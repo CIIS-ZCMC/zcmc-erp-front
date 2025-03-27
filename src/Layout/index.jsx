@@ -37,7 +37,7 @@ function Layout() {
         p={4}
         sx={{
           marginLeft: { sm: "33.33%", md: "25%", lg: "16.67%" }, // Adjust margin based on sidebar width
-          backgroundColor: color.lightBg,
+          // backgroundColor: color.lightBg,
           height: "100vh", // Ensure the main content area fills the screen
           overflowY: "auto", // Allow scrolling if content overflows
         }}
