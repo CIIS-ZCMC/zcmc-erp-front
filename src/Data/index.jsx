@@ -29,6 +29,11 @@ export const sidebarRoutes = [
                 path: "/qualitative-evaluation",
                 name: "Qualitative Evaluation",
             },
+
+            {
+                path: "/qualitative-evaluation",
+                name: "Qualitative Evaluation",
+            },
         ]
     },
 
@@ -49,5 +54,11 @@ export const sidebarRoutes = [
         ]
     }
 
-
 ]
+
+export const AOPPathMap = {
+    0: 'all',
+    1: 'pending',
+    2: 'returned',
+    3: 'approved'
+}

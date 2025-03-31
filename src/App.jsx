@@ -1,5 +1,6 @@
 import './App.css'
 import { CssVarsProvider, extendTheme } from '@mui/joy/styles'
+import { CssBaseline } from '@mui/joy'
 
 import AnimatedRoutes from './Routes/AnimatedRoutes'
 
