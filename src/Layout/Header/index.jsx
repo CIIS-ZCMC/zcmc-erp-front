@@ -28,7 +28,6 @@ const Header = ({ pageDetails, data }) => {
                 </Stack>
             </Box>
 
-
         </>
     )
 }

@@ -1,6 +1,20 @@
+import { Navigate } from "react-router-dom";
+
 import Dashboard from "../Pages/Dashboard";
 
-import AnnualOps from "../Pages/PlanningOps/AnnualOps";
+import AnnualOps from "../Pages/PlanningOps/AnnualOps/AnnualOps";
+// table views routes
+import All from '../Pages/PlanningOps/AnnualOps/TableViews/All';
+import Approved from '../Pages/PlanningOps/AnnualOps/TableViews/Approved';
+import Pending from '../Pages/PlanningOps/AnnualOps/TableViews/Pending';
+import Returned from '../Pages/PlanningOps/AnnualOps/TableViews/Returned';
+
+import CreateAOP from "../Pages/PlanningOps/AnnualOps/CreateAOP";
+//stepper routes
+import AOPStep1 from "../Pages/PlanningOps/AnnualOps/CreateAOP/AOPStep1";
+import AOPStep2 from "../Pages/PlanningOps/AnnualOps/CreateAOP/AOPStep2";
+import AOPStep3 from "../Pages/PlanningOps/AnnualOps/CreateAOP/AOPStep3";
+
 import QualitativeEvaluation from "../Pages/PlanningOps/QualitativeEvaluation";
 
 import ItemRequest from "../Pages/ItemManagement/ItemRequest";
@@ -18,6 +32,52 @@ export const sidebarRoutes = [
         path: "/aop",
         name: "AOP Management",
         element: <AnnualOps />,
+        children: [
+            {
+                index: true,
+                element: <Navigate to="all" replace />
+            },
+            {
+                path: "all",
+                element: <All />
+            },
+            {
+                path: "approved",
+                element: <Approved />
+            },
+            {
+                path: "pending",
+                element: <Pending />
+            },
+            {
+                path: "returned",
+                element: <Returned />
+            },
+        ]
+    },
+
+    {
+        path: "/aop-create",
+        name: "",
+        element: <CreateAOP />,
+        children: [
+            {
+                index: true,
+                element: <Navigate to="step1" replace />
+            },
+            {
+                path: "step1",
+                element: <AOPStep1 />
+            },
+            {
+                path: "step2",
+                element: <AOPStep2 />
+            },
+            {
+                path: "step3",
+                element: <AOPStep3 />
+            },
+        ]
     },
 
     {

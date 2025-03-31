@@ -22,3 +22,13 @@ export const EPR_API_ENDPOINTS = {
     //ERP END POINTS RELATED HERE
 }
 
+export const AOP_CONSTANTS = {
+    AOP_TITLE: 'Annual Operations Planning',
+    AOP_SUBHEADING: 'This is a subheading. It should add more context to the interaction.',
+
+    TABLE_TITLE: 'List of AOP requests',
+    TABLE_SUBHEADING: 'This is a subheading.It should add more context to the interaction.',
+
+    CREATE_AOP_TITLE: 'Create a new AOP',
+    CREATE_AOP_SUBHEADING: 'This is a subheading. It should add more context to the interaction.',
+}
