@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { Table, Sheet, Typography, Input, Select, Option } from "@mui/joy";
 
-const EditableTable = () => {
+const EditableTableComponent = () => {
   const [rows, setRows] = useState([
     { id: 1, name: "Alice", age: 25 },
     { id: 2, name: "Bob", age: 30 },
@@ -85,4 +85,4 @@ const EditableTable = () => {
   );
 };
 
-export default EditableTable;
+export default EditableTableComponent;

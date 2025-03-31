@@ -4,7 +4,7 @@ import { Table, Typography } from "@mui/joy";
 import ContainerComponent from "../../Components/Common/ContainerComponent";
 import ButtonComponent from "../../Components/Common/ButtonComponent";
 import PageTitle from "../../Components/Common/PageTitle";
-import EditableTable from "../../Components/SampleTable";
+import EditableTableComponent from '../../Components/Common/EditableTableComponent';
 
 function QualitativeEvaluation({ props }) {
   return (
@@ -22,7 +22,7 @@ function QualitativeEvaluation({ props }) {
         actions={<ButtonComponent label="Create new" />}
         sx={{ mt: 3 }}
       >
-        <EditableTable />
+        <EditableTableComponent />
       </ContainerComponent>
     </Fragment>
   );
