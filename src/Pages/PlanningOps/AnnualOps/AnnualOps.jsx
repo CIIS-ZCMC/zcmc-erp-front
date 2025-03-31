@@ -10,8 +10,6 @@ import TabsComponent from '../../../Components/Common/TabsComponent';
 import SearchBarComponent from '../../../Components/SearchBarComponent';
 import DatePickerComponent from '../../../Components/Form/DatePickerComponent';
 
-import AOPStep1 from './CreateAOP/AOPStep1';
-
 import { AOP_CONSTANTS } from '../../../Data/constants';
 import { AOPPathMap } from '../../../Data';
 
@@ -81,14 +79,10 @@ const AnnualOps = () => {
 
                     <Divider sx={{ mt: 2, mb: 2 }} />
 
-                    {/* check if the route is stepper then remove tabs component */}
-                    {location.pathname !== '/aop/step1'
-                        &&
-                        <TabsComponent
-                            tabs={['View all', 'Pending', 'Returned', 'Approved']}
-                            pathMap={AOPPathMap}
-                        />
-                    }
+                    <TabsComponent
+                        tabs={['View all', 'Pending', 'Returned', 'Approved']}
+                        pathMap={AOPPathMap}
+                    />
 
                     <Box
                         sx={{
