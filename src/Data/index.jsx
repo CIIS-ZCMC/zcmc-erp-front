@@ -30,10 +30,6 @@ export const sidebarRoutes = [
                 name: "Qualitative Evaluation",
             },
 
-            {
-                path: "/qualitative-evaluation",
-                name: "Qualitative Evaluation",
-            },
         ]
     },
 
