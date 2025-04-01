@@ -27,7 +27,6 @@ const Activities = () => {
         { id: 3, functionType: "Support", objectives: 'Objective 3', successIndicator: 'Success Indicator 3' },
     ]);
 
-
     return (
         <>
             <SheetComponent

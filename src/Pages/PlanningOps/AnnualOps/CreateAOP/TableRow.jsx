@@ -45,15 +45,18 @@ const TableRow = ({
                 <td onClick={() => setEditRowId(row.id)}>
                     {editRowId === row.id ? (
                         <Select
-                            value={editField.field === "objectives" ? editField.value : row.objectives}
-                            onChange={(e, newValue) => handleEdit(row.id, "objectives", newValue)}
+                            value={
+                                editField.field === "objectives"
+                                    ? editField.value
+                                    : row.objectives
+                            }
+                            onChange={(e, newValue) =>
+                                handleEdit(row.id, "objectives", newValue)
+                            }
                             onBlur={handleBlur}
                         >
                             {OBJECTIVE_OPTION.map(({ id, value, name }) => (
-                                <Option
-                                    key={id}
-                                    value={value}
-                                >
+                                <Option key={id} value={value}>
                                     {name}
                                 </Option>
                             ))}
@@ -63,20 +66,23 @@ const TableRow = ({
                     )}
                 </td>
 
-                <td
-                    onClick={() => setEditRowId(row.id)}
-                    style={{ cursor: 'pointer' }}
-                >
+                <td onClick={() => setEditRowId(row.id)} style={{ cursor: "pointer" }}>
                     {editRowId === row.id ? (
                         <Select
-                            value={editField.field === "successIndicator" ? editField.value : row.successIndicator}
-                            onChange={(e, newValue) => handleEdit(row.id, "successIndicator", newValue)}
+                            value={
+                                editField.field === "successIndicator"
+                                    ? editField.value
+                                    : row.successIndicator
+                            }
+                            onChange={(e, newValue) =>
+                                handleEdit(row.id, "successIndicator", newValue)
+                            }
                             onBlur={handleBlur}
                             autoFocus
                             slotProps={{
                                 listbox: {
-                                    placement: 'bottom-start'
-                                }
+                                    placement: "bottom-start",
+                                },
                             }}
                         >
                             {SUCCESS_INDICATOR_OPTION.map(({ id, value, name }) => (
@@ -87,7 +93,9 @@ const TableRow = ({
                         </Select>
                     ) : (
                         <Typography>
-                            {SUCCESS_INDICATOR_OPTION.find(obj => obj.value === row.successIndicator)?.name || row.successIndicator}
+                            {SUCCESS_INDICATOR_OPTION.find(
+                                (obj) => obj.value === row.successIndicator
+                            )?.name || row.successIndicator}
                         </Typography>
                     )}
                 </td>
@@ -124,19 +132,19 @@ const TableRow = ({
 
                 {/* Editable Name Field */}
                 {/* < td onClick={() => setEditRowId(row.id)}>
-                {editRowId === row.id ? (
-                    <Input
-                        autoFocus
-                        value={
-                            editField.field === "name" ? editField.value : row.name
-                        }
-                        onChange={(e) => handleEdit(row.id, "name", e.target.value)}
-                        onBlur={handleBlur}
-                    />
-                ) : (
-                    <Typography>{row.name}</Typography>
-                )}
-            </td > */}
+                    {editRowId === row.id ? (
+                        <Input
+                            autoFocus
+                            value={
+                                editField.field === "name" ? editField.value : row.name
+                            }
+                            onChange={(e) => handleEdit(row.id, "name", e.target.value)}
+                            onBlur={handleBlur}
+                        />
+                    ) : (
+                        <Typography>{row.name}</Typography>
+                    )}
+                </td > */}
 
             </tr >
         ))
