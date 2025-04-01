@@ -1,4 +1,4 @@
-import no_result from "../../Assets/not-found.png";
+import no_result from "../../../assets/not-found.png";
 import { Stack, Typography } from "@mui/joy";
 import PropTypes from "prop-types";
 
