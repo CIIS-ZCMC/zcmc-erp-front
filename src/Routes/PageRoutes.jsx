@@ -72,8 +72,8 @@ export const sidebarRoutes = [
   },
 
   {
-    path: "/qualitative-evaluation",
-    name: "Qualitative evauation",
+    path: "/objectives",
+    name: "Objectives and KPIs",
     element: <Objectives />,
   },
 

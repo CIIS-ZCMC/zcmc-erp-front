@@ -1,8 +1,11 @@
 import React, { Fragment } from "react";
-import ButtonComponent from "../../../Components/Common/ButtonComponent";
-import EditableTableComponent from "../../../Components/Common/Table/EditableTableComponent";
+import SheetComponent from "../../../Components/Common/SheetComponent";
+import { Table, Typography } from "@mui/joy";
 import ContainerComponent from "../../../Components/Common/ContainerComponent";
+import ButtonComponent from "../../../Components/Common/ButtonComponent";
 import PageTitle from "../../../Components/Common/PageTitle";
+import { green } from "@mui/material/colors";
+
 
 function Objectives({ props }) {
   return (
@@ -17,13 +20,12 @@ function Objectives({ props }) {
         description={
           "This is a subheading. It should add more context to the interaction."
         }
-        actions={<ButtonComponent label="Create new" />}
+        actions={<ButtonComponent label="Create new" color="success" />}
         sx={{ mt: 3 }}
-      >
-        <EditableTableComponent />
-      </ContainerComponent>
+      ></ContainerComponent>
     </Fragment>
   );
 }
 
 export default Objectives;
+
