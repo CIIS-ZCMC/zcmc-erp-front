@@ -7,6 +7,7 @@ import PageTitle from "../../../Components/Common/PageTitle";
 import { green } from "@mui/material/colors";
 
 function Objectives({ props }) {
+function Objectives({ props }) {
   return (
     <Fragment>
       <PageTitle
@@ -26,4 +27,5 @@ function Objectives({ props }) {
   );
 }
 
+export default Objectives;
 export default Objectives;

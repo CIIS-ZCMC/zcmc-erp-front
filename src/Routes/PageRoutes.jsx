@@ -15,9 +15,9 @@ import AOPStep1 from "../Pages/PlanningOps/AnnualOps/CreateAOP/AOPStep1";
 import AOPStep2 from "../Pages/PlanningOps/AnnualOps/CreateAOP/AOPStep2";
 import AOPStep3 from "../Pages/PlanningOps/AnnualOps/CreateAOP/AOPStep3";
 
-import Objectives from "../Pages/PlanningOps/ObjectiveManagement/Objectives";
 import ItemRequest from "../Pages/Consolidators/ItemManagement/ItemRequest";
 import ItemLibrary from "../Pages/Consolidators/ItemManagement/ItemLibrary";
+import Objectives from "../Pages/PlanningOps/ObjectiveManagement/Objectives";
 
 export const sidebarRoutes = [
   {
