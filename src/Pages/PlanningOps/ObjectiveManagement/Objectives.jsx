@@ -6,7 +6,7 @@ import ButtonComponent from "../../../Components/Common/ButtonComponent";
 import PageTitle from "../../../Components/Common/PageTitle";
 import { green } from "@mui/material/colors";
 
-function Objectives({ props }) {
+
 function Objectives({ props }) {
   return (
     <Fragment>
@@ -28,4 +28,4 @@ function Objectives({ props }) {
 }
 
 export default Objectives;
-export default Objectives;
+
