@@ -10,10 +10,8 @@ import Pending from '../Pages/PlanningOps/AnnualOps/TableViews/Pending';
 import Returned from '../Pages/PlanningOps/AnnualOps/TableViews/Returned';
 
 import CreateAOP from "../Pages/PlanningOps/AnnualOps/CreateAOP";
-//stepper routes
-import AOPStep1 from "../Pages/PlanningOps/AnnualOps/CreateAOP/AOPStep1";
-import AOPStep2 from "../Pages/PlanningOps/AnnualOps/CreateAOP/AOPStep2";
-import AOPStep3 from "../Pages/PlanningOps/AnnualOps/CreateAOP/AOPStep3";
+import Activities from '../Pages/PlanningOps/AnnualOps/CreateAOP/Activities';
+import Resources from '../Pages/PlanningOps/AnnualOps/CreateAOP/Activities/Resources';
 
 import QualitativeEvaluation from "../Pages/PlanningOps/QualitativeEvaluation";
 
@@ -62,20 +60,14 @@ export const sidebarRoutes = [
         element: <CreateAOP />,
         children: [
             {
-                index: true,
-                element: <Navigate to="step1" replace />
-            },
-            {
-                path: "step1",
-                element: <AOPStep1 />
-            },
-            {
-                path: "step2",
-                element: <AOPStep2 />
-            },
-            {
-                path: "step3",
-                element: <AOPStep3 />
+                path: "activities",
+                element: <Activities />,
+                children: [
+                    {
+                        path: "resources",
+                        element: <Resources />
+                    },
+                ]
             },
         ]
     },

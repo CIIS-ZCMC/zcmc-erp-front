@@ -66,6 +66,15 @@ export const AOP_STEP_HEADER = [
     { id: 4, header: 'Actions' },
 ]
 
+export const ACTIVITIES_HEADER = [
+    { id: 1, header: 'Activities' },
+    { id: 2, header: 'Timeframe' },
+    { id: 3, header: 'Target (by quarter)' },
+    { id: 4, header: 'Cost' },
+    { id: 5, header: 'Is GAD related activity' },
+    { id: 6, header: 'Responsible person' },
+    { id: 7, header: 'Actions' },
+]
 
 export const FUNCTION_TYPE_OPTION = [
     { id: 1, name: 'Strategic', value: 'Strategic' },

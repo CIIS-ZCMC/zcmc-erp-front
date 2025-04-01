@@ -1,40 +1,23 @@
-import { useState } from 'react';
-import { Typography, Input, Select, Option } from '@mui/joy';
+import { useEffect } from 'react';
+import { Typography, Input, Select, Option, Stack, Link } from '@mui/joy';
+import { Trash, ExternalLink } from 'lucide-react';
+import { useNavigate } from 'react-router-dom';
 
-import { AOP_STEP_HEADER, FUNCTION_TYPE_OPTION, OBJECTIVE_OPTION, SUCCESS_INDICATOR_OPTION } from '../../../../Data';
-import EditableTableComponent from '../../../../Components/Common/EditableTableComponent';
+import ButtonComponent from '../../../../Components/Common/ButtonComponent';
+import { FUNCTION_TYPE_OPTION, OBJECTIVE_OPTION, SUCCESS_INDICATOR_OPTION } from '../../../../Data'
 
+const TableRow = ({
+    rows,
+    handleEdit,
+    handleBlur,
+    editRowId,
+    setEditRowId,
+    editField
+}) => {
 
-const AOPStep1 = () => {
+    const navigate = useNavigate()
 
-    const [editRowId, setEditRowId] = useState(null);
-    const [editField, setEditField] = useState({});
-
-    const handleEdit = (id, field, value) => {
-        setEditField({ id, field, value });
-    };
-
-    const handleBlur = () => {
-        if (editField.id !== undefined) {
-            setRows((prev) =>
-                prev.map((row) =>
-                    row.id === editField.id
-                        ? { ...row, [editField.field]: editField.value }
-                        : row
-                )
-            );
-            setEditRowId(null);
-            setEditField({});
-        }
-    };
-
-    const [rows, setRows] = useState([
-        { id: 1, functionType: "Strategic", objectives: 'Objective 1', successIndicator: 'Success Indicator 1' },
-        { id: 2, functionType: "Core", objectives: 'Objective 2', successIndicator: 'Success Indicator 2' },
-        { id: 3, functionType: "Support", objectives: 'Objective 3', successIndicator: 'Success Indicator 3' },
-    ]);
-
-    const TableRow = ({ rows }) => (
+    return (
         rows.map((row) => (
             <tr key={row.id}>
                 <td onClick={() => setEditRowId(row.id)}>
@@ -113,37 +96,53 @@ const AOPStep1 = () => {
                     onClick={() => setEditRowId(row.id)}
                     style={{ cursor: 'pointer' }}
                 >
-                    LINK AND REMOVE BUTTON HERE
+
+                    <Stack
+                        direction={'flex'}
+                        alignItems={'center'}
+                        justifyContent={'space-between'}
+                        gap={1}
+                    >
+                        {/* navigate to step to manage activities */}
+                        <Link
+                            component="button"
+                            onClick={() => navigate(`activities`)}
+                            endDecorator={<ExternalLink size={16} />}
+                        >
+                            Manage Activities
+                        </Link>
+
+                        <ButtonComponent
+                            label={'Remove Objective'}
+                            size={'sm'}
+                            variant={'outlined'}
+                            color={'danger'}
+                            endDecorator={<Trash size={16} />}
+                        />
+                    </Stack>
                 </td>
 
                 {/* Editable Name Field */}
                 {/* < td onClick={() => setEditRowId(row.id)}>
-                    {editRowId === row.id ? (
-                        <Input
-                            autoFocus
-                            value={
-                                editField.field === "name" ? editField.value : row.name
-                            }
-                            onChange={(e) => handleEdit(row.id, "name", e.target.value)}
-                            onBlur={handleBlur}
-                        />
-                    ) : (
-                        <Typography>{row.name}</Typography>
-                    )}
-                </td > */}
+                {editRowId === row.id ? (
+                    <Input
+                        autoFocus
+                        value={
+                            editField.field === "name" ? editField.value : row.name
+                        }
+                        onChange={(e) => handleEdit(row.id, "name", e.target.value)}
+                        onBlur={handleBlur}
+                    />
+                ) : (
+                    <Typography>{row.name}</Typography>
+                )}
+            </td > */}
 
             </tr >
         ))
     )
-
-    return (
-        <>
-            <EditableTableComponent
-                tableHeader={AOP_STEP_HEADER}
-                tableRow={<TableRow rows={rows} />}
-            />
-        </>
-    )
 }
 
-export default AOPStep1
+export default TableRow
+
+
