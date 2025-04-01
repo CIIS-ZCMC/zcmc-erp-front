@@ -7,7 +7,7 @@ import Header from '../../../../../Layout/Header';
 
 import SheetComponent from '../../../../../Components/Common/SheetComponent';
 import IconButtonComponent from '../../../../../Components/Common/IconButtonComponent';
-import EditableTableComponent from '../../../../../Components/Common/EditableTableComponent';
+import EditableTableComponent from '../../../../../Components/Common/Table/EditableTableComponent';
 import TableRow from '../TableRow';
 
 import { AOP_CONSTANTS } from '../../../../../Data/constants';

@@ -7,7 +7,7 @@ import Header from '../../../../Layout/Header';
 
 //custom components
 import SheetComponent from '../../../../Components/Common/SheetComponent';
-import EditableTableComponent from '../../../../Components/Common/EditableTableComponent';
+import EditableTableComponent from '../../../../Components/Common/Table/EditableTableComponent';
 import TableRow from './TableRow';
 
 //data related
