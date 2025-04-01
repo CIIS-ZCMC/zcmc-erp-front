@@ -35,14 +35,14 @@ const TableComponent = ({
   const currentData = useMemo(() => {
     const filteredData = search
       ? data?.filter((item) =>
-          fieldsToSearch?.some((field) => {
-            const value = item[field]; // Access the field value dynamically
-            return (
-              typeof value === "string" && // Ensure the value is a string
-              value.toLowerCase().includes(search.toLowerCase())
-            );
-          })
-        )
+        fieldsToSearch?.some((field) => {
+          const value = item[field]; // Access the field value dynamically
+          return (
+            typeof value === "string" && // Ensure the value is a string
+            value.toLowerCase().includes(search.toLowerCase())
+          );
+        })
+      )
       : data;
 
     const totalPages = Math.ceil(filteredData?.length / pageSize);
@@ -100,14 +100,14 @@ const TableComponent = ({
           stripe={stripe}
           borderAxis={bordered ? "bothBetween" : border}
           hoverRow={hoverRow}
-          // sx={{
-          //   "& tr > *:first-child": {
-          //     position: "sticky",
-          //     left: 0,
-          //     boxShadow: "1px 0 var(--TableCell-borderColor)",
-          //     bgcolor: "background.surface",
-          //   },
-          // }}
+        // sx={{
+        //   "& tr > *:first-child": {
+        //     position: "sticky",
+        //     left: 0,
+        //     boxShadow: "1px 0 var(--TableCell-borderColor)",
+        //     bgcolor: "background.surface",
+        //   },
+        // }}
         >
           {!pageSize ? (
             <thead>
@@ -194,8 +194,8 @@ const TableComponent = ({
                           ? "white"
                           : "rgba(247, 247, 247, 1)"
                         : rowIndex % 2 === 0
-                        ? "rgba(247, 247, 247, 1)"
-                        : "white"
+                          ? "rgba(247, 247, 247, 1)"
+                          : "white"
                       : "white",
                   }}
                 >
