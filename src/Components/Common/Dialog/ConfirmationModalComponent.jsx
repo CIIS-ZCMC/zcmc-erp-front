@@ -2,7 +2,9 @@ import PropTypes from "prop-types";
 import {
   Box,
   DialogActions,
+  DialogContent,
   DialogTitle,
+  Divider,
   Modal,
   ModalDialog,
   Stack,
@@ -10,39 +12,56 @@ import {
 } from "@mui/joy";
 import ButtonComponent from "../ButtonComponent";
 import { Transition } from "react-transition-group";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import useModalHook from "../../../Hooks/ModalHook";
 import { getStatusIcon } from "../../../Utils/StatusIcon";
+import InputComponent from "../../Form/InputComponent";
 
-AlertDialogComponent.propTypes = {
+ConfirmationModalComponent.propTypes = {
+  content: PropTypes.node,
   rightButtonLabel: PropTypes.string,
   rightButtonAction: PropTypes.func,
+  rightButtonDisabled: PropTypes.bool,
   leftButtonLabel: PropTypes.string,
   leftButtonAction: PropTypes.func,
-  rightButtonDisabled: PropTypes.bool,
   isLoading: PropTypes.bool,
-  noRightButton: PropTypes.bool,
+  withAuthPin: PropTypes.bool,
+  withDivider: PropTypes.bool,
+  setAuthPin: PropTypes.func,
+  pinHelperText: PropTypes.string,
 };
 
 // SEE PROP TYPES FOR REFERENCE
-function AlertDialogComponent({
+function ConfirmationModalComponent({
+  content, // The primary content displayed within the modal
   rightButtonLabel = "Proceed", // Label for the right-side button within the modal
   rightButtonAction, // Function executed when the right-side button is clicked
   rightButtonDisabled, // Disables the right-side button when set to true
-  leftButtonLabel = "Close", // Label for the left-side button within the modal
-  leftButtonAction, // Function executed when the left-side button is clicked
+  leftButtonLabel = "Cancel", // Label for the left-side button within the modal
+  leftButtonAction = null, // Function executed when the left-side button is clicked
   isLoading, // Indicates whether the right-side button is in a loading state
-  noRightButton = true, // If set to true, the right button is not displayed Defaults to false
+  withAuthPin, // Auth pin confirmation; Use the setAuthPin for state management
+  withDivider, // To display modal between header and footer
+  setAuthPin, // Handle auth pin input
+  pinHelperText = "Confirm you action by typing-in your authorization PIN.",
 }) {
+  // HOOKS
   const nodeRef = useRef(null);
-
   const {
-    alertDialogState: { isOpen, status, title, description },
-    closeAlertDialog,
+    confirmationModalState: { isOpen = false, title, description, status },
+    closeConfirmation,
   } = useModalHook();
 
+  // STATES
+  const [pin, setPin] = useState(null);
+
+  const handlePinInput = (value) => {
+    if (setAuthPin) setAuthPin(value);
+    setPin(value);
+  };
+
   return (
-    <Transition in={isOpen} timeout={800} nodeRef={nodeRef}>
+    <Transition nodeRef={nodeRef} in={isOpen} timeout={500}>
       {(state) => (
         <Modal
           keepMounted
@@ -52,10 +71,11 @@ function AlertDialogComponent({
               sx: {
                 opacity: 0,
                 backdropFilter: "none",
-                transition: `opacity 800ms, backdrop-filter 800ms`,
+                transition: `opacity 300ms, backdrop-filter 300ms`,
                 ...{
                   entering: { opacity: 1, backdropFilter: "blur(8px)" },
                   entered: { opacity: 1, backdropFilter: "blur(8px)" },
+                  exiting: { opacity: 0, backdropFilter: "none" },
                 }[state],
               },
             },
@@ -68,13 +88,18 @@ function AlertDialogComponent({
         >
           <ModalDialog
             sx={{
-              width: "30%",
+              width: "auto",
+              height: "auto",
+              maxHeight: "80%",
+              maxWidth: "540px",
               borderRadius: 20,
               opacity: 0,
-              transition: `opacity 800ms`,
+              padding: 3.5,
+              transition: `opacity 400ms`,
               ...{
                 entering: { opacity: 1 },
                 entered: { opacity: 1 },
+                exiting: { opacity: 0 },
               }[state],
             }}
           >
@@ -83,13 +108,13 @@ function AlertDialogComponent({
               sx={{ alignItems: "start", justifyContent: "space-between" }}
             >
               <Stack gap={1}>
-                <Box mb={2}>{getStatusIcon(status)}</Box>
-                <Typography fontSize={{ xs: 15, lg: 18 }} fontWeight={600}>
+                {getStatusIcon(status)}
+                <Typography fontSize={{ xs: 20, lg: 20 }} fontWeight={600}>
                   {title}
                 </Typography>
                 <Typography
                   fontWeight={400}
-                  fontSize={{ xs: 12, lg: 13 }}
+                  fontSize={{ xs: 14, lg: 14 }}
                   color="neutral"
                 >
                   {description}
@@ -97,6 +122,26 @@ function AlertDialogComponent({
               </Stack>
             </DialogTitle>
 
+            {/* CONTENT */}
+            <DialogContent sx={{ py: withAuthPin && 2, overflow: "hidden" }}>
+              {withDivider && <Divider sx={{ my: 0.5 }} />}
+
+              {content && <Box py={2}>{content}</Box>}
+
+              {withDivider && <Divider sx={{ my: 0.5 }} />}
+
+              {withAuthPin && (
+                <InputComponent
+                  type="password"
+                  label="Authorization pin"
+                  helperText={pinHelperText}
+                  setValue={handlePinInput}
+                  value={pin}
+                />
+              )}
+            </DialogContent>
+
+            {/* FOOTER */}
             <DialogActions>
               <Box
                 sx={{
@@ -107,20 +152,19 @@ function AlertDialogComponent({
                 }}
               >
                 <ButtonComponent
+                  variant="outlined"
                   label={leftButtonLabel}
-                  onClick={leftButtonAction ?? closeAlertDialog}
+                  onClick={leftButtonAction ?? closeConfirmation}
                   isDisabled={isLoading}
                   fullWidth={!rightButtonAction}
                 />
 
-                {!noRightButton && (
-                  <ButtonComponent
-                    label={rightButtonLabel}
-                    isLoading={isLoading}
-                    onClick={rightButtonAction}
-                    isDisabled={rightButtonDisabled || isLoading}
-                  />
-                )}
+                <ButtonComponent
+                  label={rightButtonLabel}
+                  isLoading={isLoading}
+                  onClick={rightButtonAction}
+                  isDisabled={rightButtonDisabled || isLoading}
+                />
               </Box>
             </DialogActions>
           </ModalDialog>
@@ -130,4 +174,4 @@ function AlertDialogComponent({
   );
 }
 
-export default AlertDialogComponent;
+export default ConfirmationModalComponent;
