@@ -61,26 +61,27 @@ const CreateAOP = () => {
             {
                 // show this table to child route only
                 !isChildRoute && (
-
-                    <Stack gap={2} mt={2}>
-                        <SheetComponent
-                            variant={"outlined"}
-                        >
-                            <EditableTableComponent
-                                tableHeader={AOP_STEP_HEADER}
-                                tableRow={
-                                    <TableRow
-                                        rows={rows}
-                                        handleEdit={handleEdit}
-                                        handleBlur={handleBlur}
-                                        editField={editField}
-                                        editRowId={editRowId}
-                                        setEditRowId={setEditRowId}
-                                    />
-                                }
-                            />
-                        </SheetComponent>
-                    </Stack>
+                    <SheetComponent
+                        variant={"outlined"}
+                    >
+                        <EditableTableComponent
+                            // columns={AOP_STEP_HEADER}
+                            tableHeader={AOP_STEP_HEADER}
+                            stripe={'odd'}
+                            hoverRow
+                            isLoading={false}
+                            tableRow={
+                                <TableRow
+                                    rows={rows}
+                                    handleEdit={handleEdit}
+                                    handleBlur={handleBlur}
+                                    editField={editField}
+                                    editRowId={editRowId}
+                                    setEditRowId={setEditRowId}
+                                />
+                            }
+                        />
+                    </SheetComponent>
                 )
             }
 

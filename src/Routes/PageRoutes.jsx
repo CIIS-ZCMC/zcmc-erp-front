@@ -59,7 +59,7 @@ export const sidebarRoutes = [
     element: <CreateAOP />,
     children: [
       {
-        path: "activities",
+        path: "activities/:id",
         element: <Activities />,
         children: [
           {

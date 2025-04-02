@@ -20,6 +20,15 @@ const TableRow = ({
     return (
         rows.map((row) => (
             <tr key={row.id}>
+
+                <td>
+                    <Typography>
+                        {SUCCESS_INDICATOR_OPTION.find(
+                            (obj) => obj.value === row.id
+                        )?.name || row.id}
+                    </Typography>
+                </td>
+
                 <td onClick={() => setEditRowId(row.id)}>
                     {editRowId === row.id ? (
                         <Select
@@ -111,17 +120,16 @@ const TableRow = ({
                         justifyContent={'space-between'}
                         gap={1}
                     >
-                        {/* navigate to step to manage activities */}
                         <Link
                             component="button"
-                            onClick={() => navigate(`activities`)}
+                            onClick={() => navigate(`activities/1`)}
                             endDecorator={<ExternalLink size={16} />}
                         >
                             Manage Activities
                         </Link>
 
                         <ButtonComponent
-                            label={'Remove Objective'}
+                            label={'Delete'}
                             size={'sm'}
                             variant={'outlined'}
                             color={'danger'}

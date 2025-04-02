@@ -1,3 +1,5 @@
+import { Stack, Typography } from "@mui/joy";
+
 import { BiCategory } from "react-icons/bi";
 import { GrDocument } from "react-icons/gr";
 
@@ -56,20 +58,102 @@ export const AOPPathMap = {
 };
 
 export const AOP_STEP_HEADER = [
-  { id: 1, header: 'Type of function' },
-  { id: 2, header: 'Objectives' },
-  { id: 3, header: 'Success Indicator' },
-  { id: 4, header: 'Actions' },
+  {
+    field: "id",
+    name: "Row #",
+    width: '5%',
+    align: "center"
+  },
+  {
+    field: "function",
+    name: 'Type of Function',
+    width: "30%",
+    align: "left",
+  },
+  {
+    field: 'objectives',
+    name: 'Objectives',
+    width: "20%",
+    align: 'center'
+  },
+  {
+    field: "success_indicators",
+    name: "Success Indicators",
+    width: "20%",
+    align: "center",
+  },
+  {
+    field: 'actions',
+    align: "center",
+    name: 'Actions'
+  },
 ]
 
+
 export const ACTIVITIES_HEADER = [
-  { id: 1, header: 'Activities' },
-  { id: 2, header: 'Timeframe' },
-  { id: 3, header: 'Target (by quarter)' },
-  { id: 4, header: 'Cost' },
-  { id: 5, header: 'Is GAD related activity' },
-  { id: 6, header: 'Responsible person' },
-  { id: 7, header: 'Actions' },
+  {
+    field: "id",
+    name: "Row #",
+    width: '5%',
+    align: "center"
+  },
+  {
+    field: 'activities',
+    name: 'Activities',
+    width: "10%",
+    align: 'center'
+  },
+
+  {
+    field: '',
+    name: 'Timeframe',
+    align: 'center',
+    children: [
+      { field: 'startMonth', name: 'Start(Month)', width: '30%' },
+      { field: 'endMonth', name: 'End(Month)', width: '30%' }
+    ]
+  },
+
+  {
+    field: '',
+    name: 'Target (by quarter)',
+    align: 'center',
+    width: "15%",
+    children: [
+      { field: 'quarter1', name: 'Q1', width: '5%' },
+      { field: 'quarter2', name: 'Q2', width: '5%' },
+      { field: 'quarter3', name: 'Q3', width: '5%' },
+      { field: 'quarter4', name: 'Q4', width: '5%' },
+    ]
+  },
+
+  {
+    field: '',
+    name: 'Cost',
+    // width: "20%",
+    align: 'center'
+  },
+
+  {
+    field: '',
+    name: 'Is GAD-related activity',
+    // width: "20%",
+    align: 'center'
+  },
+
+
+  {
+    field: '',
+    name: 'Responsible Person',
+    // width: "20%",
+    align: 'center'
+  },
+
+  {
+    field: 'actions',
+    align: "center",
+    name: 'Actions'
+  },
 ]
 
 export const FUNCTION_TYPE_OPTION = [

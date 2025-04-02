@@ -15,17 +15,48 @@ import { ACTIVITIES_HEADER } from '../../../../../Data';
 
 const Activities = () => {
 
-    const [isCollapsed, setIsCollapsed] = useState(false)
+    const [isCollapsed, setIsCollapsed] = useState(false);
 
     const handleCollapseClick = () => {
         setIsCollapsed(prev => !prev)
-    }
+    };
 
     const [rows, setRows] = useState([
-        { id: 1, functionType: "Strategic", objectives: 'Objective 1', successIndicator: 'Success Indicator 1' },
-        { id: 2, functionType: "Core", objectives: 'Objective 2', successIndicator: 'Success Indicator 2' },
-        { id: 3, functionType: "Support", objectives: 'Objective 3', successIndicator: 'Success Indicator 3' },
+        {
+            id: 1,
+            activities: "Training Workshop",
+            startMonth: "January",
+            endMonth: "March",
+            quarter1: 1000,
+            quarter2: 1500,
+            quarter3: 2000,
+            quarter4: 500,
+            cost: 5000,
+            isGadRelated: true,
+            responsiblePerson: "John Doe",
+        },
     ]);
+
+    const [editRowId, setEditRowId] = useState(null);
+    const [editField, setEditField] = useState({});
+
+    const handleEdit = (id, field, value) => {
+        setEditField({ id, field, value });
+    };
+
+    const handleBlur = () => {
+        if (editField.id !== undefined) {
+            setRows((prev) =>
+                prev.map((row) =>
+                    row.id === editField.id
+                        ? { ...row, [editField.field]: editField.value }
+                        : row
+                )
+            );
+            setEditRowId(null);
+            setEditField({});
+        }
+    };
 
     return (
         <>
@@ -88,9 +119,11 @@ const Activities = () => {
                 </Box>}
             </SheetComponent >
 
-
             <EditableTableComponent
                 tableHeader={ACTIVITIES_HEADER}
+                stripe={'odd'}
+                hoverRow
+                isLoading={false}
                 tableRow={
                     <TableRow
                         rows={rows}
