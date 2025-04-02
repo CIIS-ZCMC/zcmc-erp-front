@@ -6,10 +6,11 @@ const ButtonComponent = ({
   label,
   onClick,
   variant,
-  color,
+  color = "success",
   startDecorator,
   endDecorator,
   fullWidth,
+  width = "auto",
   disabled,
   type,
 }) => {
@@ -18,12 +19,19 @@ const ButtonComponent = ({
       type={type}
       size={size}
       variant={variant}
-      color={color}
       onClick={onClick}
+      color={color}
       startDecorator={startDecorator}
       endDecorator={endDecorator}
       fullWidth={fullWidth}
       disabled={disabled}
+      sx={{
+        width: fullWidth ? "100%" : width,
+        fontWeight: 400,
+        borderRadius: 8,
+        height: 38,
+        fontSize: 14,
+      }}
     >
       {label}
     </Button>
