@@ -1,16 +1,34 @@
 export const getModeColorScheme = (type) => {
+  let colorScheme = "";
   let color = "";
+  let iconColor = "";
 
-  switch (type) {
-    case "competitive":
-      color = "success";
-      break;
-    case "alternative":
-      color = "primary";
-      break;
+  // Success
+  if (type === 200 || type === 201 || type === "success") {
+    colorScheme = "success";
+    color = "success.100";
+    iconColor = "green";
+  }
+  // Warning
+  else if (type === 199 || type === "warning") {
+    colorScheme = "warning";
+    color = "warning.100";
+    iconColor = "orange";
+  }
+  // Error
+  else if (type === 400 || type === "error") {
+    colorScheme = "error";
+    color = "error.100";
+    iconColor = "error";
+  }
+  // Default error for unknown cases
+  else {
+    colorScheme = "error";
+    color = "error.100";
+    iconColor = "error";
   }
 
-  return color;
+  return { colorScheme, color, iconColor };
 };
 
 // STATUS
