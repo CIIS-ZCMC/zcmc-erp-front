@@ -30,6 +30,7 @@ const InputComponent = ({
   endDecorator,
   width = "100%",
   isRequired,
+  color = "success",
   ...props
 }) => {
   const isPassword = type == "password";
@@ -69,6 +70,7 @@ const InputComponent = ({
         autoFocus={autoFocus}
         placeholder={placeholder}
         value={value || ""}
+        color={color}
         onChange={handleInput ? handleInput : (e) => setValue(e.target.value)}
         sx={{
           fontSize: 14,
@@ -76,6 +78,7 @@ const InputComponent = ({
           py: size ?? 1,
           background: darkMode && "none",
           color: darkMode && "white",
+          borderColor: "neutral.300",
         }}
         startDecorator={startDecorator}
         endDecorator={

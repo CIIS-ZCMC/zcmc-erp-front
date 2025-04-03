@@ -22,10 +22,13 @@ export const sidebarRoutes = [
       },
 
       {
+        path: "/aop-approval",
+        name: "AOP Management Approval",
+      },
+      {
         path: "/ppmp",
         name: "PPMP Management",
       },
-
       {
         path: "/objectives",
         name: "Objectives",
@@ -61,20 +64,20 @@ export const AOP_STEP_HEADER = [
   {
     field: "id",
     name: "Row #",
-    width: '5%',
-    align: "center"
+    width: "5%",
+    align: "center",
   },
   {
     field: "function",
-    name: 'Type of Function',
+    name: "Type of Function",
     width: "30%",
     align: "left",
   },
   {
-    field: 'objectives',
-    name: 'Objectives',
+    field: "objectives",
+    name: "Objectives",
     width: "20%",
-    align: 'center'
+    align: "center",
   },
   {
     field: "success_indicators",
@@ -83,79 +86,76 @@ export const AOP_STEP_HEADER = [
     align: "center",
   },
   {
-    field: 'actions',
+    field: "actions",
     align: "center",
-    name: 'Actions'
+    name: "Actions",
   },
-]
-
+];
 
 export const ACTIVITIES_HEADER = [
   {
     field: "id",
     name: "Row #",
-    width: '4%',
-    align: "center"
+    width: "4%",
+    align: "center",
   },
   {
-    field: 'activities',
-    name: 'Activities',
+    field: "activities",
+    name: "Activities",
     width: "10%",
-    align: 'center'
+    align: "center",
   },
 
   {
-    field: '',
-    name: 'Timeframe',
-    align: 'center',
+    field: "",
+    name: "Timeframe",
+    align: "center",
     width: "15%",
     children: [
-      { field: 'startMonth', name: 'Start(Month)', },
-      { field: 'endMonth', name: 'End(Month)', }
-    ]
+      { field: "startMonth", name: "Start(Month)" },
+      { field: "endMonth", name: "End(Month)" },
+    ],
   },
-
   {
-    field: '',
-    name: 'Target (by quarter)',
-    align: 'center',
+    field: "",
+    name: "Target (by quarter)",
+    align: "center",
     width: "20%",
     children: [
-      { field: 'quarter1', name: 'Q1', width: '10%' },
-      { field: 'quarter2', name: 'Q2', width: '10%' },
-      { field: 'quarter3', name: 'Q3', width: '10%' },
-      { field: 'quarter4', name: 'Q4', width: '10%' },
-    ]
+      { field: "quarter1", name: "Q1", width: "10%" },
+      { field: "quarter2", name: "Q2", width: "10%" },
+      { field: "quarter3", name: "Q3", width: "10%" },
+      { field: "quarter4", name: "Q4", width: "10%" },
+    ],
   },
 
   {
-    field: '',
-    name: 'Cost',
+    field: "",
+    name: "Cost",
     width: "10%",
-    align: 'center'
-  },
-
-  {
-    field: '',
-    name: 'Is GAD-related activity',
-    width: "10%",
-    align: 'center'
-  },
-
-
-  {
-    field: '',
-    name: 'Responsible Person',
-    width: "10%",
-    align: 'center'
-  },
-
-  {
-    field: 'actions',
     align: "center",
-    name: 'Actions'
   },
-]
+
+  {
+    field: "",
+    name: "Is GAD-related activity",
+    width: "10%",
+    align: "center",
+  },
+
+  {
+    field: "",
+    name: "Responsible Person",
+    width: "10%",
+    align: "center",
+  },
+
+  {
+    field: "actions",
+    align: "center",
+    name: "Actions",
+  },
+];
 
 export const FUNCTION_TYPE_OPTION = [
   { id: 1, name: "Strategic", value: "Strategic" },

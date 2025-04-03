@@ -1,55 +1,40 @@
 import { Box } from "@mui/joy";
 import {
   CheckCheck,
+  CheckCircle,
   CircleX,
+  CornerDownLeft,
   MessagesSquare,
   TriangleAlert,
 } from "lucide-react";
 import { getModeColorScheme } from "./ColorScheme";
 // STATUS
-export const getStatusIcon = (status) => {
-  let icon = "";
+export const getStatusIcon = (status, iconOnly) => {
+  const iconMap = {
+    approved: <CheckCircle size={13} />,
+    returned: <CornerDownLeft size={13} />,
+    200: <CheckCheck />,
+    201: <CheckCheck />,
+    success: <CheckCheck />,
+    199: <MessagesSquare />,
+    warning: <MessagesSquare />,
+    400: <CircleX />,
+    error: <CircleX />,
+  };
 
-  switch (status) {
-    // SUCCESS
-    case 200:
-      icon = <CheckCheck />;
-      break;
-    case 201:
-      icon = <CheckCheck />;
-      break;
-    case "success":
-      icon = <CheckCheck />;
-      break;
+  const icon = iconMap[status] || null;
+  const { color = "gray", iconColor = "white" } =
+    getModeColorScheme(status) || {};
 
-    // WARNING
-    case 199:
-      icon = <MessagesSquare />;
-      break;
-    case "warning":
-      icon = <MessagesSquare />;
-      break;
-
-    // ERROR
-    case 400:
-      icon = <CircleX />;
-      break;
-    case "error":
-      icon = <CircleX />;
-      break;
-
-    default:
-      icon = null;
-      break;
-  }
-
-  return (
+  return iconOnly ? (
+    icon
+  ) : (
     <Box
       sx={{
         width: 50,
         height: 50,
-        bgcolor: getModeColorScheme(status).color,
-        color: getModeColorScheme(status).iconColor,
+        bgcolor: color,
+        color: iconColor,
         display: "flex",
         alignItems: "center",
         justifyContent: "center",
