@@ -2,9 +2,8 @@ import React, { Fragment } from "react";
 import ContainerComponent from "../../../Components/Common/ContainerComponent";
 import ButtonComponent from "../../../Components/Common/ButtonComponent";
 import PageTitle from "../../../Components/Common/PageTitle";
-import TableComponent from "../../../Components/Common/Table/TableComponent";
-import { Stack, Typography } from "@mui/joy";
 import { objHeaders } from "../../../Data/Columns";
+import ScrollableTableComponent from "../../../Components/Common/Table/ScrollableTableComponent";
 
 function Objectives({ props }) {
   const data = [
@@ -55,12 +54,6 @@ function Objectives({ props }) {
     { id: 10, name: "Jane Doe", objective: "jane@example.com", role: "User" },
   ];
 
-  // Dummy action for "Actions" column
-  const actions = {
-    action: (id) => alert(`Action clicked for ID: ${id}`),
-    icon: "📝",
-    color: "primary",
-  };
   return (
     <Fragment>
       <PageTitle
@@ -76,15 +69,15 @@ function Objectives({ props }) {
         actions={<ButtonComponent label="Create new" color="success" />}
         sx={{ mt: 3 }}
       >
-        <TableComponent
+        <ScrollableTableComponent
           data={data}
           columns={objHeaders}
           pageSize={5}
-          actions={actions}
-          stripe="odd"
+          stripe="even"
           bordered
           hoverRow
           isLoading={false}
+          stickLast
         />
       </ContainerComponent>
     </Fragment>
