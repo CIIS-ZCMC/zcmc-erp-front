@@ -4,6 +4,7 @@ import { CircularProgress } from "@mui/joy";
 
 import { sidebarRoutes } from "./PageRoutes";
 import Layout from "../Layout";
+import ComponentTestPage from "../Pages/ComponentTestPage";
 
 const router = createBrowserRouter([
   {
@@ -16,6 +17,10 @@ const router = createBrowserRouter([
   //     element: <Layout />, // Parent component that renders common layout
   //     children: childrenRoutes, // Custom page routes
   // },
+  {
+    path: "/test-component",
+    element: <ComponentTestPage />, // For testing component only
+  },
   // {
   //     path: "/signing-in/:id",
   //     element: <Authentication />,
