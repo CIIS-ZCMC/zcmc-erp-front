@@ -2,13 +2,11 @@ import { useState } from 'react';
 import { Outlet, useLocation } from 'react-router-dom';
 import { Stack, Box } from '@mui/joy';
 
-//layouts
-import Header from '../../../../Layout/Header';
-
 //custom components
+import PageTitle from '../../../../Components/Common/PageTitle';
 import SheetComponent from '../../../../Components/Common/SheetComponent';
 import EditableTableComponent from '../../../../Components/Common/Table/EditableTableComponent';
-import TableRow from './TableRow';
+import TableRow from './TableRow'
 
 //data related
 import { AOP_CONSTANTS } from '../../../../Data/constants';
@@ -20,11 +18,6 @@ const CreateAOP = () => {
     const currentPath = location.pathname;
 
     const isChildRoute = currentPath !== '/aop-create';
-
-    const pageDetails = {
-        title: AOP_CONSTANTS.CREATE_AOP_TITLE,
-        description: AOP_CONSTANTS.CREATE_AOP_SUBHEADING
-    }
 
     const [rows, setRows] = useState([
         { id: 1, functionType: "Strategic", objectives: 'Objective 1', successIndicator: 'Success Indicator 1' },
@@ -55,9 +48,11 @@ const CreateAOP = () => {
 
     return (
         <>
-            <Header
-                pageDetails={pageDetails}
+            <PageTitle
+                title={AOP_CONSTANTS.CREATE_AOP_TITLE}
+                description={AOP_CONSTANTS.CREATE_AOP_SUBHEADING}
             />
+
             {
                 // show this table to child route only
                 !isChildRoute && (

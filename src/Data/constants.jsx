@@ -34,7 +34,10 @@ export const AOP_CONSTANTS = {
   CREATE_AOP_SUBHEADING: 'This is a subheading. It should add more context to the interaction.',
 
   MANAGE_ACTIVITIES_HEADER: `You're Managing activities for Objective:`,
-  MANAGE_ACTIVITIES_SUBHEADER: `Collapse this card to view more information about the selected objective.`
+  MANAGE_ACTIVITIES_SUBHEADER: `Collapse this card to view more information about the selected objective.`,
+
+  TABLE_ACTIVITY_HEADER: 'Step 2 of 4: Manage activities',
+  TABLE_ACTIVITY_SUBHEADING: 'This is a subheading. It should add more context to the interaction.'
 }
 
 export const MONTHS = [

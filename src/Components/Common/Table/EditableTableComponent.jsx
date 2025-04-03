@@ -1,16 +1,48 @@
 import { useState } from "react";
 import { Table, Sheet, Typography, Input, Select, Option } from "@mui/joy";
 
-const EditableTableComponent = ({ tableHeader = [], tableRow = [] }) => {
+const EditableTableComponent = ({
+  tableHeader = [],
+  tableRow = [],
+  maxHeight,
+  stripe,
+  hoverRow,
+  bordered = false,
+  border = 'none',
+  stickLast = false,
+}) => {
   return (
+
     <Sheet
-      variant="outlined"
       sx={{
-        p: 2, borderRadius: "md"
+        // width: "100%",
+        border: 1,
+        // p: 0.3,
+        borderColor: "neutral.200",
+        maxHeight: maxHeight ?? "100%",
+        overflow: "auto",
       }}
     >
       <Table
-        stickyHeader
+        borderAxis="bothBetween"
+        stripe={stripe}
+        hoverRow
+        sx={{
+          tableLayout: "fixed",
+          "& tr > *:first-child": {
+            position: "sticky",
+            left: 0,
+            boxShadow: "1px 0 var(--TableCell-borderColor)",
+            bgcolor: "background.surface",
+          },
+          ...(stickLast && {
+            "& tr > *:last-child": {
+              position: "sticky",
+              right: 0,
+              bgcolor: "var(--TableCell-headBackground)",
+            },
+          }),
+        }}
       >
         <thead>
           {/* First row - parent headers */}
@@ -67,6 +99,7 @@ const EditableTableComponent = ({ tableHeader = [], tableRow = [] }) => {
         <tbody>{tableRow}</tbody>
       </Table>
     </Sheet>
+
   );
 };
 

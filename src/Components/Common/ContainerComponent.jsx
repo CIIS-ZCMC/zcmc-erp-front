@@ -33,6 +33,7 @@ function ContainerComponent({
   comingSoon = false,
   chipLabel,
   chipColor,
+  isTable,
   ...props
 }) {
   return (
@@ -67,7 +68,7 @@ function ContainerComponent({
 
             {actions}
           </Stack>
-          <Divider sx={{ marginX: noPadding && -2.5 }} />
+          {isTable && <Divider sx={{ marginX: noPadding && -2.5 }} />}
         </Stack>
       )}
 

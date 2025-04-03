@@ -76,6 +76,7 @@ function Objectives({ props }) {
             onClick={() => setOpenCreate(true)}
           />
         }
+        isTable={true}
         sx={{ mt: 3 }}
       >
         <ScrollableTableComponent

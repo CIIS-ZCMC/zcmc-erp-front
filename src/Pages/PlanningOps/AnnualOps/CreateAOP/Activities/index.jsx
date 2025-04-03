@@ -1,14 +1,16 @@
 import { useState } from 'react';
 
 import { Box, Stack, Typography, Divider } from '@mui/joy';
-import { ChevronDown, ChevronUp } from 'lucide-react';
+import { ChevronDown, ChevronUp, Plus } from 'lucide-react';
 
 import Header from '../../../../../Layout/Header';
 
+import ButtonComponent from '../../../../../Components/Common/ButtonComponent';
 import SheetComponent from '../../../../../Components/Common/SheetComponent';
 import IconButtonComponent from '../../../../../Components/Common/IconButtonComponent';
 import EditableTableComponent from '../../../../../Components/Common/Table/EditableTableComponent';
 import TableRow from './TableRow';
+import ContainerComponent from '../../../../../Components/Common/ContainerComponent';
 
 import { AOP_CONSTANTS } from '../../../../../Data/constants';
 import { ACTIVITIES_HEADER } from '../../../../../Data';
@@ -24,6 +26,20 @@ const Activities = () => {
     const [rows, setRows] = useState([
         {
             id: 1,
+            activities: "Training Workshop",
+            startMonth: "January",
+            endMonth: "March",
+            quarter1: 100,
+            quarter2: 50,
+            quarter3: 'N/A',
+            quarter4: 'N/A',
+            cost: 5000,
+            isGadRelated: true,
+            responsiblePerson: "John Doe",
+        },
+
+        {
+            id: 2,
             activities: "Training Workshop",
             startMonth: "January",
             endMonth: "March",
@@ -60,25 +76,11 @@ const Activities = () => {
 
     return (
         <>
-            <SheetComponent
-                variant={"outlined"}
-            >
-                <Box
-                    sx={{
-                        display: 'flex',
-                        alignItems: 'center',
-                        justifyContent: 'space-between',
-                    }}
-                >
-                    <Stack>
-                        <Typography level="title-md">
-                            {AOP_CONSTANTS.MANAGE_ACTIVITIES_HEADER}
-                        </Typography>
-                        <Typography level="body-sm">
-                            {AOP_CONSTANTS.MANAGE_ACTIVITIES_SUBHEADER}
-                        </Typography>
-                    </Stack>
-
+            <ContainerComponent
+                title={AOP_CONSTANTS.MANAGE_ACTIVITIES_HEADER}
+                description={AOP_CONSTANTS.MANAGE_ACTIVITIES_SUBHEADER}
+                isTable={false}
+                actions={
                     <Stack>
                         <IconButtonComponent
                             variant={'text'}
@@ -89,51 +91,72 @@ const Activities = () => {
                             }}
                         />
                     </Stack>
-                </Box>
-
-                {isCollapsed && <Box
+                }
+            >
+                <Box
                     sx={{
-                        mt: 2,
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
                     }}
                 >
-                    <Divider />
+                    {isCollapsed && <Box>
+                        <Stack
+                            direction={'row'}
+                            gap={2}
+                        >
+                            <SheetComponent variant={"outlined"}>
+                                Content 1
+                            </SheetComponent>
 
-                    <Stack
-                        direction={'row'}
-                        gap={2}
-                        mt={2}
-                    >
-                        <SheetComponent variant={"outlined"}>
-                            Content 1
-                        </SheetComponent>
+                            <SheetComponent variant={"outlined"}>
+                                Content 2
+                            </SheetComponent>
 
-                        <SheetComponent variant={"outlined"}>
-                            Content 2
-                        </SheetComponent>
+                            <SheetComponent variant={"outlined"}>
+                                Content 3
+                            </SheetComponent>
+                        </Stack>
+                    </Box>}
 
-                        <SheetComponent variant={"outlined"}>
-                            Content 3
-                        </SheetComponent>
+                </Box>
+            </ContainerComponent>
+
+            <Box sx={{ m: 3 }} />
+
+            <ContainerComponent
+                title={AOP_CONSTANTS.TABLE_ACTIVITY_HEADER}
+                description={AOP_CONSTANTS.TABLE_ACTIVITY_SUBHEADING}
+                isTable={true}
+                actions={
+                    <Stack>
+                        <ButtonComponent
+                            onClick={() => setOpen(true)}
+                            label={"Add an Activity"}
+                            endDecorator={<Plus size={16} />}
+                        />
                     </Stack>
-                </Box>}
-            </SheetComponent >
-
-            <EditableTableComponent
-                tableHeader={ACTIVITIES_HEADER}
-                stripe={'odd'}
-                hoverRow
-                isLoading={false}
-                tableRow={
-                    <TableRow
-                        rows={rows}
-                        handleEdit={handleEdit}
-                        handleBlur={handleBlur}
-                        editField={editField}
-                        editRowId={editRowId}
-                        setEditRowId={setEditRowId}
-                    />
                 }
-            />
+            >
+                <EditableTableComponent
+                    tableHeader={ACTIVITIES_HEADER}
+                    stripe={'even'}
+                    hoverRow
+                    isLoading={false}
+                    bordered={true}
+                    stickLast
+                    tableRow={
+                        <TableRow
+                            rows={rows}
+                            handleEdit={handleEdit}
+                            handleBlur={handleBlur}
+                            editField={editField}
+                            editRowId={editRowId}
+                            setEditRowId={setEditRowId}
+                        />
+                    }
+                />
+            </ContainerComponent>
 
         </>
     )
