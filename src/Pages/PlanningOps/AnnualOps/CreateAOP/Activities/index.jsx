@@ -8,7 +8,7 @@ import Header from '../../../../../Layout/Header';
 import SheetComponent from '../../../../../Components/Common/SheetComponent';
 import IconButtonComponent from '../../../../../Components/Common/IconButtonComponent';
 import EditableTableComponent from '../../../../../Components/Common/Table/EditableTableComponent';
-import TableRow from '../TableRow';
+import TableRow from './TableRow';
 
 import { AOP_CONSTANTS } from '../../../../../Data/constants';
 import { ACTIVITIES_HEADER } from '../../../../../Data';
@@ -27,10 +27,10 @@ const Activities = () => {
             activities: "Training Workshop",
             startMonth: "January",
             endMonth: "March",
-            quarter1: 1000,
-            quarter2: 1500,
-            quarter3: 2000,
-            quarter4: 500,
+            quarter1: 100,
+            quarter2: 50,
+            quarter3: 'N/A',
+            quarter4: 'N/A',
             cost: 5000,
             isGadRelated: true,
             responsiblePerson: "John Doe",
@@ -65,7 +65,6 @@ const Activities = () => {
             >
                 <Box
                     sx={{
-
                         display: 'flex',
                         alignItems: 'center',
                         justifyContent: 'space-between',

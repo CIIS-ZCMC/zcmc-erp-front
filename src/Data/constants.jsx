@@ -35,5 +35,9 @@ export const AOP_CONSTANTS = {
 
   MANAGE_ACTIVITIES_HEADER: `You're Managing activities for Objective:`,
   MANAGE_ACTIVITIES_SUBHEADER: `Collapse this card to view more information about the selected objective.`
-
 }
+
+export const MONTHS = [
+  'January', 'February', 'March', 'April', 'May', 'June',
+  'July', 'August', 'September', 'October', 'November', 'December'
+];

@@ -94,7 +94,7 @@ export const ACTIVITIES_HEADER = [
   {
     field: "id",
     name: "Row #",
-    width: '5%',
+    width: '4%',
     align: "center"
   },
   {
@@ -108,9 +108,10 @@ export const ACTIVITIES_HEADER = [
     field: '',
     name: 'Timeframe',
     align: 'center',
+    width: "15%",
     children: [
-      { field: 'startMonth', name: 'Start(Month)', width: '30%' },
-      { field: 'endMonth', name: 'End(Month)', width: '30%' }
+      { field: 'startMonth', name: 'Start(Month)', },
+      { field: 'endMonth', name: 'End(Month)', }
     ]
   },
 
@@ -118,26 +119,26 @@ export const ACTIVITIES_HEADER = [
     field: '',
     name: 'Target (by quarter)',
     align: 'center',
-    width: "15%",
+    width: "20%",
     children: [
-      { field: 'quarter1', name: 'Q1', width: '5%' },
-      { field: 'quarter2', name: 'Q2', width: '5%' },
-      { field: 'quarter3', name: 'Q3', width: '5%' },
-      { field: 'quarter4', name: 'Q4', width: '5%' },
+      { field: 'quarter1', name: 'Q1', width: '10%' },
+      { field: 'quarter2', name: 'Q2', width: '10%' },
+      { field: 'quarter3', name: 'Q3', width: '10%' },
+      { field: 'quarter4', name: 'Q4', width: '10%' },
     ]
   },
 
   {
     field: '',
     name: 'Cost',
-    // width: "20%",
+    width: "10%",
     align: 'center'
   },
 
   {
     field: '',
     name: 'Is GAD-related activity',
-    // width: "20%",
+    width: "10%",
     align: 'center'
   },
 
@@ -145,7 +146,7 @@ export const ACTIVITIES_HEADER = [
   {
     field: '',
     name: 'Responsible Person',
-    // width: "20%",
+    width: "10%",
     align: 'center'
   },
 

@@ -3,24 +3,15 @@ import { Table, Sheet, Typography, Input, Select, Option } from "@mui/joy";
 
 const EditableTableComponent = ({ tableHeader = [], tableRow = [] }) => {
   return (
-    <Sheet variant="outlined" sx={{ p: 2, borderRadius: "md" }}>
-      <Table>
-
-        {/* <thead>
-          <tr>
-            <th rowSpan={2}>Name</th>
-            <th rowSpan={2}>ID</th>
-            <th colSpan={2} style={{ textAlign: 'center' }}>
-              Membership Dates
-            </th>
-            <th rowSpan={2}>Balance</th>
-          </tr>
-          <tr>
-            <th>Joined</th>
-            <th style={{ borderRightWidth: 0 }}>Canceled</th>
-          </tr>
-        </thead> */}
-
+    <Sheet
+      variant="outlined"
+      sx={{
+        p: 2, borderRadius: "md"
+      }}
+    >
+      <Table
+        stickyHeader
+      >
         <thead>
           {/* First row - parent headers */}
           <tr>
