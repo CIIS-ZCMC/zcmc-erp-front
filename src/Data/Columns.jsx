@@ -1,12 +1,12 @@
-import { Stack, Typography } from "@mui/joy";
+import { IconButton, Stack, Typography } from "@mui/joy";
 
 export const objHeaders = [
-  { field: "id", name: "Row #", width: "5%", align: "center" },
-  { field: "function", name: "Function", width: "30%", align: "left" },
+  { field: "id", name: "Row #", align: "center", width: "50px" },
+  { field: "function", name: "Function", width: 200, align: "left" },
   {
     field: "objective",
     name: "Objective",
-    width: "30%",
+    width: 200,
     align: "left",
     render: (params) => {
       return (
@@ -27,9 +27,27 @@ export const objHeaders = [
   {
     field: "success_indicators",
     name: "Success Indicators",
-    width: "20%",
+    width: 200,
     align: "center",
   },
-  { field: "created_at", name: "Created on", width: "10%", align: "center" },
-  { field: "updated_at", name: "Updated on", width: "10%", align: "center" },
+  { field: "created_at", name: "Created on", width: 200, align: "center" },
+  { field: "updated_at", name: "Updated on", width: 200, align: "center" },
+  {
+    field: "action",
+    name: "Actions",
+    position: "sticky",
+    width: "100px",
+    right: 0,
+    render: (params) => {
+      return (
+        <IconButton
+          onClick={() => alert(`Action clicked for ID: ${params.id}`)}
+          size="md"
+          variant="soft"
+        >
+          📝
+        </IconButton>
+      );
+    },
+  },
 ];

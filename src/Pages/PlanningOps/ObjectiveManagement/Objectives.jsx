@@ -1,12 +1,14 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useState } from "react";
 import ContainerComponent from "../../../Components/Common/ContainerComponent";
 import ButtonComponent from "../../../Components/Common/ButtonComponent";
 import PageTitle from "../../../Components/Common/PageTitle";
-import TableComponent from "../../../Components/Common/Table/TableComponent";
-import { Stack, Typography } from "@mui/joy";
 import { objHeaders } from "../../../Data/Columns";
+import ScrollableTableComponent from "../../../Components/Common/Table/ScrollableTableComponent";
+import ModalComponent from "../../../Components/Common/Dialog/ModalComponent";
+import AutocompleteComponent from "../../../Components/Form/AutocompleteComponent";
 
 function Objectives({ props }) {
+  const [openCreate, setOpenCreate] = useState(false);
   const data = [
     {
       id: 1,
@@ -55,12 +57,6 @@ function Objectives({ props }) {
     { id: 10, name: "Jane Doe", objective: "jane@example.com", role: "User" },
   ];
 
-  // Dummy action for "Actions" column
-  const actions = {
-    action: (id) => alert(`Action clicked for ID: ${id}`),
-    icon: "📝",
-    color: "primary",
-  };
   return (
     <Fragment>
       <PageTitle
@@ -73,20 +69,37 @@ function Objectives({ props }) {
         description={
           "This is a subheading. It should add more context to the interaction."
         }
-        actions={<ButtonComponent label="Create new" color="success" />}
+        actions={
+          <ButtonComponent
+            label="Create new"
+            color="success"
+            onClick={() => setOpenCreate(true)}
+          />
+        }
         sx={{ mt: 3 }}
       >
-        <TableComponent
+        <ScrollableTableComponent
           data={data}
           columns={objHeaders}
           pageSize={5}
-          actions={actions}
-          stripe="odd"
+          stripe="even"
           bordered
           hoverRow
           isLoading={false}
+          stickLast
         />
       </ContainerComponent>
+      <ModalComponent
+        isOpen={openCreate}
+        handleClose={() => setOpenCreate(false)}
+        title={"Create a new objective"}
+        description={"Add a new function, objective and its success indicators"}
+        content={
+          <Fragment>
+            <AutocompleteComponent label={"Select a function"} />
+          </Fragment>
+        }
+      />
     </Fragment>
   );
 }
