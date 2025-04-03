@@ -5,7 +5,6 @@ import ButtonComponent from "../Components/Common/ButtonComponent";
 import { AOP_CONSTANTS } from "../Data/constants";
 import ConfirmationModalComponent from "../Components/Common/Dialog/ConfirmationModalComponent";
 import useModalHook from "../Hooks/ModalHook";
-import AlertDialogComponent from "../Components/Common/Dialog/AlertDialogComponent";
 
 export default function ComponentTestPage() {
   const [open, setOpen] = useState(false);
@@ -39,7 +38,7 @@ export default function ComponentTestPage() {
   return (
     <Fragment>
       <Stack gap={1} direction={"row"}>
-        <ButtonComponent onClick={() => setOpen(true)} label={"Open modal"} />{" "}
+        <ButtonComponent onClick={() => setOpen(true)} label={"Open modal"} />
         <ButtonComponent
           variant={"outlined"}
           color="primary"
@@ -65,9 +64,6 @@ export default function ComponentTestPage() {
         withDivider
         content={"This is a content"}
       />
-
-      {/* Test AlertDialog Modal */}
-      <AlertDialogComponent />
     </Fragment>
   );
 }

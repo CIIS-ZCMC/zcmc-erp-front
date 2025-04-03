@@ -11,6 +11,7 @@ const useModalHook = create((set, get) => ({
   },
 
   alertDialogState: {
+    isGlobal: true,
     isOpen: false,
     status: null,
     title: "This is a title",
@@ -19,16 +20,13 @@ const useModalHook = create((set, get) => ({
 
   // HANDLE ALERT STATE
   setAlertDialog: (data) => {
-    const {
-      status = null,
-      title = "This is a title",
-      description = "This is a description.",
-    } = data ?? null;
+    const { status, title, description, isGlobal = true } = data ?? null;
 
     try {
       get().closeConfirmation();
       set(() => ({
         alertDialogState: {
+          isGlobal: isGlobal,
           isOpen: true,
           status: status,
           title: title,
