@@ -16,7 +16,7 @@ function Layout() {
       <Grid container sx={{ maxHeight: "100vh" }}>
         {/* Sidebar */}
         <Grid
-          item
+          item="true"
           xs={12} // Full width on extra small screens
           sm={4} // 4/12 width on small screens
           md={3} // 3/12 width on medium screens
@@ -26,7 +26,7 @@ function Layout() {
             top: 0,
             left: 0,
             bottom: 0,
-            height: "100vh",
+            maxHeight: "100vh",
             backgroundColor: color.main,
           }}
         >
@@ -35,7 +35,7 @@ function Layout() {
 
         {/* Outlet is where the child routes will be rendered */}
         <Grid
-          item
+          item="true"
           xs={12} // Full width on extra small screens
           sm={8} // 8/12 width on small screens
           md={9} // 9/12 width on medium screens
@@ -45,7 +45,7 @@ function Layout() {
             marginLeft: { sm: "33.33%", md: "25%", lg: "16.67%" }, // Adjust margin based on sidebar width
             // backgroundColor: color.lightBg,
             height: "100vh", // Ensure the main content area fills the screen
-            overflowY: "auto", // Allow scrolling if content overflows
+            overflowY: "hidden", // Allow scrolling if content overflows
           }}
         >
           <Box>

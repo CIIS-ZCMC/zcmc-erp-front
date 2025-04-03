@@ -13,10 +13,7 @@ import useModalHook from "../../../Hooks/ModalHook";
 import { getStatusIcon } from "../../../Utils/StatusIcon";
 // eslint-disable-next-line no-unused-vars
 import { AnimatePresence, motion } from "motion/react";
-import {
-  getModeColorScheme,
-  getStatusColorScheme,
-} from "../../../Utils/ColorScheme";
+import { getModeColorScheme } from "../../../Utils/ColorScheme";
 
 AlertDialogComponent.propTypes = {
   rightButtonLabel: PropTypes.string,
@@ -41,8 +38,6 @@ function AlertDialogComponent({
     alertDialogState: { isOpen, status, title, description },
     closeAlertDialog,
   } = useModalHook();
-
-  console.log("isOpen:", isOpen); // Debugging log
 
   return (
     <AnimatePresence>

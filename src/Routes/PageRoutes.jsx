@@ -10,12 +10,13 @@ import Pending from "../Pages/PlanningOps/AnnualOps/TableViews/Pending";
 import Returned from "../Pages/PlanningOps/AnnualOps/TableViews/Returned";
 
 import CreateAOP from "../Pages/PlanningOps/AnnualOps/CreateAOP";
-import Activities from '../Pages/PlanningOps/AnnualOps/CreateAOP/Activities';
-import Resources from '../Pages/PlanningOps/AnnualOps/CreateAOP/Activities/Resources';
+import Activities from "../Pages/PlanningOps/AnnualOps/CreateAOP/Activities";
+import Resources from "../Pages/PlanningOps/AnnualOps/CreateAOP/Activities/Resources";
 
 import ItemRequest from "../Pages/Consolidators/ItemManagement/ItemRequest";
 import ItemLibrary from "../Pages/Consolidators/ItemManagement/ItemLibrary";
 import Objectives from "../Pages/PlanningOps/ObjectiveManagement/Objectives";
+import AOPApproval from "../Pages/PlanningOps/Approval/AOPApproval";
 
 export const sidebarRoutes = [
   {
@@ -54,6 +55,12 @@ export const sidebarRoutes = [
   },
 
   {
+    path: "/aop-approval",
+    name: "AOP Management Approval",
+    element: <AOPApproval />,
+  },
+
+  {
     path: "/aop-create",
     name: "",
     element: <CreateAOP />,
@@ -64,11 +71,11 @@ export const sidebarRoutes = [
         children: [
           {
             path: "resources",
-            element: <Resources />
+            element: <Resources />,
           },
-        ]
+        ],
       },
-    ]
+    ],
   },
 
   {

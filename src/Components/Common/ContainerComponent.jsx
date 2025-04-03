@@ -30,7 +30,6 @@ function ContainerComponent({
   contentMaxHeight,
   actions,
   noPadding,
-  comingSoon = false,
   chipLabel,
   chipColor,
   ...props
@@ -43,25 +42,15 @@ function ContainerComponent({
             direction={"row"}
             sx={{ alignItems: "center", justifyContent: "space-between" }}
           >
-            <Stack spacign={comingSoon && 0.4}>
+            <Stack>
               <Typography
                 fontWeight={600}
                 fontSize={{ sm: "sm", md: "md", lg: "lg" }}
               >
-                {title}{" "}
-                {comingSoon && (
-                  <span style={{ marginLeft: 4 }}>
-                    <ChipComponent
-                      // color={"neutral"}
-                      // variant={"solid"}
-                      label={"Coming soon"}
-                      size="sm"
-                    />
-                  </span>
-                )}
+                {title}
               </Typography>
               <Typography level="body-xs" fontWeight={400}>
-                {description}{" "}
+                {description}
               </Typography>
             </Stack>
 
