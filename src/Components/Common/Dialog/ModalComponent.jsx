@@ -44,8 +44,8 @@ function ModalComponent({
   content, // The primary content displayed within the modal
   title, // The title of the modal, typically displayed at the top
   description, // A subtitle, styled with a smaller font
-  minWidth, // Minimum width of the modal for automatic sizing
   maxWidth, // Maximum width of the modal for automatic sizing
+  minWidth, // Minimum width of the modal for automatic sizing
   handleClose, // Callback function trigger to close the modal This can also be used for left button as the default action for "Close"
   rightButtonLabel = "Proceed", // Label for the right-side button within the modal
   rightButtonAction, // Function executed when the right-side button is clicked
@@ -83,8 +83,8 @@ function ModalComponent({
               sx={{
                 width: "auto",
                 height: "auto",
-                maxHeight: "80%",
-                maxWidth: "540px",
+                // maxHeight: "80%",
+                // maxWidth: "540px",
                 borderRadius: 20,
                 padding: 3.5,
               }}

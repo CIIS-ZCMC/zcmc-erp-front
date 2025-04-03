@@ -1,13 +1,17 @@
-import { useState } from 'react'
+import { Fragment, useState } from 'react'
 
-import { Stack, Link, Typography, Input, Select, Option } from '@mui/joy';
+import { Stack, Link, Typography, Input, Select, Option, Box } from '@mui/joy';
 import { useNavigate } from 'react-router-dom';
-import { ExternalLink, Trash } from 'lucide-react';
+import { ExternalLink, Trash, FunnelX } from 'lucide-react';
 
+import SearchBarComponent from '../../../../../Components/SearchBarComponent';
 import ButtonComponent from '../../../../../Components/Common/ButtonComponent';
 import ModalComponent from '../../../../../Components/Common/Dialog/ModalComponent';
+import AutocompleteComponent from '../../../../../Components/Form/AutocompleteComponent';
+import IconButtonComponent from '../../../../../Components/Common/IconButtonComponent';
 
-import { MONTHS } from '../../../../../Data/constants';
+import { AOP_CONSTANTS, MONTHS } from '../../../../../Data/constants';
+
 
 const TableRow = ({
     rows,
@@ -234,6 +238,43 @@ const TableRow = ({
             <ModalComponent
                 isOpen={openResourcesModal}
                 handleClose={() => setOpenResourcesModal(false)}
+                title={AOP_CONSTANTS.MODAL_RESOURCE_HEADER}
+                description={AOP_CONSTANTS.MODAL_RESOURCE_SUBHEADING}
+                maxWidth={2000}
+                content={
+                    <Fragment>
+                        <Box>
+                            <Stack
+                                direction={'row'}
+                                alignItems={'end'}
+                                gap={2}
+                            >
+                                <SearchBarComponent
+
+                                    label={'Search'}
+                                />
+
+                                <AutocompleteComponent
+
+                                    label={'Filter By Classification'}
+                                />
+
+                                <AutocompleteComponent
+                                    label={'Filter By Category'}
+                                />
+
+                                <Box>
+                                    {/* Clear Filters */}
+                                    <IconButtonComponent
+                                        icon={<FunnelX />}
+                                        variant={'outlined'}
+                                    />
+                                </Box>
+
+                            </Stack>
+                        </Box>
+                    </Fragment >
+                }
             />
 
         </>

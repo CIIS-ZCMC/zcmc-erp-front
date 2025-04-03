@@ -37,7 +37,10 @@ export const AOP_CONSTANTS = {
   MANAGE_ACTIVITIES_SUBHEADER: `Collapse this card to view more information about the selected objective.`,
 
   TABLE_ACTIVITY_HEADER: 'Step 2 of 4: Manage activities',
-  TABLE_ACTIVITY_SUBHEADING: 'This is a subheading. It should add more context to the interaction.'
+  TABLE_ACTIVITY_SUBHEADING: 'This is a subheading. It should add more context to the interaction.',
+
+  MODAL_RESOURCE_HEADER: "Select resources for activity Activity:",
+  MODAL_RESOURCE_SUBHEADING: "Select a request status and reasons (if returned) to continue. You may add remarks if necessary."
 }
 
 export const MONTHS = [
