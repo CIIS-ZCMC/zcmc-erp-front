@@ -15,8 +15,8 @@ import {
 } from "@mui/joy";
 import { BiX } from "react-icons/bi";
 import ButtonComponent from "../ButtonComponent";
-import { Transition } from "react-transition-group";
-import { useRef } from "react";
+// eslint-disable-next-line no-unused-vars
+import { AnimatePresence, motion } from "motion/react";
 
 ModalComponent.propTypes = {
   isOpen: PropTypes.bool.isRequired,
@@ -58,7 +58,6 @@ function ModalComponent({
   noRightButton, // If set to true, the right button is not displayed Defaults to false
   noDivider = false, // If set to true, the divider between the title and content is hidden
 }) {
-  const nodeRef = useRef(null); // New update
   const theme = useTheme();
   const custom = theme.palette.custom;
 
@@ -72,116 +71,98 @@ function ModalComponent({
   };
 
   return (
-    <Transition in={isOpen} timeout={300} nodeRef={nodeRef}>
-      {(state) => (
-        <Modal
-          keepMounted
-          open={!["exited", "exiting"].includes(state)}
-          onClose={handleCloseModal} // Use the updated handler
-          slotProps={{
-            backdrop: {
-              sx: {
-                opacity: 0,
-                backdropFilter: "none",
-                transition: `opacity 300ms, backdrop-filter 300ms`,
-                ...{
-                  entering: { opacity: 1, backdropFilter: "blur(8px)" },
-                  entered: { opacity: 1, backdropFilter: "blur(8px)" },
-                }[state],
-              },
-            },
-          }}
-          sx={[
-            state === "exited"
-              ? { visibility: "hidden" }
-              : { visibility: "visible" },
-          ]}
-        >
-          <ModalDialog
-            minWidth={minWidth}
-            maxWidth={maxWidth}
-            sx={{
-              width: "auto",
-              borderRadius: 20,
-              opacity: 0,
-              transition: `opacity 300ms`,
-              ...{
-                entering: { opacity: 1 },
-                entered: { opacity: 1 },
-              }[state],
-            }}
+    <AnimatePresence initial={false}>
+      {isOpen && (
+        <Modal keepMounted open={isOpen} onClose={handleCloseModal}>
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
           >
-            {/* TITLE */}
-            <DialogTitle
-              sx={{ alignItems: "start", justifyContent: "space-between" }}
+            <ModalDialog
+              sx={{
+                width: "auto",
+                height: "auto",
+                maxHeight: "80%",
+                maxWidth: "540px",
+                borderRadius: 20,
+                padding: 3.5,
+              }}
+              minWidth={minWidth}
+              maxWidth={maxWidth}
             >
-              <Stack gap={0.3}>
-                <Typography fontSize={{ xs: 15, lg: 18 }} fontWeight={600}>
-                  {title}
-                </Typography>
-                <Typography
-                  fontWeight={400}
-                  fontSize={{ xs: 12, lg: 13 }}
-                  color="neutral"
-                >
-                  {description}
-                </Typography>
-              </Stack>
-              {!noDivider && (
-                <IconButton variant="plain" onClick={handleClose}>
-                  <BiX fontSize={27} />
-                </IconButton>
-              )}
-            </DialogTitle>
-
-            {withProgress && (
-              <LinearProgress
-                determinate
-                value={progressValue}
-                sx={{ color: custom.buttonBg }}
-              />
-            )}
-            {!noDivider && <Divider sx={{ mx: 0.2 }} />}
-
-            {/* CONTENT */}
-            <DialogContent>{content}</DialogContent>
-
-            {/* FOOTER */}
-            <Divider sx={{ mx: 0.2 }} />
-            <DialogActions>
-              <Box
-                sx={{
-                  width:
-                    minWidth > "70vw" || maxWidth > "70vw" ? "20%" : "100%",
-                  display: "flex",
-                  gap: 1,
-                  flexDirection: { xs: "column", sm: "row-reverse" },
-                }}
+              {/* TITLE */}
+              <DialogTitle
+                sx={{ alignItems: "start", justifyContent: "space-between" }}
               >
-                {!noRightButton && (
-                  <ButtonComponent
-                    label={rightButtonLabel}
-                    fullWidth
-                    isLoading={isLoading}
-                    onClick={rightButtonAction}
-                    isDisabled={rightButtonDisabled || isLoading}
-                  />
+                <Stack gap={0.3}>
+                  <Typography fontSize={{ xs: 15, lg: 18 }} fontWeight={600}>
+                    {title}
+                  </Typography>
+                  <Typography
+                    fontWeight={400}
+                    fontSize={{ xs: 12, lg: 13 }}
+                    color="neutral"
+                  >
+                    {description}
+                  </Typography>
+                </Stack>
+                {!noDivider && (
+                  <IconButton variant="plain" onClick={handleClose}>
+                    <BiX fontSize={27} />
+                  </IconButton>
                 )}
+              </DialogTitle>
 
-                <ButtonComponent
-                  variant="outlined"
-                  color="success"
-                  label={leftButtonLabel}
-                  fullWidth={!noRightButton}
-                  onClick={leftButtonAction ?? handleClose}
-                  isDisabled={isLoading}
+              {withProgress && (
+                <LinearProgress
+                  determinate
+                  value={progressValue}
+                  sx={{ color: custom.buttonBg }}
                 />
-              </Box>
-            </DialogActions>
-          </ModalDialog>
+              )}
+              {!noDivider && <Divider sx={{ mx: 0.2 }} />}
+
+              {/* CONTENT */}
+              <DialogContent>{content}</DialogContent>
+
+              {/* FOOTER */}
+              <Divider sx={{ mx: 0.2 }} />
+              <DialogActions>
+                <Box
+                  sx={{
+                    width:
+                      minWidth > "70vw" || maxWidth > "70vw" ? "20%" : "100%",
+                    display: "flex",
+                    gap: 1,
+                    flexDirection: { xs: "column", sm: "row-reverse" },
+                  }}
+                >
+                  {!noRightButton && (
+                    <ButtonComponent
+                      label={rightButtonLabel}
+                      fullWidth
+                      isLoading={isLoading}
+                      onClick={rightButtonAction}
+                      isDisabled={rightButtonDisabled || isLoading}
+                    />
+                  )}
+
+                  <ButtonComponent
+                    variant="outlined"
+                    color="success"
+                    label={leftButtonLabel}
+                    fullWidth={!noRightButton}
+                    onClick={leftButtonAction ?? handleClose}
+                    isDisabled={isLoading}
+                  />
+                </Box>
+              </DialogActions>
+            </ModalDialog>
+          </motion.div>
         </Modal>
       )}
-    </Transition>
+    </AnimatePresence>
   );
 }
 

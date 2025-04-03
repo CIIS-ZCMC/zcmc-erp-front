@@ -17,15 +17,15 @@ export const getModeColorScheme = (type) => {
   }
   // Error
   else if (type === 400 || type === "error") {
-    colorScheme = "error";
-    color = "error.100";
-    iconColor = "error";
+    colorScheme = "danger";
+    color = "danger.100";
+    iconColor = "red";
   }
-  // Default error for unknown cases
+  // Default danger for unknown cases
   else {
-    colorScheme = "error";
+    colorScheme = "danger";
     color = "error.100";
-    iconColor = "error";
+    iconColor = "red";
   }
 
   return { colorScheme, color, iconColor };

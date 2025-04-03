@@ -5,6 +5,8 @@ import { CircularProgress } from "@mui/joy";
 import { sidebarRoutes } from "./PageRoutes";
 import Layout from "../Layout";
 import ComponentTestPage from "../Pages/ComponentTestPage";
+import useModalHook from "../Hooks/ModalHook";
+import AlertDialogComponent from "../Components/Common/Dialog/AlertDialogComponent";
 
 const router = createBrowserRouter([
   {
@@ -27,9 +29,14 @@ const router = createBrowserRouter([
 ]);
 
 const AnimatedRoutes = () => {
+  const { alertDialogState } = useModalHook(); // Remove this later, use this in the Layout component
+
   return (
     <Suspense fallback={<CircularProgress />}>
       <RouterProvider router={router} />
+
+      {/*  AlertDialog Modal for global display; isGlobal is true by default */}
+      {alertDialogState.isGlobal && <AlertDialogComponent />}
     </Suspense>
   );
 };
