@@ -16,7 +16,8 @@ import {
 import { BiX } from "react-icons/bi";
 import ButtonComponent from "../ButtonComponent";
 import { Transition } from "react-transition-group";
-import { useRef } from "react";
+import { useRef, useState } from "react";
+import InputComponent from "../../Form/InputComponent";
 
 ModalComponent.propTypes = {
   isOpen: PropTypes.bool.isRequired,
@@ -70,6 +71,8 @@ function ModalComponent({
     }
     handleClose();
   };
+
+  // STATES
 
   return (
     <Transition in={isOpen} timeout={300} nodeRef={nodeRef}>
