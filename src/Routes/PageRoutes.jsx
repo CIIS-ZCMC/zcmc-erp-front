@@ -2,17 +2,19 @@ import { Navigate } from "react-router-dom";
 
 import Dashboard from "../Pages/Dashboard";
 
-import AnnualOps from "../Pages/PlanningOps/AnnualOps/AnnualOps";
-// table views routes
-import All from "../Pages/PlanningOps/AnnualOps/TableViews/All";
-import Approved from "../Pages/PlanningOps/AnnualOps/TableViews/Approved";
-import Pending from "../Pages/PlanningOps/AnnualOps/TableViews/Pending";
-import Returned from "../Pages/PlanningOps/AnnualOps/TableViews/Returned";
+import AnnualOps from '../Pages/DeptHead/AnnualOps/AnnualOps';
 
-import CreateAOP from "../Pages/PlanningOps/AnnualOps/CreateAOP";
-import Activities from "../Pages/PlanningOps/AnnualOps/CreateAOP/Activities";
-import Items from "../Pages/PlanningOps/AnnualOps/CreateAOP/Activities/Items";
-import Resources from "../Pages/PlanningOps/AnnualOps/CreateAOP/Activities/Resources";
+// table views routes
+import All from "../Pages/DeptHead/AnnualOps/TableViews/All";
+import Approved from "../Pages/DeptHead/AnnualOps/TableViews/Approved";
+import Pending from "../Pages/DeptHead/AnnualOps/TableViews/Pending";
+import Returned from "../Pages/DeptHead/AnnualOps/TableViews/Returned";
+
+import CreateAOP from "../Pages/DeptHead/AnnualOps/CreateAOP";
+import Activities from "../Pages/DeptHead/AnnualOps/CreateAOP/Activities";
+import Items from "../Pages/DeptHead/AnnualOps/CreateAOP/Activities/Items";
+import Item from "../Pages/DeptHead/AnnualOps/CreateAOP/Activities/Items/Item";
+import Resources from "../Pages/DeptHead/AnnualOps/CreateAOP/Activities/Resources";
 
 import ItemRequest from "../Pages/Consolidators/ItemManagement/ItemRequest";
 import ItemLibrary from "../Pages/Consolidators/ItemManagement/ItemLibrary";
@@ -57,33 +59,39 @@ export const sidebarRoutes = [
   },
 
   {
+    path: "/aop-create",
+    children: [
+      { index: true, element: <CreateAOP /> },
+      {
+        path: "activities/:objectiveId", element: <Activities />,
+        children: [
+          {
+            path: "resources/:activityId",
+            element: <Resources />,
+          },
+        ],
+      },
+    ],
+  },
+
+  {
     path: "/aop-approval",
     name: "AOP Management Approval",
     element: <AOPApproval />,
   },
 
   {
-    path: "/aop-create",
-    element: <CreateAOP />,
+    path: 'items',
+    element: <Items />, //item resource
     children: [
       {
-        path: "activities/:id",
-        element: <Activities />,
-        children: [
-          {
-            path: 'items',
-            element: <Items />, //item resource
-            // children: [
-            //   {
-            //     path: "resources/:id",
-            //     element: <Resources />,
-            //   },
-            // ]
-          },
-        ],
-      },
-    ],
+        path: ':itemId',
+        element: <Item />, //single item profile
+      }
+    ]
   },
+
+
   {
     path: "/edit-ppmp",
     name: "Edit PPMP",

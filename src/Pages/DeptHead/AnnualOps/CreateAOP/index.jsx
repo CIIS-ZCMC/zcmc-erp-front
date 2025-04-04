@@ -1,6 +1,4 @@
-import { useState } from 'react';
-import { Outlet, useLocation } from 'react-router-dom';
-import { Stack, Box } from '@mui/joy';
+import { Fragment, useState } from 'react';
 
 //custom components
 import PageTitle from '../../../../Components/Common/PageTitle';
@@ -13,11 +11,6 @@ import { AOP_CONSTANTS } from '../../../../Data/constants';
 import { AOP_STEP_HEADER } from '../../../../Data';
 
 const CreateAOP = () => {
-
-    const location = useLocation()
-    const currentPath = location.pathname;
-
-    const isChildRoute = currentPath !== '/aop-create';
 
     const [rows, setRows] = useState([
         { id: 1, functionType: "Strategic", objectives: 'Objective 1', successIndicator: 'Success Indicator 1' },
@@ -47,15 +40,14 @@ const CreateAOP = () => {
     };
 
     return (
-        <>
-            <PageTitle
-                title={AOP_CONSTANTS.CREATE_AOP_TITLE}
-                description={AOP_CONSTANTS.CREATE_AOP_SUBHEADING}
-            />
-
+        <Fragment>
             {
-                // show this table to child route only
-                !isChildRoute && (
+                <>
+                    <PageTitle
+                        title={AOP_CONSTANTS.CREATE_AOP_TITLE}
+                        description={AOP_CONSTANTS.CREATE_AOP_SUBHEADING}
+                    />
+
                     <SheetComponent
                         variant={"outlined"}
                     >
@@ -77,16 +69,10 @@ const CreateAOP = () => {
                             }
                         />
                     </SheetComponent>
-                )
+                </>
+
             }
-
-            <Box
-                mt={2}
-            >
-                <Outlet />
-            </Box>
-
-        </>
+        </Fragment>
     )
 }
 

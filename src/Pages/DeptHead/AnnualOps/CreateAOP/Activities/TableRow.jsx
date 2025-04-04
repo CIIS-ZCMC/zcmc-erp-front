@@ -213,7 +213,7 @@ const TableRow = ({
                             {/* //trigger modal */}
                             <Link
                                 component="button"
-                                onClick={() => navigate('items')}
+                                onClick={() => navigate(`resources/${row.id}`)}
                                 endDecorator={<ExternalLink size={16} />}
                             >
                                 Manage Resources

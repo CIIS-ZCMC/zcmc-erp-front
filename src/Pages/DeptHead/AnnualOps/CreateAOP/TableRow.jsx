@@ -122,7 +122,7 @@ const TableRow = ({
                     >
                         <Link
                             component="button"
-                            onClick={() => navigate(`activities/1`)}
+                            onClick={() => navigate(`activities/${row.id}`)}
                             endDecorator={<ExternalLink size={16} />}
                         >
                             Manage Activities

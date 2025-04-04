@@ -1,9 +1,7 @@
-import { useState } from 'react';
+import { useState, Fragment } from 'react';
 
 import { Box, Stack, Typography, Divider } from '@mui/joy';
 import { ChevronDown, ChevronUp, Plus } from 'lucide-react';
-
-import Header from '../../../../../Layout/Header';
 
 import ButtonComponent from '../../../../../Components/Common/ButtonComponent';
 import SheetComponent from '../../../../../Components/Common/SheetComponent';
@@ -75,7 +73,7 @@ const Activities = () => {
     };
 
     return (
-        <>
+        <Fragment>
             <ContainerComponent
                 title={AOP_CONSTANTS.MANAGE_ACTIVITIES_HEADER}
                 description={AOP_CONSTANTS.MANAGE_ACTIVITIES_SUBHEADER}
@@ -158,7 +156,8 @@ const Activities = () => {
                 />
             </ContainerComponent>
 
-        </>
+
+        </Fragment>
     )
 }
 
