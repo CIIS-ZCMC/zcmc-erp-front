@@ -15,8 +15,9 @@ import {
 } from "@mui/joy";
 import { BiX } from "react-icons/bi";
 import ButtonComponent from "../ButtonComponent";
-// eslint-disable-next-line no-unused-vars
-import { AnimatePresence, motion } from "motion/react";
+import { Transition } from "react-transition-group";
+import { useRef, useState } from "react";
+import InputComponent from "../../Form/InputComponent";
 
 ModalComponent.propTypes = {
   isOpen: PropTypes.bool.isRequired,
@@ -69,6 +70,8 @@ function ModalComponent({
     }
     handleClose();
   };
+
+  // STATES
 
   return (
     <AnimatePresence initial={false}>
