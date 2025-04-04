@@ -19,6 +19,7 @@ import ItemLibrary from "../Pages/Consolidators/ItemManagement/ItemLibrary";
 import Objectives from "../Pages/PlanningOps/ObjectiveManagement/Objectives";
 import AOPApproval from "../Pages/PlanningOps/Approval/AOPApproval";
 import EditPPMP from "../Pages/DeptHead/EditPPMP/EditPPMP";
+import { ApprovalObjectives } from "../Pages/PlanningOps/Approval/ApprovalObjectives";
 
 export const sidebarRoutes = [
   {
@@ -58,8 +59,13 @@ export const sidebarRoutes = [
 
   {
     path: "/aop-approval",
-    name: "AOP Management Approval",
     element: <AOPApproval />,
+    children: [
+      {
+        path: "objectives/:id",
+        element: <ApprovalObjectives />,
+      },
+    ],
   },
 
   {
@@ -71,7 +77,7 @@ export const sidebarRoutes = [
         element: <Activities />,
         children: [
           {
-            path: 'items',
+            path: "items",
             element: <Items />, //item resource
             // children: [
             //   {

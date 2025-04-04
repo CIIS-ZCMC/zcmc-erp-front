@@ -8,8 +8,18 @@ import InputComponent from "../../../Components/Form/InputComponent";
 import DatePickerComponent from "../../../Components/Form/DatePickerComponent";
 import { Search } from "lucide-react";
 import CardComponent from "../../../Components/Common/Card/CardComponent";
+import { Outlet, useLocation, useNavigate } from "react-router-dom";
 
 const AOPApproval = () => {
+  const navigate = useNavigate();
+
+  const handleClickCard = (id) => {
+    navigate(`/aop-approval/objectives/1`);
+  };
+
+  const location = useLocation();
+
+  console.log(location.pathname);
   return (
     <Fragment>
       <Stack gap={4}>
@@ -59,13 +69,15 @@ const AOPApproval = () => {
                     sm={6} // 2 items on small screens
                     md={4} // 3 items on medium screens
                   >
-                    <CardComponent />
+                    <CardComponent onClick={() => handleClickCard(index)} />
                   </Grid>
                 ))}
             </Grid>
           </Stack>
         </ContainerComponent>
       </Stack>
+
+      <Outlet />
     </Fragment>
   );
 };
