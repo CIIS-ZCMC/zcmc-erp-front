@@ -11,6 +11,7 @@ import Returned from "../Pages/PlanningOps/AnnualOps/TableViews/Returned";
 
 import CreateAOP from "../Pages/PlanningOps/AnnualOps/CreateAOP";
 import Activities from "../Pages/PlanningOps/AnnualOps/CreateAOP/Activities";
+import Items from "../Pages/PlanningOps/AnnualOps/CreateAOP/Activities/Items";
 import Resources from "../Pages/PlanningOps/AnnualOps/CreateAOP/Activities/Resources";
 
 import ItemRequest from "../Pages/Consolidators/ItemManagement/ItemRequest";
@@ -62,7 +63,6 @@ export const sidebarRoutes = [
 
   {
     path: "/aop-create",
-    name: "",
     element: <CreateAOP />,
     children: [
       {
@@ -70,8 +70,14 @@ export const sidebarRoutes = [
         element: <Activities />,
         children: [
           {
-            path: "resources",
-            element: <Resources />,
+            path: 'items',
+            element: <Items />, //item resource
+            // children: [
+            //   {
+            //     path: "resources/:id",
+            //     element: <Resources />,
+            //   },
+            // ]
           },
         ],
       },

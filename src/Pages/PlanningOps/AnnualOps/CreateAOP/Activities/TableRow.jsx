@@ -4,11 +4,7 @@ import { Stack, Link, Typography, Input, Select, Option, Box } from '@mui/joy';
 import { useNavigate } from 'react-router-dom';
 import { ExternalLink, Trash, FunnelX } from 'lucide-react';
 
-import SearchBarComponent from '../../../../../Components/SearchBarComponent';
 import ButtonComponent from '../../../../../Components/Common/ButtonComponent';
-import ModalComponent from '../../../../../Components/Common/Dialog/ModalComponent';
-import AutocompleteComponent from '../../../../../Components/Form/AutocompleteComponent';
-import IconButtonComponent from '../../../../../Components/Common/IconButtonComponent';
 
 import { AOP_CONSTANTS, MONTHS } from '../../../../../Data/constants';
 
@@ -28,7 +24,7 @@ const TableRow = ({
 
     return (
 
-        <>
+        <Fragment>
             {rows.map((row) => (
                 <tr key={row.id}>
                     <td>
@@ -217,10 +213,10 @@ const TableRow = ({
                             {/* //trigger modal */}
                             <Link
                                 component="button"
-                                onClick={() => setOpenResourcesModal(true)}
+                                onClick={() => navigate('items')}
                                 endDecorator={<ExternalLink size={16} />}
                             >
-                                Manage Activities
+                                Manage Resources
                             </Link>
 
                             <ButtonComponent
@@ -234,51 +230,7 @@ const TableRow = ({
                     </td>
                 </tr>
             ))}
-
-            <ModalComponent
-                isOpen={openResourcesModal}
-                handleClose={() => setOpenResourcesModal(false)}
-                title={AOP_CONSTANTS.MODAL_RESOURCE_HEADER}
-                description={AOP_CONSTANTS.MODAL_RESOURCE_SUBHEADING}
-                maxWidth={2000}
-                content={
-                    <Fragment>
-                        <Box>
-                            <Stack
-                                direction={'row'}
-                                alignItems={'end'}
-                                gap={2}
-                            >
-                                <SearchBarComponent
-
-                                    label={'Search'}
-                                />
-
-                                <AutocompleteComponent
-
-                                    label={'Filter By Classification'}
-                                />
-
-                                <AutocompleteComponent
-                                    label={'Filter By Category'}
-                                />
-
-                                <Box>
-                                    {/* Clear Filters */}
-                                    <IconButtonComponent
-                                        icon={<FunnelX />}
-                                        variant={'outlined'}
-                                    />
-                                </Box>
-
-                            </Stack>
-                        </Box>
-                    </Fragment >
-                }
-            />
-
-        </>
-
+        </Fragment>
     )
 }
 
