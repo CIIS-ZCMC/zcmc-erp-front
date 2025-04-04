@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { Chip, useTheme } from "@mui/joy";
+import { Chip } from "@mui/joy";
 import { getStatusIcon } from "../../Utils/StatusIcon";
 
 ChipComponent.propTypes = {
@@ -10,20 +10,14 @@ ChipComponent.propTypes = {
 };
 
 function ChipComponent({ color, label, status, variant, ...props }) {
-  const theme = useTheme();
-  const customColor = theme.palette.custom;
-
   const sxStyles = {
     fontWeight: 500,
-    fontSize: 13,
+    // fontSize: 13,
     ...(variant || color
       ? { color: color }
       : {
-          backgroundColor: customColor.lighter,
-          color: customColor.buttonBg,
           fontWeight: 600,
           border: 1,
-          borderColor: customColor.buttonBg,
         }),
   };
 
