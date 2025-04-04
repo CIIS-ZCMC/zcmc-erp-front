@@ -1,6 +1,5 @@
 import { Box, Divider, Sheet, Stack, styled, Typography } from "@mui/joy";
 import PropTypes from "prop-types";
-import { getStatusColorScheme } from "../../Utils/ColorScheme";
 
 ContainerComponent.propTypes = {
   children: PropTypes.node, // Allow multiple children
@@ -30,9 +29,6 @@ function ContainerComponent({
   contentMaxHeight,
   actions,
   noPadding,
-  chipLabel,
-  chipColor,
-  isTable,
   ...props
 }) {
   return (
@@ -57,7 +53,7 @@ function ContainerComponent({
 
             {actions}
           </Stack>
-          {isTable && <Divider sx={{ marginX: noPadding && -2.5 }} />}
+          <Divider sx={{ marginX: noPadding && -2.5 }} />
         </Stack>
       )}
 

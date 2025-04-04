@@ -29,7 +29,7 @@ const ButtonComponent = ({
         width: fullWidth ? "100%" : width,
         fontWeight: 400,
         borderRadius: 8,
-        height: 38,
+        height: size ?? 38,
         fontSize: 14,
       }}
     >

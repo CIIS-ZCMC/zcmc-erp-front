@@ -83,8 +83,6 @@ function ModalComponent({
               sx={{
                 width: "auto",
                 height: "auto",
-                maxHeight: "80%",
-                maxWidth: "540px",
                 borderRadius: 20,
                 padding: 3.5,
               }}
