@@ -30,6 +30,10 @@ export const sidebarRoutes = [
         name: "PPMP Management",
       },
       {
+        path: "/edit-ppmp",
+        name: "Edit PPMP",
+      },
+      {
         path: "/objectives",
         name: "Objectives",
       },
