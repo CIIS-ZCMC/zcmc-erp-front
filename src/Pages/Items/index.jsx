@@ -2,6 +2,8 @@ import React, { Fragment } from 'react';
 
 import { Box, Stack, Grid, Typography } from '@mui/joy';
 
+import { useNavigate } from 'react-router-dom';
+
 import BoxComponent from '../../Components/Common/Card/BoxComponent';
 import SearchBarComponent from '../../Components/SearchBarComponent';
 import ButtonComponent from '../../Components/Common/ButtonComponent';
@@ -16,6 +18,8 @@ import { CART_ITEMS } from '../../Data';
 
 const Items = () => {
 
+    const navigate = useNavigate()
+
     return (
         <Fragment>
 
@@ -25,10 +29,9 @@ const Items = () => {
             />
 
             <ContainerComponent
-                title={
-                    "Select resources (items) for activity Activity: Sample activity..."
+                title={`${AOP_CONSTANTS.ITEMS_HEADER}: Sample activity..."`
                 }
-                description="Select a request status and reasons (if returned) to continue. You may add remarks if necessary."
+                description={AOP_CONSTANTS.ITEMS_SUBHEADER}
                 actions={
                     <Fragment>
                         <Stack direction={'row'} gap={1}>
@@ -42,6 +45,7 @@ const Items = () => {
                                 label={'Save items'}
                                 size={'sm'}
                                 variant={'solid'}
+                                onClick={() => navigate('/aop-create/activities/1/resources/1')}
                             />
                         </Stack>
                     </Fragment>

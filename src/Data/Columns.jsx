@@ -76,3 +76,128 @@ export const objHeaders = [
     },
   },
 ];
+
+export const AOP_STEP_HEADER = [
+  {
+    field: "id",
+    name: "Row #",
+    width: "5%",
+    align: "center",
+  },
+  {
+    field: "item_name",
+    name: "Item Name",
+    width: "15%",
+    align: "left",
+  },
+  {
+    field: "resource_type",
+    name: "Type of Resource",
+    width: "15%",
+    align: "center",
+  },
+
+  {
+    field: 'expense_class',
+    name: "Expense class of unit",
+    width: "15%",
+    align: "center",
+  },
+
+  {
+    field: 'jan',
+    name: "Jan",
+    width: "5%",
+    align: "center",
+  },
+
+  {
+    field: 'feb',
+    name: "Feb",
+    width: "5%",
+    align: "center",
+  },
+
+  {
+    field: 'mar',
+    name: "Mar",
+    width: "5%",
+    align: "center",
+  },
+
+  {
+    field: 'apr',
+    name: "Apr",
+    width: "5%",
+    align: "center",
+  },
+
+  {
+    field: 'may',
+    name: "May",
+    width: "5%",
+    align: "center",
+  },
+
+  {
+    field: 'jun',
+    name: "June",
+    width: "5%",
+    align: "center",
+  },
+
+  {
+    field: 'jul',
+    name: "Jul",
+    width: "5%",
+    align: "center",
+  },
+
+  {
+    field: 'aug',
+    name: "Aug",
+    width: "5%",
+    align: "center",
+  },
+  {
+    field: 'sep',
+    name: "Sep",
+    width: "5%",
+    align: "center",
+  },
+
+  {
+    field: 'oct',
+    name: "Oct",
+    width: "5%",
+    align: "center",
+  },
+
+  {
+    field: 'nov',
+    name: "Nov",
+    width: "5%",
+    align: "center",
+  },
+
+  {
+    field: 'dec',
+    name: "Dec",
+    width: "5%",
+    align: "center",
+  },
+
+  {
+    field: 'procurement_mode',
+    name: "Mode of procurement",
+    width: "15%",
+    align: "center",
+  },
+
+  {
+    field: "actions",
+    align: "center",
+    name: "Actions",
+  },
+
+];

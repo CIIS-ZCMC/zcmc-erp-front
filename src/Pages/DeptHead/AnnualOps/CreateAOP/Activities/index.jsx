@@ -81,91 +81,91 @@ const Activities = () => {
 
     return (
         <Fragment>
-            {childPath &&
-                <Fragment>
-                    <ContainerComponent
-                        title={AOP_CONSTANTS.MANAGE_ACTIVITIES_HEADER}
-                        description={AOP_CONSTANTS.MANAGE_ACTIVITIES_SUBHEADER}
-                        isTable={false}
-                        actions={
-                            <Stack>
-                                <IconButtonComponent
-                                    variant={'text'}
-                                    icon={isCollapsed ? <ChevronUp /> : <ChevronDown />}
-                                    onClick={(e) => {
-                                        e.stopPropagation();
-                                        handleCollapseClick();
-                                    }}
-                                />
-                            </Stack>
-                        }
-                    >
-                        <Box
-                            sx={{
-                                display: 'flex',
-                                alignItems: 'center',
-                                justifyContent: 'space-between',
+
+            <ContainerComponent
+                title={AOP_CONSTANTS.MANAGE_ACTIVITIES_HEADER}
+                description={AOP_CONSTANTS.MANAGE_ACTIVITIES_SUBHEADER}
+                isTable={false}
+                actions={
+                    <Stack>
+                        <IconButtonComponent
+                            variant={'text'}
+                            icon={isCollapsed ? <ChevronUp /> : <ChevronDown />}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleCollapseClick();
                             }}
-                        >
-                            {isCollapsed && <Box>
-                                <Stack
-                                    direction={'row'}
-                                    gap={2}
-                                >
-                                    <SheetComponent variant={"outlined"}>
-                                        Content 1
-                                    </SheetComponent>
-
-                                    <SheetComponent variant={"outlined"}>
-                                        Content 2
-                                    </SheetComponent>
-
-                                    <SheetComponent variant={"outlined"}>
-                                        Content 3
-                                    </SheetComponent>
-                                </Stack>
-                            </Box>}
-
-                        </Box>
-                    </ContainerComponent>
-
-                    <Box sx={{ m: 3 }} />
-
-                    <ContainerComponent
-                        title={AOP_CONSTANTS.TABLE_ACTIVITY_HEADER}
-                        description={AOP_CONSTANTS.TABLE_ACTIVITY_SUBHEADING}
-                        isTable={true}
-                        actions={
-                            <Stack>
-                                <ButtonComponent
-                                    onClick={() => setOpen(true)}
-                                    label={"Add an Activity"}
-                                    endDecorator={<Plus size={16} />}
-                                />
-                            </Stack>
-                        }
-                    >
-                        <EditableTableComponent
-                            tableHeader={ACTIVITIES_HEADER}
-                            stripe={'even'}
-                            hoverRow
-                            isLoading={false}
-                            bordered={true}
-                            stickLast
-                            tableRow={
-                                <TableRow
-                                    rows={rows}
-                                    handleEdit={handleEdit}
-                                    handleBlur={handleBlur}
-                                    editField={editField}
-                                    editRowId={editRowId}
-                                    setEditRowId={setEditRowId}
-                                />
-                            }
                         />
-                    </ContainerComponent>
-                </Fragment>
+                    </Stack>
+                }
+            >
+                <Box
+                    sx={{
+                        display: 'flex',
+                        alignItems: 'center',
+                        justifyContent: 'space-between',
+                    }}
+                >
+                    {isCollapsed && <Box>
+                        <Stack
+                            direction={'row'}
+                            gap={2}
+                        >
+                            <SheetComponent variant={"outlined"}>
+                                Content 1
+                            </SheetComponent>
+
+                            <SheetComponent variant={"outlined"}>
+                                Content 2
+                            </SheetComponent>
+
+                            <SheetComponent variant={"outlined"}>
+                                Content 3
+                            </SheetComponent>
+                        </Stack>
+                    </Box>}
+
+                </Box>
+            </ContainerComponent>
+
+            <Box sx={{ m: 3 }} />
+
+            {childPath &&
+                <ContainerComponent
+                    title={AOP_CONSTANTS.TABLE_ACTIVITY_HEADER}
+                    description={AOP_CONSTANTS.TABLE_ACTIVITY_SUBHEADING}
+                    isTable={true}
+                    actions={
+                        <Stack>
+                            <ButtonComponent
+                                onClick={() => setOpen(true)}
+                                label={"Add an Activity"}
+                                endDecorator={<Plus size={16} />}
+                            />
+                        </Stack>
+                    }
+                >
+                    <EditableTableComponent
+                        tableHeader={ACTIVITIES_HEADER}
+                        stripe={'even'}
+                        hoverRow
+                        isLoading={false}
+                        bordered={true}
+                        stickLast
+                        tableRow={
+                            <TableRow
+                                rows={rows}
+                                handleEdit={handleEdit}
+                                handleBlur={handleBlur}
+                                editField={editField}
+                                editRowId={editRowId}
+                                setEditRowId={setEditRowId}
+                            />
+                        }
+                    />
+                </ContainerComponent>
             }
+
             <Outlet />
 
         </Fragment>

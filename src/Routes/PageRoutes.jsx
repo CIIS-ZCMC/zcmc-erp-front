@@ -61,8 +61,9 @@ export const sidebarRoutes = [
 
   {
     path: "/aop-create",
+    element: <CreateAOP />,
     children: [
-      { index: true, element: <CreateAOP /> },
+      // { index: true, element: <CreateAOP /> },
       {
         path: "activities/:objectiveId", element: <Activities />,
         children: [

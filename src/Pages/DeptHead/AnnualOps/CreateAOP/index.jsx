@@ -48,18 +48,17 @@ const CreateAOP = () => {
     return (
         <Fragment>
 
+            <PageTitle
+                title={AOP_CONSTANTS.CREATE_AOP_TITLE}
+                description={AOP_CONSTANTS.CREATE_AOP_SUBHEADING}
+            />
+
             {parentPath &&
                 <Fragment>
-                    <PageTitle
-                        title={AOP_CONSTANTS.CREATE_AOP_TITLE}
-                        description={AOP_CONSTANTS.CREATE_AOP_SUBHEADING}
-                    />
-
                     <SheetComponent
                         variant={"outlined"}
                     >
                         <EditableTableComponent
-                            // columns={AOP_STEP_HEADER}
                             tableHeader={AOP_STEP_HEADER}
                             stripe={'odd'}
                             hoverRow
