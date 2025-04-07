@@ -12,9 +12,10 @@ import Returned from "../Pages/DeptHead/AnnualOps/TableViews/Returned";
 
 import CreateAOP from "../Pages/DeptHead/AnnualOps/CreateAOP";
 import Activities from "../Pages/DeptHead/AnnualOps/CreateAOP/Activities";
-import Items from "../Pages/DeptHead/Items";
-import Item from '../Pages/DeptHead/Items/Item';
 import Resources from "../Pages/DeptHead/AnnualOps/CreateAOP/Activities/Resources";
+
+import Items from "../Pages/Items";
+import Item from '../Pages/Items/Item';
 
 import ItemRequest from "../Pages/Consolidators/ItemManagement/ItemRequest";
 import ItemLibrary from "../Pages/Consolidators/ItemManagement/ItemLibrary";
@@ -83,6 +84,7 @@ export const sidebarRoutes = [
   {
     path: 'items',
     children: [
+      { index: true, element: <Items /> },
       {
         path: ':itemId',
         element: <Item />, //single item profile

@@ -178,3 +178,64 @@ export const SUCCESS_INDICATOR_OPTION = [
   { id: 2, name: "Success Indicator 2", value: "Success Indicator 2" },
   { id: 3, name: "Success Indicator 3", value: "Success Indicator 3" },
 ];
+
+
+export const CART_ITEMS = [
+  {
+    id: 1,
+    name: "Wireless Bluetooth Headphones",
+    specType: "High-end",
+    category: "Electronics",
+    price: 129.99,
+    quantity: 2,
+    image: "https://images.unsplash.com/photo-1532614338840-ab30cf10ed36?auto=format&fit=crop&w=318",
+    inStock: true,
+    rating: 4.5
+  },
+  {
+    id: 2,
+    name: "Smart Fitness Watch",
+    specType: "High-end",
+    category: "Wearables",
+    price: 89.99,
+    quantity: 1,
+    image: "https://images.unsplash.com/photo-1532614338840-ab30cf10ed36?auto=format&fit=crop&w=318",
+    inStock: true,
+    rating: 4.2
+  },
+  {
+    id: 3,
+    name: "Organic Cotton T-Shirt",
+    specType: "High-end",
+    category: "Clothing",
+    price: 24.99,
+    quantity: 3,
+    image: "https://images.unsplash.com/photo-1532614338840-ab30cf10ed36?auto=format&fit=crop&w=318",
+    inStock: true,
+    rating: 4.0,
+    color: "Navy Blue"
+  },
+  {
+    id: 4,
+    name: "Stainless Steel Water Bottle",
+    specType: "High-end",
+    category: "Accessories",
+    price: 19.99,
+    quantity: 1,
+    image: "https://images.unsplash.com/photo-1532614338840-ab30cf10ed36?auto=format&fit=crop&w=318",
+    inStock: true,
+    rating: 4.7
+  },
+  {
+    id: 5,
+    name: "Wireless Phone Charger",
+    specType: "High-end",
+    category: "Electronics",
+    price: 34.99,
+    quantity: 1,
+    image: "https://images.unsplash.com/photo-1532614338840-ab30cf10ed36?auto=format&fit=crop&w=318",
+    inStock: false, // Out of stock item
+    rating: 3.8,
+    backorder: true
+  }
+];
