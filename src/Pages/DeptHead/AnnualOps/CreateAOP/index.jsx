@@ -1,5 +1,7 @@
 import { Fragment, useState } from 'react';
 
+import { Outlet, useLocation } from 'react-router-dom';
+
 //custom components
 import PageTitle from '../../../../Components/Common/PageTitle';
 import SheetComponent from '../../../../Components/Common/SheetComponent';
@@ -11,6 +13,10 @@ import { AOP_CONSTANTS } from '../../../../Data/constants';
 import { AOP_STEP_HEADER } from '../../../../Data';
 
 const CreateAOP = () => {
+
+    const location = useLocation();
+    const currentPath = location.pathname;
+    const parentPath = currentPath === '/aop-create';
 
     const [rows, setRows] = useState([
         { id: 1, functionType: "Strategic", objectives: 'Objective 1', successIndicator: 'Success Indicator 1' },
@@ -41,8 +47,9 @@ const CreateAOP = () => {
 
     return (
         <Fragment>
-            {
-                <>
+
+            {parentPath &&
+                <Fragment>
                     <PageTitle
                         title={AOP_CONSTANTS.CREATE_AOP_TITLE}
                         description={AOP_CONSTANTS.CREATE_AOP_SUBHEADING}
@@ -69,10 +76,12 @@ const CreateAOP = () => {
                             }
                         />
                     </SheetComponent>
-                </>
-
+                </Fragment>
             }
-        </Fragment>
+
+            <Outlet />
+
+        </Fragment >
     )
 }
 

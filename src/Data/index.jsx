@@ -17,7 +17,7 @@ export const sidebarRoutes = [
     icon: <GrDocument />,
     children: [
       {
-        path: "/aop",
+        path: "/aop/all",
         name: "AOP Management",
       },
 
