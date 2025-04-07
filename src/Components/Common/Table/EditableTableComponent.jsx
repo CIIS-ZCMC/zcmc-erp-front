@@ -8,11 +8,10 @@ const EditableTableComponent = ({
   stripe,
   hoverRow,
   bordered = false,
-  border = 'none',
+  border = "none",
   stickLast = false,
 }) => {
   return (
-
     <Sheet
       sx={{
         // width: "100%",
@@ -47,15 +46,15 @@ const EditableTableComponent = ({
         <thead>
           {/* First row - parent headers */}
           <tr>
-            {tableHeader.map((header) => (
+            {tableHeader.map((header) =>
               header.children ? (
                 <th
                   key={header.id}
                   colSpan={header.children.length}
-                  align={header.align || 'center'}
+                  align={header.align || "center"}
                   style={{
                     borderRightWidth: header.noRightBorder ? 0 : undefined,
-                    width: header.width
+                    width: header.width,
                   }}
                 >
                   {header.name}
@@ -64,33 +63,33 @@ const EditableTableComponent = ({
                 <th
                   key={header.id}
                   rowSpan={2}
-                  align={header.align || 'center'}
+                  align={header.align || "center"}
                   style={{
-                    width: header.width
+                    width: header.width,
                   }}
                 >
                   {header.name}
                 </th>
               )
-            ))}
+            )}
           </tr>
 
           {/* Second row - child headers (only for parents with children) */}
           <tr>
-            {tableHeader.flatMap(header =>
+            {tableHeader.flatMap((header) =>
               header.children
                 ? header.children.map((child, index) => (
-                  <th
-                    key={`${header.id}-${index}`}
-                    align={child.align || 'center'}
-                    style={{
-                      borderRightWidth: child.noRightBorder ? 0 : undefined,
-                      width: child.width
-                    }}
-                  >
-                    {child.name}
-                  </th>
-                ))
+                    <th
+                      key={`${header.id}-${index}`}
+                      align={child.align || "center"}
+                      style={{
+                        borderRightWidth: child.noRightBorder ? 0 : undefined,
+                        width: child.width,
+                      }}
+                    >
+                      {child.name}
+                    </th>
+                  ))
                 : []
             )}
           </tr>
@@ -99,7 +98,6 @@ const EditableTableComponent = ({
         <tbody>{tableRow}</tbody>
       </Table>
     </Sheet>
-
   );
 };
 
