@@ -6,7 +6,7 @@ function AutocompleteComponent({
   label,
   options = [],
   helperText,
-  size,
+  size = "sm",
   width = "100%",
   placeholder = "",
   startDecorator,

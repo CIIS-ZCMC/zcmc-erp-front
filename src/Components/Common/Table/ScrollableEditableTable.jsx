@@ -31,13 +31,15 @@ function ScrollableEditableTableComponent({
   border = "none",
   hoverRow,
   isLoading,
+  onFieldChange,
 }) {
   // PAGINATION SETUP
   const [currentPage, setCurrentPage] = useState(1);
+  const [rows, setRows] = useState(data);
 
   const currentData = useMemo(() => {
     const filteredData = search
-      ? data?.filter((item) =>
+      ? rows?.filter((item) =>
           fieldsToSearch?.some((field) => {
             const value = item[field]; // Access the field value dynamically
             return (
@@ -46,7 +48,7 @@ function ScrollableEditableTableComponent({
             );
           })
         )
-      : data;
+      : rows;
 
     const totalPages = Math.ceil(filteredData?.length / pageSize);
     const startIndex = (currentPage - 1) * pageSize;
@@ -56,7 +58,62 @@ function ScrollableEditableTableComponent({
     );
 
     return { paginatedData, totalPages };
-  }, [search, data, pageSize, currentPage, fieldsToSearch]);
+  }, [search, rows, pageSize, currentPage, fieldsToSearch]);
+
+  const [editingCell, setEditingCell] = useState({
+    rowIndex: null,
+    field: null,
+  });
+
+  const handleCellClick = (rowIndex, field) => {
+    setEditingCell({ rowIndex, field });
+  };
+
+  const handleInputChange = (e, rowIndex, field) => {
+    const newValue = e.target.value;
+    const row = rows[rowIndex];
+
+    console.log(newValue);
+
+    if (onFieldChange) {
+      onFieldChange(field, newValue, row, (updatedRow) => {
+        const updatedRows = [...rows];
+        updatedRows[rowIndex] = updatedRow;
+        console.log(updatedRows);
+        setRows(updatedRows);
+      });
+    } else {
+      const newRows = [...rows];
+      newRows[rowIndex][field] = newValue;
+      setRows(newRows);
+    }
+  };
+
+  const handleNestedInputChange = (e, rowIndex, parentField, childField) => {
+    const newValue = e.target.value;
+    const row = rows[rowIndex];
+
+    if (onFieldChange) {
+      onFieldChange(
+        `${parentField}.${childField}`,
+        newValue,
+        row,
+        (updatedRow) => {
+          const updatedRows = [...rows];
+          updatedRows[rowIndex] = updatedRow;
+          setRows(updatedRows);
+        }
+      );
+    } else {
+      const newRows = [...rows];
+      newRows[rowIndex][parentField][childField] = e.target.value;
+      setRows(newRows);
+    }
+  };
+
+  const handleBlur = () => {
+    setEditingCell({ rowIndex: null, field: null });
+  };
 
   const { paginatedData, totalPages } = currentData;
 
@@ -194,28 +251,117 @@ function ScrollableEditableTableComponent({
                 </td>
               </tr>
             ) : paginatedData?.length > 0 ? (
-              paginatedData?.map((row, rowIndex) => (
+              paginatedData.map((row, rowIndex) => (
                 <tr key={rowIndex}>
-                  {columns.map(
-                    ({ field, render, children, align }, colIndex) => {
-                      return children ? (
-                        children.map((child, childIndex) => (
+                  {columns.map((column, colIndex) => {
+                    const isEditing =
+                      editingCell.rowIndex === rowIndex &&
+                      editingCell.field === column.field;
+
+                    //COLUMN WITH CHILDREN
+                    if (column.children) {
+                      return column.children.map((child, childIndex) => {
+                        const fullField = `${column.field}.${child.field}`;
+                        const nestedIsEditing =
+                          editingCell.rowIndex === rowIndex &&
+                          editingCell.field === fullField;
+                        const value = row[column.field]?.[child.field] ?? "";
+
+                        return (
                           <td
                             key={`${colIndex}-${childIndex}`}
-                            style={{ textAlign: align }}
+                            style={{ textAlign: child.align || column.align }}
+                            onClick={() =>
+                              setEditingCell({ rowIndex, field: fullField })
+                            }
                           >
-                            <InputComponent
-                              value={row[field][child.field] ?? "-"}
-                            />
+                            {nestedIsEditing ? (
+                              child.inputType === "dropdown" ? (
+                                <select
+                                  autoFocus
+                                  value={value}
+                                  onChange={(e) =>
+                                    handleNestedInputChange(
+                                      e,
+                                      rowIndex,
+                                      column.field,
+                                      child.field
+                                    )
+                                  }
+                                  onBlur={handleBlur}
+                                >
+                                  <option value="">Select</option>
+                                  <option value="Sample1">Sample1</option>
+                                  <option value="Sample2">Sample2</option>
+                                </select>
+                              ) : (
+                                <InputComponent
+                                  autoFocus
+                                  value={value}
+                                  onChange={(e) =>
+                                    handleNestedInputChange(
+                                      e,
+                                      rowIndex,
+                                      column.field,
+                                      child.field
+                                    )
+                                  }
+                                  onBlur={handleBlur}
+                                />
+                              )
+                            ) : (
+                              value || "-"
+                            )}
                           </td>
-                        ))
-                      ) : (
-                        <td key={colIndex} style={{ textAlign: align }}>
-                          {render ? render(row) : row[field] ?? "-"}
-                        </td>
-                      );
+                        );
+                      });
                     }
-                  )}
+
+                    //NOT COLUMN WITH CHILDREN
+                    const value = row[column.field] ?? "";
+
+                    return (
+                      <td
+                        key={colIndex}
+                        style={{ textAlign: column.align }}
+                        onClick={() => {
+                          if (column.inputType) {
+                            handleCellClick(rowIndex, column.field);
+                          }
+                        }}
+                      >
+                        {isEditing ? (
+                          column.inputType === "dropdown" ? (
+                            <select
+                              autoFocus
+                              value={value}
+                              onChange={(e) =>
+                                handleInputChange(e, rowIndex, column.field)
+                              }
+                              onBlur={handleBlur}
+                            >
+                              <option value="">Select</option>
+                              <option value="Option1">Option1</option>
+                              <option value="Option2">Option2</option>
+                            </select>
+                          ) : (
+                            <InputComponent
+                              autoFocus
+                              value={value}
+                              onChange={(e) =>
+                                handleInputChange(e, rowIndex, column.field)
+                              }
+                              onBlur={handleBlur}
+                            />
+                          )
+                        ) : column.render ? (
+                          column.render(row)
+                        ) : (
+                          value || "-"
+                        )}
+                      </td>
+                    );
+                  })}
                 </tr>
               ))
             ) : (
@@ -227,7 +373,7 @@ function ScrollableEditableTableComponent({
                       display: "flex",
                       justifyContent: "center",
                       alignItems: "center",
-                      height: "200px", // Adjust as needed for vertical centering
+                      height: "200px",
                       width: "100%",
                     }}
                   >
