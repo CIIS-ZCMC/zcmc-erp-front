@@ -1,6 +1,13 @@
 import React, { Fragment, useState } from "react";
 import ModalComponent from "../Components/Common/Dialog/ModalComponent";
-import { Button, Checkbox, Grid, Stack, Typography } from "@mui/joy";
+import {
+  Button,
+  Checkbox,
+  Grid,
+  IconButton,
+  Stack,
+  Typography,
+} from "@mui/joy";
 import ButtonComponent from "../Components/Common/ButtonComponent";
 import { AOP_CONSTANTS } from "../Data/constants";
 import ConfirmationModalComponent from "../Components/Common/Dialog/ConfirmationModalComponent";
@@ -9,7 +16,10 @@ import ContainerComponent from "../Components/Common/ContainerComponent";
 import ItemCardComponent from "../Components/Resources/ItemCardComponent";
 import BoxComponent from "../Components/Common/Card/BoxComponent";
 import InputComponent from "../Components/Form/InputComponent";
-import { Search } from "lucide-react";
+import { Edit, Pencil, PencilIcon, Search } from "lucide-react";
+import CustomAccordionComponent from "../Components/Common/Accordion/CustomAccordionComponent";
+import EllipsisComponent from "../Components/Common/Typography/EllipsisComponent";
+import { ActivityContainerComponent } from "../Components/Activities/ActivityContainerComponent";
 
 export default function ComponentTestPage() {
   const [open, setOpen] = useState(false);
@@ -40,8 +50,17 @@ export default function ComponentTestPage() {
     setAlertDialog(data);
   };
 
+  const accordionIds = [`parent-1`, `parent-2`];
+  const children = [`children-1`];
+  const [expanded, setExpanded] = useState([`parent-1`, `children-1`]);
+  const [active, setActive] = useState(0);
+
+  const handleClickActivity = (index) => {
+    setActive(index);
+  };
+
   return (
-    <Fragment>
+    <Stack gap={5}>
       <Stack gap={1} direction={"row"}>
         <ButtonComponent onClick={() => setOpen(true)} label={"Open modal"} />
         <ButtonComponent
@@ -51,22 +70,55 @@ export default function ComponentTestPage() {
           label={"Open confirmation modal"}
         />
       </Stack>
-      {/* Test Modal */}
-      <ModalComponent
-        isOpen={open}
-        handleClose={() => setOpen(false)}
-        title={AOP_TITLE}
-        description={AOP_SUBHEADING}
-        content={<Fragment>This is a content for ModalComponent</Fragment>}
-      />
-      {/* Test Confirmation Modal */}
-      <ConfirmationModalComponent
-        leftButtonLabel="Back to editor"
-        rightButtonAction={() => handleShowAlert(200)}
-        withAuthPin
-        withDivider
-        content={"This is a content"}
-      />
+
+      {/* ACCORDION */}
+      <ContainerComponent title={"Accordion component"}>
+        <Stack width={400} gap={1}>
+          {accordionIds.map((id) => (
+            <CustomAccordionComponent
+              id={id}
+              expanded={expanded}
+              setExpanded={setExpanded}
+              title={`Objective #${id} - Core`}
+              withEdit
+            >
+              <Stack gap={2}>
+                <EllipsisComponent
+                  label={"Objective:"}
+                  text={`Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor.`}
+                />
+                <EllipsisComponent
+                  label={"Success indicators:"}
+                  text={`Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.`}
+                />
+
+                {children.map((id) => (
+                  <CustomAccordionComponent
+                    id={id}
+                    size={"sm"}
+                    expanded={expanded}
+                    setExpanded={setExpanded}
+                    title={`Acitivities (5)`}
+                  >
+                    <Stack gap={1}>
+                      {accordionIds.map((id, index) => (
+                        <ActivityContainerComponent
+                          onClick={() => handleClickActivity(index)}
+                          active={index === active}
+                          label={"Activity #1"}
+                          text={
+                            "For each ad campaign that you create for each ad campaign that you create. For each ad campaign that you create for each ad campaign that you create"
+                          }
+                        />
+                      ))}
+                    </Stack>
+                  </CustomAccordionComponent>
+                ))}
+              </Stack>
+            </CustomAccordionComponent>
+          ))}
+        </Stack>
+      </ContainerComponent>
 
       <Stack mt={3}>
         <ContainerComponent
@@ -142,6 +194,23 @@ export default function ComponentTestPage() {
           </Grid>
         </ContainerComponent>
       </Stack>
-    </Fragment>
+
+      {/* Test Modal */}
+      <ModalComponent
+        isOpen={open}
+        handleClose={() => setOpen(false)}
+        title={AOP_TITLE}
+        description={AOP_SUBHEADING}
+        content={<Fragment>This is a content for ModalComponent</Fragment>}
+      />
+      {/* Test Confirmation Modal */}
+      <ConfirmationModalComponent
+        leftButtonLabel="Back to editor"
+        rightButtonAction={() => handleShowAlert(200)}
+        withAuthPin
+        withDivider
+        content={"This is a content"}
+      />
+    </Stack>
   );
 }
