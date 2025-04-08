@@ -1,5 +1,6 @@
-import React, { Fragment, useState } from 'react'
+import React, { Fragment, useEffect, useState } from 'react'
 
+import { Outlet, useParams, useLocation, useNavigate } from 'react-router-dom'
 import { Stack } from '@mui/joy'
 import { Plus } from 'lucide-react'
 
@@ -10,9 +11,14 @@ import ButtonComponent from '../../../../../../Components/Common/ButtonComponent
 import TableRow from './TableRow'
 
 import { AOP_CONSTANTS } from '../../../../../../Data/constants'
-import { AOP_STEP_HEADER } from '../../../../../../Data/Columns'
+import { AOP_RESOURCE_HEADER } from '../../../../../../Data/Columns'
 
 const Resources = () => {
+
+    const location = useLocation();
+    const { activityId, objectiveId } = useParams();
+    const currentPath = location.pathname;
+    const childPath = currentPath === `/aop-create/activities/${objectiveId}/resources/${activityId}`
 
     const [rows, setRows] = useState([
         {
@@ -20,54 +26,44 @@ const Resources = () => {
             item_name: "Strategic",
             resource_type: 'Resource Type',
             expense_class: 'Expense Class',
-            jan: 'N/A',
-            feb: 'N/A',
-            mar: 'N/A',
-            apr: 'N/A',
-            may: 'N/A',
-            jun: 'N/A',
-            jul: 'N/A',
-            aug: 'N/A',
-            sep: 'N/A',
-            oct: 'N/A',
-            nov: 'N/A',
-            dec: 'N/A',
             procurement_mode: 'Mode'
         },
     ]);
 
     return (
         <Fragment>
-            <ContainerComponent
-                title={AOP_CONSTANTS.TABLE_RESOURCES_HEADER}
-                description={AOP_CONSTANTS.TABLE_RESOURCES_SUBHEADING}
-                actions={
-                    <Stack>
-                        <ButtonComponent
-                            // onClick={() => setOpen(true)}
-                            label={"Add Resource"}
-                            endDecorator={<Plus size={16} />}
-                        />
-                    </Stack>
-                }
-            >
-                <EditableTableComponent
-                    tableHeader={AOP_STEP_HEADER}
-                    stripe={'odd'}
-                    haverRow
-                    tableRow={
-                        <TableRow
-                            rows={rows}
-                        // handleEdit={handleEdit}
-                        // handleBlur={handleBlur}
-                        // editField={editField}
-                        // editRowId={editRowId}
-                        // setEditRowId={setEditRowId}
-                        />
+            {childPath &&
+                <ContainerComponent
+                    title={AOP_CONSTANTS.TABLE_RESOURCES_HEADER}
+                    description={AOP_CONSTANTS.TABLE_RESOURCES_SUBHEADING}
+                    actions={
+                        <Stack>
+                            <ButtonComponent
+                                // onClick={() => setOpen(true)}
+                                label={"Add Resource"}
+                                endDecorator={<Plus size={16} />}
+                            />
+                        </Stack>
                     }
-                />
-
-            </ContainerComponent>
+                >
+                    <EditableTableComponent
+                        columns={AOP_RESOURCE_HEADER}
+                        stripe={'odd'}
+                        haverRow
+                        tableRow={
+                            <TableRow
+                                rows={rows}
+                            // handleEdit={handleEdit}
+                            // handleBlur={handleBlur}
+                            // editField={editField}
+                            // editRowId={editRowId}
+                            // setEditRowId={setEditRowId}
+                            />
+                        }
+                    />
+                </ContainerComponent>
+            }
+            <Outlet />
         </Fragment>
     )
 }

@@ -13,6 +13,7 @@ import Returned from "../Pages/DeptHead/AnnualOps/TableViews/Returned";
 import CreateAOP from "../Pages/DeptHead/AnnualOps/CreateAOP";
 import Activities from "../Pages/DeptHead/AnnualOps/CreateAOP/Activities";
 import Resources from "../Pages/DeptHead/AnnualOps/CreateAOP/Activities/Resources";
+import ResponsiblePerson from "../Pages/DeptHead/AnnualOps/CreateAOP/Activities/Resources/ResponsiblePerson";
 
 import Items from "../Pages/Items";
 import Item from '../Pages/Items/Item';
@@ -65,11 +66,16 @@ export const sidebarRoutes = [
     children: [
       // { index: true, element: <CreateAOP /> },
       {
-        path: "activities/:objectiveId", element: <Activities />,
+        path: "activities/:objectiveId",
+        element: <Activities />,
         children: [
           {
             path: "resources/:activityId",
             element: <Resources />,
+            children: [{
+              path: "person/:resourceId",
+              element: < ResponsiblePerson />,
+            }]
           },
         ],
       },

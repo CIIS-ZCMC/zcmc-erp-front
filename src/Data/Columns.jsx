@@ -77,7 +77,102 @@ export const objHeaders = [
   },
 ];
 
-export const AOP_STEP_HEADER = [
+export const AOP_HEADER = [
+  { field: "id", name: "Row #", align: "center", width: "50px" },
+  {
+    field: "function",
+    name: "Type of Function",
+    width: "30%",
+    align: "left",
+  },
+  {
+    field: "objectives",
+    name: "Objectives",
+    width: "20%",
+    align: "center",
+  },
+  {
+    field: "success_indicators",
+    name: "Success Indicators",
+    width: "20%",
+    align: "center",
+  },
+  {
+    field: "action",
+    name: "Actions",
+    position: "sticky",
+    width: "150px",
+    right: 0,
+    align: "center",
+  },
+];
+
+export const ACTIVITIES_HEADER = [
+  {
+    field: "id",
+    name: "Row #",
+    width: "4%",
+    align: "center",
+  },
+  {
+    field: "activities",
+    name: "Activities",
+    width: "10%",
+    align: "center",
+  },
+
+  {
+    field: "",
+    name: "Timeframe",
+    align: "center",
+    width: "15%",
+    children: [
+      { field: "startMonth", name: "Start(Month)" },
+      { field: "endMonth", name: "End(Month)" },
+    ],
+  },
+  {
+    field: "",
+    name: "Target (by quarter)",
+    align: "center",
+    width: "20%",
+    children: [
+      { field: "quarter1", name: "Q1", width: "10%" },
+      { field: "quarter2", name: "Q2", width: "10%" },
+      { field: "quarter3", name: "Q3", width: "10%" },
+      { field: "quarter4", name: "Q4", width: "10%" },
+    ],
+  },
+
+  {
+    field: "cost",
+    name: "Cost",
+    width: "10%",
+    align: "center",
+  },
+
+  {
+    field: "gad_related_activity",
+    name: "Is GAD-related activity",
+    width: "10%",
+    align: "center",
+  },
+
+  {
+    field: "object_category",
+    name: "Object Category (MOOE or CO)",
+    width: "10%",
+    align: "center",
+  },
+
+  {
+    field: "action",
+    align: "center",
+    name: "Actions",
+  },
+];
+
+export const AOP_RESOURCE_HEADER = [
   {
     field: "id",
     name: "Row #",
@@ -100,104 +195,24 @@ export const AOP_STEP_HEADER = [
   {
     field: 'expense_class',
     name: "Expense class of unit",
-    width: "15%",
-    align: "center",
-  },
-
-  {
-    field: 'jan',
-    name: "Jan",
-    width: "5%",
-    align: "center",
-  },
-
-  {
-    field: 'feb',
-    name: "Feb",
-    width: "5%",
-    align: "center",
-  },
-
-  {
-    field: 'mar',
-    name: "Mar",
-    width: "5%",
-    align: "center",
-  },
-
-  {
-    field: 'apr',
-    name: "Apr",
-    width: "5%",
-    align: "center",
-  },
-
-  {
-    field: 'may',
-    name: "May",
-    width: "5%",
-    align: "center",
-  },
-
-  {
-    field: 'jun',
-    name: "June",
-    width: "5%",
-    align: "center",
-  },
-
-  {
-    field: 'jul',
-    name: "Jul",
-    width: "5%",
-    align: "center",
-  },
-
-  {
-    field: 'aug',
-    name: "Aug",
-    width: "5%",
-    align: "center",
-  },
-  {
-    field: 'sep',
-    name: "Sep",
-    width: "5%",
-    align: "center",
-  },
-
-  {
-    field: 'oct',
-    name: "Oct",
-    width: "5%",
-    align: "center",
-  },
-
-  {
-    field: 'nov',
-    name: "Nov",
-    width: "5%",
-    align: "center",
-  },
-
-  {
-    field: 'dec',
-    name: "Dec",
-    width: "5%",
+    width: "20%",
     align: "center",
   },
 
   {
     field: 'procurement_mode',
     name: "Mode of procurement",
-    width: "15%",
+    width: "20%",
     align: "center",
   },
 
   {
-    field: "actions",
-    align: "center",
+    field: "action",
     name: "Actions",
+    position: "sticky",
+    width: "150px",
+    right: 0,
+    align: "center",
   },
 
 ];

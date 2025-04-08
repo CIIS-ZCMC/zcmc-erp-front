@@ -37,13 +37,13 @@ const Items = () => {
                         <Stack direction={'row'} gap={1}>
                             <ButtonComponent
                                 label={'Cancel Selection'}
-                                size={'sm'}
+                                size={'md'}
                                 variant={'outlined'}
                             />
 
                             <ButtonComponent
                                 label={'Save items'}
-                                size={'sm'}
+                                size={'md'}
                                 variant={'solid'}
                                 onClick={() => navigate('/aop-create/activities/1/resources/1')}
                             />

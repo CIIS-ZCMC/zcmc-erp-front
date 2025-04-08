@@ -37,14 +37,14 @@ function ScrollableTableComponent({
   const currentData = useMemo(() => {
     const filteredData = search
       ? data?.filter((item) =>
-          fieldsToSearch?.some((field) => {
-            const value = item[field]; // Access the field value dynamically
-            return (
-              typeof value === "string" && // Ensure the value is a string
-              value.toLowerCase().includes(search.toLowerCase())
-            );
-          })
-        )
+        fieldsToSearch?.some((field) => {
+          const value = item[field]; // Access the field value dynamically
+          return (
+            typeof value === "string" && // Ensure the value is a string
+            value.toLowerCase().includes(search.toLowerCase())
+          );
+        })
+      )
       : data;
 
     const totalPages = Math.ceil(filteredData?.length / pageSize);
@@ -122,8 +122,8 @@ function ScrollableTableComponent({
                         width: isFirstColumn
                           ? "var(--Table-firstColumnWidth)"
                           : isLastColumn && stickLast
-                          ? "var(--Table-lastColumnWidth)"
-                          : column.width || 200,
+                            ? "var(--Table-lastColumnWidth)"
+                            : column.width || 200,
                         fontSize: 13,
                         textAlign: column.align,
                         backgroundColor: "rgba(240, 240, 240, 1)",
