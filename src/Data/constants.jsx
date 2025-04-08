@@ -48,6 +48,9 @@ export const AOP_CONSTANTS = {
   TABLE_RESOURCES_HEADER: 'Step 3.2 of 4: Manage resources',
   TABLE_RESOURCES_SUBHEADING: 'This is a subheading. It should add more context to the interaction.',
 
+  TABLE_PERSON_HEADER: 'Step 4 of 4: Manage responsible person(s)',
+  TABLE_PERSON_SUBHEADING: 'This is a subheading. It should add more context to the interaction.',
+
 }
 
 export const MONTHS = [
