@@ -112,31 +112,6 @@ const TableRow = ({
         )}
       </td>
 
-      <td onClick={() => setEditRowId(row.id)} style={{ cursor: "pointer" }}>
-        <Stack
-          direction={"flex"}
-          alignItems={"center"}
-          justifyContent={"space-between"}
-          gap={1}
-        >
-          <Link
-            component="button"
-            onClick={() => navigate(`activities/1`)}
-            endDecorator={<ExternalLink size={16} />}
-          >
-            Manage Activities
-          </Link>
-
-          <ButtonComponent
-            label={"Delete"}
-            size={"sm"}
-            variant={"outlined"}
-            color={"danger"}
-            endDecorator={<Trash size={16} />}
-          />
-        </Stack>
-      </td>
-
       <td
         onClick={() => setEditRowId(row.id)}
         style={{ cursor: 'pointer' }}
