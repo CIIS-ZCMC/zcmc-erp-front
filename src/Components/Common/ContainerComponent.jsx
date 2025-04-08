@@ -1,5 +1,6 @@
 import { Box, Divider, Sheet, Stack, styled, Typography } from "@mui/joy";
 import PropTypes from "prop-types";
+import { Fragment } from "react";
 
 ContainerComponent.propTypes = {
   children: PropTypes.node, // Allow multiple children
@@ -29,6 +30,7 @@ function ContainerComponent({
   contentMaxHeight,
   actions,
   noPadding,
+  footer,
   ...props
 }) {
   return (
@@ -36,8 +38,12 @@ function ContainerComponent({
       {title && (
         <Stack gap={1.5} mb={2}>
           <Stack
-            direction={"row"}
-            sx={{ alignItems: "center", justifyContent: "space-between" }}
+            direction={{ xl: "row", lg: "column" }}
+            sx={{
+              alignItems: { xl: "center", lg: "start" },
+              justifyContent: "space-between",
+            }}
+            spacing={1}
           >
             <Stack>
               <Typography
@@ -65,6 +71,12 @@ function ContainerComponent({
       >
         {children}
       </Box>
+      {footer && (
+        <Box mt={2}>
+          <Divider sx={{ marginX: noPadding && -2.5 }} />
+          <Box mt={1.5}>{footer}</Box>
+        </Box>
+      )}
     </CustomSheet>
   );
 }

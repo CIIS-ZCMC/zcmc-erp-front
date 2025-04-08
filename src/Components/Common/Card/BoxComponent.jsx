@@ -10,19 +10,12 @@ BoxComponent.propTypes = {
   props: PropTypes.object, // Keep this for spreading additional props
 };
 
-function BoxComponent({
-  children,
-  width,
-  height,
-  maxHeight,
-  bgColor,
-  ...props
-}) {
+function BoxComponent({ children, height, maxHeight, bgColor, ...props }) {
   return (
     <Box
       sx={{
-        width: width ?? "100%",
-        height: height ?? "100%",
+        maxWidth: "100%",
+        height: height ?? "auto",
         maxHeight: maxHeight,
         overflowY: maxHeight ? "scroll" : "visible", // Improved condition
         border: 1,
