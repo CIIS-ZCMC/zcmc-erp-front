@@ -2,23 +2,28 @@ import { Navigate } from "react-router-dom";
 
 import Dashboard from "../Pages/Dashboard";
 
-import AnnualOps from "../Pages/PlanningOps/AnnualOps/AnnualOps";
-// table views routes
-import All from "../Pages/PlanningOps/AnnualOps/TableViews/All";
-import Approved from "../Pages/PlanningOps/AnnualOps/TableViews/Approved";
-import Pending from "../Pages/PlanningOps/AnnualOps/TableViews/Pending";
-import Returned from "../Pages/PlanningOps/AnnualOps/TableViews/Returned";
+import AnnualOps from '../Pages/DeptHead/AnnualOps/AnnualOps';
 
-import CreateAOP from "../Pages/PlanningOps/AnnualOps/CreateAOP";
-import Activities from "../Pages/PlanningOps/AnnualOps/CreateAOP/Activities";
-import Items from "../Pages/PlanningOps/AnnualOps/CreateAOP/Activities/Items";
-import Resources from "../Pages/PlanningOps/AnnualOps/CreateAOP/Activities/Resources";
+// table views routes
+import All from "../Pages/DeptHead/AnnualOps/TableViews/All";
+import Approved from "../Pages/DeptHead/AnnualOps/TableViews/Approved";
+import Pending from "../Pages/DeptHead/AnnualOps/TableViews/Pending";
+import Returned from "../Pages/DeptHead/AnnualOps/TableViews/Returned";
+
+import CreateAOP from "../Pages/DeptHead/AnnualOps/CreateAOP";
+import Activities from "../Pages/DeptHead/AnnualOps/CreateAOP/Activities";
+import Resources from "../Pages/DeptHead/AnnualOps/CreateAOP/Activities/Resources";
+import ResponsiblePerson from "../Pages/DeptHead/AnnualOps/CreateAOP/Activities/Resources/ResponsiblePerson";
+
+import Items from "../Pages/Items";
+import Item from '../Pages/Items/Item';
 
 import ItemRequest from "../Pages/Consolidators/ItemManagement/ItemRequest";
 import ItemLibrary from "../Pages/Consolidators/ItemManagement/ItemLibrary";
 import Objectives from "../Pages/PlanningOps/ObjectiveManagement/Objectives";
-import AOPApproval from "../Pages/PlanningOps/Approval/AOPApproval";
 import EditPPMP from "../Pages/DeptHead/EditPPMP/EditPPMP";
+import ManageObjectives from "../Pages/PlanningOps/Approval/ManageObjectives";
+import AOPApproval from "../Pages/PlanningOps/Approval/AOPApproval";
 
 export const sidebarRoutes = [
   {
@@ -57,33 +62,46 @@ export const sidebarRoutes = [
   },
 
   {
-    path: "/aop-approval",
-    name: "AOP Management Approval",
-    element: <AOPApproval />,
-  },
-
-  {
     path: "/aop-create",
     element: <CreateAOP />,
     children: [
+      // { index: true, element: <CreateAOP /> },
       {
-        path: "activities/:id",
+        path: "activities/:objectiveId",
         element: <Activities />,
         children: [
           {
-            path: 'items',
-            element: <Items />, //item resource
-            // children: [
-            //   {
-            //     path: "resources/:id",
-            //     element: <Resources />,
-            //   },
-            // ]
+            path: "resources/:activityId",
+            element: <Resources />,
+            children: [{
+              path: "person/:resourceId",
+              element: < ResponsiblePerson />,
+            }]
           },
         ],
       },
     ],
   },
+
+  {
+    path: "/aop-approval",
+    children: [
+      { index: true, element: <AOPApproval /> },
+      { path: "objectives/:id", element: <ManageObjectives /> },
+    ],
+  },
+
+  {
+    path: 'items',
+    children: [
+      { index: true, element: <Items /> },
+      {
+        path: ':itemId',
+        element: <Item />, //single item profile
+      }
+    ]
+  },
+
   {
     path: "/edit-ppmp",
     name: "Edit PPMP",

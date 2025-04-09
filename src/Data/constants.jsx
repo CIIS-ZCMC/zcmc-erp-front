@@ -39,8 +39,15 @@ export const AOP_CONSTANTS = {
   TABLE_ACTIVITY_HEADER: 'Step 2 of 4: Manage activities',
   TABLE_ACTIVITY_SUBHEADING: 'This is a subheading. It should add more context to the interaction.',
 
-  MODAL_RESOURCE_HEADER: "Select resources for activity Activity:",
-  MODAL_RESOURCE_SUBHEADING: "Select a request status and reasons (if returned) to continue. You may add remarks if necessary."
+  MODAL_RESOURCE_HEADER: "Select resources for activity Activity",
+  MODAL_RESOURCE_SUBHEADING: "Select a request status and reasons (if returned) to continue. You may add remarks if necessary.",
+
+  ITEMS_HEADER: 'Select resources (items) for activity Activity',
+  ITEMS_SUBHEADER: 'Select a request status and reasons (if returned) to continue. You may add remarks if necessary.',
+
+  TABLE_RESOURCES_HEADER: 'Step 3.2 of 4: Manage resources',
+  TABLE_RESOURCES_SUBHEADING: 'This is a subheading. It should add more context to the interaction.',
+
 }
 
 export const MONTHS = [

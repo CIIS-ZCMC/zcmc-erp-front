@@ -3,13 +3,20 @@ import PropTypes from "prop-types";
 import PageTitle from "../../../Components/Common/PageTitle";
 import { AOP_CONSTANTS } from "../../../Data/constants";
 import ContainerComponent from "../../../Components/Common/ContainerComponent";
-import { Grid, Link, Stack } from "@mui/joy";
+import { Grid, Stack } from "@mui/joy";
 import InputComponent from "../../../Components/Form/InputComponent";
 import DatePickerComponent from "../../../Components/Form/DatePickerComponent";
 import { Search } from "lucide-react";
 import CardComponent from "../../../Components/Common/Card/CardComponent";
+import { useNavigate } from "react-router-dom";
 
 const AOPApproval = () => {
+  const navigate = useNavigate();
+
+  const handleClickCard = (id) => {
+    navigate(`/aop-approval/objectives/${id}`);
+  };
+
   return (
     <Fragment>
       <Stack gap={4}>
@@ -59,7 +66,7 @@ const AOPApproval = () => {
                     sm={6} // 2 items on small screens
                     md={4} // 3 items on medium screens
                   >
-                    <CardComponent />
+                    <CardComponent onClick={() => handleClickCard(index)} />
                   </Grid>
                 ))}
             </Grid>
