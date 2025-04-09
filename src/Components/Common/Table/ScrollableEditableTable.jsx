@@ -15,6 +15,7 @@ import InputComponent from "../../Form/InputComponent";
 
 function ScrollableEditableTableComponent({
   stickLast = false,
+  stickSecond = false,
   data,
   columns,
   pageSize = 5,
@@ -205,6 +206,15 @@ function ScrollableEditableTableComponent({
               boxShadow: "1px 0 var(--TableCell-borderColor)",
               bgcolor: "background.surface",
             },
+            ...(stickSecond && {
+              "& tr > *:nth-child(2)": {
+                position: "sticky",
+                zIndex: 9,
+                left: columns[0]?.width, // Adjust to match the width of first column
+                boxShadow: "1px 0 var(--TableCell-borderColor)",
+                bgcolor: "background.surface",
+              },
+            }),
             ...(stickLast && {
               "& tr > *:last-child": {
                 position: "sticky",

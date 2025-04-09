@@ -90,7 +90,7 @@ export const ppmpHeaders = (handleDeleteRow) => [
     field: "description",
     name: "General description",
     inputType: "dropdown",
-    width: 200,
+    width: "200px",
     align: "center",
   },
   {
@@ -160,7 +160,7 @@ export const ppmpHeaders = (handleDeleteRow) => [
     field: "action",
     name: "Actions",
     isDropdown: false,
-    width: "100px",
+    width: "150px",
     align: "center",
     render: (params) => {
       return (
@@ -174,7 +174,7 @@ export const ppmpHeaders = (handleDeleteRow) => [
             fontSize={14}
             endDecorator={<MdDeleteOutline />}
           >
-            Remove
+            Remove Item
           </Link>
         </>
       );

@@ -6,6 +6,8 @@ import { BiPlus } from "react-icons/bi";
 import { Stack } from "@mui/joy";
 import ScrollableEditableTableComponent from "../../../Components/Common/Table/ScrollableEditableTable";
 import { ppmpHeaders } from "../../../Data/Columns";
+import ModalComponent from "../../../Components/Common/Dialog/ModalComponent";
+import AutocompleteComponent from "../../../Components/Form/AutocompleteComponent";
 
 const sampleData = [
   {
@@ -88,6 +90,7 @@ const sampleData = [
   },
   // Add more sample rows as needed
 ];
+
 const descriptionsData = [
   {
     label: "Option1",
@@ -102,9 +105,11 @@ const descriptionsData = [
     unit: "Piece",
   },
 ];
+
 function EditPPMP({ props }) {
   const [tableData, setTableData] = useState(sampleData);
   const [loadingDescription, setLoadingDescription] = useState(false);
+  const [openAdd, setOpenAdd] = useState(false);
 
   const calculateQuantity = (targetByQuarter) => {
     // Sum the values from January to December
@@ -145,13 +150,26 @@ function EditPPMP({ props }) {
         [fieldName.split(".")[1]]: parseInt(newValue),
       };
       const updatedQuantity = calculateQuantity(updatedTarget);
+      const newTotalAmount =
+        updatedQuantity * (parseFloat(row.estimated_budget) || 0);
 
       updateRow({
         ...row,
         target_by_quarter: updatedTarget,
         quantity: updatedQuantity, // Update the quantity field
+        total_amount: newTotalAmount,
       });
       // Simulate loading delay
+    } else if (fieldName === "quantity") {
+      const newQuantity = parseFloat(newValue) || 0;
+      const newTotalAmount =
+        newQuantity * (parseFloat(row.estimated_budget) || 0);
+
+      updateRow({
+        ...row,
+        quantity: newQuantity,
+        total_amount: newTotalAmount,
+      });
     } else {
       updateRow({
         ...row,
@@ -188,6 +206,7 @@ function EditPPMP({ props }) {
               color="success"
               variant={"outlined"}
               endDecorator={<BiPlus />}
+              onClick={() => setOpenAdd(true)}
             />
           </Stack>
         }
@@ -198,9 +217,27 @@ function EditPPMP({ props }) {
           onFieldChange={handleFieldChange}
           isLoading={loadingDescription}
           options={descriptionsData}
+          stripe={"even"}
           stickLast
+          stickSecond
         />
       </ContainerComponent>
+      <ModalComponent
+        isOpen={openAdd}
+        handleClose={() => setOpenAdd(false)}
+        title={"On what activity shall we assign the resources you’ll add?"}
+        description={
+          "Select a request status and reasons (if returned) to continue. You may add remarks if necessary."
+        }
+        content={
+          <Fragment>
+            <AutocompleteComponent label={"Select one activity"} />
+          </Fragment>
+        }
+        leftButtonLabel="Cancel"
+        rightButtonLabel="Continue"
+        rightButtonAction={() => setOpenAdd(false)}
+      />
     </Fragment>
   );
 }
