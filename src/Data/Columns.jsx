@@ -216,6 +216,7 @@ export const AOP_RESOURCE_HEADER = [
     right: 0,
     align: "center",
   },
+]
 
 export const ppmpHeaders = (handleDeleteRow) => [
   {
