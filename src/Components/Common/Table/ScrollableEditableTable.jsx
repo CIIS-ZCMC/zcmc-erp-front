@@ -1,4 +1,5 @@
 import {
+  Autocomplete,
   Box,
   Button,
   CircularProgress,
@@ -32,6 +33,8 @@ function ScrollableEditableTableComponent({
   hoverRow,
   isLoading,
   onFieldChange,
+  options = [],
+  nestedOptions = [],
 }) {
   // PAGINATION SETUP
   const [currentPage, setCurrentPage] = useState(1);
@@ -89,6 +92,24 @@ function ScrollableEditableTableComponent({
     }
   };
 
+  const handleAutocompleteChange = (e, rowIndex, field) => {
+    const row = rows[rowIndex];
+    console.log(e); // Log the selected value from Autocomplete
+
+    if (onFieldChange) {
+      onFieldChange(field, e.label, row, (updatedRow) => {
+        const updatedRows = [...rows];
+        updatedRows[rowIndex] = updatedRow;
+        console.log(updatedRows); // Log the updated rows
+        setRows(updatedRows);
+      });
+    } else {
+      const newRows = [...rows];
+      newRows[rowIndex][field] = e; // Directly update with the new value
+      setRows(newRows);
+    }
+  };
+
   const handleNestedInputChange = (e, rowIndex, parentField, childField) => {
     const newValue = e.target.value;
     const row = rows[rowIndex];
@@ -107,6 +128,33 @@ function ScrollableEditableTableComponent({
     } else {
       const newRows = [...rows];
       newRows[rowIndex][parentField][childField] = e.target.value;
+      setRows(newRows);
+    }
+  };
+
+  const handleNestedAutocompleteChange = (
+    e,
+    rowIndex,
+    parentField,
+    childField
+  ) => {
+    const row = rows[rowIndex];
+    console.log(e); // Log the selected value from Autocomplete
+
+    if (onFieldChange) {
+      onFieldChange(
+        `${parentField}.${childField}`,
+        e.label,
+        row,
+        (updatedRow) => {
+          const updatedRows = [...rows];
+          updatedRows[rowIndex] = updatedRow;
+          setRows(updatedRows);
+        }
+      );
+    } else {
+      const newRows = [...rows];
+      newRows[rowIndex][parentField][childField] = e; // Directly update with the new value
       setRows(newRows);
     }
   };
@@ -152,6 +200,7 @@ function ScrollableEditableTableComponent({
             tableLayout: "fixed",
             "& tr > *:first-child": {
               position: "sticky",
+              zIndex: 10,
               left: 0,
               boxShadow: "1px 0 var(--TableCell-borderColor)",
               bgcolor: "background.surface",
@@ -159,6 +208,7 @@ function ScrollableEditableTableComponent({
             ...(stickLast && {
               "& tr > *:last-child": {
                 position: "sticky",
+                zIndex: 10,
                 right: 0,
                 bgcolor: "var(--TableCell-headBackground)",
               },
@@ -177,11 +227,7 @@ function ScrollableEditableTableComponent({
                       key={index}
                       colSpan={column?.children?.length}
                       style={{
-                        width: isFirstColumn
-                          ? "var(--Table-firstColumnWidth)"
-                          : isLastColumn && stickLast
-                          ? "var(--Table-lastColumnWidth)"
-                          : column.width || 200,
+                        width: column.width || 200,
                         fontSize: 13,
                         textAlign: column.align || "left",
                         backgroundColor: "rgba(240, 240, 240, 1)",
@@ -221,6 +267,7 @@ function ScrollableEditableTableComponent({
                             fontSize: 13,
                             textAlign: child.align || "center",
                             backgroundColor: "rgba(240, 240, 240, 1)",
+                            zIndex: 1,
                           }}
                         >
                           {child.name}
@@ -277,23 +324,20 @@ function ScrollableEditableTableComponent({
                           >
                             {nestedIsEditing ? (
                               child.inputType === "dropdown" ? (
-                                <select
+                                <Autocomplete
                                   autoFocus
                                   value={value}
-                                  onChange={(e) =>
-                                    handleNestedInputChange(
-                                      e,
+                                  onChange={(_, event) =>
+                                    handleNestedAutocompleteChange(
+                                      event,
                                       rowIndex,
                                       column.field,
                                       child.field
                                     )
                                   }
                                   onBlur={handleBlur}
-                                >
-                                  <option value="">Select</option>
-                                  <option value="Sample1">Sample1</option>
-                                  <option value="Sample2">Sample2</option>
-                                </select>
+                                  options={nestedOptions}
+                                />
                               ) : (
                                 <InputComponent
                                   autoFocus
@@ -332,18 +376,19 @@ function ScrollableEditableTableComponent({
                       >
                         {isEditing ? (
                           column.inputType === "dropdown" ? (
-                            <select
+                            <Autocomplete
                               autoFocus
                               value={value}
-                              onChange={(e) =>
-                                handleInputChange(e, rowIndex, column.field)
+                              onChange={(_, event) =>
+                                handleAutocompleteChange(
+                                  event,
+                                  rowIndex,
+                                  column.field
+                                )
                               }
                               onBlur={handleBlur}
-                            >
-                              <option value="">Select</option>
-                              <option value="Option1">Option1</option>
-                              <option value="Option2">Option2</option>
-                            </select>
+                              options={options}
+                            />
                           ) : (
                             <InputComponent
                               autoFocus

@@ -152,6 +152,7 @@ export const ppmpHeaders = (handleDeleteRow) => [
   {
     field: "remarks",
     name: "Remarks",
+    width: 200,
     inputType: "input",
     align: "center",
   },

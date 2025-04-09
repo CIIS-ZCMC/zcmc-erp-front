@@ -12,10 +12,11 @@ const sampleData = [
     id: 1,
     description: "Item 1",
     classification: "Type A",
+    estimated_budget: 5000,
     category: "Category X",
     quantity: 0,
     unit: "pcs",
-    total_amount: 5000,
+    total_amount: 0,
     target_by_quarter: {
       jan: 0,
       feb: 0,
@@ -38,9 +39,10 @@ const sampleData = [
     description: "Item 2",
     classification: "Type B",
     category: "Category X",
+    estimated_budget: 5000,
     quantity: 0,
     unit: "pcs",
-    total_amount: 5000,
+    total_amount: 0,
     target_by_quarter: {
       jan: 0,
       feb: 0,
@@ -63,9 +65,10 @@ const sampleData = [
     description: "Item 3",
     classification: "Type C",
     category: "Category X",
+    estimated_budget: 5000,
     quantity: 0,
     unit: "pcs",
-    total_amount: 5000,
+    total_amount: 0,
     target_by_quarter: {
       jan: 0,
       feb: 0,
@@ -194,6 +197,7 @@ function EditPPMP({ props }) {
           data={tableData}
           onFieldChange={handleFieldChange}
           isLoading={loadingDescription}
+          options={descriptionsData}
           stickLast
         />
       </ContainerComponent>
