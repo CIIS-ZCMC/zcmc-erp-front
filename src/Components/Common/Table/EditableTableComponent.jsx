@@ -9,7 +9,7 @@ const EditableTableComponent = ({
   stripe,
   hoverRow,
   bordered = false,
-  border = 'none',
+  border = "none",
   stickLast = false,
   textWrap,
 }) => {
