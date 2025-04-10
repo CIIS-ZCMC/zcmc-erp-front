@@ -2,7 +2,7 @@ import { Navigate } from "react-router-dom";
 
 import Dashboard from "../Pages/Dashboard";
 
-import AnnualOps from '../Pages/DeptHead/AnnualOps/AnnualOps';
+import AnnualOps from "../Pages/DeptHead/AnnualOps/AnnualOps";
 
 // table views routes
 import All from "../Pages/DeptHead/AnnualOps/TableViews/All";
@@ -16,13 +16,13 @@ import Resources from "../Pages/DeptHead/AnnualOps/CreateAOP/Activities/Resource
 import ResponsiblePerson from "../Pages/DeptHead/AnnualOps/CreateAOP/Activities/Resources/ResponsiblePerson";
 
 import Items from "../Pages/Items";
-import Item from '../Pages/Items/Item';
+import Item from "../Pages/Items/Item";
 
 import ItemRequest from "../Pages/Consolidators/ItemManagement/ItemRequest";
 import ItemLibrary from "../Pages/Consolidators/ItemManagement/ItemLibrary";
 import Objectives from "../Pages/PlanningOps/ObjectiveManagement/Objectives";
 import EditPPMP from "../Pages/DeptHead/EditPPMP/EditPPMP";
-import ManageObjectives from "../Pages/PlanningOps/Approval/ManageObjectives";
+import ManageAOP from "../Pages/PlanningOps/Approval/ManageAOP";
 import AOPApproval from "../Pages/PlanningOps/Approval/AOPApproval";
 
 export const sidebarRoutes = [
@@ -65,7 +65,7 @@ export const sidebarRoutes = [
     path: "/aop-create",
     element: <CreateAOP />,
     children: [
-      // { index: true, element: <CreateAOP /> },
+      { index: true, element: <CreateAOP /> },
       {
         path: "activities/:objectiveId",
         element: <Activities />,
@@ -73,10 +73,12 @@ export const sidebarRoutes = [
           {
             path: "resources/:activityId",
             element: <Resources />,
-            children: [{
-              path: "person/:resourceId",
-              element: < ResponsiblePerson />,
-            }]
+            children: [
+              {
+                path: "person/:resourceId",
+                element: <ResponsiblePerson />,
+              },
+            ],
           },
         ],
       },
@@ -87,20 +89,22 @@ export const sidebarRoutes = [
     path: "/aop-approval",
     children: [
       { index: true, element: <AOPApproval /> },
-      { path: "objectives/:id", element: <ManageObjectives /> },
+      { path: "objectives/:id", element: <ManageAOP /> },
     ],
   },
 
-  {
-    path: 'items',
-    children: [
-      { index: true, element: <Items /> },
-      {
-        path: ':itemId',
-        element: <Item />, //single item profile
-      }
-    ]
-  },
+  // SAMPLE PATH
+  // {
+  //   path: "aop-create",
+  //   element: <Main />,
+  //   children: [
+  //     { index: true, element: <Contact /> },
+  //     {
+  //       path: "activities/1",
+  //       element: <About />,
+  //     },
+  //   ],
+  // },
 
   {
     path: "/edit-ppmp",

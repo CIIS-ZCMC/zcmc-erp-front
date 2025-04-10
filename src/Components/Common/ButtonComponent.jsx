@@ -30,7 +30,7 @@ const ButtonComponent = ({
         fontWeight: 400,
         borderRadius: 8,
         height: size ?? 38,
-        fontSize: size ?? 14,
+        fontSize: size ?? 13,
       }}
     >
       {label}

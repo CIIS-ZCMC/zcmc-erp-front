@@ -15,6 +15,7 @@ function TextareaComponent({
   handleInput,
   name,
   isRequired,
+  autoFocus,
 }) {
   return (
     <FormControl>
@@ -27,6 +28,7 @@ function TextareaComponent({
         )}
       </FormLabel>
       <Textarea
+        autoFocus={autoFocus}
         required={isRequired}
         size={size}
         placeholder={placeholder}

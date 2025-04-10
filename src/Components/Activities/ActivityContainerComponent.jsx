@@ -16,24 +16,27 @@ export const ActivityContainerComponent = ({
     <Box
       onClick={onClick}
       sx={{
-        border: active ? 2 : 1,
+        border: 1,
         padding: 1,
+        boxShadow: active && "md",
         borderRadius: 8,
-        borderColor: active ? "primary.200" : "neutral.100",
-
+        borderColor: active ? "primary.500" : "neutral.100",
         "&: hover": {
           borderColor: !active && "neutral.200",
           cursor: "pointer",
-          boxShadow: !active && "sm",
         },
       }}
     >
-      <Stack gap={1}>
+      <Stack gap={1.5}>
         <Stack
-          direction={"row-reverse"}
-          justifyContent={"space-between"}
-          alignItems={"center"}
+          direction={{ md: "column", lg: "row" }}
+          justifyContent={{ md: "start", lg: "space-between" }}
+          alignItems={{ md: "start", lg: "center" }}
+          rowGap={0.5}
         >
+          <Typography level="body-xs" textColor={"neutral.800"}>
+            {label}
+          </Typography>{" "}
           <Box display={"flex"} gap={0.5}>
             {withComment && (
               <ChipComponent
@@ -52,9 +55,6 @@ export const ActivityContainerComponent = ({
               />
             )}
           </Box>
-          <Typography level="body-sm" textColor={"neutral.800"}>
-            {label}
-          </Typography>
         </Stack>
 
         <Typography
