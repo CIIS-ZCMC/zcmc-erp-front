@@ -1,6 +1,5 @@
 import { Box, Divider, Sheet, Stack, styled, Typography } from "@mui/joy";
 import PropTypes from "prop-types";
-import { Fragment } from "react";
 
 ContainerComponent.propTypes = {
   children: PropTypes.node, // Allow multiple children
@@ -13,14 +12,8 @@ ContainerComponent.propTypes = {
   comingSoon: PropTypes.bool,
   chipLabel: PropTypes.string,
   chipColor: PropTypes.string,
+  noBoxShadow: PropTypes.bool,
 };
-
-const CustomSheet = styled(Sheet)(({ theme }) => ({
-  backgroundColor: "white",
-  borderRadius: 12,
-  padding: theme.spacing(2.5),
-  boxShadow: theme.shadow.md,
-}));
 
 function ContainerComponent({
   children,
@@ -28,11 +21,21 @@ function ContainerComponent({
   description,
   scrollable,
   contentMaxHeight,
+  contentMinHeight,
   actions,
   noPadding,
   footer,
+  noBoxShadow,
   ...props
 }) {
+  const CustomSheet = styled(Sheet)(({ theme }) => ({
+    backgroundColor: "white",
+    borderRadius: 12,
+    padding: theme.spacing(2.5),
+    border: noBoxShadow ? `1px solid ${theme.palette.neutral[200]}` : "none",
+    boxShadow: noBoxShadow ? "none" : theme.shadow.md,
+  }));
+
   return (
     <CustomSheet {...props}>
       {title && (
@@ -67,6 +70,7 @@ function ContainerComponent({
         sx={{
           maxHeight: scrollable ? contentMaxHeight : "none", // Adjust based on scrollable prop
           overflowY: scrollable && "auto", // Show overflow only if scrollable
+          minHeight: contentMinHeight || "auto",
         }}
       >
         {children}

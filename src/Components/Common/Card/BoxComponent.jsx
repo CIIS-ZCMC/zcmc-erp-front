@@ -24,8 +24,8 @@ function BoxComponent({ children, height, maxHeight, bgColor, ...props }) {
         borderRadius: 10,
         overflowX: "hidden", // Hide horizontal overflow
         p: 1,
+        ...props,
       }}
-      {...props} // Spread additional props
     >
       {children}
     </Box>
