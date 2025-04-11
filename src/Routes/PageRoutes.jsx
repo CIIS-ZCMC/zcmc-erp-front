@@ -2,7 +2,7 @@ import { Navigate } from "react-router-dom";
 
 import Dashboard from "../Pages/Dashboard";
 
-import AnnualOps from '../Pages/DeptHead/AnnualOps/AnnualOps';
+import AnnualOps from "../Pages/DeptHead/AnnualOps/AnnualOps";
 
 // table views routes
 import All from "../Pages/DeptHead/AnnualOps/TableViews/All";
@@ -16,7 +16,7 @@ import Resources from "../Pages/DeptHead/AnnualOps/CreateAOP/Activities/Resource
 import ResponsiblePerson from "../Pages/DeptHead/AnnualOps/CreateAOP/Activities/Resources/ResponsiblePerson";
 
 import Items from "../Pages/Items";
-import Item from '../Pages/Items/Item';
+import Item from "../Pages/Items/Item";
 
 import ItemRequest from "../Pages/Consolidators/ItemManagement/ItemRequest";
 import ItemLibrary from "../Pages/Consolidators/ItemManagement/ItemLibrary";
@@ -24,6 +24,8 @@ import Objectives from "../Pages/PlanningOps/ObjectiveManagement/Objectives";
 import EditPPMP from "../Pages/DeptHead/EditPPMP/EditPPMP";
 import ManageObjectives from "../Pages/PlanningOps/Approval/ManageObjectives";
 import AOPApproval from "../Pages/PlanningOps/Approval/AOPApproval";
+import AddItems from "../Pages/DeptHead/EditPPMP/AddItems";
+import PPMPItems from "../Pages/DeptHead/EditPPMP/PPMPItems";
 
 export const sidebarRoutes = [
   {
@@ -73,10 +75,12 @@ export const sidebarRoutes = [
           {
             path: "resources/:activityId",
             element: <Resources />,
-            children: [{
-              path: "person/:resourceId",
-              element: < ResponsiblePerson />,
-            }]
+            children: [
+              {
+                path: "person/:resourceId",
+                element: <ResponsiblePerson />,
+              },
+            ],
           },
         ],
       },
@@ -92,20 +96,30 @@ export const sidebarRoutes = [
   },
 
   {
-    path: 'items',
+    path: "items",
     children: [
       { index: true, element: <Items /> },
       {
-        path: ':itemId',
+        path: ":itemId",
         element: <Item />, //single item profile
-      }
-    ]
+      },
+    ],
   },
 
   {
     path: "/edit-ppmp",
     name: "Edit PPMP",
     element: <EditPPMP />,
+    children: [
+      {
+        index: true,
+        element: <PPMPItems />,
+      },
+      {
+        path: "add-item/:activityId/:expenseId",
+        element: <AddItems />,
+      },
+    ],
   },
   {
     path: "/objectives",

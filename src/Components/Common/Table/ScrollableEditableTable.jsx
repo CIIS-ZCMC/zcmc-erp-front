@@ -36,14 +36,15 @@ function ScrollableEditableTableComponent({
   onFieldChange,
   options = [],
   nestedOptions = [],
+  setData,
 }) {
   // PAGINATION SETUP
   const [currentPage, setCurrentPage] = useState(1);
-  const [rows, setRows] = useState(data);
+  // const [rows, setRows] = useState(data);
 
   const currentData = useMemo(() => {
     const filteredData = search
-      ? rows?.filter((item) =>
+      ? data?.filter((item) =>
           fieldsToSearch?.some((field) => {
             const value = item[field]; // Access the field value dynamically
             return (
@@ -52,7 +53,7 @@ function ScrollableEditableTableComponent({
             );
           })
         )
-      : rows;
+      : data;
 
     const totalPages = Math.ceil(filteredData?.length / pageSize);
     const startIndex = (currentPage - 1) * pageSize;
@@ -62,7 +63,7 @@ function ScrollableEditableTableComponent({
     );
 
     return { paginatedData, totalPages };
-  }, [search, rows, pageSize, currentPage, fieldsToSearch]);
+  }, [search, data, pageSize, currentPage, fieldsToSearch]);
 
   const [editingCell, setEditingCell] = useState({
     rowIndex: null,
@@ -75,45 +76,45 @@ function ScrollableEditableTableComponent({
 
   const handleInputChange = (e, rowIndex, field) => {
     const newValue = e.target.value;
-    const row = rows[rowIndex];
+    const row = data[rowIndex];
 
     console.log(newValue);
 
     if (onFieldChange) {
       onFieldChange(field, newValue, row, (updatedRow) => {
-        const updatedRows = [...rows];
+        const updatedRows = [...data];
         updatedRows[rowIndex] = updatedRow;
         console.log(updatedRows);
-        setRows(updatedRows);
+        setData(updatedRows);
       });
     } else {
-      const newRows = [...rows];
+      const newRows = [...data];
       newRows[rowIndex][field] = newValue;
-      setRows(newRows);
+      setData(newRows);
     }
   };
 
   const handleAutocompleteChange = (e, rowIndex, field) => {
-    const row = rows[rowIndex];
+    const row = data[rowIndex];
     console.log(e); // Log the selected value from Autocomplete
 
     if (onFieldChange) {
       onFieldChange(field, e.label, row, (updatedRow) => {
-        const updatedRows = [...rows];
+        const updatedRows = [...data];
         updatedRows[rowIndex] = updatedRow;
         console.log(updatedRows); // Log the updated rows
-        setRows(updatedRows);
+        setData(updatedRows);
       });
     } else {
-      const newRows = [...rows];
+      const newRows = [...data];
       newRows[rowIndex][field] = e; // Directly update with the new value
-      setRows(newRows);
+      setData(newRows);
     }
   };
 
   const handleNestedInputChange = (e, rowIndex, parentField, childField) => {
     const newValue = e.target.value;
-    const row = rows[rowIndex];
+    const row = data[rowIndex];
 
     if (onFieldChange) {
       onFieldChange(
@@ -121,15 +122,15 @@ function ScrollableEditableTableComponent({
         newValue,
         row,
         (updatedRow) => {
-          const updatedRows = [...rows];
+          const updatedRows = [...data];
           updatedRows[rowIndex] = updatedRow;
-          setRows(updatedRows);
+          setData(updatedRows);
         }
       );
     } else {
-      const newRows = [...rows];
+      const newRows = [...data];
       newRows[rowIndex][parentField][childField] = e.target.value;
-      setRows(newRows);
+      setData(newRows);
     }
   };
 
@@ -139,7 +140,7 @@ function ScrollableEditableTableComponent({
     parentField,
     childField
   ) => {
-    const row = rows[rowIndex];
+    const row = data[rowIndex];
     console.log(e); // Log the selected value from Autocomplete
 
     if (onFieldChange) {
@@ -148,15 +149,15 @@ function ScrollableEditableTableComponent({
         e.label,
         row,
         (updatedRow) => {
-          const updatedRows = [...rows];
+          const updatedRows = [...data];
           updatedRows[rowIndex] = updatedRow;
-          setRows(updatedRows);
+          setData(updatedRows);
         }
       );
     } else {
-      const newRows = [...rows];
+      const newRows = [...data];
       newRows[rowIndex][parentField][childField] = e; // Directly update with the new value
-      setRows(newRows);
+      setData(newRows);
     }
   };
 
@@ -174,6 +175,7 @@ function ScrollableEditableTableComponent({
   const lastColumnWidth = columns[columns.length - 1]?.width || "144px";
   return (
     <Box sx={{ width: "100%", overflow: "auto" }}>
+      {console.log(data)}
       <Sheet
         variant="outlined"
         sx={() => ({
@@ -215,6 +217,7 @@ function ScrollableEditableTableComponent({
                 bgcolor: "background.surface",
               },
             }),
+
             ...(stickLast && {
               "& tr > *:last-child": {
                 position: "sticky",
@@ -241,6 +244,7 @@ function ScrollableEditableTableComponent({
                         fontSize: 13,
                         textAlign: column.align || "left",
                         backgroundColor: "rgba(240, 240, 240, 1)",
+                        textWrap: "wrap",
                       }}
                     >
                       {column.name}
@@ -259,6 +263,7 @@ function ScrollableEditableTableComponent({
                         fontSize: 13,
                         textAlign: column.align || "left",
                         backgroundColor: "rgba(240, 240, 240, 1)",
+                        textWrap: "wrap",
                       }}
                     >
                       {column.name}
@@ -278,6 +283,7 @@ function ScrollableEditableTableComponent({
                             textAlign: child.align || "center",
                             backgroundColor: "rgba(240, 240, 240, 1)",
                             zIndex: 1,
+                            textWrap: "wrap",
                           }}
                         >
                           {child.name}
@@ -377,7 +383,10 @@ function ScrollableEditableTableComponent({
                     return (
                       <td
                         key={colIndex}
-                        style={{ textAlign: column.align }}
+                        style={{
+                          textAlign: column.align,
+                          // display: column?.display || "block",
+                        }}
                         onClick={() => {
                           if (column.inputType) {
                             handleCellClick(rowIndex, column.field);

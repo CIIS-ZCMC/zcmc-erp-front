@@ -219,18 +219,34 @@ export const AOP_RESOURCE_HEADER = [
 ];
 
 export const ppmpHeaders = (handleDeleteRow) => [
+  // {
+  //   field: "id",
+  //   name: "Row #",
+  //   width: "70px",
+  //   align: "center",
+  //   display: "none",
+  // },
   {
-    field: "id",
-    name: "Row #",
+    field: "item_code",
+    name: "Item Code",
     width: "70px",
     align: "center",
+    display: "none",
   },
+
   {
     field: "description",
     name: "General description",
     inputType: "dropdown",
     width: "200px",
     align: "center",
+  },
+  {
+    field: "activity_code",
+    name: "Activity Code",
+    width: "70px",
+    align: "center",
+    display: "none",
   },
   {
     field: "classification",
@@ -242,6 +258,12 @@ export const ppmpHeaders = (handleDeleteRow) => [
     field: "category",
     name: "Item Category",
     width: 150,
+    align: "center",
+  },
+  {
+    field: "aop_quantity",
+    name: "Quantity in AOP",
+    width: 100,
     align: "center",
   },
   {

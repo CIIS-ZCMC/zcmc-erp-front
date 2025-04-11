@@ -15,6 +15,7 @@ function AutocompleteComponent({
   value,
   name,
   handleSelect,
+  getOptionLabel,
   ...props
 }) {
   const handleChange = (event) => {
@@ -29,7 +30,7 @@ function AutocompleteComponent({
         size={size}
         placeholder={placeholder}
         onChange={(_, event) => {
-          handleSelect ? handleSelect(name, event) : handleChange(event);
+          handleSelect ? handleSelect(event) : handleChange(event);
         }}
         value={value}
         options={options}
@@ -39,6 +40,7 @@ function AutocompleteComponent({
           background: darkMode ? "none" : "inherit",
           color: darkMode ? "white" : "inherit",
         }}
+        getOptionLabel={getOptionLabel}
       />
       {helperText && (
         <FormHelperText sx={{ fontSize: getFontSize(size) ?? 12 }}>
