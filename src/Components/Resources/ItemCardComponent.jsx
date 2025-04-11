@@ -15,13 +15,15 @@ import ButtonComponent from "../Common/ButtonComponent";
 import ChipComponent from "../Common/ChipComponent";
 
 const ItemCardComponent = ({
-  item_name = "LCD Projector: Mounted UIn",
-  category = "Medical Equipment",
-  unit = "Piece",
-  variant = "High-end",
+  item,
+  // item_name = "LCD Projector: Mounted UIn",
+  // category = "Medical Equipment",
+  // unit = "Piece",
+  // variant = "High-end",
   image = "https://images.unsplash.com/photo-1532614338840-ab30cf10ed36?auto=format&fit=crop&w=318",
   // quantity = 2,
   amount = 12000,
+  btnAction,
 }) => {
   return (
     <Box sx={{ height: "auto", width: "100%" }}>
@@ -42,7 +44,7 @@ const ItemCardComponent = ({
 
         <CardContent sx={{ justifyContent: "flex-end", padding: 1 }}>
           <ChipComponent
-            label={variant}
+            label={item?.variant}
             size="sm"
             color={"success"}
             startDecorator={<CircleSmall size={12} />}
@@ -53,10 +55,10 @@ const ItemCardComponent = ({
       {/* CONTENT */}
       <Stack my={1.2} gap={0.5}>
         <Typography level="body-xs" fontWeight={400}>
-          {category} <CircleSmall size={8} /> {unit}
+          {item?.category} <CircleSmall size={8} /> {item?.unit}
         </Typography>
         <Typography sx={{ fontSize: "sm", fontWeight: "lg" }}>
-          {item_name}
+          {item?.name}
         </Typography>
       </Stack>
 
@@ -73,6 +75,7 @@ const ItemCardComponent = ({
           label={"Add to cart"}
           size={"sm"}
           variant={"outlined"}
+          onClick={btnAction}
         />
       </Stack>
     </Box>
