@@ -65,9 +65,22 @@ export const AOPPathMap = {
 };
 
 export const FUNCTION_TYPE_OPTION = [
-  { id: 1, name: "Strategic", value: "Strategic" },
-  { id: 2, name: "Core", value: "Core" },
-  { id: 3, name: "Support", value: "Support" },
+  {
+    id: 1,
+    label: "Strategic",
+    type: "strategic",
+  },
+  {
+    id: 2,
+    label: "Core",
+    type: "core",
+  },
+
+  {
+    id: 3,
+    label: "Support",
+    type: "support",
+  },
 ];
 
 export const OBJECTIVE_OPTION = [

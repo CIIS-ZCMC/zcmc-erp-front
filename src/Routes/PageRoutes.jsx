@@ -10,10 +10,11 @@ import Approved from "../Pages/DeptHead/AnnualOps/TableViews/Approved";
 import Pending from "../Pages/DeptHead/AnnualOps/TableViews/Pending";
 import Returned from "../Pages/DeptHead/AnnualOps/TableViews/Returned";
 
-import CreateAOP from "../Pages/DeptHead/AnnualOps/CreateAOP";
-import Activities from "../Pages/DeptHead/AnnualOps/CreateAOP/Activities";
-import Resources from "../Pages/DeptHead/AnnualOps/CreateAOP/Activities/Resources";
-import ResponsiblePerson from "../Pages/DeptHead/AnnualOps/CreateAOP/Activities/Resources/ResponsiblePerson";
+import CreateAOP from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout";
+import AnnualOpsPlanning from '../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives'
+import Activities from '../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities'
+import Resources from '../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities/Resources';
+import ResponsibePerson from '../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities/Resources/ResponsiblePerson';
 
 import Items from "../Pages/Items";
 import Item from '../Pages/Items/Item';
@@ -65,7 +66,7 @@ export const sidebarRoutes = [
     path: "/aop-create",
     element: <CreateAOP />,
     children: [
-      // { index: true, element: <CreateAOP /> },
+      { index: true, element: <AnnualOpsPlanning /> }, //ENTRY POINT
       {
         path: "activities/:objectiveId",
         element: <Activities />,
@@ -75,7 +76,7 @@ export const sidebarRoutes = [
             element: <Resources />,
             children: [{
               path: "person/:resourceId",
-              element: < ResponsiblePerson />,
+              element: <ResponsibePerson />,
             }]
           },
         ],

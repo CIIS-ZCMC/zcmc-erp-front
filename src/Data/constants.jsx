@@ -33,6 +33,9 @@ export const AOP_CONSTANTS = {
   CREATE_AOP_TITLE: 'Create a new AOP',
   CREATE_AOP_SUBHEADING: 'This is a subheading. It should add more context to the interaction.',
 
+  MANAGE_OBJECTIVES_HEADER: 'Step 1 of 4: Manage functions and objectives',
+  MANAGE_OBJECTIVES_SUBHEADER: 'This is a subheading. It should add more context to the interaction.',
+
   MANAGE_ACTIVITIES_HEADER: `You're Managing activities for Objective:`,
   MANAGE_ACTIVITIES_SUBHEADER: `Collapse this card to view more information about the selected objective.`,
 
@@ -57,3 +60,8 @@ export const MONTHS = [
   'January', 'February', 'March', 'April', 'May', 'June',
   'July', 'August', 'September', 'October', 'November', 'December'
 ];
+
+export const API = {
+  AOP_APPLICATIONS: 'aop-applications',
+  TYPE_OF_FUNCTIONS: 'type-of-functions'
+}

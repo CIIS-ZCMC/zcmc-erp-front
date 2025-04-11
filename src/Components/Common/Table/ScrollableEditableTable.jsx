@@ -8,7 +8,7 @@ import {
   Table,
   Typography,
 } from "@mui/joy";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import NoResultComponent from "./NoResultComponent";
 import PaginationComponent from "./PaginationComponent";
 import InputComponent from "../../Form/InputComponent";
@@ -36,6 +36,11 @@ function ScrollableEditableTableComponent({
   options = [],
   nestedOptions = [],
 }) {
+
+  useEffect(() => {
+    console.log(options)
+  }, [])
+
   // PAGINATION SETUP
   const [currentPage, setCurrentPage] = useState(1);
   const [rows, setRows] = useState(data);
@@ -43,14 +48,14 @@ function ScrollableEditableTableComponent({
   const currentData = useMemo(() => {
     const filteredData = search
       ? rows?.filter((item) =>
-          fieldsToSearch?.some((field) => {
-            const value = item[field]; // Access the field value dynamically
-            return (
-              typeof value === "string" && // Ensure the value is a string
-              value.toLowerCase().includes(search.toLowerCase())
-            );
-          })
-        )
+        fieldsToSearch?.some((field) => {
+          const value = item[field]; // Access the field value dynamically
+          return (
+            typeof value === "string" && // Ensure the value is a string
+            value.toLowerCase().includes(search.toLowerCase())
+          );
+        })
+      )
       : rows;
 
     const totalPages = Math.ceil(filteredData?.length / pageSize);
@@ -244,8 +249,8 @@ function ScrollableEditableTableComponent({
                         width: isFirstColumn
                           ? "var(--Table-firstColumnWidth)"
                           : isLastColumn && stickLast
-                          ? "var(--Table-lastColumnWidth)"
-                          : column.width || 200,
+                            ? "var(--Table-lastColumnWidth)"
+                            : column.width || 200,
                         fontSize: 13,
                         textAlign: column.align || "left",
                         backgroundColor: "rgba(240, 240, 240, 1)",
@@ -261,18 +266,18 @@ function ScrollableEditableTableComponent({
                 {columns.map((column) =>
                   column?.children
                     ? column?.children?.map((child, childIndex) => (
-                        <th
-                          key={`${column.id}-${childIndex}`}
-                          style={{
-                            fontSize: 13,
-                            textAlign: child.align || "center",
-                            backgroundColor: "rgba(240, 240, 240, 1)",
-                            zIndex: 1,
-                          }}
-                        >
-                          {child.name}
-                        </th>
-                      ))
+                      <th
+                        key={`${column.id}-${childIndex}`}
+                        style={{
+                          fontSize: 13,
+                          textAlign: child.align || "center",
+                          backgroundColor: "rgba(240, 240, 240, 1)",
+                          zIndex: 1,
+                        }}
+                      >
+                        {child.name}
+                      </th>
+                    ))
                     : []
                 )}
               </tr>

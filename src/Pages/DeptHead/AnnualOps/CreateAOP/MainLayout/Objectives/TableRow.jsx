@@ -3,12 +3,12 @@ import { Typography, Input, Select, Option, Stack, Link } from "@mui/joy";
 import { Trash, ExternalLink } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-import ButtonComponent from "../../../../Components/Common/ButtonComponent";
+import ButtonComponent from "../../../../../../../Components/Common/ButtonComponent";
 import {
   FUNCTION_TYPE_OPTION,
   OBJECTIVE_OPTION,
   SUCCESS_INDICATOR_OPTION,
-} from "../../../../Data";
+} from "../../../../../../../Data";
 
 const TableRow = ({
   rows,
@@ -19,6 +19,10 @@ const TableRow = ({
   editField,
 }) => {
   const navigate = useNavigate();
+
+  useEffect(() => {
+    console.log(rows)
+  }, [])
 
   return rows.map((row) => (
     <tr key={row.id}>

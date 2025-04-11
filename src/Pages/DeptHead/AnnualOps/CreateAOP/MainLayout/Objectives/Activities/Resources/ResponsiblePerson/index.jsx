@@ -1,15 +1,14 @@
-import React, { Fragment } from 'react'
+import React, { Fragment } from 'react';
 
-import { Stack, Grid, Box, Typography, Divider } from '@mui/joy'
-import { Trash } from 'lucide-react'
+import { Stack, Grid, Box, Typography, Divider } from '@mui/joy';
+import { Trash } from 'lucide-react';
 
+import ButtonComponent from '../../../../../../../../../Components/Common/ButtonComponent';
+import ContainerComponent from '../../../../../../../../../Components/Common/ContainerComponent';
+import BoxComponent from '../../../../../../../../../Components/Common/Card/BoxComponent';
+import AutocompleteComponent from '../../../../../../../../../Components/Form/AutocompleteComponent';
 
-import ButtonComponent from '../../../../../../../Components/Common/ButtonComponent'
-import ContainerComponent from '../../../../../../../Components/Common/ContainerComponent'
-import BoxComponent from '../../../../../../../Components/Common/Card/BoxComponent'
-import AutocompleteComponent from '../../../../../../../Components/Form/AutocompleteComponent'
-
-import { AOP_CONSTANTS } from '../../../../../../../Data/constants'
+import { AOP_CONSTANTS } from '../../../../../../../../../Data/constants';
 
 const ResponsiblePerson = () => {
     return (
