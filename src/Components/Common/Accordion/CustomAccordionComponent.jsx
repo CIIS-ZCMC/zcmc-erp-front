@@ -2,17 +2,19 @@ import {
   Accordion,
   accordionClasses,
   AccordionDetails,
-  AccordionSummary,
   Box,
+  Divider,
   IconButton,
   Sheet,
   Stack,
   Typography,
 } from "@mui/joy";
-import { AnimatePresence, motion } from "motion/react";
+
+import { AnimatePresence, motion } from "motion/react"; // eslint-disable-next-line no-unused-vars
 import React from "react";
 import "./accordion.css";
 import { ChevronDown, Pencil } from "lucide-react";
+import useAccordionHook from "../../../Hooks/AccordionHook";
 
 function CustomAccordionComponent({
   id,
@@ -22,19 +24,17 @@ function CustomAccordionComponent({
   title,
   withEdit,
   size,
+  name,
+  onClickEdit,
 }) {
-  const isOpen = Array.isArray(expanded)
-    ? expanded.includes(id)
-    : expanded === id;
+  const { handleExpand, rotationId, rotation } = useAccordionHook();
+  const isOpen = React.useMemo(() => {
+    if (!Array.isArray(expanded)) return false;
+    return expanded.some((item) => item?.id === id && item?.name === name);
+  }, [expanded, id, name]);
 
-  const handleExpand = () => {
-    if (isOpen) {
-      setExpanded((prev) =>
-        Array.isArray(prev) ? prev.filter((item) => item !== id) : []
-      );
-    } else {
-      setExpanded((prev) => (Array.isArray(prev) ? [...prev, id] : [id]));
-    }
+  const handleClick = () => {
+    handleExpand(isOpen, setExpanded, id, name);
   };
 
   return (
@@ -42,33 +42,30 @@ function CustomAccordionComponent({
       sx={(theme) => ({
         [`& .${accordionClasses.root}`]: {
           border: 1,
-          borderColor: "neutral.100",
+          borderColor: theme.vars.palette.neutral[100],
           borderRadius: 8,
           px: 1,
-          background: "white",
+          background: theme.vars.palette.background.body,
           width: "100%",
           "& button:hover": {
             background: "transparent",
           },
         },
         [`& .${accordionClasses.root}.${accordionClasses.expanded}`]: {
-          borderColor: "neutral.400",
-        },
-        '& [aria-expanded="true"]': {
-          boxShadow: `inset 0 -1px 0 ${theme.vars.palette.divider}`,
+          borderColor: theme.vars.palette.neutral[300],
         },
       })}
     >
       <Accordion expanded={isOpen}>
-        <AccordionSummary indicator={null}>
+        <Box>
           <Stack
             direction={"row"}
-            alignItems={"center"} // Ensures vertical alignment of children in the row
+            alignItems={"center"}
             justifyContent={"space-between"}
             width="100%"
             sx={{
               margin: 0,
-              paddingY: 1, // Reset padding to avoid excess space
+              paddingY: 1,
               width: "100%",
             }}
           >
@@ -84,39 +81,52 @@ function CustomAccordionComponent({
                   variant="soft"
                   size="sm"
                   component="a"
-                  href="#as-link"
+                  onClick={onClickEdit}
                 >
                   <Pencil size={16} />
                 </IconButton>
               )}
-              <motion.div animate={{ rotate: isOpen ? 180 : 0 }}>
-                <IconButton
-                  variant="soft"
-                  size="sm"
-                  component="a"
-                  href="#as-link"
-                  onClick={handleExpand}
-                >
-                  <ChevronDown size={18} />
-                </IconButton>
-              </motion.div>
+
+              <IconButton
+                variant="soft"
+                size="sm"
+                onClick={handleClick}
+                sx={{
+                  transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
+                  transition: "transform 0.5s ease",
+                }}
+              >
+                <ChevronDown size={18} />
+              </IconButton>
             </Stack>
           </Stack>
-        </AccordionSummary>
+          {isOpen && <Divider />}
+        </Box>
 
-        <AnimatePresence initial={false}>
-          {isOpen && (
-            <AccordionDetails
-              component={motion.div}
-              initial={{ opacity: 0, height: 0 }}
-              animate={{ opacity: 1, height: "auto", padding: 5 }}
-              exit={{ opacity: 0, height: 0, padding: 0 }}
-              transition={{ duration: 0.4, ease: "easeInOut" }}
-            >
-              <Box py={1.5}>{children}</Box>
-            </AccordionDetails>
-          )}
-        </AnimatePresence>
+        <AccordionDetails>
+          <AnimatePresence>
+            {isOpen && rotationId == id && rotation ? (
+              <Box
+                py={1.5}
+                component={motion.div}
+                initial={{ opacity: 0, height: 0 }}
+                animate={{ opacity: 1, height: "auto" }}
+                exit={{ opacity: 0, height: 0 }}
+                transition={{ duration: 0.3 }}
+              >
+                {children}
+              </Box>
+            ) : (
+              <Box
+                py={1.5}
+                component={motion.div}
+                animate={{ opacity: 1, height: "auto" }}
+              >
+                {children}
+              </Box>
+            )}
+          </AnimatePresence>
+        </AccordionDetails>
       </Accordion>
     </Sheet>
   );

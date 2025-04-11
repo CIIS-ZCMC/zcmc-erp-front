@@ -19,7 +19,7 @@ const AOPApproval = () => {
 
   return (
     <Fragment>
-      <Stack gap={4}>
+      <Stack gap={3}>
         <PageTitle
           title={AOP_CONSTANTS?.AOP_TITLE}
           description={AOP_CONSTANTS?.AOP_SUBHEADING}

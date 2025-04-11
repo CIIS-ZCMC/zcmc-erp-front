@@ -40,11 +40,11 @@ function Layout() {
           sm={8} // 8/12 width on small screens
           md={9} // 9/12 width on medium screens
           lg={10} // 10/12 width on large screens
-          p={4}
+          p={3}
           sx={{
             marginLeft: { sm: "33.33%", md: "25%", lg: "16.67%" }, // Adjust margin based on sidebar width
             // backgroundColor: color.lightBg,
-            height: "100vh", // Ensure the main content area fills the screen
+            maxHeight: "100vh", // Ensure the main content area fills the screen
             overflowY: "hidden", // Allow scrolling if content overflows
           }}
         >

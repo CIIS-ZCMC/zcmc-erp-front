@@ -22,7 +22,7 @@ import ItemRequest from "../Pages/Consolidators/ItemManagement/ItemRequest";
 import ItemLibrary from "../Pages/Consolidators/ItemManagement/ItemLibrary";
 import Objectives from "../Pages/PlanningOps/ObjectiveManagement/Objectives";
 import EditPPMP from "../Pages/DeptHead/EditPPMP/EditPPMP";
-import ManageObjectives from "../Pages/PlanningOps/Approval/ManageObjectives";
+import ManageAOP from "../Pages/PlanningOps/Approval/ManageAOP";
 import AOPApproval from "../Pages/PlanningOps/Approval/AOPApproval";
 import AddItems from "../Pages/DeptHead/EditPPMP/AddItems";
 import PPMPItems from "../Pages/DeptHead/EditPPMP/PPMPItems";
@@ -67,7 +67,7 @@ export const sidebarRoutes = [
     path: "/aop-create",
     element: <CreateAOP />,
     children: [
-      // { index: true, element: <CreateAOP /> },
+      { index: true, element: <CreateAOP /> },
       {
         path: "activities/:objectiveId",
         element: <Activities />,
@@ -91,20 +91,22 @@ export const sidebarRoutes = [
     path: "/aop-approval",
     children: [
       { index: true, element: <AOPApproval /> },
-      { path: "objectives/:id", element: <ManageObjectives /> },
+      { path: "objectives/:id", element: <ManageAOP /> },
     ],
   },
 
-  {
-    path: "items",
-    children: [
-      { index: true, element: <Items /> },
-      {
-        path: ":itemId",
-        element: <Item />, //single item profile
-      },
-    ],
-  },
+  // SAMPLE PATH
+  // {
+  //   path: "aop-create",
+  //   element: <Main />,
+  //   children: [
+  //     { index: true, element: <Contact /> },
+  //     {
+  //       path: "activities/1",
+  //       element: <About />,
+  //     },
+  //   ],
+  // },
 
   {
     path: "/edit-ppmp",

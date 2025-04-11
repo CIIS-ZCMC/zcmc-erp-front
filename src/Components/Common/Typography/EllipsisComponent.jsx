@@ -11,7 +11,7 @@ function EllipsisComponent({ label, text }) {
   };
 
   const truncatedText =
-    text.length > 100 && !isExpanded ? text.slice(0, 100) + "..." : text;
+    text.length > 120 && !isExpanded ? text.slice(0, 120) + "..." : text;
 
   return (
     <Stack gap={1} width="100%">
@@ -19,10 +19,9 @@ function EllipsisComponent({ label, text }) {
         {label}
       </Typography>
       <motion.div
-        initial={{ height: "auto" }}
-        animate={{ height: isExpanded ? "auto" : "2.5em" }}
-        exit={{ height: "2em" }}
-        transition={{ duration: 0.3 }}
+        initial={{ height: "2.3em" }}
+        animate={{ height: isExpanded ? "100%" : "2.3em" }}
+        exit={{ height: "2.3em" }}
       >
         <Typography
           sx={{
@@ -36,7 +35,8 @@ function EllipsisComponent({ label, text }) {
           {truncatedText}
         </Typography>
       </motion.div>
-      {text.length > 100 && (
+
+      {text.length > 120 && (
         <Typography
           level="body-xs"
           component="span"
