@@ -8,6 +8,7 @@ import { Plus } from 'lucide-react';
 import ButtonComponent from '../../../../../../Components/Common/ButtonComponent';
 import ContainerComponent from '../../../../../../Components/Common/ContainerComponent';
 import EditableTableComponent from '../../../../../../Components/Common/Table/EditableTableComponent';
+import TableRow from './TableRow';
 
 import useAOPHook from '../../../../../../Hooks/AOPHook';
 import useFunctionTypeHook from '../../../../../../Hooks/FunctionTypeHook';
@@ -15,7 +16,6 @@ import useFunctionTypeHook from '../../../../../../Hooks/FunctionTypeHook';
 //data related
 import AOPApproval from '../../../../../PlanningOps/Approval/AOPApproval';
 
-import { FUNCTION_TYPE_OPTION } from '../../../../../../Data';
 
 import { AOP_CONSTANTS } from '../../../../../../Data/constants';
 import { aopHeader } from '../../../../../../Data/Columns';
@@ -35,7 +35,7 @@ const Objectives = () => {
     useEffect(() => {
         const params = { with_sub_data: 1 };
         getFunctionType(params, (status, message) => {
-            console.log(status)
+            // console.log(status)
             if (!(status >= 200 && status < 300)) { // if status not success
                 return; //Toast error
             }
@@ -43,12 +43,34 @@ const Objectives = () => {
         });
     }, [isLoading])
 
-    useEffect(() => {
-        console.log(function_types)
-    }, [function_types])
-
     const [editRowId, setEditRowId] = useState(null);
     const [editField, setEditField] = useState({});
+
+    //local states
+    const [functionType, setFunctionType] = useState(null)
+    const [objective, setObjective] = useState(null)
+    const [successIndicator, setSuccessIndicator] = useState(null)
+
+    const [aopObjectives, setAopObjectives] = useState([])
+
+    const annualOpsPlanning = [
+        {
+            id: 1,
+            functionTypes: [
+                {
+                    id: 1,
+                    name: 'Strategic',
+                    objectives: [
+                        { id: 1, name: 'OBJ-TPS-9879' },
+                        { id: 2, name: 'OBJ-TPS-9879' }
+                    ]
+                },
+                { id: 2, name: 'Core' }
+            ],
+            objectives: [],
+            successIndicators: [],
+        }
+    ]
 
     const handleManageActivities = (id) => {
         console.log(id)
@@ -77,34 +99,6 @@ const Objectives = () => {
         }
     };
 
-    const handleFieldChange = (fieldName, newValue, row, updateRow) => {
-        if (fieldName === 'function_type') {
-            setisLoading(true)
-            const selected = FUNCTION_TYPE_OPTION.find((item) => item.name === newValue)
-            console.log(selected)
-
-            setTimeout(() => {
-                if (selected) {
-                    updateRow({
-                        ...row,
-                        label: newValue,
-                        // classification: selected.classification,
-                        // category: selected.category,
-                    });
-                } else {
-                    updateRow({
-                        ...row,
-                        label: newValue,
-                        // description: newValue,
-                        // classification: "",
-                        // category: "",
-                    });
-                }
-                setisLoading(false);
-            }, 1000);
-
-        }
-    }
 
     return (
         <Fragment>
@@ -121,9 +115,18 @@ const Objectives = () => {
                     </Stack>
                 }
             >
-
                 <EditableTableComponent
-                    columns={aopHeader}
+                    columns={aopHeader(handleManageActivities, handleDeleteObjective)}
+                    tableRow={
+                        <TableRow
+                            functionType={functionType}
+                            setFunctionType={setFunctionType}
+                            objective={objective}
+                            setObjective={setObjective}
+                            successIndicator={successIndicator}
+                            setSuccessIndicator={setSuccessIndicator}
+                            function_types={function_types}
+                        />}
                     stickLast
                 />
 

@@ -4,7 +4,7 @@ import { Sheet } from '@mui/joy'
 const SheetComponent = ({
     children,
     columns,
-    lastColumnWidthm,
+    lastColumnWidth,
 }) => {
     return (
         <Fragment>
@@ -14,8 +14,8 @@ const SheetComponent = ({
                     "--TableCell-height": "40px",
                     // the number is the amount of the header rows.
                     "--TableHeader-height": "calc(1 * var(--TableCell-height))",
-                    // "--Table-firstColumnWidth": columns[0]?.width, //set the width of the first column in px
-                    // "--Table-lastColumnWidth": lastColumnWidth, //set the width of the first column in px
+                    "--Table-firstColumnWidth": columns[0]?.width, //set the width of the first column in px
+                    "--Table-lastColumnWidth": lastColumnWidth, //set the width of the first column in px
                     // background needs to have transparency to show the scrolling shadows
                     "--TableRow-stripeBackground": "rgba(0 0 0 / 0.04)",
                     "--TableRow-hoverBackground": "rgba(0 0 0 / 0.08)",

@@ -79,7 +79,7 @@ export const objHeaders = [
   },
 ];
 
-export const aopHeader = [
+export const aopHeader = () => [
   {
     field: "id",
     name: "Row #",
@@ -90,63 +90,63 @@ export const aopHeader = [
     field: "function_type",
     name: "Type of Function",
     inputType: 'dropdown',
-    width: 20,
+    width: 200,
     align: "center",
   },
   {
     field: "objectives",
     name: "Objectives",
-    width: 20,
+    width: 200,
     align: "center",
   },
   {
     field: "success_indicator",
     name: "Success Indicator",
-    width: 20,
+    width: 200,
     align: "center",
   },
-  // {
-  //   field: "action",
-  //   name: "Actions",
-  //   isDropdown: false,
-  //   position: "sticky",
-  //   width: "150px",
-  //   align: "center",
-  //   render: (params) => {
-  //     return (
-  //       <Stack
-  //         direction={'row'}
-  //         alignItems={'center'}
-  //         justifyContent={'space-between'}
-  //         gap={1}
-  //       >
-  //         <Link
-  //           component="button"
-  //           onClick={() => handleManageActivities(params.id)}
-  //           size="sm"
-  //           underline="hover"
-  //           fontSize={14}
-  //         >
-  //           Manage Activities
-  //         </Link>
+  {
+    field: "action",
+    name: "Actions",
+    isDropdown: false,
+    position: "sticky",
+    width: "150px",
+    align: "center",
+    // render: (params) => {
+    //   return (
+    //     <Stack
+    //       direction={'row'}
+    //       alignItems={'center'}
+    //       justifyContent={'space-between'}
+    //       gap={1}
+    //     >
+    //       <Link
+    //         component="button"
+    //         onClick={() => handleManageActivities(params.id)}
+    //         size="sm"
+    //         underline="hover"
+    //         fontSize={14}
+    //       >
+    //         Manage Activities
+    //       </Link>
 
-  //         <Divider orientation="vertical" />
+    //       <Divider orientation="vertical" />
 
-  //         <Link
-  //           onClick={() => handleDeleteObjective(params.id)}
-  //           size="sm"
-  //           variant="text"
-  //           color="primary"
-  //           underline="hover"
-  //           fontSize={14}
-  //           endDecorator={<MdDeleteOutline />}
-  //         >
-  //           Remove
-  //         </Link>
-  //       </Stack>
-  //     )
-  //   }
-  // },
+    //       <Link
+    //         onClick={() => handleDeleteObjective(params.id)}
+    //         size="sm"
+    //         variant="text"
+    //         color="primary"
+    //         underline="hover"
+    //         fontSize={14}
+    //         endDecorator={<MdDeleteOutline />}
+    //       >
+    //         Remove
+    //       </Link>
+    //     </Stack>
+    //   )
+    // }
+  },
 ];
 
 export const ACTIVITIES_HEADER = [

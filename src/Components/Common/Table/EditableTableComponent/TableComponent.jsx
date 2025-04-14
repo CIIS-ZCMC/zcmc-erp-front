@@ -3,7 +3,7 @@ import { Table, Sheet, Box, Typography, Input, Select, Option } from "@mui/joy";
 
 const EditableTableComponent = ({
   columns = [],
-  tableRow = [],
+  rows = [],
   maxHeight,
   stripe,
   hoverRow,
@@ -12,12 +12,6 @@ const EditableTableComponent = ({
   stickLast = false,
   textWrap,
 }) => {
-
-  useEffect(() => (
-    console.log(columns)
-  ), [columns])
-
-  const lastColumnWidth = columns[columns.length - 1]?.width || "144px";
 
   const tableStyles = {
     tableLayout: "fixed",
@@ -111,7 +105,7 @@ const EditableTableComponent = ({
         </tr>
       </thead>
 
-      <tbody>{tableRow}</tbody>
+      <tbody>{rows}</tbody>
     </Table>
 
   );
