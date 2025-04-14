@@ -1,6 +1,6 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useState } from 'react';
 
-import { Box, Stack, Grid, Typography } from '@mui/joy';
+import { Box, Stack, Grid, Typography, Modal, List, ListItem, Divider } from '@mui/joy';
 
 import { useNavigate } from 'react-router-dom';
 
@@ -9,6 +9,11 @@ import SearchBarComponent from '../../Components/SearchBarComponent';
 import ButtonComponent from '../../Components/Common/ButtonComponent';
 import ContainerComponent from '../../Components/Common/ContainerComponent';
 import PageTitle from '../../Components/Common/PageTitle';
+import ModalComponent from '../../Components/Common/Dialog/ModalComponent';
+
+import ModalContent from './Item';
+
+import QuantityControlComponent from '../../Components/Cart/QuantityControlComponent';
 
 import ItemsList from '../../Layout/Items/ItemsList';
 import ItemsCart from '../../Layout/Items/ItemsCart';
@@ -19,6 +24,16 @@ import { CART_ITEMS } from '../../Data';
 const Items = () => {
 
     const navigate = useNavigate()
+
+    const [isDialogOpen, setIsDialogOpen] = useState(false)
+
+    const handleOpenItemDialog = () => {
+        setIsDialogOpen(true)
+    }
+
+    const handleCloseItemDialog = () => {
+        setIsDialogOpen(false)
+    }
 
     return (
         <Fragment>
@@ -85,7 +100,9 @@ const Items = () => {
                                     </Typography>
                                 </Stack>
                             </BoxComponent>
-                            <ItemsList />
+                            <ItemsList
+                                handleOpenItemDialog={handleOpenItemDialog}
+                            />
                         </Stack>
                     </Grid>
 
@@ -129,6 +146,19 @@ const Items = () => {
 
             </ContainerComponent>
 
+            {/* Item Modal layout */}
+            <ModalComponent
+                handleClose={handleCloseItemDialog}
+                hasActionButtons={false}
+                isOpen={isDialogOpen}
+                title={'Preview Item'}
+                description={'Select a request status and reasons (if returned) to continue. You may add remarks if necessary.'}
+                content={
+                    <>
+                        <ModalContent />
+                    </>
+                }
+            />
 
         </Fragment >
     )

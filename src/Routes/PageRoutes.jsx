@@ -85,6 +85,13 @@ export const sidebarRoutes = [
   },
 
   {
+    path: "/items",
+    children: [
+      { index: true, element: <Items /> },
+    ],
+  },
+
+  {
     path: "/aop-approval",
     children: [
       { index: true, element: <AOPApproval /> },

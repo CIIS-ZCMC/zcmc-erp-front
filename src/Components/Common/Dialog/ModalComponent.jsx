@@ -56,6 +56,7 @@ function ModalComponent({
   isLoading, // Indicates whether the right-side button is in a loading state
   noRightButton, // If set to true, the right button is not displayed Defaults to false
   noDivider = false, // If set to true, the divider between the title and content is hidden
+  hasActionButtons = false
 }) {
   const theme = useTheme();
   const custom = theme.palette.custom;
@@ -128,37 +129,43 @@ function ModalComponent({
               <DialogContent>{content}</DialogContent>
 
               {/* FOOTER */}
-              <Divider sx={{ mx: 0.2 }} />
-              <DialogActions>
-                <Box
-                  sx={{
-                    width:
-                      minWidth > "70vw" || maxWidth > "70vw" ? "20%" : "100%",
-                    display: "flex",
-                    gap: 1,
-                    flexDirection: { xs: "column", sm: "row-reverse" },
-                  }}
-                >
-                  {!noRightButton && (
-                    <ButtonComponent
-                      label={rightButtonLabel}
-                      fullWidth
-                      isLoading={isLoading}
-                      onClick={rightButtonAction}
-                      isDisabled={rightButtonDisabled || isLoading}
-                    />
-                  )}
+              {hasActionButtons &&
+                <>
+                  <Divider sx={{ mx: 0.2 }} />
 
-                  <ButtonComponent
-                    variant="outlined"
-                    color="success"
-                    label={leftButtonLabel}
-                    fullWidth={!noRightButton}
-                    onClick={leftButtonAction ?? handleClose}
-                    isDisabled={isLoading}
-                  />
-                </Box>
-              </DialogActions>
+                  <DialogActions>
+                    <Box
+                      sx={{
+                        width:
+                          minWidth > "70vw" || maxWidth > "70vw" ? "20%" : "100%",
+                        display: "flex",
+                        gap: 1,
+                        flexDirection: { xs: "column", sm: "row-reverse" },
+                      }}
+                    >
+                      {!noRightButton && (
+                        <ButtonComponent
+                          label={rightButtonLabel}
+                          fullWidth
+                          isLoading={isLoading}
+                          onClick={rightButtonAction}
+                          isDisabled={rightButtonDisabled || isLoading}
+                        />
+                      )}
+
+                      <ButtonComponent
+                        variant="outlined"
+                        color="success"
+                        label={leftButtonLabel}
+                        fullWidth={!noRightButton}
+                        onClick={leftButtonAction ?? handleClose}
+                        isDisabled={isLoading}
+                      />
+                    </Box>
+                  </DialogActions>
+                </>
+              }
+
             </ModalDialog>
           </motion.div>
         </Modal>
