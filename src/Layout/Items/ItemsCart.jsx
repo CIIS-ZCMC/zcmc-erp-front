@@ -29,7 +29,7 @@ const ItemsCart = ({ item, image, quantity, onRemove, onQuantityChange }) => {
         />
 
         <Stack pl={1}>
-          <Typography fontSize={14} fontWeight={600}>
+          <Typography fontSize={13} fontWeight={600}>
             {item?.name}
           </Typography>
           <Typography
@@ -89,6 +89,7 @@ const ItemsCart = ({ item, image, quantity, onRemove, onQuantityChange }) => {
               <ButtonComponent
                 label={"Remove"}
                 variant={"plain"}
+                color="black"
                 endDecorator={<Trash size={12} />}
                 size={"sm"}
                 onClick={onRemove}

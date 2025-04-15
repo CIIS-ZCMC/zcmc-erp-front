@@ -11,6 +11,9 @@ import ItemCardComponent from "../../../Components/Resources/ItemCardComponent";
 import ButtonComponent from "../../../Components/Common/ButtonComponent";
 import { MdOpenInNew } from "react-icons/md";
 import ItemsCart from "../../../Layout/Items/ItemsCart";
+import SearchBarComponent from "../../../Components/SearchBarComponent";
+import InfiniteScroll from "react-infinite-scroll-component";
+import empty_cart from "../../../assets/empty-cart.png";
 
 const activityData = [
   {
@@ -30,7 +33,7 @@ const activityData = [
   },
 ];
 
-const products = new Array(16).fill(0).map((_, i) => ({
+const products = new Array(50).fill(0).map((_, i) => ({
   id: i + 1,
   name: "Cradle Pro Ergonomic Office Chair",
   category: "Appliances - Complete Set",
@@ -40,6 +43,22 @@ const products = new Array(16).fill(0).map((_, i) => ({
 
 function AddItems(props) {
   const { activityId, expenseId } = useParams();
+  const [displayedProducts, setDisplayedProducts] = useState(
+    products.slice(0, 8)
+  );
+  const [hasMore, setHasMore] = useState(true);
+
+  const fetchMoreData = () => {
+    setTimeout(() => {
+      const currentLength = displayedProducts.length;
+      const more = products.slice(currentLength, currentLength + 8);
+      if (more.length === 0) {
+        setHasMore(false);
+        return;
+      }
+      setDisplayedProducts((prev) => [...prev, ...more]);
+    }, 1000); // simulate loading delay
+  };
 
   const activity = activityData.find(
     (item) => item.value === Number(activityId)
@@ -190,7 +209,8 @@ function AddItems(props) {
           container
           spacing={2}
           sx={{
-            height: isCollapsed ? "54vh" : "63vh", // Sets a fixed height
+            // height: "100%",
+            height: isCollapsed ? "54vh" : "62vh", // Sets a fixed height
             flexWrap: "nowrap", // Prevents wrapping of columns
             overflow: "hidden", // Hide extra scrollbars from container
           }}
@@ -198,17 +218,11 @@ function AddItems(props) {
           {/* Left: Scrollable Item Cards */}
           <Grid xs>
             <BoxComponent sx={{ position: "sticky", top: 0 }}>
-              <Typography>Sample</Typography>
+              <SearchBarComponent />
             </BoxComponent>
             <Box
+              id="scrollableItemsBox"
               sx={{
-                display: "grid",
-                gridTemplateColumns: {
-                  xs: "repeat(1, 1fr)",
-                  sm: "repeat(2, 1fr)",
-                  md: "repeat(3, 1fr)",
-                  lg: "repeat(4, 1fr)",
-                },
                 mt: 1,
                 gap: 2,
                 p: 1,
@@ -220,13 +234,38 @@ function AddItems(props) {
                 overflow: "auto",
               }}
             >
-              {products.map((item, index) => (
-                <ItemCardComponent
-                  key={index}
-                  item={item}
-                  btnAction={() => addToCart(item)}
-                />
-              ))}
+              <InfiniteScroll
+                dataLength={displayedProducts.length} // This is important field to render the next data
+                next={fetchMoreData}
+                hasMore={hasMore}
+                loader={
+                  <Typography sx={{ mt: 2, fontSize: 13, textAlign: "center" }}>
+                    Loading more items....
+                  </Typography>
+                }
+                scrollableTarget="scrollableItemsBox"
+              >
+                <Box
+                  sx={{
+                    display: "grid",
+                    gridTemplateColumns: {
+                      xs: "repeat(1, 1fr)",
+                      sm: "repeat(2, 1fr)",
+                      md: "repeat(3, 1fr)",
+                      lg: "repeat(4, 1fr)",
+                    },
+                    gap: 2,
+                  }}
+                >
+                  {displayedProducts.map((item, index) => (
+                    <ItemCardComponent
+                      key={index}
+                      item={item}
+                      btnAction={() => addToCart(item)}
+                    />
+                  ))}
+                </Box>
+              </InfiniteScroll>
             </Box>
           </Grid>
 
@@ -264,15 +303,44 @@ function AddItems(props) {
                 p: 2,
               }}
             >
-              {console.log(cart)}
-              {cart.map((item) => (
-                <ItemsCart
-                  key={item.id}
-                  item={item}
-                  onQuantityChange={updateQuantity}
-                  onRemove={() => removeFromCart(item.id)}
-                />
-              ))}
+              {cart?.length > 0 ? (
+                cart.map((item) => (
+                  <ItemsCart
+                    key={item.id}
+                    item={item}
+                    onQuantityChange={updateQuantity}
+                    onRemove={() => removeFromCart(item.id)}
+                  />
+                ))
+              ) : (
+                <Stack
+                  sx={{
+                    justifyContent: "center",
+                    alignItems: "center",
+                    height: "100%",
+                  }}
+                >
+                  <img
+                    src={empty_cart}
+                    alt="Not found"
+                    style={{ width: 140 }}
+                  />
+                  <Typography
+                    fontSize={14}
+                    fontWeight={600}
+                    sx={{ color: "gray" }}
+                  >
+                    Your cart is empty
+                  </Typography>
+                  <Typography
+                    fontSize={13}
+                    sx={{ color: "gray" }}
+                    textAlign={"center"}
+                  >
+                    Looks like you haven't added any items yet.
+                  </Typography>
+                </Stack>
+              )}
             </Box>
 
             <Box sx={{ p: 2, borderTop: "1px solid #eee" }}>
@@ -281,12 +349,12 @@ function AddItems(props) {
                 sx={{
                   color: "gray",
                 }}
-                fontSize={14}
+                fontSize={13}
                 fontWeight={600}
               >
                 Total cost:
               </Typography>
-              <Typography level="body-lg" fontWeight="lg" textAlign={"right"}>
+              <Typography fontSize={20} fontWeight="lg" textAlign={"right"}>
                 &#8369; {totalPrice.toLocaleString()}
               </Typography>
             </Box>
