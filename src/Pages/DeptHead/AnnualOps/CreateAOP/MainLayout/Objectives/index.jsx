@@ -10,21 +10,25 @@ import ContainerComponent from '../../../../../../Components/Common/ContainerCom
 import EditableTableComponent from '../../../../../../Components/Common/Table/EditableTableComponent';
 import TableRow from './TableRow';
 
-import useAOPHook from '../../../../../../Hooks/AOPHook';
+// import useAOPHook from '../../../../../../Hooks/AOPHook';
 import useFunctionTypeHook from '../../../../../../Hooks/FunctionTypeHook';
 
 //data related
 import AOPApproval from '../../../../../PlanningOps/Approval/AOPApproval';
+
+import useAOPObjectives from '../../../../../../Hooks/AOP/AOPObjectivesHook';
 
 import { AOP_CONSTANTS } from '../../../../../../Data/constants';
 import { AOP_HEADER } from '../../../../../../Data/Columns';
 
 const Objectives = () => {
 
+    const { aopObjectives, addObjective, deleteObjective, updateObjectiveField, getApplicationObjectivesPayload } = useAOPObjectives()
+    const { function_types, getFunctionType } = useFunctionTypeHook();
+
     const navigate = useNavigate()
 
-    const { aop_objectives } = useAOPHook();
-    const { function_types, getFunctionType } = useFunctionTypeHook();
+    // const { aop_objectives } = useAOPHook();
 
     // local states
     const [editRowId, setEditRowId] = useState(null)
@@ -41,52 +45,18 @@ const Objectives = () => {
         });
     }, [isLoading])
 
-    //local states
-    const [aopObjectives, setAopObjectives] = useState([
-        { id: 1, functionType: null, objectives: null, successIndicator: null, },
-        { id: 2, functionType: null, objectives: null, successIndicator: null, },
-        { id: 3, functionType: null, objectives: null, successIndicator: null, },
-    ])
-
-    // Capture changes on input/select
-    const handleChange = (id, field, value) => {
-        setAopObjectives(prev =>
-            prev.map(row =>
-                row.id === id
-                    ? {
-                        ...row,
-                        [field]: value,
-                        ...(field === 'functionType' && {
-                            objective: null,
-                            successIndicator: null,
-                        }),
-                        ...(field === 'objective' && {
-                            successIndicator: null,
-                        }),
-                    }
-                    : row
-            )
-        );
-    };
-
-    // handle add new row for onjectives
-    const handleAddRow = () => {
-        const newId = aopObjectives.length + 1;
-        setAopObjectives([
-            ...aopObjectives,
-            { id: newId, functionType: null, objectives: null, successIndicator: null, }
-        ])
-    }
-
     // Delete a row
     const handleDeleteRow = (id) => {
         setAopObjectives(prev => prev.filter(row => row.id !== id));
     };
 
-    // Submit the table as a form
+    // handle Submit
     const handleSubmit = () => {
-        console.log("Submitted Objectives:", aopObjectives);
-        // You can POST this to an API
+        const payload = getApplicationObjectivesPayload();
+        console.log('Submitting payload:', payload);
+
+        // Submit to API here
+        // await axios.post('/api/aop/submit', { application_objectives: payload })
     };
 
     return (
@@ -97,7 +67,7 @@ const Objectives = () => {
                 actions={
                     <Stack>
                         <ButtonComponent
-                            onClick={handleAddRow}
+                            onClick={addObjective}
                             label={"Add an Objective"}
                             endDecorator={<Plus size={16} />}
                         />
@@ -111,8 +81,8 @@ const Objectives = () => {
                             editRowId={editRowId}
                             setEditRowId={setEditRowId}
                             rows={aopObjectives}
-                            deleteRow={handleDeleteRow}
-                            handleChange={handleChange}
+                            deleteRow={deleteObjective}
+                            handleChange={updateObjectiveField}
                             function_types={function_types}
                         />}
                     stickLast

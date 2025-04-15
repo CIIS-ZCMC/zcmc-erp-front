@@ -59,7 +59,7 @@ const TableRow = ({
                     placeholder="Select objective"
                     value={objective}
                     setValue={(val) => {
-                      handleChange(id, 'objective', val);
+                      handleChange(id, 'objective_id', val);
                       setEditRowId(null);
                     }}
                     options={functionType?.objectives ?? []}
@@ -68,7 +68,7 @@ const TableRow = ({
                 :
                 (
                   <Typography>
-                    {objective?.name || "-"}
+                    {objective?.id || "-"}
                   </Typography>
                 )
               }
@@ -81,7 +81,7 @@ const TableRow = ({
                     placeholder="Select success indicator"
                     value={successIndicator}
                     setValue={(val) => {
-                      handleChange(id, 'successIndicator', val);
+                      handleChange(id, 'success_indicator_id', val);
                       setEditRowId(null);
                     }}
                     options={objective?.success_indicators ?? []}

@@ -11,7 +11,7 @@ import IconButtonComponent from '../../../../../../../Components/Common/IconButt
 import ContainerComponent from '../../../../../../../Components/Common/ContainerComponent';
 import EditableTableComponent from '../../../../../../../Components/Common/Table/EditableTableComponent';
 
-import TableRow from './Resources/TableRow';
+import TableRow from './TableRow';
 
 import { AOP_CONSTANTS } from '../../../../../../../Data/constants';
 import { AOP_ACTIVITIES_HEADER } from '../../../../../../../Data/Columns';
@@ -33,39 +33,23 @@ const Activities = () => {
     const [aopActivities, setAopActivities] = useState([
         {
             id: 1,
-            activities: "Training Workshop",
+            activityCode: "-ACT-1",
+            name: "Training Workshop",
+            isGadRelated: true,
+            cost: 5000,
             startMonth: "January",
             endMonth: "March",
-            quarter1: 100,
-            quarter2: 50,
-            quarter3: 'N/A',
-            quarter4: 'N/A',
-            cost: 5000,
-            isGadRelated: true,
-            responsiblePerson: "John Doe",
-        },
-
-        {
-            id: 2,
-            activities: "Training Workshop",
-            startMonth: "January",
-            endMonth: "March",
-            quarter1: 100,
-            quarter2: 50,
-            quarter3: 'N/A',
-            quarter4: 'N/A',
-            cost: 5000,
-            isGadRelated: true,
-            responsiblePerson: "John Doe",
+            target: {
+                firstQuarter: 100,
+                secondQuarter: 50,
+                thirdQuarter: 'N/A',
+                fourthQuarter: 'N/A',
+            },
         },
     ]);
 
     const [editRowId, setEditRowId] = useState(null);
     const [editField, setEditField] = useState({});
-
-    const handleEdit = (id, field, value) => {
-        setEditField({ id, field, value });
-    };
 
     const handleBlur = () => {
         if (editField.id !== undefined) {
@@ -149,11 +133,12 @@ const Activities = () => {
                         }
                     >
 
-
                         <EditableTableComponent
                             columns={AOP_ACTIVITIES_HEADER}
                             tableRow={
                                 <TableRow
+                                    editRowId={editRowId}
+                                    setEditRowId={setEditRowId}
                                     rows={aopActivities}
                                 />
                             }
