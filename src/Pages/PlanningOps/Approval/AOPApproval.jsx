@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useEffect } from "react";
 import PropTypes from "prop-types";
 import PageTitle from "../../../Components/Common/PageTitle";
 import { AOP_CONSTANTS } from "../../../Data/constants";
@@ -7,15 +7,28 @@ import { Grid, Stack } from "@mui/joy";
 import InputComponent from "../../../Components/Form/InputComponent";
 import DatePickerComponent from "../../../Components/Form/DatePickerComponent";
 import { Search } from "lucide-react";
-import CardComponent from "../../../Components/Common/Card/CardComponent";
 import { useNavigate } from "react-router-dom";
-
+import {
+  useAOPApplications,
+  useAOPApplicationsActions,
+} from "../../../Hooks/AOP/AOPApplicationsHook";
+import AOPCardComponent from "../../../Components/Common/Card/AOPCardComponent";
 const AOPApproval = () => {
+  // HOOKS
+  const { getAOPApplications, getAOPApplicationById } =
+    useAOPApplicationsActions();
+
+  const AOPApplications = useAOPApplications();
+
   const navigate = useNavigate();
 
   const handleClickCard = (id) => {
-    navigate(`/aop-approval/objectives/${id}`);
+    getAOPApplicationById(id, () => navigate(`/aop-approval/objectives/${id}`));
   };
+
+  useEffect(() => {
+    getAOPApplications();
+  }, []);
 
   return (
     <Fragment>
@@ -48,7 +61,7 @@ const AOPApproval = () => {
             <Grid
               container
               spacing={{ xs: 2, md: 4 }}
-              columns={{ xs: 4, sm: 8, md: 12 }}
+              columns={{ sm: 4, md: 8, xl: 12 }}
               sx={{
                 flexGrow: 1,
                 minHeight: "40vh",
@@ -56,19 +69,19 @@ const AOPApproval = () => {
                 overflow: "auto",
               }}
             >
-              {Array(9)
-                .fill(null)
-                .map((_, index) => (
-                  <Grid
-                    key={index}
-                    item="true"
-                    xs={12} // Full width on extra small screens
-                    sm={6} // 2 items on small screens
-                    md={4} // 3 items on medium screens
-                  >
-                    <CardComponent onClick={() => handleClickCard(index)} />
+              {AOPApplications?.map(
+                ({ id, created_on, date_approved, status }, index) => (
+                  <Grid key={index} item="true" xs={4}>
+                    <AOPCardComponent
+                      date_requested={created_on}
+                      date_approved={date_approved}
+                      status={status}
+                      statusLabel={status}
+                      onClick={() => handleClickCard(id)}
+                    />
                   </Grid>
-                ))}
+                )
+              )}
             </Grid>
           </Stack>
         </ContainerComponent>
