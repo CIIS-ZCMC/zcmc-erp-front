@@ -7,7 +7,7 @@ import { getStatusColorScheme } from "../../../Utils/ColorScheme";
 import ChipComponent from "../ChipComponent";
 import { ExternalLink, MapPin } from "lucide-react";
 
-CardComponent.propTypes = {
+AOPCardComponent.propTypes = {
   title: PropTypes.string,
   variant: PropTypes.string,
   width: PropTypes.string,
@@ -27,11 +27,11 @@ CardComponent.propTypes = {
   cancelled_on: PropTypes.string,
 };
 
-function CardComponent({
+function AOPCardComponent({
   title = "AOP #2023-0031 for fiscal year 2026",
   variant = "outlined",
   status = "approved",
-  statusLabel = "Approved",
+  statusLabel,
   date_requested,
   date_returned,
   date_approved,
@@ -85,7 +85,7 @@ function CardComponent({
           <ChipComponent
             status={status}
             variant={"soft"}
-            label={statusLabel}
+            label={statusLabel ?? status}
             color={getStatusColorScheme(status)}
           />
         </Stack>
@@ -155,4 +155,4 @@ function CardComponent({
   );
 }
 
-export default CardComponent;
+export default AOPCardComponent;
