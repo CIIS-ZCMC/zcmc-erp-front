@@ -5,15 +5,15 @@ import { Outlet, useLocation, useParams, useNavigate } from 'react-router-dom';
 import { Box, Stack, Typography, Divider } from '@mui/joy';
 import { ChevronDown, ChevronUp, Plus } from 'lucide-react';
 
-import ButtonComponent from '../../../../../Components/Common/ButtonComponent';
-import SheetComponent from '../../../../../Components/Common/SheetComponent';
-import IconButtonComponent from '../../../../../Components/Common/IconButtonComponent';
-import EditableTableComponent from '../../../../../Components/Common/Table/EditableTableComponent';
-import TableRow from './TableRow';
-import ContainerComponent from '../../../../../Components/Common/ContainerComponent';
+import ButtonComponent from '../../../../../../../Components/Common/ButtonComponent';
+import SheetComponent from '../../../../../../../Components/Common/SheetComponent';
+import IconButtonComponent from '../../../../../../../Components/Common/IconButtonComponent';
+import ContainerComponent from '../../../../../../../Components/Common/ContainerComponent';
 
-import { AOP_CONSTANTS } from '../../../../../Data/constants';
-import { ACTIVITIES_HEADER } from '../../../../../Data/Columns';
+import TableRow from './Resources/TableRow';
+
+import { AOP_CONSTANTS } from '../../../../../../../Data/constants';
+import { ACTIVITIES_HEADER } from '../../../../../../../Data/Columns';
 
 const Activities = () => {
 
@@ -147,7 +147,7 @@ const Activities = () => {
                             </Stack>
                         }
                     >
-                        <EditableTableComponent
+                        {/* <EditableTableComponent
                             columns={ACTIVITIES_HEADER}
                             stripe={'even'}
                             hoverRow
@@ -164,7 +164,7 @@ const Activities = () => {
                                     setEditRowId={setEditRowId}
                                 />
                             }
-                        />
+                        /> */}
 
                         <Stack
                             mt={2}

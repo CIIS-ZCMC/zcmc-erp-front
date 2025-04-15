@@ -4,7 +4,7 @@ import { useNavigate } from 'react-router-dom'
 import { Typography, Input, Stack, Link } from '@mui/joy'
 import { ExternalLink, Trash } from 'lucide-react'
 
-import ButtonComponent from '../../../../../../Components/Common/ButtonComponent'
+import ButtonComponent from '../../../../../../../../Components/Common/ButtonComponent'
 
 const TableRow = ({
     rows,

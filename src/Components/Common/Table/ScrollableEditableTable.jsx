@@ -8,7 +8,7 @@ import {
   Table,
   Typography,
 } from "@mui/joy";
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import NoResultComponent from "./NoResultComponent";
 import PaginationComponent from "./PaginationComponent";
 import InputComponent from "../../Form/InputComponent";
@@ -38,6 +38,10 @@ function ScrollableEditableTableComponent({
   nestedOptions = [],
   setData,
 }) {
+  useEffect(() => {
+    console.log(options);
+  }, []);
+
   // PAGINATION SETUP
   const [currentPage, setCurrentPage] = useState(1);
   // const [rows, setRows] = useState(data);

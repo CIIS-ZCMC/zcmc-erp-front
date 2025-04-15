@@ -6,7 +6,10 @@ import SearchBarComponent from "../../Components/SearchBarComponent";
 import BoxComponent from "../../Components/Common/Card/BoxComponent";
 import ItemCardComponent from "../../Components/Resources/ItemCardComponent";
 
-const ItemsList = () => {
+const ItemsList = ({
+  handleOpenItemDialog
+}
+) => {
   return (
     <Fragment>
       <BoxComponent maxHeight={"65vh"}>
@@ -23,7 +26,12 @@ const ItemsList = () => {
           {Array(40)
             .fill(null)
             .map((_, index) => (
-              <Grid key={index} item="true" xs={12} sm={2} md={6} lg={4} xl={3}>
+              <Grid key={index} item="true" xs={12} sm={2} md={6} lg={4} xl={3}
+                sx={{
+                  cursor: 'pointer'
+                }}
+                onClick={handleOpenItemDialog}
+              >
                 <ItemCardComponent />
               </Grid>
             ))}

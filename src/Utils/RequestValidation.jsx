@@ -15,7 +15,7 @@ export function validateStatusOk(res) {
     throw new Error("Bad response", { cause: res });
   }
 
-  return res.data;
+  return res;
 }
 
 /**

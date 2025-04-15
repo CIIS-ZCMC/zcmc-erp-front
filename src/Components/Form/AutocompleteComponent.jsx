@@ -35,6 +35,7 @@ function AutocompleteComponent({
         value={value}
         options={options}
         name={name}
+        // getOptionLabel={(option) => console.log(option.label)}
         sx={{
           fontSize: getFontSize(size),
           background: darkMode ? "none" : "inherit",

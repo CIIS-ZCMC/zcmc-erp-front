@@ -25,7 +25,10 @@ const TableRow = ({
     return (
 
         <Fragment>
-            {rows.map((row) => (
+
+            input sample
+
+            {rows?.map((row) => (
                 <tr key={row.id}>
                     <td>
                         <Typography>

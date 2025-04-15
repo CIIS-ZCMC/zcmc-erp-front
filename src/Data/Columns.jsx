@@ -1,4 +1,4 @@
-import { IconButton, Link, Stack, Typography } from "@mui/joy";
+import { IconButton, Link, Stack, Typography, Divider } from "@mui/joy";
 import { DeleteIcon } from "lucide-react";
 import { BsOpencollective } from "react-icons/bs";
 import { IoOpen, IoOpenOutline } from "react-icons/io5";
@@ -79,33 +79,73 @@ export const objHeaders = [
   },
 ];
 
-export const AOP_HEADER = [
-  { field: "id", name: "Row #", align: "center", width: "50px" },
+export const aopHeader = () => [
   {
-    field: "function",
+    field: "id",
+    name: "Row #",
+    width: "70px",
+    align: "center",
+  },
+  {
+    field: "function_type",
     name: "Type of Function",
-    width: "30%",
-    align: "left",
+    inputType: "dropdown",
+    width: 200,
+    align: "center",
   },
   {
     field: "objectives",
     name: "Objectives",
-    width: "20%",
+    width: 200,
     align: "center",
   },
   {
-    field: "success_indicators",
-    name: "Success Indicators",
-    width: "20%",
+    field: "success_indicator",
+    name: "Success Indicator",
+    width: 200,
     align: "center",
   },
   {
     field: "action",
     name: "Actions",
+    isDropdown: false,
     position: "sticky",
     width: "150px",
-    right: 0,
     align: "center",
+    // render: (params) => {
+    //   return (
+    //     <Stack
+    //       direction={'row'}
+    //       alignItems={'center'}
+    //       justifyContent={'space-between'}
+    //       gap={1}
+    //     >
+    //       <Link
+    //         component="button"
+    //         onClick={() => handleManageActivities(params.id)}
+    //         size="sm"
+    //         underline="hover"
+    //         fontSize={14}
+    //       >
+    //         Manage Activities
+    //       </Link>
+
+    //       <Divider orientation="vertical" />
+
+    //       <Link
+    //         onClick={() => handleDeleteObjective(params.id)}
+    //         size="sm"
+    //         variant="text"
+    //         color="primary"
+    //         underline="hover"
+    //         fontSize={14}
+    //         endDecorator={<MdDeleteOutline />}
+    //       >
+    //         Remove
+    //       </Link>
+    //     </Stack>
+    //   )
+    // }
   },
 ];
 

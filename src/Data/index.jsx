@@ -64,12 +64,6 @@ export const AOPPathMap = {
   3: "approved",
 };
 
-export const FUNCTION_TYPE_OPTION = [
-  { id: 1, name: "Strategic", value: "Strategic" },
-  { id: 2, name: "Core", value: "Core" },
-  { id: 3, name: "Support", value: "Support" },
-];
-
 export const OBJECTIVE_OPTION = [
   { id: 1, name: "Objective 1", value: "Objective 1" },
   { id: 2, name: "Objective 2", value: "Objective 2" },
