@@ -1,5 +1,6 @@
 import { create } from "zustand";
-import { erp_api } from "../../Services/ERP_API";
+// import { erp_api } from "../../Services/ERP_API";
+import erp_api from "../../Services/ERP_API";
 import { persist } from "zustand/middleware";
 import { localStorageSetter } from "../../Utils/LocalStorage";
 

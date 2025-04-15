@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { erp_api } from "../../Services/ERP_API";
+import erp_api from "../../Services/ERP_API";
 
 const useActivityHook = create((set) => ({
   activity: null,

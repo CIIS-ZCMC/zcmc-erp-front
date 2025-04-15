@@ -156,13 +156,12 @@ function ModalComponent({
                 />
               </Box>
             </DialogActions>
-          </ModalDialog>
-      </motion.div>
+          </>
+        }
+      </ModalDialog>
     </Modal>
   )
 }
-    </AnimatePresence >
-  );
-}
+
 
 export default ModalComponent;
