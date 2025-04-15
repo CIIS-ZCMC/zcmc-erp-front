@@ -13,6 +13,7 @@ const ButtonComponent = ({
   width = "auto",
   disabled,
   type,
+  isLoading,
 }) => {
   return (
     <Button
@@ -25,6 +26,7 @@ const ButtonComponent = ({
       endDecorator={endDecorator}
       fullWidth={fullWidth}
       disabled={disabled}
+      loading={isLoading}
       sx={{
         width: fullWidth ? "100%" : width,
         fontWeight: 400,

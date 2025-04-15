@@ -201,14 +201,14 @@ export const AOP_RESOURCE_HEADER = [
   },
 
   {
-    field: 'expense_class',
+    field: "expense_class",
     name: "Expense class of unit",
     width: "20%",
     align: "center",
   },
 
   {
-    field: 'procurement_mode',
+    field: "procurement_mode",
     name: "Mode of procurement",
     width: "20%",
     align: "center",

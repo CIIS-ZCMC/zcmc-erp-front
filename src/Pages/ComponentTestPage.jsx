@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useCallback, useState } from "react";
 import ModalComponent from "../Components/Common/Dialog/ModalComponent";
 import {
   Button,
@@ -9,7 +9,7 @@ import {
   Typography,
 } from "@mui/joy";
 import ButtonComponent from "../Components/Common/ButtonComponent";
-import { AOP_CONSTANTS } from "../Data/constants";
+import { AOP_CONSTANTS, approvalActions } from "../Data/constants";
 import ConfirmationModalComponent from "../Components/Common/Dialog/ConfirmationModalComponent";
 import useModalHook from "../Hooks/ModalHook";
 import ContainerComponent from "../Components/Common/ContainerComponent";
@@ -20,6 +20,8 @@ import { Edit, Pencil, PencilIcon, Search } from "lucide-react";
 import CustomAccordionComponent from "../Components/Common/Accordion/CustomAccordionComponent";
 import EllipsisComponent from "../Components/Common/Typography/EllipsisComponent";
 import { ActivityContainerComponent } from "../Components/Activities/ActivityContainerComponent";
+import RadioButtonComponent from "../Components/Common/RadioButtonComponent";
+import TextareaComponent from "../Components/Form/TextareaComponent";
 
 export default function ComponentTestPage() {
   const [open, setOpen] = useState(false);
@@ -59,6 +61,8 @@ export default function ComponentTestPage() {
     setActive(index);
   };
 
+  const [action, setAction] = useState(null);
+  const [newComment, setNewComment] = useState("");
   return (
     <Stack gap={5}>
       <Stack gap={1} direction={"row"}>
@@ -68,6 +72,18 @@ export default function ComponentTestPage() {
           color="primary"
           onClick={handleConfirmationModal}
           label={"Open confirmation modal"}
+        />
+      </Stack>
+
+      <Stack gap={2} py={1}>
+        {<pre>{newComment}</pre>}
+        <TextareaComponent
+          label={"Comment"}
+          minRows={7.3}
+          maxRows={7.3}
+          value={newComment}
+          setValue={setNewComment}
+          placeholder={"Add your comments here"}
         />
       </Stack>
 
@@ -201,7 +217,18 @@ export default function ComponentTestPage() {
         handleClose={() => setOpen(false)}
         title={AOP_TITLE}
         description={AOP_SUBHEADING}
-        content={<Fragment>This is a content for ModalComponent</Fragment>}
+        content={
+          <Stack gap={2} py={1}>
+            <Typography level="title-sm" mt={1}>
+              Select the action you would like to take:
+            </Typography>
+            <RadioButtonComponent
+              actions={approvalActions}
+              value={action}
+              setAction={setAction}
+            />
+          </Stack>
+        }
       />
       {/* Test Confirmation Modal */}
       <ConfirmationModalComponent
