@@ -79,7 +79,7 @@ export const objHeaders = [
   },
 ];
 
-export const aopHeader = () => [
+export const AOP_HEADER = [
   {
     field: "id",
     name: "Row #",
@@ -112,44 +112,10 @@ export const aopHeader = () => [
     position: "sticky",
     width: "150px",
     align: "center",
-    // render: (params) => {
-    //   return (
-    //     <Stack
-    //       direction={'row'}
-    //       alignItems={'center'}
-    //       justifyContent={'space-between'}
-    //       gap={1}
-    //     >
-    //       <Link
-    //         component="button"
-    //         onClick={() => handleManageActivities(params.id)}
-    //         size="sm"
-    //         underline="hover"
-    //         fontSize={14}
-    //       >
-    //         Manage Activities
-    //       </Link>
-
-    //       <Divider orientation="vertical" />
-
-    //       <Link
-    //         onClick={() => handleDeleteObjective(params.id)}
-    //         size="sm"
-    //         variant="text"
-    //         color="primary"
-    //         underline="hover"
-    //         fontSize={14}
-    //         endDecorator={<MdDeleteOutline />}
-    //       >
-    //         Remove
-    //       </Link>
-    //     </Stack>
-    //   )
-    // }
   },
 ];
 
-export const ACTIVITIES_HEADER = [
+export const AOP_ACTIVITIES_HEADER = [
   {
     field: "id",
     name: "Row #",

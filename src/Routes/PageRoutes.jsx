@@ -74,10 +74,11 @@ export const sidebarRoutes = [
           {
             path: "resources/:activityId",
             element: <Resources />,
-            children: [{
-              path: "person/:resourceId",
-              element: <ResponsibePerson />,
-            }]
+          },
+
+          {
+            path: "person/:resourceId",
+            element: <ResponsibePerson />,
           },
         ],
       },

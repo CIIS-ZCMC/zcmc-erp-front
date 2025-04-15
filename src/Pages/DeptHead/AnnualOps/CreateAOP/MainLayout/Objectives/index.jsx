@@ -16,21 +16,19 @@ import useFunctionTypeHook from '../../../../../../Hooks/FunctionTypeHook';
 //data related
 import AOPApproval from '../../../../../PlanningOps/Approval/AOPApproval';
 
-
 import { AOP_CONSTANTS } from '../../../../../../Data/constants';
-import { aopHeader } from '../../../../../../Data/Columns';
+import { AOP_HEADER } from '../../../../../../Data/Columns';
 
 const Objectives = () => {
+
+    const navigate = useNavigate()
 
     const { aop_objectives } = useAOPHook();
     const { function_types, getFunctionType } = useFunctionTypeHook();
 
+    // local states
+    const [editRowId, setEditRowId] = useState(null)
     const [isLoading, setisLoading] = useState(false)
-
-    const location = useLocation();
-    const navigate = useNavigate();
-    const currentPath = location.pathname;
-    const parentPath = currentPath === '/aop-create';
 
     useEffect(() => {
         const params = { with_sub_data: 1 };
@@ -43,62 +41,53 @@ const Objectives = () => {
         });
     }, [isLoading])
 
-    const [editRowId, setEditRowId] = useState(null);
-    const [editField, setEditField] = useState({});
-
     //local states
-    const [functionType, setFunctionType] = useState(null)
-    const [objective, setObjective] = useState(null)
-    const [successIndicator, setSuccessIndicator] = useState(null)
+    const [aopObjectives, setAopObjectives] = useState([
+        { id: 1, functionType: null, objectives: null, successIndicator: null, },
+        { id: 2, functionType: null, objectives: null, successIndicator: null, },
+        { id: 3, functionType: null, objectives: null, successIndicator: null, },
+    ])
 
-    const [aopObjectives, setAopObjectives] = useState([])
-
-    const annualOpsPlanning = [
-        {
-            id: 1,
-            functionTypes: [
-                {
-                    id: 1,
-                    name: 'Strategic',
-                    objectives: [
-                        { id: 1, name: 'OBJ-TPS-9879' },
-                        { id: 2, name: 'OBJ-TPS-9879' }
-                    ]
-                },
-                { id: 2, name: 'Core' }
-            ],
-            objectives: [],
-            successIndicators: [],
-        }
-    ]
-
-    const handleManageActivities = (id) => {
-        console.log(id)
-        navigate(`activities/${id}`)
-    }
-
-    const handleDeleteObjective = (id) => {
-        console.log(id)
-    }
-
-    const handleEdit = (id, field, value) => {
-        setEditField({ id, field, value });
+    // Capture changes on input/select
+    const handleChange = (id, field, value) => {
+        setAopObjectives(prev =>
+            prev.map(row =>
+                row.id === id
+                    ? {
+                        ...row,
+                        [field]: value,
+                        ...(field === 'functionType' && {
+                            objective: null,
+                            successIndicator: null,
+                        }),
+                        ...(field === 'objective' && {
+                            successIndicator: null,
+                        }),
+                    }
+                    : row
+            )
+        );
     };
 
-    const handleBlur = () => {
-        if (editField.id !== undefined) {
-            setRows((prev) =>
-                prev.map((row) =>
-                    row.id === editField.id
-                        ? { ...row, [editField.field]: editField.value }
-                        : row
-                )
-            );
-            setEditRowId(null);
-            setEditField({});
-        }
+    // handle add new row for onjectives
+    const handleAddRow = () => {
+        const newId = aopObjectives.length + 1;
+        setAopObjectives([
+            ...aopObjectives,
+            { id: newId, functionType: null, objectives: null, successIndicator: null, }
+        ])
+    }
+
+    // Delete a row
+    const handleDeleteRow = (id) => {
+        setAopObjectives(prev => prev.filter(row => row.id !== id));
     };
 
+    // Submit the table as a form
+    const handleSubmit = () => {
+        console.log("Submitted Objectives:", aopObjectives);
+        // You can POST this to an API
+    };
 
     return (
         <Fragment>
@@ -108,7 +97,7 @@ const Objectives = () => {
                 actions={
                     <Stack>
                         <ButtonComponent
-                            // onClick={() => setOpen(true)}
+                            onClick={handleAddRow}
                             label={"Add an Objective"}
                             endDecorator={<Plus size={16} />}
                         />
@@ -116,15 +105,14 @@ const Objectives = () => {
                 }
             >
                 <EditableTableComponent
-                    columns={aopHeader(handleManageActivities, handleDeleteObjective)}
+                    columns={AOP_HEADER}
                     tableRow={
                         <TableRow
-                            functionType={functionType}
-                            setFunctionType={setFunctionType}
-                            objective={objective}
-                            setObjective={setObjective}
-                            successIndicator={successIndicator}
-                            setSuccessIndicator={setSuccessIndicator}
+                            editRowId={editRowId}
+                            setEditRowId={setEditRowId}
+                            rows={aopObjectives}
+                            deleteRow={handleDeleteRow}
+                            handleChange={handleChange}
                             function_types={function_types}
                         />}
                     stickLast
@@ -148,8 +136,8 @@ const Objectives = () => {
                         label={'Submit AOP'}
                         size={'md'}
                         variant={'solid'}
-                        disabled={true}
-                    // onClick={} submit aop
+                        disabled={false}
+                        onClick={handleSubmit} //submit new aop
                     />
                 </Stack>
 

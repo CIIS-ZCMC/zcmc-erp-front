@@ -2,18 +2,19 @@ import { useState, Fragment } from 'react';
 
 import { Outlet, useLocation, useParams, useNavigate } from 'react-router-dom';
 
-import { Box, Stack, Typography, Divider } from '@mui/joy';
+import { Box, Stack, Typography, Divider, Tab } from '@mui/joy';
 import { ChevronDown, ChevronUp, Plus } from 'lucide-react';
 
 import ButtonComponent from '../../../../../../../Components/Common/ButtonComponent';
 import SheetComponent from '../../../../../../../Components/Common/SheetComponent';
 import IconButtonComponent from '../../../../../../../Components/Common/IconButtonComponent';
 import ContainerComponent from '../../../../../../../Components/Common/ContainerComponent';
+import EditableTableComponent from '../../../../../../../Components/Common/Table/EditableTableComponent';
 
 import TableRow from './Resources/TableRow';
 
 import { AOP_CONSTANTS } from '../../../../../../../Data/constants';
-import { ACTIVITIES_HEADER } from '../../../../../../../Data/Columns';
+import { AOP_ACTIVITIES_HEADER } from '../../../../../../../Data/Columns';
 
 const Activities = () => {
 
@@ -29,7 +30,7 @@ const Activities = () => {
         setIsCollapsed(prev => !prev)
     };
 
-    const [rows, setRows] = useState([
+    const [aopActivities, setAopActivities] = useState([
         {
             id: 1,
             activities: "Training Workshop",
@@ -147,6 +148,17 @@ const Activities = () => {
                             </Stack>
                         }
                     >
+
+
+                        <EditableTableComponent
+                            columns={AOP_ACTIVITIES_HEADER}
+                            tableRow={
+                                <TableRow
+                                    rows={aopActivities}
+                                />
+                            }
+                        />
+
                         {/* <EditableTableComponent
                             columns={ACTIVITIES_HEADER}
                             stripe={'even'}
