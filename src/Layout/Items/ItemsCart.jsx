@@ -17,8 +17,8 @@ const ItemsCart = ({ item, image, quantity, onRemove, onQuantityChange }) => {
           alt={name}
           loading="lazy"
           sx={{
-            width: 66,
-            height: 66,
+            width: 65,
+            height: 65,
             objectFit: "cover",
             borderRadius: "8px",
           }}
@@ -99,7 +99,7 @@ const ItemsCart = ({ item, image, quantity, onRemove, onQuantityChange }) => {
         </Stack>
       </Box>
 
-      <Divider sx={{ mt: 1 }} />
+      <Divider sx={{ my: 1.5 }} />
     </Fragment>
   );
 };

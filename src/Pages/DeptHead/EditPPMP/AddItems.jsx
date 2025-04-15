@@ -1,6 +1,6 @@
 import { Box, Grid, Stack, Typography } from "@mui/joy";
-import React, { Fragment, useState } from "react";
-import { useParams } from "react-router-dom";
+import React, { Fragment, useEffect, useState } from "react";
+import { useNavigate, useParams } from "react-router-dom";
 import ContainerComponent from "../../../Components/Common/ContainerComponent";
 import IconButtonComponent from "../../../Components/Common/IconButtonComponent";
 import { ChevronDown, ChevronUp } from "lucide-react";
@@ -14,6 +14,14 @@ import ItemsCart from "../../../Layout/Items/ItemsCart";
 import SearchBarComponent from "../../../Components/SearchBarComponent";
 import InfiniteScroll from "react-infinite-scroll-component";
 import empty_cart from "../../../assets/empty-cart.png";
+import useItemsHook from "../../../Hooks/ItemsHook";
+import { productNames } from "../../../Data/dummy";
+import { categories } from "../../../Data/dummy";
+import { images } from "../../../Data/dummy";
+import useItemCartHook from "../../../Hooks/ItemCartHook";
+import ConfirmationModalComponent from "../../../Components/Common/Dialog/ConfirmationModalComponent";
+import useModalHook from "../../../Hooks/ModalHook";
+import PageLoader from "../../../Components/Loading/PageLoader";
 
 const activityData = [
   {
@@ -33,20 +41,73 @@ const activityData = [
   },
 ];
 
-const products = new Array(50).fill(0).map((_, i) => ({
-  id: i + 1,
-  name: "Cradle Pro Ergonomic Office Chair",
-  category: "Appliances - Complete Set",
-  price: 12000,
-  image: "/chair.png",
-}));
+const products = new Array(50).fill(0).map((_, i) => {
+  const randomIndex = Math.floor(Math.random() * productNames.length);
+  return {
+    id: i + 1,
+    name: productNames[randomIndex],
+    category: categories[Math.floor(Math.random() * categories.length)],
+    price: Math.floor(Math.random() * 10000) + 1000, // Price between 1000 and 11000
+    image: images[randomIndex],
+  };
+});
 
 function AddItems(props) {
+  const { items, getItems } = useItemsHook();
+  const { addToCart, updateQuantity, cart, removeFromCart, clearCart } =
+    useItemCartHook();
+  const { setAlertDialog, setConfirmationModal, closeConfirmation } =
+    useModalHook();
+  const navigate = useNavigate();
+  const totalQty = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const totalPrice = cart.reduce(
+    (sum, item) => sum + item.quantity * item.price,
+    0
+  );
   const { activityId, expenseId } = useParams();
   const [displayedProducts, setDisplayedProducts] = useState(
     products.slice(0, 8)
   );
   const [hasMore, setHasMore] = useState(true);
+  const [isCollapsed, setIsCollapsed] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+
+  const activity = activityData.find(
+    (item) => item.value === Number(activityId)
+  );
+
+  const activityInfo = activity
+    ? {
+        code: activity.label,
+        description: activity.description,
+      }
+    : null;
+
+  const handleCollapseClick = () => {
+    setIsCollapsed((prev) => !prev);
+  };
+
+  const handleConfirmationModal = () => {
+    const data = {
+      status: "error",
+      title: "Discard selection?",
+      description:
+        "Discarding will forfeit your current item selection fot the selected activity. You’ll need to re-select again later if you discard now.",
+    };
+
+    setConfirmationModal(data);
+  };
+
+  const handleCancel = () => {
+    setIsLoading(true); // Show loader
+    localStorage.removeItem("cart-storage");
+
+    setTimeout(() => {
+      closeConfirmation(); // Close modal
+
+      window.location.href = "/edit-ppmp"; // This reloads + navigates
+    }, 1000);
+  };
 
   const fetchMoreData = () => {
     setTimeout(() => {
@@ -60,53 +121,17 @@ function AddItems(props) {
     }, 1000); // simulate loading delay
   };
 
-  const activity = activityData.find(
-    (item) => item.value === Number(activityId)
-  );
-
-  const activityInfo = activity
-    ? {
-        code: activity.label,
-        description: activity.description,
-      }
-    : null;
-
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  const [cart, setCart] = useState([]);
-
-  const handleCollapseClick = () => {
-    setIsCollapsed((prev) => !prev);
-  };
-
-  const addToCart = (item) => {
-    console.log(item);
-    setCart((prev) => {
-      const exists = prev.find((i) => i.id === item.id);
-      return exists
-        ? prev.map((i) =>
-            i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
-          )
-        : [...prev, { ...item, quantity: 1 }];
-    });
-  };
-
-  const updateQuantity = (id, quantity) => {
-    if (quantity < 1) return;
-    setCart((prev) =>
-      prev.map((item) => (item.id === id ? { ...item, quantity } : item))
-    );
-  };
-
-  const removeFromCart = (id) => {
-    setCart((prev) => prev.filter((item) => item.id !== id));
-  };
-
-  // const totalQty = cart.reduce((sum, item) => sum + item.quantity, 0);
-  const totalQty = cart.length;
-  const totalPrice = cart.reduce(
-    (sum, item) => sum + item.quantity * item.price,
-    0
-  );
+  useEffect(() => {
+    setTimeout(() => {
+      getItems((status, message, data) => {
+        if (status === 200) {
+          console.log("Items fetched successfully:", data);
+        } else {
+          console.error("Error fetching items:", message);
+        }
+      });
+    }, 1000); // simulate loading delay
+  }, [getItems]);
   return (
     <Fragment>
       <ContainerComponent
@@ -199,8 +224,12 @@ function AddItems(props) {
                 label={"Cancel selection"}
                 endDecorator={<MdOpenInNew />}
                 variant={"outlined"}
+                onClick={() => handleConfirmationModal()}
               />
-              <ButtonComponent label={"Save items"} />
+              <ButtonComponent
+                label={"Save items"}
+                onClick={() => navigate("/edit-ppmp")}
+              />
             </Stack>
           </>
         }
@@ -303,15 +332,18 @@ function AddItems(props) {
                 p: 2,
               }}
             >
+              {console.log(cart)}
               {cart?.length > 0 ? (
-                cart.map((item) => (
-                  <ItemsCart
-                    key={item.id}
-                    item={item}
-                    onQuantityChange={updateQuantity}
-                    onRemove={() => removeFromCart(item.id)}
-                  />
-                ))
+                [...cart]
+                  .reverse()
+                  .map((item) => (
+                    <ItemsCart
+                      key={item.id}
+                      item={item}
+                      onQuantityChange={updateQuantity}
+                      onRemove={() => removeFromCart(item.id)}
+                    />
+                  ))
               ) : (
                 <Stack
                   sx={{
@@ -361,6 +393,13 @@ function AddItems(props) {
           </Grid>
         </Grid>
       </ContainerComponent>
+      <ConfirmationModalComponent
+        leftButtonLabel="Back to selection"
+        rightButtonLabel="Discard and proceed"
+        rightButtonAction={() => handleCancel()}
+        onClose={() => closeConfirmation()}
+      />
+      <PageLoader isLoading={isLoading} />
     </Fragment>
   );
 }

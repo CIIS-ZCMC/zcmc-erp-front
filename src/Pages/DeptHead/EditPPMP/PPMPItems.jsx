@@ -341,6 +341,7 @@ function PPMPItems(props) {
         rightButtonAction={() =>
           navigate(`add-item/${activityId}/${expenseClass}`)
         }
+        hasActionButtons
       />
     </Fragment>
   );
