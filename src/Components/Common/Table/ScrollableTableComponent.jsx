@@ -37,14 +37,14 @@ function ScrollableTableComponent({
   const currentData = useMemo(() => {
     const filteredData = search
       ? data?.filter((item) =>
-        fieldsToSearch?.some((field) => {
-          const value = item[field]; // Access the field value dynamically
-          return (
-            typeof value === "string" && // Ensure the value is a string
-            value.toLowerCase().includes(search.toLowerCase())
-          );
-        })
-      )
+          fieldsToSearch?.some((field) => {
+            const value = item[field]; // Access the field value dynamically
+            return (
+              typeof value === "string" && // Ensure the value is a string
+              value.toLowerCase().includes(search.toLowerCase())
+            );
+          })
+        )
       : data;
 
     const totalPages = Math.ceil(filteredData?.length / pageSize);
@@ -94,6 +94,7 @@ function ScrollableTableComponent({
             tableLayout: "fixed",
             "& tr > *:first-child": {
               position: "sticky",
+              zIndex: 10,
               left: 0,
               boxShadow: "1px 0 var(--TableCell-borderColor)",
               bgcolor: "background.surface",
@@ -101,6 +102,7 @@ function ScrollableTableComponent({
             ...(stickLast && {
               "& tr > *:last-child": {
                 position: "sticky",
+                zIndex: 10,
                 right: 0,
                 bgcolor: "var(--TableCell-headBackground)",
               },
@@ -114,26 +116,60 @@ function ScrollableTableComponent({
                   const isFirstColumn = index === 0;
                   const isLastColumn = index === columns.length - 1;
 
-                  return (
+                  return column?.children ? (
+                    <th
+                      key={index}
+                      colSpan={column?.children?.length}
+                      style={{
+                        width: column.width || 200,
+                        fontSize: 13,
+                        textAlign: column.align || "left",
+                        backgroundColor: "rgba(240, 240, 240, 1)",
+                      }}
+                    >
+                      {column.name}
+                    </th>
+                  ) : (
                     <th
                       key={index}
                       aria-label={isLastColumn && stickLast ? "last" : ""}
+                      rowSpan={2}
                       style={{
                         width: isFirstColumn
                           ? "var(--Table-firstColumnWidth)"
                           : isLastColumn && stickLast
-                            ? "var(--Table-lastColumnWidth)"
-                            : column.width || 200,
+                          ? "var(--Table-lastColumnWidth)"
+                          : column.width || 200,
                         fontSize: 13,
-                        textAlign: column.align,
+                        textAlign: column.align || "left",
                         backgroundColor: "rgba(240, 240, 240, 1)",
-                        whiteSpace: textWrap ? "normal" : "nowrap",
                       }}
                     >
                       {column.name}
                     </th>
                   );
                 })}
+              </tr>
+
+              <tr>
+                {columns.map((column) =>
+                  column?.children
+                    ? column?.children?.map((child, childIndex) => (
+                        <th
+                          key={`${column.id}-${childIndex}`}
+                          style={{
+                            width: child.width || 200,
+                            fontSize: 13,
+                            textAlign: child.align || "center",
+                            backgroundColor: "rgba(240, 240, 240, 1)",
+                            zIndex: 1,
+                          }}
+                        >
+                          {child.name}
+                        </th>
+                      ))
+                    : []
+                )}
               </tr>
             </thead>
           ) : (

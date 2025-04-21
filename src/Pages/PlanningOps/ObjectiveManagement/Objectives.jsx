@@ -125,7 +125,7 @@ function Objectives({ props }) {
     setPin(value);
   };
 
-  const submit = () => { };
+  const submit = () => {};
   return (
     <Fragment>
       <PageTitle

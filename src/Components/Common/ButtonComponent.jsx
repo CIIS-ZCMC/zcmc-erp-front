@@ -14,6 +14,7 @@ const ButtonComponent = ({
   disabled,
   type,
   isLoading,
+  loadingLabel,
 }) => {
   return (
     <Button
@@ -27,6 +28,7 @@ const ButtonComponent = ({
       fullWidth={fullWidth}
       disabled={disabled}
       loading={isLoading}
+      loadingIndicator={loadingLabel}
       sx={{
         width: fullWidth ? "100%" : width,
         fontWeight: 400,

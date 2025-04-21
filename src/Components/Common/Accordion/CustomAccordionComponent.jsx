@@ -20,7 +20,6 @@ function CustomAccordionComponent({
   id,
   children,
   expanded,
-  setExpanded,
   title,
   withEdit,
   size,
@@ -34,7 +33,7 @@ function CustomAccordionComponent({
   }, [expanded, id, name]);
 
   const handleClick = () => {
-    handleExpand(isOpen, setExpanded, id, name);
+    handleExpand(isOpen, id, name);
   };
 
   return (

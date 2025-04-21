@@ -33,10 +33,12 @@ import {
   useActivityActions,
 } from "../../../Hooks/AOP/ActivityHook";
 import { localStorageGetter } from "../../../Utils/LocalStorage";
-import { toCapitalize } from "../../../Utils/Typography";
 import RadioButtonComponent from "../../../Components/Common/RadioButtonComponent";
 import PostCommentComponent from "../../../Components/Form/PostCommentComponent";
 import ObjectivesList from "./Contents/ObjectivesList";
+import ScrollableTableComponent from "../../../Components/Common/Table/ScrollableTableComponent";
+import { resourcesHeader } from "../../../Data/Columns";
+import ScrollableEditableTableComponent from "../../../Components/Common/Table/ScrollableEditableTable";
 
 export default function ManageAOP() {
   const { id } = useParams();
@@ -98,6 +100,7 @@ export default function ManageAOP() {
   };
 
   useEffect(() => {
+    if (activityId == defaultActivityId) return;
     getActivityById(defaultActivityId, () => {});
   }, []);
 
@@ -374,7 +377,13 @@ export default function ManageAOP() {
         description={
           "This is a subheading. It should add more context to the interaction."
         }
-        content={<Stack>{JSON.stringify(resources)}</Stack>}
+        content={
+          <ScrollableTableComponent
+            columns={resourcesHeader}
+            data={resources}
+          />
+        }
+        hasActionButtons
       />
 
       {/* PROCESS REQUEST */}

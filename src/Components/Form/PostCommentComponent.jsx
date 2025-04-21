@@ -4,20 +4,37 @@ import { Box, Stack } from "@mui/joy";
 import TextareaComponent from "./TextareaComponent";
 import ButtonComponent from "../Common/ButtonComponent";
 import { useComment, useCommentActions } from "../../Hooks/CommentHook";
+import ConfirmationModalComponent from "../Common/Dialog/ConfirmationModalComponent";
+import useModalHook from "../../Hooks/ModalHook";
 
 const PostCommentComponent = ({ activityId }) => {
   const comment = useComment();
   const { setComment, postComment } = useCommentActions();
   const [loading, setLoading] = useState(false);
 
+  const { setConfirmationModal, closeConfirmation } = useModalHook();
+
   const submit = () => {
     setLoading(true);
     postComment({ activityId: activityId, comment: comment }, (status) => {
       setLoading(false);
-      if (status === 200) {
+      if (status === 201) {
+        // SNACKBAR
         setComment("");
+        closeConfirmation();
       }
     });
+  };
+
+  const handleConfirmationModal = () => {
+    const data = {
+      status: "warning",
+      title: "Confirm Comment Submission",
+      description:
+        "Please confirm your action before proceeding. Once submitted, this comment will be permanently recorded and cannot be modified or deleted.",
+    };
+
+    setConfirmationModal(data);
   };
 
   return (
@@ -35,11 +52,19 @@ const PostCommentComponent = ({ activityId }) => {
         <ButtonComponent
           label={"Post comment"}
           width="auto"
-          onClick={submit}
-          isLoading={loading}
+          onClick={handleConfirmationModal}
           disabled={!comment}
         />
       </Box>
+
+      {/* Test Confirmation Modal */}
+      <ConfirmationModalComponent
+        leftButtonLabel="Cancel"
+        rightButtonAction={submit}
+        rightButtonLabel="Post comment"
+        isLoading={loading}
+        rigthbUtt
+      />
     </Stack>
   );
 };

@@ -27,7 +27,7 @@ const AOPApproval = () => {
   };
 
   useEffect(() => {
-    getAOPApplications();
+    getAOPApplications(() => {});
   }, []);
 
   return (

@@ -89,7 +89,7 @@ export const aopHeader = () => [
   {
     field: "function_type",
     name: "Type of Function",
-    inputType: 'dropdown',
+    inputType: "dropdown",
     width: 200,
     align: "center",
   },
@@ -256,7 +256,7 @@ export const AOP_RESOURCE_HEADER = [
     right: 0,
     align: "center",
   },
-]
+];
 
 export const ppmpHeaders = (handleDeleteRow) => [
   {
@@ -358,5 +358,66 @@ export const ppmpHeaders = (handleDeleteRow) => [
         </>
       );
     },
+  },
+];
+
+export const resourcesHeader = [
+  {
+    field: "id",
+    name: "Row #",
+    width: "70px",
+    align: "center",
+  },
+  {
+    field: "item",
+    name: "Resource Requirements",
+    children: [
+      {
+        field: "item",
+        name: "Item name",
+        width: 400,
+        align: "center",
+      },
+
+      {
+        field: "quantity",
+        name: "Quantity of item",
+        width: 50,
+        align: "center",
+      },
+      {
+        field: "price",
+        name: "Individual price",
+        width: 50,
+        align: "center",
+      },
+      {
+        field: "total_amount",
+        name: "Total cost",
+        width: 50,
+        align: "center",
+      },
+    ],
+    width: 1000,
+    align: "center",
+  },
+  {
+    field: "expense",
+    name: "Expense class of unit",
+    width: 150,
+    align: "center",
+  },
+  {
+    field: "gad",
+    name: "Is GAD-related activity",
+    width: 150,
+    align: "center",
+  },
+  {
+    field: "remarks",
+    name: "Remarks",
+    width: 200,
+    inputType: "input",
+    align: "center",
   },
 ];

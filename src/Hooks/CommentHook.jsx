@@ -1,5 +1,6 @@
 import { create } from "zustand";
-import erp_api from "../Services/ERP_API";
+import { post } from "../Services/RequestMethods";
+import { API } from "../Data/constants";
 
 const useCommentHook = create((set) => ({
   comment: "",
@@ -13,21 +14,17 @@ const useCommentHook = create((set) => ({
         dataToSubmit.append("comment", body.comment);
         dataToSubmit.append("activity_id", body.activityId);
 
-        return erp_api
-          .post(`/activity-comments`, dataToSubmit)
-          .then((response) => {
+        post({
+          url: API.COMMENT,
+          form: dataToSubmit,
+          success: (response) => {
             const { data } = response.data;
             set({ activity: data });
 
             callback(response.status, data);
-          })
-          .catch((error) => {
-            console.error("Error fetching activity:", error);
-            return callback(
-              error?.status || 500,
-              error?.response || "Unknown error occurred"
-            );
-          });
+          },
+          failed: callback,
+        });
       } catch (error) {
         console.error("Error posting comment:", error);
         return callback(
