@@ -22,6 +22,8 @@ import useItemCartHook from "../../../Hooks/ItemCartHook";
 import ConfirmationModalComponent from "../../../Components/Common/Dialog/ConfirmationModalComponent";
 import useModalHook from "../../../Hooks/ModalHook";
 import PageLoader from "../../../Components/Loading/PageLoader";
+import Item from "../../Items/Item";
+import ModalComponent from "../../../Components/Common/Dialog/ModalComponent";
 
 const activityData = [
   {
@@ -71,6 +73,7 @@ function AddItems(props) {
   const [hasMore, setHasMore] = useState(true);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [quantity, setQuantity] = useState(1);
 
   const activity = activityData.find(
     (item) => item.value === Number(activityId)
@@ -85,6 +88,16 @@ function AddItems(props) {
 
   const handleCollapseClick = () => {
     setIsCollapsed((prev) => !prev);
+  };
+
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+
+  const handleOpenItemDialog = () => {
+    setIsDialogOpen(true);
+  };
+
+  const handleCloseItemDialog = () => {
+    setIsDialogOpen(false);
   };
 
   const handleConfirmationModal = () => {
@@ -253,13 +266,11 @@ function AddItems(props) {
               id="scrollableItemsBox"
               sx={{
                 mt: 1,
-                gap: 2,
-                p: 1,
+                p: 2,
                 border: 1,
                 borderColor: "neutral.100",
                 borderRadius: 10,
-                height: "85%",
-                padding: 2,
+                height: "83%",
                 overflow: "auto",
               }}
             >
@@ -283,7 +294,7 @@ function AddItems(props) {
                       md: "repeat(3, 1fr)",
                       lg: "repeat(4, 1fr)",
                     },
-                    gap: 2,
+                    gap: 4,
                   }}
                 >
                   {displayedProducts.map((item, index) => (
@@ -291,6 +302,9 @@ function AddItems(props) {
                       key={index}
                       item={item}
                       btnAction={() => addToCart(item)}
+                      itemInfoAction={() => {
+                        handleOpenItemDialog();
+                      }}
                     />
                   ))}
                 </Box>
@@ -304,7 +318,6 @@ function AddItems(props) {
               width: 350,
               height: "100%",
               position: "sticky",
-
               border: 1,
               borderColor: "neutral.100",
               borderRadius: 10,
@@ -398,6 +411,25 @@ function AddItems(props) {
         rightButtonLabel="Discard and proceed"
         rightButtonAction={() => handleCancel()}
         onClose={() => closeConfirmation()}
+      />
+      <ModalComponent
+        handleClose={handleCloseItemDialog}
+        hasActionButtons={false}
+        isOpen={isDialogOpen}
+        title={"Preview Item"}
+        description={
+          "Select a request status and reasons (if returned) to continue. You may add remarks if necessary."
+        }
+        maxWidth={"766px"}
+        content={
+          <Box overflow={"hidden"}>
+            <Item
+              quantity={quantity}
+              onDecrease={() => setQuantity(quantity - 1)}
+              onIncrease={() => setQuantity(quantity + 1)}
+            />
+          </Box>
+        }
       />
       <PageLoader isLoading={isLoading} />
     </Fragment>

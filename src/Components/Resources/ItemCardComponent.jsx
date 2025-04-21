@@ -23,10 +23,25 @@ const ItemCardComponent = ({
   image = "https://images.unsplash.com/photo-1532614338840-ab30cf10ed36?auto=format&fit=crop&w=318",
   // quantity = 2,
   amount = 12000,
+  itemInfoAction,
   btnAction,
 }) => {
   return (
-    <Box sx={{ height: "auto", width: "100%" }}>
+    <Box
+      sx={{
+        height: "auto",
+        width: "100%",
+        padding: 1,
+        border: "2px solid transparent",
+        "&:hover": {
+          transition: "0.3s",
+          border: 2,
+          borderColor: "lightgreen",
+          borderRadius: 10,
+          cursor: "grab",
+        },
+      }}
+    >
       <Card
         sx={{
           border: 1,
@@ -35,10 +50,11 @@ const ItemCardComponent = ({
           height: "156px",
           padding: 0,
         }}
+        onClick={itemInfoAction}
       >
         <CardCover>
           {/* <AspectRatio ratio="1"> */}
-          <img src={image} srcSet={image} loading="lazy" alt="" />
+          <img src={image} srcSet={image} role="button" loading="lazy" alt="" />
           {/* </AspectRatio> */}
         </CardCover>
 

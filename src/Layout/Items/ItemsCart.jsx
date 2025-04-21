@@ -10,7 +10,7 @@ import IconButtonComponent from "../../Components/Common/IconButtonComponent";
 const ItemsCart = ({ item, image, quantity, onRemove, onQuantityChange }) => {
   return (
     <Fragment>
-      <Box display={"flex"}>
+      <Box display={"flex"} gap={1}>
         <Box
           component="img"
           src={image}
@@ -18,7 +18,7 @@ const ItemsCart = ({ item, image, quantity, onRemove, onQuantityChange }) => {
           loading="lazy"
           sx={{
             width: 65,
-            height: 65,
+            height: 55,
             objectFit: "cover",
             borderRadius: "8px",
           }}
@@ -28,7 +28,7 @@ const ItemsCart = ({ item, image, quantity, onRemove, onQuantityChange }) => {
           }}
         />
 
-        <Stack pl={1}>
+        <Box width={"100%"}>
           <Typography fontSize={13} fontWeight={600}>
             {item?.name}
           </Typography>
@@ -53,50 +53,28 @@ const ItemsCart = ({ item, image, quantity, onRemove, onQuantityChange }) => {
 
           <Box
             display={"flex"}
-            sx={{ justifyContent: "space-between", alignItems: "flex-end" }}
-            gap={1}
+            sx={{
+              justifyContent: "space-between",
+              alignItems: "center",
+              mt: 0.5,
+            }}
           >
-            <Stack direction="row" spacing={1} alignItems="center">
-              <IconButtonComponent
-                size={"sm"}
-                variant={"outlined"}
-                color={"nuetral"}
-                icon={<Minus size={14} />}
-                // disabled={quantity <= 1}
-                onClick={() => onQuantityChange(item.id, item.quantity - 1)}
-              />
+            <QuantityControlComponent
+              quantity={item?.quantity}
+              onDecrease={() => onQuantityChange(item.id, item.quantity - 1)}
+              onIncrease={() => onQuantityChange(item.id, item.quantity + 1)}
+            />
 
-              <Divider orientation="vertical" />
-              <Typography fontSize={12} sx={{ px: 1 }}>
-                {item?.quantity}
-              </Typography>
-              <Divider orientation="vertical" />
-
-              {/* <Typography level="body-md" width="2rem" textAlign="center">
-                {quantity}
-            </Typography> */}
-
-              <IconButtonComponent
-                size={"sm"}
-                variant={"outlined"}
-                color={"nuetral"}
-                icon={<Plus size={14} />}
-                // disabled={quantity <= 1}
-                onClick={() => onQuantityChange(item.id, item.quantity + 1)}
-              />
-            </Stack>
-            <Box>
-              <ButtonComponent
-                label={"Remove"}
-                variant={"plain"}
-                color="black"
-                endDecorator={<Trash size={12} />}
-                size={"sm"}
-                onClick={onRemove}
-              />
-            </Box>
+            <ButtonComponent
+              label={"Remove"}
+              variant={"plain"}
+              color="black"
+              endDecorator={<Trash size={12} style={{ paddingLeft: 3 }} />}
+              size={"xs"}
+              onClick={onRemove}
+            />
           </Box>
-        </Stack>
+        </Box>
       </Box>
 
       <Divider sx={{ my: 1.5 }} />
