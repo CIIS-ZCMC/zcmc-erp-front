@@ -1,7 +1,7 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import PageTitle from "../../../Components/Common/PageTitle";
 import { useParams } from "react-router-dom";
-import { AOP_CONSTANTS } from "../../../Data/constants";
+import { AOP_CONSTANTS, approvalActions } from "../../../Data/constants";
 import {
   Box,
   Checkbox,
@@ -10,7 +10,6 @@ import {
   FormHelperText,
   Grid,
   Link,
-  Radio,
   Stack,
   Typography,
 } from "@mui/joy";
@@ -21,27 +20,54 @@ import CustomAccordionComponent from "../../../Components/Common/Accordion/Custo
 import EllipsisComponent from "../../../Components/Common/Typography/EllipsisComponent";
 import { ActivityContainerComponent } from "../../../Components/Activities/ActivityContainerComponent";
 import BoxComponent from "../../../Components/Common/Card/BoxComponent";
-import moment from "moment/moment";
+import moment from "moment";
 import TextareaComponent from "../../../Components/Form/TextareaComponent";
 import SimpleCommentComponent from "../../../Components/Comments/SimpleCommentComponent";
 import { ACTIVITY_COMMENTS, MANAGE_AOP_APPROVAL } from "../../../Data/TestData";
 import ModalComponent from "../../../Components/Common/Dialog/ModalComponent";
 import useModalHook from "../../../Hooks/ModalHook";
 import InputComponent from "../../../Components/Form/InputComponent";
-import ConfirmationModalComponent from "../../../Components/Common/Dialog/ConfirmationModalComponent";
+import { useAOPApplication } from "../../../Hooks/AOP/AOPApplicationsHook";
+import {
+  useActivity,
+  useActivityActions,
+} from "../../../Hooks/AOP/ActivityHook";
+import { localStorageGetter } from "../../../Utils/LocalStorage";
+import { toCapitalize } from "../../../Utils/Typography";
+import RadioButtonComponent from "../../../Components/Common/RadioButtonComponent";
+import PostCommentComponent from "../../../Components/Form/PostCommentComponent";
+import ObjectivesList from "./Contents/ObjectivesList";
 
 export default function ManageAOP() {
   const { id } = useParams();
-  const { comments } = ACTIVITY_COMMENTS;
 
-  // ACCORDION DATA
-  const [expanded, setExpanded] = useState([
-    { name: "parent", id: MANAGE_AOP_APPROVAL[0]?.id },
-  ]);
-  const [expandedActivity, setExpandedActivity] = useState([
-    // { name: "child", id: 0 },
-  ]);
-  const [activeActivity, setActiveActivity] = useState(null);
+  // STATES
+  const [action, setAction] = useState("approve");
+  // const comment = useComment();
+
+  // AOP HOOK
+  const AOPApplication =
+    useAOPApplication() ?? localStorageGetter("aopApplication");
+
+  // ACTIVITY HOOK
+  const defaultActivityId = AOPApplication[0]?.activities[0]?.id;
+  const activity = useActivity();
+  const {
+    id: activityId,
+    activity_name,
+    start_month,
+    end_month,
+    target: {
+      first_quarter,
+      second_quarter,
+      third_quarter,
+      fourth_quarter,
+    } = {},
+    resources = [],
+    responsible_people = [],
+    comments = [],
+  } = activity || {};
+  const { getActivityById } = useActivityActions();
 
   // STYLES
   const titleStyles = { level: "body-xs", fontWeight: 400 };
@@ -53,17 +79,8 @@ export default function ManageAOP() {
 
   // MODAL
   const { setAlertDialog } = useModalHook();
-  const [openModal, setOpenModal] = useState(false);
   const [openProcessModal, setOpenProcessModal] = useState(false);
-
-  // FUNCTIONS
-  const handeEditObjective = (id) => {
-    setOpenModal(true);
-  };
-
-  const handleClickActivity = (id) => {
-    setActiveActivity(id);
-  };
+  const [openResourcesModal, setOpenResourcesModal] = useState(false);
 
   const handleProcessRequest = () => {
     setOpenProcessModal(true);
@@ -79,6 +96,10 @@ export default function ManageAOP() {
     setOpenProcessModal(false);
     setAlertDialog(data);
   };
+
+  useEffect(() => {
+    getActivityById(defaultActivityId, () => {});
+  }, []);
 
   return (
     <Fragment>
@@ -137,86 +158,7 @@ export default function ManageAOP() {
                 contentMaxHeight={"64vh"}
                 contentMinHeight={"64vh"}
               >
-                <Stack width={400} gap={1} sx={{ width: "100%" }}>
-                  {MANAGE_AOP_APPROVAL.map(
-                    (
-                      {
-                        id,
-                        function_description,
-                        objective,
-                        success_indicator,
-                        activity_count,
-                        activities,
-                      },
-                      objective_key
-                    ) => (
-                      <CustomAccordionComponent
-                        key={objective_key}
-                        id={id}
-                        expanded={expanded}
-                        setExpanded={setExpanded}
-                        title={
-                          <Typography>
-                            Objective #{objective_key + 1} -
-                            <Typography
-                              textColor={"success.700"}
-                              fontWeight={600}
-                            >
-                              {function_description}
-                            </Typography>
-                          </Typography>
-                        }
-                        withEdit
-                        name="parent"
-                        onClickEdit={() => handeEditObjective(id)}
-                      >
-                        <Stack gap={2} px={0.5}>
-                          <EllipsisComponent
-                            label={"Objective:"}
-                            text={objective}
-                          />
-                          <EllipsisComponent
-                            label={"Success indicators:"}
-                            text={success_indicator}
-                          />
-
-                          <CustomAccordionComponent
-                            size={"sm"}
-                            expanded={expandedActivity}
-                            setExpanded={setExpandedActivity}
-                            title={`Activities (${activity_count})`}
-                            id={objective_key}
-                            name="child"
-                          >
-                            <Stack gap={1}>
-                              {activities.map(
-                                (
-                                  {
-                                    id,
-                                    description,
-                                    with_comment,
-                                    is_reviewed,
-                                  },
-                                  activity_key
-                                ) => (
-                                  <ActivityContainerComponent
-                                    key={activity_key}
-                                    onClick={() => handleClickActivity(id)}
-                                    active={id === activeActivity}
-                                    label={`Activity #${activity_key + 1}`}
-                                    text={description}
-                                    withComment={with_comment}
-                                    reviewed={is_reviewed}
-                                  />
-                                )
-                              )}
-                            </Stack>
-                          </CustomAccordionComponent>
-                        </Stack>
-                      </CustomAccordionComponent>
-                    )
-                  )}
-                </Stack>
+                <ObjectivesList />
               </ContainerComponent>
             </Grid>
 
@@ -277,9 +219,7 @@ export default function ManageAOP() {
                     textColor={valueStyles.textColor}
                     fontWeight={valueStyles.fontWeight}
                   >
-                    This is a sample objective for the Core function. Lorem
-                    ipsum dolor sit amet, consectetur adipiscing elit. Sed do
-                    eiusmod tempor incididunt ut labore et dolore magna aliqua.
+                    {activity_name}
                   </Typography>
                   <Divider />
 
@@ -292,8 +232,13 @@ export default function ManageAOP() {
                   </Typography>
 
                   <Grid container columns={{ xs: 2, sm: 4 }} spacing={1}>
-                    {Array.from({ length: 4 }, (item, index) => (
-                      <Grid xs={1}>
+                    {[
+                      first_quarter,
+                      second_quarter,
+                      third_quarter,
+                      fourth_quarter,
+                    ]?.map((element, index) => (
+                      <Grid xs={1} key={index}>
                         <BoxComponent>
                           <Stack gap={1}>
                             <Typography level={titleStyles.level}>
@@ -305,7 +250,7 @@ export default function ManageAOP() {
                               textColor={valueStyles.textColor}
                               fontWeight={valueStyles.fontWeight}
                             >
-                              123
+                              {element}
                             </Typography>
                           </Stack>
                         </BoxComponent>
@@ -327,7 +272,8 @@ export default function ManageAOP() {
                     textColor={valueStyles.textColor}
                     fontWeight={valueStyles.fontWeight}
                   >
-                    January - December
+                    {moment(start_month).format("MMMM")} -
+                    {moment(end_month).format("MMMM")}
                   </Typography>
                   <Divider />
 
@@ -339,7 +285,11 @@ export default function ManageAOP() {
                     fontWeight={titleStyles.fontWeight}
                   >
                     Resources for this activity
-                    <Link gap={0.5} fontSize={12}>
+                    <Link
+                      gap={0.5}
+                      fontSize={12}
+                      onClick={setOpenResourcesModal}
+                    >
                       View resources <ExternalLink size={14} />
                     </Link>
                   </Typography>
@@ -353,34 +303,36 @@ export default function ManageAOP() {
                     Responsible person
                   </Typography>
 
-                  {Array.from({ length: 1 }, (index) => (
-                    <Box
-                      key={index}
-                      display={"flex"}
-                      gap={1}
-                      alignItems={"start"}
-                    >
-                      <CornerDownRight
-                        size={14}
-                        style={{ color: "green", marginTop: 4 }}
-                      />
-                      <Box>
-                        <Typography
-                          level={valueStyles.level}
-                          textColor={valueStyles.textColor}
-                          fontWeight={valueStyles.fontWeight}
-                        >
-                          Maryn Dela Cerna, MD
-                        </Typography>
-                        <Typography
-                          level={titleStyles.level}
-                          fontWeight={titleStyles.fontWeight}
-                        >
-                          Computer Programmer II - IISU
-                        </Typography>
+                  {responsible_people?.map(
+                    ({ user: { name: person_name, email } }, index) => (
+                      <Box
+                        key={index}
+                        display={"flex"}
+                        gap={1}
+                        alignItems={"start"}
+                      >
+                        <CornerDownRight
+                          size={14}
+                          style={{ color: "green", marginTop: 4 }}
+                        />
+                        <Box>
+                          <Typography
+                            level={valueStyles.level}
+                            textColor={valueStyles.textColor}
+                            fontWeight={valueStyles.fontWeight}
+                          >
+                            {person_name}
+                          </Typography>
+                          <Typography
+                            level={titleStyles.level}
+                            fontWeight={titleStyles.fontWeight}
+                          >
+                            {email}
+                          </Typography>
+                        </Box>
                       </Box>
-                    </Box>
-                  ))}
+                    )
+                  )}
                 </Stack>
               </ContainerComponent>
             </Grid>
@@ -396,22 +348,10 @@ export default function ManageAOP() {
                 scrollable
                 contentMaxHeight={"35.8vh"}
                 contentMinHeight={"35.8vh"}
-                footer={
-                  <Stack gap={2}>
-                    <TextareaComponent
-                      label={"Comment"}
-                      color="success"
-                      minRows={7.3}
-                      maxRows={7.3}
-                    />
-                    <Box>
-                      <ButtonComponent label={"Post comment"} width="auto" />{" "}
-                    </Box>
-                  </Stack>
-                }
+                footer={<PostCommentComponent activityId={activityId} />}
               >
                 <Stack gap={2.5} mr={1}>
-                  {comments.map(({ id, user, comment, date }, index) => (
+                  {comments.map(({ user, comment, date }, index) => (
                     <SimpleCommentComponent
                       key={index}
                       name={user}
@@ -426,33 +366,17 @@ export default function ManageAOP() {
         </Box>
       </Stack>
 
-      {/* MODAL */}
+      {/* VIEW RESOURCES */}
       <ModalComponent
-        isOpen={openModal}
-        handleClose={() => setOpenModal(false)}
-        title={`Revisions for objective #14 - Core`}
+        isOpen={openResourcesModal}
+        handleClose={() => setOpenResourcesModal(false)}
+        title={`Resources for activity`}
         description={
           "This is a subheading. It should add more context to the interaction."
         }
-        content={
-          <Stack gap={2} py={1}>
-            <TextareaComponent minRows={4} label={"Objective"} />
-            <TextareaComponent minRows={4} label={"Success indicators"} />
-
-            <Divider />
-
-            <InputComponent
-              type="password"
-              label="Authorization pin"
-              helperText={
-                "Confirm you action by typing-in your authorization PIN."
-              }
-              // setValue={handlePinInput}
-              // value={pin}
-            />
-          </Stack>
-        }
+        content={<Stack>{JSON.stringify(resources)}</Stack>}
       />
+
       {/* PROCESS REQUEST */}
       <ModalComponent
         isOpen={openProcessModal}
@@ -464,12 +388,21 @@ export default function ManageAOP() {
         leftButtonLabel="Back to request"
         rightButtonLabel="Confirm and save"
         rightButtonAction={handleShowAlert}
+        maxWidth={500}
         content={
           <Stack gap={2} py={1}>
-            Select status
+            <Typography level="title-sm" mt={1}>
+              Select the action you would like to take:
+            </Typography>
+            <RadioButtonComponent
+              actions={approvalActions}
+              value={action}
+              setValue={setAction}
+            />
             <TextareaComponent
               minRows={2}
               label={"Remarks"}
+              maxRows={200}
               placeholder={"Enter your remarks here"}
             />
             <Divider />

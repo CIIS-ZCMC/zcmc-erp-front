@@ -1,49 +1,53 @@
 import { FormControl, FormHelperText, FormLabel, Textarea } from "@mui/joy";
 
-TextareaComponent.propTypes = {};
-
 function TextareaComponent({
   label,
   placeholder,
   helperText,
   value,
-  minRows,
-  maxRows,
-  fontWeight,
-  darkMode,
-  size,
-  handleInput,
+  minRows = 4,
+  maxRows = 10,
+  fontWeight = 400,
+  darkMode = false,
+  size = "md",
+  setValue,
   name,
-  isRequired,
-  autoFocus,
+  color,
+  isRequired = false,
 }) {
+  const handleInput = (e) => {
+    setValue(e.target.value);
+  };
+
   return (
     <FormControl>
-      <FormLabel
-        sx={{ fontSize: 14, fontWeight: 500, color: darkMode && "white" }}
-      >
-        {label}{" "}
-        {label && isRequired && (
-          <span style={{ color: "red", fontSize: 18 }}>*</span>
-        )}
-      </FormLabel>
+      {label && (
+        <FormLabel
+          sx={{ fontSize: 14, fontWeight: 500, color: darkMode && "white" }}
+        >
+          {label}
+          {isRequired && <span style={{ color: "red", fontSize: 18 }}>*</span>}
+        </FormLabel>
+      )}
       <Textarea
-        autoFocus={autoFocus}
+        autoComplete="off"
         required={isRequired}
         size={size}
         placeholder={placeholder}
         name={name}
         minRows={minRows}
+        color={color}
         maxRows={maxRows}
         value={value}
+        onChange={handleInput}
         sx={{
           fontSize: 14,
           fontWeight: fontWeight,
           py: 1.2,
-          background: darkMode && "none",
-          color: darkMode && "white",
+          background: darkMode ? "transparent" : undefined,
+          color: "neutral.700",
+          whiteSpace: "pre-wrap",
         }}
-        onChange={handleInput}
       />
       {helperText && <FormHelperText>{helperText}</FormHelperText>}
     </FormControl>
