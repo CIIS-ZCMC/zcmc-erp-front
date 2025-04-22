@@ -123,14 +123,14 @@ export const AOP_ACTIVITIES_HEADER = [
     align: "center",
   },
   {
-    field: "activities",
+    field: "name",
     name: "Activities",
     width: "10%",
     align: "center",
   },
 
   {
-    field: "",
+    field: "timeframe",
     name: "Timeframe",
     align: "center",
     width: "15%",
@@ -140,12 +140,12 @@ export const AOP_ACTIVITIES_HEADER = [
     ],
   },
   {
-    field: "",
+    field: "target",
     name: "Target (by quarter)",
     align: "center",
     width: "20%",
     children: [
-      { field: "quarter1", name: "Q1", width: "10%" },
+      { field: "quarter", name: "Q1", width: "10%" },
       { field: "quarter2", name: "Q2", width: "10%" },
       { field: "quarter3", name: "Q3", width: "10%" },
       { field: "quarter4", name: "Q4", width: "10%" },
@@ -167,14 +167,8 @@ export const AOP_ACTIVITIES_HEADER = [
   },
 
   {
-    field: "object_category",
-    name: "Object Category (MOOE or CO)",
-    width: "10%",
-    align: "center",
-  },
-
-  {
     field: "action",
+    width: "10%",
     align: "center",
     name: "Actions",
   },

@@ -1,15 +1,34 @@
 import { create } from 'zustand';
 
+// Inside your Zustand store
+const aopActivity = {
+    activity_code: '',
+    name: '',
+    is_gad_related: false,
+    cost: 0,
+    start_month: '',
+    end_month: '',
+    target: '',
+    resources: [],
+    responsible_people: [],
+};
+
 const useAOPObjectivesHooks = create((set, get) => ({
 
     // Initial 3 default objectives
-    aopObjectives: Array.from({ length: 3 }, (_, i) => ({
-        id: i + 1,
+    aopObjectives: Array.from({ length: 3 }, (_, index) => ({
+        id: index + 1,
         objective_id: null,
         success_indicator_id: null,
-        activities: [],
+        activities: [
+            {
+                id: `${index + 1}-1`,
+                ...aopActivity
+            }
+        ],
     })),
 
+    // Update fields objective
     updateObjectiveField: (id, field, value) => {
         set((state) => ({
             aopObjectives: state.aopObjectives.map((row) =>
@@ -21,6 +40,28 @@ const useAOPObjectivesHooks = create((set, get) => ({
                         ...(field === 'objective_id' && { success_indicator_id: null }),
                     }
                     : row
+            ),
+        }));
+    },
+
+    // Update fields inside activities
+    updateActivityField: (objectiveId, activityId, field, value) => {
+        set((state) =>
+        ({
+            aopObjectives: state.aopObjectives.map((objective) =>
+                objective.id === objectiveId
+                    ? {
+                        ...objective,
+                        activities: objective.activities.map((activity) =>
+                            activity.id === activityId
+                                ? {
+                                    ...activity,
+                                    [field]: value,
+                                }
+                                : activity
+                        ),
+                    }
+                    : objective
             ),
         }));
     },
@@ -43,10 +84,40 @@ const useAOPObjectivesHooks = create((set, get) => ({
         }));
     },
 
+    //Add new activity
+    addActivity: (objectiveId) => {
+        set((state) => ({
+            aopObjectives: state.aopObjectives.map((objective) =>
+                objective.id === objectiveId
+                    ? {
+                        ...objective,
+                        activities: [
+                            ...objective.activities,
+                            {
+                                id: `${objective.id}-${objective.activities.length + 1}`,
+                                ...aopActivity,
+                            },
+                        ],
+                    }
+                    : objective
+            ),
+        }));
+    },
+
     // Delete an entire objective
     deleteObjective: (id) => {
         set((state) => ({
             aopObjectives: state.aopObjectives.filter((row) => row.id !== id),
+        }));
+    },
+
+    //delete single activity
+    deleteActivity: (activityId) => {
+        set((state) => ({
+            aopObjectives: state.aopObjectives.map((objective) => ({
+                ...objective,
+                activities: objective.activities.filter((activity) => activity.id !== activityId),
+            })),
         }));
     },
 
@@ -68,7 +139,9 @@ const useAOPObjectivesHooks = create((set, get) => ({
             })),
         }));
     },
-
 }));
 
 export default useAOPObjectivesHooks
+
+export const useAopObjectives = () =>
+    useAOPObjectivesHooks((state) => state.aopObjectives);

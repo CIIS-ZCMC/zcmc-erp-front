@@ -12,7 +12,6 @@ const EditableTableComponent = ({
   stickLast = false,
   textWrap,
 }) => {
-
   const tableStyles = {
     tableLayout: "fixed",
     "& tr > *:first-child": {
@@ -30,26 +29,20 @@ const EditableTableComponent = ({
         bgcolor: "var(--TableCell-headBackground)",
       },
     }),
-  }
+  };
 
   return (
-
-    <Table
-      borderAxis="bothBetween"
-      stripe={stripe}
-      hoverRow
-      sx={tableStyles}
-    >
+    <Table borderAxis="bothBetween" stripe={stripe} hoverRow sx={tableStyles}>
       <thead>
         {/* First row - parent headers */}
         <tr>
           {columns?.map((header, index) => {
             const isFirstColumn = index === 0;
-            const isLastColumn = index === columns.length - 1
+            const isLastColumn = index === columns.length - 1;
 
             return header.children ? (
               <th
-                key={index}
+                key={header.id || index} // Ensure a unique key based on header ID or index
                 colSpan={header.children.length}
                 style={{
                   width: header.width || 200,
@@ -62,7 +55,7 @@ const EditableTableComponent = ({
               </th>
             ) : (
               <th
-                key={index}
+                key={header.id || index} // Ensure a unique key based on header ID or index
                 aria-label={isLastColumn && stickLast ? "last" : ""}
                 rowSpan={2}
                 style={{
@@ -78,18 +71,17 @@ const EditableTableComponent = ({
               >
                 {header.name}
               </th>
-            )
-
+            );
           })}
         </tr>
 
         {/* Second row - child headers (only for parents with children) */}
         <tr>
-          {columns?.flatMap(header =>
+          {columns?.flatMap((header, parentIndex) =>
             header.children
-              ? header.children.map((child, index) => (
+              ? header.children.map((child, childIndex) => (
                 <th
-                  key={`${header.id}-${index}`}
+                  key={`${parentIndex}-${childIndex}`} // Use a combination of parent and child index
                   style={{
                     fontSize: 13,
                     textAlign: child.align || "center",
@@ -107,7 +99,6 @@ const EditableTableComponent = ({
 
       <tbody>{rows}</tbody>
     </Table>
-
   );
 };
 

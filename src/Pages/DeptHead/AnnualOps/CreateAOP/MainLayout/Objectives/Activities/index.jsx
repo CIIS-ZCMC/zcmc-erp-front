@@ -1,8 +1,8 @@
-import { useState, Fragment } from 'react';
+import { useState, Fragment, useEffect } from 'react';
 
 import { Outlet, useLocation, useParams, useNavigate } from 'react-router-dom';
 
-import { Box, Stack, Typography, Divider, Tab } from '@mui/joy';
+import { Box, Stack } from '@mui/joy';
 import { ChevronDown, ChevronUp, Plus } from 'lucide-react';
 
 import ButtonComponent from '../../../../../../../Components/Common/ButtonComponent';
@@ -16,6 +16,8 @@ import TableRow from './TableRow';
 import { AOP_CONSTANTS } from '../../../../../../../Data/constants';
 import { AOP_ACTIVITIES_HEADER } from '../../../../../../../Data/Columns';
 
+import useAOPObjectivesHooks from '../../../../../../../Hooks/AOP/AOPObjectivesHook';
+
 const Activities = () => {
 
     const location = useLocation();
@@ -24,46 +26,22 @@ const Activities = () => {
     const currentPath = location.pathname;
     const childPath = currentPath === `/aop-create/activities/${objectiveId}`
 
+    const { aopObjectives, addActivity, deleteActivity, updateActivityField } = useAOPObjectivesHooks();
+
+    const selectedObjective = aopObjectives.find(obj => obj.id === Number(objectiveId));
+    const aopActivities = selectedObjective?.activities || [];
+
+    useEffect(() => {
+        // console.log(aopActivities)
+    }, [])
+
     const [isCollapsed, setIsCollapsed] = useState(false);
 
     const handleCollapseClick = () => {
         setIsCollapsed(prev => !prev)
     };
 
-    const [aopActivities, setAopActivities] = useState([
-        {
-            id: 1,
-            activityCode: "-ACT-1",
-            name: "Training Workshop",
-            isGadRelated: true,
-            cost: 5000,
-            startMonth: "January",
-            endMonth: "March",
-            target: {
-                firstQuarter: 100,
-                secondQuarter: 50,
-                thirdQuarter: 'N/A',
-                fourthQuarter: 'N/A',
-            },
-        },
-    ]);
-
     const [editRowId, setEditRowId] = useState(null);
-    const [editField, setEditField] = useState({});
-
-    const handleBlur = () => {
-        if (editField.id !== undefined) {
-            setRows((prev) =>
-                prev.map((row) =>
-                    row.id === editField.id
-                        ? { ...row, [editField.field]: editField.value }
-                        : row
-                )
-            );
-            setEditRowId(null);
-            setEditField({});
-        }
-    };
 
     return (
         <Fragment>
@@ -125,7 +103,7 @@ const Activities = () => {
                         actions={
                             <Stack>
                                 <ButtonComponent
-                                    onClick={() => setOpen(true)}
+                                    onClick={() => addActivity(Number(objectiveId))}
                                     label={"Add an Activity"}
                                     endDecorator={<Plus size={16} />}
                                 />
@@ -137,31 +115,15 @@ const Activities = () => {
                             columns={AOP_ACTIVITIES_HEADER}
                             tableRow={
                                 <TableRow
+                                    handleChange={updateActivityField}
+                                    objectiveId={selectedObjective?.id}
                                     editRowId={editRowId}
                                     setEditRowId={setEditRowId}
+                                    deleteRow={deleteActivity}
                                     rows={aopActivities}
                                 />
                             }
                         />
-
-                        {/* <EditableTableComponent
-                            columns={ACTIVITIES_HEADER}
-                            stripe={'even'}
-                            hoverRow
-                            isLoading={false}
-                            bordered={true}
-                            stickLast
-                            tableRow={
-                                <TableRow
-                                    rows={rows}
-                                    handleEdit={handleEdit}
-                                    handleBlur={handleBlur}
-                                    editField={editField}
-                                    editRowId={editRowId}
-                                    setEditRowId={setEditRowId}
-                                />
-                            }
-                        /> */}
 
                         <Stack
                             mt={2}

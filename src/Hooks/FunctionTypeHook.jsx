@@ -11,7 +11,7 @@ const useFunctionTypeHook = create((set) => ({
             params: params,
             failed: callBack,
             success: (res) => {
-                console.log(res.data.data)
+                // console.log(res.data.data)
                 const { status, message, data: { data } } = res;
                 set({ function_types: data });
                 callBack(status, message);
