@@ -8,6 +8,8 @@ import ContainerComponent from '../../../../../../../../Components/Common/Contai
 import BoxComponent from '../../../../../../../../Components/Common/Card/BoxComponent';
 import AutocompleteComponent from '../../../../../../../../Components/Form/AutocompleteComponent';
 
+import PersonSection from '../../../../../../../../Layout/ResponsiblePerson/PersonSection';
+
 import { AOP_CONSTANTS } from '../../../../../../../../Data/constants';
 
 const ResponsiblePerson = () => {
@@ -34,150 +36,7 @@ const ResponsiblePerson = () => {
                         sm={2}
                         md={4}
                     >
-                        <BoxComponent>
-                            <Box
-                                m={1}
-                            >
-
-                                <Stack gap={1}>
-                                    <AutocompleteComponent
-                                        label={'Select Person(s)'}
-                                        size={'md'}
-                                    />
-
-                                    <Typography
-                                        level="body-xs"
-                                        fontWeight={400}
-                                    >
-                                        Selected Poeple (16)
-                                    </Typography>
-                                </Stack>
-
-                                <Box
-                                    m={1}
-                                    display={'flex'}
-                                    alignItems={'center'}
-                                    justifyContent={'space-between'}
-                                >
-
-                                    <Box
-                                        display={'flex'}
-                                        alignItems={'center'}
-                                    >
-                                        <Stack
-                                            direction={'column'}
-                                            m={1}
-                                        >
-                                            <Typography>
-                                                Name
-                                            </Typography>
-                                            <Typography
-                                                level="body-xs"
-                                                fontWeight={400}
-                                            >
-                                                Computer Programmer
-                                            </Typography>
-
-                                        </Stack>
-
-                                    </Box>
-
-                                    <Box>
-                                        <ButtonComponent
-                                            label={'Remove'}
-                                            variant={'text'}
-                                            endDecorator={<Trash size={12} />}
-                                            size={'sm'}
-                                        />
-                                    </Box>
-                                </Box>
-
-                                <Divider />
-
-                                <Box
-                                    m={1}
-                                    display={'flex'}
-                                    alignItems={'center'}
-                                    justifyContent={'space-between'}
-                                >
-
-                                    <Box
-                                        display={'flex'}
-                                        alignItems={'center'}
-                                    >
-                                        <Stack
-                                            direction={'column'}
-                                            m={1}
-                                        >
-                                            <Typography>
-                                                Name
-                                            </Typography>
-                                            <Typography
-                                                level="body-xs"
-                                                fontWeight={400}
-                                            >
-                                                Computer Programmer
-                                            </Typography>
-
-                                        </Stack>
-
-                                    </Box>
-
-                                    <Box>
-                                        <ButtonComponent
-                                            label={'Remove'}
-                                            variant={'text'}
-                                            endDecorator={<Trash size={12} />}
-                                            size={'sm'}
-                                        />
-                                    </Box>
-                                </Box>
-
-                                <Divider />
-
-                                <Box
-                                    m={1}
-                                    display={'flex'}
-                                    alignItems={'center'}
-                                    justifyContent={'space-between'}
-                                >
-
-                                    <Box
-                                        display={'flex'}
-                                        alignItems={'center'}
-                                    >
-                                        <Stack
-                                            direction={'column'}
-                                            m={1}
-                                        >
-                                            <Typography>
-                                                Name
-                                            </Typography>
-                                            <Typography
-                                                level="body-xs"
-                                                fontWeight={400}
-                                            >
-                                                Computer Programmer
-                                            </Typography>
-
-                                        </Stack>
-
-                                    </Box>
-
-                                    <Box>
-                                        <ButtonComponent
-                                            label={'Remove'}
-                                            variant={'text'}
-                                            endDecorator={<Trash size={12} />}
-                                            size={'sm'}
-                                        />
-                                    </Box>
-                                </Box>
-
-                                <Divider />
-
-                            </Box>
-                        </BoxComponent>
+                        <PersonSection />
                     </Grid>
 
                     <Grid
@@ -190,7 +49,6 @@ const ResponsiblePerson = () => {
                             <Box
                                 m={1}
                             >
-
                                 <Stack gap={1}>
                                     <AutocompleteComponent
                                         label={'Select Job Position(s)'}
@@ -318,8 +176,6 @@ const ResponsiblePerson = () => {
                     </Grid>
 
                 </Grid>
-
-
 
                 <Stack
                     mt={2}

@@ -45,11 +45,6 @@ const Objectives = () => {
         });
     }, [isLoading])
 
-    // Delete a row
-    const handleDeleteRow = (id) => {
-        setAopObjectives(prev => prev.filter(row => row.id !== id));
-    };
-
     // handle Submit
     const handleSubmit = () => {
         const payload = getApplicationObjectivesPayload();
