@@ -6,30 +6,39 @@ const useItemCartHook = create(
     (set, get) => ({
       cart: [],
 
+      activity_id: null,
+      expense_class_id: null,
+
+      setCartMeta: ({ activity_id, expense_class_id }) =>
+        set(() => ({
+          activity_id,
+          expense_class_id,
+        })),
+
       // Add item to cart
       addToCart: (item, quantity = 1) => {
-        set((state) => {
-          const existing = state.cart.find((i) => i.id === item.id);
+        const { cart, activity_id, expense_class_id } = get();
 
+        set((state) => {
+          const existing = cart?.find((i) => i?.id === item?.id);
+          console.log(activity_id);
           if (existing) {
-            // If the item exists, just increment the quantity
             return {
-              cart: state.cart.map((i) =>
+              cart: cart?.map((i) =>
                 i.id === item.id ? { ...i, quantity: i.quantity + quantity } : i
               ),
             };
           }
 
-          // If it's a new item, add it with quantity, activity_id, and expense_class
           const newItem = {
             ...item,
-            quantity: quantity,
-            activity_id: item.activity_id,
-            expense_class: item.expense_class,
+            quantity,
+            activity_id,
+            expense_class_id,
           };
 
           return {
-            cart: [...state.cart, newItem],
+            cart: [...cart, newItem],
           };
         });
       },
@@ -62,11 +71,45 @@ const useItemCartHook = create(
         })),
 
       // Clear the cart
-      clearCart: () => set({ cart: [] }),
+      clearCart: () =>
+        set({ cart: [], activity_id: null, expense_class_id: null }),
+
+      // Merge cart with ppmp-store and store in merged-cart
+      mergeWithPPMPStore: () => {
+        try {
+          const cartStorage = get().cart;
+          const ppmpState =
+            JSON.parse(localStorage.getItem("ppmp-store")) || {};
+          const ppmpCart = ppmpState?.state?.cart || [];
+
+          const combinedMap = new Map();
+
+          [...cartStorage, ...ppmpCart].forEach((item) => {
+            if (combinedMap.has(item.id)) {
+              const existing = combinedMap.get(item.id);
+              combinedMap.set(item.id, {
+                ...existing,
+                quantity: existing.quantity + (item.quantity || 1),
+              });
+            } else {
+              combinedMap.set(item.id, { ...item });
+            }
+          });
+
+          const mergedCart = Array.from(combinedMap.values());
+
+          localStorage.setItem("merged-cart", JSON.stringify(mergedCart));
+        } catch (err) {
+          console.error("Error merging localStorage carts:", err);
+        }
+      },
     }),
     {
       name: "cart-storage", // key in localStorage
       getStorage: () => localStorage, // Default to localStorage
+      partialize: (state) => ({
+        cart: state.cart, // only persist the cart
+      }),
     }
   )
 );

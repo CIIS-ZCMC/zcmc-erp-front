@@ -56,3 +56,28 @@ export const images = [
   "/images/lights.png",
   "/images/blender.png",
 ];
+
+//dummy data for item description
+export const descriptionsData = [
+  {
+    label: "Option1",
+    classification: "Medical Supply",
+    category: "Consumable",
+    unit: "Bottle",
+  },
+  {
+    label: "Option2",
+    classification: "Medical Equipment",
+    category: "Non-consumable",
+    unit: "Piece",
+  },
+];
+
+export const procurement_mode = [
+  {
+    label: "Sec. 10 Competitive Bidding",
+  },
+  {
+    label: "Sec. 48 Alternative Methods of Procurement",
+  },
+];

@@ -74,7 +74,7 @@ const ItemCardComponent = ({
           {item?.category} <CircleSmall size={8} /> {item?.unit}
         </Typography>
         <Typography sx={{ fontSize: "sm", fontWeight: "lg" }}>
-          {item?.name}
+          {item?.description}
         </Typography>
       </Stack>
 
@@ -84,7 +84,7 @@ const ItemCardComponent = ({
         justifyContent={"space-between"}
       >
         <Typography sx={{ fontSize: "md", fontWeight: "lg" }}>
-          &#8369; {amount.toLocaleString()}
+          &#8369; {item?.estimated_budget.toLocaleString()}
         </Typography>
 
         <ButtonComponent

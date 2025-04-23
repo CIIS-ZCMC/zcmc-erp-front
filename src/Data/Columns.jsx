@@ -3,6 +3,7 @@ import { DeleteIcon } from "lucide-react";
 import { BsOpencollective } from "react-icons/bs";
 import { IoOpen, IoOpenOutline } from "react-icons/io5";
 import { MdDeleteOutline } from "react-icons/md";
+import { descriptionsData, procurement_mode } from "./dummy";
 
 export const objHeaders = [
   { field: "id", name: "Row #", align: "center", width: "50px" },
@@ -280,6 +281,7 @@ export const ppmpHeaders = (handleDeleteRow) => [
     inputType: "dropdown",
     width: "200px",
     align: "center",
+    options: descriptionsData,
   },
   {
     field: "activity_code",
@@ -345,10 +347,12 @@ export const ppmpHeaders = (handleDeleteRow) => [
     align: "center",
   },
   {
-    field: "fund_source",
+    field: "procurement_mode",
     name: "Mode of procurement",
     width: 150,
     align: "center",
+    inputType: "dropdown",
+    options: procurement_mode,
   },
   {
     field: "remarks",

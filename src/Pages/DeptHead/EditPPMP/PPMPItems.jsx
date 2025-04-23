@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import PageTitle from "../../../Components/Common/PageTitle";
 import ContainerComponent from "../../../Components/Common/ContainerComponent";
 import ButtonComponent from "../../../Components/Common/ButtonComponent";
@@ -9,6 +9,8 @@ import { ppmpHeaders } from "../../../Data/Columns";
 import ModalComponent from "../../../Components/Common/Dialog/ModalComponent";
 import AutocompleteComponent from "../../../Components/Form/AutocompleteComponent";
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { usePPMPItemsHook } from "../../../Hooks/PPMPItemsHook";
+import { descriptionsData, procurement_mode } from "../../../Data/dummy";
 
 const sampleData = [
   {
@@ -16,7 +18,7 @@ const sampleData = [
     item_code: "ITM001",
     activity_code: "ACT001",
     activity_id: 1,
-    expense_class_id: 1,
+    expense_class_id: "MOOE",
     description: "Item 1",
     classification: "Type A",
     estimated_budget: 5000,
@@ -39,7 +41,7 @@ const sampleData = [
       nov: 0,
       dec: 0,
     },
-    fund_source: "Fund A",
+    procurement_mode: "Fund A",
     remarks: "No remarks",
   },
   {
@@ -47,7 +49,7 @@ const sampleData = [
     item_code: "ITM002",
     activity_code: "ACT002",
     activity_id: 1,
-    expense_class_id: 1,
+    expense_class_id: "MOOE",
     description: "Item 2",
     classification: "Type B",
     category: "Category X",
@@ -70,7 +72,7 @@ const sampleData = [
       nov: 0,
       dec: 0,
     },
-    fund_source: "Fund A",
+    procurement_mode: "Fund A",
     remarks: "No remarks",
   },
   {
@@ -78,7 +80,7 @@ const sampleData = [
     item_code: "ITM003",
     activity_code: "ACT003",
     activity_id: 1,
-    expense_class_id: 1,
+    expense_class_id: "MOOE",
     description: "Item 3",
     classification: "Type C",
     category: "Category X",
@@ -101,7 +103,7 @@ const sampleData = [
       nov: 0,
       dec: 0,
     },
-    fund_source: "Fund A",
+    procurement_mode: "Fund A",
     remarks: "No remarks",
   },
   // Add more sample rows as needed
@@ -125,22 +127,6 @@ const activityData = [
   },
 ];
 
-//dummy data for item description
-const descriptionsData = [
-  {
-    label: "Option1",
-    classification: "Medical Supply",
-    category: "Consumable",
-    unit: "Bottle",
-  },
-  {
-    label: "Option2",
-    classification: "Medical Equipment",
-    category: "Non-consumable",
-    unit: "Piece",
-  },
-];
-
 const expenseClassData = [
   {
     label: "MOOE",
@@ -153,16 +139,24 @@ const expenseClassData = [
 ];
 
 function PPMPItems(props) {
-  const [tableData, setTableData] = useState(sampleData);
-  const [loading, setLoading] = useState(false);
-  const [openAdd, setOpenAdd] = useState(false);
-  const [activity, setActivity] = useState("");
-  const [activityId, setActivityId] = useState("");
-  const [description, setDescription] = useState("");
-  const [expenseClass, setExpenseClass] = useState("");
+  const {
+    tableData,
+    loading,
+    activity,
+    activityId,
+    description,
+    expenseClass,
+    setTableData,
+    setDescriptionData,
+    setLoading,
+    handleFieldChange,
+    handleDeleteRow,
+    handleSelectActivity,
+    handleSelectExpense,
+  } = usePPMPItemsHook();
 
-  const location = useLocation();
   const navigate = useNavigate();
+  const [openAdd, setOpenAdd] = useState(false);
 
   const calculateQuantity = (targetByQuarter) => {
     // Sum the values from January to December
@@ -172,88 +166,12 @@ function PPMPItems(props) {
     );
   };
 
-  const handleFieldChange = (fieldName, newValue, row, updateRow) => {
-    if (fieldName === "description") {
-      setLoading(true);
-      const selected = descriptionsData.find((item) => item.label === newValue);
-      console.log(selected);
-
-      setTimeout(() => {
-        if (selected) {
-          updateRow({
-            ...row,
-            description: newValue,
-            classification: selected.classification,
-            category: selected.category,
-          });
-        } else {
-          updateRow({
-            ...row,
-            description: newValue,
-            classification: "",
-            category: "",
-          });
-        }
-        setLoading(false);
-      }, 1000);
-    } else if (fieldName.includes("target_by_quarter")) {
-      // Handle the change in target_by_quarter (i.e., the monthly values)
-      const updatedTarget = {
-        ...row.target_by_quarter,
-        [fieldName.split(".")[1]]: parseInt(newValue),
-      };
-      const updatedQuantity = calculateQuantity(updatedTarget);
-      const newTotalAmount =
-        updatedQuantity * (parseFloat(row.estimated_budget) || 0);
-
-      updateRow({
-        ...row,
-        target_by_quarter: updatedTarget,
-        quantity: updatedQuantity, // Update the quantity field
-        total_amount: newTotalAmount,
-      });
-      // Simulate loading delay
-    } else if (fieldName === "quantity") {
-      const newQuantity = parseFloat(newValue) || 0;
-      const newTotalAmount =
-        newQuantity * (parseFloat(row.estimated_budget) || 0);
-
-      updateRow({
-        ...row,
-        quantity: newQuantity,
-        total_amount: newTotalAmount,
-      });
-    } else {
-      updateRow({
-        ...row,
-        [fieldName]: newValue,
-      });
+  useEffect(() => {
+    if (tableData.length === 0) {
+      setTableData(sampleData);
     }
-  };
-
-  const handleDeleteRow = (id) => {
-    setLoading(id); // start loading
-
-    // Simulate async behavior (like API call)
-    setTimeout(() => {
-      setTableData((prevData) => [...prevData.filter((row) => row.id !== id)]);
-      setLoading(null); // end loading
-    }, 1000); // simulate 1 second delay
-
-    console.log("delete");
-  };
-
-  const handleSelectActivity = (event) => {
-    console.log(event);
-    setActivity(event.label);
-    setActivityId(event.value);
-    setDescription(event.description);
-  };
-
-  const handleSelectExpense = (event) => {
-    setExpenseClass(event.value);
-  };
-
+    setDescriptionData(descriptionsData);
+  }, []);
   return (
     <Fragment>
       <ContainerComponent
@@ -307,7 +225,6 @@ function PPMPItems(props) {
               <AutocompleteComponent
                 label={"Select one activity"}
                 options={activityData}
-                setValue={setActivity}
                 handleSelect={handleSelectActivity}
                 value={activity}
                 size="sm"
@@ -330,7 +247,6 @@ function PPMPItems(props) {
                 }
                 options={expenseClassData}
                 value={expenseClass}
-                setValue={setExpenseClass}
                 handleSelect={handleSelectExpense}
               />
             </Stack>

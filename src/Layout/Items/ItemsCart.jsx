@@ -10,6 +10,7 @@ import IconButtonComponent from "../../Components/Common/IconButtonComponent";
 const ItemsCart = ({ item, image, quantity, onRemove, onQuantityChange }) => {
   return (
     <Fragment>
+      {console.log("item", item)}
       <Box display={"flex"} gap={1}>
         <Box
           component="img"
@@ -30,7 +31,7 @@ const ItemsCart = ({ item, image, quantity, onRemove, onQuantityChange }) => {
 
         <Box width={"100%"}>
           <Typography fontSize={13} fontWeight={600}>
-            {item?.name}
+            {item?.description}
           </Typography>
           <Typography
             fontSize={12}
@@ -48,7 +49,7 @@ const ItemsCart = ({ item, image, quantity, onRemove, onQuantityChange }) => {
             {item?.category}
           </Typography>
           <Typography fontSize={12} fontWeight={600} textColor={"success.500"}>
-            &#8369; {item?.price.toLocaleString()}
+            &#8369; {item?.estimated_budget.toLocaleString()}
           </Typography>
 
           <Box

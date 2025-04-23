@@ -15,8 +15,14 @@ import BoxComponent from "../../../Components/Common/Card/BoxComponent";
 import ButtonComponent from "../../../Components/Common/ButtonComponent";
 
 import QuantityControlComponent from "../../../Components/Cart/QuantityControlComponent";
+import { ShoppingCart, ShoppingCartIcon } from "lucide-react";
+import {
+  MdOutlineShoppingCart,
+  MdOutlineShoppingCartCheckout,
+  MdShoppingCart,
+} from "react-icons/md";
 
-const Item = ({ quantity, onDecrease, onIncrease }) => {
+const Item = ({ item, quantity, onDecrease, onIncrease, addAction }) => {
   return (
     <>
       <Grid
@@ -49,18 +55,25 @@ const Item = ({ quantity, onDecrease, onIncrease }) => {
         </Grid>
 
         <Grid item xs={12} sm={12} md={6}>
-          <Stack gap={2} bgcolor={"white"}>
+          <Stack gap={2}>
             <BoxComponent>
               <Stack gap={1} p={1}>
                 <Typography level="body-xs" fontWeight={400} color="primary">
                   Office Supplies - Furniture and applicances
                 </Typography>
 
-                <Typography level="lg" fontWeight={600}>
-                  Cradle pro ergonomic and foldable office table and chair
+                <Typography
+                  level="lg"
+                  fontWeight={600}
+                  textColor={"common.black"}
+                >
+                  {item?.name}
                 </Typography>
 
-                <Typography> &#8369; 12,000</Typography>
+                <Typography fontSize={14} fontWeight={600} color="danger">
+                  {" "}
+                  &#8369; {item?.price.toLocaleString()}
+                </Typography>
               </Stack>
 
               <Box
@@ -80,17 +93,30 @@ const Item = ({ quantity, onDecrease, onIncrease }) => {
                     quantity={quantity}
                     onDecrease={onDecrease}
                     onIncrease={onIncrease}
+                    withLabel
                   />
 
                   <Stack>
-                    <Typography>Item Subtotal :</Typography>
-                    <Typography>&#8369; 24,000</Typography>
+                    <Typography fontSize={14} mb={0.5}>
+                      Item Subtotal :
+                    </Typography>
+                    <Typography
+                      fontSize={13}
+                      fontWeight={700}
+                      textColor={"success.700"}
+                    >
+                      &#8369; {(item?.price * quantity).toLocaleString()}
+                    </Typography>
                   </Stack>
                 </Stack>
 
                 <Divider />
 
-                <ButtonComponent label={"Add to Cart"} />
+                <ButtonComponent
+                  label={"Add to Cart"}
+                  endDecorator={<MdOutlineShoppingCart size={18} />}
+                  onClick={addAction}
+                />
               </Box>
             </BoxComponent>
 

@@ -24,6 +24,7 @@ import useModalHook from "../../../Hooks/ModalHook";
 import PageLoader from "../../../Components/Loading/PageLoader";
 import Item from "../../Items/Item";
 import ModalComponent from "../../../Components/Common/Dialog/ModalComponent";
+import { usePPMPItemsHook } from "../../../Hooks/PPMPItemsHook";
 
 const activityData = [
   {
@@ -46,24 +47,56 @@ const activityData = [
 const products = new Array(50).fill(0).map((_, i) => {
   const randomIndex = Math.floor(Math.random() * productNames.length);
   return {
-    id: i + 1,
-    name: productNames[randomIndex],
+    id: i + 3,
+    item_code: "ITM006",
+    activity_code: "ACT001",
+    activity_id: 1,
+    expense_class_id: "MOOE",
+    description: productNames[randomIndex],
+    classification: "Type A",
+    variant: "High-end",
+    estimated_budget: Math.floor(Math.random() * 10000) + 1000, // Price between 1000 and 11000,
     category: categories[Math.floor(Math.random() * categories.length)],
-    price: Math.floor(Math.random() * 10000) + 1000, // Price between 1000 and 11000
+    aop_quantity: 0,
+    quantity: 0,
+    unit: "pcs",
+    total_amount: 0,
+    target_by_quarter: {
+      jan: 0,
+      feb: 0,
+      mar: 0,
+      apr: 0,
+      may: 0,
+      jun: 0,
+      jul: 0,
+      aug: 0,
+      sep: 0,
+      oct: 0,
+      nov: 0,
+      dec: 0,
+    },
+    fund_source: "Fund A",
+    remarks: "No remarks",
     image: images[randomIndex],
   };
 });
 
 function AddItems(props) {
   const { items, getItems } = useItemsHook();
-  const { addToCart, updateQuantity, cart, removeFromCart, clearCart } =
-    useItemCartHook();
+  const {
+    setCartMeta,
+    addToCart,
+    updateQuantity,
+    cart,
+    removeFromCart,
+    clearCart,
+  } = useItemCartHook();
   const { setAlertDialog, setConfirmationModal, closeConfirmation } =
     useModalHook();
   const navigate = useNavigate();
   const totalQty = cart.reduce((sum, item) => sum + item.quantity, 0);
   const totalPrice = cart.reduce(
-    (sum, item) => sum + item.quantity * item.price,
+    (sum, item) => sum + item.quantity * item.estimated_budget,
     0
   );
   const { activityId, expenseId } = useParams();
@@ -74,6 +107,7 @@ function AddItems(props) {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [quantity, setQuantity] = useState(1);
+  const [selectedItem, setSelectedItem] = useState(null);
 
   const activity = activityData.find(
     (item) => item.value === Number(activityId)
@@ -92,11 +126,18 @@ function AddItems(props) {
 
   const [isDialogOpen, setIsDialogOpen] = useState(false);
 
-  const handleOpenItemDialog = () => {
+  const handleOpenItemDialog = (item) => {
+    setSelectedItem(item);
     setIsDialogOpen(true);
   };
 
   const handleCloseItemDialog = () => {
+    setIsDialogOpen(false);
+    setSelectedItem(null);
+  };
+
+  const add = () => {
+    addToCart(selectedItem, quantity);
     setIsDialogOpen(false);
   };
 
@@ -113,13 +154,33 @@ function AddItems(props) {
 
   const handleCancel = () => {
     setIsLoading(true); // Show loader
-    localStorage.removeItem("cart-storage");
+    clearCart();
 
     setTimeout(() => {
       closeConfirmation(); // Close modal
 
       window.location.href = "/edit-ppmp"; // This reloads + navigates
     }, 1000);
+  };
+  const handleSave = () => {
+    const { cart, clearCart } = useItemCartHook.getState();
+    const { setTableData, tableData, setLoading } = usePPMPItemsHook.getState();
+
+    setLoading(true);
+
+    const existingIds = new Set(tableData.map((item) => item.id));
+    const filteredCart = cart.filter((item) => !existingIds.has(item.id));
+
+    const mergedTableData = [...tableData, ...filteredCart];
+    setTableData(mergedTableData);
+
+    clearCart();
+
+    setTimeout(() => {
+      // Stop loading indicator and navigate to "/edit-ppmp"
+      setLoading(false);
+      navigate("/edit-ppmp");
+    }, 500);
   };
 
   const fetchMoreData = () => {
@@ -135,6 +196,10 @@ function AddItems(props) {
   };
 
   useEffect(() => {
+    setCartMeta({
+      activity_id: activityId,
+      expense_class_id: expenseId,
+    });
     setTimeout(() => {
       getItems((status, message, data) => {
         if (status === 200) {
@@ -241,7 +306,7 @@ function AddItems(props) {
               />
               <ButtonComponent
                 label={"Save items"}
-                onClick={() => navigate("/edit-ppmp")}
+                onClick={() => handleSave()}
               />
             </Stack>
           </>
@@ -303,7 +368,7 @@ function AddItems(props) {
                       item={item}
                       btnAction={() => addToCart(item)}
                       itemInfoAction={() => {
-                        handleOpenItemDialog();
+                        handleOpenItemDialog(item);
                       }}
                     />
                   ))}
@@ -345,7 +410,6 @@ function AddItems(props) {
                 p: 2,
               }}
             >
-              {console.log(cart)}
               {cart?.length > 0 ? (
                 [...cart]
                   .reverse()
@@ -424,6 +488,8 @@ function AddItems(props) {
         content={
           <Box overflow={"hidden"}>
             <Item
+              addAction={() => add()}
+              item={selectedItem}
               quantity={quantity}
               onDecrease={() => setQuantity(quantity - 1)}
               onIncrease={() => setQuantity(quantity + 1)}
