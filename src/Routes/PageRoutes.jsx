@@ -14,7 +14,7 @@ import CreateAOP from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout";
 import AnnualOpsPlanning from '../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives'
 import Activities from '../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities'
 import Resources from '../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities/Resources';
-import ResponsibePerson from '../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities/Resources/ResponsiblePerson';
+import ResponsibePerson from '../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities/ResponsiblePerson';
 
 import Items from "../Pages/Items";
 import Item from "../Pages/Items/Item";
@@ -77,7 +77,7 @@ export const sidebarRoutes = [
           },
 
           {
-            path: "person/:resourceId",
+            path: "person/:activityId",
             element: <ResponsibePerson />,
           },
         ],

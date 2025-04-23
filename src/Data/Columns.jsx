@@ -155,7 +155,7 @@ export const AOP_ACTIVITIES_HEADER = [
   {
     field: "cost",
     name: "Cost",
-    width: "10%",
+    width: "5%",
     align: "center",
   },
 
@@ -168,7 +168,7 @@ export const AOP_ACTIVITIES_HEADER = [
 
   {
     field: "action",
-    width: "10%",
+    width: "15%",
     align: "center",
     name: "Actions",
   },

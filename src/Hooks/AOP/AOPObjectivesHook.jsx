@@ -1,20 +1,6 @@
 import { create } from 'zustand';
 
-// Inside your Zustand store
-const aopActivity = {
-    activity_code: '',
-    name: '',
-    is_gad_related: false,
-    cost: 0,
-    start_month: '',
-    end_month: '',
-    target: '',
-    resources: [],
-    responsible_people: [],
-};
-
 const useAOPObjectivesHooks = create((set, get) => ({
-
     // Initial 3 default objectives
     aopObjectives: Array.from({ length: 3 }, (_, index) => ({
         id: index + 1,
@@ -23,7 +9,20 @@ const useAOPObjectivesHooks = create((set, get) => ({
         activities: [
             {
                 id: `${index + 1}-1`,
-                ...aopActivity
+                activity_code: '',
+                name: '',
+                is_gad_related: false,
+                cost: 0,
+                start_month: '',
+                end_month: '',
+                target: {
+                    first_quarter: '',
+                    second_quarter: '',
+                    third_quarter: '',
+                    fourth_quarter: '',
+                },
+                resources: [],
+                responsible_people: [],
             }
         ],
     })),
@@ -44,22 +43,28 @@ const useAOPObjectivesHooks = create((set, get) => ({
         }));
     },
 
-    // Update fields inside activities
-    updateActivityField: (objectiveId, activityId, field, value) => {
-        set((state) =>
-        ({
+    //Add new activity
+    updateActivityField: (objectiveId, activityId, fieldPath, value) => {
+        set((state) => ({
             aopObjectives: state.aopObjectives.map((objective) =>
                 objective.id === objectiveId
                     ? {
                         ...objective,
-                        activities: objective.activities.map((activity) =>
-                            activity.id === activityId
-                                ? {
-                                    ...activity,
-                                    [field]: value,
-                                }
-                                : activity
-                        ),
+                        activities: objective.activities.map((activity) => {
+                            if (activity.id !== activityId) return activity;
+
+                            const updatedActivity = { ...activity };
+                            const keys = fieldPath.split(".");
+                            let current = updatedActivity;
+
+                            for (let i = 0; i < keys.length - 1; i++) {
+                                current = current[keys[i]] = { ...current[keys[i]] };
+                            }
+
+                            current[keys.at(-1)] = value;
+
+                            return updatedActivity;
+                        }),
                     }
                     : objective
             ),
