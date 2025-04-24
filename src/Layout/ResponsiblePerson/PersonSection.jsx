@@ -1,43 +1,38 @@
 import React, { useEffect, useState } from 'react'
 
-import { Stack, Grid, Box, Typography, Divider } from '@mui/joy';
-import { Trash } from 'lucide-react';
+import { Stack, Grid, Box, Typography, Divider, Link } from '@mui/joy';
 
 import useUserHook from '../../Hooks/UserHook';
-
-import ButtonComponent from '../../Components/Common/ButtonComponent';
 import AutocompleteComponent from '../../Components/Form/AutocompleteComponent';
 import BoxComponent from '../../Components/Common/Card/BoxComponent'
 
-const PersonSection = () => {
+const usersOptions = [
+    {
+        id: 1,
+        name: 'Art',
+        label: 'Art',
+        designation: 'Programmer'
+    },
+    {
+        id: 2,
+        name: 'Kim',
+        label: 'Kim',
+        designation: 'Programmer'
+    }
+]
+
+const PersonSection = ({
+    users,
+    setUsers,
+    user,
+    setUser,
+    handleSelectedData,
+    handleRemove,
+}) => {
 
     const { getUsers } = useUserHook()
-
-    // local state
-    const [usersOptions, setUsersOptions] = useState([
-        {
-            id: 1,
-            name: 'Art',
-            label: 'Art',
-            designation: 'Programmer'
-        },
-        {
-            id: 2,
-            name: 'Kim',
-            label: 'Kim',
-            designation: 'Programmer'
-        }
-    ])
-
-    const [users, setUsers] = useState([])
-
-    const [user, setUser] = useState({
-        id: null,
-        name: '',
-        designation: ''
-    })
-
     const [isLoading, setIsLoading] = useState(false)
+    // const [usersOptions, setUserOptions] = useState([]);
 
     useEffect(() => {
         getUsers((status, message) => {
@@ -46,28 +41,9 @@ const PersonSection = () => {
                 return; //Toast error
             }
             setIsLoading(false)
+            // setUsersOptions(users) set users options
         })
     }, [])
-
-    const handleSelectedUser = (selectedValue) => {
-        if (!selectedValue) return;
-
-        // setUser(selectedValue);
-        setUsers((prevUsers) => {
-            const alreadyExists = prevUsers.some((u) => u.id === selectedValue.id);
-            return alreadyExists ? prevUsers : [...prevUsers, selectedValue];
-        });
-        setUser({ id: null, name: '', designation: '' });
-    };
-    const handleRemoveUser = (id) => {
-        const filteredUsers = users.filter((user) => user.id !== id)
-        setUsers(filteredUsers)
-        // alert(`Are you sure to delete ${id}`)
-    }
-
-    // useEffect(() => {
-    //     console.log(users)
-    // }, [users])
 
     return (
         <div>
@@ -77,9 +53,9 @@ const PersonSection = () => {
                     <AutocompleteComponent
                         label={'Select Person/People'}
                         placeholder='Select a responsible person'
-                        value={user?.name || ''}
+                        // value={user?.name || ''}
                         size={'md'}
-                        setValue={(value) => handleSelectedUser(value)}
+                        setValue={(value) => handleSelectedData(value, setUsers, true)}
                         options={usersOptions}
                     />
 
@@ -91,55 +67,69 @@ const PersonSection = () => {
                     </Typography>
                 </Stack>
 
-                {users?.map(({ id, name, designation }) => (
-                    <Box
-                        m={1}
+                {users.length === 0 ?
+                    <Stack
+                        m={2}
+                        alignItems={'center'}
+                        justifyContent={'center'}
                     >
-                        <Box
-                            key={id}
+                        <Typography
+                            level='body-xs'
+                        >
+                            Please select responsbile person/people
+                        </Typography>
+                    </Stack>
+
+                    : users?.map(({ id, name, designation }) => (
+                        < Box
                             m={1}
-                            display={'flex'}
-                            alignItems={'center'}
-                            justifyContent={'space-between'}
                         >
                             <Box
+                                key={id}
+                                m={1}
                                 display={'flex'}
                                 alignItems={'center'}
+                                justifyContent={'space-between'}
                             >
-                                <Stack
-                                    direction={'column'}
-                                    m={1}
+                                <Box
+                                    display={'flex'}
+                                    alignItems={'center'}
                                 >
-                                    <Typography>
-                                        {name}
-                                    </Typography>
-                                    <Typography
-                                        level="body-xs"
-                                        fontWeight={400}
+                                    <Stack
+                                        direction={'column'}
+                                        m={1}
                                     >
-                                        {designation}
-                                    </Typography>
+                                        <Typography>
+                                            {name}
+                                        </Typography>
+                                        <Typography
+                                            level="body-xs"
+                                            fontWeight={400}
+                                        >
+                                            {designation}
+                                        </Typography>
 
-                                </Stack>
+                                    </Stack>
 
+                                </Box>
+
+                                <Box>
+                                    <Link
+                                        component="button"
+                                        color='danger'
+                                        fontSize={14}
+                                        onClick={() => handleRemove(id, users, setUsers)}
+                                    >
+                                        Remove
+                                    </Link>
+                                </Box>
                             </Box>
 
-                            <Box>
-                                <ButtonComponent
-                                    onClick={() => handleRemoveUser(id)}
-                                    label={'Remove'}
-                                    variant={'text'}
-                                    endDecorator={<Trash size={12} />}
-                                    size={'sm'}
-                                />
-                            </Box>
+                            <Divider />
                         </Box>
-
-                        <Divider />
-                    </Box>
-                ))}
+                    ))}
             </BoxComponent>
-        </div>
+        </div >
     )
 }
 

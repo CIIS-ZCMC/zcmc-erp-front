@@ -3,6 +3,7 @@ import { Autocomplete, FormControl, FormHelperText, FormLabel } from "@mui/joy";
 import { getFontSize } from "../../Utils/Typography";
 
 function AutocompleteComponent({
+  multiple = false,
   label,
   options = [],
   helperText,
@@ -25,6 +26,8 @@ function AutocompleteComponent({
     <FormControl sx={{ width: width }} {...props}>
       {label && <FormLabel>{label}</FormLabel>}
       <Autocomplete
+        multiple={multiple}
+        filterSelectedOptions={true}
         startDecorator={startDecorator}
         size={size}
         placeholder={placeholder}

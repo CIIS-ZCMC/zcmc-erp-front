@@ -1,18 +1,65 @@
-import React, { Fragment } from 'react';
+import React, { Fragment, useState, useEffect } from 'react';
+import { Stack, Grid, } from '@mui/joy';
 
-import { Stack, Grid, Box, Typography, Divider } from '@mui/joy';
-import { Trash } from 'lucide-react';
-
+//Custom Components
 import ButtonComponent from '../../../../../../../../Components/Common/ButtonComponent';
 import ContainerComponent from '../../../../../../../../Components/Common/ContainerComponent';
-import BoxComponent from '../../../../../../../../Components/Common/Card/BoxComponent';
-import AutocompleteComponent from '../../../../../../../../Components/Form/AutocompleteComponent';
 
+// Layouts
 import PersonSection from '../../../../../../../../Layout/ResponsiblePerson/PersonSection';
+import JobPositionsSection from '../../../../../../../../Layout/ResponsiblePerson/JobPositionsSection';
+import AreasSection from '../../../../../../../../Layout/ResponsiblePerson/AreasSection';
 
+//data related
 import { AOP_CONSTANTS } from '../../../../../../../../Data/constants';
 
 const ResponsiblePerson = () => {
+
+    //  local states
+    const [users, setUsers] = useState([]);
+    const [designations, setDesignations] = useState([]);
+    const [areas, setAreas] = useState([]);
+
+    const [user, setUser] = useState({
+        id: null,
+        name: '',
+        designation: ''
+    });
+
+    const [designation, setDesignation] = useState({
+        id: null,
+        umis_designation_id: null,
+        name: '',
+        code: '',
+        probation: null,
+    })
+
+    const handleSaveAssignmentClick = () => {
+        console.log('Selected Users:', users);
+        console.log('Selected Designations:', designations);
+        console.log('Selected Areas:', areas);
+    }
+
+    //add item t odata array 
+    const handleSelectedData = (selectedValue, setData, isMultiple = false) => {
+        if (!selectedValue) return;
+
+        if (isMultiple) {
+            setData(prev => {
+                const alreadyExists = prev?.some(item => item.id === selectedValue.id);
+                return alreadyExists ? prev : [...prev, selectedValue];
+            });
+        } else {
+            setData(selectedValue);
+        }
+    };
+
+    //remove item from array
+    const handleRemove = (id, data, setData) => {
+        const filteredData = data.filter((data) => data.id !== id)
+        setData(filteredData)
+    }
+
     return (
         <Fragment>
             <ContainerComponent
@@ -36,7 +83,12 @@ const ResponsiblePerson = () => {
                         sm={2}
                         md={4}
                     >
-                        <PersonSection />
+                        <PersonSection
+                            users={users}
+                            setUsers={setUsers}
+                            handleSelectedData={handleSelectedData}
+                            handleRemove={handleRemove}
+                        />
                     </Grid>
 
                     <Grid
@@ -45,66 +97,12 @@ const ResponsiblePerson = () => {
                         sm={2}
                         md={4}
                     >
-                        <BoxComponent>
-                            <Box
-                                m={1}
-                            >
-                                <Stack gap={1}>
-                                    <AutocompleteComponent
-                                        label={'Select Job Position(s)'}
-                                        size={'md'}
-                                    />
-
-                                    <Typography
-                                        level="body-xs"
-                                        fontWeight={400}
-                                    >
-                                        Selected Poeple(s)
-                                    </Typography>
-                                </Stack>
-
-                                <Box
-                                    m={1}
-                                    display={'flex'}
-                                    alignItems={'center'}
-                                    justifyContent={'space-between'}
-                                >
-
-                                    <Box
-                                        display={'flex'}
-                                        alignItems={'center'}
-                                    >
-                                        <Stack
-                                            direction={'column'}
-                                            m={1}
-                                        >
-                                            <Typography>
-                                                Name
-                                            </Typography>
-                                            <Typography
-                                                level="body-xs"
-                                                fontWeight={400}
-                                            >
-                                                Computer Programmer
-                                            </Typography>
-
-                                        </Stack>
-
-                                    </Box>
-
-                                    <Box>
-                                        <ButtonComponent
-                                            label={'Remove'}
-                                            variant={'text'}
-                                            endDecorator={<Trash size={12} />}
-                                            size={'sm'}
-                                        />
-                                    </Box>
-                                </Box>
-                                <Divider />
-
-                            </Box>
-                        </BoxComponent>
+                        <JobPositionsSection
+                            designations={designations}
+                            setDesignations={setDesignations}
+                            handleSelectedData={handleSelectedData}
+                            handleRemove={handleRemove}
+                        />
                     </Grid>
 
                     <Grid
@@ -113,66 +111,13 @@ const ResponsiblePerson = () => {
                         sm={2}
                         md={4}
                     >
-                        <BoxComponent>
-                            <Box
-                                m={1}
-                            >
+                        <AreasSection
+                            areas={areas}
+                            setAreas={setAreas}
+                            handleSelectedData={handleSelectedData}
+                            handleRemove={handleRemove}
+                        />
 
-                                <Stack gap={1}>
-                                    <AutocompleteComponent
-                                        label={'Select Area(s)'}
-                                        size={'md'}
-                                    />
-
-                                    <Typography
-                                        level="body-xs"
-                                        fontWeight={400}
-                                    >
-                                        Selected Job Position (16)
-                                    </Typography>
-                                </Stack>
-
-                                <Box
-                                    m={1}
-                                    display={'flex'}
-                                    alignItems={'center'}
-                                    justifyContent={'space-between'}
-                                >
-
-                                    <Box
-                                        display={'flex'}
-                                        alignItems={'center'}
-                                    >
-                                        <Stack
-                                            direction={'column'}
-                                            m={1}
-                                        >
-                                            <Typography>
-                                                Name
-                                            </Typography>
-                                            <Typography
-                                                level="body-xs"
-                                                fontWeight={400}
-                                            >
-                                                Computer Programmer
-                                            </Typography>
-
-                                        </Stack>
-
-                                    </Box>
-
-                                    <Box>
-                                        <ButtonComponent
-                                            label={'Remove'}
-                                            variant={'text'}
-                                            endDecorator={<Trash size={12} />}
-                                            size={'sm'}
-                                        />
-                                    </Box>
-                                </Box>
-
-                            </Box>
-                        </BoxComponent>
                     </Grid>
 
                 </Grid>
@@ -195,7 +140,8 @@ const ResponsiblePerson = () => {
                         label={'Save Assignment'}
                         size={'md'}
                         variant={'solid'}
-                    // onClick={() => navigate(`/aop-create`)}
+                        onClick={() => handleSaveAssignmentClick()}
+                    // onClick={(e) => console.log(e)}
                     />
                 </Stack>
             </ContainerComponent>
