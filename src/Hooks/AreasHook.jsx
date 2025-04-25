@@ -2,21 +2,20 @@ import { create } from "zustand";
 import { API } from "../Data/constants";
 import { read } from "../Services/RequestMethods";
 
-const useUserHook = create((set) => ({
-    users: [],
+const useAreasHook = create((set) => ({
+    areas: [],
 
-    getUsers: (callBack) => {
+    getAreas: (callBack) => {
         read({
-            url: API.USERS,
+            url: API.AREAS,
             failed: callBack,
             success: (res) => {
                 const { status, message, data } = res;
-                set({ users: data });
+                set({ areas: data });
                 callBack(status, message);
             }
         })
     }
+}))
 
-}));
-
-export default useUserHook;
+export default useAreasHook;

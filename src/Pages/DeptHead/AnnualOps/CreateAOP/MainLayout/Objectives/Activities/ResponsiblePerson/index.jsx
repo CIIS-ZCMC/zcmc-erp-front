@@ -1,6 +1,8 @@
 import React, { Fragment, useState, useEffect } from 'react';
 import { Stack, Grid, } from '@mui/joy';
 
+import useResponsiblePersonHook from '../../../../../../../../Hooks/ResponsiblePersonHook';
+
 //Custom Components
 import ButtonComponent from '../../../../../../../../Components/Common/ButtonComponent';
 import ContainerComponent from '../../../../../../../../Components/Common/ContainerComponent';
@@ -15,50 +17,49 @@ import { AOP_CONSTANTS } from '../../../../../../../../Data/constants';
 
 const ResponsiblePerson = () => {
 
-    //  local states
-    const [users, setUsers] = useState([]);
-    const [designations, setDesignations] = useState([]);
-    const [areas, setAreas] = useState([]);
+    const { users, designations, areas } = useResponsiblePersonHook();
 
-    const [user, setUser] = useState({
-        id: null,
-        name: '',
-        designation: ''
-    });
+    const handleSaveAssignment = () => {
+        const responsiblePeople = [];
 
-    const [designation, setDesignation] = useState({
-        id: null,
-        umis_designation_id: null,
-        name: '',
-        code: '',
-        probation: null,
-    })
-
-    const handleSaveAssignmentClick = () => {
-        console.log('Selected Users:', users);
-        console.log('Selected Designations:', designations);
-        console.log('Selected Areas:', areas);
-    }
-
-    //add item t odata array 
-    const handleSelectedData = (selectedValue, setData, isMultiple = false) => {
-        if (!selectedValue) return;
-
-        if (isMultiple) {
-            setData(prev => {
-                const alreadyExists = prev?.some(item => item.id === selectedValue.id);
-                return alreadyExists ? prev : [...prev, selectedValue];
+        // Add entries from users
+        users.forEach((user) => {
+            responsiblePeople.push({
+                user_id: user.id,
+                designation_id: null,
+                division_id: null,
+                department_id: null,
+                section_id: null,
+                unit_id: null
             });
-        } else {
-            setData(selectedValue);
-        }
-    };
+        });
 
-    //remove item from array
-    const handleRemove = (id, data, setData) => {
-        const filteredData = data.filter((data) => data.id !== id)
-        setData(filteredData)
-    }
+        // Add entries from designations
+        designations.forEach((designation) => {
+            responsiblePeople.push({
+                user_id: null,
+                designation_id: designation.id,
+                division_id: null,
+                department_id: null,
+                section_id: null,
+                unit_id: null
+            });
+        });
+
+        // Add entries from areas
+        areas.forEach((area) => {
+            responsiblePeople.push({
+                user_id: null,
+                designation_id: null,
+                division_id: area.type === "division" ? area.id : null,
+                department_id: area.type === "department" ? area.id : null,
+                section_id: area.type === "section" ? area.id : null,
+                unit_id: area.type === "unit" ? area.id : null,
+            });
+        });
+
+        console.log("Formatted Responsible People:", responsiblePeople);
+    };
 
     return (
         <Fragment>
@@ -83,12 +84,7 @@ const ResponsiblePerson = () => {
                         sm={2}
                         md={4}
                     >
-                        <PersonSection
-                            users={users}
-                            setUsers={setUsers}
-                            handleSelectedData={handleSelectedData}
-                            handleRemove={handleRemove}
-                        />
+                        <PersonSection />
                     </Grid>
 
                     <Grid
@@ -97,12 +93,7 @@ const ResponsiblePerson = () => {
                         sm={2}
                         md={4}
                     >
-                        <JobPositionsSection
-                            designations={designations}
-                            setDesignations={setDesignations}
-                            handleSelectedData={handleSelectedData}
-                            handleRemove={handleRemove}
-                        />
+                        <JobPositionsSection />
                     </Grid>
 
                     <Grid
@@ -111,13 +102,7 @@ const ResponsiblePerson = () => {
                         sm={2}
                         md={4}
                     >
-                        <AreasSection
-                            areas={areas}
-                            setAreas={setAreas}
-                            handleSelectedData={handleSelectedData}
-                            handleRemove={handleRemove}
-                        />
-
+                        <AreasSection />
                     </Grid>
 
                 </Grid>
@@ -133,15 +118,13 @@ const ResponsiblePerson = () => {
                         label={'Cancel Selection'}
                         size={'md'}
                         variant={'outlined'}
-                    // onClick={() => navigate(`/aop-create`)}
                     />
 
                     <ButtonComponent
                         label={'Save Assignment'}
                         size={'md'}
                         variant={'solid'}
-                        onClick={() => handleSaveAssignmentClick()}
-                    // onClick={(e) => console.log(e)}
+                        onClick={() => handleSaveAssignment()}
                     />
                 </Stack>
             </ContainerComponent>

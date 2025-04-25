@@ -93,5 +93,8 @@ export const approvalActions = [
 export const API = {
   AOP_APPLICATIONS: 'aop-applications',
   TYPE_OF_FUNCTIONS: 'type-of-functions',
+
   USERS: 'get-users',
+  JOB_POSITIONS: 'get-designations',
+  AREAS: 'get-areas'
 }
