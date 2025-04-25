@@ -8,7 +8,7 @@ import {
   Table,
   Typography,
 } from "@mui/joy";
-import { memo, useCallback, useEffect, useMemo, useState } from "react";
+import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import NoResultComponent from "./NoResultComponent";
 import PaginationComponent from "./PaginationComponent";
 import InputComponent from "../../Form/InputComponent";
@@ -39,6 +39,7 @@ const ScrollableEditableTableComponent = memo(
     nestedOptions = [],
     setData,
   }) => {
+    const scrollRef = useRef(null);
     // PAGINATION SETUP
     const [currentPage, setCurrentPage] = useState(1);
     // const [rows, setRows] = useState(data);
@@ -85,7 +86,10 @@ const ScrollableEditableTableComponent = memo(
             const updatedRows = [...data];
             updatedRows[rowIndex] = updatedRow;
             console.log(updatedRows);
-            setData(updatedRows);
+            if (JSON.stringify(data[rowIndex]) !== JSON.stringify(updatedRow)) {
+              setData(updatedRows);
+            }
+            // setData(updatedRows);
           });
         } else {
           const newRows = [...data];
@@ -104,8 +108,11 @@ const ScrollableEditableTableComponent = memo(
           onFieldChange(field, e.label, row, (updatedRow) => {
             const updatedRows = [...data];
             updatedRows[rowIndex] = updatedRow;
-            console.log(updatedRows); // Log the updated rows
-            setData(updatedRows);
+            console.log(updatedRows); // Log the updated
+            if (JSON.stringify(data[rowIndex]) !== JSON.stringify(updatedRow)) {
+              setData(updatedRows);
+            }
+            // setData(updatedRows);
           });
         } else {
           const newRows = [...data];
@@ -181,8 +188,21 @@ const ScrollableEditableTableComponent = memo(
       setCurrentPage((prev) => Math.max(prev - 1, 1));
 
     const lastColumnWidth = columns[columns.length - 1]?.width || "144px";
+
+    // Memoize columns to avoid unnecessary re-renders
+    const memoizedColumns = useMemo(() => columns, [columns]);
+
+    useEffect(() => {
+      const scrollEl = scrollRef.current;
+      if (!scrollEl) return;
+
+      const scrollLeft = scrollEl.scrollLeft;
+      requestAnimationFrame(() => {
+        scrollEl.scrollLeft = scrollLeft;
+      });
+    }, [data]);
     return (
-      <Box sx={{ width: "100%", overflow: "auto" }}>
+      <Box ref={scrollRef} sx={{ width: "100%", overflow: "auto" }}>
         {console.log(data)}
         <Sheet
           variant="outlined"
@@ -239,7 +259,7 @@ const ScrollableEditableTableComponent = memo(
             {paginatedData?.length !== 0 ? (
               <thead>
                 <tr>
-                  {columns?.map((column, index) => {
+                  {memoizedColumns?.map((column, index) => {
                     const isFirstColumn = index === 0;
                     const isLastColumn = index === columns.length - 1;
 
@@ -281,7 +301,7 @@ const ScrollableEditableTableComponent = memo(
                 </tr>
 
                 <tr>
-                  {columns.map((column) =>
+                  {memoizedColumns.map((column) =>
                     column?.children
                       ? column?.children?.map((child, childIndex) => (
                           <th
@@ -324,7 +344,7 @@ const ScrollableEditableTableComponent = memo(
               ) : paginatedData?.length > 0 ? (
                 paginatedData.map((row, rowIndex) => (
                   <tr key={rowIndex}>
-                    {columns.map((column, colIndex) => {
+                    {memoizedColumns.map((column, colIndex) => {
                       const isEditing =
                         editingCell.rowIndex === rowIndex &&
                         editingCell.field === column.field;

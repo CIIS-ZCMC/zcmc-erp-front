@@ -40,6 +40,7 @@ const ItemCardComponent = ({
           borderRadius: 10,
           cursor: "grab",
         },
+        bgcolor: "tomato",
       }}
     >
       <Card
@@ -48,13 +49,20 @@ const ItemCardComponent = ({
           borderColor: "neutral.50",
           // backgroundColor: "neutral.300",
           height: "156px",
+
           padding: 0,
         }}
         onClick={itemInfoAction}
       >
         <CardCover>
           {/* <AspectRatio ratio="1"> */}
-          <img src={image} srcSet={image} role="button" loading="lazy" alt="" />
+          <img
+            src={item?.image}
+            srcSet={item?.image}
+            role="button"
+            loading="lazy"
+            alt=""
+          />
           {/* </AspectRatio> */}
         </CardCover>
 
@@ -71,10 +79,11 @@ const ItemCardComponent = ({
       {/* CONTENT */}
       <Stack my={1.2} gap={0.5}>
         <Typography level="body-xs" fontWeight={400}>
-          {item?.category} <CircleSmall size={8} /> {item?.unit}
+          {item?.item_category?.description} <CircleSmall size={8} />{" "}
+          {item?.item_unit?.name}
         </Typography>
         <Typography sx={{ fontSize: "sm", fontWeight: "lg" }}>
-          {item?.description}
+          {item?.name}
         </Typography>
       </Stack>
 

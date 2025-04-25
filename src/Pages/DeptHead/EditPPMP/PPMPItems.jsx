@@ -11,6 +11,7 @@ import AutocompleteComponent from "../../../Components/Form/AutocompleteComponen
 import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { usePPMPItemsHook } from "../../../Hooks/PPMPItemsHook";
 import { descriptionsData, procurement_mode } from "../../../Data/dummy";
+import usePPMPHook from "../../../Hooks/PPMPHook";
 
 const sampleData = [
   {
@@ -154,6 +155,7 @@ function PPMPItems(props) {
     handleSelectActivity,
     handleSelectExpense,
   } = usePPMPItemsHook();
+  const { ppmp, getPPMPItems } = usePPMPHook();
 
   const navigate = useNavigate();
   const [openAdd, setOpenAdd] = useState(false);
@@ -167,11 +169,30 @@ function PPMPItems(props) {
   };
 
   useEffect(() => {
+    setTimeout(() => {
+      // getPPMPItems((status, message, data) => {
+      //   if (status === 200) {
+      //     console.log("Items fetched successfully:", data);
+      //   } else {
+      //     console.error("Error fetching items:", message);
+      //   }
+      // });
+      setDescriptionData(descriptionsData);
+    }, 1000);
+  }, []);
+
+  // useEffect(() => {
+  //   if (ppmp?.ppmp_items && tableData.length === 0) {
+  //     setTableData(ppmp.ppmp_items);
+  //   }
+  // }, [ppmp]);
+
+  useEffect(() => {
     if (tableData.length === 0) {
       setTableData(sampleData);
     }
-    setDescriptionData(descriptionsData);
-  }, []);
+  }, [ppmp]);
+
   return (
     <Fragment>
       <ContainerComponent

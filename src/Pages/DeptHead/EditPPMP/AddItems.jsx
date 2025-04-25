@@ -1,5 +1,5 @@
 import { Box, Grid, Stack, Typography } from "@mui/joy";
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useEffect, useRef, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import ContainerComponent from "../../../Components/Common/ContainerComponent";
 import IconButtonComponent from "../../../Components/Common/IconButtonComponent";
@@ -44,43 +44,6 @@ const activityData = [
   },
 ];
 
-const products = new Array(50).fill(0).map((_, i) => {
-  const randomIndex = Math.floor(Math.random() * productNames.length);
-  return {
-    id: i + 3,
-    item_code: "ITM006",
-    activity_code: "ACT001",
-    activity_id: 1,
-    expense_class_id: "MOOE",
-    description: productNames[randomIndex],
-    classification: "Type A",
-    variant: "High-end",
-    estimated_budget: Math.floor(Math.random() * 10000) + 1000, // Price between 1000 and 11000,
-    category: categories[Math.floor(Math.random() * categories.length)],
-    aop_quantity: 0,
-    quantity: 0,
-    unit: "pcs",
-    total_amount: 0,
-    target_by_quarter: {
-      jan: 0,
-      feb: 0,
-      mar: 0,
-      apr: 0,
-      may: 0,
-      jun: 0,
-      jul: 0,
-      aug: 0,
-      sep: 0,
-      oct: 0,
-      nov: 0,
-      dec: 0,
-    },
-    fund_source: "Fund A",
-    remarks: "No remarks",
-    image: images[randomIndex],
-  };
-});
-
 function AddItems(props) {
   const { items, getItems } = useItemsHook();
   const {
@@ -100,9 +63,7 @@ function AddItems(props) {
     0
   );
   const { activityId, expenseId } = useParams();
-  const [displayedProducts, setDisplayedProducts] = useState(
-    products.slice(0, 8)
-  );
+  const [displayedProducts, setDisplayedProducts] = useState(items.slice(0, 8));
   const [hasMore, setHasMore] = useState(true);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -162,6 +123,7 @@ function AddItems(props) {
       window.location.href = "/edit-ppmp"; // This reloads + navigates
     }, 1000);
   };
+
   const handleSave = () => {
     const { cart, clearCart } = useItemCartHook.getState();
     const { setTableData, tableData, setLoading } = usePPMPItemsHook.getState();
@@ -186,7 +148,7 @@ function AddItems(props) {
   const fetchMoreData = () => {
     setTimeout(() => {
       const currentLength = displayedProducts.length;
-      const more = products.slice(currentLength, currentLength + 8);
+      const more = items.slice(currentLength, currentLength + 8);
       if (more.length === 0) {
         setHasMore(false);
         return;
@@ -194,6 +156,32 @@ function AddItems(props) {
       setDisplayedProducts((prev) => [...prev, ...more]);
     }, 1000); // simulate loading delay
   };
+  const loadMoreRef = useRef(null);
+
+  useEffect(() => {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        if (entries[0].isIntersecting && hasMore) {
+          fetchMoreData(); // Fetch more items when ref is visible
+        }
+      },
+      {
+        root: null,
+        rootMargin: "0px",
+        threshold: 1.0,
+      }
+    );
+
+    if (loadMoreRef.current) {
+      observer.observe(loadMoreRef.current);
+    }
+
+    return () => {
+      if (loadMoreRef.current) {
+        observer.unobserve(loadMoreRef.current);
+      }
+    };
+  }, [hasMore]);
 
   useEffect(() => {
     setCartMeta({
@@ -209,9 +197,17 @@ function AddItems(props) {
         }
       });
     }, 1000); // simulate loading delay
-  }, [getItems]);
+  }, []);
+
+  useEffect(() => {
+    if (items.length > 0) {
+      setDisplayedProducts(items.slice(0, 8));
+    }
+  }, [items]);
+
   return (
     <Fragment>
+      {console.log(displayedProducts)}
       <ContainerComponent
         title={`You are managing resources for Activity: ${activityInfo?.code}`}
         description={
@@ -336,44 +332,40 @@ function AddItems(props) {
                 borderColor: "neutral.100",
                 borderRadius: 10,
                 height: "83%",
-                overflow: "auto",
+                overflowY: "auto",
+                bgcolor: "red",
               }}
             >
-              <InfiniteScroll
-                dataLength={displayedProducts.length} // This is important field to render the next data
-                next={fetchMoreData}
-                hasMore={hasMore}
-                loader={
-                  <Typography sx={{ mt: 2, fontSize: 13, textAlign: "center" }}>
-                    Loading more items....
-                  </Typography>
-                }
-                scrollableTarget="scrollableItemsBox"
+              <Box
+                sx={{
+                  display: "grid",
+                  gridTemplateColumns: {
+                    xs: "repeat(1, 1fr)",
+                    sm: "repeat(2, 1fr)",
+                    md: "repeat(3, 1fr)",
+                    lg: "repeat(4, 1fr)",
+                  },
+                  width: "100%",
+                  gap: 4,
+                }}
               >
-                <Box
-                  sx={{
-                    display: "grid",
-                    gridTemplateColumns: {
-                      xs: "repeat(1, 1fr)",
-                      sm: "repeat(2, 1fr)",
-                      md: "repeat(3, 1fr)",
-                      lg: "repeat(4, 1fr)",
-                    },
-                    gap: 4,
-                  }}
-                >
-                  {displayedProducts.map((item, index) => (
-                    <ItemCardComponent
-                      key={index}
-                      item={item}
-                      btnAction={() => addToCart(item)}
-                      itemInfoAction={() => {
-                        handleOpenItemDialog(item);
-                      }}
-                    />
-                  ))}
+                {displayedProducts.map((item, index) => (
+                  <ItemCardComponent
+                    key={index}
+                    item={item}
+                    btnAction={() => addToCart(item)}
+                    itemInfoAction={() => {
+                      handleOpenItemDialog(item);
+                    }}
+                  />
+                ))}
+              </Box>
+              {/* Lazy loading trigger element */}
+              {hasMore && (
+                <Box ref={loadMoreRef} sx={{ mt: 2, textAlign: "center" }}>
+                  <Typography fontSize={13}>Loading more items...</Typography>
                 </Box>
-              </InfiniteScroll>
+              )}
             </Box>
           </Grid>
 
