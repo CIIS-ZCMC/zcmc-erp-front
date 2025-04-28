@@ -4,23 +4,35 @@ const useAccordionHook = create((set) => ({
   rotation: false,
   rotationId: null,
 
-  preventRotate: () => set(() => ({ rotation: false })),
-  handleExpand: (isOpen, setExpanded, id, name) => {
-    set(() => ({ rotation: true, rotationId: id }));
-    if (isOpen) {
-      setExpanded((prev) =>
-        Array.isArray(prev) ? prev.filter((item) => item.id !== id) : []
-      );
+  expandedParent: [{ name: "parent", id: 1 }],
+  expandedChild: [{ name: "child", id: 1 }],
+
+  preventRotate: () => set({ rotation: false }),
+
+  handleExpand: (isOpen, id, name) => {
+    set({ rotation: true, rotationId: id });
+
+    const updateState = (key, condition) =>
+      set((state) => ({
+        [key]: condition
+          ? state[key].filter((item) => item.id !== id)
+          : [...state[key], { id, name }],
+      }));
+
+    if (name === "child") {
+      updateState("expandedChild", isOpen);
     } else {
-      setExpanded((prev) =>
-        Array.isArray(prev) ? [...prev, { id, name }] : [{ id, name }]
-      );
+      updateState("expandedParent", isOpen);
     }
 
-    setTimeout(() => {
-      set(() => ({ rotation: false, rotationId: null }));
-    }, 500);
+    setTimeout(() => set({ rotation: false, rotationId: null }), 500);
   },
 }));
+
+export const useExpandedParent = () =>
+  useAccordionHook((state) => state.expandedParent);
+
+export const useExpandedChild = () =>
+  useAccordionHook((state) => state.expandedChild);
 
 export default useAccordionHook;

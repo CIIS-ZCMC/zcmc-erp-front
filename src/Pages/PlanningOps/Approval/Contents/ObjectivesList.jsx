@@ -1,4 +1,4 @@
-import React, { Fragment, useMemo, useState } from "react";
+import React, { Fragment, useEffect, useMemo, useState } from "react";
 import { localStorageGetter } from "../../../../Utils/LocalStorage";
 import { useAOPApplication } from "../../../../Hooks/AOP/AOPApplicationsHook";
 import { toCapitalize } from "../../../../Utils/Typography";
@@ -13,6 +13,10 @@ import {
   useActivityActions,
   useActivityUIStates,
 } from "../../../../Hooks/AOP/ActivityHook";
+import {
+  useExpandedChild,
+  useExpandedParent,
+} from "../../../../Hooks/AccordionHook";
 
 const ObjectivesList = () => {
   // HOOKS
@@ -26,12 +30,8 @@ const ObjectivesList = () => {
   const { activeActivity } = useActivityUIStates();
 
   // ACCORDION
-  const [expanded, setExpanded] = useState([
-    { name: "parent", id: AOPApplication[0]?.id },
-  ]);
-  const [expandedActivity, setExpandedActivity] = useState([
-    { name: "child", id: AOPApplication[0]?.id },
-  ]);
+  const expandedParent = useExpandedParent();
+  const expandedChild = useExpandedChild();
 
   //   MODAL
   const [openModal, setOpenModal] = useState(false);
@@ -47,6 +47,12 @@ const ObjectivesList = () => {
       getActivityById(id, () => {});
     }
   };
+
+  useEffect(() => {
+    if (AOPApplication?.[0]?.activities?.[0]?.id && !activeActivity) {
+      setActiveActivity(AOPApplication[0].activities[0].id);
+    }
+  }, [AOPApplication]);
 
   return (
     <Fragment>
@@ -64,9 +70,8 @@ const ObjectivesList = () => {
           ) => (
             <CustomAccordionComponent
               key={objective_key}
-              id={id}
-              expanded={expanded}
-              setExpanded={setExpanded}
+              id={objective_key + 1}
+              expanded={expandedParent}
               title={
                 <Typography>
                   Objective #{objective_key + 1} -
@@ -88,10 +93,9 @@ const ObjectivesList = () => {
 
                 <CustomAccordionComponent
                   size={"sm"}
-                  expanded={expandedActivity}
-                  setExpanded={setExpandedActivity}
+                  expanded={expandedChild}
                   title={`Activities (${activities?.length})`}
-                  id={id}
+                  id={objective_key + 1}
                   name="child"
                 >
                   <Stack gap={1}>
