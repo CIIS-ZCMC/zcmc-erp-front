@@ -103,9 +103,10 @@ const ScrollableEditableTableComponent = memo(
     const handleAutocompleteChange = useCallback(
       (e, rowIndex, field) => {
         const row = data[rowIndex];
+        console.log();
 
         if (onFieldChange) {
-          onFieldChange(field, e.label, row, (updatedRow) => {
+          onFieldChange(field, e.name, row, (updatedRow) => {
             const updatedRows = [...data];
             updatedRows[rowIndex] = updatedRow;
             console.log(updatedRows); // Log the updated
@@ -433,6 +434,7 @@ const ScrollableEditableTableComponent = memo(
                                     column.field
                                   )
                                 }
+                                getOptionLabel={(option) => option.name}
                                 onBlur={handleBlur}
                                 options={column.options}
                               />

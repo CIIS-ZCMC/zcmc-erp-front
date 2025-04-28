@@ -12,132 +12,8 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 import { usePPMPItemsHook } from "../../../Hooks/PPMPItemsHook";
 import { descriptionsData, procurement_mode } from "../../../Data/dummy";
 import usePPMPHook from "../../../Hooks/PPMPHook";
-
-const sampleData = [
-  {
-    id: 1,
-    item_code: "ITM001",
-    activity_code: "ACT001",
-    activity_id: 1,
-    expense_class_id: "MOOE",
-    description: "Item 1",
-    classification: "Type A",
-    estimated_budget: 5000,
-    category: "Category X",
-    aop_quantity: 50,
-    quantity: 0,
-    unit: "pcs",
-    total_amount: 0,
-    target_by_quarter: {
-      jan: 0,
-      feb: 0,
-      mar: 0,
-      apr: 0,
-      may: 0,
-      jun: 0,
-      jul: 0,
-      aug: 0,
-      sep: 0,
-      oct: 0,
-      nov: 0,
-      dec: 0,
-    },
-    procurement_mode: "Fund A",
-    remarks: "No remarks",
-  },
-  {
-    id: 2,
-    item_code: "ITM002",
-    activity_code: "ACT002",
-    activity_id: 1,
-    expense_class_id: "MOOE",
-    description: "Item 2",
-    classification: "Type B",
-    category: "Category X",
-    estimated_budget: 5000,
-    aop_quantity: 50,
-    quantity: 0,
-    unit: "pcs",
-    total_amount: 0,
-    target_by_quarter: {
-      jan: 0,
-      feb: 0,
-      mar: 0,
-      apr: 0,
-      may: 0,
-      jun: 0,
-      jul: 0,
-      aug: 0,
-      sep: 0,
-      oct: 0,
-      nov: 0,
-      dec: 0,
-    },
-    procurement_mode: "Fund A",
-    remarks: "No remarks",
-  },
-  {
-    id: 3,
-    item_code: "ITM003",
-    activity_code: "ACT003",
-    activity_id: 1,
-    expense_class_id: "MOOE",
-    description: "Item 3",
-    classification: "Type C",
-    category: "Category X",
-    estimated_budget: 5000,
-    aop_quantity: 50,
-    quantity: 0,
-    unit: "pcs",
-    total_amount: 0,
-    target_by_quarter: {
-      jan: 0,
-      feb: 0,
-      mar: 0,
-      apr: 0,
-      may: 0,
-      jun: 0,
-      jul: 0,
-      aug: 0,
-      sep: 0,
-      oct: 0,
-      nov: 0,
-      dec: 0,
-    },
-    procurement_mode: "Fund A",
-    remarks: "No remarks",
-  },
-  // Add more sample rows as needed
-];
-
-const activityData = [
-  {
-    value: 1,
-    label: "#0001",
-    description: "Sample description for activity 1",
-  },
-  {
-    value: 2,
-    label: "#0002",
-    description: "Sample description for activity 2",
-  },
-  {
-    value: 3,
-    label: "#0003",
-    description: "Sample description for activity 3",
-  },
-];
-
-const expenseClassData = [
-  {
-    label: "MOOE",
-    value: "MOOE",
-  },
-  {
-    label: "CO",
-    value: "CO",
-  },
-];
+import useItemsHook from "../../../Hooks/ItemsHook";
+import { expenseClassData } from "../../../Data/constants";
 
 function PPMPItems(props) {
   const {
@@ -148,14 +24,16 @@ function PPMPItems(props) {
     description,
     expenseClass,
     setTableData,
-    setDescriptionData,
+    setItemsData,
     setLoading,
     handleFieldChange,
     handleDeleteRow,
     handleSelectActivity,
     handleSelectExpense,
   } = usePPMPItemsHook();
-  const { ppmp, getPPMPItems } = usePPMPHook();
+  const { ppmp, modes, activities, getPPMPItems, getProcModes, getActivities } =
+    usePPMPHook();
+  const { items, getItems } = useItemsHook();
 
   const navigate = useNavigate();
   const [openAdd, setOpenAdd] = useState(false);
@@ -169,32 +47,56 @@ function PPMPItems(props) {
   };
 
   useEffect(() => {
-    setTimeout(() => {
-      // getPPMPItems((status, message, data) => {
-      //   if (status === 200) {
-      //     console.log("Items fetched successfully:", data);
-      //   } else {
-      //     console.error("Error fetching items:", message);
-      //   }
-      // });
-      setDescriptionData(descriptionsData);
-    }, 1000);
+    async function fetchData() {
+      try {
+        setLoading(true);
+
+        await Promise.all([
+          new Promise((resolve) =>
+            getPPMPItems((status, message, data) => resolve())
+          ),
+          new Promise((resolve) =>
+            getItems((status, message, data) => resolve())
+          ),
+          new Promise((resolve) =>
+            getProcModes((status, message, data) => resolve())
+          ),
+          new Promise((resolve) =>
+            getActivities((status, message, data) => resolve())
+          ),
+        ]);
+      } catch (error) {
+        console.error("Error fetching data", error);
+      } finally {
+        setLoading(false);
+      }
+    }
+
+    fetchData();
   }, []);
 
+  useEffect(() => {
+    if (!loading) {
+      if (ppmp?.ppmp_items?.length && tableData.length === 0) {
+        setTableData(ppmp.ppmp_items);
+      }
+    }
+  }, [loading, ppmp]);
+
+  useEffect(() => {
+    if (!loading && items?.length) {
+      setItemsData(items);
+    }
+  }, [loading, items]);
   // useEffect(() => {
-  //   if (ppmp?.ppmp_items && tableData.length === 0) {
-  //     setTableData(ppmp.ppmp_items);
+  //   if (tableData.length === 0) {
+  //     setTableData(sampleData);
   //   }
   // }, [ppmp]);
 
-  useEffect(() => {
-    if (tableData.length === 0) {
-      setTableData(sampleData);
-    }
-  }, [ppmp]);
-
   return (
     <Fragment>
+      {console.log(items)}
       <ContainerComponent
         title={"List of items"}
         description={
@@ -219,7 +121,7 @@ function PPMPItems(props) {
         }
       >
         <ScrollableEditableTableComponent
-          columns={ppmpHeaders(handleDeleteRow)}
+          columns={ppmpHeaders(handleDeleteRow, items, modes)}
           data={tableData}
           onFieldChange={handleFieldChange}
           isLoading={loading}
@@ -245,7 +147,8 @@ function PPMPItems(props) {
             <Stack spacing={2}>
               <AutocompleteComponent
                 label={"Select one activity"}
-                options={activityData}
+                options={activities}
+                getOptionLabel={(option) => option.activity_code}
                 handleSelect={handleSelectActivity}
                 value={activity}
                 size="sm"

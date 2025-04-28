@@ -25,23 +25,23 @@ function AutocompleteComponent({
   return (
     <FormControl sx={{ width: width }} {...props}>
       {label && <FormLabel>{label}</FormLabel>}
+      {console.log(value)}
       <Autocomplete
         startDecorator={startDecorator}
         size={size}
         placeholder={placeholder}
-        onChange={(_, event) => {
-          handleSelect ? handleSelect(event) : handleChange(event);
+        onChange={(_, newValue) => {
+          handleSelect ? handleSelect(newValue) : handleChange(event);
         }}
         value={value}
         options={options}
-        name={name}
-        // getOptionLabel={(option) => console.log(option.label)}
+        // name={name}
+        getOptionLabel={getOptionLabel}
         sx={{
           fontSize: getFontSize(size),
           background: darkMode ? "none" : "inherit",
           color: darkMode ? "white" : "inherit",
         }}
-        getOptionLabel={getOptionLabel}
       />
       {helperText && (
         <FormHelperText sx={{ fontSize: getFontSize(size) ?? 12 }}>

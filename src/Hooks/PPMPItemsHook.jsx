@@ -10,37 +10,43 @@ export const usePPMPItemsHook = create(
       activityId: "",
       description: "",
       expenseClass: "",
-      descriptionsData: [],
+      itemsData: [],
 
       setTableData: (data) => set({ tableData: data }),
-      setDescriptionData: (data) => set({ descriptionsData: data }),
+      setItemsData: (data) => set({ itemsData: data }),
       setLoading: (value) => set({ loading: value }),
 
       calculateQuantity: (target) =>
         Object.values(target).reduce((sum, value) => sum + value, 0),
 
       handleFieldChange: (fieldName, newValue, row, updateRow) => {
-        const { calculateQuantity, setLoading, descriptionsData } = get();
-
+        const { calculateQuantity, setLoading, itemsData } = get();
+        console.log(newValue);
         if (fieldName === "description") {
           setLoading(true);
-          const selected = descriptionsData.find(
-            (item) => item.label === newValue
-          );
+          const selected = itemsData.find((item) => item.name === newValue);
+          console.log(selected);
           setTimeout(() => {
             if (selected) {
+              console.log("here me");
               updateRow({
                 ...row,
                 description: newValue,
-                classification: selected.classification,
-                category: selected.category,
+                item_code: selected?.code,
+                classification: selected?.classification,
+                category: selected?.category,
+                unit: selected?.unit,
+                estimated_budget: selected?.estimated_budget,
               });
             } else {
               updateRow({
                 ...row,
                 description: newValue,
+                item_code: "",
                 classification: "",
                 category: "",
+                unit: "",
+                estimated_budget: "",
               });
             }
             set({ loading: false });
@@ -92,10 +98,11 @@ export const usePPMPItemsHook = create(
       },
 
       handleSelectActivity: (event) => {
+        console.log(event);
         set({
-          activity: event.label,
-          activityId: event.value,
-          description: event.description,
+          activity: event.activity_code,
+          activityId: event.id,
+          description: event.name,
         });
       },
 

@@ -1,5 +1,11 @@
 import { Box, Grid, Stack, Typography } from "@mui/joy";
-import React, { Fragment, useEffect, useRef, useState } from "react";
+import React, {
+  Fragment,
+  useCallback,
+  useEffect,
+  useRef,
+  useState,
+} from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import ContainerComponent from "../../../Components/Common/ContainerComponent";
 import IconButtonComponent from "../../../Components/Common/IconButtonComponent";
@@ -43,8 +49,12 @@ const activityData = [
     description: "Sample description for activity 3",
   },
 ];
+const ITEMS_PER_BATCH = 12;
 
 function AddItems(props) {
+  const navigate = useNavigate();
+  const { activityId, expenseId } = useParams();
+
   const { items, getItems } = useItemsHook();
   const {
     setCartMeta,
@@ -56,17 +66,14 @@ function AddItems(props) {
   } = useItemCartHook();
   const { setAlertDialog, setConfirmationModal, closeConfirmation } =
     useModalHook();
-  const navigate = useNavigate();
-  const totalQty = cart.reduce((sum, item) => sum + item.quantity, 0);
-  const totalPrice = cart.reduce(
-    (sum, item) => sum + item.quantity * item.estimated_budget,
-    0
-  );
-  const { activityId, expenseId } = useParams();
-  const [displayedProducts, setDisplayedProducts] = useState(items.slice(0, 8));
+
+  const loadMoreRef = useRef(null);
+
+  const [displayedItems, setDisplayedItems] = useState([]);
   const [hasMore, setHasMore] = useState(true);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [selectedItem, setSelectedItem] = useState(null);
 
@@ -80,12 +87,14 @@ function AddItems(props) {
         description: activity.description,
       }
     : null;
-
+  const totalQty = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const totalPrice = cart.reduce(
+    (sum, item) => sum + item.quantity * item.estimated_budget,
+    0
+  );
   const handleCollapseClick = () => {
     setIsCollapsed((prev) => !prev);
   };
-
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   const handleOpenItemDialog = (item) => {
     setSelectedItem(item);
@@ -99,7 +108,7 @@ function AddItems(props) {
 
   const add = () => {
     addToCart(selectedItem, quantity);
-    setIsDialogOpen(false);
+    handleCloseItemDialog();
   };
 
   const handleConfirmationModal = () => {
@@ -131,10 +140,9 @@ function AddItems(props) {
     setLoading(true);
 
     const existingIds = new Set(tableData.map((item) => item.id));
-    const filteredCart = cart.filter((item) => !existingIds.has(item.id));
+    const newItems = cart.filter((item) => !existingIds.has(item.id));
 
-    const mergedTableData = [...tableData, ...filteredCart];
-    setTableData(mergedTableData);
+    setTableData([...tableData, ...newItems]);
 
     clearCart();
 
@@ -145,31 +153,27 @@ function AddItems(props) {
     }, 500);
   };
 
-  const fetchMoreData = () => {
-    setTimeout(() => {
-      const currentLength = displayedProducts.length;
-      const more = items.slice(currentLength, currentLength + 8);
-      if (more.length === 0) {
-        setHasMore(false);
-        return;
-      }
-      setDisplayedProducts((prev) => [...prev, ...more]);
-    }, 1000); // simulate loading delay
-  };
-  const loadMoreRef = useRef(null);
+  const fetchMoreItems = useCallback(() => {
+    if (!items.length) return;
 
+    setDisplayedItems((prev) => {
+      const nextItems = items.slice(prev.length, prev.length + ITEMS_PER_BATCH);
+      if (nextItems.length === 0) {
+        setHasMore(false);
+      }
+      return [...prev, ...nextItems];
+    });
+  }, [items]);
+
+  // Observe loadMoreRef
   useEffect(() => {
     const observer = new IntersectionObserver(
       (entries) => {
         if (entries[0].isIntersecting && hasMore) {
-          fetchMoreData(); // Fetch more items when ref is visible
+          fetchMoreItems();
         }
       },
-      {
-        root: null,
-        rootMargin: "0px",
-        threshold: 1.0,
-      }
+      { threshold: 1.0 }
     );
 
     if (loadMoreRef.current) {
@@ -178,36 +182,30 @@ function AddItems(props) {
 
     return () => {
       if (loadMoreRef.current) {
-        observer.unobserve(loadMoreRef.current);
+        observer.disconnect();
       }
     };
-  }, [hasMore]);
+  }, [fetchMoreItems, hasMore]);
 
   useEffect(() => {
-    setCartMeta({
-      activity_id: activityId,
-      expense_class_id: expenseId,
+    setCartMeta({ activity_id: activityId, expense_class_id: expenseId });
+
+    getItems((status, message, data) => {
+      if (status !== 200) {
+        console.error("Failed to fetch items:", message);
+      }
     });
-    setTimeout(() => {
-      getItems((status, message, data) => {
-        if (status === 200) {
-          console.log("Items fetched successfully:", data);
-        } else {
-          console.error("Error fetching items:", message);
-        }
-      });
-    }, 1000); // simulate loading delay
   }, []);
 
   useEffect(() => {
-    if (items.length > 0) {
-      setDisplayedProducts(items.slice(0, 8));
+    if (items.length) {
+      setDisplayedItems(items.slice(0, ITEMS_PER_BATCH));
     }
   }, [items]);
 
   return (
     <Fragment>
-      {console.log(displayedProducts)}
+      {console.log(displayedItems)}
       <ContainerComponent
         title={`You are managing resources for Activity: ${activityInfo?.code}`}
         description={
@@ -331,7 +329,7 @@ function AddItems(props) {
                 border: 1,
                 borderColor: "neutral.100",
                 borderRadius: 10,
-                height: "83%",
+                height: "80%",
                 overflowY: "auto",
                 bgcolor: "red",
               }}
@@ -349,7 +347,7 @@ function AddItems(props) {
                   gap: 4,
                 }}
               >
-                {displayedProducts.map((item, index) => (
+                {displayedItems.map((item, index) => (
                   <ItemCardComponent
                     key={index}
                     item={item}
@@ -360,17 +358,13 @@ function AddItems(props) {
                   />
                 ))}
               </Box>
-              {/* Lazy loading trigger element */}
-              {hasMore && (
-                <Box ref={loadMoreRef} sx={{ mt: 2, textAlign: "center" }}>
-                  <Typography fontSize={13}>Loading more items...</Typography>
-                </Box>
-              )}
+              <div ref={loadMoreRef}>Loading more items...</div>
             </Box>
           </Grid>
 
           {/* Right: Cart */}
           <Grid
+            xs={4}
             sx={{
               width: 350,
               height: "100%",

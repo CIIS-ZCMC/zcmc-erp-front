@@ -4,6 +4,7 @@ import { BsOpencollective } from "react-icons/bs";
 import { IoOpen, IoOpenOutline } from "react-icons/io5";
 import { MdDeleteOutline } from "react-icons/md";
 import { descriptionsData, procurement_mode } from "./dummy";
+import ChipComponent from "../Components/Common/ChipComponent";
 
 export const objHeaders = [
   { field: "id", name: "Row #", align: "center", width: "50px" },
@@ -259,7 +260,7 @@ export const AOP_RESOURCE_HEADER = [
   },
 ];
 
-export const ppmpHeaders = (handleDeleteRow) => [
+export const ppmpHeaders = (handleDeleteRow, items, modes) => [
   // {
   //   field: "id",
   //   name: "Row #",
@@ -281,14 +282,27 @@ export const ppmpHeaders = (handleDeleteRow) => [
     inputType: "dropdown",
     width: "200px",
     align: "center",
-    options: descriptionsData,
+    options: items,
   },
   {
     field: "activity_code",
     name: "Activity Code",
-    width: "70px",
+    width: 100,
     align: "center",
     display: "none",
+    render: (params) => {
+      return (
+        <>
+          {params?.activities?.map((act, index) => (
+            <ChipComponent
+              key={act.activity_id}
+              label={act.activity_code}
+              size="sm"
+            />
+          ))}
+        </>
+      );
+    },
   },
   {
     field: "classification",
@@ -310,7 +324,7 @@ export const ppmpHeaders = (handleDeleteRow) => [
   },
   {
     field: "quantity",
-    name: "Quantity",
+    name: "Quantity Inputted",
     width: 100,
     align: "center",
   },
@@ -352,7 +366,7 @@ export const ppmpHeaders = (handleDeleteRow) => [
     width: 150,
     align: "center",
     inputType: "dropdown",
-    options: procurement_mode,
+    options: modes,
   },
   {
     field: "remarks",
