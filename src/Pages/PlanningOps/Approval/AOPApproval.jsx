@@ -14,6 +14,9 @@ import {
 } from "../../../Hooks/AOP/AOPApplicationsHook";
 import AOPCardComponent from "../../../Components/Common/Card/AOPCardComponent";
 import { toCapitalize } from "../../../Utils/Typography";
+import { TEST_MODE } from "../../../Services/Config";
+import { MANAGE_AOP_APPROVAL } from "../../../Data/TestData";
+
 const AOPApproval = () => {
   // HOOKS
   const { getAOPApplications, getAOPApplicationById } =
@@ -31,6 +34,7 @@ const AOPApproval = () => {
     getAOPApplications(() => {});
   }, []);
 
+  const APPLICATIONS = TEST_MODE ? MANAGE_AOP_APPROVAL : AOPApplications;
   return (
     <Fragment>
       <Stack gap={3}>
@@ -70,7 +74,7 @@ const AOPApproval = () => {
                 overflow: "auto",
               }}
             >
-              {AOPApplications?.map(
+              {APPLICATIONS?.map(
                 ({ id, created_on, date_approved, status }, index) => (
                   <Grid key={index} item="true" xs={4}>
                     <AOPCardComponent

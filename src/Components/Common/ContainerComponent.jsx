@@ -26,6 +26,7 @@ function ContainerComponent({
   noPadding,
   footer,
   noBoxShadow,
+  isLoading,
   ...props
 }) {
   const CustomSheet = styled(Sheet)(({ theme }) => ({
@@ -73,7 +74,7 @@ function ContainerComponent({
           minHeight: contentMinHeight || "auto",
         }}
       >
-        {children}
+        {isLoading ? "Loading" : children}
       </Box>
       {footer && (
         <Box mt={2}>

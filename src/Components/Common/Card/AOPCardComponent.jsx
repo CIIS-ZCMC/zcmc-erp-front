@@ -6,6 +6,7 @@ import BoxComponent from "./BoxComponent";
 import { getStatusColorScheme } from "../../../Utils/ColorScheme";
 import ChipComponent from "../ChipComponent";
 import { ExternalLink, MapPin } from "lucide-react";
+import { toCapitalize } from "../../../Utils/Typography";
 
 AOPCardComponent.propTypes = {
   title: PropTypes.string,
@@ -85,7 +86,7 @@ function AOPCardComponent({
           <ChipComponent
             status={status}
             variant={"soft"}
-            label={statusLabel ?? status}
+            label={toCapitalize(statusLabel ?? status)}
             color={getStatusColorScheme(status)}
           />
         </Stack>

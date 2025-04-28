@@ -2,10 +2,14 @@ import { create } from "zustand";
 import { post } from "../Services/RequestMethods";
 import { API } from "../Data/constants";
 
+export const COMMENT = "activity-comments";
+
 const useCommentHook = create((set) => ({
+  comments: [],
   comment: "",
 
   actions: {
+    getComments: (data) => set({ comments: data }),
     setComment: (data) => set({ comment: data }),
     postComment: (body, callback) => {
       try {
@@ -15,7 +19,7 @@ const useCommentHook = create((set) => ({
         dataToSubmit.append("activity_id", body.activityId);
 
         post({
-          url: API.COMMENT,
+          url: COMMENT,
           form: dataToSubmit,
           success: (response) => {
             const { data } = response.data;
@@ -35,6 +39,8 @@ const useCommentHook = create((set) => ({
     },
   },
 }));
+
+export default useCommentHook;
 
 export const useComment = () => useCommentHook((state) => state.comment);
 

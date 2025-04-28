@@ -4,7 +4,7 @@ export const ITEM_IMAGE = {
 
 export const MANAGE_AOP_APPROVAL = [
   {
-    id: 1234,
+    id: 1,
     function_description: "Core",
     objective:
       "This is a sample objective for the Core function. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
@@ -36,7 +36,7 @@ export const MANAGE_AOP_APPROVAL = [
   },
 
   {
-    id: 5678,
+    id: 2,
     function_description: "Support",
     objective:
       "This is a sample objective for the Support function. Lorem ipsum dolor sit amet, consectetur adipiscing elit. Sed do eiusmod tempor incididunt ut labore et dolore magna aliqua.",
@@ -60,7 +60,7 @@ export const MANAGE_AOP_APPROVAL = [
     ],
   },
   {
-    id: 9101,
+    id: 3,
     function_description: "Strategic",
     objective: "This is a sample objective for the Operations function",
     success_indicator: "This is yet another sample success indicator",

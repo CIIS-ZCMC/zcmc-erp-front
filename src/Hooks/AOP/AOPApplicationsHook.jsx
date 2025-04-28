@@ -3,10 +3,14 @@ import { create } from "zustand";
 import { localStorageSetter } from "../../Utils/LocalStorage";
 import { read } from "../../Services/RequestMethods";
 import { API } from "../../Data/constants";
+import { MANAGE_AOP_APPROVAL } from "../../Data/TestData";
 
 const useAOPApplicationsHook = create((set) => ({
   aopApplications: [],
   aopApplication: null,
+
+  isLoading: false,
+
   actions: {
     // GET ALL AOP APPLICATIONS
     getAOPApplications: (callback) => {
@@ -23,13 +27,18 @@ const useAOPApplicationsHook = create((set) => ({
 
     // GET AOP APPLICATION BY ID
     getAOPApplicationById: (id, callback) => {
+      set({ isLoading: true });
+
       read({
         url: `${API.MANAGE_AOP_REQUEST}/${id}`,
-        failed: callback,
+        failed: () => {
+          callback();
+          set({ isLoading: false });
+        },
         success: (response) => {
           const { data, message } = response.data;
 
-          set({ aopApplication: data });
+          set({ aopApplication: data, isLoading: false });
           localStorageSetter("aopApplication", data); // STORE TO LOCALSTORAGE
 
           callback(200, message);
@@ -47,3 +56,6 @@ export const useAOPApplication = () =>
 
 export const useAOPApplicationsActions = () =>
   useAOPApplicationsHook((state) => state.actions);
+
+export const useLoadingState = () =>
+  useAOPApplicationsHook((state) => state.isLoading);

@@ -27,10 +27,14 @@ import { ACTIVITY_COMMENTS, MANAGE_AOP_APPROVAL } from "../../../Data/TestData";
 import ModalComponent from "../../../Components/Common/Dialog/ModalComponent";
 import useModalHook from "../../../Hooks/ModalHook";
 import InputComponent from "../../../Components/Form/InputComponent";
-import { useAOPApplication } from "../../../Hooks/AOP/AOPApplicationsHook";
+import {
+  useAOPApplication,
+  useLoadingState,
+} from "../../../Hooks/AOP/AOPApplicationsHook";
 import {
   useActivity,
   useActivityActions,
+  useActivityStates,
 } from "../../../Hooks/AOP/ActivityHook";
 import { localStorageGetter } from "../../../Utils/LocalStorage";
 import RadioButtonComponent from "../../../Components/Common/RadioButtonComponent";
@@ -39,6 +43,7 @@ import ObjectivesList from "./Contents/ObjectivesList";
 import ScrollableTableComponent from "../../../Components/Common/Table/ScrollableTableComponent";
 import { resourcesHeader } from "../../../Data/Columns";
 import ScrollableEditableTableComponent from "../../../Components/Common/Table/ScrollableEditableTable";
+import NoResultComponent from "../../../Components/Common/Table/NoResultComponent";
 
 export default function ManageAOP() {
   const { id } = useParams();
@@ -50,6 +55,8 @@ export default function ManageAOP() {
   // AOP HOOK
   const AOPApplication =
     useAOPApplication() ?? localStorageGetter("aopApplication");
+
+  const isAOPLoading = useLoadingState();
 
   // ACTIVITY HOOK
   const defaultActivityId = AOPApplication[0]?.activities[0]?.id;
@@ -169,13 +176,15 @@ export default function ManageAOP() {
             <Grid item="true" xs={4} mt={3}>
               <ContainerComponent
                 noBoxShadow
-                title={"Objective #1’s activity #4"}
+                // title={`Objective #${objectiveNumber}’s activity #${activityNumber}`}
+                title={"Activity details"}
                 description={
                   "This is a subheading. It should add more context to the interaction."
                 }
                 scrollable
                 contentMaxHeight={"49vh"}
                 contentMinHeight={"49vh"}
+                isLoading={isAOPLoading}
                 footer={
                   <Stack gap={2}>
                     {/* REVIEW */}
@@ -340,7 +349,7 @@ export default function ManageAOP() {
               </ContainerComponent>
             </Grid>
 
-            {/* ACTIVITY DETAILS  */}
+            {/* COMMENTS  */}
             <Grid item="true" xs={4} mt={3}>
               <ContainerComponent
                 noBoxShadow
@@ -352,13 +361,16 @@ export default function ManageAOP() {
                 contentMaxHeight={"35.8vh"}
                 contentMinHeight={"35.8vh"}
                 footer={<PostCommentComponent activityId={activityId} />}
+                isLoading={isAOPLoading}
               >
                 <Stack gap={2.5} mr={1}>
-                  {comments.map(({ user, comment, date }, index) => (
+                  {comments?.length == 0 && <NoResultComponent />}
+                  {comments?.map(({ name, area, comment, date }, index) => (
                     <SimpleCommentComponent
                       key={index}
-                      name={user}
+                      name={name}
                       comment={comment}
+                      area_code={area}
                       date={date}
                     />
                   ))}

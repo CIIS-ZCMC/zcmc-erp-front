@@ -99,4 +99,9 @@ export const API = {
   USERS: "get-users",
   JOB_POSITIONS: "get-designations",
   AREAS: "get-areas",
+
+  // AOP REQUESTS
+  AOP_REQUESTS: "aop-requests",
+  MANAGE_AOP_REQUEST: "manage-aop-request",
+  SHOW_OBJECTIVE: "show-objective-activity",
 };
