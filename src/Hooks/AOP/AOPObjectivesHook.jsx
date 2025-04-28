@@ -1,5 +1,31 @@
 import { create } from 'zustand';
 
+const aopActivity = {
+    activity_code: '',
+    name: '',
+    is_gad_related: false,
+    cost: 0,
+    start_month: '',
+    end_month: '',
+    target: {
+        first_quarter: '',
+        second_quarter: '',
+        third_quarter: '',
+        fourth_quarter: '',
+    },
+    resources: [],
+    responsible_people: [
+        {
+            user_id: null,
+            designation_id: null,
+            division_id: null,
+            department_id: null,
+            section_id: null,
+            unit_id: null
+        }
+    ],
+}
+
 const useAOPObjectivesHooks = create((set, get) => ({
     // Initial 3 default objectives
     aopObjectives: Array.from({ length: 3 }, (_, index) => ({
@@ -9,20 +35,7 @@ const useAOPObjectivesHooks = create((set, get) => ({
         activities: [
             {
                 id: `${index + 1}-1`,
-                activity_code: '',
-                name: '',
-                is_gad_related: false,
-                cost: 0,
-                start_month: '',
-                end_month: '',
-                target: {
-                    first_quarter: '',
-                    second_quarter: '',
-                    third_quarter: '',
-                    fourth_quarter: '',
-                },
-                resources: [],
-                responsible_people: [],
+                ...aopActivity
             }
         ],
     })),
@@ -71,6 +84,29 @@ const useAOPObjectivesHooks = create((set, get) => ({
         }));
     },
 
+    setAopObjective: (objectiveId, activityId, responsiblePeople) => {
+
+        console.log(typeof (objectiveId))
+
+        set((state) => ({
+            aopObjectives: state.aopObjectives.map((objective) =>
+                objective.id === objectiveId
+                    ? {
+                        ...objective,
+                        activities: objective.activities.map((activity) =>
+                            activity.id === activityId
+                                ? {
+                                    ...activity,
+                                    responsible_people: responsiblePeople,
+                                }
+                                : activity
+                        ),
+                    }
+                    : objective
+            ),
+        }));
+    },
+
     // Add new objective row
     addObjective: () => {
         const currentObjectives = get().aopObjectives;
@@ -91,6 +127,7 @@ const useAOPObjectivesHooks = create((set, get) => ({
 
     //Add new activity
     addActivity: (objectiveId) => {
+
         set((state) => ({
             aopObjectives: state.aopObjectives.map((objective) =>
                 objective.id === objectiveId

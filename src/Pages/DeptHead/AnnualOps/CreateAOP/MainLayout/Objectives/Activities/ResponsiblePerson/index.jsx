@@ -1,7 +1,9 @@
 import React, { Fragment, useState, useEffect } from 'react';
 import { Stack, Grid, } from '@mui/joy';
+import { useNavigate, useLocation } from 'react-router-dom';
 
 import useResponsiblePersonHook from '../../../../../../../../Hooks/ResponsiblePersonHook';
+import useAOPObjectivesHooks from '../../../../../../../../Hooks/AOP/AOPObjectivesHook';
 
 //Custom Components
 import ButtonComponent from '../../../../../../../../Components/Common/ButtonComponent';
@@ -17,49 +19,76 @@ import { AOP_CONSTANTS } from '../../../../../../../../Data/constants';
 
 const ResponsiblePerson = () => {
 
+    const navigate = useNavigate();
+    const location = useLocation();
+
+    const pathSegments = location.pathname.split('/');
+
+    const objectiveId = pathSegments[3]
+    const activityId = pathSegments[5];
+
+    useEffect(() => {
+        console.log(typeof (objectiveId))
+        console.log(typeof (activityId))
+    }, [])
+
+
     const { users, designations, areas } = useResponsiblePersonHook();
 
+    const setAopObjective = useAOPObjectivesHooks((state) => state.setAopObjective);
+
+    const [responsiblePeople, setResponsiblePeople] = useState([
+        {
+            userId: null,
+            designationId: null,
+            divisionId: null,
+            departmentId: null,
+            sectionId: null,
+            unitId: null
+        }
+    ])
+
+    useEffect(() => {
+        console.log(responsiblePeople)
+    }, [responsiblePeople])
+
     const handleSaveAssignment = () => {
-        const responsiblePeople = [];
+        const updatedResponsiblePeople = [
+            ...users.map((user) => ({
+                userId: user.id,
+                designationId: null,
+                divisionId: null,
+                departmentId: null,
+                sectionId: null,
+                unitId: null
+            })),
+            ...designations.map((designation) => ({
+                userId: null,
+                designationId: designation.id,
+                divisionId: null,
+                departmentId: null,
+                sectionId: null,
+                unitId: null
+            })),
+            ...areas.map((area) => ({
+                userId: null,
+                designationId: null,
+                divisionId: area.type === "division" ? area.id : null,
+                departmentId: area.type === "department" ? area.id : null,
+                sectionId: area.type === "section" ? area.id : null,
+                unitId: area.type === "unit" ? area.id : null
+            }))
+        ];
 
-        // Add entries from users
-        users.forEach((user) => {
-            responsiblePeople.push({
-                user_id: user.id,
-                designation_id: null,
-                division_id: null,
-                department_id: null,
-                section_id: null,
-                unit_id: null
-            });
-        });
+        // setAopObjective from objectives hooks
+        setAopObjective(Number(objectiveId), String(activityId), updatedResponsiblePeople); // Here we use example values for objectiveId and activityId
 
-        // Add entries from designations
-        designations.forEach((designation) => {
-            responsiblePeople.push({
-                user_id: null,
-                designation_id: designation.id,
-                division_id: null,
-                department_id: null,
-                section_id: null,
-                unit_id: null
-            });
-        });
-
-        // Add entries from areas
-        areas.forEach((area) => {
-            responsiblePeople.push({
-                user_id: null,
-                designation_id: null,
-                division_id: area.type === "division" ? area.id : null,
-                department_id: area.type === "department" ? area.id : null,
-                section_id: area.type === "section" ? area.id : null,
-                unit_id: area.type === "unit" ? area.id : null,
-            });
-        });
-
-        console.log("Formatted Responsible People:", responsiblePeople);
+        navigate(`/aop-create/activities/${objectiveId}`)
     };
+
+    const handleCancel = () => {
+        navigate(`/aop-create/activities/${objectiveId}`)
+    }
 
     return (
         <Fragment>
@@ -84,7 +113,10 @@ const ResponsiblePerson = () => {
                         sm={2}
                         md={4}
                     >
-                        <PersonSection />
+                        <PersonSection
+                            responsiblePeople={responsiblePeople}
+                            setResponsiblePeople={setResponsiblePeople}
+                        />
                     </Grid>
 
                     <Grid
@@ -115,6 +147,7 @@ const ResponsiblePerson = () => {
                     gap={1}
                 >
                     <ButtonComponent
+                        onClick={() => handleCancel()}
                         label={'Cancel Selection'}
                         size={'md'}
                         variant={'outlined'}
