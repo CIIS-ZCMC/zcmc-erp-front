@@ -384,6 +384,7 @@ export default function ManageAOP() {
           />
         }
         hasActionButtons
+        noRightButton
       />
 
       {/* PROCESS REQUEST */}

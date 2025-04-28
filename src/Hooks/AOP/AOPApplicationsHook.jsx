@@ -24,7 +24,7 @@ const useAOPApplicationsHook = create((set) => ({
     // GET AOP APPLICATION BY ID
     getAOPApplicationById: (id, callback) => {
       read({
-        url: `API.MANAGE_AOP_REQUEST/${id}`,
+        url: `${API.MANAGE_AOP_REQUEST}/${id}`,
         failed: callback,
         success: (response) => {
           const { data, message } = response.data;

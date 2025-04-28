@@ -13,6 +13,7 @@ import {
   useAOPApplicationsActions,
 } from "../../../Hooks/AOP/AOPApplicationsHook";
 import AOPCardComponent from "../../../Components/Common/Card/AOPCardComponent";
+import { toCapitalize } from "../../../Utils/Typography";
 const AOPApproval = () => {
   // HOOKS
   const { getAOPApplications, getAOPApplicationById } =
@@ -60,7 +61,7 @@ const AOPApproval = () => {
             {/* LIST */}
             <Grid
               container
-              spacing={{ xs: 2, md: 4 }}
+              spacing={{ xs: 2, md: 3 }}
               columns={{ sm: 4, md: 8, xl: 12 }}
               sx={{
                 flexGrow: 1,
@@ -76,7 +77,7 @@ const AOPApproval = () => {
                       date_requested={created_on}
                       date_approved={date_approved}
                       status={status}
-                      statusLabel={status}
+                      statusLabel={toCapitalize(status)}
                       onClick={() => handleClickCard(id)}
                     />
                   </Grid>
