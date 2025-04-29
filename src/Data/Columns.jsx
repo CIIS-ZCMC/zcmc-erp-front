@@ -287,6 +287,19 @@ export const ppmpHeaders = (handleDeleteRow, items, modes) => [
     name: "Quantity Inputted",
     width: 100,
     align: "center",
+    render: (params) => {
+      return (
+        <>
+          {params?.quantity ? (
+            <Typography>
+              &#8369; {params?.quantity?.toLocaleString()}
+            </Typography>
+          ) : (
+            "-"
+          )}
+        </>
+      );
+    },
   },
   {
     field: "unit",
@@ -299,6 +312,19 @@ export const ppmpHeaders = (handleDeleteRow, items, modes) => [
     name: "Total amount",
     width: 100,
     align: "center",
+    render: (params) => {
+      return (
+        <>
+          {params?.total_amount ? (
+            <Typography>
+              &#8369; {params?.total_amount?.toLocaleString()}
+            </Typography>
+          ) : (
+            "-"
+          )}
+        </>
+      );
+    },
   },
   {
     field: "target_by_quarter",

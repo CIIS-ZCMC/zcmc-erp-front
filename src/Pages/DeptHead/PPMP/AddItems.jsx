@@ -6,7 +6,7 @@ import React, {
   useRef,
   useState,
 } from "react";
-import { useNavigate, useParams } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import ContainerComponent from "../../../Components/Common/ContainerComponent";
 import IconButtonComponent from "../../../Components/Common/IconButtonComponent";
 import { ChevronDown, ChevronUp } from "lucide-react";
@@ -53,9 +53,12 @@ const ITEMS_PER_BATCH = 12;
 
 function AddItems(props) {
   const navigate = useNavigate();
-  const { activityId, expenseId } = useParams();
+  const location = useLocation();
+  const { activityObject } = location.state || {};
+  const { expenseId } = useParams();
 
   const { items, getItems } = useItemsHook();
+  const { setTableData, tableData, setLoading } = usePPMPItemsHook();
   const {
     setCartMeta,
     addToCart,
@@ -77,19 +80,9 @@ function AddItems(props) {
   const [quantity, setQuantity] = useState(1);
   const [selectedItem, setSelectedItem] = useState(null);
 
-  const activity = activityData.find(
-    (item) => item.value === Number(activityId)
-  );
-
-  const activityInfo = activity
-    ? {
-        code: activity.label,
-        description: activity.description,
-      }
-    : null;
-  const totalQty = cart.reduce((sum, item) => sum + item.quantity, 0);
+  const totalQty = cart.reduce((sum, item) => sum + item.aop_quantity, 0);
   const totalPrice = cart.reduce(
-    (sum, item) => sum + item.quantity * item.estimated_budget,
+    (sum, item) => sum + item.aop_quantity * item.estimated_budget,
     0
   );
   const handleCollapseClick = () => {
@@ -123,31 +116,65 @@ function AddItems(props) {
   };
 
   const handleCancel = () => {
-    setIsLoading(true); // Show loader
+    setIsLoading(true);
+    setCartMeta({ activity_id: null, expense_class_id: null });
     clearCart();
 
     setTimeout(() => {
-      closeConfirmation(); // Close modal
-
-      window.location.href = "/edit-ppmp"; // This reloads + navigates
+      closeConfirmation();
+      window.location.href = "/edit-ppmp";
     }, 1000);
   };
 
   const handleSave = () => {
-    const { cart, clearCart } = useItemCartHook.getState();
-    const { setTableData, tableData, setLoading } = usePPMPItemsHook.getState();
-
     setLoading(true);
 
-    const existingIds = new Set(tableData.map((item) => item.id));
-    const newItems = cart.filter((item) => !existingIds.has(item.id));
+    const lastItemId =
+      tableData.length > 0 ? tableData[tableData.length - 1].id : 0;
 
-    setTableData([...tableData, ...newItems]);
+    // Only add IDs for new cart items
+    const mergedCart = [...tableData, ...cart].reduce((map, item, index) => {
+      const existing = map.get(item.item_code); // Use item_code!
 
+      if (existing) {
+        // If the item already exists (same item_code), combine quantities and activities
+        const combinedActivities = [
+          ...existing.activities,
+          ...(Array.isArray(item.activities)
+            ? item.activities
+            : [item.activities]),
+        ];
+
+        map.set(item.item_code, {
+          ...existing,
+          aop_quantity: existing.aop_quantity + (item.aop_quantity || 0),
+          activities: combinedActivities,
+        });
+      } else {
+        // New item, assign new id if from cart (optional logic)
+        const isFromCart = cart.some(
+          (cartItem) => cartItem.item_code === item.item_code
+        );
+        const newId = isFromCart ? lastItemId + map.size + 1 : item.id;
+
+        map.set(item.item_code, {
+          ...item,
+          id: newId,
+          activities: Array.isArray(item.activities)
+            ? item.activities
+            : [item.activities],
+        });
+      }
+
+      return map;
+    }, new Map());
+
+    setTableData(Array.from(mergedCart.values()));
+
+    setCartMeta({ selectedActivity: null, expense_class_id: null });
     clearCart();
 
     setTimeout(() => {
-      // Stop loading indicator and navigate to "/edit-ppmp"
       setLoading(false);
       navigate("/edit-ppmp");
     }, 500);
@@ -188,7 +215,10 @@ function AddItems(props) {
   }, [fetchMoreItems, hasMore]);
 
   useEffect(() => {
-    setCartMeta({ activity_id: activityId, expense_class_id: expenseId });
+    setCartMeta({
+      selectedActivity: activityObject,
+      expense_class_id: expenseId,
+    });
 
     getItems((status, message, data) => {
       if (status !== 200) {
@@ -205,9 +235,8 @@ function AddItems(props) {
 
   return (
     <Fragment>
-      {console.log(displayedItems)}
       <ContainerComponent
-        title={`You are managing resources for Activity: ${activityInfo?.code}`}
+        title={`You are managing resources for Activity: ${activityObject?.activity_code}`}
         description={
           "Collapse this card to view more information about the selected activity."
         }
@@ -247,7 +276,7 @@ function AddItems(props) {
                   </Typography>
                   <Box width={"200px"} mt={1}>
                     <Typography fontSize={12} color="primary">
-                      {activityInfo?.code}
+                      {activityObject?.activity_code}
                     </Typography>
                   </Box>
                 </BoxComponent>
@@ -269,7 +298,7 @@ function AddItems(props) {
 
                 <BoxComponent variant={"outlined"}>
                   <Typography fontSize={14} fontWeight={600}>
-                    Activity:
+                    Expense Class:
                   </Typography>
                   <Box width={"200px"} mt={1}>
                     <Typography fontSize={12}>{expenseId}</Typography>
@@ -283,7 +312,7 @@ function AddItems(props) {
 
       <ContainerComponent
         title="Select items to add on PPMP"
-        sx={{ mt: 2 }}
+        sx={{ mt: 2, height: "67vh" }}
         actions={
           <>
             <Stack direction="row" gap={1}>
@@ -308,46 +337,52 @@ function AddItems(props) {
       >
         <Grid
           container
-          spacing={2}
+          columns={{ xs: 12, sm: 12, md: 12 }}
           sx={{
-            // height: "100%",
-            height: isCollapsed ? "54vh" : "62vh", // Sets a fixed height
-            flexWrap: "nowrap", // Prevents wrapping of columns
-            overflow: "hidden", // Hide extra scrollbars from container
+            flexGrow: 1,
+            width: "auto",
+            p: 1,
           }}
+          gap={3}
         >
           {/* Left: Scrollable Item Cards */}
-          <Grid xs>
+          <Grid
+            item
+            xs={12} // Full width on extra small screens
+            sm={2} // 2 items on small screens
+            md={8.1}
+          >
             <BoxComponent sx={{ position: "sticky", top: 0 }}>
               <SearchBarComponent />
             </BoxComponent>
-            <Box
-              id="scrollableItemsBox"
+            <Grid
+              container
+              columns={{ xs: 12, sm: 6, md: 12 }}
+              gap={4}
               sx={{
-                mt: 1,
-                p: 2,
+                flexGrow: 1,
+                mt: 2,
+                p: 1,
                 border: 1,
                 borderColor: "neutral.100",
                 borderRadius: 10,
-                height: "80%",
+                height: "50vh",
                 overflowY: "auto",
-                bgcolor: "red",
               }}
             >
-              <Box
-                sx={{
-                  display: "grid",
-                  gridTemplateColumns: {
-                    xs: "repeat(1, 1fr)",
-                    sm: "repeat(2, 1fr)",
-                    md: "repeat(3, 1fr)",
-                    lg: "repeat(4, 1fr)",
-                  },
-                  width: "100%",
-                  gap: 4,
-                }}
-              >
-                {displayedItems.map((item, index) => (
+              {displayedItems.map((item, index) => (
+                <Grid
+                  key={index}
+                  item="true"
+                  xs={12}
+                  sm={2}
+                  md={6}
+                  lg={4}
+                  xl={3.6}
+                  sx={{
+                    cursor: "pointer",
+                  }}
+                >
                   <ItemCardComponent
                     key={index}
                     item={item}
@@ -356,18 +391,22 @@ function AddItems(props) {
                       handleOpenItemDialog(item);
                     }}
                   />
-                ))}
-              </Box>
+                </Grid>
+              ))}
               <div ref={loadMoreRef}>Loading more items...</div>
-            </Box>
+            </Grid>
           </Grid>
 
           {/* Right: Cart */}
           <Grid
-            xs={4}
+            item
+            xs={12} // Full width on mobile
+            sm={4} // 4/12 on small screens
+            md={3.7}
+            // xs={4}
             sx={{
               width: 350,
-              height: "100%",
+              height: "59vh",
               position: "sticky",
               border: 1,
               borderColor: "neutral.100",
@@ -401,10 +440,11 @@ function AddItems(props) {
                   .reverse()
                   .map((item) => (
                     <ItemsCart
-                      key={item.id}
+                      key={item.item_id}
                       item={item}
+                      id={item.item_id}
                       onQuantityChange={updateQuantity}
-                      onRemove={() => removeFromCart(item.id)}
+                      onRemove={() => removeFromCart(item.item_id)}
                     />
                   ))
               ) : (

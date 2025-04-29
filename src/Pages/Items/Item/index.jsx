@@ -72,7 +72,7 @@ const Item = ({ item, quantity, onDecrease, onIncrease, addAction }) => {
 
                 <Typography fontSize={14} fontWeight={600} color="danger">
                   {" "}
-                  &#8369; {item?.price.toLocaleString()}
+                  &#8369; {item?.estimated_budget.toLocaleString()}
                 </Typography>
               </Stack>
 
@@ -105,7 +105,8 @@ const Item = ({ item, quantity, onDecrease, onIncrease, addAction }) => {
                       fontWeight={700}
                       textColor={"success.700"}
                     >
-                      &#8369; {(item?.price * quantity).toLocaleString()}
+                      &#8369;{" "}
+                      {(item?.estimated_budget * quantity).toLocaleString()}
                     </Typography>
                   </Stack>
                 </Stack>

@@ -100,6 +100,34 @@ const usePPMPHook = create((set) => ({
         callback(err?.response?.status || 500, err?.response?.data || "Error");
       });
   },
+  postPPMP: async (body, callback) => {
+    return erp_api
+      .post(`${PATH}-items`, body)
+      .then((res) => {
+        const { status } = res;
+
+        if (!(status >= 200 && status < 300)) {
+          throw new Error("Bad response.", { cause: res });
+        }
+
+        if (status === 201) {
+          return callback(201, res.data.data.message);
+        }
+
+        return res;
+      })
+      .then((res) => {
+        const {
+          status,
+          data: { data, message },
+        } = res;
+
+        callback(status, message, data);
+      })
+      .catch((err) => {
+        return callback(err.status, err.response.data.message);
+      });
+  },
 }));
 
 export default usePPMPHook;

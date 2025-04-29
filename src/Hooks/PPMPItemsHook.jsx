@@ -114,6 +114,10 @@ export const usePPMPItemsHook = create(
     }),
     {
       name: "ppmp-store",
+      getStorage: () => localStorage,
+      partialize: (state) => ({
+        tableData: state.tableData, // only persist the cart
+      }),
     }
   )
 );

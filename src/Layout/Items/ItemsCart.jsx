@@ -7,7 +7,14 @@ import ButtonComponent from "../../Components/Common/ButtonComponent";
 import QuantityControlComponent from "../../Components/Cart/QuantityControlComponent";
 import IconButtonComponent from "../../Components/Common/IconButtonComponent";
 
-const ItemsCart = ({ item, image, quantity, onRemove, onQuantityChange }) => {
+const ItemsCart = ({
+  item,
+  image,
+  id,
+  quantity,
+  onRemove,
+  onQuantityChange,
+}) => {
   return (
     <Fragment>
       {console.log("item", item)}
@@ -61,9 +68,9 @@ const ItemsCart = ({ item, image, quantity, onRemove, onQuantityChange }) => {
             }}
           >
             <QuantityControlComponent
-              quantity={item?.quantity}
-              onDecrease={() => onQuantityChange(item.id, item.quantity - 1)}
-              onIncrease={() => onQuantityChange(item.id, item.quantity + 1)}
+              quantity={item?.aop_quantity}
+              onDecrease={() => onQuantityChange(id, item.aop_quantity - 1)}
+              onIncrease={() => onQuantityChange(id, item.aop_quantity + 1)}
             />
 
             <ButtonComponent

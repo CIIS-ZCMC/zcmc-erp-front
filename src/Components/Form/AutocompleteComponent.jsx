@@ -26,7 +26,6 @@ function AutocompleteComponent({
   return (
     <FormControl sx={{ width: width }} {...props}>
       {label && <FormLabel>{label}</FormLabel>}
-      {console.log(value)}
       <Autocomplete
         multiple={multiple}
         filterSelectedOptions={true}
@@ -36,7 +35,7 @@ function AutocompleteComponent({
         onChange={(_, newValue) => {
           handleSelect ? handleSelect(newValue) : handleChange(newValue);
         }}
-        value={value}
+        value={value ?? null}
         options={options}
         // name={name}
         getOptionLabel={getOptionLabel}

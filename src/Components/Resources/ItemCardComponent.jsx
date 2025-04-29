@@ -40,7 +40,6 @@ const ItemCardComponent = ({
           borderRadius: 10,
           cursor: "grab",
         },
-        bgcolor: "tomato",
       }}
     >
       <Card
@@ -57,7 +56,7 @@ const ItemCardComponent = ({
         <CardCover>
           {/* <AspectRatio ratio="1"> */}
           <img
-            src={item?.image}
+            src={item?.image ?? image}
             srcSet={item?.image}
             role="button"
             loading="lazy"

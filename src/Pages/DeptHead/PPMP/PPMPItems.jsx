@@ -16,6 +16,7 @@ import useItemsHook from "../../../Hooks/ItemsHook";
 import { expenseClassData } from "../../../Data/constants";
 
 function PPMPItems(props) {
+  const navigate = useNavigate();
   const {
     tableData,
     loading,
@@ -36,7 +37,6 @@ function PPMPItems(props) {
     usePPMPHook();
   const { items, getItems } = useItemsHook();
 
-  const navigate = useNavigate();
   const [openAdd, setOpenAdd] = useState(false);
 
   const calculateQuantity = (targetByQuarter) => {
@@ -46,6 +46,8 @@ function PPMPItems(props) {
       0
     );
   };
+
+  const handleSubmit = () => {};
 
   useEffect(() => {
     async function fetchData() {
@@ -118,6 +120,13 @@ function PPMPItems(props) {
               endDecorator={<BiPlus />}
               onClick={() => setOpenAdd(true)}
             />
+            <ButtonComponent
+              label={"Save"}
+              color="success"
+              variant={"outlined"}
+              endDecorator={<BiPlus />}
+              onClick={() => setOpenAdd(true)}
+            />
           </Stack>
         }
       >
@@ -149,7 +158,7 @@ function PPMPItems(props) {
               <AutocompleteComponent
                 label={"Select one activity"}
                 options={activities}
-                getOptionLabel={(option) => option.activity_code}
+                getOptionLabel={(option) => option.activity_code || ""}
                 handleSelect={handleSelectActivity}
                 value={activityObject}
                 size="sm"
@@ -180,7 +189,7 @@ function PPMPItems(props) {
         leftButtonLabel="Cancel"
         rightButtonLabel="Continue"
         rightButtonAction={() =>
-          navigate(`add-item/${activityId}/${expenseClass}`)
+          navigate(`add-item/${expenseClass}`, { state: { activityObject } })
         }
         hasActionButtons
       />

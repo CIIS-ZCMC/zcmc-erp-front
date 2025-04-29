@@ -85,7 +85,6 @@ const ScrollableEditableTableComponent = memo(
           onFieldChange(field, newValue, row, (updatedRow) => {
             const updatedRows = [...data];
             updatedRows[rowIndex] = updatedRow;
-            console.log(updatedRows);
             if (JSON.stringify(data[rowIndex]) !== JSON.stringify(updatedRow)) {
               setData(updatedRows);
             }
@@ -103,13 +102,11 @@ const ScrollableEditableTableComponent = memo(
     const handleAutocompleteChange = useCallback(
       (e, rowIndex, field) => {
         const row = data[rowIndex];
-        console.log();
 
         if (onFieldChange) {
           onFieldChange(field, e.name, row, (updatedRow) => {
             const updatedRows = [...data];
             updatedRows[rowIndex] = updatedRow;
-            console.log(updatedRows); // Log the updated
             if (JSON.stringify(data[rowIndex]) !== JSON.stringify(updatedRow)) {
               setData(updatedRows);
             }
@@ -156,7 +153,6 @@ const ScrollableEditableTableComponent = memo(
       childField
     ) => {
       const row = data[rowIndex];
-      console.log(e); // Log the selected value from Autocomplete
 
       if (onFieldChange) {
         onFieldChange(
@@ -204,7 +200,6 @@ const ScrollableEditableTableComponent = memo(
     }, [data]);
     return (
       <Box ref={scrollRef} sx={{ width: "100%", overflow: "auto" }}>
-        {console.log(data)}
         <Sheet
           variant="outlined"
           sx={() => ({
