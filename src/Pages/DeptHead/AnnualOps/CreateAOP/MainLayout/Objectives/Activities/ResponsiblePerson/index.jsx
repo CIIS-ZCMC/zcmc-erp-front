@@ -2,7 +2,7 @@ import React, { Fragment, useState, useEffect } from 'react';
 import { Stack, Grid, } from '@mui/joy';
 import { useNavigate, useLocation } from 'react-router-dom';
 
-import useResponsiblePersonHook from '../../../../../../../../Hooks/ResponsiblePersonHook';
+import useResponsiblePersonHook, { addActivityIndexHook } from '../../../../../../../../Hooks/ResponsiblePersonHook';
 import useAOPObjectivesHooks from '../../../../../../../../Hooks/AOP/AOPObjectivesHook';
 
 //Custom Components
@@ -27,30 +27,9 @@ const ResponsiblePerson = () => {
     const objectiveId = pathSegments[3]
     const activityId = pathSegments[5];
 
-    useEffect(() => {
-        console.log(typeof (objectiveId))
-        console.log(typeof (activityId))
-    }, [])
-
-
-    const { users, designations, areas } = useResponsiblePersonHook();
+    // const { users, designations, areas } = useResponsiblePersonHook();
 
     const setAopObjective = useAOPObjectivesHooks((state) => state.setAopObjective);
-
-    const [responsiblePeople, setResponsiblePeople] = useState([
-        {
-            userId: null,
-            designationId: null,
-            divisionId: null,
-            departmentId: null,
-            sectionId: null,
-            unitId: null
-        }
-    ])
-
-    useEffect(() => {
-        console.log(responsiblePeople)
-    }, [responsiblePeople])
 
     const handleSaveAssignment = () => {
         const updatedResponsiblePeople = [
@@ -80,15 +59,30 @@ const ResponsiblePerson = () => {
             }))
         ];
 
-        // setAopObjective from objectives hooks
-        setAopObjective(Number(objectiveId), String(activityId), updatedResponsiblePeople); // Here we use example values for objectiveId and activityId
+        // Now, update the global state with the selected responsible people
+        setAopObjective(Number(objectiveId), String(activityId), updatedResponsiblePeople);
 
-        navigate(`/aop-create/activities/${objectiveId}`)
+        // Navigate back after saving
+        navigate(`/aop-create/activities/${objectiveId}`);
     };
 
     const handleCancel = () => {
         navigate(`/aop-create/activities/${objectiveId}`)
     }
+
+    const { responsible_persons } = useResponsiblePersonHook();
+    const add = addActivityIndexHook()
+
+
+    const filtered = responsible_persons?.filter((element) => element.activity_index == activityId)
+
+    console.log(filtered)
+
+    useEffect(() => {
+        add(activityId)
+    }, [])
+
+    // console.log(responsible_persons)
 
     return (
         <Fragment>
@@ -113,10 +107,7 @@ const ResponsiblePerson = () => {
                         sm={2}
                         md={4}
                     >
-                        <PersonSection
-                            responsiblePeople={responsiblePeople}
-                            setResponsiblePeople={setResponsiblePeople}
-                        />
+                        <PersonSection />
                     </Grid>
 
                     <Grid

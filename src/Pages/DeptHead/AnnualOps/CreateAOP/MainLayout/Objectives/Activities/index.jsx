@@ -43,6 +43,8 @@ const Activities = () => {
 
     const [editRowId, setEditRowId] = useState(null);
 
+
+
     return (
         <Fragment>
 

@@ -6,12 +6,21 @@ import useUserHook from '../../Hooks/UserHook';
 import useResponsiblePersonHook from '../../Hooks/ResponsiblePersonHook';
 import AutocompleteComponent from '../../Components/Form/AutocompleteComponent';
 import BoxComponent from '../../Components/Common/Card/BoxComponent'
+import { useLocation } from 'react-router-dom';
 
 
-const SelectPersonComponent = () => {
+const SelectPersonComponent = (id) => {
     const key = 'users';
-    const { users, setData } = useResponsiblePersonHook();
+    const { users, setData, handleValue } = useResponsiblePersonHook();
     const { users: usersOptions } = useUserHook()
+
+
+
+    const location = useLocation()
+    const pathSegments = location.pathname.split('/');
+
+    const activityId = pathSegments[5];
+
 
     return <Stack gap={1}>
         <AutocompleteComponent
@@ -19,7 +28,7 @@ const SelectPersonComponent = () => {
             placeholder='Select a responsible person'
             // value={user?.name || ''}
             size={'md'}
-            setValue={(value) => setData(key, value)}
+            setValue={(value) => handleValue(activityId, "users", value)}
             options={usersOptions}
         />
 
@@ -33,9 +42,20 @@ const SelectPersonComponent = () => {
 }
 
 const ResponsiblePersonList = () => {
-    const { users, removeData } = useResponsiblePersonHook();
+    // const { users, removeData } = useResponsiblePersonHook();
 
-    if (users.length === 0) {
+    const location = useLocation()
+    const pathSegments = location.pathname.split('/');
+
+    const activityId = pathSegments[5];
+    const { responsible_persons } = useResponsiblePersonHook();
+
+
+    const filtered = responsible_persons?.filter((element) => element.activity_index == activityId)[0] ?? []
+
+    const users = filtered?.users
+
+    if (users?.length === 0) {
         return <Stack
             m={2}
             alignItems={'center'}

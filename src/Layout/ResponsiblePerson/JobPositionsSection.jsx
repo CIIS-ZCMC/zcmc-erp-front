@@ -7,11 +7,16 @@ import useResponsiblePersonHook from '../../Hooks/ResponsiblePersonHook';
 
 import BoxComponent from '../../Components/Common/Card/BoxComponent';
 import AutocompleteComponent from '../../Components/Form/AutocompleteComponent';
+import { useLocation } from 'react-router-dom';
 
 const SelectJobPositionComponent = () => {
-    const key = 'designations';
-    const { designations, setData } = useResponsiblePersonHook();
+    const { designations, setDat, handleValue } = useResponsiblePersonHook();
     const { jobPositions } = useJobPositionsHook()
+
+    const location = useLocation()
+    const pathSegments = location.pathname.split('/');
+
+    const activityId = pathSegments[5];
 
     return <Stack gap={1}>
         <AutocompleteComponent
@@ -19,7 +24,7 @@ const SelectJobPositionComponent = () => {
             placeholder='Select a job position'
             // value={user?.name || ''}
             size={'md'}
-            setValue={(value) => setData(key, value)}
+            setValue={(value) => handleValue(activityId, "designations", value)}
             options={jobPositions}
         />
 

@@ -85,9 +85,6 @@ const useAOPObjectivesHooks = create((set, get) => ({
     },
 
     setAopObjective: (objectiveId, activityId, responsiblePeople) => {
-
-        console.log(typeof (objectiveId))
-
         set((state) => ({
             aopObjectives: state.aopObjectives.map((objective) =>
                 objective.id === objectiveId

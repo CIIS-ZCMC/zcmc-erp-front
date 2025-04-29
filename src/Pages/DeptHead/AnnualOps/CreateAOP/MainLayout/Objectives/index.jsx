@@ -54,6 +54,8 @@ const Objectives = () => {
         // await axios.post('/api/aop/submit', { application_objectives: payload })
     };
 
+    // console.log(aopObjectives)
+
     return (
         <Fragment>
             <ContainerComponent
