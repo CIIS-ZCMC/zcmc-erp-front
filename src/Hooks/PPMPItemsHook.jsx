@@ -6,6 +6,7 @@ export const usePPMPItemsHook = create(
     (set, get) => ({
       tableData: [],
       loading: false,
+      activityObject: {},
       activity: "",
       activityId: "",
       description: "",
@@ -100,6 +101,7 @@ export const usePPMPItemsHook = create(
       handleSelectActivity: (event) => {
         console.log(event);
         set({
+          activityObject: event,
           activity: event.activity_code,
           activityId: event.id,
           description: event.name,

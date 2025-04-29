@@ -31,7 +31,7 @@ function AutocompleteComponent({
         size={size}
         placeholder={placeholder}
         onChange={(_, newValue) => {
-          handleSelect ? handleSelect(newValue) : handleChange(event);
+          handleSelect ? handleSelect(newValue) : handleChange(newValue);
         }}
         value={value}
         options={options}

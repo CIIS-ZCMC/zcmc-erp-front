@@ -19,6 +19,7 @@ function PPMPItems(props) {
   const {
     tableData,
     loading,
+    activityObject,
     activity,
     activityId,
     description,
@@ -150,7 +151,7 @@ function PPMPItems(props) {
                 options={activities}
                 getOptionLabel={(option) => option.activity_code}
                 handleSelect={handleSelectActivity}
-                value={activity}
+                value={activityObject}
                 size="sm"
               />
               {description !== "" && (
