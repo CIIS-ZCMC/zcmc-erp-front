@@ -1,19 +1,22 @@
-import { useState, Fragment } from 'react';
+import { useState, Fragment, useEffect } from 'react';
 
 import { Outlet, useLocation, useParams, useNavigate } from 'react-router-dom';
 
-import { Box, Stack, Typography, Divider } from '@mui/joy';
+import { Box, Stack } from '@mui/joy';
 import { ChevronDown, ChevronUp, Plus } from 'lucide-react';
 
 import ButtonComponent from '../../../../../../../Components/Common/ButtonComponent';
 import SheetComponent from '../../../../../../../Components/Common/SheetComponent';
 import IconButtonComponent from '../../../../../../../Components/Common/IconButtonComponent';
 import ContainerComponent from '../../../../../../../Components/Common/ContainerComponent';
+import EditableTableComponent from '../../../../../../../Components/Common/Table/EditableTableComponent';
 
-import TableRow from './Resources/TableRow';
+import TableRow from './TableRow';
 
 import { AOP_CONSTANTS } from '../../../../../../../Data/constants';
-import { ACTIVITIES_HEADER } from '../../../../../../../Data/Columns';
+import { AOP_ACTIVITIES_HEADER } from '../../../../../../../Data/Columns';
+
+import useAOPObjectivesHooks from '../../../../../../../Hooks/AOP/AOPObjectivesHook';
 
 const Activities = () => {
 
@@ -23,62 +26,22 @@ const Activities = () => {
     const currentPath = location.pathname;
     const childPath = currentPath === `/aop-create/activities/${objectiveId}`
 
+    const { aopObjectives, addActivity, deleteActivity, updateActivityField } = useAOPObjectivesHooks();
+
+    const selectedObjective = aopObjectives.find(obj => obj.id === Number(objectiveId));
+    const aopActivities = selectedObjective?.activities || [];
+
+    useEffect(() => {
+        // console.log(aopActivities)
+    }, [])
+
     const [isCollapsed, setIsCollapsed] = useState(false);
 
     const handleCollapseClick = () => {
         setIsCollapsed(prev => !prev)
     };
 
-    const [rows, setRows] = useState([
-        {
-            id: 1,
-            activities: "Training Workshop",
-            startMonth: "January",
-            endMonth: "March",
-            quarter1: 100,
-            quarter2: 50,
-            quarter3: 'N/A',
-            quarter4: 'N/A',
-            cost: 5000,
-            isGadRelated: true,
-            responsiblePerson: "John Doe",
-        },
-
-        {
-            id: 2,
-            activities: "Training Workshop",
-            startMonth: "January",
-            endMonth: "March",
-            quarter1: 100,
-            quarter2: 50,
-            quarter3: 'N/A',
-            quarter4: 'N/A',
-            cost: 5000,
-            isGadRelated: true,
-            responsiblePerson: "John Doe",
-        },
-    ]);
-
     const [editRowId, setEditRowId] = useState(null);
-    const [editField, setEditField] = useState({});
-
-    const handleEdit = (id, field, value) => {
-        setEditField({ id, field, value });
-    };
-
-    const handleBlur = () => {
-        if (editField.id !== undefined) {
-            setRows((prev) =>
-                prev.map((row) =>
-                    row.id === editField.id
-                        ? { ...row, [editField.field]: editField.value }
-                        : row
-                )
-            );
-            setEditRowId(null);
-            setEditField({});
-        }
-    };
 
     return (
         <Fragment>
@@ -140,31 +103,27 @@ const Activities = () => {
                         actions={
                             <Stack>
                                 <ButtonComponent
-                                    onClick={() => setOpen(true)}
+                                    onClick={() => addActivity(Number(objectiveId))}
                                     label={"Add an Activity"}
                                     endDecorator={<Plus size={16} />}
                                 />
                             </Stack>
                         }
                     >
-                        {/* <EditableTableComponent
-                            columns={ACTIVITIES_HEADER}
-                            stripe={'even'}
-                            hoverRow
-                            isLoading={false}
-                            bordered={true}
-                            stickLast
+
+                        <EditableTableComponent
+                            columns={AOP_ACTIVITIES_HEADER}
                             tableRow={
                                 <TableRow
-                                    rows={rows}
-                                    handleEdit={handleEdit}
-                                    handleBlur={handleBlur}
-                                    editField={editField}
+                                    handleChange={updateActivityField}
+                                    objectiveId={selectedObjective?.id}
                                     editRowId={editRowId}
                                     setEditRowId={setEditRowId}
+                                    deleteRow={deleteActivity}
+                                    rows={aopActivities}
                                 />
                             }
-                        /> */}
+                        />
 
                         <Stack
                             mt={2}

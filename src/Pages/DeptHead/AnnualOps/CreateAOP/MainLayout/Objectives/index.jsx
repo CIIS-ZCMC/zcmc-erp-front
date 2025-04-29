@@ -10,27 +10,29 @@ import ContainerComponent from '../../../../../../Components/Common/ContainerCom
 import EditableTableComponent from '../../../../../../Components/Common/Table/EditableTableComponent';
 import TableRow from './TableRow';
 
-import useAOPHook from '../../../../../../Hooks/AOPHook';
+// import useAOPHook from '../../../../../../Hooks/AOPHook';
 import useFunctionTypeHook from '../../../../../../Hooks/FunctionTypeHook';
 
 //data related
 import AOPApproval from '../../../../../PlanningOps/Approval/AOPApproval';
 
+import useAOPObjectives from '../../../../../../Hooks/AOP/AOPObjectivesHook';
 
 import { AOP_CONSTANTS } from '../../../../../../Data/constants';
-import { aopHeader } from '../../../../../../Data/Columns';
+import { AOP_HEADER } from '../../../../../../Data/Columns';
 
 const Objectives = () => {
 
-    const { aop_objectives } = useAOPHook();
+    const { aopObjectives, addObjective, deleteObjective, updateObjectiveField, getApplicationObjectivesPayload } = useAOPObjectives()
     const { function_types, getFunctionType } = useFunctionTypeHook();
 
-    const [isLoading, setisLoading] = useState(false)
+    const navigate = useNavigate()
 
-    const location = useLocation();
-    const navigate = useNavigate();
-    const currentPath = location.pathname;
-    const parentPath = currentPath === '/aop-create';
+    // const { aop_objectives } = useAOPHook();
+
+    // local states
+    const [editRowId, setEditRowId] = useState(null)
+    const [isLoading, setisLoading] = useState(false)
 
     useEffect(() => {
         const params = { with_sub_data: 1 };
@@ -43,62 +45,14 @@ const Objectives = () => {
         });
     }, [isLoading])
 
-    const [editRowId, setEditRowId] = useState(null);
-    const [editField, setEditField] = useState({});
+    // handle Submit
+    const handleSubmit = () => {
+        const payload = getApplicationObjectivesPayload();
+        console.log('Submitting payload:', payload);
 
-    //local states
-    const [functionType, setFunctionType] = useState(null)
-    const [objective, setObjective] = useState(null)
-    const [successIndicator, setSuccessIndicator] = useState(null)
-
-    const [aopObjectives, setAopObjectives] = useState([])
-
-    const annualOpsPlanning = [
-        {
-            id: 1,
-            functionTypes: [
-                {
-                    id: 1,
-                    name: 'Strategic',
-                    objectives: [
-                        { id: 1, name: 'OBJ-TPS-9879' },
-                        { id: 2, name: 'OBJ-TPS-9879' }
-                    ]
-                },
-                { id: 2, name: 'Core' }
-            ],
-            objectives: [],
-            successIndicators: [],
-        }
-    ]
-
-    const handleManageActivities = (id) => {
-        console.log(id)
-        navigate(`activities/${id}`)
-    }
-
-    const handleDeleteObjective = (id) => {
-        console.log(id)
-    }
-
-    const handleEdit = (id, field, value) => {
-        setEditField({ id, field, value });
+        // Submit to API here
+        // await axios.post('/api/aop/submit', { application_objectives: payload })
     };
-
-    const handleBlur = () => {
-        if (editField.id !== undefined) {
-            setRows((prev) =>
-                prev.map((row) =>
-                    row.id === editField.id
-                        ? { ...row, [editField.field]: editField.value }
-                        : row
-                )
-            );
-            setEditRowId(null);
-            setEditField({});
-        }
-    };
-
 
     return (
         <Fragment>
@@ -108,7 +62,7 @@ const Objectives = () => {
                 actions={
                     <Stack>
                         <ButtonComponent
-                            // onClick={() => setOpen(true)}
+                            onClick={addObjective}
                             label={"Add an Objective"}
                             endDecorator={<Plus size={16} />}
                         />
@@ -116,15 +70,14 @@ const Objectives = () => {
                 }
             >
                 <EditableTableComponent
-                    columns={aopHeader(handleManageActivities, handleDeleteObjective)}
+                    columns={AOP_HEADER}
                     tableRow={
                         <TableRow
-                            functionType={functionType}
-                            setFunctionType={setFunctionType}
-                            objective={objective}
-                            setObjective={setObjective}
-                            successIndicator={successIndicator}
-                            setSuccessIndicator={setSuccessIndicator}
+                            editRowId={editRowId}
+                            setEditRowId={setEditRowId}
+                            rows={aopObjectives}
+                            deleteRow={deleteObjective}
+                            handleChange={updateObjectiveField}
                             function_types={function_types}
                         />}
                     stickLast
@@ -148,8 +101,8 @@ const Objectives = () => {
                         label={'Submit AOP'}
                         size={'md'}
                         variant={'solid'}
-                        disabled={true}
-                    // onClick={} submit aop
+                        disabled={false}
+                        onClick={handleSubmit} //submit new aop
                     />
                 </Stack>
 

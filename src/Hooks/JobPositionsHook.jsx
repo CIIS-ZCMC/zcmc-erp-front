@@ -2,23 +2,20 @@ import { create } from "zustand";
 import { API } from "../Data/constants";
 import { read } from "../Services/RequestMethods";
 
-const useFunctionTypeHook = create((set) => ({
-    function_types: [],
+const useJobPositionsHook = create((set) => ({
+    jobPositions: [],
 
-    getFunctionType: (params, callBack) => {
+    getJobPositions: (callBack) => {
         read({
-            url: API.TYPE_OF_FUNCTIONS,
-            params: params,
+            url: API.JOB_POSITIONS,
             failed: callBack,
             success: (res) => {
-                // console.log(res.data.data)
                 const { status, message, data: { data } } = res;
-                set({ function_types: data });
+                set({ jobPositions: data });
                 callBack(status, message);
             }
         })
     }
+}))
 
-}));
-
-export default useFunctionTypeHook
+export default useJobPositionsHook;

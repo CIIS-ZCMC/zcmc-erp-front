@@ -59,9 +59,9 @@ export const AOP_CONSTANTS = {
   TABLE_RESOURCES_SUBHEADING:
     "This is a subheading. It should add more context to the interaction.",
 
-  TABLE_PERSON_HEADER: "Step 4 of 4: Manage responsible person(s)",
-  TABLE_PERSON_SUBHEADING:
-    "This is a subheading. It should add more context to the interaction.",
+  TABLE_PERSON_HEADER: "Manage responsible persons",
+  TABLE_PERSON_SUBHEADING: `Select people you’d like to assign for the selected activity. Assign more and include generic
+   selections such as areas and job positions as necessary`,
 };
 
 export const MONTHS = [
@@ -95,6 +95,10 @@ export const approvalActions = [
 export const API = {
   AOP_APPLICATIONS: "aop-applications",
   TYPE_OF_FUNCTIONS: "type-of-functions",
+
+  USERS: "get-users",
+  JOB_POSITIONS: "get-designations",
+  AREAS: "get-areas",
 };
 
 export const expenseClassData = [

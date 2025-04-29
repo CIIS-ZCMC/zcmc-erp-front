@@ -81,7 +81,7 @@ export const objHeaders = [
   },
 ];
 
-export const aopHeader = () => [
+export const AOP_HEADER = [
   {
     field: "id",
     name: "Row #",
@@ -114,44 +114,10 @@ export const aopHeader = () => [
     position: "sticky",
     width: "150px",
     align: "center",
-    // render: (params) => {
-    //   return (
-    //     <Stack
-    //       direction={'row'}
-    //       alignItems={'center'}
-    //       justifyContent={'space-between'}
-    //       gap={1}
-    //     >
-    //       <Link
-    //         component="button"
-    //         onClick={() => handleManageActivities(params.id)}
-    //         size="sm"
-    //         underline="hover"
-    //         fontSize={14}
-    //       >
-    //         Manage Activities
-    //       </Link>
-
-    //       <Divider orientation="vertical" />
-
-    //       <Link
-    //         onClick={() => handleDeleteObjective(params.id)}
-    //         size="sm"
-    //         variant="text"
-    //         color="primary"
-    //         underline="hover"
-    //         fontSize={14}
-    //         endDecorator={<MdDeleteOutline />}
-    //       >
-    //         Remove
-    //       </Link>
-    //     </Stack>
-    //   )
-    // }
   },
 ];
 
-export const ACTIVITIES_HEADER = [
+export const AOP_ACTIVITIES_HEADER = [
   {
     field: "id",
     name: "Row #",
@@ -159,14 +125,14 @@ export const ACTIVITIES_HEADER = [
     align: "center",
   },
   {
-    field: "activities",
+    field: "name",
     name: "Activities",
     width: "10%",
     align: "center",
   },
 
   {
-    field: "",
+    field: "timeframe",
     name: "Timeframe",
     align: "center",
     width: "15%",
@@ -176,12 +142,12 @@ export const ACTIVITIES_HEADER = [
     ],
   },
   {
-    field: "",
+    field: "target",
     name: "Target (by quarter)",
     align: "center",
     width: "20%",
     children: [
-      { field: "quarter1", name: "Q1", width: "10%" },
+      { field: "quarter", name: "Q1", width: "10%" },
       { field: "quarter2", name: "Q2", width: "10%" },
       { field: "quarter3", name: "Q3", width: "10%" },
       { field: "quarter4", name: "Q4", width: "10%" },
@@ -191,7 +157,7 @@ export const ACTIVITIES_HEADER = [
   {
     field: "cost",
     name: "Cost",
-    width: "10%",
+    width: "5%",
     align: "center",
   },
 
@@ -203,14 +169,8 @@ export const ACTIVITIES_HEADER = [
   },
 
   {
-    field: "object_category",
-    name: "Object Category (MOOE or CO)",
-    width: "10%",
-    align: "center",
-  },
-
-  {
     field: "action",
+    width: "15%",
     align: "center",
     name: "Actions",
   },

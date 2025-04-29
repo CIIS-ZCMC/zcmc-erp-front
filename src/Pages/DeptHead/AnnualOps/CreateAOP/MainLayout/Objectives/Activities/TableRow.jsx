@@ -1,238 +1,304 @@
-import { Fragment, useState } from 'react'
+import { Fragment, useEffect, useRef, useState } from 'react'
 
-import { Stack, Link, Typography, Input, Select, Option, Box } from '@mui/joy';
+import { Stack, Link, Typography, Input, Select, Option, Autocomplete } from '@mui/joy';
 import { useNavigate } from 'react-router-dom';
 import { ExternalLink, Trash, FunnelX } from 'lucide-react';
 
-import ButtonComponent from '../../../../../Components/Common/ButtonComponent';
+import IconButtonComponent from '../../../../../../../Components/Common/IconButtonComponent';
+import ButtonComponent from '../../../../../../../Components/Common/ButtonComponent';
+import InputComponent from '../../../../../../../Components/Form/InputComponent';
+import AutoCompleteComponent from '../../../../../../../Components/Form/AutocompleteComponent';
 
-import { AOP_CONSTANTS, MONTHS } from '../../../../../Data/constants';
-
+import { AOP_CONSTANTS, MONTHS } from '../../../../../../../Data/constants';
 
 const TableRow = ({
     rows,
-    handleEdit,
-    handleBlur,
+    handleChange,
+    deleteRow,
+    objectiveId,
     editRowId,
     setEditRowId,
-    editField
+    editField,
 }) => {
 
-    const navigate = useNavigate()
-
-    const [openResourcesModal, setOpenResourcesModal] = useState(false)
+    const navigate = useNavigate();
 
     return (
 
         <Fragment>
+            {rows?.map(({ id, activityCode, name, isGadRelated, cost, start_month, end_month, target }) => {
 
-            input sample
+                const isEditing = editRowId === id;
 
-            {rows?.map((row) => (
-                <tr key={row.id}>
-                    <td>
-                        <Typography>
-                            {row.id}
-                        </Typography>
-                    </td>
+                const [localAopActivity, setLocalAopActivity] = useState({
+                    localName: name,
+                    localStartMonth: start_month || '',
+                    localEndMonth: end_month,
+                    localTarget: {
+                        firstQuarter: target.first_quarter,
+                        secondQuarter: target.second_quarter,
+                        thirdQuarter: target.third_quarter,
+                        fourthQuarter: target.fourth_quarter,
+                    },
+                    localCost: cost
+                })
 
-                    {/* Editable Name Field */}
-                    < td onClick={() => setEditRowId(row.id)}>
-                        {editRowId === row.id ? (
-                            <Input
-                                size='sm'
-                                autoFocus
-                                value={
-                                    editField.field === "activities" ? editField.value : row.activities
-                                }
-                                onChange={(e) => handleEdit(row.id, "activities", e.target.value)}
-                                onBlur={handleBlur}
-                            />
-                        ) : (
-                            <Typography>{row.activities}</Typography>
-                        )}
-                    </td >
+                return (
 
-                    <td onClick={() => setEditRowId(row.id)}>
-                        {editRowId === row.id ? (
-                            <Select
-                                size='sm'
-                                value={editField.field === "startMonth" ? editField.value : row.startMonth}
-                                onChange={(e, newValue) => handleEdit(row.id, "startMonth", newValue)}
-                                onBlur={handleBlur}
-                            >
-                                {MONTHS.map((month) => (
-                                    <Option
-                                        key={month}
-                                        value={month}
-                                    >
-                                        {month}
-                                    </Option>
-                                ))}
-                            </Select>
-                        ) : (
-                            <Typography>{row.startMonth}</Typography>
-                        )}
-                    </td>
-
-                    <td onClick={() => setEditRowId(row.id)}>
-                        {editRowId === row.id ? (
-                            <Select
-                                size='sm'
-                                value={editField.field === "endMonth" ? editField.value : row.endMonth}
-                                onChange={(e, newValue) => handleEdit(row.id, "endMonth", newValue)}
-                                onBlur={handleBlur}
-                            >
-                                {MONTHS.map((month) => (
-                                    <Option
-                                        key={month}
-                                        value={month}
-                                    >
-                                        {month}
-                                    </Option>
-                                ))}
-                            </Select>
-                        ) : (
-                            <Typography>{row.endMonth}</Typography>
-                        )}
-                    </td>
-
-                    <td onClick={() => setEditRowId(row.id)}>
-                        {editRowId === row.id ? (
-                            <Input
-                                autoFocus
-                                size='sm'
-                                value={
-                                    editField.field === "quarter1" ? editField.value : row.quarter1
-                                }
-                                onChange={(e) => handleEdit(row.id, "quarter1", e.target.value)}
-                                onBlur={handleBlur}
-                            />
-                        ) : (
-                            <Typography>{row.quarter1}</Typography>
-                        )}
-                    </td >
-
-                    <td onClick={() => setEditRowId(row.id)}>
-                        {editRowId === row.id ? (
-                            <Input
-                                size='sm'
-                                autoFocus
-                                value={
-                                    editField.field === "quarter2" ? editField.value : row.quarter2
-                                }
-                                onChange={(e) => handleEdit(row.id, "quarter2", e.target.value)}
-                                onBlur={handleBlur}
-                            />
-                        ) : (
-                            <Typography>{row.quarter2}</Typography>
-                        )}
-                    </td >
-
-                    <td onClick={() => setEditRowId(row.id)}>
-                        {editRowId === row.id ? (
-                            <Input
-                                size='sm'
-                                autoFocus
-                                value={
-                                    editField.field === "quarter3" ? editField.value : row.quarter3
-                                }
-                                onChange={(e) => handleEdit(row.id, "quarter3", e.target.value)}
-                                onBlur={handleBlur}
-                            />
-                        ) : (
-                            <Typography>{row.quarter3}</Typography>
-                        )}
-                    </td >
-
-                    <td onClick={() => setEditRowId(row.id)}>
-                        {editRowId === row.id ? (
-                            <Input
-                                size='sm'
-                                autoFocus
-                                value={
-                                    editField.field === "quarter4" ? editField.value : row.quarter4
-                                }
-                                onChange={(e) => handleEdit(row.id, "quarter4", e.target.value)}
-                                onBlur={handleBlur}
-                            />
-                        ) : (
-                            <Typography>{row.quarter4}</Typography>
-                        )}
-                    </td >
-
-                    <td onClick={() => setEditRowId(row.id)}>
-                        {editRowId === row.id ? (
-                            <Input
-                                size='sm'
-                                autoFocus
-                                value={
-                                    editField.field === "cost" ? editField.value : row.cost
-                                }
-                                onChange={(e) => handleEdit(row.id, "cost", e.target.value)}
-                                onBlur={handleBlur}
-                            />
-                        ) : (
-                            <Typography>{row.cost}</Typography>
-                        )}
-                    </td >
-
-                    <td onClick={() => setEditRowId(row.id)}>
-                        {editRowId === row.id ? (
-                            <Select
-                                size='sm'
-                                value={editField.field === "isGadRelated" ? editField.value : row.isGadRelated}
-                                onChange={(e, newValue) => handleEdit(row.id, "isGadRelated", newValue)}
-                                onBlur={handleBlur}
-                            >
-                                <Option value="true">Yes</Option>
-                                <Option value="false">No</Option>
-                            </Select>
-                        ) : (
+                    <tr key={id}>
+                        <td>
                             <Typography>
-                                {row.isGadRelated ? 'Yes' : 'No'}
+                                {id}
                             </Typography>
-                        )}
-                    </td>
+                        </td>
 
-                    <td>
-                        <Typography>
-                            {row.responsiblePerson}
-                        </Typography>
-                    </td>
+                        <td onClick={() => setEditRowId(id)}>
+                            {isEditing ? (
+                                <Input
+                                    value={localAopActivity.localName}
+                                    size='sm'
+                                    onChange={(e) =>
+                                        setLocalAopActivity((prev) => ({
+                                            ...prev,
+                                            localName: e.target.value,
+                                        }))
+                                    }
+                                    onBlur={() => {
+                                        handleChange(objectiveId, id, 'name', localAopActivity.localName);
+                                        setEditRowId(null);
+                                    }}
+                                />
+                            ) : (
+                                <Typography>{name || '-'}</Typography>
+                            )}
+                        </td>
 
-                    <td
-                        onClick={() => setEditRowId(row.id)}
-                        style={{ cursor: 'pointer' }}
-                    >
 
-                        <Stack
-                            size='sm'
-                            direction={'flex'}
-                            alignItems={'center'}
-                            justifyContent={'space-between'}
-                            gap={1}
+                        <td onClick={() => setEditRowId(id)}>
+                            {isEditing ? (
+                                <Autocomplete
+                                    placeholder="Select start month"
+                                    options={MONTHS}
+                                    value={localAopActivity.localStartMonth || ''}
+                                    size='sm'
+                                    onChange={(_, newValue) => {
+                                        setLocalAopActivity((prev) => ({
+                                            ...prev,
+                                            localStartMonth: newValue,
+                                        }));
+
+                                        handleChange(objectiveId, id, 'start_month', newValue);
+                                    }}
+                                    onBlur={() => setEditRowId(null)}
+                                    isOptionEqualToValue={(option, value) => option === value}
+                                    renderInput={(params) => <Input {...params} />}
+                                />
+                            ) : (
+                                <Typography>{start_month || "-"}</Typography>
+                            )}
+                        </td>
+
+                        <td onClick={() => setEditRowId(id)}>
+                            {isEditing ? (
+                                <Autocomplete
+                                    placeholder="Select start month"
+                                    options={MONTHS}
+                                    value={localAopActivity.localEndMonth || ''}
+                                    size='sm'
+                                    onChange={(_, newValue) => {
+                                        setLocalAopActivity((prev) => ({
+                                            ...prev,
+                                            localEndMonth: newValue,
+                                        }));
+
+                                        handleChange(objectiveId, id, 'end_month', newValue);
+                                    }}
+                                    onBlur={() => setEditRowId(null)}
+                                    isOptionEqualToValue={(option, value) => option === value}
+                                    renderInput={(params) => <Input {...params} />}
+                                />
+                            ) : (
+                                <Typography>{end_month || "-"}</Typography>
+                            )}
+                        </td>
+
+                        <td onClick={() => setEditRowId(id)}>
+                            {isEditing ? (
+                                <Input
+                                    value={localAopActivity.localTarget.firstQuarter}
+                                    size='sm'
+                                    onChange={(e) =>
+                                        setLocalAopActivity(prev => ({
+                                            ...prev,
+                                            localTarget: {
+                                                ...prev.localTarget,
+                                                firstQuarter: e.target.value
+                                            }
+                                        }))
+                                    }
+                                    onBlur={() => {
+                                        handleChange(objectiveId, id, 'target.first_quarter', localAopActivity.localTarget.firstQuarter);
+                                        setEditRowId(null);
+                                    }}
+                                />
+                            ) : (
+                                <Typography>{target?.first_quarter || '-'}</Typography>
+                            )}
+
+                        </td>
+
+                        <td onClick={() => setEditRowId(id)}>
+                            {isEditing ? (
+                                <Input
+                                    value={localAopActivity.localTarget.secondQuarter}
+                                    size='sm'
+                                    onChange={(e) =>
+                                        setLocalAopActivity(prev => ({
+                                            ...prev,
+                                            localTarget: {
+                                                ...prev.localTarget,
+                                                secondQuarter: e.target.value
+                                            }
+                                        }))
+                                    }
+                                    onBlur={() => {
+                                        handleChange(objectiveId, id, 'target.second_quarter', localAopActivity.localTarget.secondQuarter);
+                                        setEditRowId(null);
+                                    }}
+                                />
+                            ) : (
+                                <Typography>{target?.second_quarter || '-'}</Typography>
+                            )}
+                        </td>
+
+                        <td onClick={() => setEditRowId(id)}>
+                            {isEditing ? (
+                                <Input
+                                    value={localAopActivity.localTarget.thirdQuarter}
+                                    size='sm'
+                                    onChange={(e) =>
+                                        setLocalAopActivity(prev => ({
+                                            ...prev,
+                                            localTarget: {
+                                                ...prev.localTarget,
+                                                thirdQuarter: e.target.value
+                                            }
+                                        }))
+                                    }
+                                    onBlur={() => {
+                                        handleChange(objectiveId, id, 'target.third_quarter', localAopActivity.localTarget.thirdQuarter);
+                                        setEditRowId(null);
+                                    }}
+                                />
+                            ) : (
+                                <Typography>{target?.third_quarter || '-'}</Typography>
+                            )}
+                        </td>
+
+                        <td onClick={() => setEditRowId(id)}>
+                            {isEditing ? (
+                                <Input
+                                    value={localAopActivity.localTarget.fourthQuarter}
+                                    size='sm'
+                                    onChange={(e) =>
+                                        setLocalAopActivity(prev => ({
+                                            ...prev,
+                                            localTarget: {
+                                                ...prev.localTarget,
+                                                fourthQuarter: e.target.value
+                                            }
+                                        }))
+                                    }
+                                    onBlur={() => {
+                                        handleChange(objectiveId, id, 'target.fourth_quarter', localAopActivity.localTarget.fourthQuarter);
+                                        setEditRowId(null);
+                                    }}
+                                />
+                            ) : (
+                                <Typography>{target?.fourth_quarter || '-'}</Typography>
+                            )}
+                        </td>
+
+                        <td onClick={() => setEditRowId(id)}>
+                            {editRowId === id ? (
+                                <Input
+                                    value={localAopActivity.localCost}
+                                    size='sm'
+                                    onChange={(e) =>
+                                        setLocalAopActivity((prev) => ({
+                                            ...prev,
+                                            localCost: e.target.value,
+                                        }))
+                                    }
+                                    onBlur={() => {
+                                        handleChange(objectiveId, id, 'cost', localAopActivity.localCost);
+                                        setEditRowId(null);
+                                    }}
+                                    disabled
+                                />
+                            ) : (
+                                <Typography>{cost || '-'}</Typography>
+                            )}
+                        </td>
+
+                        <td onClick={() => setEditRowId(id)}>
+                            {editRowId === id ? (
+                                <Select
+                                    size='sm'
+                                    value={editField === "isGadRelated" ? editField.value : isGadRelated}
+                                    onChange={(e, newValue) => handleEdit(objectiveId, id, "isGadRelated", newValue)}
+                                >
+                                    <Option value="true">Yes</Option>
+                                    <Option value="false">No</Option>
+                                </Select>
+                            ) : (
+                                <Typography>
+                                    {isGadRelated ? 'Yes' : 'No'}
+                                </Typography>
+                            )}
+                        </td>
+
+                        <td
+                            onClick={() => setEditRowId(id)}
+                            style={{ cursor: 'pointer' }}
                         >
-                            {/* //trigger modal */}
-                            <Link
-                                component="button"
-                                onClick={() => navigate(`/items`)}
-                                endDecorator={<ExternalLink size={16} />}
-                            >
-                                Manage Resources
-                            </Link>
 
-                            <ButtonComponent
-                                label={'Delete'}
-                                size={'sm'}
-                                variant={'outlined'}
-                                color={'danger'}
-                                endDecorator={<Trash size={16} />}
-                            />
-                        </Stack>
-                    </td>
-                </tr>
-            ))}
+                            <Stack
+                                size='sm'
+                                direction={'flex'}
+                                alignItems={'center'}
+                                justifyContent={'space-between'}
+                                gap={1}
+                            >
+
+                                <Link
+                                    component="button"
+                                    onClick={() => navigate(`/items`)}
+                                    fontSize={12}
+                                >
+                                    Resources
+                                </Link>
+
+                                <Link
+                                    component="button"
+                                    onClick={() => navigate(`person/${id}`)}
+                                    fontSize={12}
+                                >
+                                    Responsible Person
+                                </Link>
+
+                                <IconButtonComponent
+                                    onClick={() => deleteRow(id)}
+                                    icon={<Trash size={14} />}
+                                    size={'sm'}
+                                    // color={'danger'}
+                                    variant={'text'}
+                                />
+                            </Stack>
+                        </td>
+                    </tr>
+                )
+            })}
         </Fragment>
     )
 }
