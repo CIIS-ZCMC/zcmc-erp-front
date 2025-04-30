@@ -3,24 +3,19 @@ import React, { useEffect, useState } from 'react'
 import { Stack, Box, Typography, Divider, Link } from '@mui/joy';
 
 import useUserHook from '../../Hooks/UserHook';
-import useResponsiblePersonHook from '../../Hooks/ResponsiblePersonHook';
+import useResponsiblePeopleHook from '../../Hooks/ResponsiblePeopleHook';
 import AutocompleteComponent from '../../Components/Form/AutocompleteComponent';
 import BoxComponent from '../../Components/Common/Card/BoxComponent'
 import { useLocation } from 'react-router-dom';
 
 
-const SelectPersonComponent = (id) => {
-    const key = 'users';
-    const { users, setData, handleValue } = useResponsiblePersonHook();
+const SelectPersonComponent = () => {
+    const { users, handleValue } = useResponsiblePeopleHook();
     const { users: usersOptions } = useUserHook()
-
-
 
     const location = useLocation()
     const pathSegments = location.pathname.split('/');
-
     const activityId = pathSegments[5];
-
 
     return <Stack gap={1}>
         <AutocompleteComponent
@@ -36,24 +31,26 @@ const SelectPersonComponent = (id) => {
             level="body-xs"
             fontWeight={400}
         >
-            Selected People ({users.length})
+            Selected People ({users?.length})
         </Typography>
     </Stack>
 }
 
 const ResponsiblePersonList = () => {
-    // const { users, removeData } = useResponsiblePersonHook();
+
+    const { responsible_people, removeData } = useResponsiblePeopleHook();
 
     const location = useLocation()
     const pathSegments = location.pathname.split('/');
-
     const activityId = pathSegments[5];
-    const { responsible_persons } = useResponsiblePersonHook();
 
+    const filteredUsers = responsible_people?.filter((element) => element.activity_index === activityId)[0] ?? []
 
-    const filtered = responsible_persons?.filter((element) => element.activity_index == activityId)[0] ?? []
+    // useEffect(() => {
+    //     console.log(filteredUsers)
+    // }, [filteredUsers])
 
-    const users = filtered?.users
+    const users = filteredUsers?.users
 
     if (users?.length === 0) {
         return <Stack
@@ -69,56 +66,57 @@ const ResponsiblePersonList = () => {
         </Stack>;
     }
 
-    return <>{
-        users?.map(({ id, name, designation }) => (
-            < Box
-                m={1}
-            >
-                <Box
-                    key={id}
+    return <>
+        {
+            users?.map(({ id, name, designation }) => (
+                < Box
                     m={1}
-                    display={'flex'}
-                    alignItems={'center'}
-                    justifyContent={'space-between'}
                 >
                     <Box
+                        key={id}
+                        m={1}
                         display={'flex'}
                         alignItems={'center'}
+                        justifyContent={'space-between'}
                     >
-                        <Stack
-                            direction={'column'}
-                            m={1}
+                        <Box
+                            display={'flex'}
+                            alignItems={'center'}
                         >
-                            <Typography>
-                                {name}
-                            </Typography>
-                            <Typography
-                                level="body-xs"
-                                fontWeight={400}
+                            <Stack
+                                direction={'column'}
+                                m={1}
                             >
-                                {designation}
-                            </Typography>
+                                <Typography>
+                                    {name}
+                                </Typography>
+                                <Typography
+                                    level="body-xs"
+                                    fontWeight={400}
+                                >
+                                    {designation}
+                                </Typography>
 
-                        </Stack>
+                            </Stack>
 
+                        </Box>
+
+                        <Box>
+                            <Link
+                                component="button"
+                                color='danger'
+                                fontSize={14}
+                                onClick={() => removeData(id, 'users', activityId)}
+                            >
+                                Remove
+                            </Link>
+                        </Box>
                     </Box>
 
-                    <Box>
-                        <Link
-                            component="button"
-                            color='danger'
-                            fontSize={14}
-                            onClick={() => removeData(id, 'users')}
-                        >
-                            Remove
-                        </Link>
-                    </Box>
+                    <Divider />
                 </Box>
-
-                <Divider />
-            </Box>
-        ))
-    }
+            ))
+        }
     </>
 }
 

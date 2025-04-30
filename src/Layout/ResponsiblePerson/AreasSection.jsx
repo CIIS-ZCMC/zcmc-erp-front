@@ -1,19 +1,21 @@
 import { useEffect, useState } from 'react';
 
 import { Stack, Box, Typography, Divider, Link } from '@mui/joy'
+import { useLocation } from 'react-router-dom';
 
 import useAreasHook from '../../Hooks/AreasHook';
-import useResponsiblePersonHook from '../../Hooks/ResponsiblePersonHook';
+import useResponsiblePersonHook from '../../Hooks/ResponsiblePeopleHook';
 
 import BoxComponent from '../../Components/Common/Card/BoxComponent'
 import AutocompleteComponent from '../../Components/Form/AutocompleteComponent'
 
-
 const SelectAreaComponent = () => {
-
-    const key = 'areas';
-    const { areas, setData } = useResponsiblePersonHook();
+    const { areas, handleValue } = useResponsiblePersonHook();
     const { areas: areasOptions } = useAreasHook();
+
+    const location = useLocation();
+    const pathSegments = location.pathname.split('/')
+    const activityId = pathSegments[5]
 
     return <Stack gap={1}>
         <AutocompleteComponent
@@ -21,7 +23,7 @@ const SelectAreaComponent = () => {
             placeholder='Select a area'
             // value={user?.name || ''}
             size={'md'}
-            setValue={(value) => setData(key, value)}
+            setValue={(value) => handleValue(activityId, "areas", value)}
             options={areasOptions}
         />
 
@@ -29,17 +31,25 @@ const SelectAreaComponent = () => {
             level="body-xs"
             fontWeight={400}
         >
-            Selected People ({areas.length})
+            Selected People ({areas?.length})
         </Typography>
     </Stack>
 }
 
 const AreasList = () => {
 
-    const { areas, removeData } = useResponsiblePersonHook();
+    const { responsible_people, removeData } = useResponsiblePersonHook();
 
-    if (areas.length === 0) {
+    const location = useLocation();
+    const pathSegment = location.pathname.split('/');
 
+    const activityId = pathSegment[5];
+
+    const filteredAreas = responsible_people?.filter((element) => element.activity_index === activityId)[0] ?? [];
+
+    const areas = filteredAreas?.areas;
+
+    if (areas?.length === 0) {
         return <Stack
             m={2}
             alignItems={'center'}
@@ -91,7 +101,7 @@ const AreasList = () => {
                         component="button"
                         color='danger'
                         fontSize={14}
-                        onClick={() => removeData(id, 'areas')}
+                        onClick={() => removeData(id, 'areas', activityId)}
                     >
                         Remove
                     </Link>

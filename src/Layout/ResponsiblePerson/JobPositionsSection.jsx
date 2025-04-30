@@ -1,21 +1,21 @@
 import React, { useEffect, useState } from 'react'
 
 import { Stack, Box, Typography, Divider, Link } from '@mui/joy';
+import { useLocation } from 'react-router-dom';
 
 import useJobPositionsHook from '../../Hooks/JobPositionsHook';
-import useResponsiblePersonHook from '../../Hooks/ResponsiblePersonHook';
+import useResponsiblePersonHook from '../../Hooks/ResponsiblePeopleHook';
 
 import BoxComponent from '../../Components/Common/Card/BoxComponent';
 import AutocompleteComponent from '../../Components/Form/AutocompleteComponent';
-import { useLocation } from 'react-router-dom';
+
 
 const SelectJobPositionComponent = () => {
-    const { designations, setDat, handleValue } = useResponsiblePersonHook();
+    const { designations, handleValue } = useResponsiblePersonHook();
     const { jobPositions } = useJobPositionsHook()
 
     const location = useLocation()
     const pathSegments = location.pathname.split('/');
-
     const activityId = pathSegments[5];
 
     return <Stack gap={1}>
@@ -32,16 +32,25 @@ const SelectJobPositionComponent = () => {
             level="body-xs"
             fontWeight={400}
         >
-            Selected People ({designations.length})
+            Selected People ({designations?.length})
         </Typography>
     </Stack>
 }
 
 const JobPositionList = () => {
 
-    const { designations, removeData } = useResponsiblePersonHook();
+    const { responsible_people, removeData } = useResponsiblePersonHook();
 
-    if (designations.length === 0) {
+    const location = useLocation();
+    const pathSegment = location.pathname.split('/');
+
+    const activityId = pathSegment[5];
+
+    const filteredDesignations = responsible_people?.filter((element) => element.activity_index === activityId)[0] ?? []
+
+    const designations = filteredDesignations?.designations;
+
+    if (designations?.length === 0) {
         return <Stack
             m={2}
             alignItems={'center'}
@@ -94,7 +103,7 @@ const JobPositionList = () => {
                             component="button"
                             color='danger'
                             fontSize={14}
-                            onClick={() => removeData(id, 'designations')}
+                            onClick={() => removeData(id, 'designations', activityId)}
                         >
                             Remove
                         </Link>

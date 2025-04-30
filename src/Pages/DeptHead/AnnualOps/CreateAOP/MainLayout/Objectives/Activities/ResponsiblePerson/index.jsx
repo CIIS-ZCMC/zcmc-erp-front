@@ -1,8 +1,8 @@
-import React, { Fragment, useState, useEffect } from 'react';
+import React, { Fragment, useState, useEffect, act } from 'react';
 import { Stack, Grid, } from '@mui/joy';
 import { useNavigate, useLocation } from 'react-router-dom';
 
-import useResponsiblePersonHook, { addActivityIndexHook } from '../../../../../../../../Hooks/ResponsiblePersonHook';
+import useResponsiblePersonHook, { addActivityIndexHook } from '../../../../../../../../Hooks/ResponsiblePeopleHook';
 import useAOPObjectivesHooks from '../../../../../../../../Hooks/AOP/AOPObjectivesHook';
 
 //Custom Components
@@ -27,13 +27,38 @@ const ResponsiblePerson = () => {
     const objectiveId = pathSegments[3]
     const activityId = pathSegments[5];
 
-    // const { users, designations, areas } = useResponsiblePersonHook();
-
     const setAopObjective = useAOPObjectivesHooks((state) => state.setAopObjective);
+    const { responsible_people, resetValues, setAssignmentStatus } = useResponsiblePersonHook();
+    const addActivityIndex = addActivityIndexHook()
+
+    useEffect(() => {
+        addActivityIndex(activityId)
+        // console.log("responsible_people:", responsible_people);
+    }, [responsible_people])
+
+    const activity = responsible_people.find(
+        (item) => item.activity_index === String(activityId)
+    );
+
+    const isAssigned = activity && (
+        activity.isAssigned
+    )
+
+    const isSaveEnabled = activity &&
+        (
+            activity.users.length > 0 ||
+            activity.designations.length > 0 ||
+            activity.areas.length > 0
+        );
 
     const handleSaveAssignment = () => {
+        if (!activity) {
+            console.warn("No responsible person data found for this activity.");
+            return;
+        }
+
         const updatedResponsiblePeople = [
-            ...users.map((user) => ({
+            ...activity.users.map((user) => ({
                 userId: user.id,
                 designationId: null,
                 divisionId: null,
@@ -41,7 +66,8 @@ const ResponsiblePerson = () => {
                 sectionId: null,
                 unitId: null
             })),
-            ...designations.map((designation) => ({
+
+            ...activity.designations.map((designation) => ({
                 userId: null,
                 designationId: designation.id,
                 divisionId: null,
@@ -49,39 +75,29 @@ const ResponsiblePerson = () => {
                 sectionId: null,
                 unitId: null
             })),
-            ...areas.map((area) => ({
+
+            ...activity.areas.map((area) => ({
                 userId: null,
                 designationId: null,
                 divisionId: area.type === "division" ? area.id : null,
                 departmentId: area.type === "department" ? area.id : null,
                 sectionId: area.type === "section" ? area.id : null,
                 unitId: area.type === "unit" ? area.id : null
-            }))
-        ];
+            })),
+        ]
 
-        // Now, update the global state with the selected responsible people
+        console.log(updatedResponsiblePeople)
+        // update the global state
         setAopObjective(Number(objectiveId), String(activityId), updatedResponsiblePeople);
-
+        setAssignmentStatus(activityId, true)
         // Navigate back after saving
         navigate(`/aop-create/activities/${objectiveId}`);
     };
 
-    const handleCancel = () => {
+    const handleCancel = (activityId) => {
+        resetValues(activityId)
         navigate(`/aop-create/activities/${objectiveId}`)
     }
-
-    const { responsible_persons } = useResponsiblePersonHook();
-    const add = addActivityIndexHook()
-
-
-    const filtered = responsible_persons?.filter((element) => element.activity_index == activityId)
-
-    console.log(filtered)
-
-    useEffect(() => {
-        add(activityId)
-    }, [])
-
     // console.log(responsible_persons)
 
     return (
@@ -137,18 +153,30 @@ const ResponsiblePerson = () => {
                     justifyContent={'start'}
                     gap={1}
                 >
-                    <ButtonComponent
-                        onClick={() => handleCancel()}
-                        label={'Cancel Selection'}
-                        size={'md'}
-                        variant={'outlined'}
-                    />
+
+                    {isAssigned ?
+                        <ButtonComponent
+                            onClick={() => navigate(`/aop-create/activities/${objectiveId}`)}
+                            label={'Back to activities'}
+                            size={'md'}
+                            variant={'outlined'}
+                        />
+                        :
+                        <ButtonComponent
+                            onClick={() => handleCancel(activityId)}
+                            label={'Cancel Selection'}
+                            size={'md'}
+                            variant={'outlined'}
+                            disabled={isAssigned}
+                        />
+                    }
 
                     <ButtonComponent
                         label={'Save Assignment'}
                         size={'md'}
                         variant={'solid'}
                         onClick={() => handleSaveAssignment()}
+                        disabled={!isSaveEnabled}
                     />
                 </Stack>
             </ContainerComponent>
