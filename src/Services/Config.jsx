@@ -13,4 +13,4 @@ export const BASE_URL = {
   development: "http://localhost:8000/api", // You can change the port or ip here
 };
 
-export const TEST_MODE = true;
+export const TEST_MODE = false;

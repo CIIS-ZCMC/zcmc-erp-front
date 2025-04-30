@@ -32,24 +32,23 @@ function EllipsisComponent({ label, text }) {
             color: "neutral.500",
           }}
         >
-          {truncatedText}
+          {truncatedText}{" "}
+          {text.length > 120 && (
+            <Typography
+              level="body-xs"
+              component="span"
+              sx={{
+                color: "primary.500",
+                cursor: "pointer",
+                textDecoration: "underline",
+              }}
+              onClick={handleToggle}
+            >
+              {isExpanded ? "Read less" : "Read more"}
+            </Typography>
+          )}
         </Typography>
       </motion.div>
-
-      {text.length > 120 && (
-        <Typography
-          level="body-xs"
-          component="span"
-          sx={{
-            color: "primary.500",
-            cursor: "pointer",
-            textDecoration: "underline",
-          }}
-          onClick={handleToggle}
-        >
-          {isExpanded ? "Read less" : "Read more"}
-        </Typography>
-      )}
     </Stack>
   );
 }

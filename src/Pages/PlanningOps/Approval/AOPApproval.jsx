@@ -16,6 +16,7 @@ import AOPCardComponent from "../../../Components/Common/Card/AOPCardComponent";
 import { toCapitalize } from "../../../Utils/Typography";
 import { TEST_MODE } from "../../../Services/Config";
 import { MANAGE_AOP_APPROVAL } from "../../../Data/TestData";
+import { localStorageSetter } from "../../../Utils/LocalStorage";
 
 const AOPApproval = () => {
   // HOOKS
@@ -28,6 +29,7 @@ const AOPApproval = () => {
 
   const handleClickCard = (id) => {
     getAOPApplicationById(id, () => navigate(`/aop-approval/objectives/${id}`));
+    localStorageSetter("aop_application_id", id);
   };
 
   useEffect(() => {
@@ -35,6 +37,7 @@ const AOPApproval = () => {
   }, []);
 
   const APPLICATIONS = TEST_MODE ? MANAGE_AOP_APPROVAL : AOPApplications;
+
   return (
     <Fragment>
       <Stack gap={3}>

@@ -1,18 +1,61 @@
 import { create } from "zustand";
-import { post } from "../Services/RequestMethods";
-import { API } from "../Data/constants";
+import { post, read } from "../Services/RequestMethods";
+import {
+  localStorageGetter,
+  localStorageRemove,
+  localStorageSetter,
+} from "../Utils/LocalStorage";
 
 export const COMMENT = "activity-comments";
 
-const useCommentHook = create((set) => ({
+const useCommentHook = create((set, get) => ({
   comments: [],
+  allComments: [],
   comment: "",
+  isLoading: false,
 
   actions: {
-    getComments: (data) => set({ comments: data }),
     setComment: (data) => set({ comment: data }),
+    setIsLoading: (load) => set({ isLoading: load }),
+
+    getCommentsByActivity: (id, callback) => {
+      read({
+        url: `${COMMENT}/${id}`,
+        success: (response) => {
+          const {
+            data: { comments },
+          } = response.data;
+
+          set({ comments: comments });
+          localStorageSetter("comments", comments.length === 0 ? [] : comments);
+          callback(response.status, comments);
+        },
+        failed: () => {
+          set({ comments: [] });
+          localStorageRemove("comments");
+        },
+      });
+    },
+
+    getCommentsByApplication: (id, callback) => {
+      read({
+        url: `${COMMENT}`,
+        params: {
+          aop_application_id: localStorageGetter("aop_application_id"),
+        },
+        success: (response) => {
+          const { data } = response.data;
+          set({ allComments: data });
+          callback(response.status, data);
+        },
+      });
+    },
+
     postComment: (body, callback) => {
       try {
+        const {
+          actions: { appendNewComment },
+        } = get();
         const dataToSubmit = new FormData();
 
         dataToSubmit.append("comment", body.comment);
@@ -23,7 +66,8 @@ const useCommentHook = create((set) => ({
           form: dataToSubmit,
           success: (response) => {
             const { data } = response.data;
-            set({ activity: data });
+
+            appendNewComment(data);
 
             callback(response.status, data);
           },
@@ -37,11 +81,17 @@ const useCommentHook = create((set) => ({
         );
       }
     },
+
+    appendNewComment: (data) => {
+      set((state) => ({ comments: [data, ...state.comments] }));
+    },
   },
 }));
 
-export default useCommentHook;
-
+export const useCommentLoading = () =>
+  useCommentHook((state) => state.isLoading);
 export const useComment = () => useCommentHook((state) => state.comment);
-
+export const useComments = () => useCommentHook((state) => state.comments);
+export const useAllComments = () =>
+  useCommentHook((state) => state.allComments);
 export const useCommentActions = () => useCommentHook((state) => state.actions);

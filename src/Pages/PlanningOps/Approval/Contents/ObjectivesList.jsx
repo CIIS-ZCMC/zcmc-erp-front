@@ -17,6 +17,7 @@ import {
   useExpandedChild,
   useExpandedParent,
 } from "../../../../Hooks/AccordionHook";
+import { useCommentActions } from "../../../../Hooks/CommentHook";
 
 const ObjectivesList = () => {
   // HOOKS
@@ -27,6 +28,7 @@ const ObjectivesList = () => {
   );
   const { setActiveActivity, getActivityById } = useActivityActions();
 
+  const { getCommentsByActivity } = useCommentActions();
   const { activeActivity } = useActivityUIStates();
 
   // ACCORDION
@@ -45,6 +47,8 @@ const ObjectivesList = () => {
     if (id !== activeActivity) {
       setActiveActivity(id);
       getActivityById(id, () => {});
+
+      getCommentsByActivity(id, () => {});
     }
   };
 
@@ -101,7 +105,7 @@ const ObjectivesList = () => {
                   <Stack gap={1}>
                     {activities?.map(
                       (
-                        { id, description, with_comments, is_reviewed },
+                        { id, name, with_comments, is_reviewed },
                         activity_key
                       ) => (
                         <ActivityContainerComponent
@@ -109,7 +113,7 @@ const ObjectivesList = () => {
                           onClick={() => handleClickActivity(id)}
                           active={id === activeActivity}
                           label={`Activity #${activity_key + 1} `}
-                          text={description}
+                          text={name}
                           withComment={with_comments}
                           reviewed={is_reviewed}
                         />

@@ -30,5 +30,15 @@ export const localStorageGetter = (label) => {
   }
 };
 
+export const localStorageRemove = (label) => {
+  try {
+    localStorage.removeItem(label);
+  } catch (err) {
+    console.log(err);
+    return false;
+  }
+  return true;
+};
+
 // Clear all data from LocalStorage
 export const clearLocalStorage = () => localStorage.clear();

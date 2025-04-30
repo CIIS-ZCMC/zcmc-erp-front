@@ -42,8 +42,8 @@ const PostCommentComponent = ({ activityId }) => {
       <TextareaComponent
         label={"Comment"}
         color="success"
-        minRows={7.3}
-        maxRows={7.3}
+        minRows={6.5}
+        maxRows={6.5}
         value={comment}
         setValue={setComment}
         placeholder={"Add your comments here"}

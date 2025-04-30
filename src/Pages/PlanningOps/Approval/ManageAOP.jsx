@@ -1,10 +1,12 @@
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import PageTitle from "../../../Components/Common/PageTitle";
 import { useParams } from "react-router-dom";
 import { AOP_CONSTANTS, approvalActions } from "../../../Data/constants";
 import {
   Box,
+  Button,
   Checkbox,
+  Chip,
   Divider,
   FormControl,
   FormHelperText,
@@ -15,15 +17,16 @@ import {
 } from "@mui/joy";
 import ContainerComponent from "../../../Components/Common/ContainerComponent";
 import ButtonComponent from "../../../Components/Common/ButtonComponent";
-import { CornerDownRight, ExternalLink } from "lucide-react";
-import CustomAccordionComponent from "../../../Components/Common/Accordion/CustomAccordionComponent";
-import EllipsisComponent from "../../../Components/Common/Typography/EllipsisComponent";
-import { ActivityContainerComponent } from "../../../Components/Activities/ActivityContainerComponent";
+import {
+  ArrowDown,
+  CornerDownRight,
+  ExternalLink,
+  MoreHorizontal,
+} from "lucide-react";
 import BoxComponent from "../../../Components/Common/Card/BoxComponent";
 import moment from "moment";
 import TextareaComponent from "../../../Components/Form/TextareaComponent";
 import SimpleCommentComponent from "../../../Components/Comments/SimpleCommentComponent";
-import { ACTIVITY_COMMENTS, MANAGE_AOP_APPROVAL } from "../../../Data/TestData";
 import ModalComponent from "../../../Components/Common/Dialog/ModalComponent";
 import useModalHook from "../../../Hooks/ModalHook";
 import InputComponent from "../../../Components/Form/InputComponent";
@@ -34,7 +37,6 @@ import {
 import {
   useActivity,
   useActivityActions,
-  useActivityStates,
 } from "../../../Hooks/AOP/ActivityHook";
 import { localStorageGetter } from "../../../Utils/LocalStorage";
 import RadioButtonComponent from "../../../Components/Common/RadioButtonComponent";
@@ -42,15 +44,20 @@ import PostCommentComponent from "../../../Components/Form/PostCommentComponent"
 import ObjectivesList from "./Contents/ObjectivesList";
 import ScrollableTableComponent from "../../../Components/Common/Table/ScrollableTableComponent";
 import { resourcesHeader } from "../../../Data/Columns";
-import ScrollableEditableTableComponent from "../../../Components/Common/Table/ScrollableEditableTable";
 import NoResultComponent from "../../../Components/Common/Table/NoResultComponent";
+import DrawerComponent from "../../../Components/Common/DrawerComponent";
+import CustomTabComponent from "../../../Components/Common/CustomTabComponent";
+import { feedbackTabOptions } from "../../../Data/Options";
+import {
+  useAllComments,
+  useCommentActions,
+  useComments,
+} from "../../../Hooks/CommentHook";
+import CommentContainerComponent from "../../../Components/Comments/CommentContainerComponent";
+import { groupByDate } from "../../../Utils/GroupData";
 
 export default function ManageAOP() {
   const { id } = useParams();
-
-  // STATES
-  const [action, setAction] = useState("approve");
-  // const comment = useComment();
 
   // AOP HOOK
   const AOPApplication =
@@ -74,9 +81,18 @@ export default function ManageAOP() {
     } = {},
     resources = [],
     responsible_people = [],
-    comments = [],
   } = activity || {};
   const { getActivityById } = useActivityActions();
+
+  // COMMENTS HOOK
+  const comments = useComments();
+  const { getCommentsByActivity, getCommentsByApplication } =
+    useCommentActions();
+  const allComments = useAllComments();
+
+  // STATES
+  const [action, setAction] = useState("approve");
+  const [activeTab, setActiveTab] = useState(0);
 
   // STYLES
   const titleStyles = { level: "body-xs", fontWeight: 400 };
@@ -90,6 +106,42 @@ export default function ManageAOP() {
   const { setAlertDialog } = useModalHook();
   const [openProcessModal, setOpenProcessModal] = useState(false);
   const [openResourcesModal, setOpenResourcesModal] = useState(false);
+  const [openFeedbackModal, setOpenFeedbackModal] = useState(false);
+
+  // FEEDBACK
+  const handleViewFeedback = () => {
+    getCommentsByApplication(
+      { aop_application_id: AOPApplication?.id },
+      () => {}
+    );
+    setOpenFeedbackModal(true);
+    // fetch data
+  };
+
+  // FEEDBACK DRAWER
+  const feedbackDisplay = useMemo(() => {
+    const dataToDisplay = activeTab === 0 ? allComments : [];
+
+    return groupByDate(dataToDisplay);
+  }, [activeTab, allComments]);
+
+  const feedbackCount = Object.keys(feedbackDisplay).length;
+
+  // COMMENTS DISPLAY
+  const commentsDisplay = useMemo(() => groupByDate(comments), [comments]);
+  const messageListRef = useRef(null);
+
+  // const scrollToBottom = () => {
+  //   if (messageListRef.current) {
+  //     messageListRef.current.scrollIntoView({
+  //       behavior: "smooth",
+  //       block: "end",
+  //       inline: "nearest",
+  //     });
+  //   }
+  // };
+
+  // GET DISPLAY BY DEFAULT
 
   const handleProcessRequest = () => {
     setOpenProcessModal(true);
@@ -109,6 +161,7 @@ export default function ManageAOP() {
   useEffect(() => {
     if (activityId == defaultActivityId) return;
     getActivityById(defaultActivityId, () => {});
+    getCommentsByActivity(defaultActivityId, () => {});
   }, []);
 
   return (
@@ -155,13 +208,15 @@ export default function ManageAOP() {
                 footer={
                   <Stack direction={"row"} spacing={2}>
                     <ButtonComponent
+                      variant={"outlined"}
+                      label={" Go to feedback"}
+                      endDecorator={<ExternalLink size={14} />}
+                      onClick={handleViewFeedback}
+                    />
+                    <ButtonComponent
                       label={"Process request"}
                       onClick={handleProcessRequest}
                     />
-
-                    <Link gap={0.5} fontSize={12}>
-                      Go to feedback <ExternalLink size={14} />
-                    </Link>
                   </Stack>
                 }
                 scrollable
@@ -358,22 +413,62 @@ export default function ManageAOP() {
                   "This is a subheading. It should add more context to the interaction."
                 }
                 scrollable
-                contentMaxHeight={"35.8vh"}
-                contentMinHeight={"35.8vh"}
+                contentMaxHeight={"37.5vh"}
+                contentMinHeight={"37.5vh"}
                 footer={<PostCommentComponent activityId={activityId} />}
                 isLoading={isAOPLoading}
               >
-                <Stack gap={2.5} mr={1}>
-                  {comments?.length == 0 && <NoResultComponent />}
-                  {comments?.map(({ name, area, comment, date }, index) => (
-                    <SimpleCommentComponent
-                      key={index}
-                      name={name}
-                      comment={comment}
-                      area_code={area}
-                      date={date}
-                    />
+                <Stack gap={3} mr={1}>
+                  {/* <Box
+                    position={"absolute"}
+                    bottom={"40%"}
+                    zIndex={100}
+                    right={"35%"}
+                    onClick={scrollToBottom}
+                  >
+                    <Chip
+                      variant="solid"
+                      color="primary"
+                      endDecorator={<ArrowDown size={14} />}
+                      sx={{
+                        boxShadow: "xl",
+                        "&: hover": {
+                          cursor: "pointer",
+                          px: 1.2,
+                          transition: "ease .2s",
+                        },
+                      }}
+                    >
+                      Scroll to bottom
+                    </Chip>
+                  </Box> */}
+                  {Object.keys(commentsDisplay)?.length === 0 && (
+                    <NoResultComponent />
+                  )}
+
+                  {Object.entries(commentsDisplay).map(([date, messages]) => (
+                    <Fragment key={date}>
+                      {date !== moment().format("dddd, MMMM D") && (
+                        <Divider sx={{ fontSize: "xs", mt: 0.5 }}>
+                          {date}
+                        </Divider>
+                      )}
+
+                      {messages?.map(
+                        ({ name, area_code, created_at, comment }, key) => (
+                          <SimpleCommentComponent
+                            key={key}
+                            name={name}
+                            comment={comment}
+                            area_code={area_code}
+                            date={created_at}
+                          />
+                        )
+                      )}
+                    </Fragment>
                   ))}
+
+                  <div ref={messageListRef} />
                 </Stack>
               </ContainerComponent>
             </Grid>
@@ -401,6 +496,7 @@ export default function ManageAOP() {
 
       {/* PROCESS REQUEST */}
       <ModalComponent
+        hasActionButtons
         isOpen={openProcessModal}
         handleClose={() => setOpenProcessModal(false)}
         title={`Revisions for objective #14 - Core`}
@@ -437,6 +533,59 @@ export default function ManageAOP() {
               // setValue={handlePinInput}
               // value={pin}
             />
+          </Stack>
+        }
+      />
+
+      {/* VIEW FEEDBACK */}
+      <DrawerComponent
+        open={openFeedbackModal}
+        setOpen={setOpenFeedbackModal}
+        title={`Feedback in this request`}
+        description={
+          "The following list of feedback are based on your comments per activity and the Division Chief's remarks for this request as a whole."
+        }
+        content={
+          <Stack gap={2} mt={2}>
+            <CustomTabComponent
+              tabOptions={feedbackTabOptions}
+              onChange={setActiveTab}
+            />
+
+            <Divider />
+
+            <Stack gap={1.8} maxHeight={"70vh"} overflow={"auto"} pr={1}>
+              <Box
+                sx={{
+                  height: "73vh",
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }}
+              >
+                {feedbackCount === 0 && <NoResultComponent />}
+              </Box>
+              {Object.entries(feedbackDisplay).map(([date, messages], key) => (
+                <Fragment key={key}>
+                  {date !== moment().format("dddd, MMMM D") && (
+                    <Divider sx={{ fontSize: "xs", mt: 0.5 }}>{date}</Divider>
+                  )}
+
+                  {messages?.map(
+                    ({ name, area_code, created_at, comment }, key) => (
+                      <CommentContainerComponent
+                        isActivity={activeTab === 0}
+                        key={key}
+                        name={name}
+                        area_code={area_code}
+                        date={created_at}
+                        comment={comment}
+                      />
+                    )
+                  )}
+                </Fragment>
+              ))}
+            </Stack>
           </Stack>
         }
       />
