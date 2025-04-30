@@ -48,6 +48,10 @@ const useCommentHook = create((set, get) => ({
           set({ allComments: data });
           callback(response.status, data);
         },
+        failed: (response) => {
+          set({ allComments: [] });
+          callback(response);
+        },
       });
     },
 

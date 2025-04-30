@@ -21,6 +21,7 @@ export const getModeColorScheme = (type) => {
     warning: "warning",
     400: "danger",
     error: "danger",
+    info: "warning",
   };
 
   return colorSchemes[statusMap[type] || "danger"];

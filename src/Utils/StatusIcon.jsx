@@ -4,6 +4,7 @@ import {
   CheckCircle,
   CircleX,
   CornerDownLeft,
+  InfoIcon,
   MessagesSquare,
   TriangleAlert,
 } from "lucide-react";
@@ -13,6 +14,7 @@ export const getStatusIcon = (status, iconOnly) => {
   const iconMap = {
     approved: <CheckCircle size={13} />,
     returned: <CornerDownLeft size={13} />,
+    info: <InfoIcon />,
     200: <CheckCheck />,
     201: <CheckCheck />,
     success: <CheckCheck />,

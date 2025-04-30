@@ -28,6 +28,7 @@ ConfirmationModalComponent.propTypes = {
   rightButtonLoadingLabel: PropTypes.bool,
   withAuthPin: PropTypes.bool,
   withDivider: PropTypes.bool,
+  withFooterDivider: PropTypes.bool,
   setAuthPin: PropTypes.func,
   pinHelperText: PropTypes.string,
 };
@@ -44,6 +45,7 @@ function ConfirmationModalComponent({
   withAuthPin,
   withDivider,
   setAuthPin,
+  withFooterDivider,
   pinHelperText = "Confirm you action by typing-in your authorization PIN.",
 }) {
   const {
@@ -101,7 +103,9 @@ function ConfirmationModalComponent({
 
               {content && <Box py={2}>{content}</Box>}
 
-              {withDivider && <Divider sx={{ my: 0.5 }} />}
+              {(withDivider || withFooterDivider) && (
+                <Divider sx={{ my: withFooterDivider ? 1 : 0.5 }} />
+              )}
 
               {withAuthPin && (
                 <InputComponent

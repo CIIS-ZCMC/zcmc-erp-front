@@ -55,14 +55,15 @@ import {
 } from "../../../Hooks/CommentHook";
 import CommentContainerComponent from "../../../Components/Comments/CommentContainerComponent";
 import { groupByDate } from "../../../Utils/GroupData";
+import ConfirmationModalComponent from "../../../Components/Common/Dialog/ConfirmationModalComponent";
 
 export default function ManageAOP() {
   const { id } = useParams();
+  const messageListRef = useRef(null);
 
   // AOP HOOK
   const AOPApplication =
     useAOPApplication() ?? localStorageGetter("aopApplication");
-
   const isAOPLoading = useLoadingState();
 
   // ACTIVITY HOOK
@@ -103,33 +104,21 @@ export default function ManageAOP() {
   };
 
   // MODAL
-  const { setAlertDialog } = useModalHook();
+  const { setAlertDialog, setConfirmationModal, closeConfirmation } =
+    useModalHook();
   const [openProcessModal, setOpenProcessModal] = useState(false);
   const [openResourcesModal, setOpenResourcesModal] = useState(false);
   const [openFeedbackModal, setOpenFeedbackModal] = useState(false);
+  const [openMarkModal, setOpenMarkModal] = useState(false);
 
-  // FEEDBACK
-  const handleViewFeedback = () => {
-    getCommentsByApplication(
-      { aop_application_id: AOPApplication?.id },
-      () => {}
-    );
-    setOpenFeedbackModal(true);
-    // fetch data
-  };
-
-  // FEEDBACK DRAWER
+  // DATA
   const feedbackDisplay = useMemo(() => {
     const dataToDisplay = activeTab === 0 ? allComments : [];
 
     return groupByDate(dataToDisplay);
   }, [activeTab, allComments]);
-
   const feedbackCount = Object.keys(feedbackDisplay).length;
-
-  // COMMENTS DISPLAY
   const commentsDisplay = useMemo(() => groupByDate(comments), [comments]);
-  const messageListRef = useRef(null);
 
   // const scrollToBottom = () => {
   //   if (messageListRef.current) {
@@ -141,7 +130,16 @@ export default function ManageAOP() {
   //   }
   // };
 
-  // GET DISPLAY BY DEFAULT
+  // FUNCTIONS
+  const handleViewFeedback = () => {
+    setOpenFeedbackModal(true);
+    getCommentsByApplication(
+      { aop_application_id: AOPApplication?.id },
+      () => {}
+    );
+
+    // fetch data
+  };
 
   const handleProcessRequest = () => {
     setOpenProcessModal(true);
@@ -158,10 +156,46 @@ export default function ManageAOP() {
     setAlertDialog(data);
   };
 
+  const handleClickMarkCheckbox = () => {
+    setOpenMarkModal(true);
+    const data = {
+      status: "info",
+      title: "Mark this activity as reviewed?",
+      description:
+        "Showing marks helps you determine which among all activities has successfully passed your double-checking so that you don't have to double-check again. Don’t worry, you can uncheck this later.",
+    };
+
+    setConfirmationModal(data);
+  };
+
+  const handleClickComment = (id) => {
+    Promise.all([
+      getCommentsByActivity(id, () => {}),
+      getActivityById(id, () => {}),
+    ])
+      .then(() => {
+        setOpenFeedbackModal(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching data:", error);
+      });
+  };
+
+  const handleMarkAsReviewed = () => {};
+
   useEffect(() => {
     if (activityId == defaultActivityId) return;
-    getActivityById(defaultActivityId, () => {});
-    getCommentsByActivity(defaultActivityId, () => {});
+
+    Promise.all([
+      getActivityById(defaultActivityId, () => {}),
+      getCommentsByActivity(defaultActivityId, () => {}),
+      getCommentsByApplication(
+        { aop_application_id: AOPApplication?.id },
+        () => {}
+      ),
+    ]).catch((error) => {
+      console.error("Error fetching data:", error);
+    });
   }, []);
 
   return (
@@ -209,7 +243,7 @@ export default function ManageAOP() {
                   <Stack direction={"row"} spacing={2}>
                     <ButtonComponent
                       variant={"outlined"}
-                      label={" Go to feedback"}
+                      label={`Go to feedback (${allComments?.length})`}
                       endDecorator={<ExternalLink size={14} />}
                       onClick={handleViewFeedback}
                     />
@@ -255,6 +289,7 @@ export default function ManageAOP() {
                         size="sm"
                         sx={{ fontSize: 12, color: "neutral.800" }}
                         color="success"
+                        onChange={handleClickMarkCheckbox}
                       />
                       <FormHelperText
                         sx={{ fontSize: 11, color: "neutral.400" }}
@@ -555,16 +590,19 @@ export default function ManageAOP() {
             <Divider />
 
             <Stack gap={1.8} maxHeight={"70vh"} overflow={"auto"} pr={1}>
-              <Box
-                sx={{
-                  height: "73vh",
-                  display: "flex",
-                  alignItems: "center",
-                  justifyContent: "center",
-                }}
-              >
-                {feedbackCount === 0 && <NoResultComponent />}
-              </Box>
+              {feedbackCount === 0 && (
+                <Box
+                  sx={{
+                    height: "73vh",
+                    display: "flex",
+                    alignItems: "center",
+                    justifyContent: "center",
+                  }}
+                >
+                  <NoResultComponent />{" "}
+                </Box>
+              )}
+
               {Object.entries(feedbackDisplay).map(([date, messages], key) => (
                 <Fragment key={key}>
                   {date !== moment().format("dddd, MMMM D") && (
@@ -572,7 +610,10 @@ export default function ManageAOP() {
                   )}
 
                   {messages?.map(
-                    ({ name, area_code, created_at, comment }, key) => (
+                    (
+                      { name, area_code, created_at, comment, activity_id },
+                      key
+                    ) => (
                       <CommentContainerComponent
                         isActivity={activeTab === 0}
                         key={key}
@@ -580,6 +621,7 @@ export default function ManageAOP() {
                         area_code={area_code}
                         date={created_at}
                         comment={comment}
+                        handleClick={() => handleClickComment(activity_id)}
                       />
                     )
                   )}
@@ -589,6 +631,19 @@ export default function ManageAOP() {
           </Stack>
         }
       />
+
+      {/* CONFIRM MARK REVIEWED */}
+      {openMarkModal && (
+        <ConfirmationModalComponent
+          leftButtonAction={() => {
+            closeConfirmation();
+            setOpenMarkModal(false);
+          }}
+          leftButtonLabel="No, back to request"
+          rightButtonLabel="Mark as “Reviewed”"
+          rightButtonAction={handleMarkAsReviewed}
+        />
+      )}
     </Fragment>
   );
 }
