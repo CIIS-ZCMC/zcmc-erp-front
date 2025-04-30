@@ -166,7 +166,6 @@ const useAOPObjectivesHooks = create((set, get) => ({
             objective_id: obj.objective_id,
             success_indicator_id: obj.success_indicator_id,
             activities: obj.activities.map((act) => ({
-                activity_code: act.activity_code,
                 name: act.name,
                 is_gad_related: act.is_gad_related,
                 cost: act.cost,
