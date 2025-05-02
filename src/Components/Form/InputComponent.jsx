@@ -41,9 +41,9 @@ const InputComponent = ({
   const eyeColor = darkMode ? "white" : "black";
   const getIcon = () => {
     return showPassword ? (
-      <Eye style={{ color: eyeColor }} />
+      <Eye style={{ color: eyeColor }} size={16} />
     ) : (
-      <EyeOff style={{ color: eyeColor }} />
+      <EyeOff style={{ color: eyeColor }} size={16} />
     );
   };
 

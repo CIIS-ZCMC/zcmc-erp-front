@@ -56,7 +56,7 @@ function ModalComponent({
   isLoading, // Indicates whether the right-side button is in a loading state
   noRightButton, // If set to true, the right button is not displayed Defaults to false
   noDivider = false, // If set to true, the divider between the title and content is hidden
-  hasActionButtons = false
+  hasActionButtons = false,
 }) {
   const theme = useTheme();
   const custom = theme.palette.custom;
@@ -122,7 +122,7 @@ function ModalComponent({
         <DialogContent>{content}</DialogContent>
 
         {/* FOOTER */}
-        {hasActionButtons &&
+        {hasActionButtons && (
           <>
             <Divider sx={{ mx: 0.2 }} />
 
@@ -142,7 +142,7 @@ function ModalComponent({
                     fullWidth
                     isLoading={isLoading}
                     onClick={rightButtonAction}
-                    isDisabled={rightButtonDisabled || isLoading}
+                    disabled={rightButtonDisabled || isLoading}
                   />
                 )}
 
@@ -152,16 +152,15 @@ function ModalComponent({
                   label={leftButtonLabel}
                   fullWidth={!noRightButton}
                   onClick={leftButtonAction ?? handleClose}
-                  isDisabled={isLoading}
+                  disabled={isLoading}
                 />
               </Box>
             </DialogActions>
           </>
-        }
+        )}
       </ModalDialog>
     </Modal>
-  )
+  );
 }
-
 
 export default ModalComponent;

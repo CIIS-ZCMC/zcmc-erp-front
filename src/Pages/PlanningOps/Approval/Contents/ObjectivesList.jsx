@@ -18,8 +18,15 @@ import {
   useExpandedParent,
 } from "../../../../Hooks/AccordionHook";
 import { useCommentActions } from "../../../../Hooks/CommentHook";
+import EditObjective from "./EditObjective";
 
 const ObjectivesList = () => {
+  // STATES
+  const [objectiveData, setObjectiveData] = useState({
+    success_indicator: "",
+    objective: "",
+  });
+
   // HOOKS
   const aopApplicationData = useAOPApplication();
   const AOPApplication = useMemo(
@@ -39,9 +46,6 @@ const ObjectivesList = () => {
   const [openModal, setOpenModal] = useState(false);
 
   //   FUNCTIONS
-  const handeEditObjective = () => {
-    setOpenModal(true);
-  };
 
   const handleClickActivity = (id) => {
     if (id !== activeActivity) {
@@ -50,6 +54,34 @@ const ObjectivesList = () => {
 
       getCommentsByActivity(id, () => {});
     }
+  };
+
+  const handeEditObjective = (id) => {
+    const { success_indicator, objective, function_description } =
+      getObjectiveDetails(id);
+
+    setObjectiveData(() => {
+      return {
+        success_indicator: success_indicator,
+        objective: objective,
+        index: id,
+        core: toCapitalize(function_description),
+      };
+    });
+    setOpenModal(true);
+  };
+
+  const getObjectiveDetails = (id) => {
+    return AOPApplication?.filter((element) => element.id === id)[0];
+  };
+
+  const handleCloseModal = () => {
+    setOpenModal(false);
+
+    setObjectiveData({
+      success_indicator: "",
+      objective: "",
+    });
   };
 
   useEffect(() => {
@@ -125,35 +157,14 @@ const ObjectivesList = () => {
             </CustomAccordionComponent>
           )
         )}
+
+        {/* EDIT OBJECTIVE */}
+        <EditObjective
+          onOpen={openModal}
+          data={objectiveData}
+          handleClose={handleCloseModal}
+        />
       </Stack>
-
-      {/* MODAL EDIT OBJECTIVES */}
-      <ModalComponent
-        isOpen={openModal}
-        handleClose={() => setOpenModal(false)}
-        title={`Revisions for objective #14 - Core`}
-        description={
-          "This is a subheading. It should add more context to the interaction."
-        }
-        content={
-          <Stack gap={2} py={1}>
-            <TextareaComponent minRows={4} label={"Objective"} />
-            <TextareaComponent minRows={4} label={"Success indicators"} />
-
-            <Divider />
-
-            <InputComponent
-              type="password"
-              label="Authorization pin"
-              helperText={
-                "Confirm you action by typing-in your authorization PIN."
-              }
-              // setValue={handlePinInput}
-              // value={pin}
-            />
-          </Stack>
-        }
-      />
     </Fragment>
   );
 };
