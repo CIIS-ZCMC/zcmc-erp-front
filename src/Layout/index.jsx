@@ -45,7 +45,7 @@ function Layout() {
             marginLeft: { sm: "33.33%", md: "25%", lg: "16.67%" }, // Adjust margin based on sidebar width
             // backgroundColor: color.lightBg,
             maxHeight: "100vh", // Ensure the main content area fills the screen
-            overflowY: "hidden", // Allow scrolling if content overflows
+            overflowY: "auto", // Allow scrolling if content overflows
           }}
         >
           <Box>

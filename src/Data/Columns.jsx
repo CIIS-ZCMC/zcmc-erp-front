@@ -1,10 +1,19 @@
-import { IconButton, Link, Stack, Typography, Divider } from "@mui/joy";
+import {
+  IconButton,
+  Link,
+  Stack,
+  Typography,
+  Divider,
+  Tooltip,
+  Box,
+} from "@mui/joy";
 import { DeleteIcon } from "lucide-react";
 import { BsOpencollective } from "react-icons/bs";
-import { IoOpen, IoOpenOutline } from "react-icons/io5";
+import { IoInformationOutline, IoOpen, IoOpenOutline } from "react-icons/io5";
 import { MdDeleteOutline } from "react-icons/md";
 import { descriptionsData, procurement_mode } from "./dummy";
 import ChipComponent from "../Components/Common/ChipComponent";
+import React from "react";
 
 export const objHeaders = [
   { field: "id", name: "Row #", align: "center", width: "50px" },
@@ -221,20 +230,20 @@ export const AOP_RESOURCE_HEADER = [
 ];
 
 export const ppmpHeaders = (handleDeleteRow, items, modes) => [
-  // {
-  //   field: "id",
-  //   name: "Row #",
-  //   width: "70px",
-  //   align: "center",
-  //   display: "none",
-  // },
   {
-    field: "item_code",
-    name: "Item Code",
+    field: "id",
+    name: "Row #",
     width: "70px",
     align: "center",
     display: "none",
   },
+  // {
+  //   field: "item_code",
+  //   name: "Item Code",
+  //   width: "80px",
+  //   align: "center",
+  //   display: "none",
+  // },
 
   {
     field: "description",
@@ -247,20 +256,61 @@ export const ppmpHeaders = (handleDeleteRow, items, modes) => [
   {
     field: "activity_code",
     name: "Activity Code",
-    width: 100,
+    width: 150,
     align: "center",
     display: "none",
     render: (params) => {
+      const activities = params?.activities || [];
+      const visibleActivities = activities.slice(0, 2);
+      const hiddenActivities = activities.slice(2);
+      const remainingCount = hiddenActivities.length;
+
       return (
-        <>
-          {params?.activities?.map((act, index) => (
-            <ChipComponent
-              key={act.activity_id}
-              label={act.activity_code}
-              size="sm"
-            />
+        <Box display="flex" alignItems="center" flexWrap="wrap" gap={0.5}>
+          {visibleActivities.map((act, index) => (
+            <React.Fragment key={act.id || index}>
+              <Link
+                underline="always"
+                href="#"
+                sx={{ fontSize: 12, color: "black" }}
+                color="neutral.700"
+              >
+                {act.activity_code}
+              </Link>
+              {index < visibleActivities.length - 1 && (
+                <Typography component="span">,</Typography>
+              )}
+            </React.Fragment>
           ))}
-        </>
+
+          {remainingCount > 0 && (
+            <Tooltip
+              title={
+                <React.Fragment>
+                  {hiddenActivities.map((act, idx) => (
+                    <div key={idx}>{act.activity_code}</div>
+                  ))}
+                </React.Fragment>
+              }
+              placement="top"
+              variant="soft"
+              color="success"
+            >
+              <Link
+                href="#"
+                underline="always"
+                variant="soft"
+                color="success"
+                sx={{
+                  fontSize: 12,
+                }}
+                onClick={(e) => e.preventDefault()}
+              >
+                +{remainingCount} more
+              </Link>
+            </Tooltip>
+          )}
+        </Box>
       );
     },
   },
@@ -291,9 +341,7 @@ export const ppmpHeaders = (handleDeleteRow, items, modes) => [
       return (
         <>
           {params?.quantity ? (
-            <Typography>
-              &#8369; {params?.quantity?.toLocaleString()}
-            </Typography>
+            <Typography>{params?.quantity?.toLocaleString()}</Typography>
           ) : (
             "-"
           )}

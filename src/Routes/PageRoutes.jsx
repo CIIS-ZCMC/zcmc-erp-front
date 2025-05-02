@@ -27,6 +27,7 @@ import ManageAOP from "../Pages/PlanningOps/Approval/ManageAOP";
 import AOPApproval from "../Pages/PlanningOps/Approval/AOPApproval";
 import AddItems from "../Pages/DeptHead/PPMP/AddItems";
 import PPMPItems from "../Pages/DeptHead/PPMP/PPMPItems";
+import PPMPDashboard from "../Pages/DeptHead/PPMP/PPMPDashboard";
 
 export const sidebarRoutes = [
   {
@@ -120,6 +121,10 @@ export const sidebarRoutes = [
     children: [
       {
         index: true,
+        element: <PPMPDashboard />,
+      },
+      {
+        path: "ppmp-items",
         element: <PPMPItems />,
       },
       {

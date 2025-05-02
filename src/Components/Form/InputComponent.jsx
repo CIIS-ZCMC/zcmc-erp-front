@@ -9,6 +9,7 @@ import {
 } from "@mui/joy";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
+import userErrorInputHook from "../../Hooks/ErrorInputHook";
 // import { getFontSize } from "../../Utils/Typography";
 // import { BsEye, BsEyeSlash } from "react-icons/bs";
 // import userErrorInputHook from "../../Hooks/ErrorInputHook";
@@ -36,7 +37,7 @@ const InputComponent = ({
   const isPassword = type == "password";
   const [showPassword, setShowPassword] = useState(false);
 
-  //   const { errors } = userErrorInputHook();
+  const { errors } = userErrorInputHook();
 
   const eyeColor = darkMode ? "white" : "black";
   const getIcon = () => {
@@ -100,11 +101,11 @@ const InputComponent = ({
       {helperText && (
         <FormHelperText sx={{ fontSize: 12 }}>{helperText}</FormHelperText>
       )}
-      {/* {errors[name]?.isError && (
+      {errors[name]?.isError && (
         <Typography fontSize={"xs"} color="danger">
           {errors[name]?.message}
         </Typography>
-      )} */}
+      )}
     </FormControl>
   );
 };

@@ -476,7 +476,7 @@ const ScrollableEditableTableComponent = memo(
         </Sheet>
 
         {/* Pagination Component */}
-        {data?.length > pageSize && (
+        {data?.length >= pageSize && (
           <PaginationComponent
             currentPage={currentPage}
             totalPages={totalPages}

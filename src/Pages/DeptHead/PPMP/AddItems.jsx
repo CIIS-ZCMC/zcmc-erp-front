@@ -122,7 +122,7 @@ function AddItems(props) {
 
     setTimeout(() => {
       closeConfirmation();
-      window.location.href = "/edit-ppmp";
+      window.location.href = "/edit-ppmp/ppmp-items";
     }, 1000);
   };
 
@@ -176,7 +176,7 @@ function AddItems(props) {
 
     setTimeout(() => {
       setLoading(false);
-      navigate("/edit-ppmp");
+      navigate("/edit-ppmp/ppmp-items");
     }, 500);
   };
 
