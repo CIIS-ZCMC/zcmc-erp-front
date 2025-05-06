@@ -3,11 +3,12 @@ import { create } from "zustand";
 import { localStorageSetter } from "../../Utils/LocalStorage";
 import { read } from "../../Services/RequestMethods";
 import { API } from "../../Data/constants";
-import { MANAGE_AOP_APPROVAL } from "../../Data/TestData";
 
 const useAOPApplicationsHook = create((set) => ({
   aopApplications: [],
   aopApplication: null,
+
+  approvalTimeline: [],
 
   isLoading: false,
 

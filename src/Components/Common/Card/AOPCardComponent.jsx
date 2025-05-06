@@ -19,7 +19,7 @@ AOPCardComponent.propTypes = {
   timeline_duration: PropTypes.string,
   request_date: PropTypes.string,
   grand_total: PropTypes.string,
-  onClick: PropTypes.func,
+  // onClick: PropTypes.func,
   handleCopy: PropTypes.func,
   currentlyOn: PropTypes.string,
   requester: PropTypes.string,
@@ -36,7 +36,8 @@ function AOPCardComponent({
   date_requested,
   date_returned,
   date_approved,
-  onClick, // The whole card
+  leftClick, // The whole card
+  rightClick, // The whole card
   requester_area, // Area display
 }) {
   const linkStyles = {
@@ -57,13 +58,13 @@ function AOPCardComponent({
         border: 1,
         borderColor: "neutral.100",
         boxShadow: "md",
-        "&: hover": {
-          cursor: "pointer",
-          backgroundColor: `neutral.50`,
-        },
+        // "&: hover": {
+        //   cursor: "pointer",
+        //   backgroundColor: `neutral.50`,
+        // },
       }}
       orientation="horizontal"
-      onClick={onClick}
+      // onClick={onClick}
     >
       <CardContent>
         {/* TITLE */}
@@ -143,10 +144,28 @@ function AOPCardComponent({
             direction={{ xs: "column", sm: "row" }}
             sx={{ alignItems: "start", justifyContent: "space-between" }}
           >
-            <Link sx={linkStyles}>
+            <Link
+              sx={{
+                ...linkStyles,
+                "&: hover": {
+                  textDecoration: "none",
+                  fontWeight: 600,
+                },
+              }}
+              onClick={leftClick}
+            >
               Open request <ExternalLink size={14} />
-            </Link>{" "}
-            <Link sx={linkStyles}>
+            </Link>
+            <Link
+              sx={{
+                ...linkStyles,
+                "&: hover": {
+                  textDecoration: "none",
+                  fontWeight: 600,
+                },
+              }}
+              onClick={rightClick}
+            >
               View approval timeline <MapPin size={14} />
             </Link>
           </Stack>

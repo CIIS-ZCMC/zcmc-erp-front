@@ -15,7 +15,6 @@ import {
 } from "@mui/joy";
 import { BiX } from "react-icons/bi";
 import ButtonComponent from "../ButtonComponent";
-import { AnimatePresence, motion } from "motion/react";
 
 ModalComponent.propTypes = {
   isOpen: PropTypes.bool.isRequired,

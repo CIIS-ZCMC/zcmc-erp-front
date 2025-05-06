@@ -124,3 +124,30 @@ export const ACTIVITY_COMMENTS = {
     },
   ],
 };
+
+export const APPROVAL_TIMELINE = [
+  {
+    id: 1,
+    name: "Krizelle Mae Falcasantos",
+    position: "Department Head",
+    area_code: "IISU",
+    area: "Innovations",
+    status: "submitted",
+    approved_at: null,
+    remarks: null,
+    activities_with_comments: null, // e.g 4 comments in 2 activities
+    number_of_comments: null, // e.g 4 comments in 2 activities
+  },
+  {
+    id: 2,
+    name: "John Doe",
+    position: "Planning Officer",
+    area_code: "IISU",
+    area: "Planning",
+    status: "approved",
+    approved_at: "",
+    remarks: "This is a sample remark written by the Division Chief.",
+    activities_with_comments: 2, // e.g 4 comments in 2 activities
+    number_of_comments: 5, // e.g 4 comments in 2 activities
+  },
+];

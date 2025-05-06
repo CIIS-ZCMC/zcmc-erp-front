@@ -1,5 +1,4 @@
 import React, { Fragment, useEffect, useState } from "react";
-import PropTypes from "prop-types";
 import { handleChangeInput } from "../../../../Utils/HandleInput";
 import ModalComponent from "../../../../Components/Common/Dialog/ModalComponent";
 import { Divider, Stack } from "@mui/joy";

@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import PageTitle from "../../../Components/Common/PageTitle";
 import { AOP_CONSTANTS } from "../../../Data/constants";
@@ -15,21 +15,30 @@ import {
 import AOPCardComponent from "../../../Components/Common/Card/AOPCardComponent";
 import { toCapitalize } from "../../../Utils/Typography";
 import { TEST_MODE } from "../../../Services/Config";
-import { MANAGE_AOP_APPROVAL } from "../../../Data/TestData";
+import { APPROVAL_TIMELINE, MANAGE_AOP_APPROVAL } from "../../../Data/TestData";
 import { localStorageSetter } from "../../../Utils/LocalStorage";
+import DrawerComponent from "../../../Components/Common/DrawerComponent";
+import StepperComponent from "../../../Components/Stepper/StepperComponent";
 
 const AOPApproval = () => {
+  const navigate = useNavigate();
+
   // HOOKS
   const { getAOPApplications, getAOPApplicationById } =
     useAOPApplicationsActions();
-
   const AOPApplications = useAOPApplications();
 
-  const navigate = useNavigate();
+  // STATES
+  const [openTimelineModal, setOpenTimelineModal] = useState(false);
 
+  // FUNCTIONS
   const handleClickCard = (id) => {
     getAOPApplicationById(id, () => navigate(`/aop-approval/objectives/${id}`));
     localStorageSetter("aop_application_id", id);
+  };
+
+  const handleViewTimeline = (id) => {
+    setOpenTimelineModal(true);
   };
 
   useEffect(() => {
@@ -85,7 +94,8 @@ const AOPApproval = () => {
                       date_approved={date_approved}
                       status={status}
                       statusLabel={toCapitalize(status)}
-                      onClick={() => handleClickCard(id)}
+                      leftClick={() => handleClickCard(id)}
+                      rightClick={() => handleViewTimeline(id)}
                     />
                   </Grid>
                 )
@@ -94,6 +104,19 @@ const AOPApproval = () => {
           </Stack>
         </ContainerComponent>
       </Stack>
+
+      {/* APPROVAL TIMELINE */}
+      <DrawerComponent
+        open={openTimelineModal}
+        setOpen={setOpenTimelineModal}
+        title={`Approval timeline for this AOP`}
+        description={"The list below shows the current status of the request."}
+        content={
+          <Stack mt={2} width="99%">
+            <StepperComponent data={APPROVAL_TIMELINE} />
+          </Stack>
+        }
+      />
     </Fragment>
   );
 };
