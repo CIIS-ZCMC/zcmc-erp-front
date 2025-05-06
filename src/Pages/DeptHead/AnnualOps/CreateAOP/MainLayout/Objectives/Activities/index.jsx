@@ -17,22 +17,27 @@ import { AOP_CONSTANTS } from '../../../../../../../Data/constants';
 import { AOP_ACTIVITIES_HEADER } from '../../../../../../../Data/Columns';
 
 import useAOPObjectivesHooks from '../../../../../../../Hooks/AOP/AOPObjectivesHook';
+import useActivitiesHook from '../../../../../../../Hooks/ActivitiesHook';
 
 const Activities = () => {
 
     const location = useLocation();
     const navigate = useNavigate()
-    const { objectiveId } = useParams();
+    //
+    const params = useParams()
+    const { objectiveId } = params; //objective Id lang for url path pero yung values is from row
     const currentPath = location.pathname;
     const childPath = currentPath === `/aop-create/activities/${objectiveId}`
 
-    const { aopObjectives, addActivity, deleteActivity, updateActivityField } = useAOPObjectivesHooks();
+    const { activities, addActivity, updateActivityField } = useActivitiesHook();
+    const { aopObjectives, deleteActivity } = useAOPObjectivesHooks();
 
-    const selectedObjective = aopObjectives.find(obj => obj.id === Number(objectiveId));
-    const aopActivities = selectedObjective?.activities || [];
+    const parentId = location.state.parentId
 
     useEffect(() => {
-        // console.log(aopActivities)
+        if (activities.length === 0) {
+            addActivity(parentId)
+        }
     }, [])
 
     const [isCollapsed, setIsCollapsed] = useState(false);
@@ -40,10 +45,6 @@ const Activities = () => {
     const handleCollapseClick = () => {
         setIsCollapsed(prev => !prev)
     };
-
-    const [editRowId, setEditRowId] = useState(null);
-
-
 
     return (
         <Fragment>
@@ -105,7 +106,7 @@ const Activities = () => {
                         actions={
                             <Stack>
                                 <ButtonComponent
-                                    onClick={() => addActivity(Number(objectiveId))}
+                                    onClick={() => addActivity(parentId)}
                                     label={"Add an Activity"}
                                     endDecorator={<Plus size={16} />}
                                 />
@@ -118,11 +119,9 @@ const Activities = () => {
                             tableRow={
                                 <TableRow
                                     handleChange={updateActivityField}
-                                    objectiveId={selectedObjective?.id}
-                                    editRowId={editRowId}
-                                    setEditRowId={setEditRowId}
+                                    parentId={parentId}
                                     deleteRow={deleteActivity}
-                                    rows={aopActivities}
+                                    rows={activities}
                                 />
                             }
                         />

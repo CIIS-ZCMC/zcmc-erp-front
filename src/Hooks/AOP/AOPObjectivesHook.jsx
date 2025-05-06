@@ -1,7 +1,6 @@
 import { create } from 'zustand';
 
 const aopActivity = {
-    activity_code: '',
     name: '',
     is_gad_related: false,
     cost: 0,
@@ -40,20 +39,15 @@ const useAOPObjectivesHooks = create((set, get) => ({
         ],
     })),
 
-    // Update fields objective
-    updateObjectiveField: (id, field, value) => {
-        set((state) => ({
-            aopObjectives: state.aopObjectives.map((row) =>
-                row.id === id
-                    ? {
-                        ...row,
-                        [field]: value,
-                        // reset fields
-                        ...(field === 'objective_id' && { success_indicator_id: null }),
-                    }
-                    : row
-            ),
-        }));
+    getActivitiesCount: (objectiveId) => {
+        console.log(objectiveId)
+        // const { aopObjectives } = get();
+
+        // const matchedObjective = aopObjectives.find(
+        //     (obj) => obj.objective_id === objectiveId
+        // );
+
+        // return matchedObjective?.activities?.length || 0;
     },
 
     //Add new activity
@@ -146,7 +140,7 @@ const useAOPObjectivesHooks = create((set, get) => ({
     // Delete an entire objective
     deleteObjective: (id) => {
         set((state) => ({
-            aopObjectives: state.aopObjectives.filter((row) => row.id !== id),
+            aopObjectives: state.aopObjectives.filter((row) => console.log(row)),
         }));
     },
 
@@ -159,6 +153,22 @@ const useAOPObjectivesHooks = create((set, get) => ({
             })),
         }));
     },
+
+    // Update aopObjectives from payload
+    setApplicationObjectivesPayload: (payload) => {
+        set((state) => ({
+            aopObjectives: state.aopObjectives.map((obj, index) => {
+                const incoming = payload[index];
+                return {
+                    ...obj,
+                    objective_id: incoming?.objective_id || null,
+                    success_indicator_id: incoming?.success_indicator_id || null,
+                };
+            }),
+        }));
+    },
+
+    // setActivitiesPayload
 
     // Generate final payload
     getApplicationObjectivesPayload: () => {

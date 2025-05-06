@@ -1,6 +1,6 @@
 import { Fragment, useEffect, useState } from 'react';
 
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useNavigate } from 'react-router-dom';
 import { Stack } from '@mui/joy';
 import { Plus } from 'lucide-react';
 
@@ -10,25 +10,23 @@ import ContainerComponent from '../../../../../../Components/Common/ContainerCom
 import EditableTableComponent from '../../../../../../Components/Common/Table/EditableTableComponent';
 import TableRow from './TableRow';
 
-// import useAOPHook from '../../../../../../Hooks/AOPHook';
+// hooks
 import useFunctionTypeHook from '../../../../../../Hooks/FunctionTypeHook';
+import useAOPObjectivesHooks from '../../../../../../Hooks/AOP/AOPObjectivesHook';
+import useObjectivesHook from '../../../../../../Hooks/ObjectivesHook';
 
 //data related
-import AOPApproval from '../../../../../PlanningOps/Approval/AOPApproval';
-
-import useAOPObjectives from '../../../../../../Hooks/AOP/AOPObjectivesHook';
 
 import { AOP_CONSTANTS } from '../../../../../../Data/constants';
 import { AOP_HEADER } from '../../../../../../Data/Columns';
 
 const Objectives = () => {
 
-    const { aopObjectives, addObjective, deleteObjective, updateObjectiveField, getApplicationObjectivesPayload } = useAOPObjectives()
+    const { deleteObjective, getApplicationObjectivesPayload, setApplicationObjectivesPayload } = useAOPObjectivesHooks()
     const { function_types, getFunctionType } = useFunctionTypeHook();
+    const { applicationObjectives, addObjective, updateObjectiveField } = useObjectivesHook();
 
     const navigate = useNavigate()
-
-    // const { aop_objectives } = useAOPHook();
 
     // local states
     const [editRowId, setEditRowId] = useState(null)
@@ -47,11 +45,19 @@ const Objectives = () => {
 
     // handle Submit
     const handleSubmit = () => {
+
+        const selectedValues = applicationObjectives.map((row) => ({
+            id: row.rowId,
+            objective_id: row.objective?.id || null,
+            success_indicator_id: row.successIndicator?.id || null,
+        }));
+
+        setApplicationObjectivesPayload(selectedValues);
+
         const payload = getApplicationObjectivesPayload();
         console.log('Submitting payload:', payload);
 
-        // Submit to API here
-        // await axios.post('/api/aop/submit', { application_objectives: payload })
+        // await axios.post('/api/aop/submit', { application_objectives: payload });
     };
 
     // console.log(aopObjectives)
@@ -71,13 +77,14 @@ const Objectives = () => {
                     </Stack>
                 }
             >
+
                 <EditableTableComponent
                     columns={AOP_HEADER}
                     tableRow={
                         <TableRow
                             editRowId={editRowId}
                             setEditRowId={setEditRowId}
-                            rows={aopObjectives}
+                            rows={applicationObjectives}
                             deleteRow={deleteObjective}
                             handleChange={updateObjectiveField}
                             function_types={function_types}
