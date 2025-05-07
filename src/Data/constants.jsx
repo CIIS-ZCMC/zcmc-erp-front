@@ -3,8 +3,7 @@ import { ReceiptEuroIcon } from "lucide-react";
 /**
  * System Name must be assign here
  */
-export const SYSTEM_NAME =
-  "Operations and Procurement Planning Management System";
+export const SYSTEM_NAME = "Enterprise Resource Planning System";
 
 /**
  * Umis SSO Signing Path
