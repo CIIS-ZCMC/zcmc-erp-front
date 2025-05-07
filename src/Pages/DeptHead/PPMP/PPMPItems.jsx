@@ -1,19 +1,18 @@
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useEffect, useMemo, useState } from "react";
 import PageTitle from "../../../Components/Common/PageTitle";
 import ContainerComponent from "../../../Components/Common/ContainerComponent";
 import ButtonComponent from "../../../Components/Common/ButtonComponent";
 import { BiPlus } from "react-icons/bi";
 import {
-  Autocomplete,
-  Button,
-  ButtonGroup,
+  Checkbox,
   Divider,
-  IconButton,
   Link,
-  Menu,
-  MenuItem,
   Stack,
   Typography,
+  Box,
+  Select,
+  selectClasses,
+  Option,
 } from "@mui/joy";
 import ScrollableEditableTableComponent from "../../../Components/Common/Table/ScrollableEditableTable";
 import { ppmpHeaders } from "../../../Data/Columns";
@@ -26,12 +25,14 @@ import usePPMPHook from "../../../Hooks/PPMPHook";
 import useItemsHook from "../../../Hooks/ItemsHook";
 import { expenseClassData } from "../../../Data/constants";
 import { IoArrowDownOutline } from "react-icons/io5";
-import { MdKeyboardArrowDown, MdOpenInNew } from "react-icons/md";
+import { MdAdd, MdKeyboardArrowDown, MdOpenInNew } from "react-icons/md";
 import ConfirmationModalComponent from "../../../Components/Common/Dialog/ConfirmationModalComponent";
 import useModalHook from "../../../Hooks/ModalHook";
 import { grey } from "@mui/material/colors";
 import userErrorInputHook from "../../../Hooks/ErrorInputHook";
 import AlertDialogComponent from "../../../Components/Common/Dialog/AlertDialogComponent";
+import TextareaComponent from "../../../Components/Form/TextareaComponent";
+import InputComponent from "../../../Components/Form/InputComponent";
 
 const options = ["Save as draft"];
 
@@ -41,8 +42,6 @@ function PPMPItems(props) {
     tableData,
     loading,
     activityObject,
-    activity,
-    activityId,
     description,
     expenseClass,
     setTableData,
@@ -73,19 +72,46 @@ function PPMPItems(props) {
 
   const [openAdd, setOpenAdd] = useState(false);
   const [openReq, setOpenReq] = useState(false);
-  const [open, setOpen] = useState(false);
-  const actionRef = React.useRef(null);
-  const anchorRef = React.useRef(null);
-  const [selectedIndex, setSelectedIndex] = React.useState(1);
+  const [step, setStep] = useState(1);
   const [pin, setPin] = useState(null);
+  const [itemReq, setItemReq] = useState({
+    specs: [
+      { id: Date.now(), value: "" },
+      { id: Date.now() + 1, value: "" },
+      { id: Date.now() + 2, value: "" },
+    ],
+  });
 
-  const handleClick = () => {
-    console.info(`You clicked ${options[selectedIndex]}`);
+  const options = [
+    {
+      name: "Save as draft",
+      value: "draft",
+      action: () => handleSubmit(1),
+    },
+    { name: "Add item request", value: "add", action: () => setOpenReq(true) },
+  ];
+
+  const addSpec = () => {
+    setItemReq((prev) => ({
+      ...prev,
+      specs: [...prev.specs, { id: Date.now(), value: "" }],
+    }));
   };
 
-  const handleMenuItemClick = (event, index) => {
-    setSelectedIndex(index);
-    setOpen(false);
+  const removeSpec = (id) => {
+    setItemReq((prev) => ({
+      ...prev,
+      specs: prev.specs.filter((spec) => spec.id !== id),
+    }));
+  };
+
+  const handleChange = (id, value) => {
+    setItemReq((prev) => ({
+      ...prev,
+      specs: prev.specs.map((spec) =>
+        spec.id === id ? { ...spec, value } : spec
+      ),
+    }));
   };
 
   const handleConfirmationModal = () => {
@@ -131,6 +157,15 @@ function PPMPItems(props) {
     }
   };
 
+  const handleNextStep = () => {
+    setStep((prev) => Math.min(prev + 1, 3));
+  };
+
+  const handlePreviousStep = () => {
+    setStep((prev) => Math.max(prev - 1, 1));
+  };
+
+  //USEEFFECTS
   useEffect(() => {
     async function fetchData() {
       try {
@@ -173,17 +208,15 @@ function PPMPItems(props) {
       setItemsData(items);
     }
   }, [loading, items]);
+
+  const memoizedData = useMemo(() => tableData, [tableData]);
+
   // useEffect(() => {
   //   if (tableData.length === 0) {
   //     setTableData(sampleData);
   //   }
   // }, [ppmp]);
-  useEffect(() => {
-    if (anchorRef.current) {
-      console.log("Anchor Element:", anchorRef.current);
-      anchorRef.current.style.border = "1px solid red"; // temp highlight
-    }
-  }, []);
+
   return (
     <Fragment>
       {console.log(items)}
@@ -202,13 +235,31 @@ function PPMPItems(props) {
               endDecorator={<BiPlus />}
               onClick={() => setOpenAdd(true)}
             />
-            <ButtonComponent
-              label={"Add item request"}
+            <Select
+              placeholder="More options"
               color="success"
-              variant={"outlined"}
-              endDecorator={<BiPlus />}
-              onClick={() => setOpenReq(true)}
-            />
+              indicator={<MdKeyboardArrowDown />}
+              sx={{
+                width: "150px",
+                [`& .${selectClasses.indicator}`]: {
+                  transition: "0.2s",
+                  [`&.${selectClasses.expanded}`]: {
+                    transform: "rotate(-180deg)",
+                  },
+                },
+              }}
+            >
+              {options.map((option, index) => (
+                <Option
+                  key={index}
+                  value={option?.value}
+                  onClick={option?.action}
+                >
+                  {option?.name}
+                </Option>
+              ))}
+            </Select>
+
             <ButtonComponent
               label={"Save changes"}
               color="success"
@@ -219,7 +270,7 @@ function PPMPItems(props) {
       >
         <ScrollableEditableTableComponent
           columns={ppmpHeaders(handleDeleteRow, items, modes)}
-          data={tableData}
+          data={memoizedData}
           onFieldChange={handleFieldChange}
           isLoading={loading}
           options={descriptionsData}
@@ -231,6 +282,7 @@ function PPMPItems(props) {
         />
       </ContainerComponent>
 
+      {/* Add items to ppmp */}
       <ModalComponent
         isOpen={openAdd}
         handleClose={() => setOpenAdd(false)}
@@ -283,57 +335,175 @@ function PPMPItems(props) {
         }
         hasActionButtons
       />
+
+      {/* Submit item request */}
       <ModalComponent
         isOpen={openReq}
         handleClose={() => setOpenReq(false)}
-        title={"On what activity shall we assign the resources you’ll add?"}
+        title={
+          step === 1
+            ? "On what activity shall we assign the resources you’ll add?"
+            : step === 2
+            ? "General information"
+            : step === 3
+            ? "Specifications"
+            : ""
+        }
         description={
-          "Select a request status and reasons (if returned) to continue. You may add remarks if necessary."
+          step === 1
+            ? "Select a request status and reasons (if returned) to continue. You may add remarks if necessary."
+            : step === 2
+            ? "Fill in the item information to create it."
+            : step === 3
+            ? "List down details for the item you want to cretae to specify it."
+            : ""
         }
         minWidth={"380px"}
         maxWidth={"480px"}
-        withProgress={true}
+        height={step === 1 ? "auto" : step === 2 ? "652px" : "680px"}
         content={
           <Fragment>
-            <Stack spacing={2}>
-              <AutocompleteComponent
-                label={"Select one activity"}
-                options={activities}
-                getOptionLabel={(option) => option.activity_code || ""}
-                handleSelect={handleSelectActivity}
-                value={activityObject}
-                size="sm"
-              />
-              {description !== "" && (
-                <>
-                  <Divider />
-                  <Typography sx={{ fontSize: 12, color: "gray" }}>
-                    Description of selected activity
-                  </Typography>
-                  <Typography sx={{ fontSize: 14 }}>{description}</Typography>
-                  <Divider />
-                </>
-              )}
+            {step === 1 && (
+              <Stack spacing={2}>
+                <AutocompleteComponent
+                  label={"Select one activity"}
+                  name="activity"
+                  options={activities}
+                  getOptionLabel={(option) => option.activity_code || ""}
+                  handleSelect={handleSelectActivity}
+                  value={activityObject}
+                  size="sm"
+                />
+                {description !== "" && (
+                  <>
+                    <Divider />
+                    <Typography sx={{ fontSize: 12, color: "gray" }}>
+                      Description of selected activity
+                    </Typography>
+                    <Typography sx={{ fontSize: 14 }}>{description}</Typography>
+                    <Divider />
+                  </>
+                )}
 
-              <AutocompleteComponent
-                label={"Select expense class"}
-                helperText={
-                  "Expense class determine the type of budget to be used for the items that are to be selected."
-                }
-                options={expenseClassData}
-                value={expenseClass}
-                handleSelect={handleSelectExpense}
-              />
-            </Stack>
+                <AutocompleteComponent
+                  label={"Select expense class"}
+                  name="expense_class"
+                  helperText={
+                    "Expense class determine the type of budget to be used for the items that are to be selected."
+                  }
+                  options={expenseClassData}
+                  value={expenseClass}
+                  handleSelect={handleSelectExpense}
+                />
+              </Stack>
+            )}
+            {step === 2 && (
+              <Stack spacing={2} mt={2} sx={{ overflowX: "hidden" }}>
+                <Stack
+                  direction={"row"}
+                  justifyContent={"space-between"}
+                  alignItems={"center"}
+                  spacing={1}
+                >
+                  <AutocompleteComponent
+                    label="Classification"
+                    name="classification"
+                  />
+                  <AutocompleteComponent label="Category" name="category" />
+                </Stack>
+                <TextareaComponent
+                  label="Item name"
+                  helperText="Use a specific and descriptive naming convention for best results."
+                />
+                <Stack
+                  direction={"row"}
+                  justifyContent={"space-between"}
+                  alignItems={"center"}
+                  spacing={1}
+                >
+                  <AutocompleteComponent label="Unit of measure" />
+                  <InputComponent label="Estimated budget" />
+                </Stack>
+                <AutocompleteComponent label="Variant" />
+
+                <Checkbox
+                  label="I have conducted a market research prior setting the budget estimates."
+                  sx={{ fontSize: 12, color: grey[600] }}
+                />
+              </Stack>
+            )}
+            {step === 3 && (
+              <Stack spacing={2} mt={2} sx={{ overflowX: "hidden" }}>
+                <Box>
+                  <Typography fontSize={12} color="grey.600">
+                    Item name
+                  </Typography>
+                  <Typography fontSize={14}> Sample </Typography>
+                  <Divider sx={{ my: 1 }} />
+                </Box>
+                <Stack spacing={1}>
+                  <Box height={"235px"} overflow="auto">
+                    {itemReq?.specs?.map((spec, index) => (
+                      <div key={spec.id} style={{ marginBottom: "1rem" }}>
+                        <Stack spacing={1}>
+                          <TextareaComponent
+                            label={`Specification ${index + 1}:`}
+                            placeholder="e.g., Size: Large"
+                            value={spec.value}
+                            onChange={(e) =>
+                              handleChange(spec.id, e.target.value)
+                            }
+                          />
+                          {itemReq?.specs?.length > 1 && (
+                            <Link
+                              onClick={() => removeSpec(spec.id)}
+                              color="danger"
+                              fontSize={12}
+                              justifyContent={"right"}
+                            >
+                              Remove
+                            </Link>
+                          )}
+                        </Stack>
+                      </div>
+                    ))}
+                  </Box>
+                  <Link
+                    onClick={addSpec}
+                    fontSize={13}
+                    color="success"
+                    endDecorator={<MdAdd />}
+                    sx={{ my: 1 }}
+                  >
+                    Add another
+                  </Link>
+                  <Divider sx={{ my: 1 }} />
+                </Stack>
+                <InputComponent
+                  label={"Authorization PIN"}
+                  type="password"
+                  helperText="Confirm you action by typing-in your authorization PIN."
+                />
+              </Stack>
+            )}
           </Fragment>
         }
-        leftButtonLabel="Cancel"
-        rightButtonLabel="Continue"
-        rightButtonAction={() =>
-          navigate(`/edit-ppmp/add-item/${expenseClass}`, {
-            state: { activityObject },
-          })
-        }
+        leftButtonLabel={step > 1 ? "Back to previous" : "Cancel"}
+        leftButtonAction={() => {
+          if (step > 1) {
+            handlePreviousStep();
+          } else {
+            setOpenReq(false);
+          }
+        }}
+        rightButtonLabel={step < 3 ? "Next step" : "Confirm and save"}
+        rightButtonAction={() => {
+          if (step < 3) {
+            handleNextStep();
+          } else {
+            handleSubmit(0);
+          }
+        }}
         hasActionButtons
       />
       <ConfirmationModalComponent

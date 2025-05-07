@@ -12,6 +12,7 @@ import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
 import NoResultComponent from "./NoResultComponent";
 import PaginationComponent from "./PaginationComponent";
 import InputComponent from "../../Form/InputComponent";
+import debounce from "lodash.debounce";
 
 const ScrollableEditableTableComponent = memo(
   ({
@@ -40,9 +41,13 @@ const ScrollableEditableTableComponent = memo(
     setData,
   }) => {
     const scrollRef = useRef(null);
+    const scrollLeftRef = useRef(0);
+
     // PAGINATION SETUP
     const [currentPage, setCurrentPage] = useState(1);
-    // const [rows, setRows] = useState(data);
+
+    // Memoize columns to avoid unnecessary re-renders
+    const memoizedColumns = useMemo(() => columns, [columns]);
 
     const currentData = useMemo(() => {
       const filteredData = search
@@ -72,105 +77,39 @@ const ScrollableEditableTableComponent = memo(
       field: null,
     });
 
-    const handleCellClick = (rowIndex, field) => {
-      setEditingCell({ rowIndex, field });
-    };
-
     const handleInputChange = useCallback(
       (e, rowIndex, field) => {
         const newValue = e.target.value;
         const row = data[rowIndex];
-
-        if (onFieldChange) {
-          onFieldChange(field, newValue, row, (updatedRow) => {
-            const updatedRows = [...data];
-            updatedRows[rowIndex] = updatedRow;
-            if (JSON.stringify(data[rowIndex]) !== JSON.stringify(updatedRow)) {
-              setData(updatedRows);
-            }
-            // setData(updatedRows);
-          });
-        } else {
-          const newRows = [...data];
-          newRows[rowIndex][field] = newValue;
-          setData(newRows);
-        }
+        onFieldChange(field, newValue, row);
       },
-      [data, onFieldChange, setData]
+      [data, onFieldChange]
     );
 
     const handleAutocompleteChange = useCallback(
       (e, rowIndex, field) => {
         const row = data[rowIndex];
-
-        if (onFieldChange) {
-          onFieldChange(field, e.name, row, (updatedRow) => {
-            const updatedRows = [...data];
-            updatedRows[rowIndex] = updatedRow;
-            if (JSON.stringify(data[rowIndex]) !== JSON.stringify(updatedRow)) {
-              setData(updatedRows);
-            }
-            // setData(updatedRows);
-          });
-        } else {
-          const newRows = [...data];
-          newRows[rowIndex][field] = e; // Directly update with the new value
-          setData(newRows);
-        }
+        onFieldChange(field, e.name, row);
       },
-      [data, onFieldChange, setData]
+      [data, onFieldChange]
     );
 
     const handleNestedInputChange = useCallback(
       (e, rowIndex, parentField, childField) => {
         const newValue = e.target.value;
         const row = data[rowIndex];
-
-        if (onFieldChange) {
-          onFieldChange(
-            `${parentField}.${childField}`,
-            newValue,
-            row,
-            (updatedRow) => {
-              const updatedRows = [...data];
-              updatedRows[rowIndex] = updatedRow;
-              setData(updatedRows);
-            }
-          );
-        } else {
-          const newRows = [...data];
-          newRows[rowIndex][parentField][childField] = e.target.value;
-          setData(newRows);
-        }
+        onFieldChange(`${parentField}.${childField}`, newValue, row);
       },
-      [data, onFieldChange, setData]
+      [data, onFieldChange]
     );
 
-    const handleNestedAutocompleteChange = (
-      e,
-      rowIndex,
-      parentField,
-      childField
-    ) => {
-      const row = data[rowIndex];
-
-      if (onFieldChange) {
-        onFieldChange(
-          `${parentField}.${childField}`,
-          e.label,
-          row,
-          (updatedRow) => {
-            const updatedRows = [...data];
-            updatedRows[rowIndex] = updatedRow;
-            setData(updatedRows);
-          }
-        );
-      } else {
-        const newRows = [...data];
-        newRows[rowIndex][parentField][childField] = e; // Directly update with the new value
-        setData(newRows);
-      }
-    };
+    const handleNestedAutocompleteChange = useCallback(
+      (e, rowIndex, parentField, childField) => {
+        const row = data[rowIndex];
+        onFieldChange(`${parentField}.${childField}`, e.label, row);
+      },
+      [data, onFieldChange]
+    );
 
     const handleBlur = () => {
       setEditingCell({ rowIndex: null, field: null });
@@ -186,20 +125,20 @@ const ScrollableEditableTableComponent = memo(
 
     const lastColumnWidth = columns[columns.length - 1]?.width || "144px";
 
-    // Memoize columns to avoid unnecessary re-renders
-    const memoizedColumns = useMemo(() => columns, [columns]);
-
     useEffect(() => {
-      const scrollEl = scrollRef.current;
-      if (!scrollEl) return;
-
-      const scrollLeft = scrollEl.scrollLeft;
-      requestAnimationFrame(() => {
-        scrollEl.scrollLeft = scrollLeft;
-      });
+      if (scrollRef.current) {
+        scrollRef.current.scrollLeft = scrollLeftRef.current;
+      }
     }, [data]);
+
+    const handleCellClick = (rowIndex, field) => {
+      if (scrollRef.current) {
+        scrollLeftRef.current = scrollRef.current.scrollLeft;
+      }
+      setEditingCell({ rowIndex, field });
+    };
     return (
-      <Box ref={scrollRef} sx={{ width: "100%", overflow: "auto" }}>
+      <Box sx={{ width: "100%", overflow: "auto" }}>
         <Sheet
           variant="outlined"
           sx={() => ({
@@ -220,6 +159,7 @@ const ScrollableEditableTableComponent = memo(
           })}
         >
           <Table
+            ref={scrollRef}
             borderAxis="bothBetween"
             stripe={stripe}
             hoverRow

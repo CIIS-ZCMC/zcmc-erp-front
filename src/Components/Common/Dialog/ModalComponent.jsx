@@ -45,6 +45,7 @@ function ModalComponent({
   description, // A subtitle, styled with a smaller font
   maxWidth, // Maximum width of the modal for automatic sizing
   minWidth, // Minimum width of the modal for automatic sizing
+  height = "auto",
   handleClose, // Callback function trigger to close the modal This can also be used for left button as the default action for "Close"
   rightButtonLabel = "Proceed", // Label for the right-side button within the modal
   rightButtonAction, // Function executed when the right-side button is clicked
@@ -56,7 +57,7 @@ function ModalComponent({
   isLoading, // Indicates whether the right-side button is in a loading state
   noRightButton, // If set to true, the right button is not displayed Defaults to false
   noDivider = false, // If set to true, the divider between the title and content is hidden
-  hasActionButtons = false
+  hasActionButtons = false,
 }) {
   const theme = useTheme();
   const custom = theme.palette.custom;
@@ -77,11 +78,12 @@ function ModalComponent({
       <ModalDialog
         sx={{
           width: "auto",
-          height: "auto",
+          // height: "auto",
           // maxHeight: "80%",
           // maxWidth: "540px",
           borderRadius: 20,
           padding: 3.5,
+          height: height,
         }}
         minWidth={minWidth}
         maxWidth={maxWidth}
@@ -122,7 +124,7 @@ function ModalComponent({
         <DialogContent>{content}</DialogContent>
 
         {/* FOOTER */}
-        {hasActionButtons &&
+        {hasActionButtons && (
           <>
             <Divider sx={{ mx: 0.2 }} />
 
@@ -157,11 +159,10 @@ function ModalComponent({
               </Box>
             </DialogActions>
           </>
-        }
+        )}
       </ModalDialog>
     </Modal>
-  )
+  );
 }
-
 
 export default ModalComponent;

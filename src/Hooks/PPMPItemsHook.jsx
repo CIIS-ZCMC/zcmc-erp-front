@@ -17,19 +17,25 @@ export const usePPMPItemsHook = create(
       setItemsData: (data) => set({ itemsData: data }),
       setLoading: (value) => set({ loading: value }),
 
+      updateRow: (updatedRow) => {
+        set((state) => ({
+          tableData: state.tableData.map((row) =>
+            row.id === updatedRow.id ? { ...row, ...updatedRow } : row
+          ),
+        }));
+      },
+
       calculateQuantity: (target) =>
         Object.values(target).reduce((sum, value) => sum + value, 0),
 
-      handleFieldChange: (fieldName, newValue, row, updateRow) => {
-        const { calculateQuantity, setLoading, itemsData } = get();
+      handleFieldChange: (fieldName, newValue, row) => {
+        const { calculateQuantity, setLoading, itemsData, updateRow } = get();
         console.log(newValue);
         if (fieldName === "description") {
           setLoading(true);
           const selected = itemsData.find((item) => item.name === newValue);
-          console.log(selected);
           setTimeout(() => {
             if (selected) {
-              console.log("here me");
               updateRow({
                 ...row,
                 description: newValue,
@@ -53,7 +59,6 @@ export const usePPMPItemsHook = create(
             set({ loading: false });
           }, 1000);
         } else if (fieldName === "procurement_mode") {
-          // 🔧 Handle procurement mode separately
           updateRow({
             ...row,
             procurement_mode: newValue,
@@ -61,7 +66,7 @@ export const usePPMPItemsHook = create(
         } else if (fieldName.includes("target_by_quarter")) {
           const updatedTarget = {
             ...row.target_by_quarter,
-            [fieldName.split(".")[1]]: parseInt(newValue),
+            [fieldName.split(".")[1]]: parseInt(newValue) || 0,
           };
           const updatedQuantity = calculateQuantity(updatedTarget);
           const newTotalAmount =
