@@ -1,141 +1,7 @@
 import { create } from 'zustand';
 
-const aopActivity = {
-    name: '',
-    is_gad_related: false,
-    cost: 0,
-    start_month: '',
-    end_month: '',
-    target: {
-        first_quarter: '',
-        second_quarter: '',
-        third_quarter: '',
-        fourth_quarter: '',
-    },
-    resources: [],
-    responsible_people: [
-        {
-            user_id: null,
-            designation_id: null,
-            division_id: null,
-            department_id: null,
-            section_id: null,
-            unit_id: null
-        }
-    ],
-}
-
 const useAOPObjectivesHooks = create((set, get) => ({
-    // Initial 3 default objectives
-    aopObjectives: Array.from({ length: 3 }, (_, index) => ({
-        id: index + 1,
-        objective_id: null,
-        success_indicator_id: null,
-        activities: [
-            {
-                id: `${index + 1}-1`,
-                ...aopActivity
-            }
-        ],
-    })),
-
-    getActivitiesCount: (objectiveId) => {
-        console.log(objectiveId)
-        // const { aopObjectives } = get();
-
-        // const matchedObjective = aopObjectives.find(
-        //     (obj) => obj.objective_id === objectiveId
-        // );
-
-        // return matchedObjective?.activities?.length || 0;
-    },
-
-    //Add new activity
-    updateActivityField: (objectiveId, activityId, fieldPath, value) => {
-        set((state) => ({
-            aopObjectives: state.aopObjectives.map((objective) =>
-                objective.id === objectiveId
-                    ? {
-                        ...objective,
-                        activities: objective.activities.map((activity) => {
-                            if (activity.id !== activityId) return activity;
-
-                            const updatedActivity = { ...activity };
-                            const keys = fieldPath.split(".");
-                            let current = updatedActivity;
-
-                            for (let i = 0; i < keys.length - 1; i++) {
-                                current = current[keys[i]] = { ...current[keys[i]] };
-                            }
-
-                            current[keys.at(-1)] = value;
-
-                            return updatedActivity;
-                        }),
-                    }
-                    : objective
-            ),
-        }));
-    },
-
-    setAopObjective: (objectiveId, activityId, responsiblePeople) => {
-        set((state) => ({
-            aopObjectives: state.aopObjectives.map((objective) =>
-                objective.id === objectiveId
-                    ? {
-                        ...objective,
-                        activities: objective.activities.map((activity) =>
-                            activity.id === activityId
-                                ? {
-                                    ...activity,
-                                    responsible_people: responsiblePeople,
-                                }
-                                : activity
-                        ),
-                    }
-                    : objective
-            ),
-        }));
-    },
-
-    // Add new objective row
-    addObjective: () => {
-        const currentObjectives = get().aopObjectives;
-        const newId = currentObjectives.length + 1;
-
-        set((state) => ({
-            aopObjectives: [
-                ...state.aopObjectives,
-                {
-                    id: newId,
-                    objective_id: null,
-                    success_indicator_id: null,
-                    activities: [],
-                },
-            ],
-        }));
-    },
-
-    //Add new activity
-    addActivity: (objectiveId) => {
-
-        set((state) => ({
-            aopObjectives: state.aopObjectives.map((objective) =>
-                objective.id === objectiveId
-                    ? {
-                        ...objective,
-                        activities: [
-                            ...objective.activities,
-                            {
-                                id: `${objective.id}-${objective.activities.length + 1}`,
-                                ...aopActivity,
-                            },
-                        ],
-                    }
-                    : objective
-            ),
-        }));
-    },
+    aopObjectives: [],
 
     // Delete an entire objective
     deleteObjective: (id) => {
@@ -144,31 +10,41 @@ const useAOPObjectivesHooks = create((set, get) => ({
         }));
     },
 
-    //delete single activity
-    deleteActivity: (activityId) => {
-        set((state) => ({
-            aopObjectives: state.aopObjectives.map((objective) => ({
-                ...objective,
-                activities: objective.activities.filter((activity) => activity.id !== activityId),
+    setApplicationObjectivesPayload: (objectivesPayload) => {
+        set(() => ({
+            aopObjectives: objectivesPayload.map((item) => ({
+                objective_id: item?.objective_id || null,
+                success_indicator_id: item?.success_indicator_id || null,
+                activities: [],
             })),
         }));
     },
 
-    // Update aopObjectives from payload
-    setApplicationObjectivesPayload: (payload) => {
+    //update activities payload 
+    setActivitiesPayload: (activitiesPayload) => {
         set((state) => ({
             aopObjectives: state.aopObjectives.map((obj, index) => {
-                const incoming = payload[index];
+                const incomingActivities = activitiesPayload[index]?.activities || [];
                 return {
                     ...obj,
-                    objective_id: incoming?.objective_id || null,
-                    success_indicator_id: incoming?.success_indicator_id || null,
+                    activities: incomingActivities.map((activity) => ({
+                        name: activity.name,
+                        is_gad_related: activity.is_gad_related,
+                        cost: activity.cost,
+                        start_month: activity.start_month,
+                        end_month: activity.end_month,
+                        target: activity.target,
+                    })),
                 };
             }),
         }));
     },
 
-    // setActivitiesPayload
+    setResponsiblePeoplePayload: (resPeoplePayload) => {
+        set((state) => ({
+            aopObjectives: state.aopObjectives
+        }))
+    },
 
     // Generate final payload
     getApplicationObjectivesPayload: () => {

@@ -14,6 +14,7 @@ import TableRow from './TableRow';
 import useFunctionTypeHook from '../../../../../../Hooks/FunctionTypeHook';
 import useAOPObjectivesHooks from '../../../../../../Hooks/AOP/AOPObjectivesHook';
 import useObjectivesHook from '../../../../../../Hooks/ObjectivesHook';
+import useActivitiesHook from '../../../../../../Hooks/ActivitiesHook';
 
 //data related
 
@@ -22,9 +23,10 @@ import { AOP_HEADER } from '../../../../../../Data/Columns';
 
 const Objectives = () => {
 
-    const { deleteObjective, getApplicationObjectivesPayload, setApplicationObjectivesPayload } = useAOPObjectivesHooks()
+    const { deleteObjective, getApplicationObjectivesPayload, setApplicationObjectivesPayload, setActivitiesPayload } = useAOPObjectivesHooks()
     const { function_types, getFunctionType } = useFunctionTypeHook();
-    const { applicationObjectives, addObjective, updateObjectiveField } = useObjectivesHook();
+    const { objectives, addObjective, updateObjectiveField } = useObjectivesHook();
+    const { activities } = useActivitiesHook();
 
     const navigate = useNavigate()
 
@@ -43,24 +45,46 @@ const Objectives = () => {
         });
     }, [isLoading])
 
+
+    // check pag walang objectives then add default objective
+    useEffect(() => {
+        if (objectives.length === 0) {
+            addObjective();
+        }
+    }, [objectives, addObjective]);
+
     // handle Submit
     const handleSubmit = () => {
 
-        const selectedValues = applicationObjectives.map((row) => ({
+        //selected objectiveValues
+        const objectivesPayload = objectives.map((row) => ({
             id: row.rowId,
             objective_id: row.objective?.id || null,
             success_indicator_id: row.successIndicator?.id || null,
         }));
 
-        setApplicationObjectivesPayload(selectedValues);
+        //activities value
+        const activitiesPayload = objectives.map((obj) => ({
+            activities: activities.filter((act) => act.parentId === obj.id).map((row) => ({
+                name: row.name,
+                is_gad_related: row.isGadRelated,
+                cost: row.cost,
+                start_month: row.startMonth,
+                end_month: row.endMonth,
+                target: row.target,
+                resources: row.resources,
+                responsible_people: row.responsible_people,
+            })),
+        }));
+
+        setApplicationObjectivesPayload(objectivesPayload);
+        setActivitiesPayload(activitiesPayload)
 
         const payload = getApplicationObjectivesPayload();
         console.log('Submitting payload:', payload);
 
         // await axios.post('/api/aop/submit', { application_objectives: payload });
     };
-
-    // console.log(aopObjectives)
 
     return (
         <Fragment>
@@ -84,7 +108,7 @@ const Objectives = () => {
                         <TableRow
                             editRowId={editRowId}
                             setEditRowId={setEditRowId}
-                            rows={applicationObjectives}
+                            rows={objectives}
                             deleteRow={deleteObjective}
                             handleChange={updateObjectiveField}
                             function_types={function_types}
@@ -111,7 +135,7 @@ const Objectives = () => {
                         size={'md'}
                         variant={'solid'}
                         disabled={false}
-                        onClick={handleSubmit} //submit new aop
+                        onClick={() => handleSubmit()}
                     />
                 </Stack>
 

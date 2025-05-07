@@ -1,5 +1,13 @@
 import { create } from "zustand";
 
+const initialResponsiblePerson = () => ({
+    id: uuid(),
+    parentId: null,
+    users: [],
+    areas: [],
+    isAssigned: false,
+})
+
 const useResponsiblePeopleHook = create((set, get) => ({
     responsible_people: [],
 

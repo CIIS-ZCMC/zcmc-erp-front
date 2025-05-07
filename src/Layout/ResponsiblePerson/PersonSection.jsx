@@ -8,14 +8,12 @@ import AutocompleteComponent from '../../Components/Form/AutocompleteComponent';
 import BoxComponent from '../../Components/Common/Card/BoxComponent'
 import { useLocation } from 'react-router-dom';
 
-
 const SelectPersonComponent = () => {
     const { users, handleValue } = useResponsiblePeopleHook();
     const { users: usersOptions } = useUserHook()
 
     const location = useLocation()
-    const pathSegments = location.pathname.split('/');
-    const activityId = pathSegments[5];
+    const parentId = location.state.parentId;
 
     return <Stack gap={1}>
         <AutocompleteComponent
@@ -23,7 +21,7 @@ const SelectPersonComponent = () => {
             placeholder='Select a responsible person'
             // value={user?.name || ''}
             size={'md'}
-            setValue={(value) => handleValue(activityId, "users", value)}
+            setValue={(value) => handleValue(parentId, "users", value)}
             options={usersOptions}
         />
 

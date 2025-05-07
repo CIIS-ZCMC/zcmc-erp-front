@@ -23,22 +23,27 @@ const Activities = () => {
 
     const location = useLocation();
     const navigate = useNavigate()
-    //
     const params = useParams()
-    const { objectiveId } = params; //objective Id lang for url path pero yung values is from row
+
+    const parentId = location.state?.parentId
+
+    const { objectiveId } = params; //objective Id lang for url path pero yung value is from row 
     const currentPath = location.pathname;
     const childPath = currentPath === `/aop-create/activities/${objectiveId}`
 
     const { activities, addActivity, updateActivityField } = useActivitiesHook();
-    const { aopObjectives, deleteActivity } = useAOPObjectivesHooks();
+    const { deleteActivity } = useAOPObjectivesHooks();
 
-    const parentId = location.state.parentId
+    // const filteredActivities = useActivitiesHook(
+    //     (state) => state.getActivitiesByParentId(parentId)
+    // );
 
     useEffect(() => {
-        if (activities.length === 0) {
-            addActivity(parentId)
+        const hasActivitiesForParent = activities.some(act => act.parentId === parentId);
+        if (!hasActivitiesForParent && parentId) {
+            addActivity(parentId);
         }
-    }, [])
+    }, [activities, parentId]);
 
     const [isCollapsed, setIsCollapsed] = useState(false);
 
