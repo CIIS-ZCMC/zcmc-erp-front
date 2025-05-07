@@ -37,6 +37,7 @@ import {
 import {
   useActivity,
   useActivityActions,
+  useResources,
 } from "../../../Hooks/AOP/ActivityHook";
 import { localStorageGetter } from "../../../Utils/LocalStorage";
 import RadioButtonComponent from "../../../Components/Common/RadioButtonComponent";
@@ -52,6 +53,7 @@ import {
   useAllComments,
   useCommentActions,
   useComments,
+  useRemarks,
 } from "../../../Hooks/CommentHook";
 import CommentContainerComponent from "../../../Components/Comments/CommentContainerComponent";
 import { groupByDate } from "../../../Utils/GroupData";
@@ -69,6 +71,7 @@ export default function ManageAOP() {
   // ACTIVITY HOOK
   const defaultActivityId = AOPApplication[0]?.activities[0]?.id;
   const activity = useActivity();
+  const resources = useResources();
   const {
     id: activityId,
     activity_name,
@@ -80,21 +83,26 @@ export default function ManageAOP() {
       third_quarter,
       fourth_quarter,
     } = {},
-    resources = [],
+    is_reviewed,
     responsible_people = [],
   } = activity || {};
-  const { getActivityById } = useActivityActions();
+  const { getActivityById, markAsReviewed } = useActivityActions();
 
   // COMMENTS HOOK
   const comments = useComments();
-  const { getCommentsByActivity, getCommentsByApplication } =
-    useCommentActions();
+  const remarks = useRemarks();
+
+  const {
+    getCommentsByActivity,
+    getCommentsByApplication,
+    getRemarksByApplication,
+  } = useCommentActions();
   const allComments = useAllComments();
 
   // STATES
   const [action, setAction] = useState("approve");
   const [activeTab, setActiveTab] = useState(0);
-
+  const [btnLoading, setBtnLoading] = useState(false);
   // STYLES
   const titleStyles = { level: "body-xs", fontWeight: 400 };
   const valueStyles = {
@@ -113,11 +121,13 @@ export default function ManageAOP() {
 
   // DATA
   const feedbackDisplay = useMemo(() => {
-    const dataToDisplay = activeTab === 0 ? allComments : [];
+    const dataToDisplay = activeTab === 0 ? allComments : remarks;
 
     return groupByDate(dataToDisplay);
-  }, [activeTab, allComments]);
-  const feedbackCount = Object.keys(feedbackDisplay).length;
+  }, [activeTab, allComments, remarks]);
+
+  const feedbackCount = allComments?.length;
+
   const commentsDisplay = useMemo(() => groupByDate(comments), [comments]);
 
   // const scrollToBottom = () => {
@@ -133,10 +143,9 @@ export default function ManageAOP() {
   // FUNCTIONS
   const handleViewFeedback = () => {
     setOpenFeedbackModal(true);
-    getCommentsByApplication(
-      { aop_application_id: AOPApplication?.id },
-      () => {}
-    );
+    getCommentsByApplication(() => {});
+
+    getRemarksByApplication(() => {});
 
     // fetch data
   };
@@ -181,7 +190,16 @@ export default function ManageAOP() {
       });
   };
 
-  const handleMarkAsReviewed = () => {};
+  const handleMarkAsReviewed = () => {
+    setBtnLoading(true);
+    markAsReviewed(activityId, (status, message) => {
+      setBtnLoading(false);
+      closeConfirmation();
+      setOpenMarkModal(false);
+    });
+  };
+
+  const isDivisionHead = false;
 
   useEffect(() => {
     if (activityId == defaultActivityId) return;
@@ -189,10 +207,7 @@ export default function ManageAOP() {
     Promise.all([
       getActivityById(defaultActivityId, () => {}),
       getCommentsByActivity(defaultActivityId, () => {}),
-      getCommentsByApplication(
-        { aop_application_id: AOPApplication?.id },
-        () => {}
-      ),
+      getCommentsByApplication(() => {}),
     ]).catch((error) => {
       console.error("Error fetching data:", error);
     });
@@ -289,6 +304,7 @@ export default function ManageAOP() {
                         size="sm"
                         sx={{ fontSize: 12, color: "neutral.800" }}
                         color="success"
+                        defaultChecked={is_reviewed}
                         onChange={handleClickMarkCheckbox}
                       />
                       <FormHelperText
@@ -534,30 +550,35 @@ export default function ManageAOP() {
         hasActionButtons
         isOpen={openProcessModal}
         handleClose={() => setOpenProcessModal(false)}
-        title={`Revisions for objective #14 - Core`}
+        title={`Process request `}
         description={
-          "This is a subheading. It should add more context to the interaction."
+          "Select a request status and reasons (if returned) to continue. You may add remarks if necessary."
         }
         leftButtonLabel="Back to request"
         rightButtonLabel="Confirm and save"
         rightButtonAction={handleShowAlert}
         maxWidth={500}
         content={
-          <Stack gap={2} py={1}>
-            <Typography level="title-sm" mt={1}>
-              Select the action you would like to take:
-            </Typography>
-            <RadioButtonComponent
-              actions={approvalActions}
-              value={action}
-              setValue={setAction}
-            />
-            <TextareaComponent
-              minRows={2}
-              label={"Remarks"}
-              maxRows={200}
-              placeholder={"Enter your remarks here"}
-            />
+          <Stack gap={2}>
+            <Stack py={2}>
+              <Typography level="title-sm" mb={1}>
+                Select the action you would like to take:
+              </Typography>
+              <RadioButtonComponent
+                actions={approvalActions}
+                value={action}
+                setValue={setAction}
+              />
+              {isDivisionHead && (
+                <TextareaComponent
+                  minRows={2}
+                  label={"Remarks"}
+                  maxRows={200}
+                  placeholder={"Enter your remarks here"}
+                />
+              )}
+            </Stack>
+
             <Divider />
             <InputComponent
               type="password"
@@ -609,22 +630,40 @@ export default function ManageAOP() {
                     <Divider sx={{ fontSize: "xs", mt: 0.5 }}>{date}</Divider>
                   )}
 
-                  {messages?.map(
-                    (
-                      { name, area_code, created_at, comment, activity_id },
-                      key
-                    ) => (
-                      <CommentContainerComponent
-                        isActivity={activeTab === 0}
-                        key={key}
-                        name={name}
-                        area_code={area_code}
-                        date={created_at}
-                        comment={comment}
-                        handleClick={() => handleClickComment(activity_id)}
-                      />
-                    )
-                  )}
+                  {/* COMMENTS */}
+                  {activeTab === 0
+                    ? messages?.map(
+                        ({ name, area_code, created_at, comment }, key) => (
+                          <CommentContainerComponent
+                            key={key}
+                            name={name}
+                            comment={comment}
+                            area_code={area_code}
+                            date={created_at}
+                            isActivity
+                          />
+                        )
+                      )
+                    : messages?.map(
+                        (
+                          {
+                            division_chief_name,
+                            division_chief_area_code,
+                            created_at,
+                            remarks,
+                          },
+                          key
+                        ) => (
+                          <CommentContainerComponent
+                            key={key}
+                            name={division_chief_name}
+                            comment={remarks}
+                            area_code={division_chief_area_code}
+                            date={created_at}
+                          />
+                        )
+                      )}
+                  {/* REMARKS */}
                 </Fragment>
               ))}
             </Stack>
@@ -642,6 +681,7 @@ export default function ManageAOP() {
           leftButtonLabel="No, back to request"
           rightButtonLabel="Mark as “Reviewed”"
           rightButtonAction={handleMarkAsReviewed}
+          isLoading={btnLoading}
         />
       )}
     </Fragment>

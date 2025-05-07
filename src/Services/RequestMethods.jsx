@@ -1,6 +1,6 @@
 import {
-    handleFailedStatus,
-    validateStatusOk,
+  handleFailedStatus,
+  validateStatusOk,
 } from "../utils/RequestValidation";
 import erp_api from "./ERP_API";
 
@@ -13,11 +13,11 @@ import erp_api from "./ERP_API";
  * @param {function} failed : function to be triggered on fail request or error encountered.
  */
 export const post = ({ url, params, form, success, failed }) => {
-    erp_api
-        .post(url, form, { params: params })
-        .then((res) => validateStatusOk(res))
-        .then((res) => success(res))
-        .catch((err) => failed(...handleFailedStatus(err)));
+  erp_api
+    .post(url, form, { params: params })
+    .then((res) => validateStatusOk(res))
+    .then((res) => success(res))
+    .catch((err) => failed(...handleFailedStatus(err)));
 };
 
 /**
@@ -31,15 +31,15 @@ export const post = ({ url, params, form, success, failed }) => {
  * @param {function} failed : function to be triggered on fail request or error encountered.
  */
 export const upload = ({ url, form, success, failed }) => {
-    erp_api
-        .post(url, form, {
-            headers: {
-                "Content-Type": "multipart/form-data",
-            },
-        })
-        .then((res) => validateStatusOk(res))
-        .then((res) => success(res))
-        .catch((err) => failed(...handleFailedStatus(err)));
+  erp_api
+    .post(url, form, {
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    })
+    .then((res) => validateStatusOk(res))
+    .then((res) => success(res))
+    .catch((err) => failed(...handleFailedStatus(err)));
 };
 
 /**
@@ -51,11 +51,11 @@ export const upload = ({ url, form, success, failed }) => {
  * @param {function} failed : function to be triggered on fail request or error encountered.
  */
 export const read = ({ url, params, token, success, failed }) => {
-    erp_api
-        .get(url, { params: params }, { cancelToken: token })
-        .then((res) => validateStatusOk(res))
-        .then((res) => success(res))
-        .catch((err) => failed(...handleFailedStatus(err)));
+  erp_api
+    .get(url, { params: params }, { cancelToken: token })
+    .then((res) => validateStatusOk(res))
+    .then((res) => success(res))
+    .catch((err) => failed(...handleFailedStatus(err)));
 };
 
 /**
@@ -67,54 +67,54 @@ export const read = ({ url, params, token, success, failed }) => {
  * @param {function} failed : function to be triggered on fail request or error encountered.
  */
 export const download = ({ url, token, title, fileName, success, failed }) => {
-    erp_api
-        .get(url, { cancelToken: token, responseType: "blob" })
-        .then((res) => validateStatusOk(res))
-        .then((res) => {
-            if (res.status === 200) {
-                // Extract the filename from the content-disposition header
-                const contentDisposition =
-                    res.headers["content-disposition"] ||
-                    res.headers["Content-Disposition"];
+  erp_api
+    .get(url, { cancelToken: token, responseType: "blob" })
+    .then((res) => validateStatusOk(res))
+    .then((res) => {
+      if (res.status === 200) {
+        // Extract the filename from the content-disposition header
+        const contentDisposition =
+          res.headers["content-disposition"] ||
+          res.headers["Content-Disposition"];
 
-                console.log(contentDisposition);
+        console.log(contentDisposition);
 
-                const filename = contentDisposition
-                    ? contentDisposition.split("filename=")[1].replace(/"/g, "")
-                    : fileName;
+        const filename = contentDisposition
+          ? contentDisposition.split("filename=")[1].replace(/"/g, "")
+          : fileName;
 
-                // Create a URL for the file
-                const blob = new Blob([res.data], {
-                    type: res.headers["content-type"],
-                });
-                const url = window.URL.createObjectURL(blob);
-
-                // Create a link element
-                const link = document.createElement("a");
-                link.href = url;
-                link.download = filename; // Use the filename from the header
-
-                // Append to the body
-                document.body.appendChild(link);
-
-                // Trigger download
-                link.click();
-
-                // Clean up
-                link.remove();
-                window.URL.revokeObjectURL(url);
-
-                // Notify success
-                success(200, `Download ${title} Complete.`);
-            } else {
-                // Handle unexpected status codes
-                success(res.status, "Unexpected response status.");
-            }
-        })
-        .catch(() => {
-            //   console.error("Error downloading file", error);
-            failed(500, `Failed to download ${title}.`);
+        // Create a URL for the file
+        const blob = new Blob([res.data], {
+          type: res.headers["content-type"],
         });
+        const url = window.URL.createObjectURL(blob);
+
+        // Create a link element
+        const link = document.createElement("a");
+        link.href = url;
+        link.download = filename; // Use the filename from the header
+
+        // Append to the body
+        document.body.appendChild(link);
+
+        // Trigger download
+        link.click();
+
+        // Clean up
+        link.remove();
+        window.URL.revokeObjectURL(url);
+
+        // Notify success
+        success(200, `Download ${title} Complete.`);
+      } else {
+        // Handle unexpected status codes
+        success(res.status, "Unexpected response status.");
+      }
+    })
+    .catch(() => {
+      //   console.error("Error downloading file", error);
+      failed(500, `Failed to download ${title}.`);
+    });
 };
 
 /**
@@ -126,11 +126,11 @@ export const download = ({ url, token, title, fileName, success, failed }) => {
  * @param {function} failed : function to be triggered on fail request or error encountered.
  */
 export const update = ({ url, form, param, success, failed }) => {
-    erp_api
-        .put(url, form, { params: param })
-        .then((res) => validateStatusOk(res))
-        .then((res) => success(res))
-        .catch((err) => failed(...handleFailedStatus(err)));
+  erp_api
+    .put(url, form, { params: param })
+    .then((res) => validateStatusOk(res))
+    .then((res) => success(res))
+    .catch((err) => failed(...handleFailedStatus(err)));
 };
 
 /**
@@ -144,16 +144,16 @@ export const update = ({ url, form, param, success, failed }) => {
  * @param {function} failed : function to be triggered on fail request or error encountered.
  */
 export const updateUpload = ({ url, form, param, success, failed }) => {
-    erp_api
-        .post(url, form, {
-            params: param,
-            headers: {
-                "Content-Type": "multipart/form-data",
-            },
-        })
-        .then((res) => validateStatusOk(res))
-        .then((res) => success(res))
-        .catch((err) => failed(...handleFailedStatus(err)));
+  erp_api
+    .post(url, form, {
+      params: param,
+      headers: {
+        "Content-Type": "multipart/form-data",
+      },
+    })
+    .then((res) => validateStatusOk(res))
+    .then((res) => success(res))
+    .catch((err) => failed(...handleFailedStatus(err)));
 };
 
 /**
@@ -164,9 +164,9 @@ export const updateUpload = ({ url, form, param, success, failed }) => {
  * @param {function} failed : function to be triggered on fail request or error encountered.
  */
 export const remove = ({ url, form, param, success, failed }) => {
-    erp_api
-        .delete(url, { params: param }, form)
-        .then((res) => validateStatusOk(res))
-        .then((res) => success(res))
-        .catch((err) => failed(...handleFailedStatus(err)));
+  erp_api
+    .delete(url, { params: param }, form)
+    .then((res) => validateStatusOk(res))
+    .then((res) => success(res))
+    .catch((err) => failed(...handleFailedStatus(err)));
 };

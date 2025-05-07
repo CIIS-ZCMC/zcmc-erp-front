@@ -7,11 +7,14 @@ import {
 } from "../Utils/LocalStorage";
 
 export const COMMENT = "activity-comments";
+export const REMARKS = "aop-remarks";
+export const APPLICATION_ID = localStorageGetter("aop_application_id");
 
 const useCommentHook = create((set, get) => ({
   comments: [],
   allComments: [],
   comment: "",
+  remarks: [],
   isLoading: false,
 
   actions: {
@@ -37,15 +40,30 @@ const useCommentHook = create((set, get) => ({
       });
     },
 
-    getCommentsByApplication: (id, callback) => {
+    getCommentsByApplication: (callback) => {
       read({
         url: `${COMMENT}`,
         params: {
-          aop_application_id: localStorageGetter("aop_application_id"),
+          aop_application_id: APPLICATION_ID,
         },
         success: (response) => {
           const { data } = response.data;
           set({ allComments: data });
+          callback(response.status, data);
+        },
+        failed: (response) => {
+          set({ allComments: [] });
+          callback(response);
+        },
+      });
+    },
+
+    getRemarksByApplication: (callback) => {
+      read({
+        url: `${REMARKS}/${APPLICATION_ID}`,
+        success: (response) => {
+          const { data } = response.data;
+          set({ remarks: [data] });
           callback(response.status, data);
         },
         failed: (response) => {
@@ -96,6 +114,7 @@ export const useCommentLoading = () =>
   useCommentHook((state) => state.isLoading);
 export const useComment = () => useCommentHook((state) => state.comment);
 export const useComments = () => useCommentHook((state) => state.comments);
+export const useRemarks = () => useCommentHook((state) => state.remarks);
 export const useAllComments = () =>
   useCommentHook((state) => state.allComments);
 export const useCommentActions = () => useCommentHook((state) => state.actions);

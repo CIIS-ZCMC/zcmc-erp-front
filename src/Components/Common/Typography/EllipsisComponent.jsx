@@ -11,7 +11,7 @@ function EllipsisComponent({ label, text }) {
   };
 
   const truncatedText =
-    text.length > 120 && !isExpanded ? text.slice(0, 120) + "..." : text;
+    text?.length > 120 && !isExpanded ? text?.slice(0, 120) + "..." : text;
 
   return (
     <Stack gap={1} width="100%">
@@ -33,7 +33,7 @@ function EllipsisComponent({ label, text }) {
           }}
         >
           {truncatedText}{" "}
-          {text.length > 120 && (
+          {text?.length > 120 && (
             <Typography
               level="body-xs"
               component="span"

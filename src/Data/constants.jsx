@@ -104,4 +104,7 @@ export const API = {
   AOP_REQUESTS: "aop-requests",
   MANAGE_AOP_REQUEST: "manage-aop-request",
   SHOW_OBJECTIVE: "show-objective-activity",
+
+  // OBJECTIVES
+  EDIT_OBJECTIVE: "edit-objective",
 };

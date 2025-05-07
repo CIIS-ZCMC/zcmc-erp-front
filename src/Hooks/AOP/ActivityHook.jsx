@@ -1,10 +1,11 @@
 import { create } from "zustand";
-import { read } from "../../Services/RequestMethods";
+import { post, read } from "../../Services/RequestMethods";
 import { API } from "../../Data/constants";
 
 const useActivityHook = create((set) => ({
   activity: null,
   isLoading: false,
+  resources: [],
   activityStates: {
     objectiveNumber: 1,
     activityNumber: 1,
@@ -19,6 +20,7 @@ const useActivityHook = create((set) => ({
         UIStates: { ...state.UIStates, activeActivity: data },
       }));
     },
+
     getActivityById: (id, callback) => {
       set({ isLoading: true });
 
@@ -29,11 +31,31 @@ const useActivityHook = create((set) => ({
           set({ isLoading: false });
         },
         success: (response) => {
-          const { data, message } = response.data;
+          const {
+            data,
+            data: { resources },
+            message,
+          } = response.data;
 
-          set({ activity: data, isLoading: false });
+          set({ activity: data, resources: resources, isLoading: false });
 
           callback(response.status, message, data);
+        },
+      });
+    },
+
+    markAsReviewed: (activity_id, callback) => {
+      post({
+        url: `/activities/${activity_id}/mark-reviewed`,
+
+        success: (response) => {
+          const { data, message } = response.data;
+          console.log(data);
+          callback(response.status, message);
+        },
+        failed: () => {
+          callback();
+          set({ isLoading: false });
         },
       });
     },
@@ -41,7 +63,7 @@ const useActivityHook = create((set) => ({
 }));
 
 export const useActivity = () => useActivityHook((state) => state.activity);
-
+export const useResources = () => useActivityHook((state) => state.resources);
 export const useActivityStates = () =>
   useActivityHook((state) => state.activityStates);
 

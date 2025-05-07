@@ -57,14 +57,21 @@ const ObjectivesList = () => {
   };
 
   const handeEditObjective = (id) => {
-    const { success_indicator, objective, function_description } =
-      getObjectiveDetails(id);
+    const {
+      success_indicator,
+      success_indicator_id,
+      objective,
+      objective_id,
+      function_description,
+    } = getObjectiveDetails(id);
 
     setObjectiveData(() => {
       return {
         success_indicator: success_indicator,
         objective: objective,
         index: id,
+        objective_id: objective_id,
+        success_indicator_id: success_indicator_id,
         core: toCapitalize(function_description),
       };
     });

@@ -4,15 +4,21 @@ import ModalComponent from "../../../../Components/Common/Dialog/ModalComponent"
 import { Divider, Stack } from "@mui/joy";
 import TextareaComponent from "../../../../Components/Form/TextareaComponent";
 import InputComponent from "../../../../Components/Form/InputComponent";
+import { useAOPApplicationsActions } from "../../../../Hooks/AOP/AOPApplicationsHook";
 
 const EditObjective = ({ onOpen, data, handleClose }) => {
   // STATES
   const [authPin, setAuthPin] = useState("");
   const [objectiveData, setObjectiveData] = useState({ ...data });
 
+  // HOOKS
+  const { updateObjectiveSuccessIndicator } = useAOPApplicationsActions();
+
   // FUNCTIONS
   const handleSubmitObjective = () => {
-    console.log({ ...objectiveData, auth_pin: authPin });
+    updateObjectiveSuccessIndicator(objectiveData, (status, message) => {
+      console.log(status, message);
+    });
   };
 
   const handleCloseModal = () => {
@@ -21,9 +27,7 @@ const EditObjective = ({ onOpen, data, handleClose }) => {
   };
 
   const disabledEditBtn =
-    objectiveData?.objective === "" ||
-    objectiveData?.success_indicator === "" ||
-    authPin === "";
+    objectiveData?.objective === "" || objectiveData?.success_indicator === "";
 
   useEffect(() => setObjectiveData(data), [data]);
 
@@ -59,7 +63,7 @@ const EditObjective = ({ onOpen, data, handleClose }) => {
                 handleChangeInput("success_indicator", setObjectiveData, value)
               }
             />
-            <Divider />
+            {/* <Divider />
             <InputComponent
               isRequired
               type="password"
@@ -69,7 +73,7 @@ const EditObjective = ({ onOpen, data, handleClose }) => {
               }
               setValue={setAuthPin}
               value={authPin}
-            />
+            /> */}
           </Stack>
         }
       />
