@@ -1,9 +1,10 @@
 import { Outlet } from "react-router-dom";
-import { Box, Grid, useTheme } from "@mui/joy";
+import { Avatar, Box, Grid, Stack, useTheme } from "@mui/joy";
 import Sidebar from "./Sidebar";
 import useModalHook from "../Hooks/ModalHook";
 import { Fragment } from "react";
 import AlertDialogComponent from "../Components/Common/Dialog/AlertDialogComponent";
+import NotificationMain from "../Components/Notification/NotificationMain";
 
 function Layout() {
   const theme = useTheme();
@@ -14,6 +15,13 @@ function Layout() {
   return (
     <Fragment>
       <Grid container sx={{ maxHeight: "100vh" }}>
+        {/* Notification */}
+        <Box position={"absolute"} right={10} p={4}>
+          <Stack direction={"row"} spacing={1} alignItems={"center"}>
+            <NotificationMain />
+            <Avatar size="lg" />
+          </Stack>
+        </Box>
         {/* Sidebar */}
         <Grid
           item="true"

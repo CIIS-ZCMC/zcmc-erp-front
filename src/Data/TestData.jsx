@@ -151,3 +151,76 @@ export const APPROVAL_TIMELINE = [
     number_of_comments: 5, // e.g 4 comments in 2 activities
   },
 ];
+
+export const NOTIFICATIONS = [
+  {
+    id: 1,
+    profile_url:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ9Zx8Reb9PlKADhesmtIQw2cBNStfadsBZ8g&s",
+    title: "New AOP request (#2023-0031) waiting to be processed",
+    description: null,
+    module_path: "/aop-approval/objectives/1",
+    seen: 0,
+    created_at: "2025-05-07 06:25:04",
+  },
+  {
+    id: 2,
+    profile_url:
+      "https://img.freepik.com/free-photo/smart-looking-teacher_53876-23045.jpg",
+    title: "AOP (#2023-0031) has been approved by the Division Chief",
+    description: "(3) new comments were added *",
+    module_path: "/aop-approval/objectives/1",
+    seen: 1,
+    created_at: "2025-05-07 06:25:04",
+  },
+  {
+    id: 3,
+    profile_url:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSphOILfuKHyTdMirb7TWHIfW_bB9-TKYLqEw&s",
+    title: "AOP (#2023-0032) has been submitted by the Department Head",
+    description: "Awaiting review by the Planning Unit",
+    module_path: "/aop-approval/objectives/2",
+    seen: 0,
+    created_at: "2025-04-30 08:15:00",
+  },
+  {
+    id: 4,
+    profile_url:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ9Zx8Reb9PlKADhesmtIQw2cBNStfadsBZ8g&s",
+    title: "AOP (#2023-0033) has been approved by the Planning Unit",
+    description: null,
+    module_path: "/aop-approval/objectives/3",
+    seen: 1,
+    created_at: "2025-05-01 10:45:30",
+  },
+  {
+    id: 5,
+    profile_url:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSphOILfuKHyTdMirb7TWHIfW_bB9-TKYLqEw&s",
+    title: "AOP (#2023-0034) has been returned by the Division Chief",
+    description: "Please address the comments and resubmit",
+    module_path: "/aop-approval/objectives/4",
+    seen: 0,
+    created_at: "2025-05-02 14:20:15",
+  },
+  {
+    id: 6,
+    profile_url:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcQ9Zx8Reb9PlKADhesmtIQw2cBNStfadsBZ8g&s",
+    title: "AOP (#2023-0035) has been finalized and approved",
+    description: "No further action is required",
+    module_path: "/aop-approval/objectives/5",
+    seen: 1,
+    created_at: "2025-05-03 09:00:00",
+  },
+  {
+    id: 7,
+    profile_url:
+      "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSphOILfuKHyTdMirb7TWHIfW_bB9-TKYLqEw&s",
+    title: "AOP (#2023-0036) has been submitted for review",
+    description: "Awaiting feedback from the Planning Unit",
+    module_path: "/aop-approval/objectives/6",
+    seen: 0,
+    created_at: "2025-05-04 11:30:45",
+  },
+];
