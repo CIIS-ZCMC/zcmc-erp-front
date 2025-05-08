@@ -103,6 +103,8 @@ export default function ManageAOP() {
   const [action, setAction] = useState("approve");
   const [activeTab, setActiveTab] = useState(0);
   const [btnLoading, setBtnLoading] = useState(false);
+  const AOP_APPLICATION_ID = localStorageGetter("aop_application_id");
+
   // STYLES
   const titleStyles = { level: "body-xs", fontWeight: 400 };
   const valueStyles = {
@@ -126,7 +128,11 @@ export default function ManageAOP() {
     return groupByDate(dataToDisplay);
   }, [activeTab, allComments, remarks]);
 
-  const feedbackCount = allComments?.length;
+  const feedbackCount = Object.entries(feedbackDisplay)?.length;
+
+  console.log(feedbackCount);
+
+  const totalFeedbackCount = allComments?.length + remarks?.length;
 
   const commentsDisplay = useMemo(() => groupByDate(comments), [comments]);
 
@@ -143,9 +149,9 @@ export default function ManageAOP() {
   // FUNCTIONS
   const handleViewFeedback = () => {
     setOpenFeedbackModal(true);
-    getCommentsByApplication(() => {});
 
-    getRemarksByApplication(() => {});
+    getCommentsByApplication(AOP_APPLICATION_ID, () => {});
+    getRemarksByApplication(AOP_APPLICATION_ID, () => {});
 
     // fetch data
   };
@@ -192,7 +198,7 @@ export default function ManageAOP() {
 
   const handleMarkAsReviewed = () => {
     setBtnLoading(true);
-    markAsReviewed(activityId, (status, message) => {
+    markAsReviewed(vvvvvvvv, (status, message) => {
       setBtnLoading(false);
       closeConfirmation();
       setOpenMarkModal(false);
@@ -207,11 +213,13 @@ export default function ManageAOP() {
     Promise.all([
       getActivityById(defaultActivityId, () => {}),
       getCommentsByActivity(defaultActivityId, () => {}),
-      getCommentsByApplication(() => {}),
+      getCommentsByApplication(AOP_APPLICATION_ID, () => {}),
     ]).catch((error) => {
       console.error("Error fetching data:", error);
     });
   }, []);
+
+  console.log(AOP_APPLICATION_ID);
 
   return (
     <Fragment>
@@ -258,7 +266,7 @@ export default function ManageAOP() {
                   <Stack direction={"row"} spacing={2}>
                     <ButtonComponent
                       variant={"outlined"}
-                      label={`Go to feedback (${allComments?.length})`}
+                      label={`Go to feedback (${totalFeedbackCount})`}
                       endDecorator={<ExternalLink size={14} />}
                       onClick={handleViewFeedback}
                     />
@@ -620,7 +628,7 @@ export default function ManageAOP() {
                     justifyContent: "center",
                   }}
                 >
-                  <NoResultComponent />{" "}
+                  <NoResultComponent />
                 </Box>
               )}
 

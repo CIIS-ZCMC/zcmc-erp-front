@@ -19,6 +19,10 @@ import { APPROVAL_TIMELINE, MANAGE_AOP_APPROVAL } from "../../../Data/TestData";
 import { localStorageSetter } from "../../../Utils/LocalStorage";
 import DrawerComponent from "../../../Components/Common/DrawerComponent";
 import StepperComponent from "../../../Components/Stepper/StepperComponent";
+import {
+  useApplicationTimeline,
+  useApplicationTimelineActions,
+} from "../../../Hooks/AOP/ApplicationTimelineHook";
 
 const AOPApproval = () => {
   const navigate = useNavigate();
@@ -27,18 +31,23 @@ const AOPApproval = () => {
   const { getAOPApplications, getAOPApplicationById } =
     useAOPApplicationsActions();
   const AOPApplications = useAOPApplications();
+  const { getApplicationTimelineById } = useApplicationTimelineActions();
+  const APPLICATION_TIMELINE = useApplicationTimeline();
+
+  const { timelines } = APPLICATION_TIMELINE;
 
   // STATES
   const [openTimelineModal, setOpenTimelineModal] = useState(false);
 
   // FUNCTIONS
   const handleClickCard = (id) => {
-    getAOPApplicationById(id, () => navigate(`/aop-approval/objectives/${id}`));
     localStorageSetter("aop_application_id", id);
+    getAOPApplicationById(id, () => navigate(`/aop-approval/objectives/${id}`));
   };
 
   const handleViewTimeline = (id) => {
     setOpenTimelineModal(true);
+    getApplicationTimelineById(id, () => {});
   };
 
   useEffect(() => {
@@ -113,7 +122,7 @@ const AOPApproval = () => {
         description={"The list below shows the current status of the request."}
         content={
           <Stack mt={2} width="99%">
-            <StepperComponent data={APPROVAL_TIMELINE} />
+            <StepperComponent data={timelines} />
           </Stack>
         }
       />

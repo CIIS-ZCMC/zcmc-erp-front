@@ -107,4 +107,7 @@ export const API = {
 
   // OBJECTIVES
   EDIT_OBJECTIVE: "edit-objective",
+
+  // APPLICATION TIMELINE
+  APPLICATION_TIMELINE: "application-timelines",
 };

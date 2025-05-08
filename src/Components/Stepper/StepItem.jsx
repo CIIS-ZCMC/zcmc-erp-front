@@ -94,7 +94,7 @@ function StepItem({
           size={"sm"}
           label={toCapitalize(status) ?? "Pending"}
           color={getStatusColorScheme(status?.toLowerCase())}
-          variant={status === "submitted" ? "outlined" : "solid"}
+          variant={status?.toLowerCase() === "pending" ? "outlined" : "solid"}
         />
       </Stack>
 

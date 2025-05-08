@@ -40,11 +40,11 @@ const useCommentHook = create((set, get) => ({
       });
     },
 
-    getCommentsByApplication: (callback) => {
+    getCommentsByApplication: (id, callback) => {
       read({
         url: `${COMMENT}`,
         params: {
-          aop_application_id: APPLICATION_ID,
+          aop_application_id: id,
         },
         success: (response) => {
           const { data } = response.data;
@@ -58,9 +58,9 @@ const useCommentHook = create((set, get) => ({
       });
     },
 
-    getRemarksByApplication: (callback) => {
+    getRemarksByApplication: (id, callback) => {
       read({
-        url: `${REMARKS}/${APPLICATION_ID}`,
+        url: `${REMARKS}/${id}`,
         success: (response) => {
           const { data } = response.data;
           set({ remarks: [data] });
