@@ -1,11 +1,19 @@
 import PropTypes from "prop-types";
-import { Card, CardContent, Divider, Link, Stack, Typography } from "@mui/joy";
+import {
+  Box,
+  Card,
+  CardContent,
+  Divider,
+  Link,
+  Stack,
+  Typography,
+} from "@mui/joy";
 import moment from "moment";
 import CardInfoDisplay from "./CardInfoDisplay";
 import BoxComponent from "./BoxComponent";
 import { getStatusColorScheme } from "../../../Utils/ColorScheme";
 import ChipComponent from "../ChipComponent";
-import { ExternalLink, MapPin } from "lucide-react";
+import { Cloud, CloudDownload, ExternalLink, MapPin } from "lucide-react";
 import { toCapitalize } from "../../../Utils/Typography";
 
 AOPCardComponent.propTypes = {
@@ -29,10 +37,11 @@ AOPCardComponent.propTypes = {
 };
 
 function AOPCardComponent({
-  title = "AOP #2023-0031 for fiscal year 2026",
+  title = "AOP #2023-0031",
   variant = "outlined",
-  status = "approved",
+  status = "Pending",
   statusLabel,
+  area_code = "OMCC",
   date_requested,
   date_returned,
   date_approved,
@@ -41,11 +50,12 @@ function AOPCardComponent({
   requester_area, // Area display
 }) {
   const linkStyles = {
-    color: "success.700",
+    color: "primary.700",
     fontSize: 12.5,
-    gap: 0.5,
+    gap: 0.4,
     "&: hover": {
       textDecoration: "none",
+      fontWeight: 500,
     },
   };
   return (
@@ -80,15 +90,16 @@ function AOPCardComponent({
           <Typography
             level="title-md"
             fontWeight={600}
-            textColor={"success.700"}
+            textColor={"primary.700"}
           >
-            {title}
+            {title} for {area_code}
           </Typography>
           <ChipComponent
             status={status}
             variant={"soft"}
             label={toCapitalize(statusLabel ?? status)}
             color={getStatusColorScheme(status)}
+            endDecorator
           />
         </Stack>
 
@@ -105,9 +116,9 @@ function AOPCardComponent({
 
           {/* DATES */}
           <Stack direction={{ xs: "column", sm: "row" }} spacing={1}>
-            <BoxComponent width={{ xs: "auto", md: "60%" }}>
+            <BoxComponent width={{ xs: "auto", md: "100%" }}>
               <CardInfoDisplay
-                label={"Date created:"}
+                label={"Created on:"}
                 value={moment(date_requested).format("LL (LT)")}
               />
             </BoxComponent>
@@ -125,18 +136,20 @@ function AOPCardComponent({
               </BoxComponent>
             )}
 
-            <BoxComponent width={{ xs: "auto", md: "60%" }}>
-              <CardInfoDisplay
-                label={"Date approved:"}
-                value={
-                  <Typography color={"success"}>
-                    {date_approved
-                      ? moment(date_approved).format("LL (LT)")
-                      : "--"}
-                  </Typography>
-                }
-              />
-            </BoxComponent>
+            {date_approved && (
+              <BoxComponent width={{ xs: "auto", md: "60%" }}>
+                <CardInfoDisplay
+                  label={"Date approved:"}
+                  value={
+                    <Typography color={"primary"}>
+                      {date_approved
+                        ? moment(date_approved).format("LL (LT)")
+                        : "--"}
+                    </Typography>
+                  }
+                />
+              </BoxComponent>
+            )}
           </Stack>
           <Divider />
           {/* ACTIONS */}
@@ -144,28 +157,19 @@ function AOPCardComponent({
             direction={{ xs: "column", sm: "row" }}
             sx={{ alignItems: "start", justifyContent: "space-between" }}
           >
-            <Link
-              sx={{
-                ...linkStyles,
-                "&: hover": {
-                  textDecoration: "none",
-                  fontWeight: 600,
-                },
-              }}
-              onClick={leftClick}
+            <Stack
+              direction={{ xs: "column", sm: "row" }}
+              gap={2}
+              flexWrap={"wrap"}
             >
-              Open request <ExternalLink size={14} />
-            </Link>
-            <Link
-              sx={{
-                ...linkStyles,
-                "&: hover": {
-                  textDecoration: "none",
-                  fontWeight: 600,
-                },
-              }}
-              onClick={rightClick}
-            >
+              <Link sx={linkStyles} onClick={leftClick}>
+                Print as (.XLS) <CloudDownload size={14} />
+              </Link>
+              <Link sx={linkStyles} onClick={leftClick}>
+                Open request <ExternalLink size={14} />
+              </Link>
+            </Stack>
+            <Link sx={linkStyles} onClick={rightClick}>
               View approval timeline <MapPin size={14} />
             </Link>
           </Stack>

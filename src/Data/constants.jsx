@@ -28,6 +28,9 @@ export const AOP_CONSTANTS = {
   AOP_SUBHEADING:
     "This is a subheading. It should add more context to the interaction.",
 
+  AOP_REQUEST_SUBHEADING:
+    "All AOP requests sent by Department/Section/Unit Heads or Officers in charge appear here.",
+
   TABLE_TITLE: "List of AOP requests",
   TABLE_SUBHEADING:
     "This is a subheading.It should add more context to the interaction.",

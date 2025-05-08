@@ -10,7 +10,7 @@ import {
   Typography,
 } from "@mui/joy";
 import { Bell, ChevronDown, ChevronUp } from "lucide-react";
-import TabComponent from "./TabComponent";
+import TabComponent from "../Common/TabComponent";
 import NotificationItemList from "./NotificationItemList";
 import NoNotification from "./NoNotification";
 import ContainerComponent from "../Common/ContainerComponent";
@@ -70,7 +70,7 @@ const NotificationMain = ({ unread = 2 }) => {
           <Badge
             badgeContent={unread ?? ""}
             size="sm"
-            color="success"
+            color="primary"
             anchorOrigin={{
               vertical: "bottom",
               horizontal: "right",
@@ -104,7 +104,7 @@ const NotificationMain = ({ unread = 2 }) => {
         >
           <ContainerComponent title={"Notifications"}>
             <Stack gap={2}>
-              <TabComponent index={index} setIndex={setIndex}>
+              <TabComponent index={index} setIndex={setIndex} notificationView>
                 <Stack
                   gap={0.5}
                   sx={{

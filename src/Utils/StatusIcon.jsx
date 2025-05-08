@@ -4,6 +4,7 @@ import {
   CheckCircle,
   CircleX,
   CornerDownLeft,
+  Hourglass,
   InfoIcon,
   MessagesSquare,
   TriangleAlert,
@@ -12,6 +13,8 @@ import { getModeColorScheme } from "./ColorScheme";
 // STATUS
 export const getStatusIcon = (status, iconOnly) => {
   const iconMap = {
+    submitted: <Hourglass size={13} />,
+    pending: <Hourglass size={13} />,
     approved: <CheckCircle size={13} />,
     returned: <CornerDownLeft size={13} />,
     info: <InfoIcon />,

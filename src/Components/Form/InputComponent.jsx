@@ -73,11 +73,11 @@ const InputComponent = ({
         color={color}
         onChange={handleInput ? handleInput : (e) => setValue(e.target.value)}
         sx={{
-          fontSize: 14,
+          fontSize: 13,
           fontWeight: fontWeight,
           py: size ?? 1,
           background: darkMode && "none",
-          color: darkMode && "white",
+          color: darkMode ? "white" : "neutral.900",
           borderColor: "neutral.300",
         }}
         startDecorator={startDecorator}

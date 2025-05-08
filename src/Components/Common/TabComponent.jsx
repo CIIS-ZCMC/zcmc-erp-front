@@ -8,7 +8,13 @@ import TabPanel from "@mui/joy/TabPanel";
 import { Badge } from "@mui/joy";
 // import useNotificationHook from "../../Hooks/NotificationHook";
 
-export default function TabComponent({ children, index, setIndex }) {
+export default function TabComponent({
+  tabs,
+  children,
+  index,
+  setIndex,
+  notificationView = false,
+}) {
   const unreadCount = 12;
 
   return (
@@ -45,28 +51,29 @@ export default function TabComponent({ children, index, setIndex }) {
             },
           }}
         >
-          <Tab value={0}>View all</Tab>
-          <Tab value={1}>Read </Tab>
-          <Tab value={2}>
-            Unread{" "}
-            <Chip
-              size="sm"
-              color="primary"
-              variant="solid"
-              sx={{ fontSize: 10 }}
-            >
-              {unreadCount}
-            </Chip>
-          </Tab>
-          {/* <Tab indicatorInset>Read</Tab>
-          <Tab indicatorInset>
-            Unread
-            {unreadCount !== 0 && (
-              <Chip size="sm" variant="soft" color={"warning"}>
-                {unreadCount}
-              </Chip>
-            )}
-          </Tab> */}
+          {notificationView ? (
+            <>
+              <Tab value={0}>View all</Tab>
+              <Tab value={1}>Read </Tab>
+              <Tab value={2}>
+                Unread{" "}
+                <Chip
+                  size="sm"
+                  color="primary"
+                  variant="solid"
+                  sx={{ fontSize: 10 }}
+                >
+                  {unreadCount}
+                </Chip>
+              </Tab>
+            </>
+          ) : (
+            tabs?.map(({ name, value }, key) => (
+              <Tab key={key} value={value}>
+                {name}
+              </Tab>
+            ))
+          )}
         </TabList>
         <Box>
           <TabPanel value={index} sx={{ p: 0 }}>

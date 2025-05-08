@@ -108,6 +108,7 @@ const ObjectivesList = () => {
               objective,
               success_indicator,
               activities,
+              is_editable,
             },
             objective_key
           ) => (
@@ -123,7 +124,7 @@ const ObjectivesList = () => {
                   </Typography>
                 </Typography>
               }
-              withEdit
+              withEdit={is_editable}
               name="parent"
               onClickEdit={() => handeEditObjective(id)}
             >
