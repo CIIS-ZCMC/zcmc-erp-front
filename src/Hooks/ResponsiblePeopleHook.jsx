@@ -1,13 +1,5 @@
 import { create } from "zustand";
 
-const initialResponsiblePerson = () => ({
-    id: uuid(),
-    parentId: null,
-    users: [],
-    areas: [],
-    isAssigned: false,
-})
-
 const useResponsiblePeopleHook = create((set, get) => ({
     responsible_people: [],
 
@@ -18,10 +10,10 @@ const useResponsiblePeopleHook = create((set, get) => ({
         isAssigned: false,
     },
 
-    setAssignmentStatus: (activityIndex, status) => {
+    setAssignmentStatus: (activityId, status) => {
         set((state) => {
             const updated = state.responsible_people.map((item) => {
-                if (item.activity_index === activityIndex) {
+                if (item.activityId === activityId) {
                     return {
                         ...item,
                         isAssigned: status
@@ -36,56 +28,57 @@ const useResponsiblePeopleHook = create((set, get) => ({
         });
     },
 
-    //add activity row index/id basta unique identifier
-    addActivityIndex: (rowId) => {
-        const { responsible_people, selectedResponsibleValue } = get();
-
-        const exists = responsible_people.some(item => item.activity_index === rowId);
-
-        if (!exists) {
-            set({
-                responsible_people: [
-                    ...responsible_people,
-                    {
-                        activity_index: rowId,
-                        ...selectedResponsibleValue,
-                        isAssigned: false
-                    }
-                ]
-            });
-        }
+    getByActivityId: (activityId) => {
+        const { responsible_people } = get();
+        return responsible_people.find(item => item.activityId === activityId);
     },
 
-    //handle select value for users, designation and areas 
-    handleValue: (activityIndex, key, value) => {
+    handleValue: (activityId, key, value) => {
         set((state) => {
-            const updated = state.responsible_people.map(item => {
-                if (item.activity_index === activityIndex) {
-                    // Prevent duplicate by ID
-                    if (item[key].some(el => el.id === value.id)) return item;
+            const currentList = [...state.responsible_people];
+            const existingIndex = currentList.findIndex((item) => item.activityId === activityId);
 
-                    return {
-                        ...item,
-                        [key]: [...item[key], value]
-                    };
-                }
-                return item;
-            });
+            // If entry doesn't exist, insert new
+            if (existingIndex === -1) {
+                const newItem = {
+                    activityId,
+                    users: key === 'users' ? [value] : [],
+                    areas: key === 'areas' ? [value] : [],
+                    designations: key === 'designations' ? [value] : [],
+                    isAssigned: false,
+                };
+
+                return {
+                    responsible_people: [...currentList, newItem],
+                };
+            }
+
+            // Otherwise, update existing
+            const alreadyExists = currentList[existingIndex][key].some((el) => el.id === value.id);
+            if (alreadyExists) return { responsible_people: currentList };
+
+            const updatedItem = {
+                ...currentList[existingIndex],
+                [key]: [...currentList[existingIndex][key], value],
+            };
+
+            currentList[existingIndex] = updatedItem;
 
             return {
-                responsible_people: updated
+                responsible_people: currentList,
             };
         });
     },
 
-    removeData: (id, key, activityIndex) => set((state) => {
+    removeData: (id, key, activityId) => set((state) => {
         const updatedResponsiblePeople = state.responsible_people.map((activity) => {
+            if (activity.activityId !== activityId) return activity;
 
-            if (activity.activity_index !== activityIndex) return activity;
+            const existingList = Array.isArray(activity[key]) ? activity[key] : [];
 
             return {
                 ...activity,
-                [key]: activity[key]?.filter((item) => item.id !== id) || []
+                [key]: existingList.filter((item) => item.id !== id)
             };
         });
 
@@ -116,25 +109,6 @@ const useResponsiblePeopleHook = create((set, get) => ({
 
     },
 
-    // setActivityIndex: (row) => {
-    //     set((state) => {
-    //         const { responsible_people } = state;
-
-    //         const exists = responsible_people?.every(element => element.activity_index === row);
-
-    //         if (!exists) {
-    //             return {
-    //                 responsible_people: {
-    //                     activity_index: `${row}-1`,
-    //                     ...state.selectedResponsibleValue,
-    //                 },
-
-    //             }
-    //         }
-    //     })
-    // },
-
 }));
 
-export const addActivityIndexHook = () => useResponsiblePeopleHook(state => state.addActivityIndex)
 export default useResponsiblePeopleHook;

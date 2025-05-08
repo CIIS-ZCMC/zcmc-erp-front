@@ -2,16 +2,15 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware"
 import { v4 as uuid } from 'uuid';
 
-const initialObjective = () => (
+const initialObjective = (rowId = 1) => (
     {
         id: uuid(),
         functionType: null,
         objective: null,
         successIndicator: null,
-        rowId: 1
+        rowId
     }
 )
-
 const useObjectivesHook = create(
     persist(
         (set, get) => ({

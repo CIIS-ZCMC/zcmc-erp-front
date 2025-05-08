@@ -34,10 +34,6 @@ const Activities = () => {
     const { activities, addActivity, updateActivityField } = useActivitiesHook();
     const { deleteActivity } = useAOPObjectivesHooks();
 
-    // const filteredActivities = useActivitiesHook(
-    //     (state) => state.getActivitiesByParentId(parentId)
-    // );
-
     useEffect(() => {
         const hasActivitiesForParent = activities.some(act => act.parentId === parentId);
         if (!hasActivitiesForParent && parentId) {

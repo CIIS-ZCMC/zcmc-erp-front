@@ -72,8 +72,6 @@ const Objectives = () => {
                 start_month: row.startMonth,
                 end_month: row.endMonth,
                 target: row.target,
-                resources: row.resources,
-                responsible_people: row.responsible_people,
             })),
         }));
 

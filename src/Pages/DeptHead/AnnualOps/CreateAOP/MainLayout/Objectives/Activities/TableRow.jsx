@@ -27,9 +27,9 @@ const TableRow = ({
     const [localAopActivity, setLocalAopActivity] = useState({});
     const [editRowId, setEditRowId] = useState(null);
 
-    useEffect(() => {
-        console.log(rows)
-    }, [rows])
+    // useEffect(() => {
+    //     console.log(rows)
+    // }, [rows])
 
     useEffect(() => {
         if (editRowId !== null) {
@@ -369,7 +369,7 @@ const TableRow = ({
 
                                 <Link
                                     component="button"
-                                    onClick={() => navigate(`person/${rowId}`, { state: { parentId: id } })}
+                                    onClick={() => navigate(`person/${rowId}`, { state: { parentId: id, objectiveId: parentId, activityrowId: rowId } })}
                                     fontSize={12}
                                 >
                                     Responsible Person

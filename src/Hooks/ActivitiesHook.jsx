@@ -23,7 +23,7 @@ const initialActivity = (rowId = 1, parentId = null) => ({
 
 const useActivitiesHook = create(
     persist(
-        (set) => ({
+        (set, get) => ({
             activities: [],
 
             //Update specific field in an activity row
@@ -41,10 +41,11 @@ const useActivitiesHook = create(
 
             //add activity Row
             addActivity: (parentId = null) => {
+                const current = get().activities
                 set((state) => ({
                     activities: [...state.activities,
                     initialActivity(
-                        state.activities.length + 1,
+                        current.length + 1,
                         parentId)
                     ]
                 }))

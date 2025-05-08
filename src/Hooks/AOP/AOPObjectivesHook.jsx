@@ -34,6 +34,7 @@ const useAOPObjectivesHooks = create((set, get) => ({
                         start_month: activity.start_month,
                         end_month: activity.end_month,
                         target: activity.target,
+                        responsible_people: activity.responsible_people,
                     })),
                 };
             }),
@@ -41,9 +42,28 @@ const useAOPObjectivesHooks = create((set, get) => ({
     },
 
     setResponsiblePeoplePayload: (resPeoplePayload) => {
+        console.log(get().aopObjectives);
         set((state) => ({
-            aopObjectives: state.aopObjectives
-        }))
+            aopObjectives: state.aopObjectives.map((obj) => {
+
+                const updatedActivities = obj.activities.map((act) => {
+                    const matchedRes = resPeoplePayload.find(
+                        (res) => res.activityId === act.id // act must have id
+                    );
+
+
+                    return {
+                        ...act,
+                        responsible_people: matchedRes ? matchedRes.responsible_people : [],
+                    };
+                });
+
+                return {
+                    ...obj,
+                    activities: updatedActivities,
+                };
+            }),
+        }));
     },
 
     // Generate final payload
@@ -63,6 +83,7 @@ const useAOPObjectivesHooks = create((set, get) => ({
             })),
         }));
     },
+
 }));
 
 export default useAOPObjectivesHooks
