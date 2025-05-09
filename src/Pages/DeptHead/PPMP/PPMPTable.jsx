@@ -46,24 +46,26 @@ const PPMPTable = ({
     );
   };
 
-  const handleBlur = (rowId, field) => {
-    // Apply changes to data and reset editedCells for the specific row
-    setData((prevData) =>
-      prevData.map((row) => {
-        const edits = editedCells[row.id];
-        return edits ? { ...row, ...edits } : row;
-      })
+  // Commit the local edited value to the main data
+  const commitEditToData = (rowId, field) => {
+    setData((prevItems) =>
+      prevItems.map((item) =>
+        item.id === rowId
+          ? { ...item, [field]: editedCells[rowId]?.[field] }
+          : item
+      )
     );
     setEditedCells((prev) => {
       const { [rowId]: deleted, ...rest } = prev;
-      return rest; // Remove the rowId entry from editedCells
+      return rest; // Remove the rowId entry from editedCells after commit
     });
   };
 
-  const debouncedHandleBlur = useCallback(
+  // Apply commit on blur with debounce for performance optimization
+  const debouncedCommit = useCallback(
     debounce((rowId, field) => {
-      handleBlur(rowId, field);
-    }, 300), // Adjust debounce time as needed
+      commitEditToData(rowId, field);
+    }, 300),
     []
   );
   const renderHeader = () => {
@@ -166,7 +168,7 @@ const PPMPTable = ({
           onChange={(e) => {
             handleCellEdit(row.id, header.field, e.target.value);
           }}
-          onBlur={() => debouncedHandleBlur(row.id, header.field)} // Apply edits on blur
+          onBlur={() => debouncedCommit(row.id, header.field)} // Apply edits on blur
           fullWidth
         />
       );
