@@ -7,15 +7,21 @@ import { useComment, useCommentActions } from "../../Hooks/CommentHook";
 import ConfirmationModalComponent from "../Common/Dialog/ConfirmationModalComponent";
 import useModalHook from "../../Hooks/ModalHook";
 import useSnackbarHook from "../Common/SnackbarHook";
+import { localStorageGetter } from "../../Utils/LocalStorage";
+import { useAOPApplicationsActions } from "../../Hooks/AOP/AOPApplicationsHook";
 
-const PostCommentComponent = ({ activityId }) => {
+const PostCommentComponent = ({
+  activityId,
+  postCommentModal,
+  setPostCommentModal,
+}) => {
   const comment = useComment();
   const { setComment, postComment } = useCommentActions();
   const [loading, setLoading] = useState(false);
-  const [postCommentModal, setPostCommentModal] = useState(true);
-
+  const AOP_APPLICATION_ID = localStorageGetter("aop_application_id");
   const { setConfirmationModal, closeConfirmation } = useModalHook();
   const { showSnack } = useSnackbarHook();
+  const { getAOPApplicationById } = useAOPApplicationsActions();
 
   const submit = () => {
     setLoading(true);
@@ -26,6 +32,7 @@ const PostCommentComponent = ({ activityId }) => {
 
       if (status === 201) {
         setComment("");
+        getAOPApplicationById(AOP_APPLICATION_ID, () => {});
         showSnack(200, "Comment posted successfully");
       } else {
         showSnack(200, "Comment posted successfully");

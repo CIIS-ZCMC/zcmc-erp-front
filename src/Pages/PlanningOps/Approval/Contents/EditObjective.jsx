@@ -1,14 +1,14 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { handleChangeInput } from "../../../../Utils/HandleInput";
 import ModalComponent from "../../../../Components/Common/Dialog/ModalComponent";
-import { Divider, Stack } from "@mui/joy";
+import { Stack } from "@mui/joy";
 import TextareaComponent from "../../../../Components/Form/TextareaComponent";
-import InputComponent from "../../../../Components/Form/InputComponent";
 import {
   APPLICATION_ID,
   useAOPApplicationsActions,
 } from "../../../../Hooks/AOP/AOPApplicationsHook";
 import useSnackbarHook from "../../../../Components/Common/SnackbarHook";
+import { localStorageGetter } from "../../../../Utils/LocalStorage";
 
 const EditObjective = ({ onOpen, data, handleClose }) => {
   // STATES
@@ -19,6 +19,7 @@ const EditObjective = ({ onOpen, data, handleClose }) => {
   const { updateObjectiveSuccessIndicator, getAOPApplicationById } =
     useAOPApplicationsActions();
   const { showSnack } = useSnackbarHook();
+  const AOP_APPLICATION_ID = localStorageGetter("aop_application_id");
 
   // FUNCTIONS
   const handleSubmitObjective = () => {
@@ -28,7 +29,7 @@ const EditObjective = ({ onOpen, data, handleClose }) => {
       if (status === 200) {
         handleClose();
         showSnack(200, message);
-        getAOPApplicationById(APPLICATION_ID, () => {});
+        getAOPApplicationById(AOP_APPLICATION_ID, () => {});
       }
     });
   };

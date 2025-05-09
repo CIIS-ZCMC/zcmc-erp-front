@@ -22,7 +22,11 @@ function Layout() {
         <Box position={"absolute"} right={10} p={4}>
           <Stack direction={"row"} spacing={1} alignItems={"center"}>
             <NotificationMain />
-            <Avatar size="lg" />
+            <Avatar
+              size="lg"
+              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSphOILfuKHyTdMirb7TWHIfW_bB9-TKYLqEw&s"
+              sx={{ border: 3, borderColor: "primary.500" }}
+            />
           </Stack>
         </Box>
         {/* Sidebar */}

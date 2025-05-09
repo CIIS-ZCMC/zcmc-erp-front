@@ -162,7 +162,7 @@ function AOPCardComponent({
               gap={2}
               flexWrap={"wrap"}
             >
-              <Link sx={linkStyles} onClick={leftClick}>
+              <Link sx={linkStyles}>
                 Print as (.XLS) <CloudDownload size={14} />
               </Link>
               <Link sx={linkStyles} onClick={leftClick}>

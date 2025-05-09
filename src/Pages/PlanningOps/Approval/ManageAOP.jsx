@@ -31,9 +31,8 @@ import ModalComponent from "../../../Components/Common/Dialog/ModalComponent";
 import useModalHook from "../../../Hooks/ModalHook";
 import InputComponent from "../../../Components/Form/InputComponent";
 import {
-  APPLICATION_ID,
   useAOPApplication,
-  useLoadingState,
+  useAOPApplicationsActions,
 } from "../../../Hooks/AOP/AOPApplicationsHook";
 import {
   useActivity,
@@ -69,7 +68,8 @@ export default function ManageAOP() {
   // AOP HOOK
   const AOPApplication =
     useAOPApplication() ?? localStorageGetter("aopApplication");
-  const isAOPLoading = useLoadingState();
+  const AOP_APPLICATION_ID = localStorageGetter("aop_application_id");
+  const { getAOPApplicationById } = useAOPApplicationsActions();
 
   // ACTIVITY HOOK
   const defaultActivityId = AOPApplication[0]?.activities[0]?.id;
@@ -95,7 +95,6 @@ export default function ManageAOP() {
   // COMMENTS HOOK
   const comments = useComments();
   const remarks = useRemarks();
-
   const {
     getCommentsByActivity,
     getCommentsByApplication,
@@ -108,6 +107,7 @@ export default function ManageAOP() {
   const [action, setAction] = useState("approve");
   const [activeTab, setActiveTab] = useState(0);
   const [btnLoading, setBtnLoading] = useState(false);
+  const [postCommentModal, setPostCommentModal] = useState(false);
   const AREA_CODE = localStorageGetter("aop_application_area_code");
   const FISCAL_YEAR = 2026;
 
@@ -130,12 +130,10 @@ export default function ManageAOP() {
   // DATA
   const feedbackDisplay = useMemo(() => {
     const dataToDisplay = activeTab === 0 ? allComments : remarks;
-
     return groupByDate(dataToDisplay);
   }, [activeTab, allComments, remarks]);
 
   const feedbackCount = allComments?.length;
-
   const commentsDisplay = useMemo(() => groupByDate(comments), [comments]);
 
   // const scrollToBottom = () => {
@@ -185,18 +183,18 @@ export default function ManageAOP() {
     setConfirmationModal(data);
   };
 
-  const handleClickComment = (id) => {
-    Promise.all([
-      getActivityById(id, () => {}),
-      getCommentsByActivity(id, () => {}),
-    ])
-      .then(() => {
-        setOpenFeedbackModal(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching data:", error);
-      });
-  };
+  // const handleClickComment = (id) => {
+  //   Promise.all([
+  //     getActivityById(id, () => {}),
+  //     getCommentsByActivity(id, () => {}),
+  //   ])
+  //     .then(() => {
+  //       setOpenFeedbackModal(false);
+  //     })
+  //     .catch((error) => {
+  //       console.error("Error fetching data:", error);
+  //     });
+  // };
 
   const handleMarkAsReviewed = () => {
     setBtnLoading(true);
@@ -204,7 +202,8 @@ export default function ManageAOP() {
       setBtnLoading(false);
       closeConfirmation();
       setOpenMarkModal(false);
-      getActivityById(APPLICATION_ID, () => {}), showSnack(status, message);
+      getActivityById(activityId, () => {}), showSnack(status, message);
+      getAOPApplicationById(AOP_APPLICATION_ID, () => {});
     });
   };
 
@@ -216,7 +215,7 @@ export default function ManageAOP() {
     Promise.all([
       getActivityById(defaultActivityId, () => {}),
       getCommentsByActivity(defaultActivityId, () => {}),
-      getCommentsByApplication(() => {}),
+      getCommentsByApplication(AOP_APPLICATION_ID, () => {}),
     ]).catch((error) => {
       console.error("Error fetching data:", error);
     });
@@ -481,7 +480,13 @@ export default function ManageAOP() {
                 scrollable
                 contentMaxHeight={"35.5vh"}
                 contentMinHeight={"35.5vh"}
-                footer={<PostCommentComponent activityId={activityId} />}
+                footer={
+                  <PostCommentComponent
+                    activityId={activityId}
+                    postCommentModal={postCommentModal}
+                    setPostCommentModal={setPostCommentModal}
+                  />
+                }
                 isLoading={activityLoading}
               >
                 <Stack gap={3} mr={1}>
