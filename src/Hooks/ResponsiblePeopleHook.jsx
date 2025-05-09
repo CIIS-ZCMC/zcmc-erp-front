@@ -129,7 +129,7 @@ const useResponsiblePeopleHook = create((set, get) => ({
 
   findResponsiblePeopleByActivityID: (actID) => {
     return get()
-      .responsible_people.filter((item) => item.activityId == actID)
+      .responsible_people.filter((item) => item.activityId === actID)
       .map((item) => {
         return {
           activityId: actID,
