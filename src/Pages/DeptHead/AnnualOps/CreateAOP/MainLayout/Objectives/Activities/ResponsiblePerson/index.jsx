@@ -33,7 +33,6 @@ const ResponsiblePerson = () => {
         return item.activityId === activityId;
     });
 
-
     // const isAssigned = activity && (
     //     activity.isAssigned
     // )
@@ -165,13 +164,13 @@ const ResponsiblePerson = () => {
                 >
 
                     {/* {isAssigned ? */}
-                    <ButtonComponent
+                    {/* <ButtonComponent
                         onClick={() => navigate(`/aop-create/activities/${rowId}`)}
                         label={'Back to activities'}
                         size={'md'}
                         variant={'outlined'}
-                    />
-                    :
+                    /> */}
+
                     <ButtonComponent
                         onClick={() => handleCancel(activityId)}
                         label={'Cancel Selection'}
