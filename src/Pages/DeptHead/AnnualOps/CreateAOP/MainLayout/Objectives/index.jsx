@@ -17,6 +17,7 @@ import useObjectivesHook from "../../../../../../Hooks/ObjectivesHook";
 import useActivitiesHook from "../../../../../../Hooks/ActivitiesHook";
 
 //data related
+
 import { AOP_CONSTANTS } from "../../../../../../Data/constants";
 import { AOP_HEADER } from "../../../../../../Data/Columns";
 import useResourceHook from "../../../../../../Hooks/ResourceHook";
@@ -25,7 +26,8 @@ import useResponsiblePeopleHook from "../../../../../../Hooks/ResponsiblePeopleH
 const Objectives = () => {
   const { deleteObjective } = useAOPObjectivesHooks();
   const { function_types, getFunctionType } = useFunctionTypeHook();
-  const { objectives, addObjective, updateObjectiveField } = useObjectivesHook();
+  const { objectives, addObjective, updateObjectiveField } =
+    useObjectivesHook();
   const { findActivitiesByObjectiveID } = useActivitiesHook();
   const { findResponsiblePeopleByActivityID } = useResponsiblePeopleHook();
   const { resources, findResourcesByActivityID } = useResourceHook();
@@ -62,19 +64,11 @@ const Objectives = () => {
         (act) => {
           //   const resources = findResourcesByActivityID(act.uuid);
           const responsible_people = findResponsiblePeopleByActivityID(act.id);
-          console.log(responsible_people)
+
           return {
             ...act,
             // resources: resources,
-            responsible_people: responsible_people.map((responsible) =>
-            ({
-              user_id: responsible[0].userId,
-              division_id: responsible[0].divisionId,
-              department_id: responsible[0].departmentId,
-              section_id: responsible[0].sectionId,
-              unit_id: responsible[0].unitId,
-              designation_id: responsible[0].designationId
-            })),
+            responsible_people: responsible_people,
           };
         }
       );
