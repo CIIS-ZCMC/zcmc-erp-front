@@ -26,6 +26,7 @@ import EditPPMP from "../Pages/DeptHead/EditPPMP/EditPPMP";
 import ManageAOP from "../Pages/PlanningOps/Approval/ManageAOP";
 import AOPApproval from "../Pages/PlanningOps/Approval/AOPApproval";
 import PPMPApproval from "../Pages/PPMP/Approval/PPMPApproval";
+import ManagePPMP from "../Pages/PPMP/Approval/ManagePPMP";
 
 export const sidebarRoutes = [
   {
@@ -121,7 +122,7 @@ export const sidebarRoutes = [
     path: "/ppmp-approval",
     children: [
       { index: true, element: <PPMPApproval /> },
-      { path: ":id", element: <PPMPApproval /> },
+      { path: "view/:id", element: <ManagePPMP /> },
     ],
   },
 

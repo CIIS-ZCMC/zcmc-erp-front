@@ -30,7 +30,7 @@ const InputComponent = ({
   endDecorator,
   width = "100%",
   isRequired,
-  color = "success",
+  color = "primary",
   ...props
 }) => {
   const isPassword = type == "password";

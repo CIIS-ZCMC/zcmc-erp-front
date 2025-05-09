@@ -224,3 +224,51 @@ export const NOTIFICATIONS = [
     created_at: "2025-05-04 11:30:45",
   },
 ];
+
+export const PPMP_REQUESTS = [
+  {
+    id: 1,
+    request_number: "EXP12345",
+    requester: "John Doe",
+    total: 10,
+    amount: 500.0,
+    total_budget: 1000.0,
+    status: "Approved",
+  },
+  {
+    id: 2,
+    request_number: "EXP12346",
+    requester: "Jane Smith",
+    total: 25,
+    amount: 1200.0,
+    total_budget: 1500.0,
+    status: "Pending",
+  },
+  {
+    id: 3,
+    request_number: "EXP12347",
+    requester: "Alice Johnson",
+    total: 7,
+    amount: 350.0,
+    total_budget: 700.0,
+    status: "Denied",
+  },
+  {
+    id: 4,
+    request_number: "EXP12348",
+    requester: "Bob Brown",
+    total: 1500,
+    amount: 850.0,
+    total_budget: 1200.0,
+    status: "Approved",
+  },
+  {
+    id: 5,
+    request_number: "EXP12349",
+    requester: "Eve White",
+    total: 30,
+    amount: 1500.0,
+    total_budget: 2000.0,
+    status: "Pending",
+  },
+];

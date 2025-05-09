@@ -1,8 +1,10 @@
 import { IconButton, Link, Stack, Typography, Divider } from "@mui/joy";
-import { DeleteIcon } from "lucide-react";
+import { DeleteIcon, DownloadCloud, ExternalLink } from "lucide-react";
 import { BsOpencollective } from "react-icons/bs";
 import { IoOpen, IoOpenOutline } from "react-icons/io5";
 import { MdDeleteOutline } from "react-icons/md";
+import ChipComponent from "../Components/Common/ChipComponent";
+import { getStatusColorScheme } from "../Utils/ColorScheme";
 
 export const objHeaders = [
   { field: "id", name: "Row #", align: "center", width: "50px" },
@@ -370,6 +372,180 @@ export const RESOURCES_HEADER = [
   {
     field: "gad",
     name: "Is GAD-related activity",
+    width: 150,
+    align: "center",
+  },
+  {
+    field: "remarks",
+    name: "Remarks",
+    width: 200,
+    inputType: "input",
+    align: "center",
+  },
+];
+
+export const PPMP_REQUEST_HEADER = (handleOpen, handleDelete) => [
+  {
+    field: "id",
+    name: "Row #",
+    width: "40px",
+    align: "center",
+  },
+  {
+    field: "request_number",
+    name: "Request number",
+    width: 150,
+    align: "start",
+    render: (params) => {
+      return (
+        <Link sx={{ textDecoration: "underline" }}>
+          {params.request_number}
+        </Link>
+      );
+    },
+  },
+  {
+    field: "requester",
+    name: "Requester",
+    width: 300,
+    align: "start",
+  },
+  {
+    field: "total",
+    name: "Total number of items",
+    width: 150,
+    align: "start",
+    render: (params) => {
+      return params.total.toLocaleString();
+    },
+  },
+  {
+    field: "amount",
+    name: "Amount",
+    width: 200,
+    align: "start",
+    render: (params) => {
+      return <Typography>&#8369; {params.amount.toLocaleString()}</Typography>;
+    },
+  },
+  {
+    field: "status",
+    name: "Status",
+    width: 100,
+    align: "center",
+    render: (params) => {
+      return (
+        <ChipComponent
+          label={params.status}
+          endDecorator
+          status={params.status?.toLowerCase()}
+          color={getStatusColorScheme(params.status?.toLowerCase())}
+        />
+      );
+    },
+  },
+  {
+    field: "action",
+    name: "Actions",
+    position: "sticky",
+    width: "250px",
+    right: 0,
+    align: "center",
+    render: (params) => {
+      return (
+        <Stack direction={"row"} spacing={3} justifyContent="space-evenly">
+          <Link
+            onClick={() => handleOpen(params.id)}
+            underline="hover"
+            level="body-xs"
+            fontWeight={400}
+            endDecorator={<ExternalLink size={14} />}
+          >
+            Open request
+          </Link>
+          <Link
+            onClick={() => alert(`Action clicked for ID: ${params.id}`)}
+            level="body-xs"
+            textColor={"neutral.700"}
+            underline="hover"
+            fontWeight={400}
+            endDecorator={<DownloadCloud size={14} />}
+          >
+            Export as (.xls)
+          </Link>
+        </Stack>
+      );
+    },
+  },
+];
+
+export const PPMP_VIEW_HEADER = [
+  {
+    field: "id",
+    name: "Row #",
+    width: "70px",
+    align: "center",
+  },
+  {
+    field: "description",
+    name: "General description",
+    inputType: "dropdown",
+    width: 200,
+    align: "center",
+  },
+  {
+    field: "classification",
+    name: "Item Classification",
+    width: 150,
+    align: "center",
+  },
+  {
+    field: "category",
+    name: "Item Category",
+    width: 150,
+    align: "center",
+  },
+  {
+    field: "quantity",
+    name: "Quantity",
+    width: 100,
+    align: "center",
+  },
+  {
+    field: "unit",
+    name: "Unit",
+    width: 100,
+    align: "center",
+  },
+  {
+    field: "total_amount",
+    name: "Total amount",
+    width: 100,
+    align: "center",
+  },
+  {
+    field: "target_by_quarter",
+    name: "Target (by quarter)",
+    children: [
+      { field: "jan", name: "Jan", width: 100, inputType: "input" },
+      { field: "feb", name: "Feb", width: 100, inputType: "input" },
+      { field: "mar", name: "Mar", width: 100, inputType: "input" },
+      { field: "apr", name: "Apr", width: 100, inputType: "input" },
+      { field: "may", name: "May", width: 100, inputType: "input" },
+      { field: "jun", name: "Jun", width: 100, inputType: "input" },
+      { field: "jul", name: "Jul", width: 100, inputType: "input" },
+      { field: "aug", name: "Aug", width: 100, inputType: "input" },
+      { field: "sep", name: "Sep", width: 100, inputType: "input" },
+      { field: "oct", name: "Oct", width: 100, inputType: "input" },
+      { field: "nov", name: "Nov", width: 100, inputType: "input" },
+      { field: "dec", name: "Dec", width: 100, inputType: "input" },
+    ],
+    width: 1000,
+    align: "center",
+  },
+  {
+    field: "fund_source",
+    name: "Mode of procurement",
     width: 150,
     align: "center",
   },
