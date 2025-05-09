@@ -24,18 +24,12 @@ import useResourceHook from "../../../../../../Hooks/ResourceHook";
 import useResponsiblePeopleHook from "../../../../../../Hooks/ResponsiblePeopleHook";
 
 const Objectives = () => {
-  const {
-    deleteObjective,
-    getApplicationObjectivesPayload,
-    setApplicationObjectivesPayload,
-    setActivitiesPayload,
-  } = useAOPObjectivesHooks();
+  const { deleteObjective } = useAOPObjectivesHooks();
   const { function_types, getFunctionType } = useFunctionTypeHook();
   const { objectives, addObjective, updateObjectiveField } =
     useObjectivesHook();
-  const { activities, findActivitiesByObjectiveID } = useActivitiesHook();
-  const { responsible_people, findResponsiblePeopleByActivityID } =
-    useResponsiblePeopleHook();
+  const { findActivitiesByObjectiveID } = useActivitiesHook();
+  const { findResponsiblePeopleByActivityID } = useResponsiblePeopleHook();
   const { resources, findResourcesByActivityID } = useResourceHook();
 
   const navigate = useNavigate();
@@ -92,13 +86,7 @@ const Objectives = () => {
   // handle Submit
   const handleSubmit = () => {
     const aopPayload = buildAOP();
-    console.log(aopPayload);
-
-    // setApplicationObjectivesPayload(objectivesPayload);
-    // setActivitiesPayload(activitiesPayload);
-
-    const payload = getApplicationObjectivesPayload();
-    console.log("Submitting payload:", payload);
+    console.log("Submitting payload:", aopPayload);
 
     // await axios.post('/api/aop/submit', { application_objectives: payload });
   };

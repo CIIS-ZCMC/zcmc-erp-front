@@ -21,8 +21,6 @@ const TableRow = ({
 
     const navigate = useNavigate();
 
-    const { setActivitiesForObjectives } = useAOPObjectivesHooks();
-
     //local state
     const [localAopActivity, setLocalAopActivity] = useState({});
     const [editRowId, setEditRowId] = useState(null);
@@ -31,56 +29,34 @@ const TableRow = ({
     //     console.log(rows)
     // }, [rows])
 
-    useEffect(() => {
-        if (editRowId !== null) {
-            const currentRow = rows.find((row) => row.id === editRowId);
-            if (currentRow) {
-                setLocalAopActivity((prev) => ({
-                    ...prev,
-                    [editRowId]: {
-                        localName: currentRow.name || '',
-                        localStartMonth: currentRow.startMonth || '',
-                        localEndMonth: currentRow.endMonth || '',
-                        localTarget: {
-                            firstQuarter: currentRow.target?.firstQuarter || '',
-                            secondQuarter: currentRow.target?.secondQuarter || '',
-                            thirdQuarter: currentRow.target?.thirdQuarter || '',
-                            fourthQuarter: currentRow.target?.fourthQuarter || '',
-                        },
-                        localCost: currentRow.cost || 0,
-                        localIsGadRelated: currentRow.target.isGadRelated || false
-                    }
-                }));
-            }
-        }
-    }, [editRowId, rows]);
-
     const handleOnRowClick = (id) => {
         setEditRowId(id);
 
+        if (localAopActivity[id]) return;
+
         // Find the current row by ID
         const currentRow = rows.find((row) => row.id === id);
+        if (!currentRow) return;
 
-        if (currentRow && !localAopActivity[id]) {
-            const { name, startMonth, endMonth, target, cost, isGadRelated } = currentRow;
+        const { name, startMonth, endMonth, target, cost, isGadRelated } = currentRow;
 
-            setLocalAopActivity((prev) => ({
-                ...prev,
-                [id]: {
-                    localName: name || '',
-                    localStartMonth: startMonth || '',
-                    localEndMonth: endMonth || '',
-                    localTarget: {
-                        firstQuarter: target?.secondQuarter || '',
-                        secondQuarter: target?.secondQuarter || '',
-                        thirdQuarter: target?.thirdQuarter || '',
-                        fourthQuarter: target?.fourthQuarter || '',
-                    },
-                    localCost: cost || 0,
-                    localIsGadRelated: isGadRelated || false
+        setLocalAopActivity((prev) => ({
+            ...prev,
+            [id]: {
+                localName: name || '',
+                localStartMonth: startMonth || '',
+                localEndMonth: endMonth || '',
+                localTarget: {
+                    firstQuarter: target?.firstQuarter || '',
+                    secondQuarter: target?.secondQuarter || '',
+                    thirdQuarter: target?.thirdQuarter || '',
+                    fourthQuarter: target?.fourthQuarter || '',
                 },
-            }));
-        }
+                localCost: cost || 0,
+                localIsGadRelated: isGadRelated || false
+            },
+        }));
+
     };
 
     return (

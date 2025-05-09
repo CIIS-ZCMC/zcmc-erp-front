@@ -129,32 +129,33 @@ const useResponsiblePeopleHook = create((set, get) => ({
 
   findResponsiblePeopleByActivityID: (actID) => {
     return get()
-      .responsible_people.filter((item) => item.activityId == actID)
+      .responsible_people.filter((item) => item.activityId === actID)
       .map((item) => {
         return [
+          // activityId: actID,
           ...(item.users || []).map((user) => ({
-            userId: user.id,
-            designationId: null,
-            divisionId: null,
-            departmentId: null,
-            sectionId: null,
-            unitId: null,
+            user_id: user.id,
+            designation_id: null,
+            division_id: null,
+            department_id: null,
+            section_id: null,
+            unit_id: null,
           })),
           ...(item.designations || []).map((designation) => ({
-            userId: null,
-            designationId: designation.id,
-            divisionId: null,
-            departmentId: null,
-            sectionId: null,
-            unitId: null,
+            user_id: null,
+            designation_id: designation.id,
+            division_id: null,
+            department_id: null,
+            section_id: null,
+            unit_id: null,
           })),
           ...(item.areas || []).map((area) => ({
-            userId: null,
-            designationId: null,
-            divisionId: area.type === "division" ? area.id : null,
-            departmentId: area.type === "department" ? area.id : null,
-            sectionId: area.type === "section" ? area.id : null,
-            unitId: area.type === "unit" ? area.id : null,
+            user_id: null,
+            designation_id: null,
+            division_id: area.type === "division" ? area.id : null,
+            department_id: area.type === "department" ? area.id : null,
+            section_id: area.type === "section" ? area.id : null,
+            unit_id: area.type === "unit" ? area.id : null,
           })),
         ];
       });
