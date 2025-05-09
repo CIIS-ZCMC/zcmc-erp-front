@@ -131,7 +131,7 @@ const useResponsiblePeopleHook = create((set, get) => ({
     return get()
       .responsible_people.filter((item) => item.activityId === actID)
       .map((item) => {
-        return {
+        return [
           // activityId: actID,
           ...(item.users || []).map((user) => ({
             user_id: user.id,
@@ -157,7 +157,7 @@ const useResponsiblePeopleHook = create((set, get) => ({
             section_id: area.type === "section" ? area.id : null,
             unit_id: area.type === "unit" ? area.id : null,
           })),
-        };
+        ];
       });
   },
 }));
