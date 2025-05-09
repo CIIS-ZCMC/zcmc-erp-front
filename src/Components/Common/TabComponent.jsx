@@ -37,6 +37,7 @@ export default function TabComponent({
             fontSize: 14,
             [`&& .${tabClasses.root}`]: {
               color: "primary.800",
+              width: "auto",
               "&:hover": {
                 bgcolor: "transparent",
               },

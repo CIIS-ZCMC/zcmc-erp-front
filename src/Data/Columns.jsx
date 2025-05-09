@@ -321,7 +321,7 @@ export const ppmpHeaders = (handleDeleteRow) => [
   },
 ];
 
-export const resourcesHeader = [
+export const RESOURCES_HEADER = [
   {
     field: "id",
     name: "Row #",

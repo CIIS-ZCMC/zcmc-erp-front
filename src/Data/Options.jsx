@@ -13,3 +13,9 @@ export const approvalPageTabs = [
   { id: 4, name: "Returned", value: "returned" },
   { id: 1, name: "All requests", value: "all" },
 ];
+
+export const ppmpReceivingTabs = [
+  { id: 2, name: "Pending", value: "pending" },
+  { id: 2, name: "Received", value: "received" },
+  { id: 1, name: "View all", value: "all" },
+];

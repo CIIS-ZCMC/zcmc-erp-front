@@ -41,7 +41,7 @@ const AOPApproval = () => {
   // FUNCTIONScccccccccccccccccccccccccccc
   const handleClickCard = (id, area_code) => {
     getAOPApplicationById(id, () => navigate(`/aop-approval/objectives/${id}`));
-    console.log("ID", id);
+
     localStorageSetter("aop_application_id", id);
     localStorageSetter("aop_application_area_code", area_code);
   };

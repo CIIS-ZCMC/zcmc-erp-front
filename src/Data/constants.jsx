@@ -67,6 +67,16 @@ export const AOP_CONSTANTS = {
    selections such as areas and job positions as necessary`,
 };
 
+export const PPMP_CONSTANTS = {
+  PPMP_TITLE: "PPMP Management",
+  PPMP_SUBHEADING:
+    "This is a subheading. It should add more context to the interaction.",
+
+  PPMP_RECEIVE_TITLE: "PPMP Management: Receiving",
+  PPMP_RECEIVE_SUBHEADING:
+    "Receive PPMP requests here. Each request is therefore recognized as completed its processing once received.",
+};
+
 export const MONTHS = [
   "January",
   "February",

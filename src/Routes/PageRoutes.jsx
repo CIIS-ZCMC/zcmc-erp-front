@@ -11,10 +11,10 @@ import Pending from "../Pages/DeptHead/AnnualOps/TableViews/Pending";
 import Returned from "../Pages/DeptHead/AnnualOps/TableViews/Returned";
 
 import CreateAOP from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout";
-import AnnualOpsPlanning from '../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives'
-import Activities from '../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities'
-import Resources from '../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities/Resources';
-import ResponsibePerson from '../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities/ResponsiblePerson';
+import AnnualOpsPlanning from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives";
+import Activities from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities";
+import Resources from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities/Resources";
+import ResponsibePerson from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities/ResponsiblePerson";
 
 import Items from "../Pages/Items";
 import Item from "../Pages/Items/Item";
@@ -25,6 +25,7 @@ import Objectives from "../Pages/PlanningOps/ObjectiveManagement/Objectives";
 import EditPPMP from "../Pages/DeptHead/EditPPMP/EditPPMP";
 import ManageAOP from "../Pages/PlanningOps/Approval/ManageAOP";
 import AOPApproval from "../Pages/PlanningOps/Approval/AOPApproval";
+import PPMPApproval from "../Pages/PPMP/Approval/PPMPApproval";
 
 export const sidebarRoutes = [
   {
@@ -87,9 +88,7 @@ export const sidebarRoutes = [
 
   {
     path: "/items",
-    children: [
-      { index: true, element: <Items /> },
-    ],
+    children: [{ index: true, element: <Items /> }],
   },
 
   {
@@ -118,6 +117,14 @@ export const sidebarRoutes = [
     name: "Edit PPMP",
     element: <EditPPMP />,
   },
+  {
+    path: "/ppmp-approval",
+    children: [
+      { index: true, element: <PPMPApproval /> },
+      { path: ":id", element: <PPMPApproval /> },
+    ],
+  },
+
   {
     path: "/objectives",
     name: "Objectives and KPIs",

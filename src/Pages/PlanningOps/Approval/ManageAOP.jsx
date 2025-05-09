@@ -45,7 +45,7 @@ import RadioButtonComponent from "../../../Components/Common/RadioButtonComponen
 import PostCommentComponent from "../../../Components/Form/PostCommentComponent";
 import ObjectivesList from "./Contents/ObjectivesList";
 import ScrollableTableComponent from "../../../Components/Common/Table/ScrollableTableComponent";
-import { resourcesHeader } from "../../../Data/Columns";
+import { RESOURCES_HEADER } from "../../../Data/Columns";
 import NoResultComponent from "../../../Components/Common/Table/NoResultComponent";
 import DrawerComponent from "../../../Components/Common/DrawerComponent";
 import CustomTabComponent from "../../../Components/Common/CustomTabComponent";
@@ -557,7 +557,7 @@ export default function ManageAOP() {
         }
         content={
           <ScrollableTableComponent
-            columns={resourcesHeader}
+            columns={RESOURCES_HEADER}
             data={resources}
           />
         }
