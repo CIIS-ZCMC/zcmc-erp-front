@@ -62,11 +62,21 @@ const Objectives = () => {
       const activities = findActivitiesByObjectiveID(item.id);
       const activitiesWithResourceAndResponsiblePeople = activities.map(
         (act) => {
+          const { parentId, id, startMonth, endMonth, target, isGadRelated, ...actData } = act
           //   const resources = findResourcesByActivityID(act.uuid);
           const responsible_people = findResponsiblePeopleByActivityID(act.id);
 
           return {
-            ...act,
+            ...actData,
+            start_month: startMonth,
+            end_month: endMonth,
+            is_gad_related: isGadRelated,
+            target: {
+              first_quarter: target.firstQuarter,
+              second_quarter: target.secondQuarter,
+              third_quarter: target.thirdQuarter,
+              fourth_quarter: target.fourthQuarter,
+            },
             // resources: resources,
             responsible_people: responsible_people,
           };
