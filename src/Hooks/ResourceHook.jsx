@@ -1,17 +1,7 @@
 import { create } from "zustand";
 
-// const sample = {
-//     parentId: //indicate from parent page,
-//     responsiblePeople: [
-//         {
-//             uuid: ///,
-//             ...otherFields
-//         }
-//     ]
-// }
-
-const useResponsiblePeopleHook = create((set, get) => ({
-  responsible_people: [],
+const useResourceHook = create((set, get) => ({
+  resources: [],
 
   selectedResponsibleValue: {
     users: [],
@@ -127,39 +117,9 @@ const useResponsiblePeopleHook = create((set, get) => ({
     set({ responsible_people: updated });
   },
 
-  findResponsiblePeopleByActivityID: (actID) => {
-    return get()
-      .responsible_people.filter((item) => item.activityId == actID)
-      .map((item) => {
-        return {
-          activityId: actID,
-          ...(item.users || []).map((user) => ({
-            userId: user.id,
-            designationId: null,
-            divisionId: null,
-            departmentId: null,
-            sectionId: null,
-            unitId: null,
-          })),
-          ...(item.designations || []).map((designation) => ({
-            userId: null,
-            designationId: designation.id,
-            divisionId: null,
-            departmentId: null,
-            sectionId: null,
-            unitId: null,
-          })),
-          ...(item.areas || []).map((area) => ({
-            userId: null,
-            designationId: null,
-            divisionId: area.type === "division" ? area.id : null,
-            departmentId: area.type === "department" ? area.id : null,
-            sectionId: area.type === "section" ? area.id : null,
-            unitId: area.type === "unit" ? area.id : null,
-          })),
-        };
-      });
+  findResourcesByActivityID: (actID) => {
+    return get().resources.filter((item) => item.parentId == actID);
   },
 }));
 
-export default useResponsiblePeopleHook;
+export default useResourceHook;
