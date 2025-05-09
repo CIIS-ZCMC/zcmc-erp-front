@@ -25,6 +25,7 @@ function CustomAccordionComponent({
   size,
   name,
   onClickEdit,
+  withActivity = true,
 }) {
   const { handleExpand, rotationId, rotation } = useAccordionHook();
   const isOpen = React.useMemo(() => {
@@ -69,7 +70,8 @@ function CustomAccordionComponent({
             }}
           >
             <Typography
-              textColor={"success.800"}
+              textColor={"primary.900"}
+              fontWeight={600}
               level={size == "sm" ? "body-sm" : "body-md"}
             >
               {title}
@@ -89,6 +91,7 @@ function CustomAccordionComponent({
               <IconButton
                 variant="soft"
                 size="sm"
+                disabled={!withActivity}
                 onClick={handleClick}
                 sx={{
                   transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",

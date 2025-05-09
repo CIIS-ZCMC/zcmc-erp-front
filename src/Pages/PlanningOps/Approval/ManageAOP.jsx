@@ -31,12 +31,14 @@ import ModalComponent from "../../../Components/Common/Dialog/ModalComponent";
 import useModalHook from "../../../Hooks/ModalHook";
 import InputComponent from "../../../Components/Form/InputComponent";
 import {
+  APPLICATION_ID,
   useAOPApplication,
   useLoadingState,
 } from "../../../Hooks/AOP/AOPApplicationsHook";
 import {
   useActivity,
   useActivityActions,
+  useActivityLoadingState,
   useResources,
 } from "../../../Hooks/AOP/ActivityHook";
 import { localStorageGetter } from "../../../Utils/LocalStorage";
@@ -58,6 +60,7 @@ import {
 import CommentContainerComponent from "../../../Components/Comments/CommentContainerComponent";
 import { groupByDate } from "../../../Utils/GroupData";
 import ConfirmationModalComponent from "../../../Components/Common/Dialog/ConfirmationModalComponent";
+import useSnackbarHook from "../../../Components/Common/SnackbarHook";
 
 export default function ManageAOP() {
   const { id } = useParams();
@@ -71,6 +74,7 @@ export default function ManageAOP() {
   // ACTIVITY HOOK
   const defaultActivityId = AOPApplication[0]?.activities[0]?.id;
   const activity = useActivity();
+  const activityLoading = useActivityLoadingState();
   const resources = useResources();
   const {
     id: activityId,
@@ -98,11 +102,15 @@ export default function ManageAOP() {
     getRemarksByApplication,
   } = useCommentActions();
   const allComments = useAllComments();
+  const { showSnack } = useSnackbarHook();
 
   // STATES
   const [action, setAction] = useState("approve");
   const [activeTab, setActiveTab] = useState(0);
   const [btnLoading, setBtnLoading] = useState(false);
+  const AREA_CODE = localStorageGetter("aop_application_area_code");
+  const FISCAL_YEAR = 2026;
+
   // STYLES
   const titleStyles = { level: "body-xs", fontWeight: 400 };
   const valueStyles = {
@@ -179,8 +187,8 @@ export default function ManageAOP() {
 
   const handleClickComment = (id) => {
     Promise.all([
-      getCommentsByActivity(id, () => {}),
       getActivityById(id, () => {}),
+      getCommentsByActivity(id, () => {}),
     ])
       .then(() => {
         setOpenFeedbackModal(false);
@@ -196,6 +204,7 @@ export default function ManageAOP() {
       setBtnLoading(false);
       closeConfirmation();
       setOpenMarkModal(false);
+      getActivityById(APPLICATION_ID, () => {}), showSnack(status, message);
     });
   };
 
@@ -219,12 +228,16 @@ export default function ManageAOP() {
         <PageTitle
           title={
             <Typography>
-              Manage AOP{" "}
-              <Typography textColor={"success.500"}>#{id} </Typography>
-              for Fiscal year 2026
+              Manage{" "}
+              <Typography textColor={"warning.400"}>{AREA_CODE}'s</Typography>{" "}
+              AOP <Typography textColor={"warning.400"}>#{id} </Typography>
+              for Fiscal year{" "}
+              <Typography textColor={"warning.400"}>{FISCAL_YEAR}'s</Typography>
             </Typography>
           }
-          description={AOP_CONSTANTS?.AOP_SUBHEADING}
+          description={
+            "Each objective has its own list of activities. Mark each activity as reviewed and process the request to continue."
+          }
         />
         {/* CONTENT */}
         <Box
@@ -253,7 +266,9 @@ export default function ManageAOP() {
             <Grid item="true" xs={4} height={{ md: "auto", lg: "100%" }}>
               <ContainerComponent
                 title={"List of objectives and activities"}
-                description={"This is a subtitle"}
+                description={
+                  "Collapse an objective and select one of its activities to view more information."
+                }
                 footer={
                   <Stack direction={"row"} spacing={2}>
                     <ButtonComponent
@@ -269,8 +284,8 @@ export default function ManageAOP() {
                   </Stack>
                 }
                 scrollable
-                contentMaxHeight={"64vh"}
-                contentMinHeight={"64vh"}
+                contentMaxHeight={"62vh"}
+                contentMinHeight={"62vh"}
               >
                 <ObjectivesList />
               </ContainerComponent>
@@ -283,12 +298,12 @@ export default function ManageAOP() {
                 // title={`Objective #${objectiveNumber}’s activity #${activityNumber}`}
                 title={"Activity details"}
                 description={
-                  "This is a subheading. It should add more context to the interaction."
+                  "Scroll down below to mark this activity as “Reviewed” to help you in double-checking."
                 }
+                isLoading={activityLoading}
                 scrollable
-                contentMaxHeight={"49vh"}
-                contentMinHeight={"49vh"}
-                isLoading={isAOPLoading}
+                contentMaxHeight={"47vh"}
+                contentMinHeight={"47vh"}
                 footer={
                   <Stack gap={2}>
                     {/* REVIEW */}
@@ -303,7 +318,7 @@ export default function ManageAOP() {
                         label="Mark activity as “Reviewed”"
                         size="sm"
                         sx={{ fontSize: 12, color: "neutral.800" }}
-                        color="success"
+                        color="primary"
                         defaultChecked={is_reviewed}
                         onChange={handleClickMarkCheckbox}
                       />
@@ -461,13 +476,13 @@ export default function ManageAOP() {
                 noBoxShadow
                 title={"Comments for the selected activity"}
                 description={
-                  "This is a subheading. It should add more context to the interaction."
+                  "Write comments below as your feedback or input for this selected activity only."
                 }
                 scrollable
-                contentMaxHeight={"37.5vh"}
-                contentMinHeight={"37.5vh"}
+                contentMaxHeight={"35.5vh"}
+                contentMinHeight={"35.5vh"}
                 footer={<PostCommentComponent activityId={activityId} />}
-                isLoading={isAOPLoading}
+                isLoading={activityLoading}
               >
                 <Stack gap={3} mr={1}>
                   {/* <Box

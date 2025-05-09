@@ -49,8 +49,7 @@ const useActivityHook = create((set) => ({
         url: `/activities/${activity_id}/mark-reviewed`,
 
         success: (response) => {
-          const { data, message } = response.data;
-          console.log(data);
+          const { message } = response.data;
           callback(response.status, message);
         },
         failed: () => {
@@ -63,6 +62,8 @@ const useActivityHook = create((set) => ({
 }));
 
 export const useActivity = () => useActivityHook((state) => state.activity);
+export const useActivityLoadingState = () =>
+  useActivityHook((state) => state.isLoading);
 export const useResources = () => useActivityHook((state) => state.resources);
 export const useActivityStates = () =>
   useActivityHook((state) => state.activityStates);

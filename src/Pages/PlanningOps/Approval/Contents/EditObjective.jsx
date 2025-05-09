@@ -4,30 +4,38 @@ import ModalComponent from "../../../../Components/Common/Dialog/ModalComponent"
 import { Divider, Stack } from "@mui/joy";
 import TextareaComponent from "../../../../Components/Form/TextareaComponent";
 import InputComponent from "../../../../Components/Form/InputComponent";
-import { useAOPApplicationsActions } from "../../../../Hooks/AOP/AOPApplicationsHook";
+import {
+  APPLICATION_ID,
+  useAOPApplicationsActions,
+} from "../../../../Hooks/AOP/AOPApplicationsHook";
+import useSnackbarHook from "../../../../Components/Common/SnackbarHook";
 
 const EditObjective = ({ onOpen, data, handleClose }) => {
   // STATES
-  const [authPin, setAuthPin] = useState("");
   const [objectiveData, setObjectiveData] = useState({ ...data });
+  const [loading, setLoading] = useState(false);
 
   // HOOKS
-  const { updateObjectiveSuccessIndicator } = useAOPApplicationsActions();
+  const { updateObjectiveSuccessIndicator, getAOPApplicationById } =
+    useAOPApplicationsActions();
+  const { showSnack } = useSnackbarHook();
 
   // FUNCTIONS
   const handleSubmitObjective = () => {
+    setLoading(true);
     updateObjectiveSuccessIndicator(objectiveData, (status, message) => {
-      console.log(status, message);
+      setLoading(false);
+      if (status === 200) {
+        handleClose();
+        showSnack(200, message);
+        getAOPApplicationById(APPLICATION_ID, () => {});
+      }
     });
   };
 
-  const handleCloseModal = () => {
-    setAuthPin("");
-    handleClose();
-  };
-
   const disabledEditBtn =
-    objectiveData?.objective === "" || objectiveData?.success_indicator === "";
+    objectiveData?.other_objective === "" ||
+    objectiveData?.other_success_indicator === "";
 
   useEffect(() => setObjectiveData(data), [data]);
 
@@ -40,27 +48,32 @@ const EditObjective = ({ onOpen, data, handleClose }) => {
         description={
           "The following information you’re editing are based on end-users selection of “Others” in objectives and success indicators that are unique and not registered on the system library."
         }
-        handleClose={handleCloseModal}
+        handleClose={handleClose}
         rightButtonDisabled={disabledEditBtn}
         rightButtonAction={handleSubmitObjective}
         maxWidth={"55vh"}
+        isLoading={loading}
         hasActionButtons
         content={
           <Stack gap={2} py={1}>
             <TextareaComponent
               minRows={4}
               label={"Objective"}
-              value={objectiveData?.objective}
+              value={objectiveData?.other_objective}
               setValue={(value) =>
-                handleChangeInput("objective", setObjectiveData, value)
+                handleChangeInput("other_objective", setObjectiveData, value)
               }
             />
             <TextareaComponent
               minRows={4}
               label={"Success indicators"}
-              value={objectiveData?.success_indicator}
+              value={objectiveData?.other_success_indicator}
               setValue={(value) =>
-                handleChangeInput("success_indicator", setObjectiveData, value)
+                handleChangeInput(
+                  "other_success_indicator",
+                  setObjectiveData,
+                  value
+                )
               }
             />
             {/* <Divider />

@@ -147,7 +147,7 @@ function ModalComponent({
 
                 <ButtonComponent
                   variant="outlined"
-                  color="success"
+                  color="primary"
                   label={leftButtonLabel}
                   fullWidth={!noRightButton}
                   onClick={leftButtonAction ?? handleClose}

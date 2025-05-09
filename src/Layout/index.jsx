@@ -5,12 +5,15 @@ import useModalHook from "../Hooks/ModalHook";
 import { Fragment } from "react";
 import AlertDialogComponent from "../Components/Common/Dialog/AlertDialogComponent";
 import NotificationMain from "../Components/Notification/NotificationMain";
+import SnackbarComponent from "../Components/Common/SnackbarComponent";
+import useSnackbarHook from "../Components/Common/SnackbarHook";
 
 function Layout() {
   const theme = useTheme();
   const color = theme.palette.custom;
 
   const { alertDialogState } = useModalHook();
+  const { isOpen: snackbarIsOpen } = useSnackbarHook();
 
   return (
     <Fragment>
@@ -63,6 +66,8 @@ function Layout() {
       </Grid>
       {/*  AlertDialog Modal for global display; isGlobal is true by default */}
       {alertDialogState.isGlobal && <AlertDialogComponent />}
+
+      {snackbarIsOpen && <SnackbarComponent />}
     </Fragment>
   );
 }

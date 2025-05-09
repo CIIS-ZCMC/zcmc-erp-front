@@ -1,8 +1,13 @@
 import { create } from "zustand";
 // import { erp_api } from "../../Services/ERP_API";
-import { localStorageSetter } from "../../Utils/LocalStorage";
+import {
+  localStorageGetter,
+  localStorageSetter,
+} from "../../Utils/LocalStorage";
 import { read, update } from "../../Services/RequestMethods";
 import { API } from "../../Data/constants";
+
+export const APPLICATION_ID = localStorageGetter("aop_application_id");
 
 const useAOPApplicationsHook = create((set) => ({
   aopApplications: [],
@@ -50,19 +55,16 @@ const useAOPApplicationsHook = create((set) => ({
     // EDIT SUCCESS INDICATORS AND OBJECTIVE
     updateObjectiveSuccessIndicator: (body, callback) => {
       try {
-        const {
-          success_indicator,
-          success_indicator_id,
-          objective,
-          objective_id,
-        } = body;
+        const { other_success_indicator, other_objective } = body;
 
         const dataToSubmit = new FormData();
 
-        dataToSubmit.append("success_indicator_id", success_indicator_id);
-        dataToSubmit.append("success_indicator", success_indicator);
-        dataToSubmit.append("objective_id", objective_id);
-        dataToSubmit.append("objective", objective);
+        dataToSubmit.append("aop_application_id", APPLICATION_ID);
+        dataToSubmit.append("objective_description", other_objective);
+        dataToSubmit.append(
+          "success_indicator_description",
+          other_success_indicator
+        );
 
         update({
           url: API.EDIT_OBJECTIVE,
@@ -70,6 +72,7 @@ const useAOPApplicationsHook = create((set) => ({
           success: (response) => {
             const { data, message } = response.data;
             // set({ aopApplications: data });
+            console.log(data);
             callback(200, message);
           },
           failed: callback,

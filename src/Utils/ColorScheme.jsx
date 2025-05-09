@@ -38,3 +38,26 @@ export const getStatusColorScheme = (status) => {
   };
   return colorMap[status] || "neutral"; // Ensure it returns a string
 };
+
+// STATUS
+export const getAlertColor = (statusCode) => {
+  let color = "";
+
+  switch (statusCode) {
+    case 200:
+      color = "success";
+      break;
+    case 401:
+      color = "danger";
+      break;
+
+    case 500:
+      color = "danger";
+      break;
+    default:
+      color = "primary";
+      break;
+  }
+
+  return color;
+};

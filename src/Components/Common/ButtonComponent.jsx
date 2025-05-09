@@ -6,7 +6,7 @@ const ButtonComponent = ({
   label,
   onClick,
   variant,
-  color = "success",
+  color = "primary",
   startDecorator,
   endDecorator,
   fullWidth,
@@ -52,7 +52,7 @@ ButtonComponent.propTypes = {
   endDecorator: PropTypes.node,
   fullWidth: PropTypes.bool,
   disabled: PropTypes.bool,
-  type: PropTypes.oneOf(["button", "submit", "reset"]),
+  type: PropTypes.string,
 };
 
 export default ButtonComponent;

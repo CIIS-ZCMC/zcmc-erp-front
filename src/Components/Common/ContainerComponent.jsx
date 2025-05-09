@@ -1,5 +1,6 @@
 import { Box, Divider, Sheet, Stack, styled, Typography } from "@mui/joy";
 import PropTypes from "prop-types";
+import { Bars, ThreeDots } from "react-loader-spinner";
 
 ContainerComponent.propTypes = {
   children: PropTypes.node, // Allow multiple children
@@ -74,7 +75,27 @@ function ContainerComponent({
           minHeight: contentMinHeight || "auto",
         }}
       >
-        {isLoading ? "Loading" : children}
+        {isLoading ? (
+          <Box
+            display="flex"
+            alignItems={"center"}
+            justifyContent={"center"}
+            minHeight={contentMaxHeight}
+          >
+            <ThreeDots
+              visible={true}
+              height={contentMinHeight}
+              width="80"
+              color="#4fa94d"
+              radius="9"
+              ariaLabel="three-dots-loading"
+              wrapperStyle={{}}
+              wrapperClass=""
+            />
+          </Box>
+        ) : (
+          children
+        )}
       </Box>
       {footer && (
         <Box mt={2}>

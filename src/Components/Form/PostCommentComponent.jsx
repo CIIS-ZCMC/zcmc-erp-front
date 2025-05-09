@@ -6,27 +6,35 @@ import ButtonComponent from "../Common/ButtonComponent";
 import { useComment, useCommentActions } from "../../Hooks/CommentHook";
 import ConfirmationModalComponent from "../Common/Dialog/ConfirmationModalComponent";
 import useModalHook from "../../Hooks/ModalHook";
+import useSnackbarHook from "../Common/SnackbarHook";
 
 const PostCommentComponent = ({ activityId }) => {
   const comment = useComment();
   const { setComment, postComment } = useCommentActions();
   const [loading, setLoading] = useState(false);
+  const [postCommentModal, setPostCommentModal] = useState(true);
 
   const { setConfirmationModal, closeConfirmation } = useModalHook();
+  const { showSnack } = useSnackbarHook();
 
   const submit = () => {
     setLoading(true);
     postComment({ activityId: activityId, comment: comment }, (status) => {
       setLoading(false);
+      setPostCommentModal(false);
+      closeConfirmation();
+
       if (status === 201) {
-        // SNACKBAR
         setComment("");
-        closeConfirmation();
+        showSnack(200, "Comment posted successfully");
+      } else {
+        showSnack(200, "Comment posted successfully");
       }
     });
   };
 
   const handleConfirmationModal = () => {
+    setPostCommentModal(true);
     const data = {
       status: "warning",
       title: "Confirm Comment Submission",
@@ -41,7 +49,7 @@ const PostCommentComponent = ({ activityId }) => {
     <Stack gap={2}>
       <TextareaComponent
         label={"Comment"}
-        color="success"
+        color="primary"
         minRows={6.5}
         maxRows={6.5}
         value={comment}
@@ -58,13 +66,15 @@ const PostCommentComponent = ({ activityId }) => {
       </Box>
 
       {/* Test Confirmation Modal */}
-      <ConfirmationModalComponent
-        leftButtonLabel="Cancel"
-        rightButtonAction={submit}
-        rightButtonLabel="Post comment"
-        isLoading={loading}
-        rigthbUtt
-      />
+      {postCommentModal && (
+        <ConfirmationModalComponent
+          leftButtonLabel="Cancel"
+          rightButtonAction={submit}
+          rightButtonLabel="Post comment"
+          isLoading={loading}
+          rigthbUtt
+        />
+      )}
     </Stack>
   );
 };

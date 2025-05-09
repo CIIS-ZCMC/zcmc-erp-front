@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import PageTitle from "../../../Components/Common/PageTitle";
 import { AOP_CONSTANTS } from "../../../Data/constants";
 import ContainerComponent from "../../../Components/Common/ContainerComponent";
-import { Grid, Link, Stack } from "@mui/joy";
+import { Box, Grid, Link, Stack } from "@mui/joy";
 import InputComponent from "../../../Components/Form/InputComponent";
 import DatePickerComponent from "../../../Components/Form/DatePickerComponent";
 import { Search } from "lucide-react";
@@ -22,6 +22,7 @@ import StepperComponent from "../../../Components/Stepper/StepperComponent";
 import TabComponent from "../../../Components/Common/TabComponent";
 import { approvalPageTabs } from "../../../Data/Options";
 import YearSelectorComponent from "../../../Components/Form/YearSelectorComponent";
+import NoResultComponent from "../../../Components/Common/Table/NoResultComponent";
 
 const AOPApproval = () => {
   const navigate = useNavigate();
@@ -38,9 +39,10 @@ const AOPApproval = () => {
   // const [search, setSearch] = useState("");
 
   // FUNCTIONScccccccccccccccccccccccccccc
-  const handleClickCard = (id) => {
+  const handleClickCard = (id, area_code) => {
     getAOPApplicationById(id, () => navigate(`/aop-approval/objectives/${id}`));
     localStorageSetter("aop_application_id", id);
+    localStorageSetter("aop_application_area_code", area_code);
   };
 
   const handleViewTimeline = (id) => {
@@ -102,7 +104,7 @@ const AOPApproval = () => {
             {/* LIST */}
             <Grid
               container
-              spacing={{ xs: 2, md: 3 }}
+              spacing={{ xs: 2, md: 2.2 }}
               columns={{ sm: 4, md: 8, xl: 12 }}
               sx={{
                 flexGrow: 1,
@@ -111,6 +113,12 @@ const AOPApproval = () => {
                 overflow: "auto",
               }}
             >
+              {APPLICATIONS?.length === 0 && (
+                <Box width="100%">
+                  <NoResultComponent />
+                </Box>
+              )}
+
               {APPLICATIONS?.map(
                 (
                   { id, created_on, date_approved, area_code, status },
@@ -123,7 +131,7 @@ const AOPApproval = () => {
                       status={status}
                       area_code={area_code ?? "-"}
                       statusLabel={toCapitalize(status)}
-                      leftClick={() => handleClickCard(id)}
+                      leftClick={() => handleClickCard(id, area_code)}
                       rightClick={() => handleViewTimeline(id)}
                     />
                   </Grid>

@@ -54,8 +54,8 @@ function AOPCardComponent({
     fontSize: 12.5,
     gap: 0.4,
     "&: hover": {
-      textDecoration: "none",
-      fontWeight: 500,
+      // textDecoration: "none",
+      // fontWeight: 500,
     },
   };
   return (

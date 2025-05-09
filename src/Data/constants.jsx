@@ -109,5 +109,5 @@ export const API = {
   SHOW_OBJECTIVE: "show-objective-activity",
 
   // OBJECTIVES
-  EDIT_OBJECTIVE: "edit-objective",
+  EDIT_OBJECTIVE: "edit-objective-and-success-indicator",
 };

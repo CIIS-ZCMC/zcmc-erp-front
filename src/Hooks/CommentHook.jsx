@@ -5,10 +5,10 @@ import {
   localStorageRemove,
   localStorageSetter,
 } from "../Utils/LocalStorage";
+import { APPLICATION_ID } from "./AOP/AOPApplicationsHook";
 
 export const COMMENT = "activity-comments";
 export const REMARKS = "aop-remarks";
-export const APPLICATION_ID = localStorageGetter("aop_application_id");
 
 const useCommentHook = create((set, get) => ({
   comments: [],

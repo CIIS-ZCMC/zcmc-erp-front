@@ -50,28 +50,24 @@ const ObjectivesList = () => {
   const handleClickActivity = (id) => {
     if (id !== activeActivity) {
       setActiveActivity(id);
-      getActivityById(id, () => {});
-
-      getCommentsByActivity(id, () => {});
+      Promise.all([
+        getCommentsByActivity(id, () => {}),
+        getActivityById(id, () => {}),
+      ]).catch((error) => {
+        console.error("Error fetching data:", error);
+      });
     }
   };
 
   const handeEditObjective = (id) => {
-    const {
-      success_indicator,
-      success_indicator_id,
-      objective,
-      objective_id,
-      function_description,
-    } = getObjectiveDetails(id);
+    const { other_success_indicator, other_objective, function_description } =
+      getObjectiveDetails(id);
 
     setObjectiveData(() => {
       return {
-        success_indicator: success_indicator,
-        objective: objective,
+        other_success_indicator: other_success_indicator,
+        other_objective: other_objective,
         index: id,
-        objective_id: objective_id,
-        success_indicator_id: success_indicator_id,
         core: toCapitalize(function_description),
       };
     });
@@ -106,7 +102,9 @@ const ObjectivesList = () => {
               id,
               function_description,
               objective,
+              other_objective,
               success_indicator,
+              other_success_indicator,
               activities,
               is_editable,
             },
@@ -119,7 +117,7 @@ const ObjectivesList = () => {
               title={
                 <Typography>
                   Objective #{objective_key + 1} -
-                  <Typography textColor={"success.700"} fontWeight={600}>
+                  <Typography textColor={"primary.700"} fontWeight={600}>
                     {toCapitalize(function_description)}
                   </Typography>
                 </Typography>
@@ -128,11 +126,16 @@ const ObjectivesList = () => {
               name="parent"
               onClickEdit={() => handeEditObjective(id)}
             >
-              <Stack gap={2} px={0.5}>
-                <EllipsisComponent label={"Objective:"} text={objective} />
+              <Stack gap={3} px={0.5}>
+                <EllipsisComponent
+                  label={"Objective:"}
+                  text={is_editable ? other_objective : objective}
+                />
                 <EllipsisComponent
                   label={"Success indicators:"}
-                  text={success_indicator}
+                  text={
+                    is_editable ? other_success_indicator : success_indicator
+                  }
                 />
 
                 <CustomAccordionComponent
@@ -141,6 +144,7 @@ const ObjectivesList = () => {
                   title={`Activities (${activities?.length})`}
                   id={objective_key + 1}
                   name="child"
+                  withActivity={activities?.length > 0}
                 >
                   <Stack gap={1}>
                     {activities?.map(
