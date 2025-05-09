@@ -66,10 +66,15 @@ const Objectives = () => {
           return {
             ...act,
             // resources: resources,
-            responsible_people: responsible_people.map((responsible) => console.log(responsible))
-            //   ({
-            //   user_id: responsible[0].userId
-            // })),
+            responsible_people: responsible_people.map((responsible) =>
+            ({
+              user_id: responsible[0].userId,
+              division_id: responsible[0].divisionId,
+              department_id: responsible[0].departmentId,
+              section_id: responsible[0].sectionId,
+              unit_id: responsible[0].unitId,
+              designation_id: responsible[0].designationId
+            })),
           };
         }
       );

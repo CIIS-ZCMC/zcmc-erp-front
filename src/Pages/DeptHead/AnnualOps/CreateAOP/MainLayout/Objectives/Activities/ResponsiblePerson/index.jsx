@@ -25,9 +25,7 @@ const ResponsiblePerson = () => {
   const activityId = location.state.parentId; //refers to parent id/activity id
   const rowId = location.state.activityrowId; //refers to activity row id
 
-  const { setResponsiblePeoplePayload } = useAOPObjectivesHooks();
-  const { responsible_people, resetValues, setAssignmentStatus } =
-    useResponsiblePeopleHook();
+  const { responsible_people, resetValues, setAssignmentStatus } = useResponsiblePeopleHook();
 
   const activity = responsible_people?.find((item) => {
     return item.activityId === activityId;
@@ -92,8 +90,6 @@ const ResponsiblePerson = () => {
     ];
 
     console.log("Data to submit:", updatedResponsiblePeople);
-    setResponsiblePeoplePayload(updatedResponsiblePeople);
-
     // Set assignment flag if needed
     setAssignmentStatus(activityId, true);
 
