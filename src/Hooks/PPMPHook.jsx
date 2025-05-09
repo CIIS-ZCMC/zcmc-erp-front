@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import erp_api from "../Services/ERP_API";
+import { post } from "../Services/RequestMethods";
 
 const PATH = "ppmp";
 
@@ -101,32 +102,42 @@ const usePPMPHook = create((set) => ({
       });
   },
   postPPMP: async (body, callback) => {
-    return erp_api
-      .post(`${PATH}-items`, body)
-      .then((res) => {
-        const { status } = res;
+    post({
+      url: `${PATH}-items`,
+      form: body,
+      success: (response) => {
+        const { message } = response.data;
+        callback(response.status, message);
+      },
+      failed: callback,
+    });
+    // return erp_api
+    //   .post(`${PATH}-items`, body)
+    //   .then((res) => {
+    //     const { status } = res;
+    //     console.log("res", res);
+    //     // if (!(status >= 200 && status < 300)) {
+    //     //   throw new Error("Bad response.", { cause: res });
+    //     // }
 
-        if (!(status >= 200 && status < 300)) {
-          throw new Error("Bad response.", { cause: res });
-        }
+    //     if (status === 201) {
+    //       console.log("I am here");
+    //       return callback(201, res.data.data.message);
+    //     }
 
-        if (status === 201) {
-          return callback(201, res.data.data.message);
-        }
+    //     return res;
+    //   })
+    //   .then((res) => {
+    //     const {
+    //       status,
+    //       data: { data, message },
+    //     } = res;
 
-        return res;
-      })
-      .then((res) => {
-        const {
-          status,
-          data: { data, message },
-        } = res;
-
-        callback(status, message, data);
-      })
-      .catch((err) => {
-        return callback(err.status, err.response.data.message);
-      });
+    //     callback(status, message, data);
+    //   })
+    //   .catch((err) => {
+    //     return callback(err.status, "Something went wrong");
+    //   });
   },
 }));
 

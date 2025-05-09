@@ -1,6 +1,6 @@
 import { Modal, ModalDialog } from "@mui/joy";
 import PropTypes from "prop-types";
-import { Bars } from "react-loader-spinner";
+import { Bars, InfinitySpin, Oval, ThreeDots } from "react-loader-spinner";
 
 PageLoader.propTypes = { isLoading: PropTypes.bool };
 
@@ -17,11 +17,11 @@ function PageLoader({ isLoading }) {
           //   bgcolor: "neutral.50",
         }}
       >
-        <Bars
+        <ThreeDots
           height="80"
           width="80"
           color="#4fa94d"
-          ariaLabel="bars-loading"
+          ariaLabel="three-dots-loading"
           wrapperStyle={{}}
           wrapperClass=""
           visible={true}

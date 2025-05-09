@@ -2,9 +2,10 @@ import { Outlet } from "react-router-dom";
 import { Box, Grid, useTheme } from "@mui/joy";
 import Sidebar from "./Sidebar";
 import useModalHook from "../Hooks/ModalHook";
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import AlertDialogComponent from "../Components/Common/Dialog/AlertDialogComponent";
 import useSidebarHook from "../Hooks/SidebarHook";
+import { useMediaQuery } from "@mui/material";
 
 function Layout() {
   const theme = useTheme();
@@ -12,22 +13,24 @@ function Layout() {
 
   const { alertDialogState } = useModalHook();
 
-  const { isCollapsed, toggleSidebar } = useSidebarHook();
+  const { isCollapsed, toggleSidebar, setCollapsed } = useSidebarHook();
+  const isSmallScreen = useMediaQuery("(max-width:1500px)");
 
+  useEffect(() => {
+    setCollapsed(isSmallScreen); // Auto-collapse if small screen
+  }, [isSmallScreen, setCollapsed]);
   return (
     <Fragment>
       <Grid container sx={{ maxHeight: "100vh" }}>
         {/* Sidebar */}
         <Grid
           item="true"
-          // xs={12} // Full width on extra small screens
-          // sm={4} // 4/12 width on small screens
-          // md={3} // 3/12 width on medium screens
-          // lg={2} // 2/12 width on large screens
+          xs={12}
+          sm={isCollapsed ? 1.2 : 4}
+          md={isCollapsed ? 0.8 : 3}
+          lg={isCollapsed ? 0.7 : 2}
+          xl={isCollapsed ? 0.7 : 2}
           sx={{
-            width: isCollapsed
-              ? "60px"
-              : { xs: "100%", sm: "33.33%", md: "25%", lg: "16.67%" },
             transition: "width 0.3s",
             position: "fixed", // Make sidebar fixed
             top: 0,
@@ -43,20 +46,24 @@ function Layout() {
         {/* Outlet is where the child routes will be rendered */}
         <Grid
           item="true"
-          xs={12} // Full width on extra small screens
-          sm={8} // 8/12 width on small screens
-          md={9} // 9/12 width on medium screens
-          lg={10} // 10/12 width on large screens
+          xs={12}
+          sm={isCollapsed ? 10.8 : 8}
+          md={isCollapsed ? 11.2 : 9}
+          lg={isCollapsed ? 11.3 : 10}
+          xl={isCollapsed ? 11.4 : 10}
           p={3}
           sx={{
             // marginLeft: { sm: "33.33%", md: "25%", lg: "16.67%" }, // Adjust margin based on sidebar width
-            marginLeft: isCollapsed
-              ? "60px"
-              : { sm: "33.33%", md: "25%", lg: "16.67%" },
+            marginLeft: {
+              sm: isCollapsed ? "8.33%" : "33.33%",
+              md: isCollapsed ? "7.66%" : "25%",
+              lg: isCollapsed ? "6.80%" : "16.67%",
+              xl: isCollapsed ? "5.77%" : "16.77%",
+            },
             transition: "margin-left 0.3s",
             // backgroundColor: color.lightBg,
             maxHeight: "100vh", // Ensure the main content area fills the screen
-            overflowY: "auto", // Allow scrolling if content overflows
+            // overflowY: "auto", // Allow scrolling if content overflows
           }}
         >
           <Box>

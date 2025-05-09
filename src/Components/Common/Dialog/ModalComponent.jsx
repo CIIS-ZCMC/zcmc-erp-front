@@ -77,6 +77,7 @@ function ModalComponent({
     <Modal keepMounted open={isOpen} onClose={handleCloseModal}>
       <ModalDialog
         sx={{
+          // Set the max height of the modal
           width: "auto",
           // height: "auto",
           // maxHeight: "80%",

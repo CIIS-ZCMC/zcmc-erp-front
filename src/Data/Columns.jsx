@@ -233,7 +233,7 @@ export const ppmpHeaders = (handleDeleteRow, items, modes) => [
   {
     field: "id",
     name: "Row #",
-    width: "70px",
+    width: "50px",
     align: "center",
     display: "none",
   },
@@ -252,6 +252,15 @@ export const ppmpHeaders = (handleDeleteRow, items, modes) => [
     width: "200px",
     align: "center",
     options: items,
+    render: (params) => {
+      return (
+        <>
+          <Typography>
+            {params?.name?.name ? params?.name?.name : "-"}
+          </Typography>
+        </>
+      );
+    },
   },
   {
     field: "activity_code",
@@ -328,14 +337,14 @@ export const ppmpHeaders = (handleDeleteRow, items, modes) => [
   },
   {
     field: "aop_quantity",
-    name: "Quantity in AOP",
-    width: 100,
+    name: "Quantity",
+    width: 95,
     align: "center",
   },
   {
     field: "quantity",
     name: "Quantity Inputted",
-    width: 100,
+    width: 95,
     align: "center",
     render: (params) => {
       return (
@@ -352,7 +361,7 @@ export const ppmpHeaders = (handleDeleteRow, items, modes) => [
   {
     field: "unit",
     name: "Unit",
-    width: 100,
+    width: 90,
     align: "center",
   },
   {
@@ -401,6 +410,17 @@ export const ppmpHeaders = (handleDeleteRow, items, modes) => [
     align: "center",
     inputType: "dropdown",
     options: modes,
+    render: (params) => {
+      return (
+        <>
+          <Typography>
+            {params?.procurement_mode?.name
+              ? params?.procurement_mode?.name
+              : "-"}
+          </Typography>
+        </>
+      );
+    },
   },
   {
     field: "remarks",
@@ -413,22 +433,18 @@ export const ppmpHeaders = (handleDeleteRow, items, modes) => [
     field: "action",
     name: "Actions",
     isDropdown: false,
-    width: "150px",
+    width: "70px",
     align: "center",
     render: (params) => {
       return (
         <>
-          <Link
+          <IconButton
             onClick={() => handleDeleteRow(params.id)}
-            size="md"
-            variant="plain"
             color="primary"
-            underline="hover"
-            fontSize={14}
-            endDecorator={<MdDeleteOutline />}
+            size="lg"
           >
-            Remove Item
-          </Link>
+            <MdDeleteOutline />
+          </IconButton>
         </>
       );
     },

@@ -33,22 +33,25 @@ import userErrorInputHook from "../../../Hooks/ErrorInputHook";
 import AlertDialogComponent from "../../../Components/Common/Dialog/AlertDialogComponent";
 import TextareaComponent from "../../../Components/Form/TextareaComponent";
 import InputComponent from "../../../Components/Form/InputComponent";
+import handleSingleChangeAutcomplete from "../../../Utils/HandleAutocomplete";
+import handleInputValidation from "../../../Utils/HandleInput";
+import PageLoader from "../../../Components/Loading/PageLoader";
+import PPMPTable from "./PPMPTable";
 
 const options = ["Save as draft"];
 
 function PPMPItems(props) {
   const navigate = useNavigate();
   const {
-    tableData,
+    // tableData,
     loading,
     activityObject,
     description,
     expenseClass,
-    setTableData,
+    // setTableData,
     setItemsData,
     setLoading,
     handleFieldChange,
-    handleDeleteRow,
     handleSelectActivity,
     handleSelectExpense,
   } = usePPMPItemsHook();
@@ -61,7 +64,16 @@ function PPMPItems(props) {
     getActivities,
     postPPMP,
   } = usePPMPHook();
-  const { items, getItems } = useItemsHook();
+  const {
+    items,
+    classification,
+    categories,
+    units,
+    getItemCategories,
+    getItemClassification,
+    getItems,
+    getItemUnits,
+  } = useItemsHook();
   const {
     setAlertDialog,
     setConfirmationModal,
@@ -72,8 +84,10 @@ function PPMPItems(props) {
 
   const [openAdd, setOpenAdd] = useState(false);
   const [openReq, setOpenReq] = useState(false);
+  const [pageLoader, setPageLoader] = useState(false);
   const [step, setStep] = useState(1);
   const [pin, setPin] = useState(null);
+  const [tableData, setTableData] = useState([]);
   const [itemReq, setItemReq] = useState({
     specs: [
       { id: Date.now(), value: "" },
@@ -127,15 +141,17 @@ function PPMPItems(props) {
   };
 
   const handleSubmit = async (is_draft) => {
-    if (pin === null) {
+    if (pin === null && is_draft === 0) {
       setError("pin", true, "Please enter your authorization PIN.");
     } else {
+      setPageLoader(true);
       const formData = new FormData();
       formData.append("is_draft", is_draft);
       formData.append("PPMP_Items", JSON.stringify(tableData));
 
       await postPPMP(formData, (status, message, data) => {
-        if (status === 201 || (status >= 200 && status < 300)) {
+        setPageLoader(false);
+        if (status === 201) {
           const data = {
             status: "success",
             title: "PPMP for F.Y. 2026 successfully submitted for approval.",
@@ -158,6 +174,7 @@ function PPMPItems(props) {
   };
 
   const handleNextStep = () => {
+    console.log(itemReq);
     setStep((prev) => Math.min(prev + 1, 3));
   };
 
@@ -165,34 +182,47 @@ function PPMPItems(props) {
     setStep((prev) => Math.max(prev - 1, 1));
   };
 
+  const handleDeleteRow = (id) => {
+    // Optional: Show loading spinner
+    setLoading(true);
+    setTimeout(() => {
+      const updated = tableData.filter((row) => row.id !== id);
+      setLoading(false);
+      setTableData(updated);
+    }, 1000);
+  };
+
   //USEEFFECTS
   useEffect(() => {
-    async function fetchData() {
-      try {
-        setLoading(true);
+    async function fetchAll() {
+      setLoading(true);
 
+      // Wrap each callback-based function in a Promise
+      const wrap = (fn) =>
+        new Promise((resolve) =>
+          fn(() => {
+            resolve(); // You can optionally pass data if needed
+          })
+        );
+
+      try {
         await Promise.all([
-          new Promise((resolve) =>
-            getPPMPItems((status, message, data) => resolve())
-          ),
-          new Promise((resolve) =>
-            getItems((status, message, data) => resolve())
-          ),
-          new Promise((resolve) =>
-            getProcModes((status, message, data) => resolve())
-          ),
-          new Promise((resolve) =>
-            getActivities((status, message, data) => resolve())
-          ),
+          wrap(getPPMPItems),
+          wrap(getItems),
+          wrap(getProcModes),
+          wrap(getActivities),
+          wrap(getItemClassification),
+          wrap(getItemCategories),
+          wrap(getItemUnits),
         ]);
-      } catch (error) {
-        console.error("Error fetching data", error);
+      } catch (err) {
+        console.error("Fetching error:", err);
       } finally {
         setLoading(false);
       }
     }
 
-    fetchData();
+    fetchAll();
   }, []);
 
   useEffect(() => {
@@ -208,8 +238,6 @@ function PPMPItems(props) {
       setItemsData(items);
     }
   }, [loading, items]);
-
-  const memoizedData = useMemo(() => tableData, [tableData]);
 
   // useEffect(() => {
   //   if (tableData.length === 0) {
@@ -268,9 +296,9 @@ function PPMPItems(props) {
           </Stack>
         }
       >
-        <ScrollableEditableTableComponent
+        <PPMPTable
           columns={ppmpHeaders(handleDeleteRow, items, modes)}
-          data={memoizedData}
+          data={tableData}
           onFieldChange={handleFieldChange}
           isLoading={loading}
           options={descriptionsData}
@@ -279,6 +307,7 @@ function PPMPItems(props) {
           pageSize={10}
           stickLast
           stickSecond
+          withSearch={true}
         />
       </ContainerComponent>
 
@@ -358,7 +387,7 @@ function PPMPItems(props) {
             ? "List down details for the item you want to cretae to specify it."
             : ""
         }
-        minWidth={"380px"}
+        minWidth={"400px"}
         maxWidth={"480px"}
         height={step === 1 ? "auto" : step === 2 ? "652px" : "680px"}
         content={
@@ -398,54 +427,127 @@ function PPMPItems(props) {
               </Stack>
             )}
             {step === 2 && (
-              <Stack spacing={2} mt={2} sx={{ overflowX: "hidden" }}>
-                <Stack
-                  direction={"row"}
-                  justifyContent={"space-between"}
-                  alignItems={"center"}
-                  spacing={1}
-                >
-                  <AutocompleteComponent
-                    label="Classification"
-                    name="classification"
-                  />
-                  <AutocompleteComponent label="Category" name="category" />
+              <Stack spacing={2} mt={1} width="100%">
+                <Stack direction={"row"} gap={1} width="100%">
+                  <Box width={"49%"}>
+                    <AutocompleteComponent
+                      label="Classification"
+                      name="classification"
+                      value={
+                        classification?.find(
+                          (el) => el.id === itemReq?.classification?.id
+                        ) || null
+                      } // Match the full object in value
+                      handleSelect={(value) => {
+                        handleSingleChangeAutcomplete(
+                          value,
+                          setItemReq,
+                          "classification",
+                          setError
+                        );
+                      }}
+                      options={classification}
+                      getOptionLabel={(option) => option.name || ""}
+                      size="md"
+                    />
+                  </Box>
+                  <Box width={"49%"}>
+                    <AutocompleteComponent
+                      label="Category"
+                      name="category"
+                      value={
+                        categories?.find(
+                          (el) => el.id === itemReq?.category?.id
+                        ) || null
+                      }
+                      options={categories}
+                      getOptionLabel={(option) => option.name || ""}
+                      handleSelect={(value) => {
+                        handleSingleChangeAutcomplete(
+                          value,
+                          setItemReq,
+                          "category",
+                          setError
+                        );
+                      }}
+                      size="md"
+                    />
+                  </Box>
                 </Stack>
                 <TextareaComponent
                   label="Item name"
+                  name="item_name"
                   helperText="Use a specific and descriptive naming convention for best results."
+                  value={itemReq?.item_name}
+                  onChange={(e) =>
+                    handleInputValidation(e, setItemReq, setError)
+                  }
                 />
-                <Stack
-                  direction={"row"}
-                  justifyContent={"space-between"}
-                  alignItems={"center"}
-                  spacing={1}
-                >
-                  <AutocompleteComponent label="Unit of measure" />
-                  <InputComponent label="Estimated budget" />
+                <Stack direction={"row"} gap={1} width="100%">
+                  <AutocompleteComponent
+                    label="Unit of measure"
+                    name="unit"
+                    value={
+                      units?.find((el) => el.id === itemReq?.unit?.id) || null
+                    }
+                    options={units}
+                    getOptionLabel={(option) => option.name || ""}
+                    handleSelect={(value) => {
+                      handleSingleChangeAutcomplete(
+                        value,
+                        setItemReq,
+                        "unit",
+                        setError
+                      );
+                    }}
+                    size="md"
+                    width="49%"
+                  />
+                  <InputComponent
+                    label="Estimated budget"
+                    name="estimated_budget"
+                    size="md"
+                    value={itemReq.estimated_budget}
+                    handleInput={(e) => handleInputValidation(e, setItemReq)}
+                    width="49%"
+                    color="primary"
+                  />
                 </Stack>
                 <AutocompleteComponent label="Variant" />
 
                 <Checkbox
                   label="I have conducted a market research prior setting the budget estimates."
-                  sx={{ fontSize: 12, color: grey[600] }}
+                  sx={{ color: grey[600], width: "100%" }}
+                  size="sm"
+                  checked={itemReq?.market_research}
+                  onChange={(e) =>
+                    setItemReq((prev) => ({
+                      ...prev,
+                      market_research: e.target.checked,
+                    }))
+                  }
                 />
               </Stack>
             )}
             {step === 3 && (
-              <Stack spacing={2} mt={2} sx={{ overflowX: "hidden" }}>
+              <Stack
+                spacing={2}
+                mt={1}
+                sx={{ overflowX: "hidden" }}
+                width="100%"
+              >
                 <Box>
                   <Typography fontSize={12} color="grey.600">
                     Item name
                   </Typography>
-                  <Typography fontSize={14}> Sample </Typography>
+                  <Typography fontSize={14}> {itemReq?.item_name} </Typography>
                   <Divider sx={{ my: 1 }} />
                 </Box>
-                <Stack spacing={1}>
+                <Stack spacing={1} width={"100%"}>
                   <Box height={"235px"} overflow="auto">
                     {itemReq?.specs?.map((spec, index) => (
                       <div key={spec.id} style={{ marginBottom: "1rem" }}>
-                        <Stack spacing={1}>
+                        <Stack spacing={1} width={"100%"}>
                           <TextareaComponent
                             label={`Specification ${index + 1}:`}
                             placeholder="e.g., Size: Large"
@@ -540,6 +642,7 @@ function PPMPItems(props) {
         setAuthPin={setPin}
       />
       <AlertDialogComponent leftButtonAction={() => closeAlertDialog()} />
+      <PageLoader isLoading={pageLoader} />
     </Fragment>
   );
 }

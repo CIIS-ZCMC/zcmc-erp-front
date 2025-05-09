@@ -81,9 +81,9 @@ const ScrollableEditableTableComponent = memo(
       (e, rowIndex, field) => {
         const newValue = e.target.value;
         const row = data[rowIndex];
-        onFieldChange(field, newValue, row);
+        onFieldChange(field, newValue, row, data, setData);
       },
-      [data, onFieldChange]
+      [data, onFieldChange, setData]
     );
 
     const handleAutocompleteChange = useCallback(
@@ -98,7 +98,13 @@ const ScrollableEditableTableComponent = memo(
       (e, rowIndex, parentField, childField) => {
         const newValue = e.target.value;
         const row = data[rowIndex];
-        onFieldChange(`${parentField}.${childField}`, newValue, row);
+        onFieldChange(
+          `${parentField}.${childField}`,
+          newValue,
+          row,
+          data,
+          setData
+        );
       },
       [data, onFieldChange]
     );

@@ -8,7 +8,7 @@ function handleSingleChangeAutcomplete(
   console.log(value);
   setData((prevData) => ({
     ...prevData,
-    [name]: value?.value,
+    [name]: value,
   }));
   if (handleError) {
     const hasError = value === "" || value === undefined;

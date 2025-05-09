@@ -28,6 +28,7 @@ function BrandLogo() {
         direction={isCollapsed ? "column" : "row"}
         gap={1}
         alignItems={"flex-start"}
+        paddingX={isCollapsed ? 1 : 0}
       >
         <img src={zcmc_logo} style={{ width: "33px", height: "44px" }} />
 

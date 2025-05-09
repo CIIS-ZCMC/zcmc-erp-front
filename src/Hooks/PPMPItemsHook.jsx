@@ -18,6 +18,11 @@ export const usePPMPItemsHook = create(
       setLoading: (value) => set({ loading: value }),
 
       updateRow: (updatedRow) => {
+        // setTableData(() =>
+        //   tableData.map((row) =>
+        //     row.id === updatedRow.id ? { ...row, ...updatedRow } : row
+        //   )
+        // );
         set((state) => ({
           tableData: state.tableData.map((row) =>
             row.id === updatedRow.id ? { ...row, ...updatedRow } : row
@@ -30,7 +35,7 @@ export const usePPMPItemsHook = create(
 
       handleFieldChange: (fieldName, newValue, row) => {
         const { calculateQuantity, setLoading, itemsData, updateRow } = get();
-        console.log(newValue);
+
         if (fieldName === "description") {
           setLoading(true);
           const selected = itemsData.find((item) => item.name === newValue);

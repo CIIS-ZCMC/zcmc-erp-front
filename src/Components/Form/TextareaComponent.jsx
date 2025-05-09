@@ -14,6 +14,7 @@ function TextareaComponent({
   name,
   color,
   isRequired = false,
+  onChange,
 }) {
   const handleInput = (e) => {
     setValue(e.target.value);
@@ -39,7 +40,7 @@ function TextareaComponent({
         color={color}
         maxRows={maxRows}
         value={value}
-        onChange={handleInput}
+        onChange={setValue ? handleInput : onChange}
         sx={{
           fontSize: 14,
           fontWeight: fontWeight,

@@ -16,7 +16,7 @@ function Sidebar() {
 
   return (
     <Stack
-      p={{ xs: 1.5, sm: 2.5 }} // Responsive padding
+      p={isCollapsed ? 2 : { xs: 1.5, sm: 2.5 }} // Responsive padding
       sx={{
         height: "95%",
         overflowY: "auto",
