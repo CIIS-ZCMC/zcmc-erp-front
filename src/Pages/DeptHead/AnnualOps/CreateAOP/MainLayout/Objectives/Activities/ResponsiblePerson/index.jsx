@@ -62,33 +62,30 @@ const ResponsiblePerson = () => {
     }
 
     const updatedResponsiblePeople = [
-      {
-        activityId: activityId,
-        ...(activity.users || []).map((user) => ({
-          userId: user.id,
-          designationId: null,
-          divisionId: null,
-          departmentId: null,
-          sectionId: null,
-          unitId: null,
-        })),
-        ...(activity.designations || []).map((designation) => ({
-          userId: null,
-          designationId: designation.id,
-          divisionId: null,
-          departmentId: null,
-          sectionId: null,
-          unitId: null,
-        })),
-        ...(activity.areas || []).map((area) => ({
-          userId: null,
-          designationId: null,
-          divisionId: area.type === "division" ? area.id : null,
-          departmentId: area.type === "department" ? area.id : null,
-          sectionId: area.type === "section" ? area.id : null,
-          unitId: area.type === "unit" ? area.id : null,
-        })),
-      },
+      ...(activity.users || []).map((user) => ({
+        userId: user.id,
+        designationId: null,
+        divisionId: null,
+        departmentId: null,
+        sectionId: null,
+        unitId: null,
+      })),
+      ...(activity.designations || []).map((designation) => ({
+        userId: null,
+        designationId: designation.id,
+        divisionId: null,
+        departmentId: null,
+        sectionId: null,
+        unitId: null,
+      })),
+      ...(activity.areas || []).map((area) => ({
+        userId: null,
+        designationId: null,
+        divisionId: area.type === "division" ? area.id : null,
+        departmentId: area.type === "department" ? area.id : null,
+        sectionId: area.type === "section" ? area.id : null,
+        unitId: area.type === "unit" ? area.id : null,
+      })),
     ];
 
     console.log("Data to submit:", updatedResponsiblePeople);
