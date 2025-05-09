@@ -21,12 +21,12 @@ const useObjectivesHook = create(
           objectives: state.objectives?.map((row) =>
             row.id === id
               ? {
-                  ...row,
-                  [field]: value,
-                  ...(field === "objective_id" && {
-                    success_indicator_id: null,
-                  }),
-                }
+                ...row,
+                [field]: value,
+                ...(field === "objective_id" && {
+                  success_indicator_id: null,
+                }),
+              }
               : row
           ),
         }));
