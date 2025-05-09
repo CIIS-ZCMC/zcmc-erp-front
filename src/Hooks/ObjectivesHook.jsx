@@ -1,49 +1,56 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware"
-import { v4 as uuid } from 'uuid';
+import { persist } from "zustand/middleware";
+import { v4 as uuid } from "uuid";
 
-const initialObjective = (rowId = 1) => (
-    {
-        id: uuid(),
-        functionType: null,
-        objective: null,
-        successIndicator: null,
-        rowId
-    }
-)
+const initialObjective = (rowId = 1) => ({
+  id: uuid(),
+  functionType: null,
+  objective: null,
+  successIndicator: null,
+  rowId,
+});
 const useObjectivesHook = create(
-    persist(
-        (set, get) => ({
-            objectives: [],
+  persist(
+    (set, get) => ({
+      objectives: [],
+      current_parent_id: null,
 
-            //update field 
-            updateObjectiveField: (id, field, value) => {
-                set((state) => ({
-                    objectives: state.objectives?.map((row) =>
-                        row.id === id
-                            ? {
-                                ...row,
-                                [field]: value,
-                                ...(field === 'objective_id' && { success_indicator_id: null }),
-                            }
-                            : row
-                    ),
-                }));
-            },
-            // add row objective
-            addObjective: () => {
-                const current = get().objectives;
-                set((state) => ({
-                    objectives: [...state.objectives,
-                    initialObjective(current.length + 1)],
-                }));
-            }
-        }),
-        {
-            name: "objectives-storage",
-            getStorage: () => localStorage,
-        }
-    ),
-
+      //update field
+      updateObjectiveField: (id, field, value) => {
+        set((state) => ({
+          objectives: state.objectives?.map((row) =>
+            row.id === id
+              ? {
+                  ...row,
+                  [field]: value,
+                  ...(field === "objective_id" && {
+                    success_indicator_id: null,
+                  }),
+                }
+              : row
+          ),
+        }));
+      },
+      // add row objective
+      addObjective: () => {
+        const current = get().objectives;
+        set((state) => ({
+          objectives: [
+            ...state.objectives,
+            initialObjective(current.length + 1),
+          ],
+        }));
+      },
+      setCurrentObjective: (objectiveuuid) => {
+        set(() => ({
+          current_parent_id: objectiveuuid,
+        }));
+      },
+    }),
+    {
+      name: "objectives-storage",
+      getStorage: () => localStorage,
+    }
+  )
 );
 export default useObjectivesHook;
