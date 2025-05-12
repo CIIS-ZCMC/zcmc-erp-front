@@ -17,7 +17,6 @@ import useObjectivesHook from "../../../../../../Hooks/ObjectivesHook";
 import useActivitiesHook from "../../../../../../Hooks/ActivitiesHook";
 
 //data related
-
 import { AOP_CONSTANTS } from "../../../../../../Data/constants";
 import { AOP_HEADER } from "../../../../../../Data/Columns";
 import useResourceHook from "../../../../../../Hooks/ResourceHook";
