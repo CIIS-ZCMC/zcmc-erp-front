@@ -10,12 +10,9 @@ import useSnackbarHook from "../Common/SnackbarHook";
 import { localStorageGetter } from "../../Utils/LocalStorage";
 import { useAOPApplicationsActions } from "../../Hooks/AOP/AOPApplicationsHook";
 
-const PostCommentComponent = ({
-  activityId,
-  postCommentModal,
-  setPostCommentModal,
-}) => {
+const PostCommentComponent = ({ postCommentModal, setPostCommentModal }) => {
   const comment = useComment();
+  const activityId = localStorageGetter("activeActivityId");
   const { setComment, postComment } = useCommentActions();
   const [loading, setLoading] = useState(false);
   const AOP_APPLICATION_ID = localStorageGetter("aop_application_id");

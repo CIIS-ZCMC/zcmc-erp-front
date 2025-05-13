@@ -27,6 +27,8 @@ const useAccordionHook = create((set) => ({
 
     setTimeout(() => set({ rotation: false, rotationId: null }), 500);
   },
+
+  handleRotation: () => set({ rotation: false, rotationId: null }),
 }));
 
 export const useExpandedParent = () =>

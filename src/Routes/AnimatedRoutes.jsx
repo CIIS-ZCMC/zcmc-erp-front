@@ -7,6 +7,7 @@ import Layout from "../Layout";
 import ComponentTestPage from "../Pages/ComponentTestPage";
 import useModalHook from "../Hooks/ModalHook";
 import AlertDialogComponent from "../Components/Common/Dialog/AlertDialogComponent";
+import { TestPage } from "../Pages/TestPage";
 
 const router = createBrowserRouter([
   {
@@ -23,6 +24,11 @@ const router = createBrowserRouter([
     path: "/test-component",
     element: <ComponentTestPage />, // For testing component only
   },
+  {
+    path: "/test-page",
+    element: <TestPage />, // For testing component only
+  },
+
   // {
   //     path: "/signing-in/:id",
   //     element: <Authentication />,
