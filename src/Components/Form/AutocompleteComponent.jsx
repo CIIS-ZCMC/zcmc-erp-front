@@ -1,5 +1,5 @@
 import PropTypes from "prop-types";
-import { Autocomplete, FormControl, FormHelperText, FormLabel } from "@mui/joy";
+import { Box, Typography, Autocomplete, FormControl, FormHelperText, FormLabel } from "@mui/joy";
 import { getFontSize } from "../../Utils/Typography";
 
 function AutocompleteComponent({
@@ -22,6 +22,7 @@ function AutocompleteComponent({
     setValue(event);
   };
 
+
   return (
     <FormControl sx={{ width: width }} {...props}>
       {label && <FormLabel>{label}</FormLabel>}
@@ -34,6 +35,31 @@ function AutocompleteComponent({
         onChange={(_, event) => {
           handleSelect ? handleSelect(name, event) : handleChange(event);
         }}
+        renderOption={(props, option) => (
+          <li
+            {...props}
+            key={option.id}
+            style={{
+              padding: "8px 12px",
+              borderBottom: "1px solid #eee",
+              cursor: "pointer",
+              transition: "background 0.2s ease-in-out",
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.background = "#f5f5f5")}
+            onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+          >
+            <Box display="flex" flexDirection="column">
+              <Typography variant="body1" fontWeight="500">
+                {option?.label}
+              </Typography>
+              {option.designation && (
+                <Typography variant="caption" color="text.secondary">
+                  {option.designation}
+                </Typography>
+              )}
+            </Box>
+          </li>
+        )}
         value={value}
         options={options}
         name={name}

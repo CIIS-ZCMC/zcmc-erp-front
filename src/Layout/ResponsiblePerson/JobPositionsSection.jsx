@@ -1,25 +1,28 @@
 import React, { useEffect, useState } from 'react'
 
 import { Stack, Box, Typography, Divider, Link } from '@mui/joy';
+import { useLocation } from 'react-router-dom';
 
 import useJobPositionsHook from '../../Hooks/JobPositionsHook';
-import useResponsiblePersonHook from '../../Hooks/ResponsiblePersonHook';
+import useResponsiblePersonHook from '../../Hooks/ResponsiblePeopleHook';
 
 import BoxComponent from '../../Components/Common/Card/BoxComponent';
 import AutocompleteComponent from '../../Components/Form/AutocompleteComponent';
 
-const SelectJobPositionComponent = () => {
-    const key = 'designations';
-    const { designations, setData } = useResponsiblePersonHook();
+
+const SelectJobPositionComponent = ({ parentId }) => {
+    const { getByActivityId, handleValue } = useResponsiblePersonHook();
     const { jobPositions } = useJobPositionsHook()
+
+    const responsible = getByActivityId(parentId);
+    const selectedDesignations = responsible?.designations || []
 
     return <Stack gap={1}>
         <AutocompleteComponent
             label={'Select job position'}
             placeholder='Select a job position'
-            // value={user?.name || ''}
             size={'md'}
-            setValue={(value) => setData(key, value)}
+            setValue={(value) => handleValue(parentId, "designations", value)}
             options={jobPositions}
         />
 
@@ -27,16 +30,19 @@ const SelectJobPositionComponent = () => {
             level="body-xs"
             fontWeight={400}
         >
-            Selected People ({designations.length})
+            Selected Job Positions ({selectedDesignations?.length})
         </Typography>
     </Stack>
 }
 
-const JobPositionList = () => {
+const JobPositionList = ({ parentId }) => {
 
-    const { designations, removeData } = useResponsiblePersonHook();
+    const { responsible_people, removeData } = useResponsiblePersonHook();
 
-    if (designations.length === 0) {
+    const filteredData = responsible_people?.filter((element) => element.activityId === parentId)[0] ?? []
+    const designations = filteredData?.designations
+
+    if (designations?.length === 0) {
         return <Stack
             m={2}
             alignItems={'center'}
@@ -51,7 +57,7 @@ const JobPositionList = () => {
     }
 
     return <>
-        {designations?.map(({ id, name, code }) => (
+        {designations?.map(({ id, label, code }) => (
             < Box
                 m={1}
             >
@@ -71,7 +77,7 @@ const JobPositionList = () => {
                             m={1}
                         >
                             <Typography>
-                                {name}
+                                {label}
                             </Typography>
                             <Typography
                                 level="body-xs"
@@ -89,7 +95,7 @@ const JobPositionList = () => {
                             component="button"
                             color='danger'
                             fontSize={14}
-                            onClick={() => removeData(id, 'designations')}
+                            onClick={() => removeData(id, 'designations', parentId)}
                         >
                             Remove
                         </Link>
@@ -103,6 +109,9 @@ const JobPositionList = () => {
 }
 
 const JobPositionsSection = () => {
+
+    const location = useLocation();
+    const activityId = location.state.parentId;
 
     const { getJobPositions } = useJobPositionsHook();
     const [isLoading, setIsLoading] = useState(false);
@@ -119,8 +128,8 @@ const JobPositionsSection = () => {
     return (
         <div>
             <BoxComponent>
-                <SelectJobPositionComponent />
-                <JobPositionList />
+                <SelectJobPositionComponent parentId={activityId} />
+                <JobPositionList parentId={activityId} />
             </BoxComponent>
         </div >
     )

@@ -1,135 +1,170 @@
-import React, { Fragment, useState, useEffect } from 'react';
-import { Stack, Grid, } from '@mui/joy';
+import React, { Fragment, useState, useEffect, act } from "react";
+import { Stack, Grid } from "@mui/joy";
+import { useNavigate, useLocation } from "react-router-dom";
 
-import useResponsiblePersonHook from '../../../../../../../../Hooks/ResponsiblePersonHook';
+import useAOPObjectivesHooks from "../../../../../../../../Hooks/AOP/AOPObjectivesHook";
+import useResponsiblePeopleHook from "../../../../../../../../Hooks/ResponsiblePeopleHook";
 
 //Custom Components
-import ButtonComponent from '../../../../../../../../Components/Common/ButtonComponent';
-import ContainerComponent from '../../../../../../../../Components/Common/ContainerComponent';
+import ButtonComponent from "../../../../../../../../Components/Common/ButtonComponent";
+import ContainerComponent from "../../../../../../../../Components/Common/ContainerComponent";
 
 // Layouts
-import PersonSection from '../../../../../../../../Layout/ResponsiblePerson/PersonSection';
-import JobPositionsSection from '../../../../../../../../Layout/ResponsiblePerson/JobPositionsSection';
-import AreasSection from '../../../../../../../../Layout/ResponsiblePerson/AreasSection';
+import PersonSection from "../../../../../../../../Layout/ResponsiblePerson/PersonSection";
+import JobPositionsSection from "../../../../../../../../Layout/ResponsiblePerson/JobPositionsSection";
+import AreasSection from "../../../../../../../../Layout/ResponsiblePerson/AreasSection";
 
 //data related
-import { AOP_CONSTANTS } from '../../../../../../../../Data/constants';
+import { AOP_CONSTANTS } from "../../../../../../../../Data/constants";
 
 const ResponsiblePerson = () => {
+  const navigate = useNavigate();
+  const location = useLocation();
 
-    const { users, designations, areas } = useResponsiblePersonHook();
+  const objectiveId = location.state.objectiveId; //refers to grand parent id/objective id
+  const activityId = location.state.parentId; //refers to parent id/activity id
+  const rowId = location.state.activityrowId; //refers to activity row id
 
-    const handleSaveAssignment = () => {
-        const responsiblePeople = [];
+  const { responsible_people, resetValues, setAssignmentStatus } = useResponsiblePeopleHook();
 
-        // Add entries from users
-        users.forEach((user) => {
-            responsiblePeople.push({
-                user_id: user.id,
-                designation_id: null,
-                division_id: null,
-                department_id: null,
-                section_id: null,
-                unit_id: null
-            });
-        });
+  const activity = responsible_people?.find((item) => {
+    return item.activityId === activityId;
+  });
 
-        // Add entries from designations
-        designations.forEach((designation) => {
-            responsiblePeople.push({
-                user_id: null,
-                designation_id: designation.id,
-                division_id: null,
-                department_id: null,
-                section_id: null,
-                unit_id: null
-            });
-        });
+  // const isAssigned = activity && (
+  //     activity.isAssigned
+  // )
 
-        // Add entries from areas
-        areas.forEach((area) => {
-            responsiblePeople.push({
-                user_id: null,
-                designation_id: null,
-                division_id: area.type === "division" ? area.id : null,
-                department_id: area.type === "department" ? area.id : null,
-                section_id: area.type === "section" ? area.id : null,
-                unit_id: area.type === "unit" ? area.id : null,
-            });
-        });
+  // const isSaveEnabled = activity &&
+  //     (
+  //         activity.users.length > 0 ||
+  //         activity.designations.length > 0 ||
+  //         activity.areas.length > 0
+  //     );
 
-        console.log("Formatted Responsible People:", responsiblePeople);
-    };
+  const handleSaveAssignment = () => {
+    if (!activity) {
+      console.warn("No responsible person data found for this activity.");
+      return;
+    }
 
-    return (
-        <Fragment>
-            <ContainerComponent
-                title={AOP_CONSTANTS.TABLE_PERSON_HEADER}
-                description={AOP_CONSTANTS.TABLE_PERSON_SUBHEADING}
-            >
+    // Check if at least one responsible entity exists
+    const hasData =
+      activity.users?.length > 0 ||
+      activity.designations?.length > 0 ||
+      activity.areas?.length > 0;
 
-                <Grid
-                    container
-                    spacing={3}
-                    columns={{ xs: 12, sm: 12, md: 12 }}
-                    sx={{
-                        flexGrow: 1,
-                        width: "auto",
-                        p: 1,
-                    }}
-                >
-                    <Grid
-                        item
-                        xs={12}
-                        sm={2}
-                        md={4}
-                    >
-                        <PersonSection />
-                    </Grid>
+    if (!hasData) {
+      console.warn("No users, designations, or areas selected.");
+      return;
+    }
 
-                    <Grid
-                        item
-                        xs={12}
-                        sm={2}
-                        md={4}
-                    >
-                        <JobPositionsSection />
-                    </Grid>
+    // const updatedResponsiblePeople = [
+    //   {
+    //     activityId: activityId,
+    //     ...(activity.users || []).map((user) => ({
+    //       userId: user.id,
+    //       designationId: null,
+    //       divisionId: null,
+    //       departmentId: null,
+    //       sectionId: null,
+    //       unitId: null,
+    //     })),
+    //     ...(activity.designations || []).map((designation) => ({
+    //       userId: null,
+    //       designationId: designation.id,
+    //       divisionId: null,
+    //       departmentId: null,
+    //       sectionId: null,
+    //       unitId: null,
+    //     })),
+    //     ...(activity.areas || []).map((area) => ({
+    //       userId: null,
+    //       designationId: null,
+    //       divisionId: area.type === "division" ? area.id : null,
+    //       departmentId: area.type === "department" ? area.id : null,
+    //       sectionId: area.type === "section" ? area.id : null,
+    //       unitId: area.type === "unit" ? area.id : null,
+    //     })),
+    //   },
+    // ];
 
-                    <Grid
-                        item
-                        xs={12}
-                        sm={2}
-                        md={4}
-                    >
-                        <AreasSection />
-                    </Grid>
+    // console.log("Data to submit:", updatedResponsiblePeople);
+    // Set assignment flag if needed
+    setAssignmentStatus(activityId, true);
 
-                </Grid>
+    // navigate(`/aop-create/activities/${rowId}`);
+  };
 
-                <Stack
-                    mt={2}
-                    direction={'flex'}
-                    alignItems={'center'}
-                    justifyContent={'start'}
-                    gap={1}
-                >
-                    <ButtonComponent
-                        label={'Cancel Selection'}
-                        size={'md'}
-                        variant={'outlined'}
-                    />
+  const handleCancel = (activityId) => {
+    resetValues(activityId);
+    navigate(`/aop-create/activities/${rowId}`);
+  };
+  // console.log(responsible_persons)
 
-                    <ButtonComponent
-                        label={'Save Assignment'}
-                        size={'md'}
-                        variant={'solid'}
-                        onClick={() => handleSaveAssignment()}
-                    />
-                </Stack>
-            </ContainerComponent>
-        </Fragment>
-    )
-}
+  return (
+    <Fragment>
+      <ContainerComponent
+        title={AOP_CONSTANTS.TABLE_PERSON_HEADER}
+        description={AOP_CONSTANTS.TABLE_PERSON_SUBHEADING}
+      >
+        <Grid
+          container
+          spacing={3}
+          columns={{ xs: 12, sm: 12, md: 12 }}
+          sx={{
+            flexGrow: 1,
+            width: "auto",
+            p: 1,
+          }}
+        >
+          <Grid item xs={12} sm={2} md={4}>
+            <PersonSection />
+          </Grid>
 
-export default ResponsiblePerson
+          <Grid item xs={12} sm={2} md={4}>
+            <JobPositionsSection />
+          </Grid>
+
+          <Grid item xs={12} sm={2} md={4}>
+            <AreasSection />
+          </Grid>
+        </Grid>
+
+        <Stack
+          mt={2}
+          direction={"flex"}
+          alignItems={"center"}
+          justifyContent={"start"}
+          gap={1}
+        >
+          {/* {isAssigned ? */}
+          <ButtonComponent
+            onClick={() => navigate(`/aop-create/activities/${rowId}`)}
+            label={"Back to activities"}
+            size={"md"}
+            variant={"outlined"}
+          />
+          :
+          <ButtonComponent
+            onClick={() => handleCancel(activityId)}
+            label={"Cancel Selection"}
+            size={"md"}
+            variant={"outlined"}
+          // disabled={isAssigned}
+          />
+          {/* } */}
+          <ButtonComponent
+            label={"Save Assignment"}
+            size={"md"}
+            variant={"solid"}
+            onClick={() => handleSaveAssignment()}
+          // disabled={!isSaveEnabled}
+          />
+        </Stack>
+      </ContainerComponent>
+    </Fragment>
+  );
+};
+
+export default ResponsiblePerson;
