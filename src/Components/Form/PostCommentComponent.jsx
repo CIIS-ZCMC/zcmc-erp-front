@@ -11,11 +11,14 @@ import { localStorageGetter } from "../../Utils/LocalStorage";
 import { useAOPApplicationsActions } from "../../Hooks/AOP/AOPApplicationsHook";
 
 const PostCommentComponent = ({ postCommentModal, setPostCommentModal }) => {
-  const comment = useComment();
-  const activityId = localStorageGetter("activeActivityId");
-  const { setComment, postComment } = useCommentActions();
+  // STATES
   const [loading, setLoading] = useState(false);
   const AOP_APPLICATION_ID = localStorageGetter("aop_application_id");
+  const activityId = localStorageGetter("activeActivityId");
+
+  // HOOKS
+  const comment = useComment();
+  const { setComment, postComment } = useCommentActions();
   const { setConfirmationModal, closeConfirmation } = useModalHook();
   const { showSnack } = useSnackbarHook();
   const { getAOPApplicationById } = useAOPApplicationsActions();
@@ -69,7 +72,7 @@ const PostCommentComponent = ({ postCommentModal, setPostCommentModal }) => {
         />
       </Box>
 
-      {/* Test Confirmation Modal */}
+      {/* Confirmation Modal */}
       {postCommentModal && (
         <ConfirmationModalComponent
           leftButtonLabel="Cancel"

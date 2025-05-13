@@ -1,8 +1,5 @@
 import React, { Fragment, useEffect, useMemo, useState } from "react";
-import {
-  localStorageGetter,
-  localStorageSetter,
-} from "../../../../Utils/LocalStorage";
+import { localStorageGetter } from "../../../../Utils/LocalStorage";
 import { useAOPApplication } from "../../../../Hooks/AOP/AOPApplicationsHook";
 import { toCapitalize } from "../../../../Utils/Typography";
 import { Divider, Stack, Typography } from "@mui/joy";
@@ -45,16 +42,13 @@ const ObjectivesList = () => {
   const expandedParent = useExpandedParent();
   const expandedChild = useExpandedChild();
 
-  //   MODAL
+  // MODAL
   const [openModal, setOpenModal] = useState(false);
 
-  //   FUNCTIONS
-
+  // FUNCTIONS
   const handleClickActivity = (id) => {
     if (id !== activeActivity) {
       setActiveActivity(id);
-      localStorageSetter("activeActivityId", id);
-
       Promise.all([
         getCommentsByActivity(id, () => {}),
         getActivityById(id, () => {}),
