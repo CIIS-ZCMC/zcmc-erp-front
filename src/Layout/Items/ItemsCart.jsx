@@ -1,84 +1,93 @@
-import React, { Fragment } from 'react'
+import React, { Fragment } from "react";
 
-import { Box, Stack, Typography, Divider } from '@mui/joy';
-import { Trash } from 'lucide-react';
+import { Box, Stack, Typography, Divider } from "@mui/joy";
+import { LucideDot, Minus, Plus, Trash } from "lucide-react";
 
-import ButtonComponent from '../../Components/Common/ButtonComponent';
-import QuantityControlComponent from '../../Components/Cart/QuantityControlComponent';
+import ButtonComponent from "../../Components/Common/ButtonComponent";
+import QuantityControlComponent from "../../Components/Cart/QuantityControlComponent";
+import IconButtonComponent from "../../Components/Common/IconButtonComponent";
 
 const ItemsCart = ({
-    name,
-    specType,
-    category,
-    image,
-    quantity
+  item,
+  image,
+  id,
+  quantity,
+  onRemove,
+  onQuantityChange,
 }) => {
-    return (
-        <Fragment>
-            <Box
-                m={1}
-                display={'flex'}
-                alignItems={'center'}
-                justifyContent={'space-between'}
-            >
+  return (
+    <Fragment>
+      {console.log("item", item)}
+      <Box display={"flex"} gap={1}>
+        <Box
+          component="img"
+          src={image}
+          alt={name}
+          loading="lazy"
+          sx={{
+            width: 65,
+            height: 55,
+            objectFit: "cover",
+            borderRadius: "8px",
+          }}
+          onError={(e) => {
+            e.target.onerror = null;
+            e.target.src = "/fallback-image.png";
+          }}
+        />
 
-                <Box
-                    display={'flex'}
-                    alignItems={'center'}
-                >
-                    <Box
-                        component="img"
-                        src={image}
-                        alt={name}
-                        loading="lazy"
-                        sx={{
-                            width: 64,
-                            height: 64,
-                            objectFit: 'cover',
-                            borderRadius: '8px',
-                        }}
-                        onError={(e) => {
-                            e.target.onerror = null;
-                            e.target.src = '/fallback-image.png';
-                        }}
-                    />
+        <Box width={"100%"}>
+          <Typography fontSize={13} fontWeight={600}>
+            {item?.description}
+          </Typography>
+          <Typography
+            fontSize={12}
+            fontWeight={400}
+            display={"flex"}
+            alignItems={"center"}
+          >
+            {item?.variant ? (
+              <>
+                {item?.variant} <LucideDot />
+              </>
+            ) : (
+              ""
+            )}{" "}
+            {item?.category}
+          </Typography>
+          <Typography fontSize={12} fontWeight={600} textColor={"success.500"}>
+            &#8369; {item?.estimated_budget.toLocaleString()}
+          </Typography>
 
-                    <Stack
-                        direction={'column'}
-                        m={1}
-                    >
-                        <Typography>
-                            {name}
-                        </Typography>
-                        <Typography
-                            level="body-xs"
-                            fontWeight={400}
-                        >
-                            {specType} - {category}
-                        </Typography>
+          <Box
+            display={"flex"}
+            sx={{
+              justifyContent: "space-between",
+              alignItems: "center",
+              mt: 0.5,
+            }}
+          >
+            <QuantityControlComponent
+              quantity={item?.aop_quantity}
+              onDecrease={() => onQuantityChange(id, item.aop_quantity - 1)}
+              onIncrease={() => onQuantityChange(id, item.aop_quantity + 1)}
+            />
 
-                        <Box>
-                            <QuantityControlComponent
-                                quantity={quantity}
-                            />
-                        </Box>
-                    </Stack>
+            <ButtonComponent
+              label={"Remove"}
+              variant={"plain"}
+              color="black"
+              endDecorator={<Trash size={12} style={{ paddingLeft: 3 }} />}
+              size={"xs"}
+              onClick={onRemove}
+            />
+          </Box>
+        </Box>
+      </Box>
 
-                </Box>
+      <Divider sx={{ my: 1.5 }} />
+    </Fragment>
+  );
+};
 
-                <Box>
-                    <ButtonComponent
-                        label={'Remove'}
-                        variant={'text'}
-                        endDecorator={<Trash size={12} />}
-                        size={'sm'}
-                    />
-                </Box>
-            </Box>
-
-            <Divider />
-        </Fragment>
-    )
-}
-
-export default ItemsCart
+export default ItemsCart;

@@ -11,10 +11,10 @@ import Pending from "../Pages/DeptHead/AnnualOps/TableViews/Pending";
 import Returned from "../Pages/DeptHead/AnnualOps/TableViews/Returned";
 
 import CreateAOP from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout";
-import AnnualOpsPlanning from '../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives'
-import Activities from '../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities'
-import Resources from '../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities/Resources';
-import ResponsibePerson from '../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities/ResponsiblePerson';
+import AnnualOpsPlanning from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives";
+import Activities from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities";
+import Resources from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities/Resources";
+import ResponsibePerson from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities/ResponsiblePerson";
 
 import Items from "../Pages/Items";
 import Item from "../Pages/Items/Item";
@@ -22,9 +22,12 @@ import Item from "../Pages/Items/Item";
 import ItemRequest from "../Pages/Consolidators/ItemManagement/ItemRequest";
 import ItemLibrary from "../Pages/Consolidators/ItemManagement/ItemLibrary";
 import Objectives from "../Pages/PlanningOps/ObjectiveManagement/Objectives";
-import EditPPMP from "../Pages/DeptHead/EditPPMP/EditPPMP";
+import EditPPMP from "../Pages/DeptHead/PPMP/EditPPMP";
 import ManageAOP from "../Pages/PlanningOps/Approval/ManageAOP";
 import AOPApproval from "../Pages/PlanningOps/Approval/AOPApproval";
+import AddItems from "../Pages/DeptHead/PPMP/AddItems";
+import PPMPItems from "../Pages/DeptHead/PPMP/PPMPItems";
+import PPMPDashboard from "../Pages/DeptHead/PPMP/PPMPDashboard";
 
 export const sidebarRoutes = [
   {
@@ -87,9 +90,7 @@ export const sidebarRoutes = [
 
   {
     path: "/items",
-    children: [
-      { index: true, element: <Items /> },
-    ],
+    children: [{ index: true, element: <Items /> }],
   },
 
   {
@@ -117,6 +118,20 @@ export const sidebarRoutes = [
     path: "/edit-ppmp",
     name: "Edit PPMP",
     element: <EditPPMP />,
+    children: [
+      {
+        index: true,
+        element: <PPMPDashboard />,
+      },
+      {
+        path: "ppmp-items",
+        element: <PPMPItems />,
+      },
+      {
+        path: "add-item/:expenseId",
+        element: <AddItems />,
+      },
+    ],
   },
   {
     path: "/objectives",

@@ -44,6 +44,7 @@ function ConfirmationModalComponent({
   withDivider,
   setAuthPin,
   pinHelperText = "Confirm you action by typing-in your authorization PIN.",
+  errors = {},
 }) {
   const {
     confirmationModalState: { isOpen = false, title, description, status },
@@ -106,10 +107,12 @@ function ConfirmationModalComponent({
                 {withAuthPin && (
                   <InputComponent
                     type="password"
+                    name="pin"
                     label="Authorization pin"
                     helperText={pinHelperText}
                     setValue={handlePinInput}
                     value={pin}
+                    errors={errors}
                   />
                 )}
               </DialogContent>

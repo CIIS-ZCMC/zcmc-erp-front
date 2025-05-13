@@ -34,6 +34,7 @@ function ContainerComponent({
     padding: theme.spacing(2.5),
     border: noBoxShadow ? `1px solid ${theme.palette.neutral[200]}` : "none",
     boxShadow: noBoxShadow ? "none" : theme.shadow.md,
+    position: "static",
   }));
 
   return (

@@ -16,6 +16,7 @@ function AutocompleteComponent({
   value,
   name,
   handleSelect,
+  getOptionLabel,
   ...props
 }) {
   const handleChange = (event) => {
@@ -32,8 +33,8 @@ function AutocompleteComponent({
         startDecorator={startDecorator}
         size={size}
         placeholder={placeholder}
-        onChange={(_, event) => {
-          handleSelect ? handleSelect(name, event) : handleChange(event);
+        onChange={(_, newValue) => {
+          handleSelect ? handleSelect(newValue) : handleChange(newValue);
         }}
         renderOption={(props, option) => (
           <li
@@ -60,10 +61,10 @@ function AutocompleteComponent({
             </Box>
           </li>
         )}
-        value={value}
+        value={value ?? null}
         options={options}
-        name={name}
-        // getOptionLabel={(option) => console.log(option.label)}
+        // name={name}
+        getOptionLabel={getOptionLabel}
         sx={{
           fontSize: getFontSize(size),
           background: darkMode ? "none" : "inherit",

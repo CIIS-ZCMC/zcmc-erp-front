@@ -1,8 +1,19 @@
-import { IconButton, Link, Stack, Typography, Divider } from "@mui/joy";
+import {
+  IconButton,
+  Link,
+  Stack,
+  Typography,
+  Divider,
+  Tooltip,
+  Box,
+} from "@mui/joy";
 import { DeleteIcon } from "lucide-react";
 import { BsOpencollective } from "react-icons/bs";
-import { IoOpen, IoOpenOutline } from "react-icons/io5";
+import { IoInformationOutline, IoOpen, IoOpenOutline } from "react-icons/io5";
 import { MdDeleteOutline } from "react-icons/md";
+import { descriptionsData, procurement_mode } from "./dummy";
+import ChipComponent from "../Components/Common/ChipComponent";
+import React from "react";
 
 export const objHeaders = [
   { field: "id", name: "Row #", align: "center", width: "50px" },
@@ -89,7 +100,7 @@ export const AOP_HEADER = [
   {
     field: "function_type",
     name: "Type of Function",
-    inputType: 'dropdown',
+    inputType: "dropdown",
     width: 200,
     align: "center",
   },
@@ -216,21 +227,101 @@ export const AOP_RESOURCE_HEADER = [
     right: 0,
     align: "center",
   },
-]
+];
 
-export const ppmpHeaders = (handleDeleteRow) => [
+export const ppmpHeaders = (handleDeleteRow, items, modes) => [
   {
     field: "id",
     name: "Row #",
-    width: "70px",
+    width: "50px",
     align: "center",
+    display: "none",
   },
+  // {
+  //   field: "item_code",
+  //   name: "Item Code",
+  //   width: "80px",
+  //   align: "center",
+  //   display: "none",
+  // },
+
   {
     field: "description",
     name: "General description",
     inputType: "dropdown",
-    width: 200,
+    width: "200px",
     align: "center",
+    options: items,
+    render: (params) => {
+      return (
+        <>
+          <Typography>
+            {params?.name?.name ? params?.name?.name : "-"}
+          </Typography>
+        </>
+      );
+    },
+  },
+  {
+    field: "activity_code",
+    name: "Activity Code",
+    width: 150,
+    align: "center",
+    display: "none",
+    render: (params) => {
+      const activities = params?.activities || [];
+      const visibleActivities = activities.slice(0, 2);
+      const hiddenActivities = activities.slice(2);
+      const remainingCount = hiddenActivities.length;
+
+      return (
+        <Box display="flex" alignItems="center" flexWrap="wrap" gap={0.5}>
+          {visibleActivities.map((act, index) => (
+            <React.Fragment key={act.id || index}>
+              <Link
+                underline="always"
+                href="#"
+                sx={{ fontSize: 12, color: "black" }}
+                color="neutral.700"
+              >
+                {act.activity_code}
+              </Link>
+              {index < visibleActivities.length - 1 && (
+                <Typography component="span">,</Typography>
+              )}
+            </React.Fragment>
+          ))}
+
+          {remainingCount > 0 && (
+            <Tooltip
+              title={
+                <React.Fragment>
+                  {hiddenActivities.map((act, idx) => (
+                    <div key={idx}>{act.activity_code}</div>
+                  ))}
+                </React.Fragment>
+              }
+              placement="top"
+              variant="soft"
+              color="success"
+            >
+              <Link
+                href="#"
+                underline="always"
+                variant="soft"
+                color="success"
+                sx={{
+                  fontSize: 12,
+                }}
+                onClick={(e) => e.preventDefault()}
+              >
+                +{remainingCount} more
+              </Link>
+            </Tooltip>
+          )}
+        </Box>
+      );
+    },
   },
   {
     field: "classification",
@@ -245,15 +336,32 @@ export const ppmpHeaders = (handleDeleteRow) => [
     align: "center",
   },
   {
-    field: "quantity",
+    field: "aop_quantity",
     name: "Quantity",
-    width: 100,
+    width: 95,
     align: "center",
+  },
+  {
+    field: "quantity",
+    name: "Quantity Inputted",
+    width: 95,
+    align: "center",
+    render: (params) => {
+      return (
+        <>
+          {params?.quantity ? (
+            <Typography>{params?.quantity?.toLocaleString()}</Typography>
+          ) : (
+            "-"
+          )}
+        </>
+      );
+    },
   },
   {
     field: "unit",
     name: "Unit",
-    width: 100,
+    width: 90,
     align: "center",
   },
   {
@@ -261,6 +369,19 @@ export const ppmpHeaders = (handleDeleteRow) => [
     name: "Total amount",
     width: 100,
     align: "center",
+    render: (params) => {
+      return (
+        <>
+          {params?.total_amount ? (
+            <Typography>
+              &#8369; {params?.total_amount?.toLocaleString()}
+            </Typography>
+          ) : (
+            "-"
+          )}
+        </>
+      );
+    },
   },
   {
     field: "target_by_quarter",
@@ -283,10 +404,23 @@ export const ppmpHeaders = (handleDeleteRow) => [
     align: "center",
   },
   {
-    field: "fund_source",
+    field: "procurement_mode",
     name: "Mode of procurement",
     width: 150,
     align: "center",
+    inputType: "dropdown",
+    options: modes,
+    render: (params) => {
+      return (
+        <>
+          <Typography>
+            {params?.procurement_mode?.name
+              ? params?.procurement_mode?.name
+              : "-"}
+          </Typography>
+        </>
+      );
+    },
   },
   {
     field: "remarks",
@@ -299,22 +433,18 @@ export const ppmpHeaders = (handleDeleteRow) => [
     field: "action",
     name: "Actions",
     isDropdown: false,
-    width: "100px",
+    width: "70px",
     align: "center",
     render: (params) => {
       return (
         <>
-          <Link
+          <IconButton
             onClick={() => handleDeleteRow(params.id)}
-            size="md"
-            variant="plain"
             color="primary"
-            underline="hover"
-            fontSize={14}
-            endDecorator={<MdDeleteOutline />}
+            size="lg"
           >
-            Remove
-          </Link>
+            <MdDeleteOutline />
+          </IconButton>
         </>
       );
     },
