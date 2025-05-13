@@ -337,7 +337,12 @@ const TableRow = ({
 
                                 <Link
                                     component="button"
-                                    onClick={() => navigate(`/items`)}
+                                    onClick={() => navigate(`/items/${rowId}`, {
+                                        state: {
+                                            activityrowId: rowId,
+                                            cost: cost
+                                        }
+                                    })}
                                     fontSize={12}
                                 >
                                     Resources
@@ -345,7 +350,14 @@ const TableRow = ({
 
                                 <Link
                                     component="button"
-                                    onClick={() => navigate(`person/${rowId}`, { state: { parentId: id, objectiveId: parentId, activityrowId: rowId } })}
+                                    onClick={() => navigate(`person/${rowId}`, {
+                                        state:
+                                        {
+                                            parentId: id,
+                                            objectiveId: parentId,
+                                            activityrowId: rowId,
+                                        }
+                                    })}
                                     fontSize={12}
                                 >
                                     Responsible Person

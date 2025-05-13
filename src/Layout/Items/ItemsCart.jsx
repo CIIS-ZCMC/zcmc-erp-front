@@ -17,7 +17,7 @@ const ItemsCart = ({
 }) => {
   return (
     <Fragment>
-      {console.log("item", item)}
+      {/* {console.log("item", item)} */}
       <Box display={"flex"} gap={1}>
         <Box
           component="img"

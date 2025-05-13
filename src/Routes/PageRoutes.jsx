@@ -89,7 +89,7 @@ export const sidebarRoutes = [
   },
 
   {
-    path: "/items",
+    path: "/items/:activityId",
     children: [{ index: true, element: <Items /> }],
   },
 

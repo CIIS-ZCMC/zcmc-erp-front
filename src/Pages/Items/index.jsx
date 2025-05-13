@@ -1,8 +1,8 @@
-import React, { Fragment, useState } from 'react';
+import React, { Fragment, useEffect, useState } from 'react';
 
 import { Box, Stack, Grid, Typography, Modal, List, ListItem, Divider } from '@mui/joy';
-
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation } from 'react-router-dom';
+import { ChevronDown, ChevronUp } from 'lucide-react';
 
 import BoxComponent from '../../Components/Common/Card/BoxComponent';
 import SearchBarComponent from '../../Components/SearchBarComponent';
@@ -10,6 +10,9 @@ import ButtonComponent from '../../Components/Common/ButtonComponent';
 import ContainerComponent from '../../Components/Common/ContainerComponent';
 import PageTitle from '../../Components/Common/PageTitle';
 import ModalComponent from '../../Components/Common/Dialog/ModalComponent';
+import IconButtonComponent from '../../Components/Common/IconButtonComponent';
+import ItemCardComponent from '../../Components/Resources/ItemCardComponent';
+import useItemsHook from '../../Hooks/ItemsHook';
 
 import ModalContent from './Item';
 
@@ -21,11 +24,35 @@ import ItemsCart from '../../Layout/Items/ItemsCart';
 import { AOP_CONSTANTS } from '../../Data/constants';
 import { CART_ITEMS } from '../../Data';
 
+
 const Items = () => {
 
     const navigate = useNavigate()
+    const location = useLocation()
 
+    const { items, getItems } = useItemsHook();
+
+    const [displayedItems, setDisplayedItems] = useState([]);
+
+    const rowNumber = location.state?.activityrowId;
+    const cost = location.state?.cost;
+
+    const [isCollapsed, setIsCollapsed] = useState(false);
     const [isDialogOpen, setIsDialogOpen] = useState(false)
+
+    useEffect(() => {
+        getItems((status, message, data) => {
+            if (status !== 200) {
+                console.error('Failed to fetch items:', message)
+            }
+        })
+    }, []);
+
+    useEffect(() => {
+        if (items.length) {
+            setDisplayedItems(items)
+        }
+    }, [items])
 
     const handleOpenItemDialog = () => {
         setIsDialogOpen(true)
@@ -34,6 +61,10 @@ const Items = () => {
     const handleCloseItemDialog = () => {
         setIsDialogOpen(false)
     }
+
+    const handleCollapseClick = () => {
+        setIsCollapsed((prev) => !prev);
+    };
 
     return (
         <Fragment>
@@ -44,9 +75,84 @@ const Items = () => {
             />
 
             <ContainerComponent
-                title={`${AOP_CONSTANTS.ITEMS_HEADER}: Sample activity..."`
+                title={`${AOP_CONSTANTS.MANAGE_HEADER} ACTIVITY : Sample activity..."`}
+                description={`${AOP_CONSTANTS.MANAGE_SUBHEADER} activity`}
+                sx={{ mt: 2 }}
+                actions={
+                    <Stack>
+                        <IconButtonComponent
+                            variant={'text'}
+                            icon={isCollapsed ? <ChevronUp /> : <ChevronDown />}
+                            onClick={(e) => {
+                                e.stopPropagation();
+                                handleCollapseClick();
+                            }}
+                        />
+                    </Stack>
                 }
-                description={AOP_CONSTANTS.ITEMS_SUBHEADER}
+            >
+                <Box
+                    sx={{
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "space-between",
+                    }}
+                >
+                    {isCollapsed && (
+                        <Box>
+                            <Stack
+                                direction={"row"}
+                                gap={2}
+                                sx={{
+                                    justifyContent: "space-between",
+                                }}
+                            >
+                                <BoxComponent variant={"outlined"}>
+                                    <Typography fontSize={14} fontWeight={600}>
+                                        Row number:
+                                    </Typography>
+                                    <Box width={"200px"} mt={1}>
+                                        <Typography fontSize={12} color="primary">
+                                            {rowNumber}
+                                        </Typography>
+                                    </Box>
+                                </BoxComponent>
+
+                                <BoxComponent variant={"outlined"}>
+                                    <Typography fontSize={14} fontWeight={600}>
+                                        Activity:
+                                    </Typography>
+                                    <Box width={"80%"} mt={1}>
+                                        <Typography fontSize={12}>
+                                            Lorem Ipsum is simply dummy text of the printing and
+                                            typesetting industry. Lorem Ipsum has been the industry's
+                                            standard dummy text ever since the 1500s, when an unknown
+                                            printer took a galley of type and scrambled it to make a
+                                            type specimen book.
+                                        </Typography>
+                                    </Box>
+                                </BoxComponent>
+
+                                <BoxComponent variant={"outlined"}>
+                                    <Typography fontSize={14} fontWeight={600}>
+                                        Cost:
+                                    </Typography>
+                                    <Box width={"200px"} mt={1}>
+                                        <Typography fontSize={12}>
+                                            {cost}
+                                        </Typography>
+                                    </Box>
+                                </BoxComponent>
+                            </Stack>
+                        </Box>
+                    )}
+                </Box>
+            </ContainerComponent>
+
+            <ContainerComponent
+                title={`${AOP_CONSTANTS.TABLE_ITEMS_HEADER}`}
+                description={`${AOP_CONSTANTS.TABLE_ITEMS_SUBHEADER}`}
+                sx={{ mt: 2, height: "67vh" }}
                 actions={
                     <Fragment>
                         <Stack direction={'row'} gap={1}>
@@ -66,82 +172,168 @@ const Items = () => {
                     </Fragment>
                 }
             >
+
                 <Grid
                     container
-                    spacing={3}
                     columns={{ xs: 12, sm: 12, md: 12 }}
                     sx={{
                         flexGrow: 1,
                         width: "auto",
                         p: 1,
                     }}
+                    gap={3}
                 >
-                    {/* ITEMS VIEW */}
+
+                    {/* Left: Scrollable Item Cards */}
                     <Grid
                         item
-                        // width={{ sm: "100%", lg: "60%" }}
                         xs={12} // Full width on extra small screens
                         sm={2} // 2 items on small screens
-                        md={8}
+                        md={8.1}
                     >
-                        <Stack gap={2}>
-                            <BoxComponent>
-                                <Stack
-                                    direction={{ sm: "column", lg: "row" }}
-                                    alignItems={{ sm: "start", lg: "center" }}
-                                    gap={2}
+                        <BoxComponent sx={{ position: "sticky", top: 0 }}>
+                            <SearchBarComponent />
+                        </BoxComponent>
+                        <Grid
+                            container
+                            columns={{ xs: 12, sm: 6, md: 12 }}
+                            gap={4}
+                            sx={{
+                                flexGrow: 1,
+                                mt: 2,
+                                p: 1,
+                                border: 1,
+                                borderColor: "neutral.100",
+                                borderRadius: 10,
+                                height: "50vh",
+                                overflowY: "auto",
+                            }}
+                        >
+                            {displayedItems.map((item, index) => (
+                                <Grid
+                                    key={index}
+                                    item="true"
+                                    xs={12}
+                                    sm={2}
+                                    md={6}
+                                    lg={4}
+                                    xl={3.6}
+                                    sx={{
+                                        cursor: "pointer",
+                                    }}
                                 >
-                                    <SearchBarComponent
-                                        placeholder={'search here to find item fast'}
+                                    <ItemCardComponent
+                                        key={index}
+                                        item={item}
+                                    // btnAction={() => addToCart(item)}
+                                    // itemInfoAction={() => {
+                                    //     handleOpenItemDialog(item);
+                                    // }}
                                     />
-
-                                    <Typography level="body-xs">
-                                        Showing 16 of 16 Items
-                                    </Typography>
-                                </Stack>
-                            </BoxComponent>
-                            <ItemsList
-                                handleOpenItemDialog={handleOpenItemDialog}
-                            />
-                        </Stack>
+                                </Grid>
+                            ))}
+                            {/* <div ref={loadMoreRef}>Loading more items...</div> */}
+                        </Grid>
                     </Grid>
 
+                    {/* Right: Cart */}
                     <Grid
                         item
-                        xs={12}  // Full width on mobile
-                        sm={4}    // 4/12 on small screens
-                        md={4}    // 4/12 on medium screens
+                        xs={12} // Full width on mobile
+                        sm={4} // 4/12 on small screens
+                        md={3.7}
+                        // xs={4}
+                        sx={{
+                            width: 350,
+                            height: "59vh",
+                            position: "sticky",
+                            border: 1,
+                            borderColor: "neutral.100",
+                            borderRadius: 10,
+                            bgcolor: "white",
+                            display: "flex",
+                            flexDirection: "column",
+                        }}
                     >
-                        <Stack gap={2}>
+                        <Box sx={{ p: 2, borderBottom: "1px solid #eee" }}>
+                            <Typography level="h6">
+                                {" "}
+                                <Typography fontSize={14} fontWeight={600}>
+                                    {/* {totalQty === 0
+                                    ? "No items"
+                                    : `${totalQty} Item${totalQty > 1 ? "s" : ""}`}{" "} */}
+                                    in cart
+                                </Typography>
+                            </Typography>
+                        </Box>
 
-                            <BoxComponent>
-                                <Box
-                                    m={1}
-                                >
-                                    <Typography
-                                        fontWeight={600}
-                                        fontSize={{ sm: "sm", md: "md", lg: "lg" }}
-                                    >
-                                        {CART_ITEMS.length} distinct item on cart
-                                    </Typography>
-                                </Box>
-
-                                {CART_ITEMS.map(({ id, name, specType, category, image, quantity }) => (
+                        <Box
+                            sx={{
+                                flex: 1,
+                                overflowY: "auto",
+                                p: 2,
+                            }}
+                        >
+                            {/* {cart?.length > 0 ? (
+                            [...cart]
+                                .reverse()
+                                .map((item) => (
                                     <ItemsCart
-                                        key={id}
-                                        name={name}
-                                        specType={specType}
-                                        category={category}
-                                        image={image}
-                                        quantity={quantity}
+                                        key={item.item_id}
+                                        item={item}
+                                        id={item.item_id}
+                                        onQuantityChange={updateQuantity}
+                                        onRemove={() => removeFromCart(item.item_id)}
                                     />
-                                ))}
+                                ))
+                        ) : (
+                            <Stack
+                                sx={{
+                                    justifyContent: "center",
+                                    alignItems: "center",
+                                    height: "100%",
+                                }}
+                            >
+                                <img
+                                    src={empty_cart}
+                                    alt="Not found"
+                                    style={{ width: 140 }}
+                                />
+                                <Typography
+                                    fontSize={14}
+                                    fontWeight={600}
+                                    sx={{ color: "gray" }}
+                                >
+                                    Your cart is empty
+                                </Typography>
+                                <Typography
+                                    fontSize={13}
+                                    sx={{ color: "gray" }}
+                                    textAlign={"center"}
+                                >
+                                    Looks like you haven't added any items yet.
+                                </Typography>
+                            </Stack>
+                        )} */}
+                        </Box>
 
-                            </BoxComponent>
-                        </Stack>
-
-
+                        <Box sx={{ p: 2, borderTop: "1px solid #eee" }}>
+                            <Typography
+                                textAlign={"right"}
+                                sx={{
+                                    color: "gray",
+                                }}
+                                fontSize={13}
+                                fontWeight={600}
+                            >
+                                Total cost:
+                            </Typography>
+                            <Typography fontSize={20} fontWeight="lg" textAlign={"right"}>
+                                {/* &#8369; {totalPrice.toLocaleString()} */}
+                            </Typography>
+                        </Box>
                     </Grid>
+
                 </Grid>
 
             </ContainerComponent>

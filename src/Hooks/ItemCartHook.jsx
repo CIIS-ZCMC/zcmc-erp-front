@@ -27,9 +27,9 @@ const useItemCartHook = create(
               cart: cart?.map((i) =>
                 i.item_id === item.id
                   ? {
-                      ...i,
-                      aop_quantity: i.aop_quantity + quantity,
-                    }
+                    ...i,
+                    aop_quantity: i.aop_quantity + quantity,
+                  }
                   : i
               ),
             };
