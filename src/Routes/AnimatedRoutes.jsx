@@ -1,4 +1,4 @@
-import React, { Suspense } from "react";
+import { Suspense } from "react";
 import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { CircularProgress } from "@mui/joy";
 
@@ -7,6 +7,7 @@ import Layout from "../Layout";
 import ComponentTestPage from "../Pages/ComponentTestPage";
 import useModalHook from "../Hooks/ModalHook";
 import AlertDialogComponent from "../Components/Common/Dialog/AlertDialogComponent";
+import Authentication from "../Pages/Authentication";
 
 const router = createBrowserRouter([
   {
@@ -23,10 +24,10 @@ const router = createBrowserRouter([
     path: "/test-component",
     element: <ComponentTestPage />, // For testing component only
   },
-  // {
-  //     path: "/signing-in/:id",
-  //     element: <Authentication />,
-  // },
+  {
+    path: "/signing-in/:id",
+    element: <Authentication />,
+  },
   // {
   //     path: "*",
   //     element: <PageNotFound />,
