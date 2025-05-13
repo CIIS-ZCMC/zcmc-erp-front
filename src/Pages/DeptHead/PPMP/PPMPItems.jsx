@@ -43,12 +43,12 @@ const options = ["Save as draft"];
 function PPMPItems(props) {
   const navigate = useNavigate();
   const {
-    // tableData,
+    tableData,
     loading,
     activityObject,
     description,
     expenseClass,
-    // setTableData,
+    setTableData,
     setItemsData,
     setLoading,
     handleFieldChange,
@@ -87,7 +87,7 @@ function PPMPItems(props) {
   const [pageLoader, setPageLoader] = useState(false);
   const [step, setStep] = useState(1);
   const [pin, setPin] = useState(null);
-  const [tableData, setTableData] = useState([]);
+  // const [tableData, setTableData] = useState([]);
   const [itemReq, setItemReq] = useState({
     specs: [
       { id: Date.now(), value: "" },

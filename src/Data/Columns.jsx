@@ -256,7 +256,7 @@ export const ppmpHeaders = (handleDeleteRow, items, modes) => [
       return (
         <>
           <Typography>
-            {params?.name?.name ? params?.name?.name : "-"}
+            {params?.item?.name ? params?.item?.name : "-"}
           </Typography>
         </>
       );
