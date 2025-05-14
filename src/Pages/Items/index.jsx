@@ -12,9 +12,12 @@ import PageTitle from '../../Components/Common/PageTitle';
 import ModalComponent from '../../Components/Common/Dialog/ModalComponent';
 import IconButtonComponent from '../../Components/Common/IconButtonComponent';
 import ItemCardComponent from '../../Components/Resources/ItemCardComponent';
-import useItemsHook from '../../Hooks/ItemsHook';
 
-import ModalContent from './Item';
+import useItemsHook from '../../Hooks/ItemsHook';
+import useResourceHook from '../../Hooks/ResourceHook';
+import useItemCartHook from '../../Hooks/ItemCartHook';
+
+import Item from './Item';
 
 import QuantityControlComponent from '../../Components/Cart/QuantityControlComponent';
 
@@ -24,6 +27,7 @@ import ItemsCart from '../../Layout/Items/ItemsCart';
 import { AOP_CONSTANTS } from '../../Data/constants';
 import { CART_ITEMS } from '../../Data';
 
+import empty_cart from '../../assets/empty-cart.png';
 
 const Items = () => {
 
@@ -31,6 +35,7 @@ const Items = () => {
     const location = useLocation()
 
     const { items, getItems } = useItemsHook();
+    const { cart, addResourceToCart, removeFromCart, updateQuantity } = useResourceHook();
 
     const [displayedItems, setDisplayedItems] = useState([]);
 
@@ -38,7 +43,19 @@ const Items = () => {
     const cost = location.state?.cost;
 
     const [isCollapsed, setIsCollapsed] = useState(false);
-    const [isDialogOpen, setIsDialogOpen] = useState(false)
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [selectedItem, setSelectedItem] = useState(null);
+    const [quantity, setQuantity] = useState(1);
+
+    const totalQty = cart.reduce((sum, item) => sum + item.aop_quantity, 0);
+    const totalPrice = cart.reduce(
+        (sum, item) => sum + item.aop_quantity * item.estimated_budget,
+        0
+    );
+
+    // useEffect(() => {
+    //     console.log(cart)
+    // }, [cart])
 
     useEffect(() => {
         getItems((status, message, data) => {
@@ -54,16 +71,23 @@ const Items = () => {
         }
     }, [items])
 
-    const handleOpenItemDialog = () => {
+    const handleOpenItemDialog = (item) => {
+        setSelectedItem(item);
         setIsDialogOpen(true)
     }
 
     const handleCloseItemDialog = () => {
         setIsDialogOpen(false)
+        setSelectedItem(null);
     }
 
     const handleCollapseClick = () => {
         setIsCollapsed((prev) => !prev);
+    };
+
+    const add = () => {
+        addResourceToCart(selectedItem, quantity);
+        handleCloseItemDialog();
     };
 
     return (
@@ -225,10 +249,10 @@ const Items = () => {
                                     <ItemCardComponent
                                         key={index}
                                         item={item}
-                                    // btnAction={() => addToCart(item)}
-                                    // itemInfoAction={() => {
-                                    //     handleOpenItemDialog(item);
-                                    // }}
+                                        btnAction={() => addResourceToCart(item)}
+                                        itemInfoAction={() => {
+                                            handleOpenItemDialog(item);
+                                        }}
                                     />
                                 </Grid>
                             ))}
@@ -259,9 +283,9 @@ const Items = () => {
                             <Typography level="h6">
                                 {" "}
                                 <Typography fontSize={14} fontWeight={600}>
-                                    {/* {totalQty === 0
-                                    ? "No items"
-                                    : `${totalQty} Item${totalQty > 1 ? "s" : ""}`}{" "} */}
+                                    {totalQty === 0
+                                        ? "No items"
+                                        : `${totalQty} Item${totalQty > 1 ? "s" : ""}`}{" "}
                                     in cart
                                 </Typography>
                             </Typography>
@@ -274,47 +298,47 @@ const Items = () => {
                                 p: 2,
                             }}
                         >
-                            {/* {cart?.length > 0 ? (
-                            [...cart]
-                                .reverse()
-                                .map((item) => (
-                                    <ItemsCart
-                                        key={item.item_id}
-                                        item={item}
-                                        id={item.item_id}
-                                        onQuantityChange={updateQuantity}
-                                        onRemove={() => removeFromCart(item.item_id)}
+                            {cart?.length > 0 ? (
+                                [...cart]
+                                    .reverse()
+                                    .map((item) => (
+                                        <ItemsCart
+                                            key={item.id}
+                                            item={item}
+                                            id={item.id}
+                                            onQuantityChange={updateQuantity}
+                                            onRemove={() => removeFromCart(item.id)}
+                                        />
+                                    ))
+                            ) : (
+                                <Stack
+                                    sx={{
+                                        justifyContent: "center",
+                                        alignItems: "center",
+                                        height: "100%",
+                                    }}
+                                >
+                                    <img
+                                        src={empty_cart}
+                                        alt="Not found"
+                                        style={{ width: 140 }}
                                     />
-                                ))
-                        ) : (
-                            <Stack
-                                sx={{
-                                    justifyContent: "center",
-                                    alignItems: "center",
-                                    height: "100%",
-                                }}
-                            >
-                                <img
-                                    src={empty_cart}
-                                    alt="Not found"
-                                    style={{ width: 140 }}
-                                />
-                                <Typography
-                                    fontSize={14}
-                                    fontWeight={600}
-                                    sx={{ color: "gray" }}
-                                >
-                                    Your cart is empty
-                                </Typography>
-                                <Typography
-                                    fontSize={13}
-                                    sx={{ color: "gray" }}
-                                    textAlign={"center"}
-                                >
-                                    Looks like you haven't added any items yet.
-                                </Typography>
-                            </Stack>
-                        )} */}
+                                    <Typography
+                                        fontSize={14}
+                                        fontWeight={600}
+                                        sx={{ color: "gray" }}
+                                    >
+                                        Your cart is empty
+                                    </Typography>
+                                    <Typography
+                                        fontSize={13}
+                                        sx={{ color: "gray" }}
+                                        textAlign={"center"}
+                                    >
+                                        Looks like you haven't added any items yet.
+                                    </Typography>
+                                </Stack>
+                            )}
                         </Box>
 
                         <Box sx={{ p: 2, borderTop: "1px solid #eee" }}>
@@ -329,7 +353,7 @@ const Items = () => {
                                 Total cost:
                             </Typography>
                             <Typography fontSize={20} fontWeight="lg" textAlign={"right"}>
-                                {/* &#8369; {totalPrice.toLocaleString()} */}
+                                &#8369; {totalPrice.toLocaleString()}
                             </Typography>
                         </Box>
                     </Grid>
@@ -346,9 +370,15 @@ const Items = () => {
                 title={'Preview Item'}
                 description={'Select a request status and reasons (if returned) to continue. You may add remarks if necessary.'}
                 content={
-                    <>
-                        <ModalContent />
-                    </>
+                    <Box overflow={"hidden"}>
+                        <Item
+                            addAction={() => add()}
+                            item={selectedItem}
+                            quantity={quantity}
+                            onDecrease={() => setQuantity(quantity - 1)}
+                            onIncrease={() => setQuantity(quantity + 1)}
+                        />
+                    </Box>
                 }
             />
 

@@ -1,125 +1,88 @@
 import { create } from "zustand";
+import { persist } from "zustand/middleware";
+import { v4 as uuid } from 'uuid'
 
-const useResourceHook = create((set, get) => ({
-  resources: [],
 
-  selectedResponsibleValue: {
-    users: [],
-    designations: [],
-    areas: [],
-    isAssigned: false,
-  },
+const initialResource = (rowId = 1, parentId = null, purchaseTypeId = null) => ({
+  id: uuid(),
+  parentId: parentId,
+  rowId: rowId,
+  name: "",
+  typeOfResources: "",
+  quantity: 0,
+  individualPrice: 0,
+  totalCost: 0,
+  expenseClass: "",
+  purchaseTypeId: purchaseTypeId,
+})
 
-  setAssignmentStatus: (activityId, status) => {
-    set((state) => {
-      const updated = state.responsible_people.map((item) => {
-        if (item.activityId === activityId) {
-          return {
+const useResourceHook = create(
+  persist(
+    (set, get) => ({
+      resources: [],
+      cart: [],
+      expenseClass: '',
+      purchaseTypeId: null,
+      quantity: 0,
+
+      addResourceToCart: (item) => {
+        const { cart } = get();
+
+        // Try to find the existing item by ID
+        const existingItem = cart?.find((cartItem) => cartItem?.id === item?.id);
+
+        if (existingItem) {
+          // Update only the quantity of the existing item
+          const updatedCart = cart.map((cartItem) =>
+            cartItem?.id === item?.id
+              ? {
+                ...cartItem,
+                aop_quantity: (cartItem.aop_quantity || 0) + (item.quantity || 1),
+              }
+              : cartItem
+          );
+          set({ cart: updatedCart });
+          // console.log(updatedCart)
+        } else {
+
+          const newItem = {
             ...item,
-            isAssigned: status,
+            aop_quantity: item.quantity || 1,
           };
+
+          const updatedCart = [...cart, newItem];
+          set({ cart: updatedCart });
+          console.log(updatedCart)
         }
-        return item;
-      });
+      },
 
-      return {
-        responsible_people: updated,
-      };
-    });
-  },
+      // Remove  resourse item from cart
+      removeFromCart: (id) =>
+        set((state) => ({
+          cart: state.cart.filter((item) => item.id !== id),
+        })),
 
-  getByActivityId: (activityId) => {
-    const { responsible_people } = get();
-    return responsible_people.find((item) => item.activityId === activityId);
-  },
+      // Update quantity
+      updateQuantity: (id, quantity) =>
+        set((state) => ({
+          cart: state.cart.map((item) =>
+            item.id === id ? { ...item, aop_quantity: quantity } : item
+          ),
+        })),
 
-  handleValue: (activityId, key, value) => {
-    set((state) => {
-      const currentList = [...state.responsible_people];
-      const existingIndex = currentList.findIndex(
-        (item) => item.activityId === activityId
-      );
+      //handle assigment of data from cart to table row resources
+      // navigate to resources Table
+      // saveItems
 
-      // If entry doesn't exist, insert new
-      if (existingIndex === -1) {
-        const newItem = {
-          activityId,
-          users: key === "users" ? [value] : [],
-          areas: key === "areas" ? [value] : [],
-          designations: key === "designations" ? [value] : [],
-          isAssigned: false,
-        };
-
-        return {
-          responsible_people: [...currentList, newItem],
-        };
-      }
-
-      // Otherwise, update existing
-      const alreadyExists = currentList[existingIndex][key].some(
-        (el) => el.id === value.id
-      );
-      if (alreadyExists) return { responsible_people: currentList };
-
-      const updatedItem = {
-        ...currentList[existingIndex],
-        [key]: [...currentList[existingIndex][key], value],
-      };
-
-      currentList[existingIndex] = updatedItem;
-
-      return {
-        responsible_people: currentList,
-      };
-    });
-  },
-
-  removeData: (id, key, activityId) =>
-    set((state) => {
-      const updatedResponsiblePeople = state.responsible_people.map(
-        (activity) => {
-          if (activity.activityId !== activityId) return activity;
-
-          const existingList = Array.isArray(activity[key])
-            ? activity[key]
-            : [];
-
-          return {
-            ...activity,
-            [key]: existingList.filter((item) => item.id !== id),
-          };
-        }
-      );
-
-      return {
-        responsible_people: updatedResponsiblePeople,
-      };
+      findResourcesByActivityID: (activityId) => {
+        return get().resources.filter((item) => item.parentId == activityId);
+      },
     }),
 
-  // reset value of responsible person selected values
-  resetValues: (activityIndex) => {
-    const { isAssigned, responsible_people } = get();
-
-    if (isAssigned) return;
-
-    const updated = responsible_people.map((activity) => {
-      if (activity.activity_index === activityIndex) {
-        return {
-          ...activity,
-          users: [],
-          designations: [],
-          areas: [],
-        };
-      }
-      return activity;
-    });
-
-    set({ responsible_people: updated });
-  },
-
-  findResourcesByActivityID: (actID) => {
-    return get().resources.filter((item) => item.parentId == actID);
-  },
-}));
+    {
+      name: "resources-storage",
+      getStorage: () => localStorage,
+    }
+  ));
 
 export default useResourceHook;

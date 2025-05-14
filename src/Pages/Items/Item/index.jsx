@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import {
   Grid,
@@ -23,6 +23,7 @@ import {
 } from "react-icons/md";
 
 const Item = ({ item, quantity, onDecrease, onIncrease, addAction }) => {
+
   return (
     <>
       <Grid

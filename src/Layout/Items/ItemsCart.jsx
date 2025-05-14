@@ -56,7 +56,7 @@ const ItemsCart = ({
             {item?.category}
           </Typography>
           <Typography fontSize={12} fontWeight={600} textColor={"success.500"}>
-            &#8369; {item?.estimated_budget.toLocaleString()}
+            &#8369; {item?.estimated_budget?.toLocaleString()}
           </Typography>
 
           <Box
