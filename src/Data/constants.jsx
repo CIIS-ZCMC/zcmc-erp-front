@@ -61,21 +61,25 @@ export const AOP_CONSTANTS = {
   TABLE_PERSON_HEADER: "Manage responsible persons",
   TABLE_PERSON_SUBHEADING: `Select people you’d like to assign for the selected activity. Assign more and include generic
    selections such as areas and job positions as necessary`,
+
+  LIBRARY_TITLE: "Item information management",
+  LIBRARY_SUBTITLE:
+    "All information used by end-users around the system, across different modules and areas can be managed here.",
 };
 
 export const MONTHS = [
-  { label: 'January', value: '01' },
-  { label: 'February', value: '02' },
-  { label: 'March', value: '03' },
-  { label: 'April', value: '04' },
-  { label: 'May', value: '05' },
-  { label: 'June', value: '06' },
-  { label: 'July', value: '07' },
-  { label: 'August', value: '08' },
-  { label: 'September', value: '09' },
-  { label: 'October', value: '10' },
-  { label: 'November', value: '11' },
-  { label: 'December', value: '12' },
+  { label: "January", value: "01" },
+  { label: "February", value: "02" },
+  { label: "March", value: "03" },
+  { label: "April", value: "04" },
+  { label: "May", value: "05" },
+  { label: "June", value: "06" },
+  { label: "July", value: "07" },
+  { label: "August", value: "08" },
+  { label: "September", value: "09" },
+  { label: "October", value: "10" },
+  { label: "November", value: "11" },
+  { label: "December", value: "12" },
 ];
 
 export const approvalActions = [
