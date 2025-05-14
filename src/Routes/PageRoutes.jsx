@@ -29,6 +29,11 @@ import AddItems from "../Pages/DeptHead/PPMP/AddItems";
 import PPMPItems from "../Pages/DeptHead/PPMP/PPMPItems";
 import PPMPDashboard from "../Pages/DeptHead/PPMP/PPMPDashboard";
 
+import { Items as ConsolidatorItems } from "../Pages/Consolidators/Tabs/Items";
+import { Classification } from "../Pages/Consolidators/Tabs/Classification";
+import { Category } from "../Pages/Consolidators/Tabs/Category";
+import { Variant } from "../Pages/Consolidators/Tabs/Variant";
+
 export const sidebarRoutes = [
   {
     path: "/dashboard",
@@ -150,5 +155,23 @@ export const sidebarRoutes = [
     path: "/item-library",
     name: "Library",
     element: <ItemLibrary />,
+    children: [
+      {
+        index: true,
+        element: <ConsolidatorItems />,
+      },
+      {
+        path: "classification",
+        element: <Classification />,
+      },
+      {
+        path: "category",
+        element: <Category />,
+      },
+      {
+        path: "variant",
+        element: <Variant />,
+      },
+    ],
   },
 ];

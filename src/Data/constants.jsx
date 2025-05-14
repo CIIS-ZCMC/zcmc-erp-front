@@ -61,10 +61,15 @@ export const AOP_CONSTANTS = {
   TABLE_PERSON_HEADER: "Manage responsible persons",
   TABLE_PERSON_SUBHEADING: `Select people you’d like to assign for the selected activity. Assign more and include generic
    selections such as areas and job positions as necessary`,
+};
 
+export const LIBRARY_CONSTANTS = {
   LIBRARY_TITLE: "Item information management",
   LIBRARY_SUBTITLE:
     "All information used by end-users around the system, across different modules and areas can be managed here.",
+  LIBRARY_HEADER: "Lis of records ready for AOP and PPMP",
+  LIBRARY_SUBHEADER:
+    "The following records of information are used to define user-inputted values",
 };
 
 export const MONTHS = [
