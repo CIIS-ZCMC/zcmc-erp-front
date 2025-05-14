@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import erp_api from "../Services/ERP_API";
+import { read } from "../Services/RequestMethods";
 
 const PATH = "item";
 
@@ -11,131 +12,55 @@ const useItemsHook = create((set) => ({
   // itemsLoading: false,
   // itemsError: null,
 
-  getItems: async (callback) => {
-    return erp_api
-      .get(`${PATH}s`, {
-        params: { mode: "selection" },
-      })
-      .then((res) => {
-        const { status } = res;
-
-        if (!(status >= 200 && status < 300)) {
-          throw new Error("Bad response.", { cause: res });
-        }
-
-        if (status === 201) {
-          return callback(201, res.data.message);
-        }
-
-        return res;
-      })
-      .then((res) => {
-        const { data, message } = res.data;
-
-        set(() => ({
-          items: data,
-        }));
-
-        callback(200, message, data);
-      })
-      .catch((err) => {
-        console.error("Error fetching transactions:", err);
-        callback(err?.response?.status || 500, err?.response?.data || "Error");
-      });
+  getItems: async (callBack) => {
+    read({
+      url: `${PATH}s`,
+      params: { mode: "selection" },
+      failed: callBack,
+      success: (res) => {
+        const { status, message, data } = res;
+        set({ items: data.data });
+        callBack(status, message);
+      },
+    });
   },
 
-  getItemCategories: async (callback) => {
-    return erp_api
-      .get(`${PATH}-categories`)
-      .then((res) => {
-        const { status } = res;
-
-        if (!(status >= 200 && status < 300)) {
-          throw new Error("Bad response.", { cause: res });
-        }
-
-        if (status === 201) {
-          return callback(201, res.data.message);
-        }
-
-        return res;
-      })
-      .then((res) => {
-        const { data, message } = res.data;
-
-        set(() => ({
-          categories: data,
-        }));
-
-        callback(200, message, data);
-      })
-      .catch((err) => {
-        console.error("Error fetching transactions:", err);
-        callback(err?.response?.status || 500, err?.response?.data || "Error");
-      });
+  getItemCategories: async (callBack) => {
+    read({
+      url: `${PATH}-categories`,
+      params: { mode: "selection" },
+      failed: callBack,
+      success: (res) => {
+        const { status, message, data } = res;
+        set({ categories: data.data });
+        callBack(status, message);
+      },
+    });
   },
-  getItemClassification: async (callback) => {
-    return erp_api
-      .get(`${PATH}-classifications`)
-      .then((res) => {
-        const { status } = res;
-
-        if (!(status >= 200 && status < 300)) {
-          throw new Error("Bad response.", { cause: res });
-        }
-
-        if (status === 201) {
-          return callback(201, res.data.message);
-        }
-
-        return res;
-      })
-      .then((res) => {
-        const { data, message } = res.data;
-
-        set(() => ({
-          classification: data,
-        }));
-
-        callback(200, message, data);
-      })
-      .catch((err) => {
-        console.error("Error fetching transactions:", err);
-        callback(err?.response?.status || 500, err?.response?.data || "Error");
-      });
+  getItemClassification: async (callBack) => {
+    read({
+      url: `${PATH}-classifications`,
+      params: { mode: "selection" },
+      failed: callBack,
+      success: (res) => {
+        const { status, message, data } = res;
+        set({ classification: data.data });
+        callBack(status, message);
+      },
+    });
   },
 
-  getItemUnits: async (callback) => {
-    return erp_api
-      .get(`${PATH}-units`, {
-        params: { mode: "selection" },
-      })
-      .then((res) => {
-        const { status } = res;
-
-        if (!(status >= 200 && status < 300)) {
-          throw new Error("Bad response.", { cause: res });
-        }
-
-        if (status === 201) {
-          return callback(201, res.data.message);
-        }
-
-        return res;
-      })
-      .then((res) => {
-        const { data, message } = res.data;
-
-        set(() => ({
-          units: data,
-        }));
-
-        callback(200, message, data);
-      })
-      .catch((err) => {
-        console.error("Error fetching transactions:", err);
-        callback(err?.response?.status || 500, err?.response?.data || "Error");
-      });
+  getItemUnits: async (callBack) => {
+    read({
+      url: `${PATH}-units`,
+      params: { mode: "selection" },
+      failed: callBack,
+      success: (res) => {
+        const { status, message, data } = res;
+        set({ units: data.data });
+        callBack(status, message);
+      },
+    });
   },
 }));
 

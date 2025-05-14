@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import erp_api from "../Services/ERP_API";
-import { post } from "../Services/RequestMethods";
+import { post, read } from "../Services/RequestMethods";
 
 const PATH = "ppmp";
 
@@ -11,95 +11,39 @@ const usePPMPHook = create((set) => ({
   ppmpLoading: false,
   ppmpError: null,
 
-  getPPMPItems: async (callback) => {
-    return erp_api
-      .get(`${PATH}-items`)
-      .then((res) => {
-        const { status } = res;
-
-        if (!(status >= 200 && status < 300)) {
-          throw new Error("Bad response.", { cause: res });
-        }
-
-        if (status === 201) {
-          return callback(201, res.data.message);
-        }
-
-        return res;
-      })
-      .then((res) => {
-        const { data, message } = res.data;
-
-        set(() => ({
-          ppmp: data,
-        }));
-
-        callback(200, message, data);
-      })
-      .catch((err) => {
-        console.error("Error fetching ppmp:", err);
-        callback(err?.response?.status || 500, err?.response?.data || "Error");
-      });
+  getPPMPItems: (callBack) => {
+    read({
+      url: `${PATH}-items`,
+      failed: callBack,
+      success: (res) => {
+        const { status, message, data } = res;
+        set({ ppmp: data });
+        callBack(status, message, data);
+      },
+    });
   },
-  getProcModes: async (callback) => {
-    return erp_api
-      .get(`procurement-modes`)
-      .then((res) => {
-        const { status } = res;
-
-        if (!(status >= 200 && status < 300)) {
-          throw new Error("Bad response.", { cause: res });
-        }
-
-        if (status === 201) {
-          return callback(201, res.data.message);
-        }
-
-        return res;
-      })
-      .then((res) => {
-        const { data, message } = res.data;
-
-        set(() => ({
-          modes: data,
-        }));
-
-        callback(200, message, data);
-      })
-      .catch((err) => {
-        console.error("Error fetching ppmp:", err);
-        callback(err?.response?.status || 500, err?.response?.data || "Error");
-      });
+  getProcModes: (callBack) => {
+    read({
+      url: `procurement-modes`,
+      failed: callBack,
+      success: (res) => {
+        const { status, message, data } = res;
+        set({ modes: data });
+        callBack(status, message);
+      },
+    });
   },
-  getActivities: async (callback) => {
-    return erp_api
-      .get(`activities`)
-      .then((res) => {
-        const { status } = res;
 
-        if (!(status >= 200 && status < 300)) {
-          throw new Error("Bad response.", { cause: res });
-        }
-
-        if (status === 201) {
-          return callback(201, res.data.message);
-        }
-
-        return res;
-      })
-      .then((res) => {
-        const { data, message } = res.data;
-
-        set(() => ({
-          activities: data,
-        }));
-
-        callback(200, message, data);
-      })
-      .catch((err) => {
-        console.error("Error fetching ppmp:", err);
-        callback(err?.response?.status || 500, err?.response?.data || "Error");
-      });
+  getActivities: async (callBack) => {
+    read({
+      url: `activities`,
+      failed: callBack,
+      success: (res) => {
+        const { status, message, data } = res;
+        set({ activities: data.data });
+        callBack(status, message);
+      },
+    });
   },
   postPPMP: async (body, callback) => {
     post({
@@ -111,33 +55,6 @@ const usePPMPHook = create((set) => ({
       },
       failed: callback,
     });
-    // return erp_api
-    //   .post(`${PATH}-items`, body)
-    //   .then((res) => {
-    //     const { status } = res;
-    //     console.log("res", res);
-    //     // if (!(status >= 200 && status < 300)) {
-    //     //   throw new Error("Bad response.", { cause: res });
-    //     // }
-
-    //     if (status === 201) {
-    //       console.log("I am here");
-    //       return callback(201, res.data.data.message);
-    //     }
-
-    //     return res;
-    //   })
-    //   .then((res) => {
-    //     const {
-    //       status,
-    //       data: { data, message },
-    //     } = res;
-
-    //     callback(status, message, data);
-    //   })
-    //   .catch((err) => {
-    //     return callback(err.status, "Something went wrong");
-    //   });
   },
 }));
 

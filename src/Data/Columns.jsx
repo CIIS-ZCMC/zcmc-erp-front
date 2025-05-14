@@ -246,7 +246,7 @@ export const ppmpHeaders = (handleDeleteRow, items, modes) => [
   // },
 
   {
-    field: "description",
+    field: "item",
     name: "General description",
     inputType: "dropdown",
     width: "200px",

@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useMemo, useState } from "react";
+import React, { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import PageTitle from "../../../Components/Common/PageTitle";
 import ContainerComponent from "../../../Components/Common/ContainerComponent";
 import ButtonComponent from "../../../Components/Common/ButtonComponent";
@@ -43,15 +43,10 @@ const options = ["Save as draft"];
 function PPMPItems(props) {
   const navigate = useNavigate();
   const {
-    tableData,
-    loading,
     activityObject,
     description,
     expenseClass,
-    setTableData,
-    setItemsData,
     setLoading,
-    handleFieldChange,
     handleSelectActivity,
     handleSelectExpense,
   } = usePPMPItemsHook();
@@ -59,19 +54,19 @@ function PPMPItems(props) {
     ppmp,
     modes,
     activities,
-    getPPMPItems,
     getProcModes,
+    getPPMPItems,
     getActivities,
     postPPMP,
   } = usePPMPHook();
   const {
-    items,
     classification,
     categories,
     units,
+    items,
+    getItems,
     getItemCategories,
     getItemClassification,
-    getItems,
     getItemUnits,
   } = useItemsHook();
   const {
@@ -87,7 +82,7 @@ function PPMPItems(props) {
   const [pageLoader, setPageLoader] = useState(false);
   const [step, setStep] = useState(1);
   const [pin, setPin] = useState(null);
-  // const [tableData, setTableData] = useState([]);
+  const [tableData, setTableData] = useState([]);
   const [itemReq, setItemReq] = useState({
     specs: [
       { id: Date.now(), value: "" },
@@ -145,11 +140,14 @@ function PPMPItems(props) {
       setError("pin", true, "Please enter your authorization PIN.");
     } else {
       setPageLoader(true);
+
+      const ppmp_items = JSON.parse(localStorage.getItem("ppmp-items")) || [];
       const formData = new FormData();
       formData.append("is_draft", is_draft);
-      formData.append("PPMP_Items", JSON.stringify(tableData));
+      formData.append("PPMP_Items", JSON.stringify(ppmp_items));
 
       await postPPMP(formData, (status, message, data) => {
+        //return data then save sa localstorage
         setPageLoader(false);
         if (status === 201) {
           const data = {
@@ -182,38 +180,32 @@ function PPMPItems(props) {
     setStep((prev) => Math.max(prev - 1, 1));
   };
 
-  const handleDeleteRow = (id) => {
-    // Optional: Show loading spinner
-    setLoading(true);
-    setTimeout(() => {
-      const updated = tableData.filter((row) => row.id !== id);
-      setLoading(false);
-      setTableData(updated);
-    }, 1000);
-  };
+  // const handleDeleteRow = (id) => {
+  //   // Optional: Show loading spinner
+  //   setLoading(true);
+  //   setTimeout(() => {
+  //     const updated = tableData.filter((row) => row.id !== id);
+  //     setLoading(false);
+  //     setTableData(updated);
+  //     localStorage.setItem("ppmp-items", JSON.stringify(updated));
+  //   }, 1000);
+  // };
 
-  //USEEFFECTS
   useEffect(() => {
     async function fetchAll() {
       setLoading(true);
-
-      // Wrap each callback-based function in a Promise
-      const wrap = (fn) =>
-        new Promise((resolve) =>
-          fn(() => {
-            resolve(); // You can optionally pass data if needed
-          })
-        );
+      // Step 2: Wrap callbacks in Promises for async/await
+      const wrap = (fn) => new Promise((resolve) => fn(() => resolve()));
 
       try {
+        // Step 3: Fetch all other needed data
         await Promise.all([
-          wrap(getPPMPItems),
-          wrap(getItems),
-          wrap(getProcModes),
           wrap(getActivities),
           wrap(getItemClassification),
           wrap(getItemCategories),
           wrap(getItemUnits),
+          wrap(getProcModes),
+          wrap(getItems),
         ]);
       } catch (err) {
         console.error("Fetching error:", err);
@@ -225,29 +217,9 @@ function PPMPItems(props) {
     fetchAll();
   }, []);
 
-  useEffect(() => {
-    if (!loading) {
-      if (ppmp?.ppmp_items?.length && tableData.length === 0) {
-        setTableData(ppmp.ppmp_items);
-      }
-    }
-  }, [loading, ppmp]);
-
-  useEffect(() => {
-    if (!loading && items?.length) {
-      setItemsData(items);
-    }
-  }, [loading, items]);
-
-  // useEffect(() => {
-  //   if (tableData.length === 0) {
-  //     setTableData(sampleData);
-  //   }
-  // }, [ppmp]);
-
   return (
     <Fragment>
-      {console.log(items)}
+      {console.log(activities)}
       <ContainerComponent
         title={"List of items"}
         description={
@@ -297,17 +269,10 @@ function PPMPItems(props) {
         }
       >
         <PPMPTable
-          columns={ppmpHeaders(handleDeleteRow, items, modes)}
-          data={tableData}
-          onFieldChange={handleFieldChange}
-          isLoading={loading}
-          options={descriptionsData}
-          setData={setTableData}
-          stripe={"even"}
-          pageSize={10}
-          stickLast
-          stickSecond
-          withSearch={true}
+          ppmpTable={tableData}
+          items={items}
+          setPPMPTable={setTableData}
+          modes={modes.data}
         />
       </ContainerComponent>
 

@@ -1,83 +1,114 @@
-import {
-  Autocomplete,
-  Box,
-  Button,
-  CircularProgress,
-  IconButton,
-  Sheet,
-  Table,
-  Typography,
-} from "@mui/joy";
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Autocomplete, Box, Sheet, Table, Typography } from "@mui/joy";
+import { memo, useEffect, useState } from "react";
 import NoResultComponent from "../../../Components/Common/Table/NoResultComponent";
-import PaginationComponent from "../../../Components/Common/Table/PaginationComponent";
 import InputComponent from "../../../Components/Form/InputComponent";
-import debounce from "lodash.debounce";
 import { ThreeDots } from "react-loader-spinner";
 import { flattenColumns } from "../../../Utils/FlattenColumns";
-import { MdDeleteOutline } from "react-icons/md";
-import { usePPMPItemsHook } from "../../../Hooks/PPMPItemsHook";
+import usePPMPHook from "../../../Hooks/PPMPHook";
+import useItemsHook from "../../../Hooks/ItemsHook";
+import { ppmpHeaders } from "../../../Data/Columns";
 
 const PPMPTable = memo(
   ({
-    stickLast = false,
-    stickSecond = false,
-    data,
-    columns,
-    stripe,
-    isLoading,
-    setData,
-    onFieldChange,
+    stickLast = true,
+    stickSecond = true,
+    stripe = true,
+    // ppmpTable,
+    items,
+    // setPPMPTable,
+    modes,
   }) => {
-    const childHeaders = flattenColumns(columns);
-    const [editedCells, setEditedCells] = useState({});
-    const [loading, setLoading] = useState(false);
+    const { ppmp, getPPMPItems, getProcModes } = usePPMPHook();
+    // const { items, getItems } = useItemsHook();
 
-    const handleCellEdit = (rowId, field, value) => {
-      setEditedCells((prev) => ({
-        ...prev,
-        [rowId]: {
-          ...prev[rowId],
-          [field]: value,
-        },
-      }));
+    const handleDeleteRow = (id) => {
+      setLoading(true);
+      setTimeout(() => {
+        const updated = ppmpTable.filter((row) => row.id !== id);
+        setLoading(false);
+        setPPMPTable(updated);
+        localStorage.setItem("ppmp-items", JSON.stringify(updated));
+      }, 1000);
     };
 
-    // Commit the local edited value to the main data
-    const commitEditToData = (rowId, field) => {
-      const editedValue = editedCells[rowId]?.[field];
-      if (editedValue === undefined) return;
+    const columns = ppmpHeaders(handleDeleteRow, items, modes);
 
-      const row = data.find((item) => item.id === rowId);
-      if (!row) return;
+    const [ppmpTable, setPPMPTable] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [editRowId, setEditRowId] = useState(null);
+    const [editedCell, setEditedCell] = useState({ rowId: null, field: null });
+    const childHeaders = flattenColumns(columns);
 
-      // Only commit if the value actually changed
-      if (row[field] !== editedValue) {
-        onFieldChange(field, editedValue, row);
+    const calculateQuantity = (target) => {
+      return Object.values(target).reduce((sum, value) => sum + value, 0);
+    };
+
+    const handleFieldChange = (fieldName, newValue, row) => {
+      if (!row?.id) return;
+
+      const updatedRow = { ...row };
+
+      if (fieldName === "item") {
+        setLoading(true);
+
+        const selected = items.find((item) => item.name === newValue.name);
+        if (!selected) {
+          console.warn("Selected item not found.");
+          return;
+        }
+
+        updatedRow.item = selected;
+        updatedRow.item_code = selected?.code || "";
+        updatedRow.classification = selected?.classification || "";
+        updatedRow.category = selected?.category || "";
+        updatedRow.unit = selected?.unit || "";
+        updatedRow.estimated_budget = selected?.estimated_budget || "";
+
+        setLoading(false);
+      } else if (fieldName === "procurement_mode") {
+        updatedRow.procurement_mode = newValue;
+      } else {
+        if (
+          [
+            "jan",
+            "feb",
+            "mar",
+            "apr",
+            "may",
+            "jun",
+            "jul",
+            "aug",
+            "sep",
+            "oct",
+            "nov",
+            "dec",
+          ].includes(fieldName)
+        ) {
+          updatedRow.target_by_quarter = {
+            ...updatedRow.target_by_quarter,
+            [fieldName]: parseInt(newValue) || 0,
+          };
+          updatedRow.quantity = calculateQuantity(updatedRow.target_by_quarter);
+          updatedRow.total_amount =
+            updatedRow.quantity *
+            (parseFloat(updatedRow.estimated_budget) || 0);
+        } else if (fieldName === "quantity") {
+          updatedRow.quantity = parseFloat(newValue) || 0;
+          updatedRow.total_amount =
+            updatedRow.quantity *
+            (parseFloat(updatedRow.estimated_budget) || 0);
+        } else {
+          updatedRow[fieldName] = newValue;
+        }
       }
 
-      // Remove the committed field from the state
-      setEditedCells((prev) => {
-        const updatedRow = { ...prev[rowId] };
-        delete updatedRow[field];
-
-        const newState = { ...prev };
-        if (Object.keys(updatedRow).length > 0) {
-          newState[rowId] = updatedRow;
-        } else {
-          delete newState[rowId];
-        }
-        return newState;
-      });
+      const updatedData = ppmpTable.map((r) =>
+        r.id === row.id ? updatedRow : r
+      );
+      setPPMPTable(updatedData);
+      localStorage.setItem("ppmp-items", JSON.stringify(updatedData));
     };
 
-    // Apply commit on blur with debounce for performance optimization
-    const debouncedCommit = useCallback(
-      debounce((rowId, field) => {
-        commitEditToData(rowId, field);
-      }, 300),
-      []
-    );
     const renderHeader = () => {
       return (
         <>
@@ -152,38 +183,63 @@ const PPMPTable = memo(
         </>
       );
     };
-    const renderCell = (header, row) => {
-      const value = row[header.field];
 
-      if (header.inputType === "dropdown") {
-        return (
-          <Autocomplete
-            options={header.options || []}
-            getOptionLabel={(option) => option?.name || "-"}
-            value={value || null}
-            onChange={(e, newVal) => {
-              // your onChange logic
-            }}
-            renderInput={(params) => <TextField {...params} />}
-          />
-        );
-      }
+    const renderCell = (header, row, isEditing) => {
+      const getFieldValue = () => {
+        if (
+          [
+            "jan",
+            "feb",
+            "mar",
+            "apr",
+            "may",
+            "jun",
+            "jul",
+            "aug",
+            "sep",
+            "oct",
+            "nov",
+            "dec",
+          ].includes(header.field)
+        ) {
+          return isEditing
+            ? row.target_by_quarter[header.field]
+            : row.target_by_quarter[header.field];
+        }
+        return isEditing ? row[header.field] : row[header.field];
+      };
 
-      if (header.inputType === "input") {
-        const editedValue =
-          editedCells?.[row.id]?.[header.field] ?? row[header.field] ?? "";
-        return (
-          <InputComponent
-            value={editedValue}
-            onChange={(e) => {
-              handleCellEdit(row.id, header.field, e.target.value);
-            }}
-            onBlur={() => {
-              debouncedCommit(row.id, header.field); // now commit with fresh value
-            }}
-            fullWidth
-          />
-        );
+      const value = getFieldValue();
+
+      const handleChange = (field, rowId, newValue) => {
+        setEditedCell((prev) => ({ ...prev, rowId, field }));
+        handleFieldChange(field, newValue, row);
+      };
+
+      if (isEditing) {
+        if (header.inputType === "dropdown") {
+          return (
+            <Autocomplete
+              options={header.options || []}
+              getOptionLabel={(option) => option?.name || "-"}
+              value={value}
+              onChange={(e, newValue) =>
+                handleChange(header.field, row.id, newValue)
+              }
+            />
+          );
+        }
+        if (header.inputType === "input") {
+          return (
+            <InputComponent
+              value={value}
+              onChange={(e) =>
+                handleChange(header.field, row.id, e.target.value)
+              }
+              onBlur={() => setEditRowId(null)}
+            />
+          );
+        }
       }
 
       return header.render ? (
@@ -194,9 +250,46 @@ const PPMPTable = memo(
     };
 
     const lastColumnWidth = columns[columns.length - 1]?.width || "144px";
+    useEffect(() => {
+      async function fetchPPMPItemsIfNeeded() {
+        setLoading(true);
+
+        const localItems = localStorage.getItem("ppmp-items");
+
+        if (localItems) {
+          const parsed = JSON.parse(localItems);
+          if (parsed.length > 0) {
+            setPPMPTable(parsed);
+            setLoading(false);
+            return; // ✅ Stop here; no need to fetch
+          }
+        }
+
+        // No valid localStorage, fetch from API
+        try {
+          await getPPMPItems((status, message, data) => {
+            localStorage.setItem(
+              "ppmp-items",
+              JSON.stringify(data.data.ppmp_items)
+            );
+            setPPMPTable(data?.data.ppmp_items);
+          });
+        } catch (error) {
+          console.error("Error fetching ppmp_items:", error);
+        } finally {
+          setLoading(false);
+        }
+      }
+
+      fetchPPMPItemsIfNeeded();
+    }, []);
+
+    useEffect(() => {
+      // localStorage.setItem("ppmp-items", JSON.stringify(ppmp.ppmp_items));
+      console.log("tableData updated:", ppmpTable); // Logs tableData after it's updated
+    }, [ppmp]);
     return (
       <Box sx={{ width: "100%", overflow: "auto" }}>
-        {console.log("re-render")}
         <Sheet
           variant="outlined"
           sx={() => ({
@@ -249,10 +342,10 @@ const PPMPTable = memo(
               }),
             }}
           >
-            {data?.length !== 0 ? <thead>{renderHeader()}</thead> : ""}
+            {ppmpTable?.length !== 0 ? <thead>{renderHeader()}</thead> : ""}
 
             <tbody>
-              {isLoading ? (
+              {loading ? (
                 <tr>
                   <td colSpan={columns?.length} style={{ padding: 0 }}>
                     <Box
@@ -275,14 +368,29 @@ const PPMPTable = memo(
                     </Box>
                   </td>
                 </tr>
-              ) : data?.length > 0 ? (
-                data.map((row) => (
+              ) : ppmpTable?.length > 0 ? (
+                ppmpTable.map((row) => (
                   <tr key={row.id}>
-                    {childHeaders.map((header) => (
-                      <td key={header.field} align="center">
-                        {renderCell(header, row)}
-                      </td>
-                    ))}
+                    {childHeaders.map((header) => {
+                      const isEditing =
+                        editedCell?.rowId === row.id &&
+                        editedCell?.field === header.field;
+
+                      return (
+                        <td
+                          key={header.field}
+                          align="center"
+                          onClick={() =>
+                            setEditedCell({
+                              rowId: row.id,
+                              field: header.field,
+                            })
+                          }
+                        >
+                          {renderCell(header, row, isEditing)}
+                        </td>
+                      );
+                    })}
                   </tr>
                 ))
               ) : (
