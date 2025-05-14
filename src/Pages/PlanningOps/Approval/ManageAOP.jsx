@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useMemo, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import PageTitle from "../../../Components/Common/PageTitle";
 import { useParams } from "react-router-dom";
 import { approvalActions } from "../../../Data/constants";
@@ -6,7 +6,6 @@ import { Box, Divider, Grid, Stack, Typography } from "@mui/joy";
 import ContainerComponent from "../../../Components/Common/ContainerComponent";
 import ButtonComponent from "../../../Components/Common/ButtonComponent";
 import { ExternalLink } from "lucide-react";
-import moment from "moment";
 import TextareaComponent from "../../../Components/Form/TextareaComponent";
 import ModalComponent from "../../../Components/Common/Dialog/ModalComponent";
 import useModalHook from "../../../Hooks/ModalHook";
@@ -15,24 +14,16 @@ import { useAOPApplication } from "../../../Hooks/AOP/AOPApplicationsHook";
 import { useActivityActions } from "../../../Hooks/AOP/ActivityHook";
 import { localStorageGetter } from "../../../Utils/LocalStorage";
 import RadioButtonComponent from "../../../Components/Common/RadioButtonComponent";
-import PostCommentComponent from "../../../Components/Form/PostCommentComponent";
 import ObjectivesList from "./Contents/ObjectivesList";
-import NoResultComponent from "../../../Components/Common/Table/NoResultComponent";
-import DrawerComponent from "../../../Components/Common/DrawerComponent";
-import CustomTabComponent from "../../../Components/Common/CustomTabComponent";
-import { feedbackTabOptions } from "../../../Data/Options";
-import {
-  useAllComments,
-  useCommentActions,
-  useRemarks,
-} from "../../../Hooks/CommentHook";
-import CommentContainerComponent from "../../../Components/Comments/CommentContainerComponent";
-import { groupByDate } from "../../../Utils/GroupData";
+import { useAllComments, useCommentActions } from "../../../Hooks/CommentHook";
 import { ActivityDetails } from "./Contents/ActivityDetails";
 import { CommentsDetails } from "./Contents/CommentsDetails";
+import { useUserTypes } from "../../../Hooks/UserHook";
+import { FeedbackContent } from "./Contents/FeedbackContent";
 
 export default function ManageAOP() {
   const { id } = useParams();
+  const { isDivisionHead } = useUserTypes();
 
   // AOP HOOK
   const AOPApplication =
@@ -45,7 +36,6 @@ export default function ManageAOP() {
   const { getActivityById } = useActivityActions();
 
   // COMMENTS HOOK
-  const remarks = useRemarks();
   const {
     getCommentsByActivity,
     getCommentsByApplication,
@@ -56,7 +46,7 @@ export default function ManageAOP() {
   // STATES
   // const [activityLoading, setActivityLoading] = useState(false);
   const [action, setAction] = useState("approve");
-  const [activeTab, setActiveTab] = useState(0);
+  const [isRemarksLoading, setIsRemarksLoading] = useState(true);
 
   const AREA_CODE = localStorageGetter("aop_application_area_code");
   const FISCAL_YEAR = 2026;
@@ -66,20 +56,25 @@ export default function ManageAOP() {
   const [openProcessModal, setOpenProcessModal] = useState(false);
   const [openFeedbackModal, setOpenFeedbackModal] = useState(false);
 
-  // DATA
-  const feedbackDisplay = useMemo(() => {
-    const dataToDisplay = activeTab === 0 ? allComments : remarks;
-    return groupByDate(dataToDisplay);
-  }, [activeTab, allComments, remarks]);
-
-  const feedbackCount = allComments?.length;
-
   // FUNCTIONS
   const handleViewFeedback = () => {
     setOpenFeedbackModal(true);
-    getCommentsByApplication(() => {});
+    setIsRemarksLoading(true);
 
-    getRemarksByApplication(() => {});
+    getRemarksByApplication(() => {
+      setTimeout(() => setIsRemarksLoading(false), 1000);
+    });
+    // Promise.all([
+    //   getCommentsByApplication(() => {}),
+    //   getRemarksByApplication(() => {}),
+    // ])
+    //   .then(() => {
+    //     setIsRemarksLoading(false);
+    //   })
+    //   .catch((error) => {
+    //     console.error("Error fetching comments or remarks:", error);
+    //     setIsRemarksLoading(false);
+    //   });
   };
 
   const handleProcessRequest = () => {
@@ -109,8 +104,6 @@ export default function ManageAOP() {
   //       console.error("Error fetching data:", error);
   //     });
   // };
-
-  const isDivisionHead = false;
 
   useEffect(() => {
     if (activityId == defaultActivityId) return;
@@ -194,12 +187,12 @@ export default function ManageAOP() {
             </Grid>
 
             {/* ACTIVITY DETAILS  */}
-            <Grid item="true" xs={4} mt={3}>
+            <Grid item="true" xs={isDivisionHead ? 8 : 4} mt={3}>
               <ActivityDetails />
             </Grid>
 
             {/* COMMENTS  */}
-            <Grid item="true" xs={4} mt={3}>
+            <Grid item="true" xs={4} mt={3} display={isDivisionHead && "none"}>
               <CommentsDetails />
             </Grid>
           </Grid>
@@ -255,81 +248,11 @@ export default function ManageAOP() {
       />
 
       {/* VIEW FEEDBACK */}
-      <DrawerComponent
-        open={openFeedbackModal}
-        setOpen={setOpenFeedbackModal}
-        title={`Feedback in this request`}
-        description={
-          "The following list of feedback are based on your comments per activity and the Division Chief's remarks for this request as a whole."
-        }
-        content={
-          <Stack gap={2} mt={2}>
-            <CustomTabComponent
-              tabOptions={feedbackTabOptions}
-              onChange={setActiveTab}
-            />
 
-            <Divider />
-
-            <Stack gap={1.8} maxHeight={"70vh"} overflow={"auto"} pr={1}>
-              {feedbackCount === 0 && (
-                <Box
-                  sx={{
-                    height: "73vh",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <NoResultComponent />{" "}
-                </Box>
-              )}
-
-              {Object.entries(feedbackDisplay).map(([date, messages], key) => (
-                <Fragment key={key}>
-                  {date !== moment().format("dddd, MMMM D") && (
-                    <Divider sx={{ fontSize: "xs", mt: 0.5 }}>{date}</Divider>
-                  )}
-
-                  {/* COMMENTS */}
-                  {activeTab === 0
-                    ? messages?.map(
-                        ({ name, area_code, created_at, comment }, key) => (
-                          <CommentContainerComponent
-                            key={key}
-                            name={name}
-                            comment={comment}
-                            area_code={area_code}
-                            date={created_at}
-                            isActivity
-                          />
-                        )
-                      )
-                    : messages?.map(
-                        (
-                          {
-                            division_chief_name,
-                            division_chief_area_code,
-                            created_at,
-                            remarks,
-                          },
-                          key
-                        ) => (
-                          <CommentContainerComponent
-                            key={key}
-                            name={division_chief_name}
-                            comment={remarks}
-                            area_code={division_chief_area_code}
-                            date={created_at}
-                          />
-                        )
-                      )}
-                  {/* REMARKS */}
-                </Fragment>
-              ))}
-            </Stack>
-          </Stack>
-        }
+      <FeedbackContent
+        openFeedbackModal={openFeedbackModal}
+        setOpenFeedbackModal={setOpenFeedbackModal}
+        isLoading={isRemarksLoading}
       />
     </Fragment>
   );

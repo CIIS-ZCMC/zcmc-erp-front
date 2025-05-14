@@ -12,7 +12,6 @@ import {
 
 import { AnimatePresence, motion } from "motion/react"; // eslint-disable-next-line no-unused-vars
 import React from "react";
-import "./accordion.css";
 import { ChevronDown, Pencil } from "lucide-react";
 import useAccordionHook from "../../../Hooks/AccordionHook";
 
@@ -52,7 +51,7 @@ function CustomAccordionComponent({
           },
         },
         [`& .${accordionClasses.root}.${accordionClasses.expanded}`]: {
-          borderColor: theme.vars.palette.neutral[300],
+          borderColor: "warning.300",
         },
       })}
     >
