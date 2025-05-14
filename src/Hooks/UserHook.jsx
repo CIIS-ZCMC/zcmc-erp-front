@@ -1,9 +1,10 @@
 import { create } from "zustand";
 import { API } from "../Data/constants";
 import { read } from "../Services/RequestMethods";
+import { mockUserData } from "../Data/TestData";
 
 const useUserHook = create((set) => ({
-  user: { position: "planning" },
+  user: { ...mockUserData },
 
   users: [],
 

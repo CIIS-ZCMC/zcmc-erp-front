@@ -4,6 +4,7 @@ import moment from "moment";
 import {
   useActivity,
   useActivityActions,
+  useActivityUIStates,
 } from "../../../../Hooks/AOP/ActivityHook";
 import { localStorageGetter } from "../../../../Utils/LocalStorage";
 import useSnackbarHook from "../../../../Components/Common/SnackbarHook";
@@ -18,13 +19,12 @@ import ConfirmationModalComponent from "../../../../Components/Common/Dialog/Con
 
 export const MarkReviewFooter = ({ openMarkModal, setOpenMarkModal }) => {
   // STATE
-
   const [btnLoading, setBtnLoading] = useState(false);
   const titleStyles = { level: "body-xs", fontWeight: 400 };
-  const activityId = localStorageGetter("activeActivityId");
+  const { activeActivity } = useActivityUIStates();
   const activity = useActivity();
 
-  const { is_reviewed } = activity ?? {};
+  const { is_reviewed, is_reviewed_date } = activity ?? {};
 
   // HOOKS
   const { setConfirmationModal, closeConfirmation } = useModalHook();
@@ -46,11 +46,11 @@ export const MarkReviewFooter = ({ openMarkModal, setOpenMarkModal }) => {
 
   const handleMarkAsReviewed = () => {
     setBtnLoading(true);
-    markAsReviewed(activityId, (status, message) => {
+    markAsReviewed(activeActivity, (status, message) => {
       setBtnLoading(false);
       closeConfirmation();
       setOpenMarkModal(false);
-      getActivityById(activityId, () => {}), showSnack(status, message);
+      getActivityById(activeActivity, () => {}), showSnack(status, message);
       // getAOPApplicationById(AOP_APPLICATION_ID, () => {});
     });
   };
@@ -80,9 +80,12 @@ export const MarkReviewFooter = ({ openMarkModal, setOpenMarkModal }) => {
             double-check again.
           </FormHelperText>
 
-          <FormHelperText sx={{ fontSize: 12, color: "neutral.600" }}>
-            Marked as <b>“Reviewed”</b> on {moment().format("ll")}
-          </FormHelperText>
+          {is_reviewed && (
+            <FormHelperText sx={{ fontSize: 12, color: "neutral.600" }}>
+              Marked as <b>“Reviewed”</b> on{" "}
+              {moment(is_reviewed_date).format("ll")}
+            </FormHelperText>
+          )}
         </FormControl>
       </Stack>
 
