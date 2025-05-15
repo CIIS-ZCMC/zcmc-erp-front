@@ -13,12 +13,20 @@ import TableRow from './TableRow'
 import { AOP_CONSTANTS } from '../../../../../../../../Data/constants';
 import { AOP_RESOURCE_HEADER } from '../../../../../../../../Data/Columns';
 
+import useResourceHook from '../../../../../../../../Hooks/ResourceHook';
+
 const Resources = () => {
 
     const location = useLocation();
     const { activityId, objectiveId } = useParams();
     const currentPath = location.pathname;
     const childPath = currentPath === `/aop-create/activities/${objectiveId}/resources/${activityId}`
+
+    const { resources } = useResourceHook();
+
+    useEffect(() => {
+        console.log(resources)
+    }, [resources])
 
     const [rows, setRows] = useState([
         {

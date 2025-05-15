@@ -340,6 +340,7 @@ const TableRow = ({
                                     onClick={() => navigate(`/items/${rowId}`, {
                                         state: {
                                             parentId: id,
+                                            // objectiveId: parentId,
                                             activityrowId: rowId,
                                             cost: cost
                                         }
