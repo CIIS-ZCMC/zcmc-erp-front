@@ -1,4 +1,4 @@
-import { Autocomplete, Box, Sheet, Table, Typography } from "@mui/joy";
+import { Autocomplete, Box, Sheet, Stack, Table, Typography } from "@mui/joy";
 import { memo, useEffect, useState } from "react";
 import NoResultComponent from "../../../Components/Common/Table/NoResultComponent";
 import InputComponent from "../../../Components/Form/InputComponent";
@@ -7,6 +7,11 @@ import { flattenColumns } from "../../../Utils/FlattenColumns";
 import usePPMPHook from "../../../Hooks/PPMPHook";
 import useItemsHook from "../../../Hooks/ItemsHook";
 import { ppmpHeaders } from "../../../Data/Columns";
+import ButtonComponent from "../../../Components/Common/ButtonComponent";
+import PaginationComponent from "../../../Components/Common/Table/PaginationComponent";
+import AlertDialogComponent from "../../../Components/Common/Dialog/AlertDialogComponent";
+import useModalHook from "../../../Hooks/ModalHook";
+import AutocompleteComponent from "../../../Components/Form/AutocompleteComponent";
 
 const PPMPTable = memo(
   ({
@@ -14,13 +19,23 @@ const PPMPTable = memo(
     stickSecond = true,
     stripe = true,
     // ppmpTable,
-    items,
+    items = [],
     // setPPMPTable,
-    modes,
+    modes = [],
+    categories = [],
+    classifications = [],
   }) => {
     const { ppmp, getPPMPItems, getProcModes } = usePPMPHook();
+    const { setAlertDialog, setConfirmationModal } = useModalHook();
     // const { items, getItems } = useItemsHook();
+    const [ppmpTable, setPPMPTable] = useState([]);
+    const [loading, setLoading] = useState(false);
+    const [searchVal, setSearchVal] = useState("");
+    const [selectedClass, setSelectedClass] = useState({});
+    const [selectedCat, setSelectedCat] = useState({});
+    const [editedCell, setEditedCell] = useState({ rowId: null, field: null });
 
+    //COLUMN
     const handleDeleteRow = (id) => {
       setLoading(true);
       setTimeout(() => {
@@ -30,15 +45,40 @@ const PPMPTable = memo(
         localStorage.setItem("ppmp-items", JSON.stringify(updated));
       }, 1000);
     };
-
     const columns = ppmpHeaders(handleDeleteRow, items, modes);
-
-    const [ppmpTable, setPPMPTable] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [editRowId, setEditRowId] = useState(null);
-    const [editedCell, setEditedCell] = useState({ rowId: null, field: null });
     const childHeaders = flattenColumns(columns);
 
+    //FILTER
+    const filteredTable = ppmpTable.filter((item) => {
+      const matchesClass =
+        !selectedClass?.name || item?.classification === selectedClass?.name;
+      const matchesCat =
+        !selectedCat?.name || item?.category === selectedCat?.name;
+      return matchesClass && matchesCat;
+    });
+    const handleClear = () => {
+      setSelectedCat({});
+      setSelectedClass({});
+    };
+
+    //PAGINATION
+    const [currentPage, setCurrentPage] = useState(1);
+    const pageSize = 10;
+    const paginatedData = filteredTable.slice(
+      (currentPage - 1) * pageSize,
+      currentPage * pageSize
+    );
+    const totalPages = Math.ceil(filteredTable.length / pageSize);
+
+    const handleNextPage = () => {
+      if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
+    };
+
+    const handlePrevPage = () => {
+      if (currentPage > 1) setCurrentPage((prev) => prev - 1);
+    };
+
+    //CHANGES IN TABLE
     const calculateQuantity = (target) => {
       return Object.values(target).reduce((sum, value) => sum + value, 0);
     };
@@ -84,14 +124,29 @@ const PPMPTable = memo(
             "dec",
           ].includes(fieldName)
         ) {
-          updatedRow.target_by_quarter = {
-            ...updatedRow.target_by_quarter,
-            [fieldName]: parseInt(newValue) || 0,
+          const newQuarterValue = parseInt(newValue) || 0;
+
+          const updatedTargets = {
+            ...row.target_by_quarter,
+            [fieldName]: newQuarterValue,
           };
-          updatedRow.quantity = calculateQuantity(updatedRow.target_by_quarter);
+
+          const newQuantity = calculateQuantity(updatedTargets);
+
+          if (row.aop_quantity && newQuantity > row.aop_quantity) {
+            const data = {
+              status: "error",
+              title: "Exceeded quantity",
+              description: `Total quantity (${newQuantity}) exceeds AOP quantity (${row.aop_quantity}).`,
+            };
+            setAlertDialog(data);
+            return; // Stop further updates if invalid
+          }
+
+          updatedRow.target_by_quarter = updatedTargets;
+          updatedRow.quantity = newQuantity;
           updatedRow.total_amount =
-            updatedRow.quantity *
-            (parseFloat(updatedRow.estimated_budget) || 0);
+            newQuantity * (parseFloat(updatedRow.estimated_budget) || 0);
         } else if (fieldName === "quantity") {
           updatedRow.quantity = parseFloat(newValue) || 0;
           updatedRow.total_amount =
@@ -109,6 +164,7 @@ const PPMPTable = memo(
       localStorage.setItem("ppmp-items", JSON.stringify(updatedData));
     };
 
+    //RENDER TABLE HEADER
     const renderHeader = () => {
       return (
         <>
@@ -184,6 +240,7 @@ const PPMPTable = memo(
       );
     };
 
+    //RENDER TABLE CELL
     const renderCell = (header, row, isEditing) => {
       const getFieldValue = () => {
         if (
@@ -236,7 +293,6 @@ const PPMPTable = memo(
               onChange={(e) =>
                 handleChange(header.field, row.id, e.target.value)
               }
-              onBlur={() => setEditRowId(null)}
             />
           );
         }
@@ -250,6 +306,8 @@ const PPMPTable = memo(
     };
 
     const lastColumnWidth = columns[columns.length - 1]?.width || "144px";
+
+    //USEEFFECT
     useEffect(() => {
       async function fetchPPMPItemsIfNeeded() {
         setLoading(true);
@@ -288,17 +346,60 @@ const PPMPTable = memo(
       // localStorage.setItem("ppmp-items", JSON.stringify(ppmp.ppmp_items));
       console.log("tableData updated:", ppmpTable); // Logs tableData after it's updated
     }, [ppmp]);
+
     return (
       <Box sx={{ width: "100%", overflow: "auto" }}>
+        <Stack direction="row" mb={2} justifyContent="space-between">
+          <Stack direction="row" alignItems="flex-end" gap={1}>
+            <InputComponent
+              label="Search"
+              placeholder="Search for an item"
+              width="auto"
+              value={searchVal}
+              setValue={setSearchVal}
+            />
+            <ButtonComponent label="Search" />
+          </Stack>
+          <Stack direction="row" gap={1} alignItems="flex-end">
+            <AutocompleteComponent
+              label={"Filter by classification"}
+              placeholder={"Select classification"}
+              size="md"
+              options={classifications}
+              getOptionLabel={(option) => option.name || ""}
+              value={
+                classifications?.find((el) => el.id === selectedClass?.id) ||
+                null
+              }
+              setValue={setSelectedClass}
+            />
+            <AutocompleteComponent
+              label={"Filter by category"}
+              placeholder={"Select category"}
+              size="md"
+              options={categories}
+              getOptionLabel={(option) => option.name || ""}
+              value={
+                categories?.find((el) => el.id === selectedCat?.id) || null
+              }
+              setValue={setSelectedCat}
+            />
+            <ButtonComponent
+              label={"Clear filters"}
+              variant="plain"
+              width="100%"
+              onClick={() => handleClear()}
+            />
+          </Stack>
+        </Stack>
+
         <Sheet
           variant="outlined"
           sx={() => ({
             "--TableCell-height": "40px",
-            // the number is the amount of the header rows.
             "--TableHeader-height": "calc(1 * var(--TableCell-height))",
             "--Table-firstColumnWidth": columns[0]?.width, //set the width of the first column in px
             "--Table-lastColumnWidth": lastColumnWidth, //set the width of the first column in px
-            // background needs to have transparency to show the scrolling shadows
             "--TableRow-stripeBackground": "rgba(0 0 0 / 0.04)",
             "--TableRow-hoverBackground": "rgba(0 0 0 / 0.08)",
             overflow: "auto",
@@ -342,7 +443,7 @@ const PPMPTable = memo(
               }),
             }}
           >
-            {ppmpTable?.length !== 0 ? <thead>{renderHeader()}</thead> : ""}
+            {filteredTable?.length !== 0 ? <thead>{renderHeader()}</thead> : ""}
 
             <tbody>
               {loading ? (
@@ -368,8 +469,8 @@ const PPMPTable = memo(
                     </Box>
                   </td>
                 </tr>
-              ) : ppmpTable?.length > 0 ? (
-                ppmpTable.map((row) => (
+              ) : filteredTable?.length > 0 ? (
+                paginatedData.map((row) => (
                   <tr key={row.id}>
                     {childHeaders.map((header) => {
                       const isEditing =
@@ -416,15 +517,16 @@ const PPMPTable = memo(
         </Sheet>
 
         {/* Pagination Component */}
-        {/* {data?.length >= pageSize && (
-        <PaginationComponent
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onNextPage={handleNextPage}
-          onPrevPage={handlePrevPage}
-          totalRows={data?.length}
-        />
-      )} */}
+        {ppmpTable?.length >= pageSize && (
+          <PaginationComponent
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onNextPage={handleNextPage}
+            onPrevPage={handlePrevPage}
+            totalRows={ppmpTable?.length}
+          />
+        )}
+        <AlertDialogComponent />
       </Box>
     );
   }

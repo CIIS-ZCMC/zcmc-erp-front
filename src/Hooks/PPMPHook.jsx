@@ -50,8 +50,8 @@ const usePPMPHook = create((set) => ({
       url: `${PATH}-items`,
       form: body,
       success: (response) => {
-        const { message } = response.data;
-        callback(response.status, message);
+        const { message, data } = response.data;
+        callback(response.status, message, data);
       },
       failed: callback,
     });

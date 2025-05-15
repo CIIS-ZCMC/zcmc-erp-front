@@ -14,17 +14,13 @@ import {
   selectClasses,
   Option,
 } from "@mui/joy";
-import ScrollableEditableTableComponent from "../../../Components/Common/Table/ScrollableEditableTable";
-import { ppmpHeaders } from "../../../Data/Columns";
 import ModalComponent from "../../../Components/Common/Dialog/ModalComponent";
 import AutocompleteComponent from "../../../Components/Form/AutocompleteComponent";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import { usePPMPItemsHook } from "../../../Hooks/PPMPItemsHook";
-import { descriptionsData, procurement_mode } from "../../../Data/dummy";
 import usePPMPHook from "../../../Hooks/PPMPHook";
 import useItemsHook from "../../../Hooks/ItemsHook";
 import { expenseClassData } from "../../../Data/constants";
-import { IoArrowDownOutline } from "react-icons/io5";
 import { MdAdd, MdKeyboardArrowDown, MdOpenInNew } from "react-icons/md";
 import ConfirmationModalComponent from "../../../Components/Common/Dialog/ConfirmationModalComponent";
 import useModalHook from "../../../Hooks/ModalHook";
@@ -38,27 +34,12 @@ import handleInputValidation from "../../../Utils/HandleInput";
 import PageLoader from "../../../Components/Loading/PageLoader";
 import PPMPTable from "./PPMPTable";
 
-const options = ["Save as draft"];
-
 function PPMPItems(props) {
   const navigate = useNavigate();
-  const {
-    activityObject,
-    description,
-    expenseClass,
-    setLoading,
-    handleSelectActivity,
-    handleSelectExpense,
-  } = usePPMPItemsHook();
-  const {
-    ppmp,
-    modes,
-    activities,
-    getProcModes,
-    getPPMPItems,
-    getActivities,
-    postPPMP,
-  } = usePPMPHook();
+  const { description, setLoading, handleSelectActivity, handleSelectExpense } =
+    usePPMPItemsHook();
+  const { modes, activities, getProcModes, getActivities, postPPMP } =
+    usePPMPHook();
   const {
     classification,
     categories,
@@ -77,6 +58,8 @@ function PPMPItems(props) {
   } = useModalHook();
   const { errors, setError, clearErrors } = userErrorInputHook();
 
+  const [activity, setActivity] = useState({});
+  const [expenseClass, setExpenseClass] = useState({});
   const [openAdd, setOpenAdd] = useState(false);
   const [openReq, setOpenReq] = useState(false);
   const [pageLoader, setPageLoader] = useState(false);
@@ -97,7 +80,15 @@ function PPMPItems(props) {
       value: "draft",
       action: () => handleSubmit(1),
     },
-    { name: "Add item request", value: "add", action: () => setOpenReq(true) },
+    {
+      name: "Add item request",
+      value: "add",
+      action: () => {
+        setActivity({});
+        setExpenseClass({});
+        setOpenReq(true);
+      },
+    },
   ];
 
   const addSpec = () => {
@@ -148,6 +139,7 @@ function PPMPItems(props) {
 
       await postPPMP(formData, (status, message, data) => {
         //return data then save sa localstorage
+        localStorage.setItem("ppmp-items", JSON.stringify(data.ppmp_items));
         setPageLoader(false);
         if (status === 201) {
           const data = {
@@ -219,7 +211,6 @@ function PPMPItems(props) {
 
   return (
     <Fragment>
-      {console.log(activities)}
       <ContainerComponent
         title={"List of items"}
         description={
@@ -233,7 +224,11 @@ function PPMPItems(props) {
               color="success"
               variant={"outlined"}
               endDecorator={<BiPlus />}
-              onClick={() => setOpenAdd(true)}
+              onClick={() => {
+                setActivity({});
+                setExpenseClass({});
+                setOpenAdd(true);
+              }}
             />
             <Select
               placeholder="More options"
@@ -273,6 +268,8 @@ function PPMPItems(props) {
           items={items}
           setPPMPTable={setTableData}
           modes={modes.data}
+          categories={categories}
+          classifications={classification}
         />
       </ContainerComponent>
 
@@ -293,17 +290,19 @@ function PPMPItems(props) {
                 label={"Select one activity"}
                 options={activities}
                 getOptionLabel={(option) => option.activity_code || ""}
-                handleSelect={handleSelectActivity}
-                value={activityObject}
+                setValue={setActivity}
+                value={activity}
                 size="sm"
               />
-              {description !== "" && (
+              {activity?.name && (
                 <>
                   <Divider />
                   <Typography sx={{ fontSize: 12, color: "gray" }}>
                     Description of selected activity
                   </Typography>
-                  <Typography sx={{ fontSize: 14 }}>{description}</Typography>
+                  <Typography sx={{ fontSize: 14 }}>
+                    {activity?.name}
+                  </Typography>
                   <Divider />
                 </>
               )}
@@ -315,7 +314,7 @@ function PPMPItems(props) {
                 }
                 options={expenseClassData}
                 value={expenseClass}
-                handleSelect={handleSelectExpense}
+                setValue={setExpenseClass}
               />
             </Stack>
           </Fragment>
@@ -324,7 +323,7 @@ function PPMPItems(props) {
         rightButtonLabel="Continue"
         rightButtonAction={() =>
           navigate(`/edit-ppmp/add-item/${expenseClass}`, {
-            state: { activityObject },
+            state: { activity },
           })
         }
         hasActionButtons
@@ -357,47 +356,52 @@ function PPMPItems(props) {
         height={step === 1 ? "auto" : step === 2 ? "652px" : "680px"}
         content={
           <Fragment>
-            {step === 1 && (
-              <Stack spacing={2}>
-                <AutocompleteComponent
-                  label={"Select one activity"}
-                  name="activity"
-                  options={activities}
-                  getOptionLabel={(option) => option.activity_code || ""}
-                  handleSelect={handleSelectActivity}
-                  value={activityObject}
-                  size="sm"
-                />
-                {description !== "" && (
-                  <>
-                    <Divider />
-                    <Typography sx={{ fontSize: 12, color: "gray" }}>
-                      Description of selected activity
-                    </Typography>
-                    <Typography sx={{ fontSize: 14 }}>{description}</Typography>
-                    <Divider />
-                  </>
-                )}
+            <Box mt={1}>
+              {step === 1 && (
+                <Stack spacing={2}>
+                  <AutocompleteComponent
+                    label={"Select one activity"}
+                    name="activity"
+                    options={activities}
+                    getOptionLabel={(option) => option.activity_code || ""}
+                    setValue={setActivity}
+                    value={activity}
+                    size="sm"
+                  />
+                  {activity?.name && (
+                    <>
+                      <Divider />
+                      <Typography sx={{ fontSize: 12, color: "gray" }}>
+                        Description of selected activity
+                      </Typography>
+                      <Typography sx={{ fontSize: 14 }}>
+                        {activity?.name}
+                      </Typography>
+                      <Divider />
+                    </>
+                  )}
 
-                <AutocompleteComponent
-                  label={"Select expense class"}
-                  name="expense_class"
-                  helperText={
-                    "Expense class determine the type of budget to be used for the items that are to be selected."
-                  }
-                  options={expenseClassData}
-                  value={expenseClass}
-                  handleSelect={handleSelectExpense}
-                />
-              </Stack>
-            )}
-            {step === 2 && (
-              <Stack spacing={2} mt={1} width="100%">
-                <Stack direction={"row"} gap={1} width="100%">
-                  <Box width={"49%"}>
+                  <AutocompleteComponent
+                    label={"Select expense class"}
+                    name="expense_class"
+                    helperText={
+                      "Expense class determine the type of budget to be used for the items that are to be selected."
+                    }
+                    options={expenseClassData}
+                    getOptionLabel={(option) => option.label || ""}
+                    value={expenseClass}
+                    setValue={setExpenseClass}
+                  />
+                </Stack>
+              )}
+              {step === 2 && (
+                <Stack spacing={2} mb={1}>
+                  <Stack direction={"row"} gap={1}>
                     <AutocompleteComponent
                       label="Classification"
                       name="classification"
+                      options={classification}
+                      getOptionLabel={(option) => option.name || ""}
                       value={
                         classification?.find(
                           (el) => el.id === itemReq?.classification?.id
@@ -411,12 +415,8 @@ function PPMPItems(props) {
                           setError
                         );
                       }}
-                      options={classification}
-                      getOptionLabel={(option) => option.name || ""}
-                      size="md"
                     />
-                  </Box>
-                  <Box width={"49%"}>
+
                     <AutocompleteComponent
                       label="Category"
                       name="category"
@@ -435,124 +435,123 @@ function PPMPItems(props) {
                           setError
                         );
                       }}
-                      size="md"
                     />
-                  </Box>
-                </Stack>
-                <TextareaComponent
-                  label="Item name"
-                  name="item_name"
-                  helperText="Use a specific and descriptive naming convention for best results."
-                  value={itemReq?.item_name}
-                  onChange={(e) =>
-                    handleInputValidation(e, setItemReq, setError)
-                  }
-                />
-                <Stack direction={"row"} gap={1} width="100%">
-                  <AutocompleteComponent
-                    label="Unit of measure"
-                    name="unit"
-                    value={
-                      units?.find((el) => el.id === itemReq?.unit?.id) || null
+                  </Stack>
+                  <TextareaComponent
+                    label="Item name"
+                    name="item_name"
+                    helperText="Use a specific and descriptive naming convention for best results."
+                    value={itemReq?.item_name}
+                    onChange={(e) =>
+                      handleInputValidation(e, setItemReq, setError)
                     }
-                    options={units}
-                    getOptionLabel={(option) => option.name || ""}
-                    handleSelect={(value) => {
-                      handleSingleChangeAutcomplete(
-                        value,
-                        setItemReq,
-                        "unit",
-                        setError
-                      );
-                    }}
-                    size="md"
-                    width="49%"
+                    size="sm"
+                    minRows={3}
                   />
-                  <InputComponent
-                    label="Estimated budget"
-                    name="estimated_budget"
-                    size="md"
-                    value={itemReq.estimated_budget}
-                    handleInput={(e) => handleInputValidation(e, setItemReq)}
-                    width="49%"
-                    color="primary"
-                  />
-                </Stack>
-                <AutocompleteComponent label="Variant" />
+                  <Stack direction={"row"} gap={1} width="100%">
+                    <AutocompleteComponent
+                      label="Unit of measure"
+                      name="unit"
+                      value={
+                        units?.find((el) => el.id === itemReq?.unit?.id) || null
+                      }
+                      options={units}
+                      getOptionLabel={(option) => option.name || ""}
+                      handleSelect={(value) => {
+                        handleSingleChangeAutcomplete(
+                          value,
+                          setItemReq,
+                          "unit",
+                          setError
+                        );
+                      }}
+                    />
+                    <InputComponent
+                      label="Estimated budget"
+                      name="estimated_budget"
+                      size="sm"
+                      value={itemReq?.estimated_budget}
+                      handleInput={(e) => handleInputValidation(e, setItemReq)}
+                      color="primary"
+                    />
+                  </Stack>
+                  <AutocompleteComponent label="Variant" />
 
-                <Checkbox
-                  label="I have conducted a market research prior setting the budget estimates."
-                  sx={{ color: grey[600], width: "100%" }}
-                  size="sm"
-                  checked={itemReq?.market_research}
-                  onChange={(e) =>
-                    setItemReq((prev) => ({
-                      ...prev,
-                      market_research: e.target.checked,
-                    }))
-                  }
-                />
-              </Stack>
-            )}
-            {step === 3 && (
-              <Stack
-                spacing={2}
-                mt={1}
-                sx={{ overflowX: "hidden" }}
-                width="100%"
-              >
-                <Box>
-                  <Typography fontSize={12} color="grey.600">
-                    Item name
-                  </Typography>
-                  <Typography fontSize={14}> {itemReq?.item_name} </Typography>
-                  <Divider sx={{ my: 1 }} />
-                </Box>
-                <Stack spacing={1} width={"100%"}>
-                  <Box height={"235px"} overflow="auto">
-                    {itemReq?.specs?.map((spec, index) => (
-                      <div key={spec.id} style={{ marginBottom: "1rem" }}>
-                        <Stack spacing={1} width={"100%"}>
-                          <TextareaComponent
-                            label={`Specification ${index + 1}:`}
-                            placeholder="e.g., Size: Large"
-                            value={spec.value}
-                            onChange={(e) =>
-                              handleChange(spec.id, e.target.value)
-                            }
-                          />
-                          {itemReq?.specs?.length > 1 && (
-                            <Link
-                              onClick={() => removeSpec(spec.id)}
-                              color="danger"
-                              fontSize={12}
-                              justifyContent={"right"}
-                            >
-                              Remove
-                            </Link>
-                          )}
-                        </Stack>
-                      </div>
-                    ))}
-                  </Box>
-                  <Link
-                    onClick={addSpec}
-                    fontSize={13}
-                    color="success"
-                    endDecorator={<MdAdd />}
-                    sx={{ my: 1 }}
-                  >
-                    Add another
-                  </Link>
-                  <Divider sx={{ my: 1 }} />
+                  <Checkbox
+                    label="I have conducted a market research prior setting the budget estimates."
+                    sx={{ color: grey[600] }}
+                    size="sm"
+                    checked={itemReq?.market_research}
+                    onChange={(e) =>
+                      setItemReq((prev) => ({
+                        ...prev,
+                        market_research: e.target.checked,
+                      }))
+                    }
+                  />
                 </Stack>
-                <InputComponent
-                  label={"Authorization PIN"}
-                  type="password"
-                  helperText="Confirm you action by typing-in your authorization PIN."
-                />
-              </Stack>
-            )}
+              )}
+              {step === 3 && (
+                <Stack spacing={2}>
+                  <Box>
+                    <Typography fontSize={13} color="grey.600">
+                      Item name
+                    </Typography>
+                    <Typography fontSize={14}>
+                      {" "}
+                      {itemReq?.item_name}{" "}
+                    </Typography>
+                    <Divider sx={{ my: 1 }} />
+                  </Box>
+                  <Stack>
+                    <Box height={"235px"} overflow="auto">
+                      {itemReq?.specs?.map((spec, index) => (
+                        <Box key={spec.id} sx={{ mb: 0.5 }}>
+                          <Stack spacing={1}>
+                            <TextareaComponent
+                              label={`Specification ${index + 1}:`}
+                              placeholder="e.g., Size: Large"
+                              value={spec.value}
+                              onChange={(e) =>
+                                handleChange(spec.id, e.target.value)
+                              }
+                              size="sm"
+                            />
+                            {itemReq?.specs?.length > 1 && (
+                              <Link
+                                onClick={() => removeSpec(spec.id)}
+                                color="danger"
+                                fontSize={12}
+                                justifyContent={"right"}
+                              >
+                                Remove
+                              </Link>
+                            )}
+                          </Stack>
+                        </Box>
+                      ))}
+                    </Box>
+                    <Link
+                      onClick={addSpec}
+                      fontSize={13}
+                      color="success"
+                      endDecorator={<MdAdd />}
+                      sx={{ my: 1 }}
+                    >
+                      Add another
+                    </Link>
+                    <Divider sx={{ my: 1 }} />
+                  </Stack>
+                  <InputComponent
+                    label={"Authorization PIN"}
+                    type="password"
+                    name="pin"
+                    helperText="Confirm you action by typing-in your authorization PIN."
+                    handleInput={(e) => handleInputValidation(e, setItemReq)}
+                  />
+                </Stack>
+              )}
+            </Box>
           </Fragment>
         }
         leftButtonLabel={step > 1 ? "Back to previous" : "Cancel"}

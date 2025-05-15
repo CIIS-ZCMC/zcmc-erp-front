@@ -32,29 +32,12 @@ import Item from "../../Items/Item";
 import ModalComponent from "../../../Components/Common/Dialog/ModalComponent";
 import { usePPMPItemsHook } from "../../../Hooks/PPMPItemsHook";
 
-const activityData = [
-  {
-    value: 1,
-    label: "#0001",
-    description: "Sample description for activity 1",
-  },
-  {
-    value: 2,
-    label: "#0002",
-    description: "Sample description for activity 2",
-  },
-  {
-    value: 3,
-    label: "#0003",
-    description: "Sample description for activity 3",
-  },
-];
 const ITEMS_PER_BATCH = 12;
 
 function AddItems(props) {
   const navigate = useNavigate();
   const location = useLocation();
-  const { activityObject } = location.state || {};
+  const { activity } = location.state || {};
   const { expenseId } = useParams();
 
   const { items, getItems } = useItemsHook();
@@ -237,7 +220,7 @@ function AddItems(props) {
 
   useEffect(() => {
     setCartMeta({
-      selectedActivity: activityObject,
+      selectedActivity: activity,
       expense_class_id: expenseId,
     });
 
@@ -256,9 +239,8 @@ function AddItems(props) {
 
   return (
     <Fragment>
-      {console.log(items)}
       <ContainerComponent
-        title={`You are managing resources for Activity: ${activityObject?.activity_code}`}
+        title={`You are managing resources for Activity: ${activity?.activity_code}`}
         description={
           "Collapse this card to view more information about the selected activity."
         }
@@ -298,7 +280,7 @@ function AddItems(props) {
                   </Typography>
                   <Box width={"200px"} mt={1}>
                     <Typography fontSize={12} color="primary">
-                      {activityObject?.activity_code}
+                      {activity?.activity_code}
                     </Typography>
                   </Box>
                 </BoxComponent>

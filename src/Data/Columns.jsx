@@ -265,7 +265,7 @@ export const ppmpHeaders = (handleDeleteRow, items, modes) => [
   {
     field: "activity_code",
     name: "Activity Code",
-    width: 150,
+    width: 155,
     align: "center",
     display: "none",
     render: (params) => {
@@ -338,13 +338,13 @@ export const ppmpHeaders = (handleDeleteRow, items, modes) => [
   {
     field: "aop_quantity",
     name: "Quantity",
-    width: 95,
+    width: 85,
     align: "center",
   },
   {
     field: "quantity",
     name: "Quantity Inputted",
-    width: 95,
+    width: 85,
     align: "center",
     render: (params) => {
       return (
