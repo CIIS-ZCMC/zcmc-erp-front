@@ -1,9 +1,12 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
-import { v4 as uuid } from 'uuid'
+import { v4 as uuid } from "uuid";
 
-
-const initialResource = (rowId = 1, parentId = null, purchaseTypeId = null) => ({
+const initialResource = (
+  rowId = 1,
+  parentId = null,
+  purchaseTypeId = null
+) => ({
   id: uuid(),
   parentId: parentId,
   rowId: rowId,
@@ -14,14 +17,14 @@ const initialResource = (rowId = 1, parentId = null, purchaseTypeId = null) => (
   totalCost: 0,
   expenseClass: "",
   purchaseTypeId: purchaseTypeId,
-})
+});
 
 const useResourceHook = create(
   persist(
     (set, get) => ({
       resources: [],
       cart: [],
-      expenseClass: '',
+      expenseClass: "",
       purchaseTypeId: null,
       quantity: 0,
 
@@ -29,32 +32,33 @@ const useResourceHook = create(
         const { cart } = get();
 
         // Try to find the existing item by ID
-        const existingItem = cart?.find((cartItem) => cartItem?.id === item?.id);
+        const existingItem = cart?.find(
+          (cartItem) => cartItem?.id === item?.id
+        );
 
         if (existingItem) {
           // Update only the quantity of the existing item
           const updatedCart = cart.map((cartItem) =>
             cartItem?.id === item?.id
               ? {
-                ...cartItem,
-                aop_quantity: cartItem.aop_quantity + quantity,
-                parentId: parentId,
-              }
+                  ...cartItem,
+                  aop_quantity: cartItem.aop_quantity + quantity,
+                  parentId: parentId,
+                }
               : cartItem
           );
           set({ cart: updatedCart });
-          console.log(updatedCart)
+          console.log(updatedCart);
         } else {
-
           const newItem = {
             ...item,
-            aop_quantity: item.quantity || 1,
+            aop_quantity: quantity || 1,
             parentId: parentId,
           };
 
           const updatedCart = [...cart, newItem];
           set({ cart: updatedCart });
-          console.log(updatedCart)
+          console.log(updatedCart);
         }
       },
 
@@ -63,7 +67,7 @@ const useResourceHook = create(
         // console.log(id)
         set((state) => ({
           cart: state.cart.filter((item) => item.id !== id),
-        }))
+        }));
       },
 
       // Update quantity
@@ -87,6 +91,7 @@ const useResourceHook = create(
       name: "resources-storage",
       getStorage: () => localStorage,
     }
-  ));
+  )
+);
 
 export default useResourceHook;
