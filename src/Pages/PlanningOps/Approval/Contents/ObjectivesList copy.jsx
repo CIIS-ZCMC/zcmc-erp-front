@@ -13,12 +13,13 @@ import {
   useActivityActions,
   useActivityUIStates,
 } from "../../../../Hooks/AOP/ActivityHook";
-import {
+import useAccordionHook, {
   useExpandedChild,
   useExpandedParent,
 } from "../../../../Hooks/AccordionHook";
 import { useCommentActions } from "../../../../Hooks/CommentHook";
 import EditObjective from "./EditObjective";
+import { useCallback } from "react";
 
 const ObjectivesList = () => {
   // STATES
@@ -33,28 +34,60 @@ const ObjectivesList = () => {
     () => aopApplicationData ?? localStorageGetter("aopApplication"),
     [aopApplicationData]
   );
-  const { setActiveActivity, getActivityById } = useActivityActions();
+  const {
+    // setActiveActivity,
+    getActivityById,
+  } = useActivityActions();
 
   const { getCommentsByActivity } = useCommentActions();
-  const { activeActivity } = useActivityUIStates();
+  // const { activeActivity } = useActivityUIStates();
+
+  const { handleRotation } = useAccordionHook();
 
   // ACCORDION
-  const expandedParent = useExpandedParent();
-  const expandedChild = useExpandedChild();
+  // const expandedParent = useExpandedParent();
+  // const expandedChild = useExpandedChild();
 
-  // MODAL
+  const [expandedParentLocal, setExpandedParentLocal] = useState([
+    {
+      name: "parent",
+      id: 1,
+    },
+  ]);
+  const [expandedChildLocal, setExpandedChildLocal] = useState([
+    {
+      name: "child",
+      id: 1,
+    },
+  ]);
+  const [activeActivityLocal, setActiveActivityLocal] = useState(1);
+  //   MODAL
   const [openModal, setOpenModal] = useState(false);
 
-  // FUNCTIONS
+  //   FUNCTIONS
+
+  const fetchData = useCallback(() => {
+    Promise.all([
+      getCommentsByActivity(activeActivityLocal, () => {}),
+      // getActivityById(id, () => {}),
+    ]).catch((error) => {
+      console.error("Error fetching data:", error);
+    });
+  }, [activeActivityLocal, getCommentsByActivity]);
+
+  const handleActiveActivity = (id) => {
+    setActiveActivityLocal(id);
+
+    try {
+      fetchData();
+    } catch (error) {
+      console.error("Error in handleActiveActivity:", error);
+    }
+  };
+
   const handleClickActivity = (id) => {
-    if (id !== activeActivity) {
-      setActiveActivity(id);
-      Promise.all([
-        getCommentsByActivity(id, () => {}),
-        getActivityById(id, () => {}),
-      ]).catch((error) => {
-        console.error("Error fetching data:", error);
-      });
+    if (id !== activeActivityLocal) {
+      handleActiveActivity(id);
     }
   };
 
@@ -86,11 +119,33 @@ const ObjectivesList = () => {
     });
   };
 
+  const handleExpand = (isOpen, id, name) => {
+    // set({ rotation: true, rotationId: id });\
+
+    if (name === "child") {
+      setExpandedChildLocal((prev) => {
+        return isOpen
+          ? prev.filter((item) => item.id !== id)
+          : [...prev, { id, name }];
+      });
+    } else {
+      setExpandedParentLocal((prev) => {
+        return isOpen
+          ? prev.filter((item) => item.id !== id)
+          : [...prev, { id, name }];
+      });
+    }
+
+    // setTimeout(() => handleRotation(), 500);
+  };
+
   useEffect(() => {
-    if (AOPApplication?.[0]?.activities?.[0]?.id && !activeActivity) {
-      setActiveActivity(AOPApplication[0].activities[0].id);
+    if (AOPApplication?.[0]?.activities?.[0]?.id && !activeActivityLocal) {
+      handleActiveActivity(AOPApplication[0].activities[0].id);
     }
   }, [AOPApplication]);
+
+  useEffect(() => console.info("This page rerendered"), []);
 
   return (
     <Fragment>
@@ -112,7 +167,8 @@ const ObjectivesList = () => {
             <CustomAccordionComponent
               key={objective_key}
               id={objective_key + 1}
-              expanded={expandedParent}
+              expanded={expandedParentLocal}
+              handleExpand={handleExpand}
               title={
                 <Typography>
                   Objective #{objective_key + 1} -
@@ -139,11 +195,12 @@ const ObjectivesList = () => {
 
                 <CustomAccordionComponent
                   size={"sm"}
-                  expanded={expandedChild}
+                  expanded={expandedChildLocal}
                   title={`Activities (${activities?.length})`}
                   id={objective_key + 1}
                   name="child"
                   withActivity={activities?.length > 0}
+                  handleExpand={handleExpand}
                 >
                   <Stack gap={1}>
                     {activities?.map(
@@ -154,7 +211,7 @@ const ObjectivesList = () => {
                         <ActivityContainerComponent
                           key={activity_key}
                           onClick={() => handleClickActivity(id)}
-                          active={id === activeActivity}
+                          active={id === activeActivityLocal}
                           label={`Activity #${activity_key + 1} `}
                           text={name}
                           withComment={with_comments}

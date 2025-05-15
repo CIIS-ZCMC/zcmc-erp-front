@@ -51,9 +51,11 @@ const useCommentHook = create((set, get) => ({
           set({ allComments: data });
           callback(response.status, data);
         },
-        failed: (response) => {
+        failed: () => {
           set({ allComments: [] });
-          callback(response);
+          if (typeof callback === "function") {
+            callback(500, "Something went wrong");
+          }
         },
       });
     },

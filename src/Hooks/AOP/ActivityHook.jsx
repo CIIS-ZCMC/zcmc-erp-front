@@ -34,12 +34,11 @@ const useActivityHook = create((set) => ({
           const {
             data,
             data: { resources },
-            message,
           } = response.data;
 
           set({ activity: data, resources: resources, isLoading: false });
 
-          callback(response.status, message, data);
+          callback(response.status, data);
         },
       });
     },

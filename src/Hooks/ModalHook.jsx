@@ -55,6 +55,8 @@ const useModalHook = create((set, get) => ({
 
   // CONFIRMATION MODAL
   setConfirmationModal: (data) => {
+    console.log(get().confirmationModalState);
+    get().closeConfirmation();
     const { status, title, description } = data ?? null;
 
     try {

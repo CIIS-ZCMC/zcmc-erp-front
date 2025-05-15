@@ -9,23 +9,24 @@ import useModalHook from "../../Hooks/ModalHook";
 import useSnackbarHook from "../Common/SnackbarHook";
 import { localStorageGetter } from "../../Utils/LocalStorage";
 import { useAOPApplicationsActions } from "../../Hooks/AOP/AOPApplicationsHook";
+import { useActivityUIStates } from "../../Hooks/AOP/ActivityHook";
 
-const PostCommentComponent = ({
-  activityId,
-  postCommentModal,
-  setPostCommentModal,
-}) => {
-  const comment = useComment();
-  const { setComment, postComment } = useCommentActions();
+const PostCommentComponent = ({ postCommentModal, setPostCommentModal }) => {
+  // STATES
   const [loading, setLoading] = useState(false);
   const AOP_APPLICATION_ID = localStorageGetter("aop_application_id");
+  const { activeActivity } = useActivityUIStates();
+
+  // HOOKS
+  const comment = useComment();
+  const { setComment, postComment } = useCommentActions();
   const { setConfirmationModal, closeConfirmation } = useModalHook();
   const { showSnack } = useSnackbarHook();
   const { getAOPApplicationById } = useAOPApplicationsActions();
 
   const submit = () => {
     setLoading(true);
-    postComment({ activityId: activityId, comment: comment }, (status) => {
+    postComment({ activityId: activeActivity, comment: comment }, (status) => {
       setLoading(false);
       setPostCommentModal(false);
       closeConfirmation();
@@ -72,7 +73,7 @@ const PostCommentComponent = ({
         />
       </Box>
 
-      {/* Test Confirmation Modal */}
+      {/* Confirmation Modal */}
       {postCommentModal && (
         <ConfirmationModalComponent
           leftButtonLabel="Cancel"
