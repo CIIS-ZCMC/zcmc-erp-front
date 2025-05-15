@@ -91,7 +91,7 @@ const Items = () => {
     };
 
     const add = () => {
-        addResourceToCart(selectedItem, activityId);
+        addResourceToCart(selectedItem, activityId, quantity);
         handleCloseItemDialog();
     };
 
