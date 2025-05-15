@@ -13,7 +13,7 @@ const useAuthStore = create((set, get) => ({
       set({ loading: true, error: null });
 
       return await erp_api
-        .post("authenticate", { params })
+        .post("authenticate", params)
         .then((res) => {
           const { data, status } = res;
 
@@ -23,6 +23,7 @@ const useAuthStore = create((set, get) => ({
 
           set({ user: data.data, meta: data.meta, loading: false });
 
+          console.log(data.meta);
           return data.meta.redirect_to;
         })
         .catch((err) => {

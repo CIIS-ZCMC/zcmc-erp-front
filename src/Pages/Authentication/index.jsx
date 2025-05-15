@@ -37,10 +37,10 @@ const Authentication = () => {
    *
    * @param {any} token : Token to allow cancelation of request in case the user remove the current tab
    */
-  function init() {
+  async function init() {
     const params = { session_id: id };
 
-    const redirect_to = authenticate(params);
+    const redirect_to = await authenticate(params);
 
     if (!!redirect_to) {
       navigate(redirect_to);
