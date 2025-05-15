@@ -23,10 +23,13 @@ import { CategoryModalContent } from "../Modals/CategoryModalContent";
 import { ClassificationModalContent } from "../Modals/ClassificationModalContent";
 import { VariantModalContent } from "../Modals/VariantModalContent";
 import { ItemModalContent } from "../Modals/ItemModalContent";
+import useLibItemHook from "../../../Hooks/Libraries/LibItemHooks";
+import useModalHook from "../../../Hooks/ModalHook";
 const ItemLibrary = () => {
-  const [open, setOpen] = useState(false);
+  const { openModal, setOpenModal } = useModalHook();
   const location = useLocation();
   const UrllastSegment = location.pathname.split("/").filter(Boolean).pop();
+
   const ModalContent = () => {
     switch (UrllastSegment) {
       case "classification":
@@ -39,6 +42,7 @@ const ItemLibrary = () => {
         return <ItemModalContent />;
     }
   };
+
   return (
     <Fragment>
       <PageTitle
@@ -62,9 +66,7 @@ const ItemLibrary = () => {
                 label={"New record"}
                 variant={"solid"}
                 size={"sm"}
-                onClick={() => {
-                  setOpen(true);
-                }}
+                onClick={() => setOpenModal(true, false, true)}
               />
             </Stack>
           }
@@ -97,8 +99,8 @@ const ItemLibrary = () => {
       <Modal
         aria-labelledby="modal-title"
         aria-describedby="modal-desc"
-        open={open}
-        onClose={() => setOpen(false)}
+        open={openModal.isOpen}
+        onClose={() => setOpenModal(false, false, false)}
         sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}
       >
         <Sheet
