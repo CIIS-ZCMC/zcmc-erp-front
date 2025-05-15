@@ -339,6 +339,7 @@ const TableRow = ({
                                     component="button"
                                     onClick={() => navigate(`/items/${rowId}`, {
                                         state: {
+                                            parentId: id,
                                             activityrowId: rowId,
                                             cost: cost
                                         }

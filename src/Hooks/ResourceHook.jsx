@@ -25,7 +25,7 @@ const useResourceHook = create(
       purchaseTypeId: null,
       quantity: 0,
 
-      addResourceToCart: (item) => {
+      addResourceToCart: (item, parentId, quantity = 1) => {
         const { cart } = get();
 
         // Try to find the existing item by ID
@@ -37,17 +37,19 @@ const useResourceHook = create(
             cartItem?.id === item?.id
               ? {
                 ...cartItem,
-                aop_quantity: (cartItem.aop_quantity || 0) + (item.quantity || 1),
+                aop_quantity: cartItem.aop_quantity + quantity,
+                parentId: parentId,
               }
               : cartItem
           );
           set({ cart: updatedCart });
-          // console.log(updatedCart)
+          console.log(updatedCart)
         } else {
 
           const newItem = {
             ...item,
             aop_quantity: item.quantity || 1,
+            parentId: parentId,
           };
 
           const updatedCart = [...cart, newItem];
@@ -57,10 +59,12 @@ const useResourceHook = create(
       },
 
       // Remove  resourse item from cart
-      removeFromCart: (id) =>
+      removeFromCart: (id) => {
+        // console.log(id)
         set((state) => ({
           cart: state.cart.filter((item) => item.id !== id),
-        })),
+        }))
+      },
 
       // Update quantity
       updateQuantity: (id, quantity) =>
