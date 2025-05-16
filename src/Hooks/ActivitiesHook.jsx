@@ -56,22 +56,31 @@ const useActivitiesHook = create(
 
             setInitialRender: (value) => set({ initialRender: value }),
 
-            // Remove  resourse item from cart
             removeActivity: (id) => {
                 const activities = get().activities;
+
                 const filtered = activities.filter((item) => item.id !== id);
 
-                set({
-                    activities: [
-                        ...filtered.map((item, index) => {
-                            return {
-                                ...item,
-                                rowId: index + 1,
-                            };
-                        }),
-                    ],
+                const groupedByParent = {};
+
+                filtered.forEach((item) => {
+                    if (!groupedByParent[item.parentId]) {
+                        groupedByParent[item.parentId] = [];
+                    }
+                    groupedByParent[item.parentId].push(item);
                 });
+
+                const newActivities = Object.values(groupedByParent)
+                    .flatMap((group) =>
+                        group.map((item, index) => ({
+                            ...item,
+                            rowId: index + 1,
+                        }))
+                    );
+
+                set({ activities: newActivities });
             },
+
 
             findActivitiesByObjectiveID: (objID) => {
                 return get().activities.filter((item) => item.parentId == objID);

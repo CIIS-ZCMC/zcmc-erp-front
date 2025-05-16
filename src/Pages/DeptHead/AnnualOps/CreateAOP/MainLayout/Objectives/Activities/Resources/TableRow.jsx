@@ -19,16 +19,16 @@ const TableRow = ({
 
     return (
         <Fragment>
-            {rows.map((row) => (
+            {rows.map((row, index) => (
                 <tr key={row.id}>
                     <td>
                         <Typography>
-                            {row.id}
+                            {index + 1}
                         </Typography>
                     </td>
 
                     {/* Editable Name Field */}
-                    < td onClick={() => setEditRowId(row.id)}>
+                    < td onClick={() => setEditRowId(id)}>
                         {editRowId === row.id ? (
                             <Input
                                 size='sm'
@@ -40,61 +40,113 @@ const TableRow = ({
                                 onBlur={handleBlur}
                             />
                         ) : (
-                            <Typography>{row.item_name}</Typography>
+                            <Typography>{row.name}</Typography>
                         )}
                     </td >
 
-
                     {/* Editable Name Field */}
-                    < td onClick={() => setEditRowId(row.id)}>
+                    < td onClick={() => setEditRowId(id)}>
                         {editRowId === row.id ? (
                             <Input
                                 size='sm'
                                 autoFocus
                                 value={
-                                    editField.field === "resource_type" ? editField.value : row.resource_type
+                                    editField.field === "item_name" ? editField.value : row.item_name
                                 }
-                                onChange={(e) => handleEdit(row.id, "resource_type", e.target.value)}
+                                onChange={(e) => handleEdit(row.id, "item_name", e.target.value)}
                                 onBlur={handleBlur}
                             />
                         ) : (
-                            <Typography>{row.resource_type}</Typography>
+                            <Typography>{row.typeOfResources}</Typography>
                         )}
                     </td >
 
                     {/* Editable Name Field */}
-                    < td onClick={() => setEditRowId(row.id)}>
+                    < td onClick={() => setEditRowId(id)}>
                         {editRowId === row.id ? (
                             <Input
                                 size='sm'
                                 autoFocus
                                 value={
-                                    editField.field === "expense_class" ? editField.value : row.expense_class
+                                    editField.field === "item_name" ? editField.value : row.item_name
                                 }
-                                onChange={(e) => handleEdit(row.id, "expense_class", e.target.value)}
+                                onChange={(e) => handleEdit(row.id, "item_name", e.target.value)}
                                 onBlur={handleBlur}
                             />
                         ) : (
-                            <Typography>{row.expense_class}</Typography>
+                            <Typography>{row.quantity}</Typography>
                         )}
                     </td >
 
                     {/* Editable Name Field */}
-                    <td onClick={() => setEditRowId(row.id)}>
+                    < td onClick={() => setEditRowId(id)}>
                         {editRowId === row.id ? (
                             <Input
                                 size='sm'
                                 autoFocus
                                 value={
-                                    editField.field === "procurement_mode" ? editField.value : row.procurement_mode
+                                    editField.field === "item_name" ? editField.value : row.item_name
                                 }
-                                onChange={(e) => handleEdit(row.id, "procurement_mode", e.target.value)}
+                                onChange={(e) => handleEdit(row.id, "item_name", e.target.value)}
                                 onBlur={handleBlur}
                             />
                         ) : (
-                            <Typography>{row.procurement_mode}</Typography>
+                            <Typography>{row.individualPrice}</Typography>
                         )}
-                    </td>
+                    </td >
+
+                    {/* Editable Name Field */}
+                    < td onClick={() => setEditRowId(id)}>
+                        {editRowId === row.id ? (
+                            <Input
+                                size='sm'
+                                autoFocus
+                                value={
+                                    editField.field === "item_name" ? editField.value : row.item_name
+                                }
+                                onChange={(e) => handleEdit(row.id, "item_name", e.target.value)}
+                                onBlur={handleBlur}
+                            />
+                        ) : (
+                            <Typography>{row.totalCost}</Typography>
+                        )}
+                    </td >
+
+                    < td onClick={() => setEditRowId(id)}>
+                        {editRowId === row.id ? (
+                            <Input
+                                size='sm'
+                                autoFocus
+                                value={
+                                    editField.field === "item_name" ? editField.value : row.item_name
+                                }
+                                onChange={(e) => handleEdit(row.id, "item_name", e.target.value)}
+                                onBlur={handleBlur}
+                            />
+                        ) : (
+                            <Typography>{row.expenseClass}</Typography>
+                        )}
+                    </td >
+
+                    {/* Editable Name Field */}
+                    < td onClick={() => setEditRowId(id)}>
+                        {editRowId === row.id ? (
+                            <Input
+                                size='sm'
+                                autoFocus
+                                value={
+                                    editField.field === "item_name" ? editField.value : row.item_name
+                                }
+                                onChange={(e) => handleEdit(row.id, "item_name", e.target.value)}
+                                onBlur={handleBlur}
+                            />
+                        ) : (
+                            <Typography>{row.purchaseType}</Typography>
+                        )}
+                    </td >
+
+
+
 
                     <td>
                         <Stack
@@ -104,14 +156,6 @@ const TableRow = ({
                             justifyContent={'space-between'}
                             gap={1}
                         >
-                            {/* //trigger modal */}
-                            <Link
-                                component="button"
-                                onClick={() => navigate(`person/1`)}
-                                endDecorator={<ExternalLink size={16} />}
-                            >
-                                Responsible Person
-                            </Link>
 
                             <ButtonComponent
                                 label={'Delete'}

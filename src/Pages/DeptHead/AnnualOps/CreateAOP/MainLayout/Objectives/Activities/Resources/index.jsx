@@ -28,16 +28,6 @@ const Resources = () => {
         console.log(resources)
     }, [resources])
 
-    const [rows, setRows] = useState([
-        {
-            id: 1,
-            item_name: "Strategic",
-            resource_type: 'Resource Type',
-            expense_class: 'Expense Class',
-            procurement_mode: 'Mode'
-        },
-    ]);
-
     return (
         <Fragment>
 
@@ -60,7 +50,7 @@ const Resources = () => {
                     haverRow
                     tableRow={
                         <TableRow
-                            rows={rows}
+                            rows={resources}
                         // handleEdit={handleEdit}
                         // handleBlur={handleBlur}
                         // editField={editField}

@@ -206,18 +206,40 @@ export const AOP_RESOURCE_HEADER = [
   },
 
   {
+    field: "quantity",
+    name: " Quantity",
+    width: "20%",
+    align: "center",
+  },
+
+  {
+    field: "individual_price",
+    name: "individual Price",
+    width: "20%",
+    align: "center",
+  },
+
+  {
+    field: "total_cost",
+    name: "Total Cost",
+    width: "20%",
+    align: "center",
+  },
+
+  {
+    field: "purchase_type",
+    name: "Purchase Type",
+    width: "20%",
+    align: "center",
+  },
+
+  {
     field: "expense_class",
     name: "Expense class of unit",
     width: "20%",
     align: "center",
   },
 
-  {
-    field: "procurement_mode",
-    name: "Mode of procurement",
-    width: "20%",
-    align: "center",
-  },
 
   {
     field: "action",

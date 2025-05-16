@@ -32,27 +32,15 @@ const Activities = () => {
   const currentPath = location.pathname;
   const childPath = currentPath === `/aop-create/activities/${objectiveId}`;
 
-  const {
-    current_parent_id,
-    setCurrentObjective,
-    current_row_id,
-    setCurrentRowId,
-  } = useObjectivesHook();
-  const {
-    activities,
-    addActivity,
-    initialRender,
-    setInitialRender,
-    updateActivityField,
-    removeActivity,
-  } = useActivitiesHook();
+  const { current_parent_id, setCurrentObjective, current_row_id, setCurrentRowId } = useObjectivesHook();
+  const { activities, addActivity, updateActivityField, removeActivity } = useActivitiesHook();
 
   useEffect(() => {
     console.log(activities);
     const hasActivitiesForParent = activities.some(
       (act) => act.parentId === parentId
     );
-    if (!hasActivitiesForParent && parentId && initialRender) {
+    if (!hasActivitiesForParent && parentId) {
       addActivity(parentId ?? current_parent_id);
     }
   }, [activities, parentId]);
@@ -68,11 +56,11 @@ const Activities = () => {
 
     if (current_row_id !== null) {
       if (current_parent_id !== objectiveRowId && !!objectiveRowId) {
-        console.log(current_row_id);
+        console.log(current_row_id)
         setCurrentRowId(objectiveRowId);
       }
     } else {
-      setCurrentRowId(objectiveRowId);
+      setCurrentRowId(objectiveRowId)
     }
   }, []);
 
@@ -84,6 +72,8 @@ const Activities = () => {
 
   return (
     <Fragment>
+
+
       {childPath && (
         <>
           <ContainerComponent
@@ -113,17 +103,11 @@ const Activities = () => {
               {isCollapsed && (
                 <Box>
                   <Stack direction={"row"} gap={2}>
-                    <SheetComponent variant={"outlined"}>
-                      Content 1
-                    </SheetComponent>
+                    <SheetComponent variant={"outlined"}>Content 1</SheetComponent>
 
-                    <SheetComponent variant={"outlined"}>
-                      Content 2
-                    </SheetComponent>
+                    <SheetComponent variant={"outlined"}>Content 2</SheetComponent>
 
-                    <SheetComponent variant={"outlined"}>
-                      Content 3
-                    </SheetComponent>
+                    <SheetComponent variant={"outlined"}>Content 3</SheetComponent>
                   </Stack>
                 </Box>
               )}
@@ -170,10 +154,7 @@ const Activities = () => {
                 label={"Back"}
                 size={"md"}
                 variant={"outlined"}
-                onClick={() => {
-                  navigate(`/aop-create`);
-                  setInitialRender(true);
-                }}
+                onClick={() => navigate(`/aop-create`)}
               />
             </Stack>
           </ContainerComponent>
