@@ -25,6 +25,7 @@ const useActivitiesHook = create(
     persist(
         (set, get) => ({
             activities: [],
+            initialRender: true,
 
             //Update specific field in an activity row
             updateActivityField: (id, fieldPath, value) => {
@@ -44,26 +45,32 @@ const useActivitiesHook = create(
                 set((state) => ({
                     activities: [
                         ...state.activities,
-                        initialActivity(current.filter((item) => item.parentId == parentId).length + 1, parentId),
+                        initialActivity(
+                            current.filter((item) => item.parentId == parentId).length + 1,
+                            parentId
+                        ),
                     ],
+                    initialRender: false,
                 }));
             },
+
+            setInitialRender: (value) => set({ initialRender: value }),
 
             // Remove  resourse item from cart
             removeActivity: (id) => {
                 const activities = get().activities;
-                const filtered = activities.filter(item => item.id !== id)
-
-                console.log(filtered)
+                const filtered = activities.filter((item) => item.id !== id);
 
                 set({
-                    activities: [...filtered.map((item, index) => {
-                        return {
-                            ...item,
-                            rowId: index + 1
-                        }
-                    })]
-                })
+                    activities: [
+                        ...filtered.map((item, index) => {
+                            return {
+                                ...item,
+                                rowId: index + 1,
+                            };
+                        }),
+                    ],
+                });
             },
 
             findActivitiesByObjectiveID: (objID) => {
