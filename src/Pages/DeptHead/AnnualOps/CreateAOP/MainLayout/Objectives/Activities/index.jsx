@@ -36,6 +36,7 @@ const Activities = () => {
   const { activities, addActivity, updateActivityField, removeActivity } = useActivitiesHook();
 
   useEffect(() => {
+    // console.log(activities);
     const hasActivitiesForParent = activities.some(
       (act) => act.parentId === parentId
     );

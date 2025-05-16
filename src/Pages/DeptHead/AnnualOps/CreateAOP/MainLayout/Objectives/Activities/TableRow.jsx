@@ -71,7 +71,7 @@ const TableRow = ({
                     <tr key={id}>
                         <td>
                             <Typography>
-                                {rowId}
+                                {index + 1}
                             </Typography>
                         </td>
 

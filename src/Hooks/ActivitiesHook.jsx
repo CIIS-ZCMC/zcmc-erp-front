@@ -44,17 +44,24 @@ const useActivitiesHook = create(
                 set((state) => ({
                     activities: [
                         ...state.activities,
-                        initialActivity(current.length + 1, parentId),
+                        initialActivity(current.filter((item) => item.parentId == parentId).length + 1, parentId),
                     ],
                 }));
             },
 
             // Remove  resourse item from cart
             removeActivity: (id) => {
-                // console.log(id)
-                set((state) => ({
-                    activities: state.activities.filter((item) => item.id !== id),
-                }));
+                const activities = get().activities;
+                const filtered = activities.filter(item => item.id !== id)
+                console.log(filtered)
+                set({
+                    activities: [...filtered.map((item, index) => {
+                        return {
+                            ...item,
+                            rowId: index + 1
+                        }
+                    })]
+                })
             },
 
             findActivitiesByObjectiveID: (objID) => {
