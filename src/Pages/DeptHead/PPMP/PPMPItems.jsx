@@ -36,19 +36,25 @@ import PPMPTable from "./PPMPTable";
 
 function PPMPItems(props) {
   const navigate = useNavigate();
-  const { description, setLoading, handleSelectActivity, handleSelectExpense } =
-    usePPMPItemsHook();
-  const { modes, activities, getProcModes, getActivities, postPPMP } =
-    usePPMPHook();
+  const {
+    modes,
+    activities,
+    getProcModes,
+    getActivities,
+    postPPMP,
+    postItemRequest,
+  } = usePPMPHook();
   const {
     classification,
     categories,
     units,
     items,
+    variants,
     getItems,
     getItemCategories,
     getItemClassification,
     getItemUnits,
+    getVariants,
   } = useItemsHook();
   const {
     setAlertDialog,
@@ -163,6 +169,51 @@ function PPMPItems(props) {
     }
   };
 
+  const handleRequest = async () => {
+    const formData = new FormData();
+
+    formData.append("activity", JSON.stringify(activity));
+    formData.append("expense_class", JSON.stringify(expenseClass));
+    formData.append("classification", JSON.stringify(itemReq.classification));
+    formData.append("category", JSON.stringify(itemReq.category));
+    formData.append("item_name", itemReq.item_name || "");
+    formData.append("unit", JSON.stringify(itemReq.unit));
+    formData.append("estimated_budget", itemReq.estimated_budget || "");
+    formData.append("variant", JSON.stringify(itemReq.variant));
+    formData.append(
+      "market_research",
+      itemReq.market_research ? "true" : "false"
+    );
+    formData.append("specifications", JSON.stringify(itemReq.specs));
+    formData.append("pin", itemReq.pin || "");
+
+    // for (let [key, value] of formData.entries()) {
+    //   console.log(`${key}: ${value}`);
+    // }
+
+    await postItemRequest(formData, (status, message, data) => {
+      //return data then save sa localstorage
+      setPageLoader(false);
+      if (status === 201) {
+        const data = {
+          status: "success",
+          title: message,
+          description: message,
+        };
+
+        setAlertDialog(data);
+      } else {
+        const data = {
+          status: "error",
+          title: message,
+          description: message,
+        };
+
+        setAlertDialog(data);
+      }
+    });
+  };
+
   const handleNextStep = () => {
     console.log(itemReq);
     setStep((prev) => Math.min(prev + 1, 3));
@@ -172,20 +223,17 @@ function PPMPItems(props) {
     setStep((prev) => Math.max(prev - 1, 1));
   };
 
-  // const handleDeleteRow = (id) => {
-  //   // Optional: Show loading spinner
-  //   setLoading(true);
-  //   setTimeout(() => {
-  //     const updated = tableData.filter((row) => row.id !== id);
-  //     setLoading(false);
-  //     setTableData(updated);
-  //     localStorage.setItem("ppmp-items", JSON.stringify(updated));
-  //   }, 1000);
-  // };
+  const handleClose = () => {
+    closeAlertDialog();
+    setOpenReq(false);
+    setItemReq({});
+    setActivity({});
+    setExpenseClass({});
+    setPin("");
+  };
 
   useEffect(() => {
     async function fetchAll() {
-      setLoading(true);
       // Step 2: Wrap callbacks in Promises for async/await
       const wrap = (fn) => new Promise((resolve) => fn(() => resolve()));
 
@@ -198,11 +246,10 @@ function PPMPItems(props) {
           wrap(getItemUnits),
           wrap(getProcModes),
           wrap(getItems),
+          wrap(getVariants),
         ]);
       } catch (err) {
         console.error("Fetching error:", err);
-      } finally {
-        setLoading(false);
       }
     }
 
@@ -475,7 +522,25 @@ function PPMPItems(props) {
                       color="primary"
                     />
                   </Stack>
-                  <AutocompleteComponent label="Variant" />
+                  {console.log(variants)}
+                  <AutocompleteComponent
+                    label="Variant"
+                    name="variant"
+                    value={
+                      variants?.find((el) => el.id === itemReq?.variant?.id) ||
+                      null
+                    }
+                    options={variants}
+                    getOptionLabel={(option) => option.name || ""}
+                    handleSelect={(value) => {
+                      handleSingleChangeAutcomplete(
+                        value,
+                        setItemReq,
+                        "variant",
+                        setError
+                      );
+                    }}
+                  />
 
                   <Checkbox
                     label="I have conducted a market research prior setting the budget estimates."
@@ -546,6 +611,7 @@ function PPMPItems(props) {
                     label={"Authorization PIN"}
                     type="password"
                     name="pin"
+                    value={itemReq.pin}
                     helperText="Confirm you action by typing-in your authorization PIN."
                     handleInput={(e) => handleInputValidation(e, setItemReq)}
                   />
@@ -567,7 +633,7 @@ function PPMPItems(props) {
           if (step < 3) {
             handleNextStep();
           } else {
-            handleSubmit(0);
+            handleRequest();
           }
         }}
         hasActionButtons
@@ -605,7 +671,7 @@ function PPMPItems(props) {
         withAuthPin={true}
         setAuthPin={setPin}
       />
-      <AlertDialogComponent leftButtonAction={() => closeAlertDialog()} />
+      <AlertDialogComponent leftButtonAction={() => handleClose()} />
       <PageLoader isLoading={pageLoader} />
     </Fragment>
   );

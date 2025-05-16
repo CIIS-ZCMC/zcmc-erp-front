@@ -9,15 +9,40 @@ import {
 } from "@mui/joy";
 import { DeleteIcon } from "lucide-react";
 import { BsOpencollective } from "react-icons/bs";
-import { IoInformationOutline, IoOpen, IoOpenOutline } from "react-icons/io5";
+import {
+  IoInformationOutline,
+  IoOpen,
+  IoOpenOutline,
+  IoTrashBinOutline,
+} from "react-icons/io5";
+import { IoMdTrash } from "react-icons/io";
 import { MdDeleteOutline } from "react-icons/md";
 import { descriptionsData, procurement_mode } from "./dummy";
 import ChipComponent from "../Components/Common/ChipComponent";
 import React from "react";
+import moment from "moment";
+import { BiTrash } from "react-icons/bi";
 
-export const objHeaders = [
+export const objHeaders = ({ onUpdate, onDelete, onViewIndicators }) => [
   { field: "id", name: "Row #", align: "center", width: "50px" },
-  { field: "function", name: "Function", width: 200, align: "left" },
+  {
+    field: "function",
+    name: "Function",
+    width: 100,
+    align: "left",
+    render: (params) => {
+      return (
+        <Stack>
+          <Typography fontWeight={600} fontSize={13}>
+            {params?.function?.type}
+          </Typography>
+          <Typography level="body-xs" fontSize={13}>
+            {params?.function?.code}
+          </Typography>
+        </Stack>
+      );
+    },
+  },
   {
     field: "objective",
     name: "Objective",
@@ -26,14 +51,18 @@ export const objHeaders = [
     render: (params) => {
       return (
         <Stack>
-          <Typography fontWeight={600} fontSize={13}>
-            {params?.objective}
+          <Typography
+            fontWeight={600}
+            fontSize={13}
+            sx={{ textTransform: "capitalize" }}
+          >
+            {params?.objective?.description}
           </Typography>
           <Typography
             level="body-xs"
             sx={{ alignItems: "center", display: "flex", gap: 0.4 }}
           >
-            {params?.objective}
+            {params?.objective?.code}
           </Typography>
         </Stack>
       );
@@ -44,14 +73,57 @@ export const objHeaders = [
     name: "Success Indicators",
     width: 200,
     align: "center",
+    render: (params) => {
+      return (
+        <Link
+          onClick={() => onViewIndicators(params)}
+          size="md"
+          variant="plain"
+          color="black"
+          underline="hover"
+          fontSize={14}
+          endDecorator={<IoOpenOutline />}
+        >
+          See all {params.success_indicator?.length || 0} success indicators
+        </Link>
+      );
+    },
   },
-  { field: "created_at", name: "Created on", width: 200, align: "center" },
-  { field: "updated_at", name: "Updated on", width: 200, align: "center" },
+  {
+    field: "created_at",
+    name: "Created on",
+    width: 100,
+    align: "center",
+    render: (params) => {
+      return (
+        <Stack>
+          <Typography fontSize={13}>
+            {moment(params?.meta?.created_at).format("LL")}
+          </Typography>
+        </Stack>
+      );
+    },
+  },
+  {
+    field: "updated_at",
+    name: "Updated on",
+    width: 100,
+    align: "center",
+    render: (params) => {
+      return (
+        <Stack>
+          <Typography fontSize={13}>
+            {moment(params?.meta?.updated_at).format("LL")}
+          </Typography>
+        </Stack>
+      );
+    },
+  },
   {
     field: "action",
     name: "Actions",
     position: "sticky",
-    width: "150px",
+    width: "100px",
     right: 0,
     align: "center",
     render: (params) => {
@@ -59,10 +131,11 @@ export const objHeaders = [
         <>
           <Stack
             direction="row"
-            sx={{ justifyContent: "space-between", alignItems: "center" }}
+            sx={{ alignItems: "center", justifyContent: "center" }}
+            gap={2}
           >
             <Link
-              onClick={() => alert(`Action clicked for ID: ${params.function}`)}
+              onClick={() => onUpdate(params)}
               size="md"
               variant="plain"
               color="primary"
@@ -73,13 +146,13 @@ export const objHeaders = [
               Update
             </Link>
             <Link
-              onClick={() => alert(`Action clicked for ID: ${params.id}`)}
+              onClick={() => onDelete(params)}
               size="md"
               variant="plain"
               color="danger"
               underline="hover"
               fontSize={14}
-              endDecorator={<IoOpenOutline />}
+              endDecorator={<BiTrash />}
             >
               Delete
             </Link>
@@ -87,6 +160,17 @@ export const objHeaders = [
         </>
       );
     },
+  },
+];
+
+export const successIndicator = [
+  { field: "id", name: "Row #", width: "70px", align: "center" },
+  { field: "code", name: "Code", width: "90px", align: "center" },
+  {
+    field: "description",
+    name: "Description",
+    width: "150px",
+    align: "center",
   },
 ];
 

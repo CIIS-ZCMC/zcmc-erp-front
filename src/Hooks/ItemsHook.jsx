@@ -9,6 +9,7 @@ const useItemsHook = create((set) => ({
   categories: [],
   classification: [],
   units: [],
+  variants: [],
   // itemsLoading: false,
   // itemsError: null,
 
@@ -58,6 +59,19 @@ const useItemsHook = create((set) => ({
       success: (res) => {
         const { status, message, data } = res;
         set({ units: data.data });
+        callBack(status, message);
+      },
+    });
+  },
+
+  getVariants: async (callBack) => {
+    read({
+      url: `variant`,
+      params: { mode: "selection" },
+      failed: callBack,
+      success: (res) => {
+        const { status, message, data } = res;
+        set({ variants: data.data });
         callBack(status, message);
       },
     });

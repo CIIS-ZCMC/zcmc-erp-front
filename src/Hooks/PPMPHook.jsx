@@ -22,6 +22,7 @@ const usePPMPHook = create((set) => ({
       },
     });
   },
+
   getProcModes: (callBack) => {
     read({
       url: `procurement-modes`,
@@ -45,9 +46,22 @@ const usePPMPHook = create((set) => ({
       },
     });
   },
+
   postPPMP: async (body, callback) => {
     post({
       url: `${PATH}-items`,
+      form: body,
+      success: (response) => {
+        const { message, data } = response.data;
+        callback(response.status, message, data);
+      },
+      failed: callback,
+    });
+  },
+
+  postItemRequest: async (body, callback) => {
+    post({
+      url: `${PATH}-item-requests`,
       form: body,
       success: (response) => {
         const { message, data } = response.data;
