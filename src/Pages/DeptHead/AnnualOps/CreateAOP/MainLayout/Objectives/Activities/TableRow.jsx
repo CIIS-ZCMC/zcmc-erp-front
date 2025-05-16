@@ -16,7 +16,8 @@ const TableRow = ({
     rows,
     handleChange,
     deleteRow,
-    parentId
+    parentId,
+    objectiveRowId,
 }) => {
 
     const navigate = useNavigate();
@@ -70,7 +71,7 @@ const TableRow = ({
                     <tr key={id}>
                         <td>
                             <Typography>
-                                {index + 1}
+                                {rowId}
                             </Typography>
                         </td>
 
@@ -337,11 +338,11 @@ const TableRow = ({
 
                                 <Link
                                     component="button"
-                                    onClick={() => navigate(`/items/${rowId}`, {
+                                    onClick={() => navigate(`items/${rowId}`, {
                                         state: {
                                             parentId: id,
-                                            // objectiveId: parentId,
-                                            activityrowId: rowId,
+                                            objectiveRowId: objectiveRowId,
+                                            activityRowId: rowId,
                                             cost: cost
                                         }
                                     })}

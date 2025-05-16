@@ -5,7 +5,6 @@ import { useNavigate, useLocation } from "react-router-dom";
 
 import ButtonComponent from "../../Components/Common/ButtonComponent";
 import ContainerComponent from "../../Components/Common/ContainerComponent";
-import PageTitle from "../../Components/Common/PageTitle";
 import ModalComponent from "../../Components/Common/Dialog/ModalComponent";
 
 //layouts
@@ -41,7 +40,8 @@ const Items = () => {
 
     const [displayedItems, setDisplayedItems] = useState([]);
 
-    const rowNumber = location.state?.activityrowId;
+    const rowNumber = location.state?.activityRowId;
+    const objectiveRowId = location.state.objectiveRowId;
     const cost = location.state?.cost;
     const activityId = location.state?.parentId;
     // const objectiveId = location.state.objectiveId;
@@ -103,16 +103,11 @@ const Items = () => {
 
     const handleSaveResources = () => {
         saveItems(activityId, totalPrice)
-        navigate(`aop-create/activities/${objectiveId}/resources/${rowNumber}`)
+        navigate(`/aop-create/activities/${objectiveRowId}/resources/${rowNumber}`) //navigate with activity row id
     }
 
     return (
         <Fragment>
-            <PageTitle
-                title={AOP_CONSTANTS.CREATE_AOP_TITLE}
-                description={AOP_CONSTANTS.CREATE_AOP_SUBHEADING}
-            />
-
             <ItemSummaryHeader
                 isCollapsed={isCollapsed}
                 rowNumber={rowNumber}

@@ -1,15 +1,5 @@
 import { create } from "zustand";
 
-// const sample = {
-//     parentId: //indicate from parent page,
-//     responsiblePeople: [
-//         {
-//             uuid: ///,
-//             ...otherFields
-//         }
-//     ]
-// }
-
 const useResponsiblePeopleHook = create((set, get) => ({
   responsible_people: [],
 

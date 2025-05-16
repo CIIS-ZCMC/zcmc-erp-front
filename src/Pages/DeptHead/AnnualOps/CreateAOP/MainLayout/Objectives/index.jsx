@@ -25,9 +25,8 @@ import useResponsiblePeopleHook from "../../../../../../Hooks/ResponsiblePeopleH
 const Objectives = () => {
   const { deleteObjective } = useAOPObjectivesHooks();
   const { function_types, getFunctionType } = useFunctionTypeHook();
-  const { objectives, addObjective, updateObjectiveField } =
-    useObjectivesHook();
-  const { findActivitiesByObjectiveID } = useActivitiesHook();
+  const { objectives, addObjective, updateObjectiveField } = useObjectivesHook();
+  const { findActivitiesByObjectiveID, activities } = useActivitiesHook();
   const { findResponsiblePeopleByActivityID } = useResponsiblePeopleHook();
   const { resources, findResourcesByActivityID } = useResourceHook();
 
@@ -36,6 +35,15 @@ const Objectives = () => {
   // local states
   const [editRowId, setEditRowId] = useState(null);
   const [isLoading, setisLoading] = useState(false);
+
+  const activitiesCount = objectives.map((objective) =>
+    // console.log(item.id)
+    activities.filter((activity) => activity.parentId === objective.id)
+  );
+
+  // useEffect(() => {
+  //   console.log("Activities per objective:", activitiesCount);
+  // }, [activitiesCount]);
 
   useEffect(() => {
     const params = { with_sub_data: 1 };
@@ -125,6 +133,7 @@ const Objectives = () => {
               deleteRow={deleteObjective}
               handleChange={updateObjectiveField}
               function_types={function_types}
+              activitiesCount={activitiesCount}
             />
           }
           stickLast

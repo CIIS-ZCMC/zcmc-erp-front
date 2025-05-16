@@ -75,6 +75,10 @@ export const sidebarRoutes = [
         element: <Activities />,
         children: [
           {
+            path: "items/:activityId",
+            element: <Items />
+          },
+          {
             path: "resources/:activityId",
             element: <Resources />,
           },
@@ -88,10 +92,10 @@ export const sidebarRoutes = [
     ],
   },
 
-  {
-    path: "/items/:activityId",
-    children: [{ index: true, element: <Items /> }],
-  },
+  // {
+  //   path: "/items/:activityId",
+  //   children: [{ index: true, element: <Items /> }],
+  // },
 
   {
     path: "/aop-approval",

@@ -49,6 +49,14 @@ const useActivitiesHook = create(
                 }));
             },
 
+            // Remove  resourse item from cart
+            removeActivity: (id) => {
+                // console.log(id)
+                set((state) => ({
+                    activities: state.activities.filter((item) => item.id !== id),
+                }));
+            },
+
             findActivitiesByObjectiveID: (objID) => {
                 return get().activities.filter((item) => item.parentId == objID);
             },

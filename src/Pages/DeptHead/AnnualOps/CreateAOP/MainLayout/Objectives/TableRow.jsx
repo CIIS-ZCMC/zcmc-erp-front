@@ -13,6 +13,7 @@ const TableRow = ({
   function_types,
   editRowId,
   setEditRowId,
+  activitiesCount,
 }) => {
   const navigate = useNavigate();
 
@@ -21,7 +22,7 @@ const TableRow = ({
   return (
     <Fragment>
       {
-        rows?.map(({ id, rowId, functionType, objective, successIndicator }) => {
+        rows?.map(({ id, rowId, functionType, objective, successIndicator }, index) => {
 
           // const activitiesCount = getActivitiesCount(id)
           // console.log(activitiesCount)
@@ -114,7 +115,7 @@ const TableRow = ({
                   >
                     <Link
                       component="button"
-                      onClick={() => navigate(`activities/${rowId}`, { state: { parentId: id } })}
+                      onClick={() => navigate(`activities/${rowId}`, { state: { parentId: id, rowId: rowId } })}
                       fontSize={14}
                     >
                       Manage Activities
@@ -124,7 +125,7 @@ const TableRow = ({
                       variant="outlined"
                       color="success"
                     >
-                      {/* {currentObjectiveActivitiesCount} */}
+                      {activitiesCount[index]?.length || 0}
                     </Chip>
                   </Stack>
 

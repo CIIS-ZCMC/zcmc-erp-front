@@ -14,6 +14,7 @@ const useObjectivesHook = create(
     (set, get) => ({
       objectives: [],
       current_parent_id: null,
+      current_row_id: null,
 
       //update field
       updateObjectiveField: (id, field, value) => {
@@ -41,11 +42,18 @@ const useObjectivesHook = create(
           ],
         }));
       },
+
       setCurrentObjective: (objectiveuuid) => {
         set(() => ({
           current_parent_id: objectiveuuid,
         }));
       },
+
+      setCurrentRowId: (objectiveRowId) => {
+        set(() => ({
+          current_row_id: objectiveRowId
+        }))
+      }
     }),
     {
       name: "objectives-storage",

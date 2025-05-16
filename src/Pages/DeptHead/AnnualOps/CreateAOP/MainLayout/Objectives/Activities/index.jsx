@@ -26,14 +26,14 @@ const Activities = () => {
   const params = useParams();
 
   const parentId = location.state?.parentId;
+  const objectiveRowId = location.state?.rowId;
 
   const { objectiveId } = params; //objective Id lang for url path pero yung value is from row
   const currentPath = location.pathname;
   const childPath = currentPath === `/aop-create/activities/${objectiveId}`;
 
-  const { current_parent_id, setCurrentObjective } = useObjectivesHook();
-  const { activities, addActivity, updateActivityField } = useActivitiesHook();
-  const { deleteActivity } = useAOPObjectivesHooks();
+  const { current_parent_id, setCurrentObjective, current_row_id, setCurrentRowId } = useObjectivesHook();
+  const { activities, addActivity, updateActivityField, removeActivity } = useActivitiesHook();
 
   useEffect(() => {
     const hasActivitiesForParent = activities.some(
@@ -52,6 +52,15 @@ const Activities = () => {
     } else {
       setCurrentObjective(parentId);
     }
+
+    if (current_row_id !== null) {
+      if (current_parent_id !== objectiveRowId && !!objectiveRowId) {
+        console.log(current_row_id)
+        setCurrentRowId(objectiveRowId);
+      }
+    } else {
+      setCurrentRowId(objectiveRowId)
+    }
   }, []);
 
   const [isCollapsed, setIsCollapsed] = useState(false);
@@ -62,48 +71,52 @@ const Activities = () => {
 
   return (
     <Fragment>
-      <ContainerComponent
-        title={AOP_CONSTANTS.MANAGE_ACTIVITIES_HEADER}
-        description={AOP_CONSTANTS.MANAGE_ACTIVITIES_SUBHEADER}
-        isTable={false}
-        actions={
-          <Stack>
-            <IconButtonComponent
-              variant={"text"}
-              icon={isCollapsed ? <ChevronUp /> : <ChevronDown />}
-              onClick={(e) => {
-                e.stopPropagation();
-                handleCollapseClick();
-              }}
-            />
-          </Stack>
-        }
-      >
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
-          {isCollapsed && (
-            <Box>
-              <Stack direction={"row"} gap={2}>
-                <SheetComponent variant={"outlined"}>Content 1</SheetComponent>
 
-                <SheetComponent variant={"outlined"}>Content 2</SheetComponent>
-
-                <SheetComponent variant={"outlined"}>Content 3</SheetComponent>
-              </Stack>
-            </Box>
-          )}
-        </Box>
-      </ContainerComponent>
-
-      <Box sx={{ m: 3 }} />
 
       {childPath && (
         <>
+
+
+          <ContainerComponent
+            title={AOP_CONSTANTS.MANAGE_ACTIVITIES_HEADER}
+            description={AOP_CONSTANTS.MANAGE_ACTIVITIES_SUBHEADER}
+            isTable={false}
+            actions={
+              <Stack>
+                <IconButtonComponent
+                  variant={"text"}
+                  icon={isCollapsed ? <ChevronUp /> : <ChevronDown />}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleCollapseClick();
+                  }}
+                />
+              </Stack>
+            }
+          >
+            <Box
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "space-between",
+              }}
+            >
+              {isCollapsed && (
+                <Box>
+                  <Stack direction={"row"} gap={2}>
+                    <SheetComponent variant={"outlined"}>Content 1</SheetComponent>
+
+                    <SheetComponent variant={"outlined"}>Content 2</SheetComponent>
+
+                    <SheetComponent variant={"outlined"}>Content 3</SheetComponent>
+                  </Stack>
+                </Box>
+              )}
+            </Box>
+          </ContainerComponent>
+
+          <Box sx={{ m: 3 }} />
+
           <ContainerComponent
             title={AOP_CONSTANTS.TABLE_ACTIVITY_HEADER}
             description={AOP_CONSTANTS.TABLE_ACTIVITY_SUBHEADING}
@@ -124,7 +137,8 @@ const Activities = () => {
                 <TableRow
                   handleChange={updateActivityField}
                   parentId={parentId ?? current_parent_id}
-                  deleteRow={deleteActivity}
+                  objectiveRowId={objectiveRowId ?? current_row_id}
+                  deleteRow={removeActivity}
                   rows={activities}
                 />
               }
