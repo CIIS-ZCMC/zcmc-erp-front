@@ -53,7 +53,9 @@ const useActivitiesHook = create(
             removeActivity: (id) => {
                 const activities = get().activities;
                 const filtered = activities.filter(item => item.id !== id)
+
                 console.log(filtered)
+
                 set({
                     activities: [...filtered.map((item, index) => {
                         return {
