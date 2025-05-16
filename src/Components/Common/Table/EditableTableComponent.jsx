@@ -74,8 +74,8 @@ const EditableTableComponent = ({
                       width: isFirstColumn
                         ? "var(--Table-firstColumnWidth)"
                         : isLastColumn && stickLast
-                        ? "var(--Table-lastColumnWidth)"
-                        : header.width || 200,
+                          ? "var(--Table-lastColumnWidth)"
+                          : header.width || 200,
                       fontSize: 13,
                       textAlign: header.align,
                       backgroundColor: "rgba(240, 240, 240, 1)",
@@ -105,17 +105,17 @@ const EditableTableComponent = ({
               {columns.flatMap((header) =>
                 header.children
                   ? header.children.map((child, index) => (
-                      <th
-                        key={`${header.id}-${index}`}
-                        align={child.align || "center"}
-                        style={{
-                          borderRightWidth: child.noRightBorder ? 0 : undefined,
-                          width: child.width,
-                        }}
-                      >
-                        {child.name}
-                      </th>
-                    ))
+                    <th
+                      key={`${header.id}-${index}`}
+                      align={child.align || "center"}
+                      style={{
+                        borderRightWidth: child.noRightBorder ? 0 : undefined,
+                        width: child.width,
+                      }}
+                    >
+                      {child.name}
+                    </th>
+                  ))
                   : []
               )}
             </tr>

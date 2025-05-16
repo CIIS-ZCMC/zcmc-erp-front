@@ -76,8 +76,6 @@ const Activities = () => {
 
       {childPath && (
         <>
-
-
           <ContainerComponent
             title={AOP_CONSTANTS.MANAGE_ACTIVITIES_HEADER}
             description={AOP_CONSTANTS.MANAGE_ACTIVITIES_SUBHEADER}
