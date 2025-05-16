@@ -10,7 +10,10 @@ import TextareaComponent from "../../../Components/Form/TextareaComponent";
 import ModalComponent from "../../../Components/Common/Dialog/ModalComponent";
 import useModalHook from "../../../Hooks/ModalHook";
 import InputComponent from "../../../Components/Form/InputComponent";
-import { useAOPApplication } from "../../../Hooks/AOP/AOPApplicationsHook";
+import {
+  useAOPApplication,
+  useAOPApplicationObjectives,
+} from "../../../Hooks/AOP/AOPApplicationsHook";
 import { useActivityActions } from "../../../Hooks/AOP/ActivityHook";
 import { localStorageGetter } from "../../../Utils/LocalStorage";
 import RadioButtonComponent from "../../../Components/Common/RadioButtonComponent";
@@ -20,18 +23,24 @@ import { ActivityDetails } from "./Contents/ActivityDetails";
 import { CommentsDetails } from "./Contents/CommentsDetails";
 import { useUserTypes } from "../../../Hooks/UserHook";
 import { FeedbackContent } from "./Contents/FeedbackContent";
+import { useApprovalActions } from "../../../Hooks/AOP/AOPApprovalHook";
 
 export default function ManageAOP() {
   const { id } = useParams();
   const { isDivisionHead } = useUserTypes();
+  const AOPApplication = useAOPApplication();
+
+  const { status: applicationStatus = null } = AOPApplication;
 
   // AOP HOOK
-  const AOPApplication =
-    useAOPApplication() ?? localStorageGetter("aopApplication");
+  const AOPApplicationObjectives =
+    useAOPApplicationObjectives() ??
+    localStorageGetter("aopApplicationObjectives");
+
   const AOP_APPLICATION_ID = localStorageGetter("aop_application_id");
 
   // ACTIVITY HOOK
-  const defaultActivityId = AOPApplication[0]?.activities[0]?.id;
+  const defaultActivityId = AOPApplicationObjectives[0]?.activities[0]?.id;
   const activityId = localStorageGetter("activeActivityId");
   const { getActivityById } = useActivityActions();
 
@@ -45,7 +54,7 @@ export default function ManageAOP() {
 
   // STATES
   // const [activityLoading, setActivityLoading] = useState(false);
-  const [action, setAction] = useState("approve");
+  const [action, setAction] = useState("approved");
   const [isRemarksLoading, setIsRemarksLoading] = useState(true);
 
   const AREA_CODE = localStorageGetter("aop_application_area_code");
@@ -61,49 +70,62 @@ export default function ManageAOP() {
     setOpenFeedbackModal(true);
     setIsRemarksLoading(true);
 
-    getRemarksByApplication(() => {
-      setTimeout(() => setIsRemarksLoading(false), 1000);
-    });
-    // Promise.all([
-    //   getCommentsByApplication(() => {}),
-    //   getRemarksByApplication(() => {}),
-    // ])
-    //   .then(() => {
-    //     setIsRemarksLoading(false);
-    //   })
-    //   .catch((error) => {
-    //     console.error("Error fetching comments or remarks:", error);
-    //     setIsRemarksLoading(false);
-    //   });
+    const fetch = () => {
+      if (!isDivisionHead) {
+        getCommentsByApplication(AOP_APPLICATION_ID, () => {});
+      }
+
+      getRemarksByApplication(AOP_APPLICATION_ID, () => {
+        setTimeout(() => setIsRemarksLoading(false), 1000);
+      });
+    };
+    Promise.all(fetch())
+      .then(() => {
+        setIsRemarksLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching comments or remarks:", error);
+        setIsRemarksLoading(false);
+      });
   };
 
   const handleProcessRequest = () => {
     setOpenProcessModal(true);
   };
 
-  const handleShowAlert = () => {
-    const data = {
-      status: 200,
-      title: "AOP request for F.Y. “2026” successfully approved.",
-      description:
-        "Everyone can now see the changes you’ve made. The request is now ready for processing of the next approving body (Division Chief).",
-    };
-    setOpenProcessModal(false);
-    setAlertDialog(data);
-  };
+  // PROCESS AOP
+  const { processAOP } = useApprovalActions();
+  const [pin, setPin] = useState(null);
 
-  // const handleClickComment = (id) => {
-  //   Promise.all([
-  //     getActivityById(id, () => {}),
-  //     getCommentsByActivity(id, () => {}),
-  //   ])
-  //     .then(() => {
-  //       setOpenFeedbackModal(false);
-  //     })
-  //     .catch((error) => {
-  //       console.error("Error fetching data:", error);
-  //     });
-  // };
+  const handleProcessAOP = () => {
+    const form = {
+      aop_application_id: AOP_APPLICATION_ID,
+      status: action,
+      remarks: `This is a sample remarks for APPLICATION: ${AOP_APPLICATION_ID}`,
+      auth_pin: pin,
+    };
+
+    processAOP(form, (status, message) => {
+      let data = {};
+      if (status === 200) {
+        data = {
+          status: 200,
+          title: "AOP request for F.Y. “2026” successfully approved.",
+          description:
+            "Everyone can now see the changes you’ve made. The request is now ready for processing of the next approving body (Division Chief).",
+        };
+        setOpenProcessModal(false);
+      } else {
+        data = {
+          status: "error",
+          title: message,
+          description: message,
+        };
+      }
+
+      setAlertDialog(data);
+    });
+  };
 
   useEffect(() => {
     if (activityId == defaultActivityId) return;
@@ -174,6 +196,7 @@ export default function ManageAOP() {
                     />
                     <ButtonComponent
                       label={"Process request"}
+                      disabled={applicationStatus === "approved"}
                       onClick={handleProcessRequest}
                     />
                   </Stack>
@@ -210,7 +233,7 @@ export default function ManageAOP() {
         }
         leftButtonLabel="Back to request"
         rightButtonLabel="Confirm and save"
-        rightButtonAction={handleShowAlert}
+        rightButtonAction={handleProcessAOP}
         maxWidth={500}
         content={
           <Stack gap={2}>
@@ -240,8 +263,8 @@ export default function ManageAOP() {
               helperText={
                 "Confirm you action by typing-in your authorization PIN."
               }
-              // setValue={handlePinInput}
-              // value={pin}
+              setValue={setPin}
+              value={pin}
             />
           </Stack>
         }

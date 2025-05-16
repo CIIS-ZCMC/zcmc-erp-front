@@ -1,19 +1,15 @@
 import { create } from "zustand";
 // import { erp_api } from "../../Services/ERP_API";
-import {
-  localStorageGetter,
-  localStorageSetter,
-} from "../../Utils/LocalStorage";
+import { localStorageSetter } from "../../Utils/LocalStorage";
 import { read, update } from "../../Services/RequestMethods";
 import { API } from "../../Data/constants";
 
-export const APPLICATION_ID = localStorageGetter("aop_application_id");
-
 const useAOPApplicationsHook = create((set) => ({
   aopApplications: [],
+  aopApplicationObjectives: null,
   aopApplication: null,
 
-  approvalTimeline: [],
+  // approvalTimeline: [],
   isLoading: false,
 
   actions: {
@@ -42,10 +38,18 @@ const useAOPApplicationsHook = create((set) => ({
           set({ isLoading: false });
         },
         success: (response) => {
-          const { data, message } = response.data;
+          const {
+            data: { objectives, application },
+            message,
+          } = response.data;
 
-          set({ aopApplication: data, isLoading: false });
-          localStorageSetter("aopApplication", data); // STORE TO LOCALSTORAGE
+          set({
+            aopApplicationObjectives: objectives,
+            aopApplication: application,
+            isLoading: false,
+          });
+
+          localStorageSetter("aopApplicationObjectives", objectives); // STORE TO LOCALSTORAGE
 
           callback(200, message);
         },
@@ -53,13 +57,13 @@ const useAOPApplicationsHook = create((set) => ({
     },
 
     // EDIT SUCCESS INDICATORS AND OBJECTIVE
-    updateObjectiveSuccessIndicator: (body, callback) => {
+    updateObjectiveSuccessIndicator: (id, body, callback) => {
       try {
         const { other_success_indicator, other_objective } = body;
 
         const dataToSubmit = new FormData();
 
-        dataToSubmit.append("aop_application_id", APPLICATION_ID);
+        dataToSubmit.append("aop_application_id", id);
         dataToSubmit.append("objective_description", other_objective);
         dataToSubmit.append(
           "success_indicator_description",
@@ -89,6 +93,9 @@ export const useAOPApplications = () =>
 
 export const useAOPApplication = () =>
   useAOPApplicationsHook((state) => state.aopApplication);
+
+export const useAOPApplicationObjectives = () =>
+  useAOPApplicationsHook((state) => state.aopApplicationObjectives);
 
 export const useAOPApplicationsActions = () =>
   useAOPApplicationsHook((state) => state.actions);

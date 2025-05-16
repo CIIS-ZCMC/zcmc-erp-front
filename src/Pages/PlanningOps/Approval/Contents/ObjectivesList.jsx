@@ -1,6 +1,9 @@
 import React, { Fragment, useEffect, useMemo, useState } from "react";
 import { localStorageGetter } from "../../../../Utils/LocalStorage";
-import { useAOPApplication } from "../../../../Hooks/AOP/AOPApplicationsHook";
+import {
+  useAOPApplication,
+  useAOPApplicationObjectives,
+} from "../../../../Hooks/AOP/AOPApplicationsHook";
 import { toCapitalize } from "../../../../Utils/Typography";
 import { Divider, Stack, Typography } from "@mui/joy";
 import CustomAccordionComponent from "../../../../Components/Common/Accordion/CustomAccordionComponent";
@@ -28,10 +31,10 @@ const ObjectivesList = () => {
   });
 
   // HOOKS
-  const aopApplicationData = useAOPApplication();
-  const AOPApplication = useMemo(
-    () => aopApplicationData ?? localStorageGetter("aopApplication"),
-    [aopApplicationData]
+  const AOPApplicationObjectives = useAOPApplicationObjectives();
+  const AppicationObjectives = useMemo(
+    () => AOPApplicationObjectives ?? localStorageGetter("aopApplication"),
+    [AOPApplicationObjectives]
   );
   const { setActiveActivity, getActivityById } = useActivityActions();
 
@@ -74,7 +77,7 @@ const ObjectivesList = () => {
   };
 
   const getObjectiveDetails = (id) => {
-    return AOPApplication?.filter((element) => element.id === id)[0];
+    return AOPApplicationObjectives?.filter((element) => element.id === id)[0];
   };
 
   const handleCloseModal = () => {
@@ -87,15 +90,15 @@ const ObjectivesList = () => {
   };
 
   useEffect(() => {
-    if (AOPApplication?.[0]?.activities?.[0]?.id && !activeActivity) {
-      setActiveActivity(AOPApplication[0].activities[0].id);
+    if (AOPApplicationObjectives?.[0]?.activities?.[0]?.id && !activeActivity) {
+      setActiveActivity(AOPApplicationObjectives[0].activities[0].id);
     }
-  }, [AOPApplication]);
+  }, []);
 
   return (
     <Fragment>
       <Stack width={400} gap={2} sx={{ width: "100%" }}>
-        {AOPApplication?.map(
+        {AppicationObjectives?.map(
           (
             {
               id,

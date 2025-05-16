@@ -100,16 +100,23 @@ function StepItem({
 
       <Stack gap={1.5} ml={0.7}>
         <Typography fontWeight={400} level="body-xs">
-          <Typography>Approved by: </Typography>
+          <Typography>
+            {status === "pending" ? "Updated " : "Approved"} by:{" "}
+          </Typography>
 
           <Typography textColor={"neutral.900"}> {name}</Typography>
         </Typography>
         <Divider sx={dividerStyles} />
-        <StepTextDisplay
-          label={"Approved on:"}
-          value={moment().format("LLL")}
-        />
-        <Divider sx={dividerStyles} />
+        {approved_at && (
+          <>
+            <StepTextDisplay
+              label={"Approved on:"}
+              value={moment().format("LLL")}
+            />
+            <Divider sx={dividerStyles} />
+          </>
+        )}
+
         {number_of_comments > 0 && (
           <>
             <StepTextDisplay

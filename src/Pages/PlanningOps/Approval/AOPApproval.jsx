@@ -23,6 +23,12 @@ import TabComponent from "../../../Components/Common/TabComponent";
 import { approvalPageTabs } from "../../../Data/Options";
 import YearSelectorComponent from "../../../Components/Form/YearSelectorComponent";
 import NoResultComponent from "../../../Components/Common/Table/NoResultComponent";
+import {
+  useApprovalActions,
+  useApprovalLoading,
+  useApprovalTimeline,
+} from "../../../Hooks/AOP/AOPApprovalHook";
+import { ThreeDotsLoader } from "../../../Components/Common/Loading/ThreeDotsLoader";
 
 const AOPApproval = () => {
   const navigate = useNavigate();
@@ -31,6 +37,9 @@ const AOPApproval = () => {
   const { getAOPApplications, getAOPApplicationById } =
     useAOPApplicationsActions();
   const AOPApplications = useAOPApplications();
+  const { getAOPApprovalTimeline } = useApprovalActions();
+  const approvalTimeline = useApprovalTimeline();
+  const isLoading = useApprovalLoading();
 
   // STATES
   const [openTimelineModal, setOpenTimelineModal] = useState(false);
@@ -38,7 +47,7 @@ const AOPApproval = () => {
   const [year, setYear] = useState(new Date().getFullYear());
   // const [search, setSearch] = useState("");
 
-  // FUNCTIONScccccccccccccccccccccccccccc
+  // FUNCTIONS
   const handleClickCard = (id, area_code) => {
     getAOPApplicationById(id, () => navigate(`/aop-approval/objectives/${id}`));
 
@@ -48,6 +57,8 @@ const AOPApproval = () => {
 
   const handleViewTimeline = (id) => {
     setOpenTimelineModal(true);
+
+    getAOPApprovalTimeline(id, () => {});
   };
 
   useEffect(() => {
@@ -60,6 +71,8 @@ const AOPApproval = () => {
   }, [index, year, getAOPApplications]);
 
   const APPLICATIONS = TEST_MODE ? MANAGE_AOP_APPROVAL : AOPApplications;
+
+  const TIMELINE = TEST_MODE ? APPROVAL_TIMELINE : approvalTimeline;
 
   return (
     <Fragment>
@@ -151,7 +164,11 @@ const AOPApproval = () => {
         description={"The list below shows the current status of the request."}
         content={
           <Stack mt={2} width="99%">
-            <StepperComponent data={APPROVAL_TIMELINE} />
+            {isLoading ? (
+              <ThreeDotsLoader />
+            ) : (
+              <StepperComponent data={TIMELINE} />
+            )}
           </Stack>
         }
       />

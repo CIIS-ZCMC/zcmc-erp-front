@@ -51,7 +51,7 @@ function CustomAccordionComponent({
           },
         },
         [`& .${accordionClasses.root}.${accordionClasses.expanded}`]: {
-          borderColor: "warning.300",
+          borderColor: "neutral.300",
         },
       })}
     >

@@ -78,28 +78,28 @@ export const PPMP_CONSTANTS = {
 };
 
 export const MONTHS = [
-  { label: 'January', value: '01' },
-  { label: 'February', value: '02' },
-  { label: 'March', value: '03' },
-  { label: 'April', value: '04' },
-  { label: 'May', value: '05' },
-  { label: 'June', value: '06' },
-  { label: 'July', value: '07' },
-  { label: 'August', value: '08' },
-  { label: 'September', value: '09' },
-  { label: 'October', value: '10' },
-  { label: 'November', value: '11' },
-  { label: 'December', value: '12' },
+  { label: "January", value: "01" },
+  { label: "February", value: "02" },
+  { label: "March", value: "03" },
+  { label: "April", value: "04" },
+  { label: "May", value: "05" },
+  { label: "June", value: "06" },
+  { label: "July", value: "07" },
+  { label: "August", value: "08" },
+  { label: "September", value: "09" },
+  { label: "October", value: "10" },
+  { label: "November", value: "11" },
+  { label: "December", value: "12" },
 ];
 
 export const approvalActions = [
   {
-    value: "Approve",
+    value: "approved",
     label: "Approve",
     color: "success",
   },
   {
-    value: "Returned",
+    value: "returned",
     label: "Return",
     color: "warning",
   },
@@ -117,6 +117,10 @@ export const API = {
   AOP_REQUESTS: "aop-requests",
   MANAGE_AOP_REQUEST: "manage-aop-request",
   SHOW_OBJECTIVE: "show-objective-activity",
+  PROCESS_AOP_REQUEST: "process-aop-request",
+
+  // TIMELINE
+  APPROVAL_TIMELINE: "application-timelines",
 
   // OBJECTIVES
   EDIT_OBJECTIVE: "edit-objective-and-success-indicator",

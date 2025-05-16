@@ -1,11 +1,7 @@
 import { create } from "zustand";
 import { post, read } from "../Services/RequestMethods";
-import {
-  localStorageGetter,
-  localStorageRemove,
-  localStorageSetter,
-} from "../Utils/LocalStorage";
-import { APPLICATION_ID } from "./AOP/AOPApplicationsHook";
+import { localStorageRemove, localStorageSetter } from "../Utils/LocalStorage";
+// import { APPLICATION_ID } from "./AOP/AOPApplicationsHook";
 
 export const COMMENT = "activity-comments";
 export const REMARKS = "aop-remarks";
@@ -40,11 +36,11 @@ const useCommentHook = create((set, get) => ({
       });
     },
 
-    getCommentsByApplication: (callback) => {
+    getCommentsByApplication: (id, callback) => {
       read({
         url: `${COMMENT}`,
         params: {
-          aop_application_id: APPLICATION_ID,
+          aop_application_id: id,
         },
         success: (response) => {
           const { data } = response.data;
@@ -60,9 +56,10 @@ const useCommentHook = create((set, get) => ({
       });
     },
 
-    getRemarksByApplication: (callback) => {
+    getRemarksByApplication: (id, callback) => {
+      console.log(id);
       read({
-        url: `${REMARKS}/${APPLICATION_ID}`,
+        url: `${REMARKS}/${id}`,
         success: (response) => {
           const { data } = response.data;
           set({ remarks: [data] });

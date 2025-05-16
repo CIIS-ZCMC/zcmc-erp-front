@@ -8,12 +8,12 @@ const StepperComponent = ({ data = [] }) => {
       {data?.map(
         (
           {
-            name = "Krizelle Mae Falcasantos",
-            position = "Department Head",
+            user = "Krizelle Mae Falcasantos",
+            user_position = "Department Head",
             area_code = "IISU",
             area = "Innovations",
             status = "submitted",
-            approved_at = null,
+            date_approved = null,
             remarks = null,
             activities_with_comments = null, // e.g 4 comments in 2 activities
             number_of_comments = null, // e.g 4 comments in 2 activities
@@ -26,14 +26,14 @@ const StepperComponent = ({ data = [] }) => {
             return (
               <StepItem
                 key={key}
-                position={position}
-                name={name}
+                position={user_position}
+                name={user}
                 area_code={area_code}
                 area={area}
                 status={status}
                 created_at={created_at}
-                date_submitted={created_at}
-                approved_at={approved_at}
+                date_submitted={updated_at}
+                approved_at={date_approved}
                 remarks={remarks}
                 activities_with_comments={activities_with_comments} // e.g 4 comments in 2 activities
                 number_of_comments={number_of_comments} // e.g 4 comments in 2 activities
@@ -43,14 +43,14 @@ const StepperComponent = ({ data = [] }) => {
             return (
               <StepItem
                 key={key}
-                position={position}
-                name={name}
+                position={user_position}
+                name={user}
                 area_code={area_code}
                 area={area}
                 status={status}
                 created_at={created_at}
                 date_submitted={created_at}
-                approved_at={approved_at}
+                approved_at={date_approved}
                 remarks={remarks}
                 activities_with_comments={activities_with_comments} // e.g 4 comments in 2 activities
                 number_of_comments={number_of_comments} // e.g 4 comments in 2 activities
