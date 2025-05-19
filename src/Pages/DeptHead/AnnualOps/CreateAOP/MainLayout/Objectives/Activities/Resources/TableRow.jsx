@@ -15,6 +15,7 @@ const TableRow = ({
     resources,
     handleEdit,
     handleBlur,
+    purchase_type,
 }) => {
 
     const navigate = useNavigate()
@@ -25,6 +26,10 @@ const TableRow = ({
     const [editRowId, setEditRowId] = useState(null);
 
     const filtered = rows.filter((value) => value.parentId === parentId)
+
+    useEffect(() => {
+        console.log(purchase_type)
+    }, [purchase_type])
 
     const handleOnRowClick = (id) => {
         setEditRowId(id)

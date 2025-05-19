@@ -15,11 +15,13 @@ import { AOP_RESOURCE_HEADER } from '../../../../../../../../Data/Columns';
 
 import useResourceHook from '../../../../../../../../Hooks/ResourceHook';
 import useItemsHook from '../../../../../../../../Hooks/ItemsHook';
+import usePurchaseTypeHook from '../../../../../../../../Hooks/PurchaseTypeHook';
 
 const Resources = () => {
 
     const { resources, addResource } = useResourceHook();
     const { items, getItems } = useItemsHook();
+    const { purchase_type, getPurchaseType } = usePurchaseTypeHook();
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -33,6 +35,21 @@ const Resources = () => {
             }
         });
     }, []);
+
+    useEffect(() => {
+        getPurchaseType((status, message) => {
+            // console.log(status)
+            if (!(status >= 200 && status < 300)) {
+                // if status not success
+                return; //Toast error
+            }
+            // setisLoading(false);
+        });
+    }, []);
+
+    useEffect(() => {
+        console.log(purchase_type)
+    }, [])
 
     return (
         <Fragment>
@@ -59,6 +76,7 @@ const Resources = () => {
                             rows={resources}
                             parentId={parentId}
                             resources={items}
+                            purchase_type={purchase_type}
                         // handleEdit={handleEdit}
                         // handleBlur={handleBlur}
                         // editField={editField}
