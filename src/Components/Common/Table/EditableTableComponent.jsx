@@ -51,7 +51,7 @@ const EditableTableComponent = ({
   stickLast = false,
   textWrap,
 }) => {
-  useEffect(() => console.log(stickLast), []);
+  // useEffect(() => console.log(stickLast), []);
 
   const lastColumnWidth = columns[columns.length - 1]?.width || "144px";
 
