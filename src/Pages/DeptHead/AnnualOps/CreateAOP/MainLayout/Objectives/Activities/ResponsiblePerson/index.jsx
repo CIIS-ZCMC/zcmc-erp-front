@@ -31,9 +31,9 @@ const ResponsiblePerson = () => {
     return item.activityId === activityId;
   });
 
-  useEffect(() => {
-    console.log(location.state)
-  }, [])
+  // useEffect(() => {
+  //   console.log(location.state)
+  // }, [])
 
   // const isAssigned = activity && (
   //     activity.isAssigned
@@ -122,15 +122,15 @@ const ResponsiblePerson = () => {
             p: 1,
           }}
         >
-          <Grid item xs={12} sm={2} md={4}>
+          <Grid item={'true'} xs={12} sm={2} md={4}>
             <PersonSection />
           </Grid>
 
-          <Grid item xs={12} sm={2} md={4}>
+          <Grid item={'true'} xs={12} sm={2} md={4}>
             <JobPositionsSection />
           </Grid>
 
-          <Grid item xs={12} sm={2} md={4}>
+          <Grid item={'true'} xs={12} sm={2} md={4}>
             <AreasSection />
           </Grid>
         </Grid>

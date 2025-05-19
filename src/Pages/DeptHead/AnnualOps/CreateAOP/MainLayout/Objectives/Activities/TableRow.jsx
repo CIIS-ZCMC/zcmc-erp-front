@@ -110,7 +110,7 @@ const TableRow = ({
                                                     localStartMonth: newValue
                                                 },
                                             }));
-                                            console.log(newValue)
+                                            // console.log(newValue)
                                             handleChange(id, 'startMonth', newValue);
                                         }}
 

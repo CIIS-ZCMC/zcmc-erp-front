@@ -35,8 +35,7 @@ const Items = () => {
     const location = useLocation();
 
     const { items, getItems } = useItemsHook();
-    const { cart, addResourceToCart, removeFromCart, updateQuantity, saveItems } =
-        useResourceHook();
+    const { cart, addResourceToCart, removeFromCart, updateQuantity, saveItems, cancelResources } =  useResourceHook();
 
     const [displayedItems, setDisplayedItems] = useState([]);
 
@@ -46,9 +45,9 @@ const Items = () => {
     const activityId = location.state?.parentId;
     // const objectiveId = location.state.objectiveId;
 
-    useEffect(() => {
-        console.log(location.state)
-    }, [])
+    // useEffect(() => {
+    //     console.log(location.state)
+    // }, [])
 
     const [isCollapsed, setIsCollapsed] = useState(false);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -115,6 +114,12 @@ const Items = () => {
         }) //navigate with activity row id
     }
 
+    const handleOnCancel = () => {
+        // removeFromCart(activityId);
+        cancelResources()
+        navigate(`/aop-create/activities/${objectiveRowId}`)
+    }
+
     return (
         <Fragment>
             <ItemSummaryHeader
@@ -132,6 +137,7 @@ const Items = () => {
                     <Fragment>
                         <Stack direction={"row"} gap={1}>
                             <ButtonComponent
+                                onClick={() => handleOnCancel()}
                                 label={"Cancel Selection"}
                                 size={"md"}
                                 variant={"outlined"}
@@ -141,6 +147,7 @@ const Items = () => {
                                 label={"Save items"}
                                 size={"md"}
                                 variant={"solid"}
+                                disabled={cart.length === 0}
                                 onClick={() => handleSaveResources()}
                             />
                         </Stack>
@@ -158,7 +165,7 @@ const Items = () => {
                     gap={3}
                 >
                     {/* Left: Scrollable Item Cards */}
-                    <Grid item xs={12} sm={2} md={8.1}>
+                    <Grid item={'true'} xs={12} sm={2} md={8.1}>
                         <ItemList
                             quantity={quantity}
                             activityId={activityId}
@@ -168,7 +175,7 @@ const Items = () => {
                     </Grid>
 
                     {/* Right: Cart */}
-                    <Grid item xs={12} sm={4} md={3.7} sx={{ ...cartStyles }}>
+                    <Grid item={'true'} xs={12} sm={4} md={3.7} sx={{ ...cartStyles }}>
                         <ItemCart
                             totalQty={totalQty}
                             totalPrice={totalPrice}

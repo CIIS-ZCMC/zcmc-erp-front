@@ -112,6 +112,10 @@ const useResourceHook = create(
         }));
       },
 
+      cancelResources : () => {
+        set((state) => state.cart = [])
+      },
+
       addResource: (parentId) => {
         const resources = get().resources;
         set((state) => ({
