@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import erp_api from "../Services/ERP_API";
-import { post, read } from "../Services/RequestMethods";
+import { post, read, remove } from "../Services/RequestMethods";
 
 const PATH = "ppmp";
 
@@ -62,6 +62,19 @@ const usePPMPHook = create((set) => ({
   postItemRequest: async (body, callback) => {
     post({
       url: `${PATH}-item-requests`,
+      form: body,
+      success: (response) => {
+        const { message, data } = response.data;
+        callback(response.status, message, data);
+      },
+      failed: callback,
+    });
+  },
+
+  removeItem: async (params, body, callback) => {
+    remove({
+      url: `${PATH}-items/${params}`,
+      param: { id: params },
       form: body,
       success: (response) => {
         const { message, data } = response.data;

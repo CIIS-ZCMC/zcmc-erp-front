@@ -8,7 +8,7 @@ const useManageObjHook = create((set) => ({
 
   getObjectives: (callBack) => {
     read({
-      url: `${PATH}-success-indicators`,
+      url: `${PATH}s`,
       //   params: { mode: "selection" },
       failed: callBack,
       success: (res) => {
@@ -19,10 +19,11 @@ const useManageObjHook = create((set) => ({
     });
   },
 
-  removeObj: async (params, callback) => {
+  removeObj: async (params, body, callback) => {
     remove({
-      url: `${PATH}-success-indicators`,
-      params: params,
+      url: `${PATH}s`,
+      param: { id: params },
+      form: body,
       success: (response) => {
         const { message, data } = response.data;
         callback(response.status, message, data);

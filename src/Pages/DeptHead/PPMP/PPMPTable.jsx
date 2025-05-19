@@ -12,6 +12,9 @@ import PaginationComponent from "../../../Components/Common/Table/PaginationComp
 import AlertDialogComponent from "../../../Components/Common/Dialog/AlertDialogComponent";
 import useModalHook from "../../../Hooks/ModalHook";
 import AutocompleteComponent from "../../../Components/Form/AutocompleteComponent";
+import ConfirmationModalComponent from "../../../Components/Common/Dialog/ConfirmationModalComponent";
+import ConfirmationModal from "../../../Components/Common/Dialog/ConfirmationModal";
+import PageLoader from "../../../Components/Loading/PageLoader";
 
 const PPMPTable = memo(
   ({
@@ -25,28 +28,58 @@ const PPMPTable = memo(
     categories = [],
     classifications = [],
   }) => {
-    const { ppmp, getPPMPItems, getProcModes } = usePPMPHook();
-    const { setAlertDialog, setConfirmationModal } = useModalHook();
+    const { ppmp, getPPMPItems, getProcModes, removeItem } = usePPMPHook();
+    const { setAlertDialog, setConfirmationModal, closeConfirmation } =
+      useModalHook();
     // const { items, getItems } = useItemsHook();
     const [ppmpTable, setPPMPTable] = useState([]);
     const [loading, setLoading] = useState(false);
+    const [openDel, setOpenDel] = useState(false);
     const [searchVal, setSearchVal] = useState("");
     const [selectedClass, setSelectedClass] = useState({});
     const [selectedCat, setSelectedCat] = useState({});
     const [editedCell, setEditedCell] = useState({ rowId: null, field: null });
+    const [pin, setPin] = useState("");
 
     //COLUMN
-    const handleDeleteRow = (id) => {
+    const handleOpenDel = (params) => {
+      console.log(params);
+      const data = {
+        status: "error",
+        title: ` Are you sure you want to delete item ${params?.item?.code}`,
+        description:
+          "The selected item will be removed from the table. Please input authorization pin to proceed",
+        leftButtonLabel: "Cancel",
+        rightButtonLabel: "Proceed",
+        rightButtonAction: () => handleDeleteRow(params),
+        withAuthPin: true,
+        setAuthPin: setPin,
+      };
+      setConfirmationModal(data);
+    };
+
+    const columns = ppmpHeaders(handleOpenDel, items, modes);
+    const childHeaders = flattenColumns(columns);
+
+    //DELETE ITEM
+    const handleDeleteRow = async (params) => {
+      // const formData = new FormData();
+      // formData.append("pin", pin);
       setLoading(true);
       setTimeout(() => {
-        const updated = ppmpTable.filter((row) => row.id !== id);
+        const updated = ppmpTable.filter((row) => row.id !== params.id);
+        const data = {
+          status: "success",
+          title: "Item Deleted",
+          description: "Item has been deleted",
+        };
         setLoading(false);
+        closeConfirmation();
+        setAlertDialog(data);
         setPPMPTable(updated);
         localStorage.setItem("ppmp-items", JSON.stringify(updated));
       }, 1000);
     };
-    const columns = ppmpHeaders(handleDeleteRow, items, modes);
-    const childHeaders = flattenColumns(columns);
 
     //FILTER
     const filteredTable = ppmpTable.filter((item) => {
@@ -526,6 +559,9 @@ const PPMPTable = memo(
             totalRows={ppmpTable?.length}
           />
         )}
+
+        <ConfirmationModal />
+
         <AlertDialogComponent />
       </Box>
     );

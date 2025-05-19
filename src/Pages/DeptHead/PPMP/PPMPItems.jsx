@@ -33,6 +33,7 @@ import handleSingleChangeAutcomplete from "../../../Utils/HandleAutocomplete";
 import handleInputValidation from "../../../Utils/HandleInput";
 import PageLoader from "../../../Components/Loading/PageLoader";
 import PPMPTable from "./PPMPTable";
+import ConfirmationModal from "../../../Components/Common/Dialog/ConfirmationModal";
 
 function PPMPItems(props) {
   const navigate = useNavigate();
@@ -67,6 +68,7 @@ function PPMPItems(props) {
   const [activity, setActivity] = useState({});
   const [expenseClass, setExpenseClass] = useState({});
   const [openAdd, setOpenAdd] = useState(false);
+  const [openSave, setOpenSave] = useState(false);
   const [openReq, setOpenReq] = useState(false);
   const [pageLoader, setPageLoader] = useState(false);
   const [step, setStep] = useState(1);
@@ -121,12 +123,44 @@ function PPMPItems(props) {
   };
 
   const handleConfirmationModal = () => {
+    setOpenSave(true);
     const data = {
       status: "success",
       title:
         "Changes on PPMP are ready to be reflected to your AOP. Would you like to have a preview first before saving changes?",
       description:
         "Document previews will be generated and downloaded in Microsoft Excel Spreadsheet (.xls) file format. The document preview is for viewing purposes only to help you ensure that all fields are filled-up correctly and accurately.",
+      content: (
+        <>
+          <Typography fontSize={12} sx={{ color: grey[600] }}>
+            Available preview:
+          </Typography>
+          <Stack
+            direction={"row"}
+            justifyContent={"space-between"}
+            alignItems={"center"}
+          >
+            <Typography fontSize={13} py={2}>
+              Project Procurement Management Plan - 2023-0031.xls
+            </Typography>
+            <Link
+              endDecorator={<MdOpenInNew />}
+              fontSize={12}
+              underline="always"
+              color="success"
+            >
+              Open preview
+            </Link>
+          </Stack>
+        </>
+      ),
+      leftButtonLabel: "Back to editor",
+      withDivider: true,
+      rightButtonLabel: "Save changes",
+      rightButtonAction: () => handleSubmit(0),
+      onClose: () => closeConfirmation(),
+      withAuthPin: true,
+      setAuthPin: setPin,
     };
 
     setConfirmationModal(data);
@@ -154,7 +188,8 @@ function PPMPItems(props) {
             description:
               "Your PPMP request has been sent to designated to the next approving body and notified them for approvals.",
           };
-
+          closeConfirmation();
+          setOpenSave(false);
           setAlertDialog(data);
         } else {
           const data = {
@@ -638,39 +673,8 @@ function PPMPItems(props) {
         }}
         hasActionButtons
       />
-      <ConfirmationModalComponent
-        leftButtonLabel="Back to editor"
-        rightButtonLabel="Save changes"
-        rightButtonAction={() => handleSubmit(0)}
-        onClose={() => closeConfirmation()}
-        withDivider={true}
-        content={
-          <>
-            <Typography fontSize={12} sx={{ color: grey[600] }}>
-              Available preview:
-            </Typography>
-            <Stack
-              direction={"row"}
-              justifyContent={"space-between"}
-              alignItems={"center"}
-            >
-              <Typography fontSize={13} py={2}>
-                Project Procurement Management Plan - 2023-0031.xls
-              </Typography>
-              <Link
-                endDecorator={<MdOpenInNew />}
-                fontSize={12}
-                underline="always"
-                color="success"
-              >
-                Open preview
-              </Link>
-            </Stack>
-          </>
-        }
-        withAuthPin={true}
-        setAuthPin={setPin}
-      />
+      {openSave && <ConfirmationModal />}
+
       <AlertDialogComponent leftButtonAction={() => handleClose()} />
       <PageLoader isLoading={pageLoader} />
     </Fragment>

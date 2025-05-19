@@ -523,8 +523,8 @@ export const ppmpHeaders = (handleDeleteRow, items, modes) => [
       return (
         <>
           <IconButton
-            onClick={() => handleDeleteRow(params.id)}
-            color="primary"
+            onClick={() => handleDeleteRow(params)}
+            color="danger"
             size="lg"
           >
             <MdDeleteOutline />

@@ -19,7 +19,7 @@ import InputComponent from "../../Form/InputComponent";
 import { AnimatePresence, motion } from "motion/react";
 import { LampFloor } from "lucide-react";
 
-ConfirmationModalComponent.propTypes = {
+ConfirmationModal.propTypes = {
   content: PropTypes.node,
   rightButtonLabel: PropTypes.string,
   rightButtonAction: PropTypes.func,
@@ -33,27 +33,24 @@ ConfirmationModalComponent.propTypes = {
   pinHelperText: PropTypes.string,
 };
 
-function ConfirmationModalComponent({
-  content,
-  rightButtonLabel = "Proceed",
-  rightButtonAction,
-  rightButtonDisabled,
-  leftButtonLabel = "Cancel",
-  leftButtonAction = null,
-  isLoading,
-  withAuthPin,
-  withDivider,
-  setAuthPin,
-  pinHelperText = "Confirm you action by typing-in your authorization PIN.",
-  errors = {},
-}) {
+function ConfirmationModal({ errors = {} }) {
   const {
     confirmationModalState: {
       isOpen = false,
       title,
       description,
       status,
-      leftBtnLbl,
+      content,
+      leftButtonLabel,
+      withDivider,
+      rightButtonLabel,
+      rightButtonAction,
+      rightButtonDisabled,
+      leftButtonAction,
+      isLoading,
+      withAuthPin,
+      setAuthPin,
+      pinHelperText,
     },
     closeConfirmation,
   } = useModalHook();
@@ -136,7 +133,7 @@ function ConfirmationModalComponent({
                 >
                   <ButtonComponent
                     variant="outlined"
-                    label={leftButtonLabel ?? leftBtnLbl}
+                    label={leftButtonLabel}
                     onClick={leftButtonAction ?? closeConfirmation}
                     isDisabled={isLoading}
                     fullWidth={!rightButtonAction}
@@ -158,4 +155,4 @@ function ConfirmationModalComponent({
   );
 }
 
-export default ConfirmationModalComponent;
+export default ConfirmationModal;

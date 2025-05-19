@@ -25,10 +25,11 @@ import TableComponent from "../../../Components/Common/Table/TableComponent";
 import useModalHook from "../../../Hooks/ModalHook";
 import AlertDialogComponent from "../../../Components/Common/Dialog/AlertDialogComponent";
 import PageLoader from "../../../Components/Loading/PageLoader";
+import ConfirmationModalComponent from "../../../Components/Common/Dialog/ConfirmationModalComponent";
 
 function Objectives({ props }) {
   const { objectives, getObjectives, removeObj } = useManageObjHook();
-  const { setAlertDialog } = useModalHook();
+  const { setAlertDialog, setConfirmationModal } = useModalHook();
   const [openCreate, setOpenCreate] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isView, setIsView] = useState(false);
@@ -37,6 +38,7 @@ function Objectives({ props }) {
   const [obj, setObj] = useState({});
   const [objIndicators, setObjIndicators] = useState([]);
   const [pin, setPin] = useState(null);
+  const [selected, setSelected] = useState({});
   const indicatorsContainerRef = useRef(null);
 
   const addIndicator = () => {
@@ -92,16 +94,31 @@ function Objectives({ props }) {
     console.log("Update clicked:", row);
   };
 
+  const handleOpenDel = (row) => {
+    const data = {
+      status: "error",
+      title: ` Are you sure you want to delete objective ${row?.objective?.code}`,
+      description:
+        "The selected objective will be removed from the table. Please input authorization pin to proceed",
+    };
+    setSelected(row);
+    setConfirmationModal(data);
+  };
+
   const handleDelete = async (row) => {
-    await removeObj(row.id, (status, message, data) => {
+    const formData = new FormData();
+    formData.append("pin", pin);
+    await removeObj(row.id, formData, (status, message, data) => {
       //return data then save sa localstorage
       setIsLoading(true);
-      if (status === 201) {
+      if (status === 200) {
         const data = {
           status: "success",
           title: message,
           description: message,
         };
+        fetchAll();
+        setSelected({});
         setIsLoading(false);
         setAlertDialog(data);
       } else {
@@ -116,6 +133,18 @@ function Objectives({ props }) {
     });
   };
 
+  const fetchAll = async () => {
+    // Step 2: Wrap callbacks in Promises for async/await
+    const wrap = (fn) => new Promise((resolve) => fn(() => resolve()));
+
+    try {
+      // Step 3: Fetch all other needed data
+      await Promise.all([wrap(getObjectives)]);
+    } catch (err) {
+      console.error("Fetching error:", err);
+    }
+  };
+
   const handleViewIndicators = (row) => {
     setObj(row.objective);
     setObjIndicators(row.success_indicator);
@@ -125,18 +154,6 @@ function Objectives({ props }) {
   const submit = () => {};
 
   useEffect(() => {
-    async function fetchAll() {
-      // Step 2: Wrap callbacks in Promises for async/await
-      const wrap = (fn) => new Promise((resolve) => fn(() => resolve()));
-
-      try {
-        // Step 3: Fetch all other needed data
-        await Promise.all([wrap(getObjectives)]);
-      } catch (err) {
-        console.error("Fetching error:", err);
-      }
-    }
-
     fetchAll();
   }, []);
   return (
@@ -166,7 +183,7 @@ function Objectives({ props }) {
           data={objectives}
           columns={objHeaders({
             onUpdate: handleUpdate,
-            onDelete: handleDelete,
+            onDelete: handleOpenDel,
             onViewIndicators: handleViewIndicators,
           })}
           pageSize={5}
@@ -285,6 +302,11 @@ function Objectives({ props }) {
             />
           </Fragment>
         }
+      />
+      <ConfirmationModalComponent
+        rightButtonAction={() => handleDelete(selected)}
+        withAuthPin
+        setAuthPin={setPin}
       />
       <AlertDialogComponent />
       <PageLoader isLoading={isLoading} />
