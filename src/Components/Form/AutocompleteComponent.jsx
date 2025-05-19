@@ -17,6 +17,7 @@ function AutocompleteComponent({
   name,
   handleSelect,
   getOptionLabel,
+  isOptionEqualToValue,
   ...props
 }) {
   const handleChange = (event) => {
@@ -36,6 +37,7 @@ function AutocompleteComponent({
         onChange={(_, newValue) => {
           handleSelect ? handleSelect(newValue) : handleChange(newValue);
         }}
+        isOptionEqualToValue={(option, value) => option.name === value.name}
         renderOption={(props, option) => (
           <li
             {...props}

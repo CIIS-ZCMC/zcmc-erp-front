@@ -198,12 +198,6 @@ export const AOP_RESOURCE_HEADER = [
     width: "15%",
     align: "left",
   },
-  {
-    field: "resource_type",
-    name: "Type of Resource",
-    width: "15%",
-    align: "center",
-  },
 
   {
     field: "quantity",

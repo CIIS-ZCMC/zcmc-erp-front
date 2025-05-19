@@ -32,6 +32,7 @@ const useObjectivesHook = create(
           ),
         }));
       },
+
       // add row objective
       addObjective: () => {
         const current = get().objectives;

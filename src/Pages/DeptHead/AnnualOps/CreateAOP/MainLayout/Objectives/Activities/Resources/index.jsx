@@ -14,10 +14,12 @@ import { AOP_CONSTANTS } from '../../../../../../../../Data/constants';
 import { AOP_RESOURCE_HEADER } from '../../../../../../../../Data/Columns';
 
 import useResourceHook from '../../../../../../../../Hooks/ResourceHook';
+import useItemsHook from '../../../../../../../../Hooks/ItemsHook';
 
 const Resources = () => {
 
-    const { resources } = useResourceHook();
+    const { resources, addResource } = useResourceHook();
+    const { items, getItems } = useItemsHook();
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -25,8 +27,12 @@ const Resources = () => {
     const objectiveRowId = location.state?.objectiveRowId;
 
     useEffect(() => {
-        console.log(location.state)
-    }, [location])
+        getItems((status, message, data) => {
+            if (status !== 200) {
+                console.error("Failed to fetch items:", message);
+            }
+        });
+    }, []);
 
     return (
         <Fragment>
@@ -37,7 +43,7 @@ const Resources = () => {
                 actions={
                     <Stack>
                         <ButtonComponent
-                            // onClick={() => setOpen(true)}
+                            onClick={() => addResource(parentId)}
                             label={"Add Resource"}
                             endDecorator={<Plus size={16} />}
                         />
@@ -52,6 +58,7 @@ const Resources = () => {
                         <TableRow
                             rows={resources}
                             parentId={parentId}
+                            resources={items}
                         // handleEdit={handleEdit}
                         // handleBlur={handleBlur}
                         // editField={editField}

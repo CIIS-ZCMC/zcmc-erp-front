@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { v4 as uuid } from "uuid";
+import { setNestedValue } from "../Utils/SetNestedValue";
 
 const initialResource = (
   rowId = 1,
@@ -24,6 +25,17 @@ const useResourceHook = create(
     (set, get) => ({
       resources: [],
       cart: [],
+
+      updateResourceField: (id, fieldPath, value) => {
+        set((state) => ({
+          resources: state.resources.map((resource) => {
+            if (resource.id === id) {
+              return setNestedValue(resource, fieldPath, value)
+            }
+            return resource;
+          })
+        }))
+      },
 
       addResourceToCart: (item, parentId, quantity = 1) => {
         const { cart } = get();
@@ -100,12 +112,43 @@ const useResourceHook = create(
         }));
       },
 
-      addResource: () => {
-        //to be added
+      addResource: (parentId) => {
+        const resources = get().resources;
+        set((state) => ({
+          resources: [
+            ...state.resources,
+            initialResource(
+              resources.filter((item) => item.parentId === parentId).length + 1,
+              parentId
+            ),
+          ],
+          initialRender: false,
+        }))
       },
 
       removeItemResource: (id) => {
-        console.log(id)
+        const resources = get().resources;
+
+        const filtered = resources.filter((item) => item.id !== id)
+
+        const groupedByParent = {};
+
+        filtered.forEach((item) => {
+          if (!groupedByParent[item.parentId]) {
+            groupedByParent[item.parentId] = [];
+          }
+          groupedByParent[item.parentId].push(item);
+        });
+
+        const newResources = Object.values(groupedByParent)
+          .flatMap((group) =>
+            group.map((item, index) => ({
+              ...item,
+              rowId: index + 1,
+            }))
+          );
+
+        set({ resources: newResources });
       },
 
       findResourcesByActivityID: (activityId) => {
