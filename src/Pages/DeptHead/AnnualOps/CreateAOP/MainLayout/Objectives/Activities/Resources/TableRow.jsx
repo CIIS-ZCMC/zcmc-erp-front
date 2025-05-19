@@ -1,13 +1,16 @@
-import React, { Fragment } from 'react'
+import { Fragment, useEffect } from 'react'
 
 import { useNavigate } from 'react-router-dom'
-import { Typography, Input, Stack, Link } from '@mui/joy'
-import { ExternalLink, Trash } from 'lucide-react'
+import { Typography, Input, } from '@mui/joy'
+import { Trash } from 'lucide-react'
 
-import ButtonComponent from '../../../../../../../../Components/Common/ButtonComponent'
+import useResourceHook from '../../../../../../../../Hooks/ResourceHook'
+
+import IconButtonComponent from '../../../../../../../../Components/Common/IconButtonComponent'
 
 const TableRow = ({
     rows,
+    parentId,
     handleEdit,
     handleBlur,
     editRowId,
@@ -17,9 +20,18 @@ const TableRow = ({
 
     const navigate = useNavigate()
 
+    const { removeItemResource } = useResourceHook();
+
+    const filtered = rows.filter((value) => value.parentId === parentId)
+
+    useEffect(() => {
+        console.log(parentId)
+        console.log(filtered)
+    }, [parentId, filtered])
+
     return (
         <Fragment>
-            {rows.map((row, index) => (
+            {filtered?.map((row, index) => (
                 <tr key={row.id}>
                     <td>
                         <Typography>
@@ -145,29 +157,15 @@ const TableRow = ({
                         )}
                     </td >
 
-
-
-
                     <td>
-                        <Stack
-                            size='sm'
-                            direction={'flex'}
-                            alignItems={'center'}
-                            justifyContent={'space-between'}
-                            gap={1}
-                        >
-
-                            <ButtonComponent
-                                label={'Delete'}
-                                size={'sm'}
-                                variant={'outlined'}
-                                color={'danger'}
-                                endDecorator={<Trash size={16} />}
-                            />
-                        </Stack>
+                        <IconButtonComponent
+                            onClick={() => removeItemResource(row.id)}
+                            icon={<Trash size={14} />}
+                            size={'sm'}
+                            // color={'danger'}
+                            variant={'text'}
+                        />
                     </td>
-
-
                 </tr>
             ))}
         </Fragment>

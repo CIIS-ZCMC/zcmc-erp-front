@@ -31,6 +31,10 @@ const ResponsiblePerson = () => {
     return item.activityId === activityId;
   });
 
+  useEffect(() => {
+    console.log(location.state)
+  }, [])
+
   // const isAssigned = activity && (
   //     activity.isAssigned
   // )

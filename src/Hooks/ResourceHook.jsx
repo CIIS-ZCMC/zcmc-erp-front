@@ -67,7 +67,7 @@ const useResourceHook = create(
         }));
       },
 
-      // Update quantity
+      // Update quantity cart
       updateQuantity: (id, quantity) =>
         set((state) => ({
           cart: state.cart.map((item) =>
@@ -78,7 +78,6 @@ const useResourceHook = create(
 
       //handle assigment of data from cart to table row resources
       // navigate to resources Table
-
 
       saveItems: (parentId = null, totalPrice) => {
         const { resources, cart } = get();
@@ -97,7 +96,16 @@ const useResourceHook = create(
 
         set((state) => ({
           resources: [...state.resources, ...updatedResources],
+          cart: [],
         }));
+      },
+
+      addResource: () => {
+        //to be added
+      },
+
+      removeItemResource: (id) => {
+        console.log(id)
       },
 
       findResourcesByActivityID: (activityId) => {

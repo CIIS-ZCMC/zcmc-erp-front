@@ -46,6 +46,10 @@ const Items = () => {
     const activityId = location.state?.parentId;
     // const objectiveId = location.state.objectiveId;
 
+    useEffect(() => {
+        console.log(location.state)
+    }, [])
+
     const [isCollapsed, setIsCollapsed] = useState(false);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
@@ -103,7 +107,12 @@ const Items = () => {
 
     const handleSaveResources = () => {
         saveItems(activityId, totalPrice)
-        navigate(`/aop-create/activities/${objectiveRowId}/resources/${rowNumber}`) //navigate with activity row id
+        navigate(`/aop-create/activities/${objectiveRowId}/resources/${rowNumber}`, {
+            state: {
+                parentId: activityId,
+                objectiveRowId: objectiveRowId,
+            }
+        }) //navigate with activity row id
     }
 
     return (

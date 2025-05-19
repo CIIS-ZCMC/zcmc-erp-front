@@ -1,16 +1,12 @@
-import { Fragment, useEffect, useRef, useState } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 
-import { Stack, Link, Typography, Input, Select, Option, Autocomplete } from '@mui/joy';
+import { Stack, Link, Typography, Input, Select, Option } from '@mui/joy';
 import { useNavigate } from 'react-router-dom';
-import { ExternalLink, Trash, FunnelX } from 'lucide-react';
-import useAOPObjectivesHooks from '../../../../../../../Hooks/AOP/AOPObjectivesHook';
+import { Trash } from 'lucide-react';
+
+import useResourceHook from '../../../../../../../Hooks/ResourceHook';
 
 import IconButtonComponent from '../../../../../../../Components/Common/IconButtonComponent';
-import ButtonComponent from '../../../../../../../Components/Common/ButtonComponent';
-import InputComponent from '../../../../../../../Components/Form/InputComponent';
-import AutoCompleteComponent from '../../../../../../../Components/Form/AutocompleteComponent';
-
-import { AOP_CONSTANTS, MONTHS } from '../../../../../../../Data/constants';
 
 const TableRow = ({
     rows,
@@ -22,13 +18,11 @@ const TableRow = ({
 
     const navigate = useNavigate();
 
+    const { findResourcesByActivityID } = useResourceHook();
+
     //local state
     const [localAopActivity, setLocalAopActivity] = useState({});
     const [editRowId, setEditRowId] = useState(null);
-
-    // useEffect(() => {
-    //     console.log(rows)
-    // }, [rows])
 
     const handleOnRowClick = (id) => {
         setEditRowId(id);
@@ -338,14 +332,20 @@ const TableRow = ({
 
                                 <Link
                                     component="button"
-                                    onClick={() => navigate(`items/${rowId}`, {
-                                        state: {
-                                            parentId: id,
-                                            objectiveRowId: objectiveRowId,
-                                            activityRowId: rowId,
-                                            cost: cost
-                                        }
-                                    })}
+                                    onClick={() => {
+
+                                        const resources = findResourcesByActivityID(id)
+                                        console.log(resources)
+
+                                        navigate(resources.length > 0 ? `resources/${rowId}` : `items/${rowId}`, {
+                                            state: {
+                                                parentId: id,
+                                                objectiveRowId: objectiveRowId,
+                                                activityRowId: rowId,
+                                                cost: cost
+                                            }
+                                        })
+                                    }}
                                     fontSize={12}
                                 >
                                     Resources

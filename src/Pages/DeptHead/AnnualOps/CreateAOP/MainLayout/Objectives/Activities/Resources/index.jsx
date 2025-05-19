@@ -17,16 +17,16 @@ import useResourceHook from '../../../../../../../../Hooks/ResourceHook';
 
 const Resources = () => {
 
-    const location = useLocation();
-    const { activityId, objectiveId } = useParams();
-    const currentPath = location.pathname;
-    const childPath = currentPath === `/aop-create/activities/${objectiveId}/resources/${activityId}`
-
     const { resources } = useResourceHook();
 
+    const navigate = useNavigate();
+    const location = useLocation();
+    const parentId = location.state?.parentId; // refers to objectiveId as parent
+    const objectiveRowId = location.state?.objectiveRowId;
+
     useEffect(() => {
-        console.log(resources)
-    }, [resources])
+        console.log(location.state)
+    }, [location])
 
     return (
         <Fragment>
@@ -51,6 +51,7 @@ const Resources = () => {
                     tableRow={
                         <TableRow
                             rows={resources}
+                            parentId={parentId}
                         // handleEdit={handleEdit}
                         // handleBlur={handleBlur}
                         // editField={editField}
@@ -59,6 +60,22 @@ const Resources = () => {
                         />
                     }
                 />
+
+                <Stack
+                    mt={2}
+                    direction={"flex"}
+                    alignItems={"center"}
+                    justifyContent={"start"}
+                    gap={1}
+                >
+                    <ButtonComponent
+                        label={"Back"}
+                        size={"md"}
+                        variant={"outlined"}
+                        onClick={() => navigate(`/aop-create/activities/${objectiveRowId}`)}
+                    />
+                </Stack>
+
             </ContainerComponent>
 
             <Outlet />

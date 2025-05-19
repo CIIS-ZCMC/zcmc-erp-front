@@ -36,7 +36,7 @@ const Activities = () => {
   const { activities, addActivity, updateActivityField, removeActivity } = useActivitiesHook();
 
   useEffect(() => {
-    console.log(activities);
+    // console.log(activities);
     const hasActivitiesForParent = activities.some(
       (act) => act.parentId === parentId
     );
@@ -137,8 +137,8 @@ const Activities = () => {
                   handleChange={updateActivityField}
                   parentId={parentId ?? current_parent_id}
                   objectiveRowId={objectiveRowId ?? current_row_id}
-                  deleteRow={removeActivity}
                   rows={activities}
+                  deleteRow={removeActivity}
                 />
               }
             />
