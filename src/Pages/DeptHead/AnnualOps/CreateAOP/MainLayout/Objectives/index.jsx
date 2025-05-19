@@ -41,10 +41,6 @@ const Objectives = () => {
     activities.filter((activity) => activity.parentId === objective.id)
   );
 
-  // useEffect(() => {
-  //   console.log("Activities per objective:", activitiesCount);
-  // }, [activitiesCount]);
-
   useEffect(() => {
     const params = { with_sub_data: 1 };
     getFunctionType(params, (status, message) => {

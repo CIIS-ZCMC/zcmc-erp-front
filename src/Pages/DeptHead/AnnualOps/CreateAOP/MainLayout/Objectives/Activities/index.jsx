@@ -141,6 +141,7 @@ const Activities = () => {
                   deleteRow={removeActivity}
                 />
               }
+              stickLast
             />
 
             <Stack

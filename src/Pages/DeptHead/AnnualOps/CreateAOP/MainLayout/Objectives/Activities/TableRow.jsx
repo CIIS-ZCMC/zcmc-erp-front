@@ -317,13 +317,9 @@ const TableRow = ({
                             )}
                         </td>
 
-                        <td
-                            onClick={() => setEditRowId(id)}
-                            style={{ cursor: 'pointer' }}
-                        >
+                        <td >
 
                             <Stack
-                                size='sm'
                                 direction={'flex'}
                                 alignItems={'center'}
                                 justifyContent={'space-between'}
