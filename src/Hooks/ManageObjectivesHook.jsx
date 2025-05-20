@@ -19,7 +19,7 @@ const useManageObjHook = create((set) => ({
     });
   },
 
-  postPPMP: async (body, callback) => {
+  postObjective: async (body, callback) => {
     post({
       url: `${PATH}s`,
       form: body,

@@ -29,7 +29,8 @@ import ConfirmationModalComponent from "../../../Components/Common/Dialog/Confir
 import useFunctionTypeHook from "../../../Hooks/FunctionTypeHook";
 
 function Objectives({ props }) {
-  const { objectives, getObjectives, removeObj } = useManageObjHook();
+  const { objectives, getObjectives, removeObj, postObjective } =
+    useManageObjHook();
   const { function_types, getFunctionType } = useFunctionTypeHook();
   const { setAlertDialog, setConfirmationModal } = useModalHook();
   const [openCreate, setOpenCreate] = useState(false);
@@ -156,15 +157,35 @@ function Objectives({ props }) {
     setIsView(true);
   };
 
-  const submit = () => {
+  const submit = async () => {
     const formData = new FormData();
     formData.append("function", JSON.stringify(newObj.function));
     formData.append("objective", newObj.objective);
     formData.append("indicators", JSON.stringify(newObj.indicators));
 
-    for (let [key, value] of formData.entries()) {
-      console.log(`${key}: ${value}`);
-    }
+    // for (let [key, value] of formData.entries()) {
+    //   console.log(`${key}: ${value}`);
+    // }
+
+    await postObjective(formData, (status, message, data) => {
+      if (status === 201) {
+        const data = {
+          status: "success",
+          title: message,
+          description: message,
+        };
+
+        setAlertDialog(data);
+      } else {
+        const data = {
+          status: "error",
+          title: message,
+          description: message,
+        };
+
+        setAlertDialog(data);
+      }
+    });
   };
 
   useEffect(() => {
