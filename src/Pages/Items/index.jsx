@@ -35,7 +35,7 @@ const Items = () => {
     const location = useLocation();
 
     const { items, getItems } = useItemsHook();
-    const { cart, addResourceToCart, removeFromCart, updateQuantity, saveItems, cancelResources } =  useResourceHook();
+    const { cart, addResourceToCart, removeFromCart, updateQuantity, saveItems, cancelResources } = useResourceHook();
 
     const [displayedItems, setDisplayedItems] = useState([]);
 
@@ -52,6 +52,7 @@ const Items = () => {
     const [isCollapsed, setIsCollapsed] = useState(false);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
+    const [itemTotal, setItemTotal] = useState(null)
     const [quantity, setQuantity] = useState(1);
 
     const filteredCart =
@@ -61,14 +62,15 @@ const Items = () => {
         (sum, item) => sum + item.aop_quantity,
         0
     );
+
     const totalPrice = filteredCart.reduce(
         (sum, item) => sum + item.aop_quantity * item.estimated_budget,
         0
     );
 
     // useEffect(() => {
-    //     console.log(cart)
-    // }, [cart])
+    //     console.log(itemTotal)
+    // }, [itemTotal])
 
     useEffect(() => {
         getItems((status, message, data) => {
@@ -105,7 +107,7 @@ const Items = () => {
     };
 
     const handleSaveResources = () => {
-        saveItems(activityId, totalPrice)
+        saveItems(activityId, totalPrice, itemTotal)
         navigate(`/aop-create/activities/${objectiveRowId}/resources/${rowNumber}`, {
             state: {
                 parentId: activityId,
@@ -182,6 +184,7 @@ const Items = () => {
                             filteredCart={filteredCart}
                             onRemove={removeFromCart}
                             onQuantityChange={updateQuantity}
+                            setItemTotal={setItemTotal}
                         />
                     </Grid>
                 </Grid>

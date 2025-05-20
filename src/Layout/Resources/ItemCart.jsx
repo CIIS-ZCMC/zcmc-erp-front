@@ -5,14 +5,29 @@ import QuantityControlComponent from "../../Components/Cart/QuantityControlCompo
 import ButtonComponent from "../../Components/Common/ButtonComponent";
 
 import empty_cart from "../../assets/empty-cart.png";
+import { Fragment, useEffect } from "react";
 
 const ItemCart = ({
     totalQty,
     totalPrice,
     filteredCart,
     onRemove,
-    onQuantityChange
+    onQuantityChange,
+    setItemTotal,
 }) => {
+
+
+    const itemTotal = (name) =>
+        filteredCart
+            .filter(item => item.name === name)
+            .reduce((sum, item) => {
+                const quantity = Number(item.aop_quantity) || 0;
+                const price = Number(item.estimated_budget) || 0;
+                const total = sum + quantity * price;
+                setItemTotal(total)
+                return total
+            }, 0);
+
     return (
         <>
             <Box sx={{ p: 2, borderBottom: "1px solid #eee" }}>
@@ -38,7 +53,7 @@ const ItemCart = ({
                     [...filteredCart]
                         .reverse()
                         .map((item) => (
-                            <>
+                            <Fragment key={item.id}>
                                 <Box display={"flex"} gap={1}>
                                     <Box
                                         component="img"
@@ -76,8 +91,9 @@ const ItemCart = ({
                                             )}{" "}
                                             {item?.category}
                                         </Typography>
+
                                         <Typography fontSize={12} fontWeight={600} textColor={"success.500"}>
-                                            &#8369; {item?.estimated_budget?.toLocaleString()}
+                                            &#8369; {itemTotal(item.name).toLocaleString()}
                                         </Typography>
 
                                         <Box
@@ -107,7 +123,7 @@ const ItemCart = ({
                                 </Box>
 
                                 <Divider sx={{ my: 1.5 }} />
-                            </>
+                            </Fragment>
                         ))
                 ) : (
                     <Stack

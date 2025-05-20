@@ -39,6 +39,8 @@ const TableRow = ({
         const currentRow = rows.find((row) => row.id === id);
         if (!currentRow) return
 
+        console.log(currentRow)
+
         const { name, quantity, expenseClass, individualPrice, totalCost } = currentRow;
 
         setLocalResource((prev) => ({
@@ -55,7 +57,7 @@ const TableRow = ({
 
     return (
         <Fragment>
-            {filtered?.map(({ id, name, quantity, individualPrice, totalCost, purchaseTypeId, expenseClass }, index) => {
+            {filtered?.map(({ id, name, quantity, individualPrice, totalCost, itemTotal, purchaseTypeId, expenseClass }, index) => {
 
                 const isEditing = editRowId === id;
 
@@ -110,54 +112,12 @@ const TableRow = ({
                             )}
                         </td>
 
-                        <td onClick={() => handleOnRowClick(id)}>
-                            {isEditing ? (
-                                <Input
-                                    value={localResource[id]?.localPrice || ''}
-                                    size='sm'
-                                    placeholder='Individual Price'
-                                    onChange={(e) =>
-                                        setLocalResource((prev) => ({
-                                            ...prev,
-                                            [id]: {
-                                                ...prev[id],
-                                                localPrice: e.target.value,
-                                            },
-                                        }))
-                                    }
-                                    onBlur={() => {
-                                        updateResourceField(id, 'individualPrice', localResource[id]?.localPrice);
-                                        setEditRowId(null);
-                                    }}
-                                />
-                            ) : (
-                                <Typography>{individualPrice || '-'}</Typography>
-                            )}
+                        <td>
+                            <Typography>{individualPrice || '-'}</Typography>
                         </td>
 
                         <td onClick={() => handleOnRowClick(id)}>
-                            {isEditing ? (
-                                <Input
-                                    // value={localAopActivity[id]?.localName || ''}
-                                    size='sm'
-                                    placeholder='Total Cost'
-                                // onChange={(e) =>
-                                //     setLocalAopActivity((prev) => ({
-                                //         ...prev,
-                                //         [id]: {
-                                //             ...prev[id],
-                                //             localName: e.target.value,
-                                //         },
-                                //     }))
-                                // }
-                                // onBlur={() => {
-                                //     handleChange(id, 'name', localAopActivity[id]?.localName);
-                                //     setEditRowId(null);
-                                // }}
-                                />
-                            ) : (
-                                <Typography>{totalCost || '-'}</Typography>
-                            )}
+                            <Typography>{itemTotal || '-'}</Typography>
                         </td>
 
                         <td onClick={() => handleOnRowClick(id)}>
