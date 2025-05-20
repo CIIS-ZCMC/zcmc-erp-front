@@ -388,13 +388,13 @@ export const ppmpHeaders = (handleDeleteRow, items, modes) => [
               }
               placement="top"
               variant="soft"
-              color="success"
+              color="primary"
             >
               <Link
                 href="#"
                 underline="always"
                 variant="soft"
-                color="success"
+                color="primary"
                 sx={{
                   fontSize: 12,
                 }}

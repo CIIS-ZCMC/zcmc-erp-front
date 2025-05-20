@@ -303,7 +303,7 @@ function PPMPItems(props) {
           <Stack direction={"row"} spacing={1}>
             <ButtonComponent
               label={"Add item"}
-              color="success"
+              color="primary"
               variant={"outlined"}
               endDecorator={<BiPlus />}
               onClick={() => {
@@ -314,7 +314,7 @@ function PPMPItems(props) {
             />
             <Select
               placeholder="More options"
-              color="success"
+              color="primary"
               indicator={<MdKeyboardArrowDown />}
               sx={{
                 width: "150px",
@@ -339,7 +339,7 @@ function PPMPItems(props) {
 
             <ButtonComponent
               label={"Save changes"}
-              color="success"
+              color="primary"
               onClick={() => handleConfirmationModal()}
             />
           </Stack>
@@ -395,6 +395,7 @@ function PPMPItems(props) {
                   "Expense class determine the type of budget to be used for the items that are to be selected."
                 }
                 options={expenseClassData}
+                getOptionLabel={(option) => option?.label || ""}
                 value={expenseClass}
                 setValue={setExpenseClass}
               />
@@ -465,12 +466,11 @@ function PPMPItems(props) {
 
                   <AutocompleteComponent
                     label={"Select expense class"}
-                    name="expense_class"
                     helperText={
                       "Expense class determine the type of budget to be used for the items that are to be selected."
                     }
+                    getOptionLabel={(option) => option?.label || ""}
                     options={expenseClassData}
-                    getOptionLabel={(option) => option.label || ""}
                     value={expenseClass}
                     setValue={setExpenseClass}
                   />

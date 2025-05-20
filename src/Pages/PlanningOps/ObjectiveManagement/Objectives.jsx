@@ -171,7 +171,7 @@ function Objectives({ props }) {
         actions={
           <ButtonComponent
             label="Create new"
-            color="success"
+            color="primary"
             onClick={() => setOpenCreate(true)}
           />
         }

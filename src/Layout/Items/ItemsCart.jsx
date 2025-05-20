@@ -17,7 +17,6 @@ const ItemsCart = ({
 }) => {
   return (
     <Fragment>
-      {console.log("item", item)}
       <Box display={"flex"} gap={1}>
         <Box
           component="img"
@@ -55,7 +54,7 @@ const ItemsCart = ({
             )}{" "}
             {item?.category}
           </Typography>
-          <Typography fontSize={12} fontWeight={600} textColor={"success.500"}>
+          <Typography fontSize={12} fontWeight={600} textColor={"primary.500"}>
             &#8369; {item?.estimated_budget.toLocaleString()}
           </Typography>
 

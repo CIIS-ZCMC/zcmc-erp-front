@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Box, Stack } from "@mui/joy";
+import { Box, Stack, Tooltip } from "@mui/joy";
 
 import MenuItemWithChildren from "./MenuItemComponent/MenuItemWithChildren";
 import { sidebarRoutes } from "../../../Data";
@@ -13,7 +13,24 @@ const Content = () => {
   return (
     <Box>
       <Stack pt={4} gap={1} flexGrow={1}>
-        {sidebarRoutes?.map((item, index) =>
+        {sidebarRoutes?.map((item, index) => {
+          const MenuComponent = item.children
+            ? MenuItemWithChildren
+            : SimpleMenuItem;
+
+          const content = (
+            <MenuComponent key={index} {...item} isCollapsed={isCollapsed} />
+          );
+
+          return isCollapsed ? (
+            <Tooltip key={index} title={item.name} placement="right">
+              <Box>{content}</Box>
+            </Tooltip>
+          ) : (
+            content
+          );
+        })}
+        {/* {sidebarRoutes?.map((item, index) =>
           item.children ? (
             <MenuItemWithChildren
               key={index}
@@ -23,7 +40,7 @@ const Content = () => {
           ) : (
             <SimpleMenuItem key={index} {...item} isCollapsed={isCollapsed} />
           )
-        )}
+        )} */}
       </Stack>
     </Box>
   );
