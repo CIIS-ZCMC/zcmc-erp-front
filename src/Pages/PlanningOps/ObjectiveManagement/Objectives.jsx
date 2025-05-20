@@ -26,47 +26,55 @@ import useModalHook from "../../../Hooks/ModalHook";
 import AlertDialogComponent from "../../../Components/Common/Dialog/AlertDialogComponent";
 import PageLoader from "../../../Components/Loading/PageLoader";
 import ConfirmationModalComponent from "../../../Components/Common/Dialog/ConfirmationModalComponent";
+import useFunctionTypeHook from "../../../Hooks/FunctionTypeHook";
 
 function Objectives({ props }) {
   const { objectives, getObjectives, removeObj } = useManageObjHook();
+  const { function_types, getFunctionType } = useFunctionTypeHook();
   const { setAlertDialog, setConfirmationModal } = useModalHook();
   const [openCreate, setOpenCreate] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isView, setIsView] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
-  const [indicators, setIndicators] = useState(["", "", ""]);
   const [obj, setObj] = useState({});
   const [objIndicators, setObjIndicators] = useState([]);
   const [pin, setPin] = useState(null);
   const [selected, setSelected] = useState({});
+  const [newObj, setNewObj] = useState({
+    function: null,
+    objective: "",
+    indicators: ["", "", ""],
+  });
   const indicatorsContainerRef = useRef(null);
 
   const addIndicator = () => {
-    setIndicators((prevIndicators) => {
-      const newIndicators = [...prevIndicators, ""];
+    setNewObj((prev) => {
+      const newIndicators = [...prev.indicators, ""];
       setTimeout(() => {
-        if (indicatorsContainerRef.current) {
-          indicatorsContainerRef.current.lastElementChild.scrollIntoView({
-            behavior: "smooth",
-            block: "end",
-          });
-        }
-      }, 100); // Delay to allow the DOM to update
-      return newIndicators;
+        indicatorsContainerRef.current?.lastElementChild?.scrollIntoView({
+          behavior: "smooth",
+          block: "end",
+        });
+      }, 100);
+      return { ...prev, indicators: newIndicators };
     });
   };
 
   const removeIndicator = (index) => {
-    if (indicators.length > 1) {
-      setIndicators(indicators.filter((_, i) => i !== index));
-    }
+    setNewObj((prev) => ({
+      ...prev,
+      indicators:
+        prev.indicators.length > 1
+          ? prev.indicators.filter((_, i) => i !== index)
+          : prev.indicators,
+    }));
   };
 
   const handleChangeIndicator = (index, value) => {
-    setIndicators((prevIndicators) => {
-      const newIndicators = [...prevIndicators];
-      newIndicators[index] = value; // Update the specific field
-      return newIndicators;
+    setNewObj((prev) => {
+      const newIndicators = [...prev.indicators];
+      newIndicators[index] = value;
+      return { ...prev, indicators: newIndicators };
     });
   };
 
@@ -84,10 +92,6 @@ function Objectives({ props }) {
   const handleClose = () => {
     setOpenCreate(false);
     setCurrentStep(1);
-  };
-
-  const handlePinInput = (value) => {
-    setPin(value);
   };
 
   const handleUpdate = (row) => {
@@ -134,12 +138,13 @@ function Objectives({ props }) {
   };
 
   const fetchAll = async () => {
-    // Step 2: Wrap callbacks in Promises for async/await
     const wrap = (fn) => new Promise((resolve) => fn(() => resolve()));
 
     try {
-      // Step 3: Fetch all other needed data
-      await Promise.all([wrap(getObjectives)]);
+      await Promise.all([
+        wrap(getObjectives),
+        wrap((done) => getFunctionType({ mode: "selection" }, done)),
+      ]);
     } catch (err) {
       console.error("Fetching error:", err);
     }
@@ -151,7 +156,16 @@ function Objectives({ props }) {
     setIsView(true);
   };
 
-  const submit = () => {};
+  const submit = () => {
+    const formData = new FormData();
+    formData.append("function", JSON.stringify(newObj.function));
+    formData.append("objective", newObj.objective);
+    formData.append("indicators", JSON.stringify(newObj.indicators));
+
+    for (let [key, value] of formData.entries()) {
+      console.log(`${key}: ${value}`);
+    }
+  };
 
   useEffect(() => {
     fetchAll();
@@ -196,20 +210,42 @@ function Objectives({ props }) {
       </ContainerComponent>
       <ModalComponent
         isOpen={openCreate}
+        hasActionButtons
         handleClose={() => setOpenCreate(false)}
         title={"Create a new objective"}
         description={"Add a new function, objective and its success indicators"}
         leftButtonLabel={currentStep === 1 ? "Cancel" : "Back to previous"}
         leftButtonAction={currentStep === 1 ? handleClose : handleBack}
         rightButtonLabel={currentStep === 1 ? "Next step" : "Confirm and save"}
-        rightButtonAction={currentStep === 2 ? handleClose : handleNext}
+        rightButtonAction={currentStep === 2 ? submit : handleNext}
         content={
           <Fragment>
             {currentStep === 1 && (
               <Fragment>
                 <Stack gap={2}>
-                  <AutocompleteComponent label={"Select a function"} />
-                  <TextareaComponent label={"Objective"} />
+                  <AutocompleteComponent
+                    label={"Select a function"}
+                    options={function_types}
+                    value={newObj.function}
+                    getOptionLabel={(option) => option?.type || ""}
+                    handleSelect={(val) =>
+                      setNewObj((prev) => ({
+                        ...prev,
+                        function: val,
+                      }))
+                    }
+                  />
+
+                  <TextareaComponent
+                    label={"Objective"}
+                    value={newObj.objective}
+                    onChange={(e) =>
+                      setNewObj((prev) => ({
+                        ...prev,
+                        objective: e.target.value,
+                      }))
+                    }
+                  />
                 </Stack>
               </Fragment>
             )}
@@ -220,10 +256,10 @@ function Objectives({ props }) {
                   maxHeight={300}
                   ref={indicatorsContainerRef}
                 >
-                  {indicators.map((indicator, index) => (
+                  {newObj.indicators.map((indicator, index) => (
                     <Box
                       key={index}
-                      sx={{ mt: 2, padding: 1 }}
+                      sx={{ my: 2, padding: 1 }}
                       bgcolor={"#F9F9F9"}
                     >
                       <Stack
@@ -236,7 +272,7 @@ function Objectives({ props }) {
                         <Typography sx={{ fontSize: 14, fontWeight: 500 }}>
                           Success indicator {index + 1}
                         </Typography>
-                        {indicators.length > 1 && (
+                        {newObj.indicators.length > 1 && (
                           <Link
                             onClick={() => removeIndicator(index)}
                             underline="always"
@@ -251,7 +287,7 @@ function Objectives({ props }) {
                       <TextareaComponent
                         isRequired={true}
                         value={indicator}
-                        handleInput={(e) =>
+                        onChange={(e) =>
                           handleChangeIndicator(index, e.target.value)
                         }
                       />
@@ -276,7 +312,7 @@ function Objectives({ props }) {
                   helperText={
                     "Confirm your action by typing-in your authorization PIN."
                   }
-                  setValue={handlePinInput}
+                  setValue={setPin}
                   value={pin}
                 />
               </Fragment>

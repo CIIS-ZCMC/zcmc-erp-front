@@ -99,11 +99,27 @@ function PPMPItems(props) {
     },
   ];
 
+  const specsContainerRef = useRef(null);
+
   const addSpec = () => {
-    setItemReq((prev) => ({
-      ...prev,
-      specs: [...prev.specs, { id: Date.now(), value: "" }],
-    }));
+    setItemReq((prev) => {
+      const newSpecs = [...prev.specs, { id: Date.now(), value: "" }];
+
+      // Allow the DOM to update before scrolling
+      setTimeout(() => {
+        if (specsContainerRef.current) {
+          specsContainerRef.current.lastElementChild?.scrollIntoView({
+            behavior: "smooth",
+            block: "end",
+          });
+        }
+      }, 100);
+
+      return {
+        ...prev,
+        specs: newSpecs,
+      };
+    });
   };
 
   const removeSpec = (id) => {
@@ -604,7 +620,11 @@ function PPMPItems(props) {
                     <Divider sx={{ my: 1 }} />
                   </Box>
                   <Stack>
-                    <Box height={"235px"} overflow="auto">
+                    <Box
+                      height={"235px"}
+                      overflow="auto"
+                      ref={specsContainerRef}
+                    >
                       {itemReq?.specs?.map((spec, index) => (
                         <Box key={spec.id} sx={{ mb: 0.5 }}>
                           <Stack spacing={1}>
