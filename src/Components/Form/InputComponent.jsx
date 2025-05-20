@@ -31,7 +31,7 @@ const InputComponent = ({
   endDecorator,
   width = "100%",
   isRequired,
-  color = "success",
+  color = "primary",
   ...props
 }) => {
   const isPassword = type == "password";
@@ -42,9 +42,9 @@ const InputComponent = ({
   const eyeColor = darkMode ? "white" : "black";
   const getIcon = () => {
     return showPassword ? (
-      <Eye style={{ color: eyeColor }} />
+      <Eye style={{ color: eyeColor }} size={16} />
     ) : (
-      <EyeOff style={{ color: eyeColor }} />
+      <EyeOff style={{ color: eyeColor }} size={16} />
     );
   };
 
@@ -74,11 +74,11 @@ const InputComponent = ({
         color={color}
         onChange={handleInput ? handleInput : (e) => setValue(e.target.value)}
         sx={{
-          fontSize: 14,
+          fontSize: 13,
           fontWeight: fontWeight,
           py: size ?? 1,
           background: darkMode && "none",
-          color: darkMode && "white",
+          color: darkMode ? "white" : "neutral.900",
           borderColor: "neutral.300",
         }}
         startDecorator={startDecorator}

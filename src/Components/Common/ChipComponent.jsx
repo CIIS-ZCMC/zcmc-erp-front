@@ -7,12 +7,20 @@ ChipComponent.propTypes = {
   label: PropTypes.string,
   variant: PropTypes.string,
   startDecorator: PropTypes.element,
+  endDecorator: PropTypes.element,
 };
 
-function ChipComponent({ color, label, status, variant, ...props }) {
+function ChipComponent({
+  color,
+  label,
+  status,
+  endDecorator,
+  variant,
+  ...props
+}) {
   const sxStyles = {
-    fontWeight: 500,
-    // fontSize: 13,
+    fontWeight: 600,
+    fontSize: 12,
     ...(variant || color
       ? { color: color }
       : {
@@ -26,7 +34,7 @@ function ChipComponent({ color, label, status, variant, ...props }) {
       color={color}
       variant={variant}
       sx={sxStyles}
-      endDecorator={getStatusIcon(status, true)} // the second param is for icon display
+      endDecorator={endDecorator && getStatusIcon(status, true)} // the second param is for icon display
       {...props}
     >
       {label}
