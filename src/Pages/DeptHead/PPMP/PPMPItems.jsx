@@ -30,7 +30,7 @@ import AlertDialogComponent from "../../../Components/Common/Dialog/AlertDialogC
 import TextareaComponent from "../../../Components/Form/TextareaComponent";
 import InputComponent from "../../../Components/Form/InputComponent";
 import handleSingleChangeAutcomplete from "../../../Utils/HandleAutocomplete";
-import handleInputValidation from "../../../Utils/HandleInput";
+import { handleInputValidation } from "../../../Utils/HandleInput";
 import PageLoader from "../../../Components/Loading/PageLoader";
 import PPMPTable from "./PPMPTable";
 import ConfirmationModal from "../../../Components/Common/Dialog/ConfirmationModal";
