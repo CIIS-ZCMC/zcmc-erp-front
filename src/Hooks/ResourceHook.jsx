@@ -30,11 +30,11 @@ const useResourceHook = create(
         set((state) => ({
           resources: state.resources.map((resource) => {
             if (resource.id === id) {
-              return setNestedValue(resource, fieldPath, value)
+              return setNestedValue(resource, fieldPath, value);
             }
             return resource;
-          })
-        }))
+          }),
+        }));
       },
 
       addResourceToCart: (item, parentId, quantity = 1) => {
@@ -50,10 +50,10 @@ const useResourceHook = create(
           const updatedCart = cart.map((cartItem) =>
             cartItem?.id === item?.id
               ? {
-                ...cartItem,
-                aop_quantity: cartItem.aop_quantity + quantity,
-                parentId: parentId,
-              }
+                  ...cartItem,
+                  aop_quantity: cartItem.aop_quantity + quantity,
+                  parentId: parentId,
+                }
               : cartItem
           );
           set({ cart: updatedCart });
@@ -87,23 +87,20 @@ const useResourceHook = create(
           ),
         })),
 
-
       //handle assigment of data from cart to table row resources
       // navigate to resources Table
 
       saveItems: (parentId = null, totalPrice, itemTotal) => {
         const { resources, cart } = get();
 
-        const updatedResources = cart.map((item, index) =>
-        ({
+        const updatedResources = cart.map((item, index) => ({
           ...initialResource(resources.length + index + 1, parentId, null),
           name: item.name,
           quantity: item.aop_quantity,
           individualPrice: item.estimated_budget,
           itemTotal: itemTotal,
           totalCost: totalPrice,
-        })
-        );
+        }));
 
         console.log("Updated Resources:", updatedResources);
 
@@ -114,7 +111,7 @@ const useResourceHook = create(
       },
 
       cancelResources: () => {
-        set((state) => state.cart = [])
+        set((state) => (state.cart = []));
       },
 
       addResource: (parentId) => {
@@ -128,13 +125,13 @@ const useResourceHook = create(
             ),
           ],
           initialRender: false,
-        }))
+        }));
       },
 
       removeItemResource: (id) => {
         const resources = get().resources;
 
-        const filtered = resources.filter((item) => item.id !== id)
+        const filtered = resources.filter((item) => item.id !== id);
 
         const groupedByParent = {};
 
@@ -145,18 +142,18 @@ const useResourceHook = create(
           groupedByParent[item.parentId].push(item);
         });
 
-        const newResources = Object.values(groupedByParent)
-          .flatMap((group) =>
-            group.map((item, index) => ({
-              ...item,
-              rowId: index + 1,
-            }))
-          );
+        const newResources = Object.values(groupedByParent).flatMap((group) =>
+          group.map((item, index) => ({
+            ...item,
+            rowId: index + 1,
+          }))
+        );
 
         set({ resources: newResources });
       },
 
       findResourcesByActivityID: (activityId) => {
+        console.log("IS ARRAY ", get().resources);
         return get().resources.filter((item) => item.parentId == activityId);
       },
     }),
