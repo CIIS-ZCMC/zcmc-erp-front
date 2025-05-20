@@ -1,27 +1,10 @@
 import { useEffect, useState } from "react";
 import { Table, Sheet, Box, Typography, Input, Select, Option } from "@mui/joy";
 
-const EditableTableComponent = ({
-  columns = [],
-  tableRow = [],
-  maxHeight,
-  stripe,
-  hoverRow,
-  bordered = false,
-  border = "none",
-  stickLast = false,
-  textWrap,
-}) => {
-  useEffect(() => console.log(stickLast), []);
 
-  const lastColumnWidth = columns[columns.length - 1]?.width || "144px";
-
-  return (
-    <Box sx={{ width: "100%", overflow: "auto" }}>
-      <Sheet
-        variant="outlined"
-        sx={() => ({
-          "--TableCell-height": "40px",
+const sheetStyles = (columns, lastColumnWidth) => (
+  {
+    "--TableCell-height": "40px",
           // the number is the amount of the header rows.
           "--TableHeader-height": "calc(1 * var(--TableCell-height))",
           "--Table-firstColumnWidth": columns[0]?.width, //set the width of the first column in px
@@ -35,15 +18,13 @@ const EditableTableComponent = ({
           backgroundPosition:
             "var(--Table-firstColumnWidth) var(--TableCell-height), calc(100% - var(--Table-lastColumnWidth)) var(--TableCell-height), var(--Table-firstColumnWidth) var(--TableCell-height), calc(100% - var(--Table-lastColumnWidth)) var(--TableCell-height)",
           backgroundColor: "background.surface",
-        })}
-      >
-        <Table
-          borderAxis="bothBetween"
-          stripe={stripe}
-          hoverRow
-          sx={{
-            tableLayout: "fixed",
-            "& tr > *:first-child": {
+  }
+)
+
+const tableStyles = (stickLast) => (
+  {
+     tableLayout: "fixed",
+            "& tr > *:first-of-type": {
               position: "sticky",
               left: 0,
               boxShadow: "1px 0 var(--TableCell-borderColor)",
@@ -56,17 +37,45 @@ const EditableTableComponent = ({
                 bgcolor: "var(--TableCell-headBackground)",
               },
             }),
-          }}
+  }
+)
+
+const EditableTableComponent = ({
+  columns = [],
+  tableRow = [],
+  maxHeight,
+  stripe,
+  hoverRow,
+  bordered = false,
+  border = "none",
+  stickLast = false,
+  textWrap,
+}) => {
+  // useEffect(() => console.log(stickLast), []);
+
+  const lastColumnWidth = columns[columns.length - 1]?.width || "144px";
+
+  return (
+    <Box sx={{ width: "100%", overflow: "auto" }}>
+      <Sheet
+        variant="outlined"
+        sx={sheetStyles(columns, lastColumnWidth)}
+      >
+        <Table
+          borderAxis="bothBetween"
+          stripe={stripe}
+          hoverRow
+          sx={tableStyles(stickLast)}
         >
           <thead>
             {/* First row - parent headers */}
             <tr>
-              {columns.map((header, index) => {
+              {columns.map((header, index) => {  
                 const isFirstColumn = index === 0;
                 const isLastColumn = index === columns.length - 1;
                 return header.children ? (
                   <th
-                    key={header.id}
+                    key={header.field}
                     aria-label={isLastColumn && stickLast ? "last" : ""}
                     colSpan={header.children.length}
                     align={header.align || "center"}
@@ -74,8 +83,8 @@ const EditableTableComponent = ({
                       width: isFirstColumn
                         ? "var(--Table-firstColumnWidth)"
                         : isLastColumn && stickLast
-                        ? "var(--Table-lastColumnWidth)"
-                        : header.width || 200,
+                          ? "var(--Table-lastColumnWidth)"
+                          : header.width || 200,
                       fontSize: 13,
                       textAlign: header.align,
                       backgroundColor: "rgba(240, 240, 240, 1)",
@@ -86,7 +95,7 @@ const EditableTableComponent = ({
                   </th>
                 ) : (
                   <th
-                    key={header.id}
+                    key={header.field}
                     aria-label={isLastColumn && stickLast ? "last" : ""}
                     rowSpan={2}
                     align={header.align || "center"}
@@ -105,17 +114,17 @@ const EditableTableComponent = ({
               {columns.flatMap((header) =>
                 header.children
                   ? header.children.map((child, index) => (
-                      <th
-                        key={`${header.id}-${index}`}
-                        align={child.align || "center"}
-                        style={{
-                          borderRightWidth: child.noRightBorder ? 0 : undefined,
-                          width: child.width,
-                        }}
-                      >
-                        {child.name}
-                      </th>
-                    ))
+                    <th
+                      key={`${header.field}-${index}`}
+                      align={child.align || "center"}
+                      style={{
+                        borderRightWidth: child.noRightBorder ? 0 : undefined,
+                        width: child.width,
+                      }}
+                    >
+                      {child.name}
+                    </th>
+                  ))
                   : []
               )}
             </tr>

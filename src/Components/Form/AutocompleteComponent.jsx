@@ -1,5 +1,12 @@
 import PropTypes from "prop-types";
-import { Box, Typography, Autocomplete, FormControl, FormHelperText, FormLabel } from "@mui/joy";
+import {
+  Box,
+  Typography,
+  Autocomplete,
+  FormControl,
+  FormHelperText,
+  FormLabel,
+} from "@mui/joy";
 import { getFontSize } from "../../Utils/Typography";
 
 function AutocompleteComponent({
@@ -17,12 +24,12 @@ function AutocompleteComponent({
   name,
   handleSelect,
   getOptionLabel,
+  isOptionEqualToValue,
   ...props
 }) {
   const handleChange = (event) => {
     setValue(event);
   };
-
 
   return (
     <FormControl sx={{ width: width }} {...props}>
@@ -36,6 +43,7 @@ function AutocompleteComponent({
         onChange={(_, newValue) => {
           handleSelect ? handleSelect(newValue) : handleChange(newValue);
         }}
+        isOptionEqualToValue={(option, value) => option.name === value.name}
         renderOption={(props, option) => (
           <li
             {...props}
@@ -47,7 +55,9 @@ function AutocompleteComponent({
               transition: "background 0.2s ease-in-out",
             }}
             onMouseEnter={(e) => (e.currentTarget.style.background = "#f5f5f5")}
-            onMouseLeave={(e) => (e.currentTarget.style.background = "transparent")}
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.background = "transparent")
+            }
           >
             <Box display="flex" flexDirection="column">
               <Typography variant="body1" fontWeight="500">
@@ -61,7 +71,7 @@ function AutocompleteComponent({
             </Box>
           </li>
         )}
-        value={value}
+        value={value ?? null}
         options={options}
         // name={name}
         getOptionLabel={getOptionLabel}

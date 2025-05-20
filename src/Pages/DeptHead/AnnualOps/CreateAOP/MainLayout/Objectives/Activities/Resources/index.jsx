@@ -13,22 +13,43 @@ import TableRow from './TableRow'
 import { AOP_CONSTANTS } from '../../../../../../../../Data/constants';
 import { AOP_RESOURCE_HEADER } from '../../../../../../../../Data/Columns';
 
+import useResourceHook from '../../../../../../../../Hooks/ResourceHook';
+import useItemsHook from '../../../../../../../../Hooks/ItemsHook';
+import usePurchaseTypeHook from '../../../../../../../../Hooks/PurchaseTypeHook';
+
 const Resources = () => {
 
-    const location = useLocation();
-    const { activityId, objectiveId } = useParams();
-    const currentPath = location.pathname;
-    const childPath = currentPath === `/aop-create/activities/${objectiveId}/resources/${activityId}`
+    const { resources, addResource } = useResourceHook();
+    const { items, getItems } = useItemsHook();
+    const { purchase_type, getPurchaseType } = usePurchaseTypeHook();
 
-    const [rows, setRows] = useState([
-        {
-            id: 1,
-            item_name: "Strategic",
-            resource_type: 'Resource Type',
-            expense_class: 'Expense Class',
-            procurement_mode: 'Mode'
-        },
-    ]);
+    const navigate = useNavigate();
+    const location = useLocation();
+    const parentId = location.state?.parentId; // refers to objectiveId as parent
+    const objectiveRowId = location.state?.objectiveRowId;
+
+    useEffect(() => {
+        getItems((status, message, data) => {
+            if (status !== 200) {
+                console.error("Failed to fetch items:", message);
+            }
+        });
+    }, []);
+
+    useEffect(() => {
+        getPurchaseType((status, message) => {
+            // console.log(status)
+            if (!(status >= 200 && status < 300)) {
+                // if status not success
+                return; //Toast error
+            }
+            // setisLoading(false);
+        });
+    }, []);
+
+    useEffect(() => {
+        console.log(purchase_type)
+    }, [])
 
     return (
         <Fragment>
@@ -39,7 +60,7 @@ const Resources = () => {
                 actions={
                     <Stack>
                         <ButtonComponent
-                            // onClick={() => setOpen(true)}
+                            onClick={() => addResource(parentId)}
                             label={"Add Resource"}
                             endDecorator={<Plus size={16} />}
                         />
@@ -52,7 +73,10 @@ const Resources = () => {
                     haverRow
                     tableRow={
                         <TableRow
-                            rows={rows}
+                            rows={resources}
+                            parentId={parentId}
+                            resources={items}
+                            purchase_type={purchase_type}
                         // handleEdit={handleEdit}
                         // handleBlur={handleBlur}
                         // editField={editField}
@@ -61,6 +85,22 @@ const Resources = () => {
                         />
                     }
                 />
+
+                <Stack
+                    mt={2}
+                    direction={"flex"}
+                    alignItems={"center"}
+                    justifyContent={"start"}
+                    gap={1}
+                >
+                    <ButtonComponent
+                        label={"Back"}
+                        size={"md"}
+                        variant={"outlined"}
+                        onClick={() => navigate(`/aop-create/activities/${objectiveRowId}`)}
+                    />
+                </Stack>
+
             </ContainerComponent>
 
             <Outlet />

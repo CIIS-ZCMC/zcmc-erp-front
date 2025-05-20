@@ -1,66 +1,154 @@
-import React, { Fragment, useState } from 'react';
+import { Fragment, useEffect, useState } from "react";
 
-import { Box, Stack, Grid, Typography, Modal, List, ListItem, Divider } from '@mui/joy';
+import { Box, Stack, Grid } from "@mui/joy";
+import { useNavigate, useLocation } from "react-router-dom";
 
-import { useNavigate } from 'react-router-dom';
+import ButtonComponent from "../../Components/Common/ButtonComponent";
+import ContainerComponent from "../../Components/Common/ContainerComponent";
+import ModalComponent from "../../Components/Common/Dialog/ModalComponent";
 
-import BoxComponent from '../../Components/Common/Card/BoxComponent';
-import SearchBarComponent from '../../Components/SearchBarComponent';
-import ButtonComponent from '../../Components/Common/ButtonComponent';
-import ContainerComponent from '../../Components/Common/ContainerComponent';
-import PageTitle from '../../Components/Common/PageTitle';
-import ModalComponent from '../../Components/Common/Dialog/ModalComponent';
+//layouts
+import ItemSummaryHeader from "../../Layout/Resources/ItemSummaryHeader";
+import ItemList from "../../Layout/Resources/ItemList";
+import ItemCart from "../../Layout/Resources/ItemCart";
+import ItemModalContent from "../../Layout/Resources/ItemModalContent";
 
-import ModalContent from './Item';
+import useItemsHook from "../../Hooks/ItemsHook";
+import useResourceHook from "../../Hooks/ResourceHook";
 
-import QuantityControlComponent from '../../Components/Cart/QuantityControlComponent';
+import { AOP_CONSTANTS } from "../../Data/constants";
 
-import ItemsList from '../../Layout/Items/ItemsList';
-import ItemsCart from '../../Layout/Items/ItemsCart';
-
-import { AOP_CONSTANTS } from '../../Data/constants';
-import { CART_ITEMS } from '../../Data';
+const cartStyles = {
+    width: 350,
+    height: "59vh",
+    position: "sticky",
+    border: 1,
+    borderColor: "neutral.100",
+    borderRadius: 10,
+    bgcolor: "white",
+    display: "flex",
+    flexDirection: "column",
+};
 
 const Items = () => {
+    const navigate = useNavigate();
+    const location = useLocation();
 
-    const navigate = useNavigate()
+    const { items, getItems } = useItemsHook();
+    const { cart, addResourceToCart, removeFromCart, updateQuantity, saveItems, cancelResources } =  useResourceHook();
 
-    const [isDialogOpen, setIsDialogOpen] = useState(false)
+    const [displayedItems, setDisplayedItems] = useState([]);
 
-    const handleOpenItemDialog = () => {
-        setIsDialogOpen(true)
-    }
+    const rowNumber = location.state?.activityRowId;
+    const objectiveRowId = location.state.objectiveRowId;
+    const cost = location.state?.cost;
+    const activityId = location.state?.parentId;
+    // const objectiveId = location.state.objectiveId;
+
+    // useEffect(() => {
+    //     console.log(location.state)
+    // }, [])
+
+    const [isCollapsed, setIsCollapsed] = useState(false);
+    const [isDialogOpen, setIsDialogOpen] = useState(false);
+    const [selectedItem, setSelectedItem] = useState(null);
+    const [quantity, setQuantity] = useState(1);
+
+    const filteredCart =
+        cart?.filter((item) => item.parentId === activityId) || [];
+
+    const totalQty = filteredCart.reduce(
+        (sum, item) => sum + item.aop_quantity,
+        0
+    );
+    const totalPrice = filteredCart.reduce(
+        (sum, item) => sum + item.aop_quantity * item.estimated_budget,
+        0
+    );
+
+    // useEffect(() => {
+    //     console.log(cart)
+    // }, [cart])
+
+    useEffect(() => {
+        getItems((status, message, data) => {
+            if (status !== 200) {
+                console.error("Failed to fetch items:", message);
+            }
+        });
+    }, []);
+
+    useEffect(() => {
+        if (items.length) {
+            setDisplayedItems(items);
+        }
+    }, [items]);
+
+    const handleOpenItemDialog = (item) => {
+        setSelectedItem(item);
+        setIsDialogOpen(true);
+    };
 
     const handleCloseItemDialog = () => {
-        setIsDialogOpen(false)
+        setIsDialogOpen(false);
+        setSelectedItem(null);
+        setQuantity(1)
+    };
+
+    const handleCollapseClick = () => {
+        setIsCollapsed((prev) => !prev);
+    };
+
+    const add = () => {
+        addResourceToCart(selectedItem, activityId, quantity);
+        handleCloseItemDialog();
+    };
+
+    const handleSaveResources = () => {
+        saveItems(activityId, totalPrice)
+        navigate(`/aop-create/activities/${objectiveRowId}/resources/${rowNumber}`, {
+            state: {
+                parentId: activityId,
+                objectiveRowId: objectiveRowId,
+            }
+        }) //navigate with activity row id
+    }
+
+    const handleOnCancel = () => {
+        // removeFromCart(activityId);
+        cancelResources()
+        navigate(`/aop-create/activities/${objectiveRowId}`)
     }
 
     return (
         <Fragment>
-
-            <PageTitle
-                title={AOP_CONSTANTS.CREATE_AOP_TITLE}
-                description={AOP_CONSTANTS.CREATE_AOP_SUBHEADING}
+            <ItemSummaryHeader
+                isCollapsed={isCollapsed}
+                rowNumber={rowNumber}
+                cost={cost}
+                handleCollapseClick={handleCollapseClick}
             />
 
             <ContainerComponent
-                title={`${AOP_CONSTANTS.ITEMS_HEADER}: Sample activity..."`
-                }
-                description={AOP_CONSTANTS.ITEMS_SUBHEADER}
+                title={`${AOP_CONSTANTS.TABLE_ITEMS_HEADER}`}
+                description={`${AOP_CONSTANTS.TABLE_ITEMS_SUBHEADER}`}
+                sx={{ mt: 2, height: "67vh" }}
                 actions={
                     <Fragment>
-                        <Stack direction={'row'} gap={1}>
+                        <Stack direction={"row"} gap={1}>
                             <ButtonComponent
-                                label={'Cancel Selection'}
-                                size={'md'}
-                                variant={'outlined'}
+                                onClick={() => handleOnCancel()}
+                                label={"Cancel Selection"}
+                                size={"md"}
+                                variant={"outlined"}
                             />
 
                             <ButtonComponent
-                                label={'Save items'}
-                                size={'md'}
-                                variant={'solid'}
-                                onClick={() => navigate('/aop-create/activities/1/resources/1')}
+                                label={"Save items"}
+                                size={"md"}
+                                variant={"solid"}
+                                disabled={cart.length === 0}
+                                onClick={() => handleSaveResources()}
                             />
                         </Stack>
                     </Fragment>
@@ -68,82 +156,35 @@ const Items = () => {
             >
                 <Grid
                     container
-                    spacing={3}
                     columns={{ xs: 12, sm: 12, md: 12 }}
                     sx={{
                         flexGrow: 1,
                         width: "auto",
                         p: 1,
                     }}
+                    gap={3}
                 >
-                    {/* ITEMS VIEW */}
-                    <Grid
-                        item
-                        // width={{ sm: "100%", lg: "60%" }}
-                        xs={12} // Full width on extra small screens
-                        sm={2} // 2 items on small screens
-                        md={8}
-                    >
-                        <Stack gap={2}>
-                            <BoxComponent>
-                                <Stack
-                                    direction={{ sm: "column", lg: "row" }}
-                                    alignItems={{ sm: "start", lg: "center" }}
-                                    gap={2}
-                                >
-                                    <SearchBarComponent
-                                        placeholder={'search here to find item fast'}
-                                    />
-
-                                    <Typography level="body-xs">
-                                        Showing 16 of 16 Items
-                                    </Typography>
-                                </Stack>
-                            </BoxComponent>
-                            <ItemsList
-                                handleOpenItemDialog={handleOpenItemDialog}
-                            />
-                        </Stack>
+                    {/* Left: Scrollable Item Cards */}
+                    <Grid item={'true'} xs={12} sm={2} md={8.1}>
+                        <ItemList
+                            quantity={quantity}
+                            activityId={activityId}
+                            displayedItems={displayedItems}
+                            handleOpenItemDialog={handleOpenItemDialog}
+                        />
                     </Grid>
 
-                    <Grid
-                        item
-                        xs={12}  // Full width on mobile
-                        sm={4}    // 4/12 on small screens
-                        md={4}    // 4/12 on medium screens
-                    >
-                        <Stack gap={2}>
-
-                            <BoxComponent>
-                                <Box
-                                    m={1}
-                                >
-                                    <Typography
-                                        fontWeight={600}
-                                        fontSize={{ sm: "sm", md: "md", lg: "lg" }}
-                                    >
-                                        {CART_ITEMS.length} distinct item on cart
-                                    </Typography>
-                                </Box>
-
-                                {CART_ITEMS.map(({ id, name, specType, category, image, quantity }) => (
-                                    <ItemsCart
-                                        key={id}
-                                        name={name}
-                                        specType={specType}
-                                        category={category}
-                                        image={image}
-                                        quantity={quantity}
-                                    />
-                                ))}
-
-                            </BoxComponent>
-                        </Stack>
-
-
+                    {/* Right: Cart */}
+                    <Grid item={'true'} xs={12} sm={4} md={3.7} sx={{ ...cartStyles }}>
+                        <ItemCart
+                            totalQty={totalQty}
+                            totalPrice={totalPrice}
+                            filteredCart={filteredCart}
+                            onRemove={removeFromCart}
+                            onQuantityChange={updateQuantity}
+                        />
                     </Grid>
                 </Grid>
-
             </ContainerComponent>
 
             {/* Item Modal layout */}
@@ -151,17 +192,24 @@ const Items = () => {
                 handleClose={handleCloseItemDialog}
                 hasActionButtons={false}
                 isOpen={isDialogOpen}
-                title={'Preview Item'}
-                description={'Select a request status and reasons (if returned) to continue. You may add remarks if necessary.'}
+                title={"Preview Item"}
+                description={
+                    "Select a request status and reasons (if returned) to continue. You may add remarks if necessary."
+                }
                 content={
-                    <>
-                        <ModalContent />
-                    </>
+                    <Box overflow={"hidden"}>
+                        <ItemModalContent
+                            addAction={() => add()}
+                            item={selectedItem}
+                            quantity={quantity}
+                            onDecrease={() => setQuantity((state) => state - 1)}
+                            onIncrease={() => setQuantity((state) => state + 1)}
+                        />
+                    </Box>
                 }
             />
+        </Fragment>
+    );
+};
 
-        </Fragment >
-    )
-}
-
-export default Items
+export default Items;

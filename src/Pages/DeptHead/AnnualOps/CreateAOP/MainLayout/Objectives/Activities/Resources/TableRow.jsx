@@ -1,132 +1,214 @@
-import React, { Fragment } from 'react'
+import { Fragment, useEffect, useState } from 'react'
 
 import { useNavigate } from 'react-router-dom'
-import { Typography, Input, Stack, Link } from '@mui/joy'
-import { ExternalLink, Trash } from 'lucide-react'
+import { Typography, Input, Select, Option } from '@mui/joy'
+import { Trash } from 'lucide-react'
 
-import ButtonComponent from '../../../../../../../../Components/Common/ButtonComponent'
+import useResourceHook from '../../../../../../../../Hooks/ResourceHook'
+import AutocompleteComponent from '../../../../../../../../Components/Form/AutocompleteComponent'
+import IconButtonComponent from '../../../../../../../../Components/Common/IconButtonComponent'
+
 
 const TableRow = ({
     rows,
+    parentId,
+    resources,
     handleEdit,
     handleBlur,
-    editRowId,
-    setEditRowId,
-    editField
+    purchase_type,
 }) => {
 
     const navigate = useNavigate()
 
+    const { removeItemResource, updateResourceField } = useResourceHook();
+
+    const [localResource, setLocalResource] = useState({});
+    const [editRowId, setEditRowId] = useState(null);
+
+    const filtered = rows.filter((value) => value.parentId === parentId)
+
+    useEffect(() => {
+        console.log(purchase_type)
+    }, [purchase_type])
+
+    const handleOnRowClick = (id) => {
+        setEditRowId(id)
+
+        if (localResource[id]) return;
+
+        const currentRow = rows.find((row) => row.id === id);
+        if (!currentRow) return
+
+        const { name, quantity, expenseClass, individualPrice, totalCost } = currentRow;
+
+        setLocalResource((prev) => ({
+            ...prev,
+            [id]: {
+                // localName: name || '',
+                localQuantity: quantity || '',
+                localPrice: individualPrice || '',
+                localCost: totalCost || '',
+                localExpenseClass: expenseClass || false,
+            }
+        }));
+    }
+
     return (
         <Fragment>
-            {rows.map((row) => (
-                <tr key={row.id}>
-                    <td>
-                        <Typography>
-                            {row.id}
-                        </Typography>
-                    </td>
+            {filtered?.map(({ id, name, quantity, individualPrice, totalCost, purchaseTypeId, expenseClass }, index) => {
 
-                    {/* Editable Name Field */}
-                    < td onClick={() => setEditRowId(row.id)}>
-                        {editRowId === row.id ? (
-                            <Input
-                                size='sm'
-                                autoFocus
-                                value={
-                                    editField.field === "item_name" ? editField.value : row.item_name
-                                }
-                                onChange={(e) => handleEdit(row.id, "item_name", e.target.value)}
-                                onBlur={handleBlur}
-                            />
-                        ) : (
-                            <Typography>{row.item_name}</Typography>
-                        )}
-                    </td >
+                const isEditing = editRowId === id;
 
+                return (
 
-                    {/* Editable Name Field */}
-                    < td onClick={() => setEditRowId(row.id)}>
-                        {editRowId === row.id ? (
-                            <Input
-                                size='sm'
-                                autoFocus
-                                value={
-                                    editField.field === "resource_type" ? editField.value : row.resource_type
-                                }
-                                onChange={(e) => handleEdit(row.id, "resource_type", e.target.value)}
-                                onBlur={handleBlur}
-                            />
-                        ) : (
-                            <Typography>{row.resource_type}</Typography>
-                        )}
-                    </td >
+                    < tr key={id} >
+                        <td>
+                            <Typography>
+                                {index + 1}
+                            </Typography>
+                        </td>
 
-                    {/* Editable Name Field */}
-                    < td onClick={() => setEditRowId(row.id)}>
-                        {editRowId === row.id ? (
-                            <Input
-                                size='sm'
-                                autoFocus
-                                value={
-                                    editField.field === "expense_class" ? editField.value : row.expense_class
-                                }
-                                onChange={(e) => handleEdit(row.id, "expense_class", e.target.value)}
-                                onBlur={handleBlur}
-                            />
-                        ) : (
-                            <Typography>{row.expense_class}</Typography>
-                        )}
-                    </td >
+                        <td onClick={() => handleOnRowClick(id)}>
+                            {isEditing ? (
+                                <>
+                                    <AutocompleteComponent
+                                        placeholder="Select item resource"
+                                        value={name}
+                                        setValue={(val) => { val.name }}
+                                        getOptionLabel={(item) => String(item.name)}
+                                        options={resources}
+                                    />
+                                </>
 
-                    {/* Editable Name Field */}
-                    <td onClick={() => setEditRowId(row.id)}>
-                        {editRowId === row.id ? (
-                            <Input
-                                size='sm'
-                                autoFocus
-                                value={
-                                    editField.field === "procurement_mode" ? editField.value : row.procurement_mode
-                                }
-                                onChange={(e) => handleEdit(row.id, "procurement_mode", e.target.value)}
-                                onBlur={handleBlur}
-                            />
-                        ) : (
-                            <Typography>{row.procurement_mode}</Typography>
-                        )}
-                    </td>
+                            ) : (
+                                <Typography>{name || '-'}</Typography>
+                            )}
+                        </td >
 
-                    <td>
-                        <Stack
-                            size='sm'
-                            direction={'flex'}
-                            alignItems={'center'}
-                            justifyContent={'space-between'}
-                            gap={1}
-                        >
-                            {/* //trigger modal */}
-                            <Link
-                                component="button"
-                                onClick={() => navigate(`person/1`)}
-                                endDecorator={<ExternalLink size={16} />}
-                            >
-                                Responsible Person
-                            </Link>
+                        <td onClick={() => handleOnRowClick(id)}>
+                            {isEditing ? (
+                                <Input
+                                    value={localResource[id]?.localQuantity || ''}
+                                    size='sm'
+                                    placeholder='Quantity'
+                                    onChange={(e) =>
+                                        setLocalResource((prev) => ({
+                                            ...prev,
+                                            [id]: {
+                                                ...prev[id],
+                                                localQuantity: e.target.value,
+                                            },
+                                        }))
+                                    }
+                                    onBlur={() => {
+                                        updateResourceField(id, 'quantity', localResource[id]?.localQuantity);
+                                        setEditRowId(null);
+                                    }}
+                                />
+                            ) : (
+                                <Typography>{quantity || '-'}</Typography>
+                            )}
+                        </td>
 
-                            <ButtonComponent
-                                label={'Delete'}
+                        <td onClick={() => handleOnRowClick(id)}>
+                            {isEditing ? (
+                                <Input
+                                    value={localResource[id]?.localPrice || ''}
+                                    size='sm'
+                                    placeholder='Individual Price'
+                                    onChange={(e) =>
+                                        setLocalResource((prev) => ({
+                                            ...prev,
+                                            [id]: {
+                                                ...prev[id],
+                                                localPrice: e.target.value,
+                                            },
+                                        }))
+                                    }
+                                    onBlur={() => {
+                                        updateResourceField(id, 'individualPrice', localResource[id]?.localPrice);
+                                        setEditRowId(null);
+                                    }}
+                                />
+                            ) : (
+                                <Typography>{individualPrice || '-'}</Typography>
+                            )}
+                        </td>
+
+                        <td onClick={() => handleOnRowClick(id)}>
+                            {isEditing ? (
+                                <Input
+                                    // value={localAopActivity[id]?.localName || ''}
+                                    size='sm'
+                                    placeholder='Total Cost'
+                                // onChange={(e) =>
+                                //     setLocalAopActivity((prev) => ({
+                                //         ...prev,
+                                //         [id]: {
+                                //             ...prev[id],
+                                //             localName: e.target.value,
+                                //         },
+                                //     }))
+                                // }
+                                // onBlur={() => {
+                                //     handleChange(id, 'name', localAopActivity[id]?.localName);
+                                //     setEditRowId(null);
+                                // }}
+                                />
+                            ) : (
+                                <Typography>{totalCost || '-'}</Typography>
+                            )}
+                        </td>
+
+                        <td onClick={() => handleOnRowClick(id)}>
+                            {isEditing ? (
+                                <>
+                                    <AutocompleteComponent
+                                        placeholder="Select Purchase"
+                                        value={name}
+                                        setValue={(val) => { val.name }}
+                                        getOptionLabel={(item) => String(item.name)}
+                                        options={resources}
+                                    />
+                                </>
+
+                            ) : (
+                                <Typography>{name || '-'}</Typography>
+                            )}
+                        </td >
+
+                        <td onClick={() => handleOnRowClick(id)}>
+                            {isEditing ? (
+                                <Select
+                                    size='sm'
+                                    value={localResource?.[id]?.expenseClass || false}
+                                    onChange={(e, newValue) => updateResourceField(id, "expenseClass", newValue)}
+                                >
+                                    <Option value={true}>MOOE</Option>
+                                    <Option value={false}>CO</Option>
+                                </Select>
+                            ) : (
+                                <Typography>
+                                    {localResource?.[id]?.expenseClass}
+                                    {expenseClass ? 'MOOE' : 'CO'}
+                                </Typography>
+                            )}
+                        </td>
+
+                        <td>
+                            <IconButtonComponent
+                                onClick={() => removeItemResource(id)}
+                                icon={<Trash size={14} />}
                                 size={'sm'}
-                                variant={'outlined'}
-                                color={'danger'}
-                                endDecorator={<Trash size={16} />}
+                                // color={'danger'}
+                                variant={'text'}
                             />
-                        </Stack>
-                    </td>
+                        </td>
+                    </tr >
+                )
 
-
-                </tr>
-            ))}
-        </Fragment>
+            })}
+        </Fragment >
     )
 }
 

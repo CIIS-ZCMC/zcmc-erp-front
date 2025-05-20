@@ -31,16 +31,20 @@ const ResponsiblePerson = () => {
     return item.activityId === activityId;
   });
 
+  // useEffect(() => {
+  //   console.log(location.state)
+  // }, [])
+
   // const isAssigned = activity && (
   //     activity.isAssigned
   // )
 
-  // const isSaveEnabled = activity &&
-  //     (
-  //         activity.users.length > 0 ||
-  //         activity.designations.length > 0 ||
-  //         activity.areas.length > 0
-  //     );
+
+ // Check if at least one responsible entity exists
+    const hasData =
+      activity?.users?.length > 0 ||
+      activity?.designations?.length > 0 ||
+      activity?.areas?.length > 0;
 
   const handleSaveAssignment = () => {
     if (!activity) {
@@ -48,49 +52,11 @@ const ResponsiblePerson = () => {
       return;
     }
 
-    // Check if at least one responsible entity exists
-    const hasData =
-      activity.users?.length > 0 ||
-      activity.designations?.length > 0 ||
-      activity.areas?.length > 0;
-
     if (!hasData) {
       console.warn("No users, designations, or areas selected.");
       return;
     }
 
-    // const updatedResponsiblePeople = [
-    //   {
-    //     activityId: activityId,
-    //     ...(activity.users || []).map((user) => ({
-    //       userId: user.id,
-    //       designationId: null,
-    //       divisionId: null,
-    //       departmentId: null,
-    //       sectionId: null,
-    //       unitId: null,
-    //     })),
-    //     ...(activity.designations || []).map((designation) => ({
-    //       userId: null,
-    //       designationId: designation.id,
-    //       divisionId: null,
-    //       departmentId: null,
-    //       sectionId: null,
-    //       unitId: null,
-    //     })),
-    //     ...(activity.areas || []).map((area) => ({
-    //       userId: null,
-    //       designationId: null,
-    //       divisionId: area.type === "division" ? area.id : null,
-    //       departmentId: area.type === "department" ? area.id : null,
-    //       sectionId: area.type === "section" ? area.id : null,
-    //       unitId: area.type === "unit" ? area.id : null,
-    //     })),
-    //   },
-    // ];
-
-    // console.log("Data to submit:", updatedResponsiblePeople);
-    // Set assignment flag if needed
     setAssignmentStatus(activityId, true);
 
     // navigate(`/aop-create/activities/${rowId}`);
@@ -118,15 +84,15 @@ const ResponsiblePerson = () => {
             p: 1,
           }}
         >
-          <Grid item xs={12} sm={2} md={4}>
+          <Grid item={'true'} xs={12} sm={2} md={4}>
             <PersonSection />
           </Grid>
 
-          <Grid item xs={12} sm={2} md={4}>
+          <Grid item={'true'} xs={12} sm={2} md={4}>
             <JobPositionsSection />
           </Grid>
 
-          <Grid item xs={12} sm={2} md={4}>
+          <Grid item={'true'} xs={12} sm={2} md={4}>
             <AreasSection />
           </Grid>
         </Grid>
@@ -139,27 +105,27 @@ const ResponsiblePerson = () => {
           gap={1}
         >
           {/* {isAssigned ? */}
-          <ButtonComponent
+
+          {!hasData ? <ButtonComponent
             onClick={() => navigate(`/aop-create/activities/${rowId}`)}
             label={"Back to activities"}
             size={"md"}
             variant={"outlined"}
-          />
-          :
-          <ButtonComponent
+          /> 
+           : 
+           <ButtonComponent
             onClick={() => handleCancel(activityId)}
             label={"Cancel Selection"}
             size={"md"}
             variant={"outlined"}
-          // disabled={isAssigned}
-          />
-          {/* } */}
+           />
+          }
           <ButtonComponent
             label={"Save Assignment"}
             size={"md"}
             variant={"solid"}
             onClick={() => handleSaveAssignment()}
-          // disabled={!isSaveEnabled}
+            disabled={!hasData}
           />
         </Stack>
       </ContainerComponent>
