@@ -7,7 +7,7 @@ export const Category = () => {
   const data = [
     {
       id: 1,
-      function: "Alice Johnson",
+      function: "Alice Johnsonss",
       objective: "alice@example.com",
       role: "Admin",
     },

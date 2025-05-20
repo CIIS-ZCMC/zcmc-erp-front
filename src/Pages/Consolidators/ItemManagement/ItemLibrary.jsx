@@ -25,8 +25,14 @@ import { VariantModalContent } from "../Modals/VariantModalContent";
 import { ItemModalContent } from "../Modals/ItemModalContent";
 import useLibItemHook from "../../../Hooks/Libraries/LibItemHooks";
 import useModalHook from "../../../Hooks/ModalHook";
+import useclassificationHook from "../../../Hooks/Libraries/LibclassificationHook";
+import IndicatorDialog from "../Modals/IndicatorDialog";
+import RenderDialog from "../Modals/RenderDialog";
 const ItemLibrary = () => {
-  const { openModal, setOpenModal } = useModalHook();
+  
+  const { openModal, setOpenModal,successDialog,
+setSuccessDialog } = useModalHook();
+  const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const UrllastSegment = location.pathname.split("/").filter(Boolean).pop();
 
@@ -45,6 +51,7 @@ const ItemLibrary = () => {
 
   return (
     <Fragment>
+      {JSON.stringify(useclassificationHook.getState().inputs)}
       <PageTitle
         title={LIBRARY_CONSTANTS.LIBRARY_TITLE}
         description={LIBRARY_CONSTANTS.LIBRARY_SUBTITLE}
@@ -109,6 +116,22 @@ const ItemLibrary = () => {
         >
           <ModalClose variant="plain" sx={{ m: 1 }} />
           <ModalContent />
+        </Sheet>
+      </Modal>
+      {/* Success Indicators modal */}
+      <Modal
+        aria-labelledby="modal-title"
+        aria-describedby="modal-desc"
+        open={successDialog}
+        onClose={() => setSuccessDialog(false)}
+        sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}
+      >
+        <Sheet
+          variant="outlined"
+          sx={{ maxWidth: 500, borderRadius: "md", p: 3, boxShadow: "lg" }}
+        >
+          <ModalClose variant="plain" sx={{ m: 1 }} />
+          <RenderDialog />
         </Sheet>
       </Modal>
     </Fragment>

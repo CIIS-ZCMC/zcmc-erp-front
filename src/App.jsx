@@ -17,6 +17,7 @@ const theme = extendTheme({
           fontLight: "#667085",
           fontReg: "#666666",
           active: "rgba(249, 250, 251, 0.12)",
+          darkgreen: "#0E5844",
         },
       },
     },
