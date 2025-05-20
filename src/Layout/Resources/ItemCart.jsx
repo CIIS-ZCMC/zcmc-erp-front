@@ -1,3 +1,5 @@
+import { Fragment } from "react";
+
 import { Stack, Box, Typography, Divider } from "@mui/joy";
 import { LucideDot, Trash } from "lucide-react";
 
@@ -82,7 +84,7 @@ const ItemCart = ({
                       fontWeight={600}
                       textColor={"success.500"}
                     >
-                      &#8369; {computeTotalPrice(item.name).toLocaleString()}
+                      &#8369; {item.estimated_budget.toLocaleString()}
                     </Typography>
 
                     <Box

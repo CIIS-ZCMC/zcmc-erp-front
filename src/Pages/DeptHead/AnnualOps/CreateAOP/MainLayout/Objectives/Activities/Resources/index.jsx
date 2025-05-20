@@ -71,11 +71,11 @@ const Resources = () => {
               parentId={parentId}
               resources={items}
               purchase_types={purchase_types}
-              // handleEdit={handleEdit}
-              // handleBlur={handleBlur}
-              // editField={editField}
-              // editRowId={editRowId}
-              // setEditRowId={setEditRowId}
+            // handleEdit={handleEdit}
+            // handleBlur={handleBlur}
+            // editField={editField}
+            // editRowId={editRowId}
+            // setEditRowId={setEditRowId}
             />
           }
         />
