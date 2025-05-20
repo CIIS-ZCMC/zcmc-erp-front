@@ -121,7 +121,7 @@ export const AOP_HEADER = [
     // name: "Actions",
     // isDropdown: false,
     // position: "sticky",
-     width:150,
+    width: 150,
     align: "center",
   },
 ];
@@ -144,7 +144,7 @@ export const AOP_ACTIVITIES_HEADER = [
     field: "timeframe",
     name: "Timeframe",
     align: "center",
-     width: 100,
+    width: 100,
     children: [
       { field: "startMonth", name: "Start(Month)" },
       { field: "endMonth", name: "End(Month)" },
@@ -154,7 +154,7 @@ export const AOP_ACTIVITIES_HEADER = [
     field: "target",
     name: "Target (by quarter)",
     align: "center",
-     width: 200,
+    width: 200,
     children: [
       { field: "quarter", name: "Q1", width: 20 },
       { field: "quarter2", name: "Q2", width: 20 },
@@ -235,7 +235,6 @@ export const AOP_RESOURCE_HEADER = [
     width: "20%",
     align: "center",
   },
-
 
   {
     field: "action",
@@ -463,6 +462,55 @@ export const ppmpHeaders = (handleDeleteRow, items, modes) => [
           >
             <MdDeleteOutline />
           </IconButton>
+        </>
+      );
+    },
+  },
+];
+
+export const classificationCols = (updateCallBack, delCallback) => [
+  { field: "id", name: "Row #", align: "left", width: "50px" },
+  { field: "clName", name: "Classification", width: 200, align: "left" },
+
+  { field: "created_at", name: "Created at", width: 200, align: "left" },
+  { field: "updated_at", name: "Updated at", width: 200, align: "left" },
+  {
+    field: "action",
+    name: "Actions",
+    position: "sticky",
+    width: "150px",
+    right: 0,
+    align: "center",
+    render: (params) => {
+      return (
+        <>
+          <Stack
+            direction="row"
+            sx={{ justifyContent: "space-around", alignItems: "center" }}
+          >
+            <Link
+              onClick={() => updateCallBack(params)}
+              size="md"
+              variant="plain"
+              color="primary"
+              underline="hover"
+              fontSize={14}
+              endDecorator={<IoOpenOutline />}
+            >
+              Update
+            </Link>
+            <Link
+              onClick={() => delCallback(params)}
+              size="md"
+              variant="plain"
+              color="danger"
+              underline="hover"
+              fontSize={14}
+              endDecorator={<IoOpenOutline />}
+            >
+              Delete
+            </Link>
+          </Stack>
         </>
       );
     },

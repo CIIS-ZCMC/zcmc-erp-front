@@ -25,13 +25,13 @@ import { VariantModalContent } from "../Modals/VariantModalContent";
 import { ItemModalContent } from "../Modals/ItemModalContent";
 import useLibItemHook from "../../../Hooks/Libraries/LibItemHooks";
 import useModalHook from "../../../Hooks/ModalHook";
-import useclassificationHook from "../../../Hooks/Libraries/LibclassificationHook";
+import useLibrariesHook from "../../../Hooks/Libraries/LibclassificationHook";
 import IndicatorDialog from "../Modals/IndicatorDialog";
 import RenderDialog from "../Modals/RenderDialog";
 const ItemLibrary = () => {
-  
-  const { openModal, setOpenModal,successDialog,
-setSuccessDialog } = useModalHook();
+  const { setType } = useLibrariesHook();
+  const { openModal, setOpenModal, successDialog, setSuccessDialog } =
+    useModalHook();
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const UrllastSegment = location.pathname.split("/").filter(Boolean).pop();
@@ -51,7 +51,6 @@ setSuccessDialog } = useModalHook();
 
   return (
     <Fragment>
-      {JSON.stringify(useclassificationHook.getState().inputs)}
       <PageTitle
         title={LIBRARY_CONSTANTS.LIBRARY_TITLE}
         description={LIBRARY_CONSTANTS.LIBRARY_SUBTITLE}
@@ -73,7 +72,10 @@ setSuccessDialog } = useModalHook();
                 label={"New record"}
                 variant={"solid"}
                 size={"sm"}
-                onClick={() => setOpenModal(true, false, true)}
+                onClick={() => {
+                  setType("create");
+                  setOpenModal(true, false, true);
+                }}
               />
             </Stack>
           }
