@@ -447,11 +447,11 @@ export const ItemModalContent = () => {
           </>
         ) : (
           <>
-            <Typography level="body-lg" fontWeight={"bold"}>
+            <Typography  level="body-lg" fontWeight={"bold"}>
               Delete item " <span style={{ color: "#CB0404" }}>#2023-0031</span>{" "}
               " ?
             </Typography>
-            <Typography level="body-md">
+            <Typography  level="body-md">
               This action cannot be undone
             </Typography>
             <Divider sx={{ marginTop: "20px", marginBottom: "10px" }} />
