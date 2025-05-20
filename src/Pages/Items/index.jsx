@@ -52,7 +52,6 @@ const Items = () => {
     const [isCollapsed, setIsCollapsed] = useState(false);
     const [isDialogOpen, setIsDialogOpen] = useState(false);
     const [selectedItem, setSelectedItem] = useState(null);
-    const [itemTotal, setItemTotal] = useState(null)
     const [quantity, setQuantity] = useState(1);
 
     const filteredCart =
@@ -107,7 +106,7 @@ const Items = () => {
     };
 
     const handleSaveResources = () => {
-        saveItems(activityId, totalPrice, itemTotal)
+        saveItems(activityId, totalPrice)
         navigate(`/aop-create/activities/${objectiveRowId}/resources/${rowNumber}`, {
             state: {
                 parentId: activityId,
@@ -184,7 +183,6 @@ const Items = () => {
                             filteredCart={filteredCart}
                             onRemove={removeFromCart}
                             onQuantityChange={updateQuantity}
-                            setItemTotal={setItemTotal}
                         />
                     </Grid>
                 </Grid>

@@ -8,7 +8,6 @@ import useResourceHook from '../../../../../../../../Hooks/ResourceHook'
 import AutocompleteComponent from '../../../../../../../../Components/Form/AutocompleteComponent'
 import IconButtonComponent from '../../../../../../../../Components/Common/IconButtonComponent'
 
-
 const TableRow = ({
     rows,
     parentId,
@@ -76,8 +75,11 @@ const TableRow = ({
                                     <AutocompleteComponent
                                         placeholder="Select item resource"
                                         value={name}
-                                        setValue={(val) => { val.name }}
-                                        getOptionLabel={(item) => String(item.name)}
+                                        setValue={(val) => {
+                                            // updateResourceField(id, 'name', val)
+                                            // setEditRowId(null)
+                                        }}
+
                                         options={resources}
                                     />
                                 </>
@@ -117,7 +119,9 @@ const TableRow = ({
                         </td>
 
                         <td onClick={() => handleOnRowClick(id)}>
-                            <Typography>{itemTotal || '-'}</Typography>
+                            <Typography>
+                                {(quantity && individualPrice) ? (quantity * individualPrice).toFixed(2) : '-'}
+                            </Typography>
                         </td>
 
                         <td onClick={() => handleOnRowClick(id)}>

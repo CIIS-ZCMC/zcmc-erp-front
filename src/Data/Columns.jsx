@@ -121,7 +121,7 @@ export const AOP_HEADER = [
     // name: "Actions",
     // isDropdown: false,
     // position: "sticky",
-     width:150,
+    width: 150,
     align: "center",
   },
 ];
@@ -144,7 +144,7 @@ export const AOP_ACTIVITIES_HEADER = [
     field: "timeframe",
     name: "Timeframe",
     align: "center",
-     width: 100,
+    width: 100,
     children: [
       { field: "startMonth", name: "Start(Month)" },
       { field: "endMonth", name: "End(Month)" },
@@ -154,7 +154,7 @@ export const AOP_ACTIVITIES_HEADER = [
     field: "target",
     name: "Target (by quarter)",
     align: "center",
-     width: 200,
+    width: 200,
     children: [
       { field: "quarter", name: "Q1", width: 20 },
       { field: "quarter2", name: "Q2", width: 20 },
@@ -197,14 +197,14 @@ export const AOP_RESOURCE_HEADER = [
   {
     field: "item_name",
     name: "Item Name",
-    width: "15%",
+    width: "20%",
     align: "left",
   },
 
   {
     field: "quantity",
     name: " Quantity",
-    width: "20%",
+    width: "10%",
     align: "center",
   },
 

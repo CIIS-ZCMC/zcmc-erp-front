@@ -27,14 +27,19 @@ const useResourceHook = create(
       cart: [],
 
       updateResourceField: (id, fieldPath, value) => {
-        set((state) => ({
-          resources: state.resources.map((resource) => {
-            if (resource.id === id) {
-              return setNestedValue(resource, fieldPath, value)
-            }
-            return resource;
-          })
-        }))
+
+        const resources = get().resources;
+
+        //   resources: state.resources?.map((resource) => {
+        //     if (resource.id === id) {
+        //       return {
+        //         ...resource,
+        //         [fieldPath]: value
+        //       };
+        //     }
+        //     return resource;
+        //   })
+        // }));
       },
 
       addResourceToCart: (item, parentId, quantity = 1) => {
@@ -87,11 +92,10 @@ const useResourceHook = create(
           ),
         })),
 
-
       //handle assigment of data from cart to table row resources
       // navigate to resources Table
 
-      saveItems: (parentId = null, totalPrice, itemTotal) => {
+      saveItems: (parentId = null, totalPrice) => {
         const { resources, cart } = get();
 
         const updatedResources = cart.map((item, index) =>
@@ -100,7 +104,6 @@ const useResourceHook = create(
           name: item.name,
           quantity: item.aop_quantity,
           individualPrice: item.estimated_budget,
-          itemTotal: itemTotal,
           totalCost: totalPrice,
         })
         );
