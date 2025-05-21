@@ -26,15 +26,28 @@ const useResourceHook = create(
       resources: [],
       cart: [],
 
-      updateResourceField: (id, fieldPath, value) => {
-        set((state) => ({
-          resources: state.resources.map((resource) => {
+      // setResources: () => {
+      //   set((state) => {
+      //     console.log(state.resources)
+      //   })
+      // },
+
+      updateResourceField: (id, field, value) => {
+        set((state) => {
+          const updatedResources = state.resources.map((resource) => {
             if (resource.id === id) {
-              return setNestedValue(resource, fieldPath, value);
+              const updated = {
+                ...resource,
+                [field]: value,
+              };
+              // console.log(`Updating resource ${id}:`, updated);
+              return updated;
             }
             return resource;
-          }),
-        }));
+          });
+
+          return { resources: updatedResources };
+        });
       },
 
       addResourceToCart: (item, parentId, quantity = 1) => {
