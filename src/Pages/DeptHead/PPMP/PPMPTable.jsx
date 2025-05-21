@@ -50,7 +50,7 @@ const PPMPTable = memo(
     const handleOpenDel = (params) => {
       const data = {
         status: "error",
-        title: ` Are you sure you want to delete item ${params?.item?.code}`,
+        title: ` Are you sure you want to delete item ${params?.item?.code}?`,
         description:
           "The selected item will be removed from the table. Please input authorization pin to proceed.",
         leftButtonLabel: "Cancel",
