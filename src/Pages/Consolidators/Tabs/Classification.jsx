@@ -1,7 +1,7 @@
 import React, { Fragment } from "react";
 import { classificationCols } from "../../../Data/Columns";
 import ScrollableTableComponent from "../../../Components/Common/Table/ScrollableTableComponent";
-import useLibrariesHook from "../../../Hooks/Libraries/LibclassificationHook";
+import useLibrariesHook from "../../../Hooks/Libraries/LibHooks";
 import useModalHook from "../../../Hooks/ModalHook";
 export const Classification = () => {
   const { setType, setSelectedData } = useLibrariesHook();
@@ -16,6 +16,7 @@ export const Classification = () => {
     setOpenModal(true, false, true);
     setSelectedData(data);
   };
+
   const data = [
     {
       id: 1,

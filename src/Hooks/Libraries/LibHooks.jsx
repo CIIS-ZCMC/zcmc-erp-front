@@ -7,7 +7,7 @@ const useLibrariesHook = create((set) => ({
   },
   type: "create", // ['create', 'update', 'delete']
   isloading: false,
-  hasError: false,
+  hasError: true,
   selectedData: null,
   setSelectedData: (data) => {
     set({ selectedData: data });

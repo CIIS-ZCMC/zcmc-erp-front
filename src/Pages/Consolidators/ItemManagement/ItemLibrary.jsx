@@ -25,7 +25,7 @@ import { VariantModalContent } from "../Modals/VariantModalContent";
 import { ItemModalContent } from "../Modals/ItemModalContent";
 import useLibItemHook from "../../../Hooks/Libraries/LibItemHooks";
 import useModalHook from "../../../Hooks/ModalHook";
-import useLibrariesHook from "../../../Hooks/Libraries/LibclassificationHook";
+import useLibrariesHook from "../../../Hooks/Libraries/LibHooks";
 import IndicatorDialog from "../Modals/IndicatorDialog";
 import RenderDialog from "../Modals/RenderDialog";
 const ItemLibrary = () => {

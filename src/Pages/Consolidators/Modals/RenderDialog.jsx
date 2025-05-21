@@ -4,7 +4,7 @@ import CheckCircleIcon from "@mui/icons-material/CheckCircle";
 import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { Box, Typography, Button, IconButton, Sheet } from "@mui/joy";
-import useLibrariesHook from "../../../Hooks/Libraries/LibclassificationHook";
+import useLibrariesHook from "../../../Hooks/Libraries/LibHooks";
 const RenderDialog = () => {
   return (
     <IndicatorDialog>

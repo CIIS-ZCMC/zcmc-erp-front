@@ -11,13 +11,44 @@ import {
 } from "@mui/joy";
 import React from "react";
 import { MdInfoOutline } from "react-icons/md";
-import useLibrariesHook from "../../../Hooks/Libraries/LibclassificationHook";
+import useLibrariesHook from "../../../Hooks/Libraries/LibHooks";
 import useModalHook from "../../../Hooks/ModalHook";
 
 export const CategoryModalContent = () => {
-  const { inputs, setInputs, resetInput, isloading, hasError } =
-    useLibrariesHook();
+  const {
+    inputs,
+    setInputs,
+    resetInput,
+    isloading,
+    hasError,
+    type,
+    setLoading,
+    selectedData,
+  } = useLibrariesHook();
   const { openModal, setOpenModal, setSuccessDialog } = useModalHook();
+
+  const MetaData = {
+    create: {
+      title: "Create a new Category",
+      desc: "Name your Category to create it.",
+      plholder: "Name the Category you wish to create",
+      action: "Confirm and save",
+    },
+    update: {
+      title: "Update a Category",
+      desc: "Keep the Category up-to-date",
+      plholder: "Name the Category you wish to update",
+      action: "Update and save",
+    },
+    delete: {
+      title: "Archive the Category",
+      action: "Archive and save",
+      desc: "This action will archive the Category.",
+    },
+  };
+
+  const getStateOfModal = () => MetaData[type];
+
   return (
     <>
       {/* Header */}
@@ -30,29 +61,46 @@ export const CategoryModalContent = () => {
         }}
       >
         <Box>
-          <Typography level="title-lg">Create a new classification</Typography>
+          <Typography level="title-lg" mr={type === "delete" ? 3 : 0}>
+            {getStateOfModal().title}
+            {type === "delete" && (
+              <>
+                {" ("}
+                <Typography level="title-lg" textColor={"danger.500"}>
+                  {selectedData?.clName}
+                </Typography>
+                {" )"}
+              </>
+            )}
+          </Typography>
           <Typography level="body-sm" textColor="text.secondary">
-            Name your classification to create it.
+            {getStateOfModal().desc}
           </Typography>
         </Box>
       </Box>
 
       {/* Name input */}
-      <FormControl sx={{ mt: 2 }}>
-        <FormLabel>Name of classification</FormLabel>
-        <Textarea
-          placeholder="Name the classification you wish to create"
-          variant="outlined"
-          size="md"
-          minRows={2}
-          onChange={(e) => setInputs("currentLibName", e.target.value)}
-          value={inputs.classificationName}
-          sx={{ minHeight: 100, maxHeight: 200 }}
-        />
-        <Typography level="body-xs" textColor="text.tertiary" sx={{ mt: 0.5 }}>
-          Use a specific and descriptive naming convention for best results.
-        </Typography>
-      </FormControl>
+      {type !== "delete" && (
+        <FormControl sx={{ mt: 2 }}>
+          <FormLabel>Name of Category</FormLabel>
+          <Textarea
+            placeholder={getStateOfModal().plholder}
+            variant="outlined"
+            size="md"
+            minRows={2}
+            onChange={(e) => setInputs("currentLibName", e.target.value)}
+            value={inputs.currentLibName}
+            sx={{ minHeight: 100, maxHeight: 200 }}
+          />
+          <Typography
+            level="body-xs"
+            textColor="text.tertiary"
+            sx={{ mt: 0.5 }}
+          >
+            Use a specific and descriptive naming convention for best results.
+          </Typography>
+        </FormControl>
+      )}
 
       {/* Authorization PIN input */}
       <FormControl sx={{ mt: 3 }}>
@@ -99,7 +147,7 @@ export const CategoryModalContent = () => {
       <Box sx={{ display: "flex", gap: 1.5, mt: 4 }}>
         <Button
           onClick={() => {
-            setOpenModal(false, true, true);
+            setOpenModal(false, false, false);
           }}
           variant="outlined"
           color="neutral"
@@ -112,7 +160,7 @@ export const CategoryModalContent = () => {
           sx={{ flex: 1 }}
           onClick={() => setSuccessDialog(true)}
           variant="solid"
-          color="primary"
+          color={type === "delete" ? "danger" : "primary"}
           disabled={isloading}
           startDecorator={
             isloading && (
@@ -131,7 +179,7 @@ export const CategoryModalContent = () => {
             )
           }
         >
-          {isloading ? "Saving..." : "Confirm and save"}
+          {isloading ? "Saving..." : getStateOfModal().action}
         </Button>
       </Box>
     </>

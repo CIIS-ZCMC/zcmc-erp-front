@@ -11,7 +11,7 @@ import {
 } from "@mui/joy";
 import React, { act } from "react";
 import { MdInfoOutline } from "react-icons/md";
-import useLibrariesHook from "../../../Hooks/Libraries/LibclassificationHook";
+import useLibrariesHook from "../../../Hooks/Libraries/LibHooks";
 import useModalHook from "../../../Hooks/ModalHook";
 
 // ['create', 'update', 'delete']
