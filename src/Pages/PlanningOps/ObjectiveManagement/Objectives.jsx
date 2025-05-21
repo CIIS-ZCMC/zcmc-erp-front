@@ -32,7 +32,8 @@ function Objectives({ props }) {
   const { objectives, getObjectives, removeObj, postObjective } =
     useManageObjHook();
   const { function_types, getFunctionType } = useFunctionTypeHook();
-  const { setAlertDialog, setConfirmationModal } = useModalHook();
+  const { setAlertDialog, setConfirmationModal, closeConfirmation } =
+    useModalHook();
   const [openCreate, setOpenCreate] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isView, setIsView] = useState(false);
@@ -174,7 +175,7 @@ function Objectives({ props }) {
           title: message,
           description: message,
         };
-
+        closeConfirmation();
         setAlertDialog(data);
       } else {
         const data = {
