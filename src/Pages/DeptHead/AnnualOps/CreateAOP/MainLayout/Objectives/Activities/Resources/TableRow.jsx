@@ -141,29 +141,16 @@ const TableRow = ({
                 <td onClick={() => handleOnRowClick(id)}>
                   {isEditing ? (
                     <>
-
                       <AutocompleteComponent
                         placeholder="Select Expense Class"
                         value={selectedExpenseClass}
                         setValue={(val) => {
-                          console.log(val)
+                          // console.log(val)
                           setSelectedExpenseClass(val);
                           updateResourceField(id, "expenseClass", val.value);
                         }}
                         options={expenseClassOptions}
                       />
-
-                      {/* <Select
-                        size="sm"
-                        defaultValue="MOOE"
-                        value={expenseClass || ''}
-                        onChange={(e, newValue) =>
-                          onChangeFieldValue(id, "expenseClass", newValue)
-                        }
-                      >
-                        <Option value="MOOE">MOOE</Option>
-                        <Option value="CO">CO</Option>
-                      </Select> */}
                     </>
 
                   ) : (
