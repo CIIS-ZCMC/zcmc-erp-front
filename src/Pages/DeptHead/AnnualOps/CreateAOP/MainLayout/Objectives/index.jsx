@@ -1,13 +1,15 @@
 import { Fragment, useEffect, useState } from "react";
 
 import { useNavigate } from "react-router-dom";
-import { Stack } from "@mui/joy";
-import { Plus } from "lucide-react";
+import { Stack, Link } from "@mui/joy";
+import { Plus, ExternalLink } from "lucide-react";
 
 //custom components
 import ButtonComponent from "../../../../../../Components/Common/ButtonComponent";
 import ContainerComponent from "../../../../../../Components/Common/ContainerComponent";
 import EditableTableComponent from "../../../../../../Components/Common/Table/EditableTableComponent";
+import ModalComponent from "../../../../../../Components/Common/Dialog/ModalComponent";
+import TextareaComponent from "../../../../../../Components/Form/TextareaComponent";
 import TableRow from "./TableRow";
 
 // hooks
@@ -35,6 +37,9 @@ const Objectives = () => {
   // local states
   const [editRowId, setEditRowId] = useState(null);
   const [isLoading, setisLoading] = useState(false);
+  const [isModalOpen, setIsModalOpen] = useState(false);
+
+  const [mission, setMission] = useState('');
 
   const activitiesCount = objectives.map((objective) =>
     // console.log(item.id)
@@ -66,7 +71,6 @@ const Objectives = () => {
       const activitiesWithResourceAndResponsiblePeople = activities.map(
         (act) => {
           const { parentId, id, startMonth, endMonth, target, isGadRelated, ...actData } = act
-          console.log(act)
           const resources = findResourcesByActivityID(act.id);
           const responsible_people = findResponsiblePeopleByActivityID(act.id);
 
@@ -97,12 +101,37 @@ const Objectives = () => {
     return objectiveData;
   }
 
-  // handle Submit
+  // handle  
   const handleSubmit = () => {
     const aopPayload = buildAOP();
     console.log("Submitting payload:", aopPayload);
+
+    const payload = {
+      mission: mission,
+      is_discussed: true,
+      application_objectives: aopPayload
+    }
+
+    console.log('final payload', payload)
+
     // await axios.post('/api/aop/submit', { application_objectives: payload });
   };
+
+  const handleOpenDialog = () => {
+    setIsModalOpen(true);
+  }
+
+  const handleCloseDialog = () => {
+    setIsModalOpen(false);
+    // setMission('')
+  }
+
+  const handleSaveMission = () => {
+    alert('saving...')
+    handleCloseDialog()
+    // setMission('')
+    //set to local state 
+  }
 
   return (
     <Fragment>
@@ -121,6 +150,24 @@ const Objectives = () => {
       >
         <EditableTableComponent
           columns={AOP_HEADER}
+          secondaryHeader={
+
+            <Link
+              component="button"
+              onClick={() => handleOpenDialog()}
+              pb={1}
+            >
+              <Stack
+                direction={'row'}
+                gap={1}
+                alignItems={'center'}
+              >
+                Create a Mission
+                <ExternalLink size={16} />
+              </Stack>
+
+            </Link>
+          }
           tableRow={
             <TableRow
               editRowId={editRowId}
@@ -158,6 +205,26 @@ const Objectives = () => {
           />
         </Stack>
       </ContainerComponent>
+
+      <ModalComponent
+        isOpen={isModalOpen}
+        handleClose={handleCloseDialog}
+        title={'Mission'}
+        description={`Define the core purpose and primary focus of the organization's operational efforts for the upcoming fiscal year. This statement should guide the development and execution of the annual plan.`}
+        content={
+          <>
+            <TextareaComponent
+              // label={'Mission'}
+              placeholder={'Please insert mission content here'}
+              value={mission}
+              onChange={(e) => setMission(e.target.value)}
+            />
+          </>
+        }
+        hasActionButtons={true}
+        rightButtonLabel={'Save'}
+        rightButtonAction={() => handleSaveMission()}
+      />
     </Fragment>
   );
 };
