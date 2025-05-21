@@ -1,17 +1,21 @@
 import { Outlet } from "react-router-dom";
-import { Box, Grid, useTheme } from "@mui/joy";
+import { Avatar, Box, Grid, Stack, useTheme } from "@mui/joy";
 import Sidebar from "./Sidebar";
 import useModalHook from "../Hooks/ModalHook";
 import { Fragment, useEffect, useState } from "react";
 import AlertDialogComponent from "../Components/Common/Dialog/AlertDialogComponent";
 import useSidebarHook from "../Hooks/SidebarHook";
 import { useMediaQuery } from "@mui/material";
+import NotificationMain from "../Components/Notification/NotificationMain";
+import SnackbarComponent from "../Components/Common/SnackbarComponent";
+import useSnackbarHook from "../Components/Common/SnackbarHook";
 
 function Layout() {
   const theme = useTheme();
   const color = theme.palette.custom;
 
   const { alertDialogState } = useModalHook();
+  const { isOpen: snackbarIsOpen } = useSnackbarHook();
 
   const { isCollapsed, toggleSidebar, setCollapsed } = useSidebarHook();
   const isSmallScreen = useMediaQuery("(max-width:1500px)");
@@ -22,6 +26,17 @@ function Layout() {
   return (
     <Fragment>
       <Grid container sx={{ maxHeight: "100vh" }}>
+        {/* Notification */}
+        <Box position={"absolute"} right={10} p={4}>
+          <Stack direction={"row"} spacing={1} alignItems={"center"}>
+            <NotificationMain />
+            <Avatar
+              size="lg"
+              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSphOILfuKHyTdMirb7TWHIfW_bB9-TKYLqEw&s"
+              sx={{ border: 3, borderColor: "primary.500" }}
+            />
+          </Stack>
+        </Box>
         {/* Sidebar */}
         <Grid
           item="true"
@@ -73,6 +88,8 @@ function Layout() {
       </Grid>
       {/*  AlertDialog Modal for global display; isGlobal is true by default */}
       {alertDialogState.isGlobal && <AlertDialogComponent />}
+
+      {snackbarIsOpen && <SnackbarComponent />}
     </Fragment>
   );
 }

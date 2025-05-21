@@ -1,15 +1,14 @@
-import { create } from 'zustand';
+import { create } from "zustand";
 
 const useAOPObjectivesHooks = create((set, get) => ({
-    aopObjectives: [],
+  aopObjectives: [],
 
-    // Delete an entire objective
-    deleteObjective: (id) => {
-        set((state) => ({
-            aopObjectives: state.aopObjectives.filter((row) => console.log(row)),
-        }));
-    },
-
+  // Delete an entire objective
+  deleteObjective: (id) => {
+    set((state) => ({
+      aopObjectives: state.aopObjectives.filter((row) => console.log(row)),
+    }));
+  },
 }));
 
-export default useAOPObjectivesHooks
+export default useAOPObjectivesHooks;

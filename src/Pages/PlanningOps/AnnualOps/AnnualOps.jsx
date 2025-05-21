@@ -7,7 +7,6 @@ import Header from "../../../Layout/Header";
 
 import ContainerComponent from "../../../Components/Common/ContainerComponent";
 import ButtonComponent from "../../../Components/Common/ButtonComponent";
-import TabsComponent from "../../../Components/Common/TabsComponent";
 import SearchBarComponent from "../../../Components/SearchBarComponent";
 import DatePickerComponent from "../../../Components/Form/DatePickerComponent";
 import PageTitle from "../../../Components/Common/PageTitle";
@@ -48,12 +47,6 @@ const AnnualOps = () => {
           </Stack>
         }
       >
-        {/* 
-                <TabsComponent
-                    tabs={['View all', 'Pending', 'Returned', 'Approved']}
-                    pathMap={AOPPathMap}
-                /> */}
-
         <Box
           sx={{
             mt: 2,

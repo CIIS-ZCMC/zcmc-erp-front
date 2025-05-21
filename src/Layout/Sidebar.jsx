@@ -19,8 +19,9 @@ function Sidebar() {
       p={isCollapsed ? 2 : { xs: 1.5, sm: 2.5 }} // Responsive padding
       sx={{
         height: "95%",
-        overflowY: "auto",
+        overflowY: "visible",
         alignItems: isCollapsed ? "center" : "flex-start",
+        zIndex: 100,
       }} // Ensure it scrolls if needed
     >
       <Header />

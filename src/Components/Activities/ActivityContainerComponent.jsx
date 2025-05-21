@@ -1,5 +1,4 @@
 import React from "react";
-import BoxComponent from "../Common/Card/BoxComponent";
 import { Box, Stack, Typography } from "@mui/joy";
 import ChipComponent from "../Common/ChipComponent";
 import { CircleSmall } from "lucide-react";
@@ -7,7 +6,7 @@ import { CircleSmall } from "lucide-react";
 export const ActivityContainerComponent = ({
   label,
   text,
-  withComment = true,
+  withComment = false,
   reviewed = true,
   active,
   onClick,
@@ -16,11 +15,11 @@ export const ActivityContainerComponent = ({
     <Box
       onClick={onClick}
       sx={{
-        border: 1,
+        border: 2,
         padding: 1,
         boxShadow: active && "md",
         borderRadius: 8,
-        borderColor: active ? "primary.500" : "neutral.100",
+        borderColor: active ? "warning.400" : "neutral.100",
         "&: hover": {
           borderColor: !active && "neutral.200",
           cursor: "pointer",

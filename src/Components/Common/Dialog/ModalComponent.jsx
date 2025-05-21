@@ -15,7 +15,7 @@ import {
 } from "@mui/joy";
 import { BiX } from "react-icons/bi";
 import ButtonComponent from "../ButtonComponent";
-import { AnimatePresence, motion } from "motion/react";
+import { Fragment } from "react";
 
 ModalComponent.propTypes = {
   isOpen: PropTypes.bool.isRequired,
@@ -145,17 +145,17 @@ function ModalComponent({
                     fullWidth
                     isLoading={isLoading}
                     onClick={rightButtonAction}
-                    isDisabled={rightButtonDisabled || isLoading}
+                    disabled={rightButtonDisabled || isLoading}
                   />
                 )}
 
                 <ButtonComponent
                   variant="outlined"
-                  color="success"
+                  color="primary"
                   label={leftButtonLabel}
                   fullWidth={!noRightButton}
                   onClick={leftButtonAction ?? handleClose}
-                  isDisabled={isLoading}
+                  disabled={isLoading}
                 />
               </Box>
             </DialogActions>

@@ -17,6 +17,7 @@ import { getStatusIcon } from "../../../Utils/StatusIcon";
 import InputComponent from "../../Form/InputComponent";
 // eslint-disable-next-line no-unused-vars
 import { AnimatePresence, motion } from "motion/react";
+import { LampFloor } from "lucide-react";
 
 ConfirmationModalComponent.propTypes = {
   content: PropTypes.node,
@@ -25,9 +26,10 @@ ConfirmationModalComponent.propTypes = {
   rightButtonDisabled: PropTypes.bool,
   leftButtonLabel: PropTypes.string,
   leftButtonAction: PropTypes.func,
-  isLoading: PropTypes.bool,
+  rightButtonLoadingLabel: PropTypes.bool,
   withAuthPin: PropTypes.bool,
   withDivider: PropTypes.bool,
+  withFooterDivider: PropTypes.bool,
   setAuthPin: PropTypes.func,
   pinHelperText: PropTypes.string,
 };
@@ -40,14 +42,22 @@ function ConfirmationModalComponent({
   leftButtonLabel = "Cancel",
   leftButtonAction = null,
   isLoading,
+  rightButtonLoadingLabel,
   withAuthPin,
   withDivider,
   setAuthPin,
+  withFooterDivider,
   pinHelperText = "Confirm you action by typing-in your authorization PIN.",
   errors = {},
 }) {
   const {
-    confirmationModalState: { isOpen = false, title, description, status },
+    confirmationModalState: {
+      isOpen = false,
+      title,
+      description,
+      status,
+      leftBtnLbl,
+    },
     closeConfirmation,
   } = useModalHook();
 
@@ -59,95 +69,96 @@ function ConfirmationModalComponent({
   };
 
   return (
-    <AnimatePresence initial={false}>
-      {isOpen && (
-        <Modal keepMounted open={isOpen} onClose={closeConfirmation}>
-          <motion.div
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            exit={{ opacity: 0 }}
+    isOpen && (
+      <Modal keepMounted open={isOpen} onClose={closeConfirmation}>
+        <motion.div
+          initial={{ opacity: 0 }}
+          animate={{ opacity: 1 }}
+          exit={{ opacity: 0 }}
+        >
+          <ModalDialog
+            sx={{
+              width: "auto",
+              height: "auto",
+              maxHeight: "80%",
+              maxWidth: "540px",
+              borderRadius: 20,
+              padding: 3.5,
+            }}
           >
-            <ModalDialog
-              sx={{
-                width: "auto",
-                height: "auto",
-                maxHeight: "80%",
-                maxWidth: "540px",
-                borderRadius: 20,
-                padding: 3.5,
-              }}
+            {/* TITLE */}
+            <DialogTitle
+              sx={{ alignItems: "start", justifyContent: "space-between" }}
             >
-              {/* TITLE */}
-              <DialogTitle
-                sx={{ alignItems: "start", justifyContent: "space-between" }}
-              >
-                <Stack gap={1}>
-                  {getStatusIcon(status)}
-                  <Typography fontSize={{ xs: 20, lg: 20 }} fontWeight={600}>
-                    {title}
-                  </Typography>
-                  <Typography
-                    fontWeight={400}
-                    fontSize={{ xs: 14, lg: 14 }}
-                    color="neutral"
-                  >
-                    {description}
-                  </Typography>
-                </Stack>
-              </DialogTitle>
-
-              {/* CONTENT */}
-              <DialogContent sx={{ py: withAuthPin && 2, overflow: "hidden" }}>
-                {withDivider && <Divider sx={{ my: 0.5 }} />}
-
-                {content && <Box py={2}>{content}</Box>}
-
-                {withDivider && <Divider sx={{ my: 0.5 }} />}
-
-                {withAuthPin && (
-                  <InputComponent
-                    type="password"
-                    name="pin"
-                    label="Authorization pin"
-                    helperText={pinHelperText}
-                    setValue={handlePinInput}
-                    value={pin}
-                    errors={errors}
-                  />
-                )}
-              </DialogContent>
-
-              {/* FOOTER */}
-              <DialogActions>
-                <Box
-                  sx={{
-                    width: rightButtonAction ? "auto" : "100%",
-                    display: "flex",
-                    gap: 1,
-                    flexDirection: { xs: "column", sm: "row" },
-                  }}
+              <Stack gap={1}>
+                {getStatusIcon(status)}
+                <Typography fontSize={{ xs: 20, lg: 20 }} fontWeight={600}>
+                  {title}
+                </Typography>
+                <Typography
+                  fontWeight={400}
+                  fontSize={{ xs: 14, lg: 14 }}
+                  color="neutral"
                 >
-                  <ButtonComponent
-                    variant="outlined"
-                    label={leftButtonLabel}
-                    onClick={leftButtonAction ?? closeConfirmation}
-                    isDisabled={isLoading}
-                    fullWidth={!rightButtonAction}
-                  />
+                  {description}
+                </Typography>
+              </Stack>
+            </DialogTitle>
 
-                  <ButtonComponent
-                    label={rightButtonLabel}
-                    isLoading={isLoading}
-                    onClick={rightButtonAction}
-                    isDisabled={rightButtonDisabled || isLoading}
-                  />
-                </Box>
-              </DialogActions>
-            </ModalDialog>
-          </motion.div>
-        </Modal>
-      )}
-    </AnimatePresence>
+            {/* CONTENT */}
+            <DialogContent sx={{ py: withAuthPin && 2, overflow: "hidden" }}>
+              {withDivider && <Divider sx={{ my: 0.5 }} />}
+
+              {content && <Box py={2}>{content}</Box>}
+
+              {(withDivider || withFooterDivider) && (
+                <Divider sx={{ my: withFooterDivider ? 1 : 0.5 }} />
+              )}
+
+              {withAuthPin && (
+                <InputComponent
+                  type="password"
+                  name="pin"
+                  label="Authorization pin"
+                  helperText={pinHelperText}
+                  setValue={handlePinInput}
+                  value={pin}
+                  errors={errors}
+                />
+              )}
+            </DialogContent>
+
+            {/* FOOTER */}
+            <DialogActions>
+              <Box
+                sx={{
+                  width: rightButtonAction ? "auto" : "100%",
+                  display: "flex",
+                  gap: 1,
+                  flexDirection: { xs: "column", sm: "row" },
+                }}
+              >
+                <ButtonComponent
+                  variant="outlined"
+                  label={leftButtonLabel}
+                  onClick={leftButtonAction ?? closeConfirmation}
+                  isDisabled={isLoading}
+                  fullWidth={!rightButtonAction}
+                />
+
+                <ButtonComponent
+                  label={rightButtonLabel}
+                  isLoading={isLoading}
+                  onClick={rightButtonAction}
+                  loadingLabel={rightButtonLoadingLabel}
+                  isDisabled={rightButtonDisabled || isLoading}
+                />
+              </Box>
+            </DialogActions>
+          </ModalDialog>
+        </motion.div>
+      </Modal>
+    )
   );
 }
 

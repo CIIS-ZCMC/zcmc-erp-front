@@ -32,29 +32,12 @@ import Item from "../../Items/Item";
 import ModalComponent from "../../../Components/Common/Dialog/ModalComponent";
 import { usePPMPItemsHook } from "../../../Hooks/PPMPItemsHook";
 
-const activityData = [
-  {
-    value: 1,
-    label: "#0001",
-    description: "Sample description for activity 1",
-  },
-  {
-    value: 2,
-    label: "#0002",
-    description: "Sample description for activity 2",
-  },
-  {
-    value: 3,
-    label: "#0003",
-    description: "Sample description for activity 3",
-  },
-];
 const ITEMS_PER_BATCH = 12;
 
 function AddItems(props) {
   const navigate = useNavigate();
   const location = useLocation();
-  const { activityObject } = location.state || {};
+  const { activity } = location.state || {};
   const { expenseId } = useParams();
 
   const { items, getItems } = useItemsHook();
@@ -129,47 +112,68 @@ function AddItems(props) {
   const handleSave = () => {
     setLoading(true);
 
-    const lastItemId =
-      tableData.length > 0 ? tableData[tableData.length - 1].id : 0;
+    const localKey = "ppmp-items";
 
-    // Only add IDs for new cart items
-    const mergedCart = [...tableData, ...cart].reduce((map, item, index) => {
-      const existing = map.get(item.item_code); // Use item_code!
+    const existingItems = JSON.parse(localStorage.getItem(localKey)) || [];
+
+    // Build a set of existing item_codes to detect duplicates
+    const existingMap = new Map();
+    existingItems.forEach((item) => {
+      existingMap.set(item.item_code, item);
+    });
+
+    let nextId =
+      existingItems.length > 0
+        ? Math.max(...existingItems.map((item) => item.id || 0)) + 1
+        : 1;
+
+    const mergedMap = new Map();
+
+    // First, add existing items
+    existingItems.forEach((item) => {
+      mergedMap.set(item.item_code, item);
+    });
+
+    // Then, merge cart items
+    cart.forEach((cartItem) => {
+      const existing = mergedMap.get(cartItem.item_code);
 
       if (existing) {
-        // If the item already exists (same item_code), combine quantities and activities
+        // Merge quantities and activities
         const combinedActivities = [
           ...existing.activities,
-          ...(Array.isArray(item.activities)
-            ? item.activities
-            : [item.activities]),
+          ...(Array.isArray(cartItem.activities)
+            ? cartItem.activities
+            : [cartItem.activities]),
         ];
+        const combinedQuantity =
+          existing.aop_quantity + (cartItem.aop_quantity || 0);
 
-        map.set(item.item_code, {
+        mergedMap.set(cartItem.item_code, {
           ...existing,
-          aop_quantity: existing.aop_quantity + (item.aop_quantity || 0),
+          aop_quantity: combinedQuantity,
           activities: combinedActivities,
+          total_amount: combinedQuantity * (cartItem.estimated_budget || 0),
         });
       } else {
-        // New item, assign new id if from cart (optional logic)
-        const isFromCart = cart.some(
-          (cartItem) => cartItem.item_code === item.item_code
-        );
-        const newId = isFromCart ? lastItemId + map.size + 1 : item.id;
-
-        map.set(item.item_code, {
-          ...item,
-          id: newId,
-          activities: Array.isArray(item.activities)
-            ? item.activities
-            : [item.activities],
-        });
+        // New item from cart: assign unique ID if missing
+        const newItem = {
+          ...cartItem,
+          id: cartItem.id || nextId++,
+          activities: Array.isArray(cartItem.activities)
+            ? cartItem.activities
+            : [cartItem.activities],
+        };
+        mergedMap.set(cartItem.item_code, newItem);
       }
+    });
 
-      return map;
-    }, new Map());
+    const mergedItemsArray = Array.from(mergedMap.values());
+    // 3. Save to hook and localStorage
+    console.log("Merged items:", mergedItemsArray);
 
-    setTableData(Array.from(mergedCart.values()));
+    localStorage.setItem(localKey, JSON.stringify(mergedItemsArray));
+    setTableData(mergedItemsArray);
 
     setCartMeta({ selectedActivity: null, expense_class_id: null });
     clearCart();
@@ -216,7 +220,7 @@ function AddItems(props) {
 
   useEffect(() => {
     setCartMeta({
-      selectedActivity: activityObject,
+      selectedActivity: activity,
       expense_class_id: expenseId,
     });
 
@@ -236,7 +240,7 @@ function AddItems(props) {
   return (
     <Fragment>
       <ContainerComponent
-        title={`You are managing resources for Activity: ${activityObject?.activity_code}`}
+        title={`You are managing resources for Activity: ${activity?.activity_code}`}
         description={
           "Collapse this card to view more information about the selected activity."
         }
@@ -276,7 +280,7 @@ function AddItems(props) {
                   </Typography>
                   <Box width={"200px"} mt={1}>
                     <Typography fontSize={12} color="primary">
-                      {activityObject?.activity_code}
+                      {activity?.activity_code}
                     </Typography>
                   </Box>
                 </BoxComponent>
@@ -317,18 +321,13 @@ function AddItems(props) {
           <>
             <Stack direction="row" gap={1}>
               <ButtonComponent
-                label={"Request new item"}
-                endDecorator={<MdOpenInNew />}
-                variant={"outlined"}
-              />
-              <ButtonComponent
                 label={"Cancel selection"}
                 endDecorator={<MdOpenInNew />}
                 variant={"outlined"}
                 onClick={() => handleConfirmationModal()}
               />
               <ButtonComponent
-                label={"Save items"}
+                label={"Save to table"}
                 onClick={() => handleSave()}
               />
             </Stack>

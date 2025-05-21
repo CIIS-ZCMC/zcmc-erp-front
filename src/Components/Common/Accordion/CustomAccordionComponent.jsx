@@ -12,7 +12,6 @@ import {
 
 import { AnimatePresence, motion } from "motion/react"; // eslint-disable-next-line no-unused-vars
 import React from "react";
-import "./accordion.css";
 import { ChevronDown, Pencil } from "lucide-react";
 import useAccordionHook from "../../../Hooks/AccordionHook";
 
@@ -20,12 +19,12 @@ function CustomAccordionComponent({
   id,
   children,
   expanded,
-  setExpanded,
   title,
   withEdit,
   size,
   name,
   onClickEdit,
+  withActivity = true,
 }) {
   const { handleExpand, rotationId, rotation } = useAccordionHook();
   const isOpen = React.useMemo(() => {
@@ -34,7 +33,7 @@ function CustomAccordionComponent({
   }, [expanded, id, name]);
 
   const handleClick = () => {
-    handleExpand(isOpen, setExpanded, id, name);
+    handleExpand(isOpen, id, name);
   };
 
   return (
@@ -52,7 +51,7 @@ function CustomAccordionComponent({
           },
         },
         [`& .${accordionClasses.root}.${accordionClasses.expanded}`]: {
-          borderColor: theme.vars.palette.neutral[300],
+          borderColor: "neutral.300",
         },
       })}
     >
@@ -70,7 +69,8 @@ function CustomAccordionComponent({
             }}
           >
             <Typography
-              textColor={"success.800"}
+              textColor={"primary.900"}
+              fontWeight={600}
               level={size == "sm" ? "body-sm" : "body-md"}
             >
               {title}
@@ -90,6 +90,7 @@ function CustomAccordionComponent({
               <IconButton
                 variant="soft"
                 size="sm"
+                disabled={!withActivity}
                 onClick={handleClick}
                 sx={{
                   transform: isOpen ? "rotate(180deg)" : "rotate(0deg)",
