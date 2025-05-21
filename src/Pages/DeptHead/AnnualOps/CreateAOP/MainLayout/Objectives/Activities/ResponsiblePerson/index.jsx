@@ -8,6 +8,8 @@ import useResponsiblePeopleHook from "../../../../../../../../Hooks/ResponsibleP
 //Custom Components
 import ButtonComponent from "../../../../../../../../Components/Common/ButtonComponent";
 import ContainerComponent from "../../../../../../../../Components/Common/ContainerComponent";
+import AlertDialogComponent from "../../../../../../../../Components/Common/Dialog/AlertDialogComponent";
+import ModalComponent from "../../../../../../../../Components/Common/Dialog/ModalComponent";
 
 // Layouts
 import PersonSection from "../../../../../../../../Layout/ResponsiblePerson/PersonSection";
@@ -31,6 +33,8 @@ const ResponsiblePerson = () => {
     return item.activityId === activityId;
   });
 
+  const [isDialogOpen, setIsDialogOpen] = useState(true);
+
   // useEffect(() => {
   //   console.log(location.state)
   // }, [])
@@ -39,6 +43,10 @@ const ResponsiblePerson = () => {
   //     activity.isAssigned
   // )
 
+
+  const handleDialogOpen = () => {
+    setIsDialogOpen(true);
+  }
 
   // Check if at least one responsible entity exists
   const hasData =
@@ -58,6 +66,7 @@ const ResponsiblePerson = () => {
     }
 
     setAssignmentStatus(activityId, true);
+    handleDialogOpen()
 
     // navigate(`/aop-create/activities/${rowId}`);
   };
@@ -129,6 +138,14 @@ const ResponsiblePerson = () => {
           />
         </Stack>
       </ContainerComponent>
+
+      <AlertDialogComponent
+        isOpen={isDialogOpen}
+      />
+
+      <ModalComponent
+        isOpen={isDialogOpen}
+      />
     </Fragment>
   );
 };

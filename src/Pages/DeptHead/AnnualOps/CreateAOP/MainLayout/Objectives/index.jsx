@@ -129,9 +129,15 @@ const Objectives = () => {
   const handleSaveMission = () => {
     alert('saving...')
     handleCloseDialog()
+
+    // Save to local storage
+    localStorage.setItem('mission', JSON.stringify(mission));
+
     // setMission('')
     //set to local state 
   }
+
+  // const savedMission = JSON.parse(localStorage.getItem('mission'))
 
   return (
     <Fragment>
