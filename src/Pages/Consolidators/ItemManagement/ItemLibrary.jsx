@@ -133,7 +133,7 @@ const ItemLibrary = () => {
           sx={{ maxWidth: 500, borderRadius: "md", p: 3, boxShadow: "lg" }}
         >
           <ModalClose variant="plain" sx={{ m: 1 }} />
-          <RenderDialog />
+          <RenderDialog lib={UrllastSegment} />
         </Sheet>
       </Modal>
     </Fragment>

@@ -5,15 +5,15 @@ import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { Box, Typography, Button, IconButton, Sheet } from "@mui/joy";
 import useLibrariesHook from "../../../Hooks/Libraries/LibHooks";
-const RenderDialog = () => {
+const RenderDialog = ({ lib }) => {
   return (
     <IndicatorDialog>
-      <SuccessClassification />
+      <SuccessClassification lib={lib} />
     </IndicatorDialog>
   );
 };
 
-const SuccessClassification = () => {
+const SuccessClassification = (props) => {
   const {
     inputs,
     setInputs,
@@ -23,12 +23,26 @@ const SuccessClassification = () => {
     type,
     selectedData,
   } = useLibrariesHook();
+  const { lib } = props; // "classification","category","variant"
+
+  const getLabel = () => {
+    switch (lib) {
+      case "classification":
+        return "Classification";
+      case "category":
+        return "Category";
+      case "variant":
+        return "Variant";
+      default:
+        return "Item";
+    }
+  };
 
   const MetaData = {
     create: {
       render: () => (
         <Typography level="title-md" fontWeight="lg">
-          New item classification{" "}
+          New item {getLabel()}{" "}
           <Typography
             sx={{ color: "custom.darkgreen" }}
             component="span"
@@ -37,7 +51,7 @@ const SuccessClassification = () => {
           >
             #2023-0031
           </Typography>{" "}
-          successfully successfully saved to the library.
+          successfully saved to the library.
         </Typography>
       ),
       desc: "You can now use it for requesting AOP and PPMP documents. Everyone can see and use the new item.",
@@ -45,7 +59,7 @@ const SuccessClassification = () => {
     update: {
       render: () => (
         <Typography level="title-md" fontWeight="lg">
-          Library classification{" "}
+          Library {getLabel()}{" "}
           <Typography
             sx={{ color: "custom.darkgreen" }}
             component="span"
@@ -62,7 +76,8 @@ const SuccessClassification = () => {
     delete: {
       render: () => (
         <Typography level="title-md" fontWeight="lg">
-          Library classification{" ( "}
+          Library {getLabel()}
+          {" ( "}
           <Typography
             sx={{ color: "danger.500" }}
             component="span"

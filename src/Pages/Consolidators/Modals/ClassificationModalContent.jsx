@@ -91,7 +91,7 @@ export const ClassificationModalContent = () => {
             size="md"
             minRows={2}
             onChange={(e) => setInputs("currentLibName", e.target.value)}
-            value={inputs.classificationName}
+            value={inputs.currentLibName}
             sx={{ minHeight: 100, maxHeight: 200 }}
           />
           <Typography
