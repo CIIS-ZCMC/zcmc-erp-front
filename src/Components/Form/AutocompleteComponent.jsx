@@ -45,39 +45,35 @@ function AutocompleteComponent({
           // console.log("newValue", newValue);
           handleSelect ? handleSelect(newValue) : handleChange(newValue);
         }}
-        renderOption={
-          isRenderOption &&
-          ((props, option) => (
-            <li
-              {...props}
-              key={option.id}
-              style={{
-                padding: "8px 12px",
-                borderBottom: "1px solid #eee",
-                cursor: "pointer",
-                transition: "background 0.2s ease-in-out",
-              }}
-              onMouseEnter={(e) =>
-                (e.currentTarget.style.background = "#f5f5f5")
-              }
-              onMouseLeave={(e) =>
-                (e.currentTarget.style.background = "transparent")
-              }
-            >
-              <Box display="flex" flexDirection="column">
-                <Typography variant="body1" fontWeight="500">
-                  {option?.label}
+        isOptionEqualToValue={(option, value) => option.name === value.name}
+        renderOption={(props, option) => (
+          <li
+            {...props}
+            key={option.id}
+            style={{
+              padding: "8px 12px",
+              borderBottom: "1px solid #eee",
+              cursor: "pointer",
+              transition: "background 0.2s ease-in-out",
+            }}
+            onMouseEnter={(e) => (e.currentTarget.style.background = "#f5f5f5")}
+            onMouseLeave={(e) =>
+              (e.currentTarget.style.background = "transparent")
+            }
+          >
+            <Box display="flex" flexDirection="column">
+              <Typography variant="body1" fontWeight="500">
+                {option?.label}
+              </Typography>
+              {option.designation && (
+                <Typography variant="caption" color="text.secondary">
+                  {option.designation}
                 </Typography>
-                {option.designation && (
-                  <Typography variant="caption" color="text.secondary">
-                    {option.designation}
-                  </Typography>
-                )}
-              </Box>
-            </li>
-          ))
-        }
-        value={value}
+              )}
+            </Box>
+          </li>
+        )}
+        value={value ?? null}
         options={options}
         onClose={onClose}
         // name={name}
