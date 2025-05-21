@@ -36,7 +36,7 @@ const PostCommentComponent = ({ postCommentModal, setPostCommentModal }) => {
         getAOPApplicationById(AOP_APPLICATION_ID, () => {});
         showSnack(200, "Comment posted successfully");
       } else {
-        showSnack(200, "Comment posted successfully");
+        showSnack(500, "Failed to post comment");
       }
     });
   };

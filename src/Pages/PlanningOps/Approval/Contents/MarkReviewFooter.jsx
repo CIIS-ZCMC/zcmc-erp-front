@@ -16,6 +16,7 @@ import {
   Typography,
 } from "@mui/joy";
 import ConfirmationModalComponent from "../../../../Components/Common/Dialog/ConfirmationModalComponent";
+import { useAOPApplicationsActions } from "../../../../Hooks/AOP/AOPApplicationsHook";
 
 export const MarkReviewFooter = ({ openMarkModal, setOpenMarkModal }) => {
   // STATE
@@ -25,20 +26,26 @@ export const MarkReviewFooter = ({ openMarkModal, setOpenMarkModal }) => {
   const activity = useActivity();
 
   const { is_reviewed, is_reviewed_date } = activity ?? {};
+  const AOP_APPLICATION_ID = localStorageGetter("aop_application_id");
 
   // HOOKS
   const { setConfirmationModal, closeConfirmation } = useModalHook();
-  const { markAsReviewed, getActivityById } = useActivityActions();
+  const { markAsReviewed, getActivityById, markAsUnreviewed } =
+    useActivityActions();
   const { showSnack } = useSnackbarHook();
+  const { getAOPApplicationById } = useAOPApplicationsActions();
 
   // FUNCTIONS
   const handleClickMarkCheckbox = () => {
     setOpenMarkModal(true);
     const data = {
       status: "info",
-      title: "Mark this activity as reviewed?",
-      description:
-        "Showing marks helps you determine which among all activities has successfully passed your double-checking so that you don't have to double-check again. Don’t worry, you can uncheck this later.",
+      title: is_reviewed
+        ? "Remove review mark from this activity?"
+        : "Mark this activity as reviewed?",
+      description: is_reviewed
+        ? "Are you sure you want to remove the review mark? You can mark this activity as reviewed again later if needed."
+        : "Showing marks helps you determine which among all activities has successfully passed your double-checking so that you don't have to double-check again. Don’t worry, you can uncheck this later.",
     };
 
     setConfirmationModal(data);
@@ -46,13 +53,23 @@ export const MarkReviewFooter = ({ openMarkModal, setOpenMarkModal }) => {
 
   const handleMarkAsReviewed = () => {
     setBtnLoading(true);
-    markAsReviewed(activeActivity, (status, message) => {
-      setBtnLoading(false);
-      closeConfirmation();
-      setOpenMarkModal(false);
-      getActivityById(activeActivity, () => {}), showSnack(status, message);
-      // getAOPApplicationById(AOP_APPLICATION_ID, () => {});
-    });
+
+    if (is_reviewed) {
+      markAsUnreviewed(activeActivity, (status, message) => {
+        setBtnLoading(false);
+        closeConfirmation();
+        setOpenMarkModal(false);
+        getActivityById(activeActivity, () => {}), showSnack(status, message);
+      });
+    } else {
+      markAsReviewed(activeActivity, (status, message) => {
+        setBtnLoading(false);
+        closeConfirmation();
+        setOpenMarkModal(false);
+        getActivityById(activeActivity, () => {}), showSnack(status, message);
+        getAOPApplicationById(AOP_APPLICATION_ID, () => {});
+      });
+    }
   };
 
   return (
@@ -80,12 +97,12 @@ export const MarkReviewFooter = ({ openMarkModal, setOpenMarkModal }) => {
             double-check again.
           </FormHelperText>
 
-          {is_reviewed && (
+          {/* {is_reviewed && (
             <FormHelperText sx={{ fontSize: 12, color: "neutral.600" }}>
               Marked as <b>“Reviewed”</b> on{" "}
               {moment(is_reviewed_date).format("ll")}
             </FormHelperText>
-          )}
+          )} */}
         </FormControl>
       </Stack>
 
@@ -97,7 +114,7 @@ export const MarkReviewFooter = ({ openMarkModal, setOpenMarkModal }) => {
             setOpenMarkModal(false);
           }}
           leftButtonLabel="No, back to request"
-          rightButtonLabel="Mark as “Reviewed”"
+          rightButtonLabel={is_reviewed ? "Remove mark" : 'Mark as "Reviewed"'}
           rightButtonAction={handleMarkAsReviewed}
           isLoading={btnLoading}
         />

@@ -74,7 +74,7 @@ export const ActivityDetails = () => {
           columnSpacing={isDivisionHead ? 2 : 0}
           overflow={"hidden"}
         >
-          <Grid item xs={isDivisionHead ? 6 : 12}>
+          <Grid item={"true"} xs={isDivisionHead ? 6 : 12}>
             <Stack spacing={isDivisionHead ? 2 : 1.5}>
               {/* ACTIVITY NAME */}
               <Typography
@@ -157,7 +157,7 @@ export const ActivityDetails = () => {
             </Stack>
           </Grid>
 
-          <Grid item xs={isDivisionHead ? 6 : 12}>
+          <Grid item="true" xs={isDivisionHead ? 6 : 12}>
             <Stack spacing={isDivisionHead ? 2 : 1.5}>
               {/* PERSON */}
               <Typography
@@ -167,7 +167,15 @@ export const ActivityDetails = () => {
                 Responsible person
               </Typography>
               {responsible_people?.map(
-                ({ user: { name: person_name, email } }, index) => (
+                (
+                  {
+                    user: {
+                      name: person_name,
+                      assignedArea: { name },
+                    },
+                  },
+                  index
+                ) => (
                   <Box
                     key={index}
                     display={"flex"}
@@ -190,7 +198,7 @@ export const ActivityDetails = () => {
                         level={titleStyles.level}
                         fontWeight={titleStyles.fontWeight}
                       >
-                        {email}
+                        {name}
                       </Typography>
                     </Box>
                   </Box>

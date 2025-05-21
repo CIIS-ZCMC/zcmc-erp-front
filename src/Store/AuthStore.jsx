@@ -47,6 +47,10 @@ const useAuthStore = create((set, get) => ({
         })
         .catch((err) => set({ error: err.cause }));
     },
+
+    getUserArea: () => {
+      return get().user.assignedArea.name;
+    },
   },
 }));
 
