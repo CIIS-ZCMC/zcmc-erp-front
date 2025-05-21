@@ -165,9 +165,16 @@ const useResourceHook = create(
       },
 
       findResourcesByActivityID: (activityId) => {
-        console.log("IS ARRAY ", get().resources);
-        return get().resources.filter((item) => item.parentId == activityId);
-      },
+        return get()
+          .resources
+          .filter((item) => item.parentId === activityId)
+          .map((item) => ({
+            item_id: item.id,
+            purchase_type_id: item.purchaseTypeId?.id || item.purchaseTypeId, // handles both object and raw id
+            quantity: item.quantity,
+            expense_class: item.expenseClass,
+          }));
+      }
     }),
 
     {

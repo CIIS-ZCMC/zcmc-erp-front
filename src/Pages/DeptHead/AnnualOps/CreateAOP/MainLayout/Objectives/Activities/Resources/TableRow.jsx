@@ -41,7 +41,7 @@ const TableRow = ({
 
         if (key === "quantity") {
           updatedItem.totalCost = value * item.individualPrice;
-          // updateResourceField(id, key, value)
+          updateResourceField(id, key, value)
         };
 
         return {
@@ -55,7 +55,6 @@ const TableRow = ({
   // useEffect(() => {
   //   console.log(localResources)
   // }, [localResources])
-
 
   const expenseClassOptions = [
     { id: 1, label: 'MOOE', value: 'MOOE' },
@@ -113,7 +112,9 @@ const TableRow = ({
                 </td>
 
                 <td onClick={() => handleOnRowClick(id)}>
-                  <Typography>{quantity * individualPrice || "-"}</Typography>
+                  <Typography>
+                    {Number(quantity * individualPrice).toFixed(2) || "-"}
+                  </Typography>
                 </td>
 
                 <td onClick={() => handleOnRowClick(id)}>

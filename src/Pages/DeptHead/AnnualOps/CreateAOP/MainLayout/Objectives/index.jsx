@@ -66,7 +66,8 @@ const Objectives = () => {
       const activitiesWithResourceAndResponsiblePeople = activities.map(
         (act) => {
           const { parentId, id, startMonth, endMonth, target, isGadRelated, ...actData } = act
-          //   const resources = findResourcesByActivityID(act.uuid);
+          console.log(act)
+          const resources = findResourcesByActivityID(act.id);
           const responsible_people = findResponsiblePeopleByActivityID(act.id);
 
           return {
@@ -80,7 +81,7 @@ const Objectives = () => {
               third_quarter: target.thirdQuarter,
               fourth_quarter: target.fourthQuarter,
             },
-            // resources: resources,
+            resources: resources,
             responsible_people: responsible_people,
           };
         }
@@ -100,7 +101,6 @@ const Objectives = () => {
   const handleSubmit = () => {
     const aopPayload = buildAOP();
     console.log("Submitting payload:", aopPayload);
-
     // await axios.post('/api/aop/submit', { application_objectives: payload });
   };
 
