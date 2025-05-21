@@ -83,6 +83,19 @@ const usePPMPHook = create((set) => ({
       failed: callback,
     });
   },
+
+  search: async (params, callBack) => {
+    read({
+      url: `${PATH}-item-search`,
+      params: { search: params },
+      failed: callBack,
+      success: (res) => {
+        const { status, message, data } = res;
+        set({ items: data.data });
+        callBack(status, message, data.data);
+      },
+    });
+  },
 }));
 
 export default usePPMPHook;
