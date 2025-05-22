@@ -13,6 +13,7 @@ import React from "react";
 import { MdInfoOutline } from "react-icons/md";
 import useLibrariesHook from "../../../Hooks/Libraries/LibHooks";
 import useModalHook from "../../../Hooks/ModalHook";
+import useCategoryHooks from "../../../Hooks/Libraries/LibCategoryHooks";
 
 export const CategoryModalContent = () => {
   const {
@@ -24,7 +25,7 @@ export const CategoryModalContent = () => {
     type,
     setLoading,
     selectedData,
-  } = useLibrariesHook();
+  } = useCategoryHooks();
   const { openModal, setOpenModal, setSuccessDialog } = useModalHook();
 
   const MetaData = {

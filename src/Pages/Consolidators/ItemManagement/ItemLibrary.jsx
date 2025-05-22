@@ -28,8 +28,20 @@ import useModalHook from "../../../Hooks/ModalHook";
 import useLibrariesHook from "../../../Hooks/Libraries/LibHooks";
 import IndicatorDialog from "../Modals/IndicatorDialog";
 import RenderDialog from "../Modals/RenderDialog";
+import useClassificationHooks from "../../../Hooks/Libraries/LibClassificationHooks";
+import useCategoryHooks from "../../../Hooks/Libraries/LibCategoryHooks";
+import useVariantHooks from "../../../Hooks/Libraries/LibVarianHooks";
 const ItemLibrary = () => {
-  const { setType } = useLibrariesHook();
+  const { setType: setTypeclassi } = useClassificationHooks();
+  const { setType: setTypecateg } = useCategoryHooks();
+  const { setType: setTypevariant } = useVariantHooks();
+
+  // Unified setter
+  const setAllTypes = (type) => {
+    setTypeclassi(type);
+    setTypecateg(type);
+    setTypevariant(type);
+  };
   const { openModal, setOpenModal, successDialog, setSuccessDialog } =
     useModalHook();
   const [isOpen, setIsOpen] = useState(false);
@@ -73,7 +85,7 @@ const ItemLibrary = () => {
                 variant={"solid"}
                 size={"sm"}
                 onClick={() => {
-                  setType("create");
+                  setAllTypes("create");
                   setOpenModal(true, false, true);
                 }}
               />

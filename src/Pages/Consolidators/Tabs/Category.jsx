@@ -1,12 +1,12 @@
 import React, { Fragment } from "react";
-import { classificationCols, objHeaders } from "../../../Data/Columns";
+import { classificationCols } from "../../../Data/Columns";
 import ScrollableTableComponent from "../../../Components/Common/Table/ScrollableTableComponent";
 import { Typography } from "@mui/joy";
 import useModalHook from "../../../Hooks/ModalHook";
-import useLibrariesHook from "../../../Hooks/Libraries/LibHooks";
+import useCategoryHooks from "../../../Hooks/Libraries/LibCategoryHooks";
 
 export const Category = () => {
-  const { setType, setSelectedData } = useLibrariesHook();
+  const { setType, setSelectedData } = useCategoryHooks();
   const { setOpenModal } = useModalHook();
   const setUpdateType = (data) => {
     setType("update");
