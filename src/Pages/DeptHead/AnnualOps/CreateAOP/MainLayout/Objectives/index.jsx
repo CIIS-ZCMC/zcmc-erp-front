@@ -17,6 +17,7 @@ import useFunctionTypeHook from "../../../../../../Hooks/FunctionTypeHook";
 import useAOPObjectivesHooks from "../../../../../../Hooks/AOP/AOPObjectivesHook";
 import useObjectivesHook from "../../../../../../Hooks/ObjectivesHook";
 import useActivitiesHook from "../../../../../../Hooks/ActivitiesHook";
+import useModalHook from "../../../../../../Hooks/ModalHook";
 
 //data related
 import { AOP_CONSTANTS } from "../../../../../../Data/constants";
@@ -25,20 +26,22 @@ import useResourceHook from "../../../../../../Hooks/ResourceHook";
 import useResponsiblePeopleHook from "../../../../../../Hooks/ResponsiblePeopleHook";
 
 const Objectives = () => {
-  const { create, deleteObjective } = useAOPObjectivesHooks();
+  const { aopObjectives, create, deleteObjective } = useAOPObjectivesHooks();
   const { function_types, getFunctionType } = useFunctionTypeHook();
   const { objectives, addObjective, updateObjectiveField } =
     useObjectivesHook();
   const { findActivitiesByObjectiveID, activities } = useActivitiesHook();
-  const { findResponsiblePeopleByActivityID } = useResponsiblePeopleHook();
+  const { responsible_people, findResponsiblePeopleByActivityID } = useResponsiblePeopleHook();
   const { resources, findResourcesByActivityID } = useResourceHook();
+  const { setAlertDialog } = useModalHook();
 
   const navigate = useNavigate();
 
   // local states
   const [editRowId, setEditRowId] = useState(null);
   const [isLoading, setisLoading] = useState(false);
-  const [isModalOpen, setIsModalOpen] = useState(false);
+  const [openSubmitModal, setOpenSubmitModal] = useState(false);
+  const [openSaveMissionModal, setOpenSaveMissionModal] = useState(false)
 
   const [mission, setMission] = useState("");
 
@@ -47,9 +50,17 @@ const Objectives = () => {
     activities.filter((activity) => activity.parentId === objective.id)
   );
 
+  const savedMission = localStorage.getItem("mission");
+
   useEffect(() => {
-    console.log(resources)
-  }, [])
+    if (savedMission) {
+      setMission(JSON.parse(savedMission));
+    }
+  }, []);
+
+  useEffect(() => {
+    console.log(aopObjectives)
+  }, [aopObjectives])
 
   useEffect(() => {
     const params = { with_sub_data: 1 };
@@ -69,6 +80,13 @@ const Objectives = () => {
       addObjective();
     }
   }, [objectives, addObjective]);
+
+
+
+
+  useEffect(() => {
+    console.log(resources)
+  }, [])
 
   function buildAOP() {
     const objectiveData = objectives.map((item) => {
@@ -117,7 +135,6 @@ const Objectives = () => {
   // handle submit aop objective
   const handleSubmit = () => {
     const aopPayload = buildAOP();
-    console.log("Submitting payload:", aopPayload);
 
     const payload = {
       mission: mission,
@@ -126,42 +143,58 @@ const Objectives = () => {
     }
 
     create(payload, (status, message) => {
-      if (!(status >= 200 && status < 300)) {
-        // Do appropriate action to notify user
-        return;
+
+      // console.log(message)
+
+      let data = {}
+
+      if (!(status === 200)) {
+        data = {
+          status: 200,
+          title: 'AOP created successfully!',
+          description: ''
+        };
+        setOpenSubmitModal(false)
+      } else {
+        data = {
+          status: !200,
+          title: message,
+          description: message,
+        }
       }
 
-      // Success toast
+      setAlertDialog(data);
     });
 
-    console.log('final payload', payload)
-  };
-
-
-  const handleOpenDialog = () => {
-    setIsModalOpen(true);
-  };
-
-  const handleCloseDialog = () => {
-    setIsModalOpen(false);
-    // setMission('')
+    // console.log('final payload', payload)
   };
 
   // handle save mission
   const handleSaveMission = () => {
-    alert('saving...')
-    handleCloseDialog()
+    let data = {}
+
+    // alert("saving...");
+    data = {
+      status: 200,
+      title: 'Mission created successfully!',
+      description: ''
+    }
+    setOpenSaveMissionModal(false)
+    setAlertDialog(data);
 
     // Save to local storage
     localStorage.setItem('mission', JSON.stringify(mission));
-
-    alert("saving...");
-    handleCloseDialog();
-    // setMission('')
-    //set to local state
   };
 
-  // const savedMission = JSON.parse(localStorage.getItem('mission'))
+  const handleOpenDialog = () => {
+    setOpenSaveMissionModal(true);
+  };
+
+  const handleCloseDialog = () => {
+    setOpenSaveMissionModal(false);
+    // setMission('')
+  };
+
 
   return (
     <Fragment>
@@ -220,14 +253,14 @@ const Objectives = () => {
             label={"Submit AOP"}
             size={"md"}
             variant={"solid"}
-            disabled={false}
+            disabled={!mission || resources.length === 0 || responsible_people.length === 0}
             onClick={() => handleSubmit()}
           />
         </Stack>
       </ContainerComponent>
 
       <ModalComponent
-        isOpen={isModalOpen}
+        isOpen={openSaveMissionModal}
         handleClose={handleCloseDialog}
         title={"Mission"}
         description={`Define the core purpose and primary focus of the organization's operational efforts for the upcoming fiscal year. This statement should guide the development and execution of the annual plan.`}

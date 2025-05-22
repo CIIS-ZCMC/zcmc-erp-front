@@ -5,12 +5,6 @@ import { API } from "../../Data/constants";
 const useAOPObjectivesHooks = create((set, get) => ({
   aopObjectives: [],
 
-  // Delete an entire objective
-  deleteObjective: (id) => {
-    set((state) => ({
-      aopObjectives: state.aopObjectives.filter((row) => console.log(row)),
-    }));
-  },
   create: (form, callBack) => {
     post({
       url: API.AOP_APPLICATIONS_STORE,
@@ -19,9 +13,18 @@ const useAOPObjectivesHooks = create((set, get) => ({
       success: (res) => {
         set({ aopObjectives: res.data });
         callBack(200, "Success");
+        aopObjectives
       },
     });
   },
+
+  // Delete an entire objective
+  // deleteObjective: (id, objectives) => {
+  //   set((state) => ({
+  //     objectives: state.objectives.filter((row) => console.log(row)),
+  //   }));
+  // },
+
 }));
 
 export default useAOPObjectivesHooks;

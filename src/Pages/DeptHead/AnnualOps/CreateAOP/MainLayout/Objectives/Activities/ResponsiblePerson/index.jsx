@@ -2,7 +2,6 @@ import React, { Fragment, useState, useEffect, act } from "react";
 import { Stack, Grid } from "@mui/joy";
 import { useNavigate, useLocation } from "react-router-dom";
 
-import useAOPObjectivesHooks from "../../../../../../../../Hooks/AOP/AOPObjectivesHook";
 import useResponsiblePeopleHook from "../../../../../../../../Hooks/ResponsiblePeopleHook";
 
 //Custom Components
@@ -69,13 +68,14 @@ const ResponsiblePerson = () => {
     alert('saving responsible person');
     // handleDialogOpen()
 
-    navigate(`/aop-create/`);
+    // navigate(`/aop-create/`);
   };
 
   const handleCancel = (activityId) => {
     resetValues(activityId);
     navigate(`/aop-create/activities/${rowId}`);
   };
+
   // console.log(responsible_persons)
 
   return (
