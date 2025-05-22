@@ -1,5 +1,5 @@
 import React, { Fragment } from "react";
-import { classificationCols, objHeaders } from "../../../Data/Columns";
+// import { classificationCols, objHeaders } from "../../../Data/Columns";
 import ScrollableTableComponent from "../../../Components/Common/Table/ScrollableTableComponent";
 import { Typography } from "@mui/joy";
 import useModalHook from "../../../Hooks/ModalHook";

@@ -1,5 +1,5 @@
 import React, { Fragment } from "react";
-import { objHeaders, variantCols } from "../../../Data/Columns";
+// import { objHeaders, variantCols } from "../../../Data/Columns";
 import ScrollableTableComponent from "../../../Components/Common/Table/ScrollableTableComponent";
 import useModalHook from "../../../Hooks/ModalHook";
 import useLibrariesHook from "../../../Hooks/Libraries/LibHooks";
@@ -143,7 +143,7 @@ export const Variant = () => {
     <Fragment>
       <ScrollableTableComponent
         data={data}
-        columns={variantCols(setUpdateType, setDeleteType)}
+        // columns={variantCols(setUpdateType, setDeleteType)}
         pageSize={5}
         stripe="even"
         bordered
