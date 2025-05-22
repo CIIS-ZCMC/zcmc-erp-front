@@ -127,7 +127,7 @@ function Objectives({ props }) {
   const handleOpenDel = (row) => {
     const data = {
       status: "error",
-      title: ` Are you sure you want to delete objective ${row?.objective?.code}`,
+      title: ` Are you sure you want to delete objective ${row?.objective?.code}?`,
       description:
         "The selected objective will be removed from the table. Please input authorization pin to proceed",
     };
