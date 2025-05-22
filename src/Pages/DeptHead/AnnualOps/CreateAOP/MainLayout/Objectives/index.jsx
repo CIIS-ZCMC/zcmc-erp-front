@@ -102,7 +102,7 @@ const Objectives = () => {
   }
 
   // handle  
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     const aopPayload = buildAOP();
     console.log("Submitting payload:", aopPayload);
 
@@ -114,7 +114,7 @@ const Objectives = () => {
 
     console.log('final payload', payload)
 
-    // await axios.post('/api/aop/submit', { application_objectives: payload });
+    await axios.post('', { application_objectives: payload });
   };
 
   const handleOpenDialog = () => {

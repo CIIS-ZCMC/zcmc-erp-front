@@ -67,10 +67,6 @@ export const AOP_CONSTANTS = {
   MODAL_RESOURCE_SUBHEADING:
     "Select a request status and reasons (if returned) to continue. You may add remarks if necessary.",
 
-
-
-
-
 };
 
 export const PPMP_CONSTANTS = {
@@ -113,6 +109,7 @@ export const approvalActions = [
 
 export const API = {
   AOP_APPLICATIONS: "aop-applications",
+  AOP_APPLICATIONS_STORE: 'aop-application-store',
   TYPE_OF_FUNCTIONS: "type-of-functions",
   TYPE_OF_PURCHASE: "purchase-types",
 
