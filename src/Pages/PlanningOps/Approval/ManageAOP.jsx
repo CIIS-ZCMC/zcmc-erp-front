@@ -72,7 +72,7 @@ export default function ManageAOP() {
 
     const fetch = () => {
       if (!isDivisionHead) {
-        getCommentsByApplication(AOP_APPLICATION_ID, () => {});
+        getCommentsByApplication(AOP_APPLICATION_ID, () => { });
       }
 
       getRemarksByApplication(AOP_APPLICATION_ID, () => {
@@ -131,9 +131,9 @@ export default function ManageAOP() {
     if (activityId == defaultActivityId) return;
 
     Promise.all([
-      getActivityById(defaultActivityId, () => {}),
-      getCommentsByActivity(defaultActivityId, () => {}),
-      getCommentsByApplication(AOP_APPLICATION_ID, () => {}),
+      getActivityById(defaultActivityId, () => { }),
+      getCommentsByActivity(defaultActivityId, () => { }),
+      getCommentsByApplication(AOP_APPLICATION_ID, () => { }),
     ]).catch((error) => {
       console.error("Error fetching data:", error);
     });

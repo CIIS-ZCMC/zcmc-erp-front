@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { post } from "../../Services/RequestMethods";
+import { API } from "../../Data/constants";
 
 const useAOPObjectivesHooks = create((set, get) => ({
   aopObjectives: [],
@@ -12,7 +13,7 @@ const useAOPObjectivesHooks = create((set, get) => ({
   },
   create: (form, callBack) => {
     post({
-      url: "aop-objectives-store",
+      url: API.AOP_APPLICATIONS_STORE,
       form: form,
       failed: callBack,
       success: (res) => {

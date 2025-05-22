@@ -33,7 +33,7 @@ const ResponsiblePerson = () => {
     return item.activityId === activityId;
   });
 
-  const [isDialogOpen, setIsDialogOpen] = useState(true);
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
 
   // useEffect(() => {
   //   console.log(location.state)
@@ -66,9 +66,10 @@ const ResponsiblePerson = () => {
     }
 
     setAssignmentStatus(activityId, true);
-    handleDialogOpen()
+    alert('saving responsible person');
+    // handleDialogOpen()
 
-    // navigate(`/aop-create/activities/${rowId}`);
+    navigate(`/aop-create/`);
   };
 
   const handleCancel = (activityId) => {

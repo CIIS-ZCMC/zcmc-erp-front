@@ -48,6 +48,10 @@ const Objectives = () => {
   );
 
   useEffect(() => {
+    console.log(resources)
+  }, [])
+
+  useEffect(() => {
     const params = { with_sub_data: 1 };
     getFunctionType(params, (status, message) => {
       // console.log(status)
@@ -110,21 +114,29 @@ const Objectives = () => {
     return objectiveData;
   }
 
-  // handle
-  const handleSubmit = async () => {
+  // handle submit aop objective
+  const handleSubmit = () => {
     const aopPayload = buildAOP();
     console.log("Submitting payload:", aopPayload);
 
     const payload = {
       mission: mission,
-      is_discussed: true,
+      has_discussed: true,
       application_objectives: aopPayload
     }
 
-    console.log('final payload', payload)
+    create(payload, (status, message) => {
+      if (!(status >= 200 && status < 300)) {
+        // Do appropriate action to notify user
+        return;
+      }
 
-    await axios.post('', { application_objectives: payload });
+      // Success toast
+    });
+
+    console.log('final payload', payload)
   };
+
 
   const handleOpenDialog = () => {
     setIsModalOpen(true);
@@ -135,6 +147,7 @@ const Objectives = () => {
     // setMission('')
   };
 
+  // handle save mission
   const handleSaveMission = () => {
     alert('saving...')
     handleCloseDialog()
