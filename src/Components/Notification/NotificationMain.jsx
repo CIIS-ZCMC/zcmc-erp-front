@@ -1,4 +1,4 @@
-import React, { Fragment, useMemo, useState } from "react";
+import React, { Fragment, useEffect, useMemo, useState } from "react";
 import PropTypes from "prop-types";
 import {
   Badge,
@@ -14,7 +14,10 @@ import TabComponent from "../Common/TabComponent";
 import NotificationItemList from "./NotificationItemList";
 import NoNotification from "./NoNotification";
 import ContainerComponent from "../Common/ContainerComponent";
-import { useNotifications } from "../../Hooks/NotificationsHook";
+import {
+  useNotificationEvents,
+  useNotifications,
+} from "../../Hooks/NotificationsHook";
 import { groupByDate } from "../../Utils/GroupData";
 import moment from "moment";
 import ButtonComponent from "../Common/ButtonComponent";
@@ -47,6 +50,13 @@ const NotificationMain = ({ unread = 2 }) => {
   const handleClickNotif = () => {
     setIsOpen((prev) => !prev);
   };
+
+  useNotificationEvents(); // Start listening for new notifications via socket
+
+  useEffect(() => {
+    console.log("Updated notifications:", notifications);
+  }, [notifications]);
+
   return (
     <Fragment>
       <Box
