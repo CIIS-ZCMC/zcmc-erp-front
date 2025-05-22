@@ -290,6 +290,11 @@ function PPMPItems(props) {
       const wrap = (fn) => new Promise((resolve) => fn(() => resolve()));
 
       try {
+        const localData = localStorage.getItem("ppmp-items");
+        if (!localData) {
+          wrap(getPPMPItems);
+        }
+
         // Step 3: Fetch all other needed data
         await Promise.all([
           wrap(getActivities),
@@ -299,7 +304,6 @@ function PPMPItems(props) {
           wrap(getProcModes),
           wrap(getItems),
           wrap(getVariants),
-          wrap(getPPMPItems),
         ]);
       } catch (err) {
         console.error("Fetching error:", err);
