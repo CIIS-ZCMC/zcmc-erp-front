@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { post, read, remove } from "../Services/RequestMethods";
+import { post, read, remove, update } from "../Services/RequestMethods";
 
 const PATH = "objective";
 
@@ -44,7 +44,7 @@ const useManageObjHook = create((set) => ({
   },
 
   updateObjective: async (body, callback) => {
-    post({
+    update({
       url: `${PATH}s`,
       form: body,
       success: (response) => {

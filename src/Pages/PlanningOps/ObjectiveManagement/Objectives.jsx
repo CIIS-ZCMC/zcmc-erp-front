@@ -195,7 +195,7 @@ function Objectives({ props }) {
     // }
 
     await updateObjective(formData, (status, message, data) => {
-      if (status === 201) {
+      if (status === 200) {
         const data = {
           status: "success",
           title: message,
@@ -241,7 +241,9 @@ function Objectives({ props }) {
           title: message,
           description: message,
         };
+
         setOpenCreate(false);
+        fetchAll();
         setNewObj({
           function: null,
           objective: "",
