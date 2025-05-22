@@ -2,7 +2,7 @@ import { create } from "zustand";
 
 const useModalHook = create((set, get) => ({
   modalState: { isOpen: false },
-  successDialog:true,
+  successDialog: true,
   setSuccessDialog: (state) => set({ successDialog: state }),
   openModal: {
     isNew: false,
@@ -35,7 +35,7 @@ const useModalHook = create((set, get) => ({
     description: "This is subtitle.",
   },
 
-  setOpenModal: (isNew, isDelete, Open ) => {
+  setOpenModal: (isNew, isDelete, Open) => {
     set({
       openModal: {
         isNew: isNew,
