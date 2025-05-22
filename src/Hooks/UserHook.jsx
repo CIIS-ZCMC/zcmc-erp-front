@@ -24,8 +24,10 @@ const useUserHook = create((set) => ({
 export const useUserTypes = () => {
   const user = useUserHook((state) => state.user);
   return {
-    isDivisionHead: user.position === "division",
+    isDivisionHead: true,
+    // user.position === "division",
     isPlanning: user.position === "planning",
+    isDepartmentHead: user.position === "department-head",
   };
 };
 

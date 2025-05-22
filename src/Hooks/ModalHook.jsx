@@ -82,6 +82,8 @@ const useModalHook = create((set, get) => ({
       pinHelperText,
     } = data ?? null;
 
+    get().closeConfirmation();
+
     try {
       set(() => ({
         confirmationModalState: {

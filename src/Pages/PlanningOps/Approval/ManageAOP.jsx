@@ -24,13 +24,14 @@ import { CommentsDetails } from "./Contents/CommentsDetails";
 import { useUserTypes } from "../../../Hooks/UserHook";
 import { FeedbackContent } from "./Contents/FeedbackContent";
 import { useApprovalActions } from "../../../Hooks/AOP/AOPApprovalHook";
+import { useAuthActions } from "../../../Store/AuthStore";
 
 export default function ManageAOP() {
   const { id } = useParams();
   const { isDivisionHead } = useUserTypes();
   const AOPApplication = useAOPApplication();
 
-  const { status: applicationStatus = null } = AOPApplication;
+  const { status: applicationStatus } = AOPApplication || {};
 
   // AOP HOOK
   const AOPApplicationObjectives =
@@ -56,6 +57,8 @@ export default function ManageAOP() {
   // const [activityLoading, setActivityLoading] = useState(false);
   const [action, setAction] = useState("approved");
   const [isRemarksLoading, setIsRemarksLoading] = useState(true);
+  const [btnLoading, setBtnLoading] = useState(false);
+  const [remarks, setRemarks] = useState("");
 
   const AREA_CODE = localStorageGetter("aop_application_area_code");
   const FISCAL_YEAR = 2026;
@@ -64,7 +67,13 @@ export default function ManageAOP() {
   const { setAlertDialog } = useModalHook();
   const [openProcessModal, setOpenProcessModal] = useState(false);
   const [openFeedbackModal, setOpenFeedbackModal] = useState(false);
+  const { getUserArea } = useAuthActions();
 
+  const disabledProcessRequest = () => {
+    return (
+      applicationStatus === "approved" && getUserArea() === "Planning Unit"
+    );
+  };
   // FUNCTIONS
   const handleViewFeedback = () => {
     setOpenFeedbackModal(true);
@@ -95,17 +104,19 @@ export default function ManageAOP() {
 
   // PROCESS AOP
   const { processAOP } = useApprovalActions();
-  const [pin, setPin] = useState(null);
+  const [pin, setPin] = useState("");
 
   const handleProcessAOP = () => {
+    setBtnLoading(false);
+
     const form = {
       aop_application_id: AOP_APPLICATION_ID,
       status: action,
-      remarks: `This is a sample remarks for APPLICATION: ${AOP_APPLICATION_ID}`,
+      remarks: remarks,
       auth_pin: pin,
     };
 
-    processAOP(form, (status, message) => {
+    processAOP(form, (status) => {
       let data = {};
       if (status === 200) {
         data = {
@@ -118,8 +129,9 @@ export default function ManageAOP() {
       } else {
         data = {
           status: "error",
-          title: message,
-          description: message,
+          title: "Failed to update status",
+          description:
+            "An error occurred while updating the status of the AOP request. Please check your authorization PIN and try again. If the problem persists, contact the system administrator.",
         };
       }
 
@@ -196,7 +208,7 @@ export default function ManageAOP() {
                     />
                     <ButtonComponent
                       label={"Process request"}
-                      disabled={applicationStatus === "approved"}
+                      disabled={disabledProcessRequest}
                       onClick={handleProcessRequest}
                     />
                   </Stack>
@@ -234,6 +246,8 @@ export default function ManageAOP() {
         leftButtonLabel="Back to request"
         rightButtonLabel="Confirm and save"
         rightButtonAction={handleProcessAOP}
+        isLoading={btnLoading}
+        rightButtonDisabled={!pin || !action}
         maxWidth={500}
         content={
           <Stack gap={2}>
@@ -250,6 +264,8 @@ export default function ManageAOP() {
                 <TextareaComponent
                   minRows={2}
                   label={"Remarks"}
+                  setValue={setRemarks}
+                  value={remarks}
                   maxRows={200}
                   placeholder={"Enter your remarks here"}
                 />
