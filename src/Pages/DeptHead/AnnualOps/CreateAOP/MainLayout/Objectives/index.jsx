@@ -143,9 +143,7 @@ const Objectives = () => {
     }
 
     create(payload, (status, message) => {
-
       // console.log(message)
-
       let data = {}
 
       if (!(status === 200)) {
@@ -165,6 +163,8 @@ const Objectives = () => {
 
       setAlertDialog(data);
     });
+
+    setMission('');
 
     // console.log('final payload', payload)
   };
