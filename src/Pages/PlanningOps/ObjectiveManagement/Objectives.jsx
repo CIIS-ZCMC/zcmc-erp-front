@@ -11,6 +11,7 @@ import {
   Button,
   Divider,
   IconButton,
+  Input,
   Link,
   Stack,
   Textarea,
@@ -27,17 +28,28 @@ import AlertDialogComponent from "../../../Components/Common/Dialog/AlertDialogC
 import PageLoader from "../../../Components/Loading/PageLoader";
 import ConfirmationModalComponent from "../../../Components/Common/Dialog/ConfirmationModalComponent";
 import useFunctionTypeHook from "../../../Hooks/FunctionTypeHook";
+import ServerTableComponent from "../../../Components/Common/Table/ServerTableComponent";
 
 function Objectives({ props }) {
-  const { objectives, getObjectives, removeObj, postObjective } =
-    useManageObjHook();
+  const {
+    objectives,
+    pagination,
+    navLinks,
+    getObjectives,
+    removeObj,
+    postObjective,
+    updateObjective,
+  } = useManageObjHook();
   const { function_types, getFunctionType } = useFunctionTypeHook();
   const { setAlertDialog, setConfirmationModal, closeConfirmation } =
     useModalHook();
+  const [searchTerm, setSearchTerm] = useState("");
   const [openCreate, setOpenCreate] = useState(false);
+  const [openUpdate, setOpenUpdate] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isView, setIsView] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
+  const [currentPage, setCurrentPage] = useState(1);
   const [obj, setObj] = useState({});
   const [objIndicators, setObjIndicators] = useState([]);
   const [pin, setPin] = useState(null);
@@ -48,6 +60,10 @@ function Objectives({ props }) {
     indicators: ["", "", ""],
   });
   const indicatorsContainerRef = useRef(null);
+
+  //PAGINATION
+  // Extract these for cleaner access
+  const totalPages = pagination?.last_page || 1;
 
   const addIndicator = () => {
     setNewObj((prev) => {
@@ -96,8 +112,16 @@ function Objectives({ props }) {
     setCurrentStep(1);
   };
 
-  const handleUpdate = (row) => {
-    console.log("Update clicked:", row);
+  const handleOpenUpdate = (row) => {
+    console.log(row);
+    setCurrentStep(1);
+    setSelected(row);
+    setNewObj({
+      function: row.function,
+      objective: row.objective.description,
+      indicators: row.success_indicator.map((item) => item.description),
+    });
+    setOpenUpdate(true);
   };
 
   const handleOpenDel = (row) => {
@@ -144,7 +168,7 @@ function Objectives({ props }) {
 
     try {
       await Promise.all([
-        wrap(getObjectives),
+        wrap(getObjectives(currentPage)),
         wrap((done) => getFunctionType({ mode: "selection" }, done)),
       ]);
     } catch (err) {
@@ -157,9 +181,51 @@ function Objectives({ props }) {
     setObjIndicators(row.success_indicator);
     setIsView(true);
   };
+  //UPDATE
+
+  const update = async () => {
+    const formData = new FormData();
+    formData.append("id", selected.id);
+    formData.append("function", JSON.stringify(newObj.function));
+    formData.append("objective", newObj.objective);
+    formData.append("indicators", JSON.stringify(newObj.indicators));
+
+    // for (let [key, value] of formData.entries()) {
+    //   console.log(`${key}: ${value}`);
+    // }
+
+    await updateObjective(formData, (status, message, data) => {
+      if (status === 201) {
+        const data = {
+          status: "success",
+          title: message,
+          description: message,
+        };
+
+        setOpenUpdate(false);
+        setNewObj({
+          function: null,
+          objective: "",
+          indicators: ["", "", ""],
+        });
+        setAlertDialog(data);
+      } else {
+        const data = {
+          status: "error",
+          title: message,
+          description: message,
+        };
+
+        setAlertDialog(data);
+      }
+    });
+  };
 
   const submit = async () => {
     const formData = new FormData();
+    if (openUpdate) {
+      formData.append("id", selected.id);
+    }
     formData.append("function", JSON.stringify(newObj.function));
     formData.append("objective", newObj.objective);
     formData.append("indicators", JSON.stringify(newObj.indicators));
@@ -175,7 +241,12 @@ function Objectives({ props }) {
           title: message,
           description: message,
         };
-        closeConfirmation();
+        setOpenCreate(false);
+        setNewObj({
+          function: null,
+          objective: "",
+          indicators: ["", "", ""],
+        });
         setAlertDialog(data);
       } else {
         const data = {
@@ -191,7 +262,7 @@ function Objectives({ props }) {
 
   useEffect(() => {
     fetchAll();
-  }, []);
+  }, [currentPage]);
   return (
     <Fragment>
       <PageTitle
@@ -208,32 +279,55 @@ function Objectives({ props }) {
           <ButtonComponent
             label="Create new"
             color="primary"
-            onClick={() => setOpenCreate(true)}
+            onClick={() => {
+              setCurrentStep(1);
+              setOpenCreate(true);
+            }}
           />
         }
         isTable={true}
         sx={{ mt: 3 }}
       >
-        {console.log(objectives)}
-        <ScrollableTableComponent
+        <Stack gap={1} mb={2}>
+          <InputComponent
+            label="Search"
+            width="auto"
+            value={searchTerm}
+            setValue={setSearchTerm}
+          />
+        </Stack>
+        <ServerTableComponent
           data={objectives}
           columns={objHeaders({
-            onUpdate: handleUpdate,
+            onUpdate: handleOpenUpdate,
             onDelete: handleOpenDel,
             onViewIndicators: handleViewIndicators,
           })}
-          pageSize={5}
+          pageSize={pagination?.per_page}
+          currentPage={currentPage}
+          totalPages={totalPages}
+          onPageChange={setCurrentPage}
+          paginationMeta={pagination}
           stripe="even"
+          withCount={pagination?.total}
+          fieldsToSearch={["title", "description"]}
+          search={""}
           bordered
           hoverRow
-          isLoading={false}
           stickLast
         />
       </ContainerComponent>
       <ModalComponent
         isOpen={openCreate}
         hasActionButtons
-        handleClose={() => setOpenCreate(false)}
+        handleClose={() => {
+          setNewObj({
+            function: null,
+            objective: "",
+            indicators: ["", "", ""],
+          });
+          setOpenCreate(false);
+        }}
         title={"Create a new objective"}
         description={"Add a new function, objective and its success indicators"}
         leftButtonLabel={currentStep === 1 ? "Cancel" : "Back to previous"}
@@ -342,8 +436,136 @@ function Objectives({ props }) {
           </Fragment>
         }
       />
+
+      {/* //UPDATE MODAL */}
       <ModalComponent
-        title={`Showing ${obj.code}'s Success Indicators`}
+        isOpen={openUpdate}
+        hasActionButtons
+        handleClose={() => {
+          setNewObj({
+            function: null,
+            objective: "",
+            indicators: ["", "", ""],
+          });
+          setOpenUpdate(false);
+        }}
+        title={
+          <>
+            Update objective{" "}
+            <span style={{ color: "#C98503" }}>
+              {selected?.objective?.code}
+            </span>
+          </>
+        }
+        description={"Keep the objective up-to-date."}
+        leftButtonLabel={currentStep === 1 ? "Cancel" : "Back to previous"}
+        leftButtonAction={currentStep === 1 ? handleClose : handleBack}
+        rightButtonLabel={currentStep === 1 ? "Next step" : "Confirm and save"}
+        rightButtonAction={currentStep === 2 ? update : handleNext}
+        content={
+          <Fragment>
+            {currentStep === 1 && (
+              <Fragment>
+                <Stack gap={2}>
+                  <AutocompleteComponent
+                    label={"Select a function"}
+                    options={function_types}
+                    value={newObj.function}
+                    getOptionLabel={(option) => option?.type || ""}
+                    handleSelect={(val) =>
+                      setNewObj((prev) => ({
+                        ...prev,
+                        function: val,
+                      }))
+                    }
+                  />
+
+                  <TextareaComponent
+                    label={"Objective"}
+                    value={newObj.objective}
+                    onChange={(e) =>
+                      setNewObj((prev) => ({
+                        ...prev,
+                        objective: e.target.value,
+                      }))
+                    }
+                  />
+                </Stack>
+              </Fragment>
+            )}
+            {currentStep === 2 && (
+              <Fragment>
+                <Box
+                  overflow="auto"
+                  maxHeight={300}
+                  ref={indicatorsContainerRef}
+                >
+                  {newObj.indicators.map((indicator, index) => (
+                    <Box
+                      key={index}
+                      sx={{ my: 2, padding: 1 }}
+                      bgcolor={"#F9F9F9"}
+                    >
+                      <Stack
+                        direction="row"
+                        sx={{
+                          justifyContent: "space-between",
+                          alignItems: "flex-end",
+                        }}
+                      >
+                        <Typography sx={{ fontSize: 14, fontWeight: 500 }}>
+                          Success indicator {index + 1}
+                        </Typography>
+                        {newObj.indicators.length > 1 && (
+                          <Link
+                            onClick={() => removeIndicator(index)}
+                            underline="always"
+                            color="danger"
+                            fontSize={13}
+                          >
+                            Remove
+                          </Link>
+                        )}
+                      </Stack>
+
+                      <TextareaComponent
+                        isRequired={true}
+                        value={indicator}
+                        onChange={(e) =>
+                          handleChangeIndicator(index, e.target.value)
+                        }
+                      />
+                    </Box>
+                  ))}
+                </Box>
+                <Divider sx={{ my: 1 }} />
+
+                <Link
+                  onClick={addIndicator}
+                  fontSize={14}
+                  endDecorator={<BiPlus />}
+                  underline="always"
+                  color="success"
+                >
+                  Add another
+                </Link>
+                <Divider sx={{ my: 1 }} />
+                <InputComponent
+                  type="password"
+                  label="Authorization pin"
+                  helperText={
+                    "Confirm your action by typing-in your authorization PIN."
+                  }
+                  setValue={setPin}
+                  value={pin}
+                />
+              </Fragment>
+            )}
+          </Fragment>
+        }
+      />
+      <ModalComponent
+        title={`Showing ${obj?.code}'s Success Indicators`}
         isOpen={isView}
         handleClose={() => {
           setObj({});
