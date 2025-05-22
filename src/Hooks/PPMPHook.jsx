@@ -18,6 +18,11 @@ const usePPMPHook = create((set) => ({
       success: (res) => {
         const { status, message, data } = res;
         set({ ppmp: data });
+        console.log(data);
+        localStorage.setItem(
+          "ppmp-items",
+          JSON.stringify(data.data.ppmp_items)
+        );
         callBack(status, message, data);
       },
     });
