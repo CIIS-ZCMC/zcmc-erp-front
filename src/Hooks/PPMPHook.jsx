@@ -5,11 +5,8 @@ import { post, read, remove } from "../Services/RequestMethods";
 const PATH = "ppmp";
 
 const usePPMPHook = create((set) => ({
-  ppmp: {},
   modes: [],
   activities: [],
-  ppmpLoading: false,
-  ppmpError: null,
 
   getPPMPItems: (callBack) => {
     read({
@@ -17,7 +14,10 @@ const usePPMPHook = create((set) => ({
       failed: callBack,
       success: (res) => {
         const { status, message, data } = res;
-        set({ ppmp: data });
+        localStorage.setItem(
+          "ppmp-items",
+          JSON.stringify(data.data.ppmp_items)
+        );
         callBack(status, message, data);
       },
     });

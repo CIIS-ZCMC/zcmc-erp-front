@@ -40,6 +40,7 @@ function PPMPItems(props) {
   const {
     modes,
     activities,
+    getPPMPItems,
     getProcModes,
     getActivities,
     postPPMP,
@@ -298,6 +299,7 @@ function PPMPItems(props) {
           wrap(getProcModes),
           wrap(getItems),
           wrap(getVariants),
+          wrap(getPPMPItems),
         ]);
       } catch (err) {
         console.error("Fetching error:", err);

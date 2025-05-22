@@ -21,15 +21,12 @@ const PPMPTable = memo(
     stickLast = true,
     stickSecond = true,
     stripe = true,
-    // ppmpTable,
     items = [],
-    // setPPMPTable,
     modes = [],
     categories = [],
     classifications = [],
   }) => {
-    const { ppmp, getPPMPItems, getProcModes, removeItem, search } =
-      usePPMPHook();
+    const { getPPMPItems, removeItem, search } = usePPMPHook();
     const {
       setAlertDialog,
       setConfirmationModal,
@@ -37,7 +34,10 @@ const PPMPTable = memo(
       closeAlertDialog,
     } = useModalHook();
     // const { items, getItems } = useItemsHook();
-    const [ppmpTable, setPPMPTable] = useState([]);
+
+    const [ppmpTable, setPPMPTable] = useState(
+      JSON.parse(localStorage.getItem("ppmp-items")) ?? []
+    );
     const [loading, setLoading] = useState(false);
     const [openDel, setOpenDel] = useState(false);
     const [searchVal, setSearchVal] = useState("");
@@ -74,7 +74,7 @@ const PPMPTable = memo(
 
       removeItem(params.id, formData, (status, message) => {
         if (status === 200) {
-          const updated = ppmpTable.filter((row) => row.id !== params.id);
+          const updated = ppmpTable?.filter((row) => row.id !== params.id);
 
           setPPMPTable(updated);
           localStorage.setItem("ppmp-items", JSON.stringify(updated));
@@ -99,7 +99,7 @@ const PPMPTable = memo(
     };
 
     //FILTER
-    const filteredTable = ppmpTable.filter((item) => {
+    const filteredTable = ppmpTable?.filter((item) => {
       const matchesClass =
         !selectedClass?.name || item?.classification === selectedClass?.name;
       const matchesCat =
@@ -408,44 +408,6 @@ const PPMPTable = memo(
     const lastColumnWidth = columns[columns.length - 1]?.width || "144px";
 
     //USEEFFECT
-    useEffect(() => {
-      async function fetchPPMPItemsIfNeeded() {
-        setLoading(true);
-
-        const localItems = localStorage.getItem("ppmp-items");
-
-        if (localItems) {
-          const parsed = JSON.parse(localItems);
-          if (parsed.length > 0) {
-            setPPMPTable(parsed);
-            setLoading(false);
-            return; // ✅ Stop here; no need to fetch
-          }
-        }
-
-        // No valid localStorage, fetch from API
-        try {
-          await getPPMPItems((status, message, data) => {
-            localStorage.setItem(
-              "ppmp-items",
-              JSON.stringify(data.data.ppmp_items)
-            );
-            setPPMPTable(data?.data.ppmp_items);
-          });
-        } catch (error) {
-          console.error("Error fetching ppmp_items:", error);
-        } finally {
-          setLoading(false);
-        }
-      }
-
-      fetchPPMPItemsIfNeeded();
-    }, []);
-
-    useEffect(() => {
-      // localStorage.setItem("ppmp-items", JSON.stringify(ppmp.ppmp_items));
-      console.log("tableData updated:", ppmpTable); // Logs tableData after it's updated
-    }, [ppmpTable]);
 
     useEffect(() => {
       const storedSearch = localStorage.getItem("search-value");
@@ -453,6 +415,7 @@ const PPMPTable = memo(
         setSearchVal(storedSearch);
       }
     }, []);
+
     return (
       <Box sx={{ width: "100%", overflow: "auto" }}>
         <Stack direction="row" mb={2} justifyContent="space-between">
