@@ -111,7 +111,7 @@ const TableRow = ({
                         value={select}
                         setValue={(val) => {
                           setSelect(val);
-                          onChangeFieldValue(id, "purchaseTypeId", val.id);
+                          onChangeFieldValue(id, "purchaseTypeId", val);
                         }}
                         options={purchase_types.map((item) => {
                           return { id: item.id, label: item.code };

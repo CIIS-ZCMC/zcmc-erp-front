@@ -23,9 +23,10 @@ import useResourceHook from "../../../../../../Hooks/ResourceHook";
 import useResponsiblePeopleHook from "../../../../../../Hooks/ResponsiblePeopleHook";
 
 const Objectives = () => {
-  const { deleteObjective } = useAOPObjectivesHooks();
+  const { create, deleteObjective } = useAOPObjectivesHooks();
   const { function_types, getFunctionType } = useFunctionTypeHook();
-  const { objectives, addObjective, updateObjectiveField } = useObjectivesHook();
+  const { objectives, addObjective, updateObjectiveField } =
+    useObjectivesHook();
   const { findActivitiesByObjectiveID, activities } = useActivitiesHook();
   const { findResponsiblePeopleByActivityID } = useResponsiblePeopleHook();
   const { resources, findResourcesByActivityID } = useResourceHook();
@@ -65,7 +66,15 @@ const Objectives = () => {
       const activities = findActivitiesByObjectiveID(item.id);
       const activitiesWithResourceAndResponsiblePeople = activities.map(
         (act) => {
-          const { parentId, id, startMonth, endMonth, target, isGadRelated, ...actData } = act
+          const {
+            parentId,
+            id,
+            startMonth,
+            endMonth,
+            target,
+            isGadRelated,
+            ...actData
+          } = act;
           //   const resources = findResourcesByActivityID(act.uuid);
           const responsible_people = findResponsiblePeopleByActivityID(act.id);
 
@@ -100,6 +109,15 @@ const Objectives = () => {
   const handleSubmit = () => {
     const aopPayload = buildAOP();
     console.log("Submitting payload:", aopPayload);
+
+    create(aopPayload, (status, message) => {
+      if (!(status >= 200 && status < 300)) {
+        // Do appropriate action to notify user
+        return;
+      }
+
+      // Success toast
+    });
 
     // await axios.post('/api/aop/submit', { application_objectives: payload });
   };
