@@ -124,9 +124,14 @@ const TableRow = ({
                         placeholder="Select Purchase"
                         value={selectPurchaseType}
                         setValue={(val) => {
+<<<<<<< HEAD
+                          setSelect(val);
+                          onChangeFieldValue(id, "purchaseTypeId", val);
+=======
                           // console.log(val)
                           setSelectPurchaseType(val);
                           updateResourceField(id, "purchaseTypeId", val);
+>>>>>>> 0877ee37ec1b819d99886056b3988a41f1521b25
                         }}
                         options={purchase_types.map((item) => {
                           console.log(item)

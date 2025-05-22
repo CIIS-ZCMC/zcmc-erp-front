@@ -25,9 +25,10 @@ import useResourceHook from "../../../../../../Hooks/ResourceHook";
 import useResponsiblePeopleHook from "../../../../../../Hooks/ResponsiblePeopleHook";
 
 const Objectives = () => {
-  const { deleteObjective } = useAOPObjectivesHooks();
+  const { create, deleteObjective } = useAOPObjectivesHooks();
   const { function_types, getFunctionType } = useFunctionTypeHook();
-  const { objectives, addObjective, updateObjectiveField } = useObjectivesHook();
+  const { objectives, addObjective, updateObjectiveField } =
+    useObjectivesHook();
   const { findActivitiesByObjectiveID, activities } = useActivitiesHook();
   const { findResponsiblePeopleByActivityID } = useResponsiblePeopleHook();
   const { resources, findResourcesByActivityID } = useResourceHook();
@@ -39,7 +40,7 @@ const Objectives = () => {
   const [isLoading, setisLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
 
-  const [mission, setMission] = useState('');
+  const [mission, setMission] = useState("");
 
   const activitiesCount = objectives.map((objective) =>
     // console.log(item.id)
@@ -70,7 +71,15 @@ const Objectives = () => {
       const activities = findActivitiesByObjectiveID(item.id);
       const activitiesWithResourceAndResponsiblePeople = activities.map(
         (act) => {
-          const { parentId, id, startMonth, endMonth, target, isGadRelated, ...actData } = act
+          const {
+            parentId,
+            id,
+            startMonth,
+            endMonth,
+            target,
+            isGadRelated,
+            ...actData
+          } = act;
           const resources = findResourcesByActivityID(act.id);
           const responsible_people = findResponsiblePeopleByActivityID(act.id);
 
@@ -101,7 +110,7 @@ const Objectives = () => {
     return objectiveData;
   }
 
-  // handle  
+  // handle
   const handleSubmit = async () => {
     const aopPayload = buildAOP();
     console.log("Submitting payload:", aopPayload);
@@ -119,12 +128,12 @@ const Objectives = () => {
 
   const handleOpenDialog = () => {
     setIsModalOpen(true);
-  }
+  };
 
   const handleCloseDialog = () => {
     setIsModalOpen(false);
     // setMission('')
-  }
+  };
 
   const handleSaveMission = () => {
     alert('saving...')
@@ -133,9 +142,11 @@ const Objectives = () => {
     // Save to local storage
     localStorage.setItem('mission', JSON.stringify(mission));
 
+    alert("saving...");
+    handleCloseDialog();
     // setMission('')
-    //set to local state 
-  }
+    //set to local state
+  };
 
   // const savedMission = JSON.parse(localStorage.getItem('mission'))
 
@@ -157,21 +168,11 @@ const Objectives = () => {
         <EditableTableComponent
           columns={AOP_HEADER}
           secondaryHeader={
-
-            <Link
-              component="button"
-              onClick={() => handleOpenDialog()}
-              pb={1}
-            >
-              <Stack
-                direction={'row'}
-                gap={1}
-                alignItems={'center'}
-              >
+            <Link component="button" onClick={() => handleOpenDialog()} pb={1}>
+              <Stack direction={"row"} gap={1} alignItems={"center"}>
                 Create a Mission
                 <ExternalLink size={16} />
               </Stack>
-
             </Link>
           }
           tableRow={
@@ -215,20 +216,20 @@ const Objectives = () => {
       <ModalComponent
         isOpen={isModalOpen}
         handleClose={handleCloseDialog}
-        title={'Mission'}
+        title={"Mission"}
         description={`Define the core purpose and primary focus of the organization's operational efforts for the upcoming fiscal year. This statement should guide the development and execution of the annual plan.`}
         content={
           <>
             <TextareaComponent
               // label={'Mission'}
-              placeholder={'Please insert mission content here'}
+              placeholder={"Please insert mission content here"}
               value={mission}
               onChange={(e) => setMission(e.target.value)}
             />
           </>
         }
         hasActionButtons={true}
-        rightButtonLabel={'Save'}
+        rightButtonLabel={"Save"}
         rightButtonAction={() => handleSaveMission()}
       />
     </Fragment>
