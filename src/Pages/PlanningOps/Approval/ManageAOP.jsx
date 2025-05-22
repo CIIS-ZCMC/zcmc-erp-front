@@ -1,104 +1,142 @@
-import React, { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import PageTitle from "../../../Components/Common/PageTitle";
 import { useParams } from "react-router-dom";
-import { AOP_CONSTANTS, approvalActions } from "../../../Data/constants";
-import {
-  Box,
-  Checkbox,
-  Divider,
-  FormControl,
-  FormHelperText,
-  Grid,
-  Link,
-  Stack,
-  Typography,
-} from "@mui/joy";
+import { approvalActions } from "../../../Data/constants";
+import { Box, Divider, Grid, Stack, Typography } from "@mui/joy";
 import ContainerComponent from "../../../Components/Common/ContainerComponent";
 import ButtonComponent from "../../../Components/Common/ButtonComponent";
-import { CornerDownRight, ExternalLink } from "lucide-react";
-import CustomAccordionComponent from "../../../Components/Common/Accordion/CustomAccordionComponent";
-import EllipsisComponent from "../../../Components/Common/Typography/EllipsisComponent";
-import { ActivityContainerComponent } from "../../../Components/Activities/ActivityContainerComponent";
-import BoxComponent from "../../../Components/Common/Card/BoxComponent";
-import moment from "moment";
+import { ExternalLink } from "lucide-react";
 import TextareaComponent from "../../../Components/Form/TextareaComponent";
-import SimpleCommentComponent from "../../../Components/Comments/SimpleCommentComponent";
-import { ACTIVITY_COMMENTS, MANAGE_AOP_APPROVAL } from "../../../Data/TestData";
 import ModalComponent from "../../../Components/Common/Dialog/ModalComponent";
 import useModalHook from "../../../Hooks/ModalHook";
 import InputComponent from "../../../Components/Form/InputComponent";
-import { useAOPApplication } from "../../../Hooks/AOP/AOPApplicationsHook";
 import {
-  useActivity,
-  useActivityActions,
-} from "../../../Hooks/AOP/ActivityHook";
+  useAOPApplication,
+  useAOPApplicationObjectives,
+} from "../../../Hooks/AOP/AOPApplicationsHook";
+import { useActivityActions } from "../../../Hooks/AOP/ActivityHook";
 import { localStorageGetter } from "../../../Utils/LocalStorage";
-import { toCapitalize } from "../../../Utils/Typography";
 import RadioButtonComponent from "../../../Components/Common/RadioButtonComponent";
-import PostCommentComponent from "../../../Components/Form/PostCommentComponent";
 import ObjectivesList from "./Contents/ObjectivesList";
+import { useAllComments, useCommentActions } from "../../../Hooks/CommentHook";
+import { ActivityDetails } from "./Contents/ActivityDetails";
+import { CommentsDetails } from "./Contents/CommentsDetails";
+import { useUserTypes } from "../../../Hooks/UserHook";
+import { FeedbackContent } from "./Contents/FeedbackContent";
+import { useApprovalActions } from "../../../Hooks/AOP/AOPApprovalHook";
 
 export default function ManageAOP() {
   const { id } = useParams();
+  const { isDivisionHead } = useUserTypes();
+  const AOPApplication = useAOPApplication();
 
-  // STATES
-  const [action, setAction] = useState("approve");
-  // const comment = useComment();
+  const { status: applicationStatus = null } = AOPApplication;
 
   // AOP HOOK
-  const AOPApplication =
-    useAOPApplication() ?? localStorageGetter("aopApplication");
+  const AOPApplicationObjectives =
+    useAOPApplicationObjectives() ??
+    localStorageGetter("aopApplicationObjectives");
+
+  const AOP_APPLICATION_ID = localStorageGetter("aop_application_id");
 
   // ACTIVITY HOOK
-  const defaultActivityId = AOPApplication[0]?.activities[0]?.id;
-  const activity = useActivity();
-  const {
-    id: activityId,
-    activity_name,
-    start_month,
-    end_month,
-    target: {
-      first_quarter,
-      second_quarter,
-      third_quarter,
-      fourth_quarter,
-    } = {},
-    resources = [],
-    responsible_people = [],
-    comments = [],
-  } = activity || {};
+  const defaultActivityId = AOPApplicationObjectives[0]?.activities[0]?.id;
+  const activityId = localStorageGetter("activeActivityId");
   const { getActivityById } = useActivityActions();
 
-  // STYLES
-  const titleStyles = { level: "body-xs", fontWeight: 400 };
-  const valueStyles = {
-    level: "body-sm",
-    textColor: "neutral.900",
-    fontWeight: 400,
-  };
+  // COMMENTS HOOK
+  const {
+    getCommentsByActivity,
+    getCommentsByApplication,
+    getRemarksByApplication,
+  } = useCommentActions();
+  const allComments = useAllComments();
+
+  // STATES
+  // const [activityLoading, setActivityLoading] = useState(false);
+  const [action, setAction] = useState("approved");
+  const [isRemarksLoading, setIsRemarksLoading] = useState(true);
+
+  const AREA_CODE = localStorageGetter("aop_application_area_code");
+  const FISCAL_YEAR = 2026;
 
   // MODAL
   const { setAlertDialog } = useModalHook();
   const [openProcessModal, setOpenProcessModal] = useState(false);
-  const [openResourcesModal, setOpenResourcesModal] = useState(false);
+  const [openFeedbackModal, setOpenFeedbackModal] = useState(false);
+
+  // FUNCTIONS
+  const handleViewFeedback = () => {
+    setOpenFeedbackModal(true);
+    setIsRemarksLoading(true);
+
+    const fetch = () => {
+      if (!isDivisionHead) {
+        getCommentsByApplication(AOP_APPLICATION_ID, () => {});
+      }
+
+      getRemarksByApplication(AOP_APPLICATION_ID, () => {
+        setTimeout(() => setIsRemarksLoading(false), 1000);
+      });
+    };
+    Promise.all(fetch())
+      .then(() => {
+        setIsRemarksLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching comments or remarks:", error);
+        setIsRemarksLoading(false);
+      });
+  };
 
   const handleProcessRequest = () => {
     setOpenProcessModal(true);
   };
 
-  const handleShowAlert = () => {
-    const data = {
-      status: 200,
-      title: "AOP request for F.Y. “2026” successfully approved.",
-      description:
-        "Everyone can now see the changes you’ve made. The request is now ready for processing of the next approving body (Division Chief).",
+  // PROCESS AOP
+  const { processAOP } = useApprovalActions();
+  const [pin, setPin] = useState(null);
+
+  const handleProcessAOP = () => {
+    const form = {
+      aop_application_id: AOP_APPLICATION_ID,
+      status: action,
+      remarks: `This is a sample remarks for APPLICATION: ${AOP_APPLICATION_ID}`,
+      auth_pin: pin,
     };
-    setOpenProcessModal(false);
-    setAlertDialog(data);
+
+    processAOP(form, (status, message) => {
+      let data = {};
+      if (status === 200) {
+        data = {
+          status: 200,
+          title: "AOP request for F.Y. “2026” successfully approved.",
+          description:
+            "Everyone can now see the changes you’ve made. The request is now ready for processing of the next approving body (Division Chief).",
+        };
+        setOpenProcessModal(false);
+      } else {
+        data = {
+          status: "error",
+          title: message,
+          description: message,
+        };
+      }
+
+      setAlertDialog(data);
+    });
   };
 
   useEffect(() => {
-    getActivityById(defaultActivityId, () => {});
+    if (activityId == defaultActivityId) return;
+
+    Promise.all([
+      getActivityById(defaultActivityId, () => {}),
+      getCommentsByActivity(defaultActivityId, () => {}),
+      getCommentsByApplication(AOP_APPLICATION_ID, () => {}),
+    ]).catch((error) => {
+      console.error("Error fetching data:", error);
+    });
   }, []);
 
   return (
@@ -107,12 +145,16 @@ export default function ManageAOP() {
         <PageTitle
           title={
             <Typography>
-              Manage AOP{" "}
-              <Typography textColor={"success.500"}>#{id} </Typography>
-              for Fiscal year 2026
+              Manage{" "}
+              <Typography textColor={"warning.400"}>{AREA_CODE}'s</Typography>{" "}
+              AOP <Typography textColor={"warning.400"}>#{id} </Typography>
+              for Fiscal year{" "}
+              <Typography textColor={"warning.400"}>{FISCAL_YEAR}'s</Typography>
             </Typography>
           }
-          description={AOP_CONSTANTS?.AOP_SUBHEADING}
+          description={
+            "Each objective has its own list of activities. Mark each activity as reviewed and process the request to continue."
+          }
         />
         {/* CONTENT */}
         <Box
@@ -141,270 +183,79 @@ export default function ManageAOP() {
             <Grid item="true" xs={4} height={{ md: "auto", lg: "100%" }}>
               <ContainerComponent
                 title={"List of objectives and activities"}
-                description={"This is a subtitle"}
+                description={
+                  "Collapse an objective and select one of its activities to view more information."
+                }
                 footer={
                   <Stack direction={"row"} spacing={2}>
                     <ButtonComponent
+                      variant={"outlined"}
+                      label={`Go to feedback (${allComments?.length})`}
+                      endDecorator={<ExternalLink size={14} />}
+                      onClick={handleViewFeedback}
+                    />
+                    <ButtonComponent
                       label={"Process request"}
+                      disabled={applicationStatus === "approved"}
                       onClick={handleProcessRequest}
                     />
-
-                    <Link gap={0.5} fontSize={12}>
-                      Go to feedback <ExternalLink size={14} />
-                    </Link>
                   </Stack>
                 }
                 scrollable
-                contentMaxHeight={"64vh"}
-                contentMinHeight={"64vh"}
+                contentMaxHeight={"62vh"}
+                contentMinHeight={"62vh"}
               >
                 <ObjectivesList />
               </ContainerComponent>
             </Grid>
 
             {/* ACTIVITY DETAILS  */}
-            <Grid item="true" xs={4} mt={3}>
-              <ContainerComponent
-                noBoxShadow
-                title={"Objective #1’s activity #4"}
-                description={
-                  "This is a subheading. It should add more context to the interaction."
-                }
-                scrollable
-                contentMaxHeight={"49vh"}
-                contentMinHeight={"49vh"}
-                footer={
-                  <Stack gap={2}>
-                    {/* REVIEW */}
-                    <Typography
-                      level={titleStyles.level}
-                      fontWeight={titleStyles.fontWeight}
-                    >
-                      Double-checking support
-                    </Typography>
-                    <FormControl sx={{ gap: 1 }}>
-                      <Checkbox
-                        label="Mark activity as “Reviewed”"
-                        size="sm"
-                        sx={{ fontSize: 12, color: "neutral.800" }}
-                        color="success"
-                      />
-                      <FormHelperText
-                        sx={{ fontSize: 11, color: "neutral.400" }}
-                      >
-                        Showing marks helps you determine which among all
-                        activities has successfully passed your double-checking
-                        so that you don't have to double-check again.
-                      </FormHelperText>
-
-                      <FormHelperText
-                        sx={{ fontSize: 12, color: "neutral.600" }}
-                      >
-                        Marked as <b>“Reviewed”</b> on {moment().format("ll")}
-                      </FormHelperText>
-                    </FormControl>
-                  </Stack>
-                }
-              >
-                <Stack gap={1.5} width={"100%"} overflow={"hidden"}>
-                  {/* ACTIVITY NAME */}
-                  <Typography
-                    level={titleStyles.level}
-                    fontWeight={titleStyles.fontWeight}
-                  >
-                    Programs/activities/projects
-                  </Typography>
-                  <Typography
-                    level={valueStyles.level}
-                    textColor={valueStyles.textColor}
-                    fontWeight={valueStyles.fontWeight}
-                  >
-                    {activity_name}
-                  </Typography>
-                  <Divider />
-
-                  {/* TARGET */}
-                  <Typography
-                    level={titleStyles.level}
-                    fontWeight={titleStyles.fontWeight}
-                  >
-                    Target (by quarter)
-                  </Typography>
-
-                  <Grid container columns={{ xs: 2, sm: 4 }} spacing={1}>
-                    {[
-                      first_quarter,
-                      second_quarter,
-                      third_quarter,
-                      fourth_quarter,
-                    ]?.map((element, index) => (
-                      <Grid xs={1} key={index}>
-                        <BoxComponent>
-                          <Stack gap={1}>
-                            <Typography level={titleStyles.level}>
-                              Q{index + 1}:
-                            </Typography>
-
-                            <Typography
-                              level={valueStyles.level}
-                              textColor={valueStyles.textColor}
-                              fontWeight={valueStyles.fontWeight}
-                            >
-                              {element}
-                            </Typography>
-                          </Stack>
-                        </BoxComponent>
-                      </Grid>
-                    ))}
-                  </Grid>
-                  <Divider />
-
-                  {/* TIMEFRAME */}
-                  <Typography
-                    level={titleStyles.level}
-                    fontWeight={titleStyles.fontWeight}
-                  >
-                    Timeframe
-                  </Typography>
-
-                  <Typography
-                    level={valueStyles.level}
-                    textColor={valueStyles.textColor}
-                    fontWeight={valueStyles.fontWeight}
-                  >
-                    {moment(start_month).format("MMMM")} -
-                    {moment(end_month).format("MMMM")}
-                  </Typography>
-                  <Divider />
-
-                  {/* RESOURCES */}
-                  <Typography
-                    level={titleStyles.level}
-                    display={"flex"}
-                    justifyContent={"space-between"}
-                    fontWeight={titleStyles.fontWeight}
-                  >
-                    Resources for this activity
-                    <Link
-                      gap={0.5}
-                      fontSize={12}
-                      onClick={setOpenResourcesModal}
-                    >
-                      View resources <ExternalLink size={14} />
-                    </Link>
-                  </Typography>
-                  <Divider />
-
-                  {/* PERSON */}
-                  <Typography
-                    level={titleStyles.level}
-                    fontWeight={titleStyles.fontWeight}
-                  >
-                    Responsible person
-                  </Typography>
-
-                  {responsible_people?.map(
-                    ({ user: { name: person_name, email } }, index) => (
-                      <Box
-                        key={index}
-                        display={"flex"}
-                        gap={1}
-                        alignItems={"start"}
-                      >
-                        <CornerDownRight
-                          size={14}
-                          style={{ color: "green", marginTop: 4 }}
-                        />
-                        <Box>
-                          <Typography
-                            level={valueStyles.level}
-                            textColor={valueStyles.textColor}
-                            fontWeight={valueStyles.fontWeight}
-                          >
-                            {person_name}
-                          </Typography>
-                          <Typography
-                            level={titleStyles.level}
-                            fontWeight={titleStyles.fontWeight}
-                          >
-                            {email}
-                          </Typography>
-                        </Box>
-                      </Box>
-                    )
-                  )}
-                </Stack>
-              </ContainerComponent>
+            <Grid item="true" xs={isDivisionHead ? 8 : 4} mt={3}>
+              <ActivityDetails />
             </Grid>
 
-            {/* ACTIVITY DETAILS  */}
-            <Grid item="true" xs={4} mt={3}>
-              <ContainerComponent
-                noBoxShadow
-                title={"Comments for the selected activity"}
-                description={
-                  "This is a subheading. It should add more context to the interaction."
-                }
-                scrollable
-                contentMaxHeight={"35.8vh"}
-                contentMinHeight={"35.8vh"}
-                footer={<PostCommentComponent activityId={activityId} />}
-              >
-                <Stack gap={2.5} mr={1}>
-                  {comments.map(({ user, comment, date }, index) => (
-                    <SimpleCommentComponent
-                      key={index}
-                      name={user}
-                      comment={comment}
-                      date={date}
-                    />
-                  ))}
-                </Stack>
-              </ContainerComponent>
+            {/* COMMENTS  */}
+            <Grid item="true" xs={4} mt={3} display={isDivisionHead && "none"}>
+              <CommentsDetails />
             </Grid>
           </Grid>
         </Box>
       </Stack>
 
-      {/* VIEW RESOURCES */}
-      <ModalComponent
-        isOpen={openResourcesModal}
-        handleClose={() => setOpenResourcesModal(false)}
-        title={`Resources for activity`}
-        description={
-          "This is a subheading. It should add more context to the interaction."
-        }
-        content={<Stack>{JSON.stringify(resources)}</Stack>}
-      />
-
       {/* PROCESS REQUEST */}
       <ModalComponent
+        hasActionButtons
         isOpen={openProcessModal}
         handleClose={() => setOpenProcessModal(false)}
-        title={`Revisions for objective #14 - Core`}
+        title={`Process request `}
         description={
-          "This is a subheading. It should add more context to the interaction."
+          "Select a request status and reasons (if returned) to continue. You may add remarks if necessary."
         }
         leftButtonLabel="Back to request"
         rightButtonLabel="Confirm and save"
-        rightButtonAction={handleShowAlert}
+        rightButtonAction={handleProcessAOP}
         maxWidth={500}
         content={
-          <Stack gap={2} py={1}>
-            <Typography level="title-sm" mt={1}>
-              Select the action you would like to take:
-            </Typography>
-            <RadioButtonComponent
-              actions={approvalActions}
-              value={action}
-              setValue={setAction}
-            />
-            <TextareaComponent
-              minRows={2}
-              label={"Remarks"}
-              maxRows={200}
-              placeholder={"Enter your remarks here"}
-            />
+          <Stack gap={2}>
+            <Stack py={2}>
+              <Typography level="title-sm" mb={1}>
+                Select the action you would like to take:
+              </Typography>
+              <RadioButtonComponent
+                actions={approvalActions}
+                value={action}
+                setValue={setAction}
+              />
+              {isDivisionHead && (
+                <TextareaComponent
+                  minRows={2}
+                  label={"Remarks"}
+                  maxRows={200}
+                  placeholder={"Enter your remarks here"}
+                />
+              )}
+            </Stack>
+
             <Divider />
             <InputComponent
               type="password"
@@ -412,11 +263,19 @@ export default function ManageAOP() {
               helperText={
                 "Confirm you action by typing-in your authorization PIN."
               }
-              // setValue={handlePinInput}
-              // value={pin}
+              setValue={setPin}
+              value={pin}
             />
           </Stack>
         }
+      />
+
+      {/* VIEW FEEDBACK */}
+
+      <FeedbackContent
+        openFeedbackModal={openFeedbackModal}
+        setOpenFeedbackModal={setOpenFeedbackModal}
+        isLoading={isRemarksLoading}
       />
     </Fragment>
   );

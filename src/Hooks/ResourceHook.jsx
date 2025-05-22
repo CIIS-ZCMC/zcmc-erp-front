@@ -26,15 +26,28 @@ const useResourceHook = create(
       resources: [],
       cart: [],
 
-      updateResourceField: (id, fieldPath, value) => {
-        set((state) => ({
-          resources: state.resources.map((resource) => {
+      // setResources: () => {
+      //   set((state) => {
+      //     console.log(state.resources)
+      //   })
+      // },
+
+      updateResourceField: (id, field, value) => {
+        set((state) => {
+          const updatedResources = state.resources.map((resource) => {
             if (resource.id === id) {
-              return setNestedValue(resource, fieldPath, value);
+              const updated = {
+                ...resource,
+                [field]: value,
+              };
+              // console.log(`Updating resource ${id}:`, updated);
+              return updated;
             }
             return resource;
-          }),
-        }));
+          });
+
+          return { resources: updatedResources };
+        });
       },
 
       addResourceToCart: (item, parentId, quantity = 1) => {
@@ -50,10 +63,10 @@ const useResourceHook = create(
           const updatedCart = cart.map((cartItem) =>
             cartItem?.id === item?.id
               ? {
-                  ...cartItem,
-                  aop_quantity: cartItem.aop_quantity + quantity,
-                  parentId: parentId,
-                }
+                ...cartItem,
+                aop_quantity: cartItem.aop_quantity + quantity,
+                parentId: parentId,
+              }
               : cartItem
           );
           set({ cart: updatedCart });
@@ -90,7 +103,7 @@ const useResourceHook = create(
       //handle assigment of data from cart to table row resources
       // navigate to resources Table
 
-      saveItems: (parentId = null, totalPrice, itemTotal) => {
+      saveItems: (parentId = null, totalPrice) => {
         const { resources, cart } = get();
 
         const updatedResources = cart.map((item, index) => ({
@@ -98,7 +111,6 @@ const useResourceHook = create(
           name: item.name,
           quantity: item.aop_quantity,
           individualPrice: item.estimated_budget,
-          itemTotal: itemTotal,
           totalCost: totalPrice,
         }));
 
@@ -153,9 +165,16 @@ const useResourceHook = create(
       },
 
       findResourcesByActivityID: (activityId) => {
-        console.log("IS ARRAY ", get().resources);
-        return get().resources.filter((item) => item.parentId == activityId);
-      },
+        return get()
+          .resources
+          .filter((item) => item.parentId === activityId)
+          .map((item) => ({
+            item_id: item.id,
+            purchase_type_id: item.purchaseTypeId?.id || item.purchaseTypeId, // handles both object and raw id
+            quantity: item.quantity,
+            expense_class: item.expenseClass,
+          }));
+      }
     }),
 
     {

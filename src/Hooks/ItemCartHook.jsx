@@ -21,7 +21,7 @@ const useItemCartHook = create(
 
         set((state) => {
           const existing = cart?.find((i) => i?.item_id === item?.id);
-          console.log(selectedActivity);
+          console.log(existing);
           if (existing) {
             return {
               cart: cart?.map((i) =>
@@ -37,6 +37,7 @@ const useItemCartHook = create(
 
           const newItem = {
             item_id: item.id,
+            item: item,
             item_code: item.code,
             variant: item.variant,
             description: item.name,

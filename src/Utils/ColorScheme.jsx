@@ -21,6 +21,7 @@ export const getModeColorScheme = (type) => {
     warning: "warning",
     400: "danger",
     error: "danger",
+    info: "warning",
   };
 
   return colorSchemes[statusMap[type] || "danger"];
@@ -31,9 +32,34 @@ export const getModeColorScheme = (type) => {
 export const getStatusColorScheme = (status) => {
   const colorMap = {
     approved: "success",
-    pending: "success",
+    pending: "neutral",
+    submitted: "neutral",
     cancelled: "error",
+    denied: "danger",
     returned: "warning",
   };
   return colorMap[status] || "neutral"; // Ensure it returns a string
+};
+
+// STATUS
+export const getAlertColor = (statusCode) => {
+  let color = "";
+
+  switch (statusCode) {
+    case 200:
+      color = "success";
+      break;
+    case 401:
+      color = "danger";
+      break;
+
+    case 500:
+      color = "danger";
+      break;
+    default:
+      color = "primary";
+      break;
+  }
+
+  return color;
 };

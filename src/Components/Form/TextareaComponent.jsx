@@ -42,7 +42,7 @@ function TextareaComponent({
         value={value}
         onChange={setValue ? handleInput : onChange}
         sx={{
-          fontSize: 14,
+          fontSize: 13,
           fontWeight: fontWeight,
           py: 1.2,
           background: darkMode ? "transparent" : undefined,

@@ -46,6 +46,10 @@ const Resources = () => {
     });
   }, []);
 
+  useEffect(() => {
+    console.log(resources)
+  }, [resources])
+
   return (
     <Fragment>
       <ContainerComponent
@@ -71,11 +75,6 @@ const Resources = () => {
               parentId={parentId}
               resources={items}
               purchase_types={purchase_types}
-              // handleEdit={handleEdit}
-              // handleBlur={handleBlur}
-              // editField={editField}
-              // editRowId={editRowId}
-              // setEditRowId={setEditRowId}
             />
           }
         />

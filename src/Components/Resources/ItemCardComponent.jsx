@@ -40,7 +40,7 @@ const ItemCardComponent = ({
         "&:hover": {
           transition: "0.3s",
           border: 2,
-          borderColor: "lightgreen",
+          borderColor: "lightblue",
           borderRadius: 10,
           cursor: "grab",
         },
@@ -73,7 +73,7 @@ const ItemCardComponent = ({
           <ChipComponent
             label={item?.variant}
             size="sm"
-            color={"success"}
+            color={"primary"}
             startDecorator={<CircleSmall size={12} />}
           />
         </CardContent>

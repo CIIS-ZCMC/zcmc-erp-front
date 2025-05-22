@@ -25,7 +25,6 @@ const TableRow = ({
   } = useResourceHook();
 
   const [localResources, setLocalResources] = useState(rows);
-  const [localResource, setLocalResource] = useState(rows);
   const [editRowId, setEditRowId] = useState(null);
 
   const handleOnRowClick = (id) => setEditRowId(id);
@@ -35,13 +34,15 @@ const TableRow = ({
       ...prev.map((item) => {
         if (item.id !== id) return item;
 
+        const updatedItem = {
+          ...item,
+          [key]: value,
+        };
+
         if (key === "quantity") {
-          return {
-            ...item,
-            [key]: value,
-            totalCost: value * item.individualPrice,
-          };
-        }
+          updatedItem.totalCost = value * item.individualPrice;
+          updateResourceField(id, key, value)
+        };
 
         return {
           ...item,
@@ -50,6 +51,15 @@ const TableRow = ({
       }),
     ]);
   }
+
+  // useEffect(() => {
+  //   console.log(localResources)
+  // }, [localResources])
+
+  const expenseClassOptions = [
+    { id: 1, label: 'MOOE', value: 'MOOE' },
+    { id: 2, label: 'CO', value: 'CO' }
+  ]
 
   return (
     <Fragment>
@@ -68,7 +78,8 @@ const TableRow = ({
             index
           ) => {
             const isEditing = editRowId === id;
-            const [select, setSelect] = useState(purchaseTypeId ?? null);
+            const [selectPurchaseType, setSelectPurchaseType] = useState(purchaseTypeId ?? null);
+            const [selectedExpenseClass, setSelectedExpenseClass] = useState(expenseClass ?? "")
 
             return (
               <tr key={id}>
@@ -83,15 +94,16 @@ const TableRow = ({
                 <td onClick={() => handleOnRowClick(id)}>
                   {isEditing ? (
                     <Input
-                      value={quantity || ""}
+                      value={quantity ?? 0}
                       size="sm"
                       placeholder="Quantity"
-                      onChange={(e) =>
-                        onChangeFieldValue(id, "quantity", e.target.value)
-                      }
+                      onChange={(e) => {
+                        const intValue = parseInt(e.target.value, 10) || 0;
+                        onChangeFieldValue(id, "quantity", intValue)
+                      }}
                     />
                   ) : (
-                    <Typography>{quantity || "-"}</Typography>
+                    <Typography>{quantity ?? "-"}</Typography>
                   )}
                 </td>
 
@@ -100,7 +112,9 @@ const TableRow = ({
                 </td>
 
                 <td onClick={() => handleOnRowClick(id)}>
-                  <Typography>{quantity * individualPrice || "-"}</Typography>
+                  <Typography>
+                    {Number(quantity * individualPrice).toFixed(2) || "-"}
+                  </Typography>
                 </td>
 
                 <td onClick={() => handleOnRowClick(id)}>
@@ -108,37 +122,46 @@ const TableRow = ({
                     <>
                       <AutocompleteComponent
                         placeholder="Select Purchase"
-                        value={select}
+                        value={selectPurchaseType}
                         setValue={(val) => {
+<<<<<<< HEAD
                           setSelect(val);
                           onChangeFieldValue(id, "purchaseTypeId", val);
+=======
+                          // console.log(val)
+                          setSelectPurchaseType(val);
+                          updateResourceField(id, "purchaseTypeId", val);
+>>>>>>> 0877ee37ec1b819d99886056b3988a41f1521b25
                         }}
                         options={purchase_types.map((item) => {
+                          console.log(item)
                           return { id: item.id, label: item.code };
                         })}
                       />
                     </>
                   ) : (
-                    <Typography>{select?.code || "-"}</Typography>
+                    <Typography>{purchaseTypeId?.label || "-"}</Typography>
                   )}
                 </td>
 
                 <td onClick={() => handleOnRowClick(id)}>
                   {isEditing ? (
-                    <Select
-                      size="sm"
-                      value={localResource?.[id]?.expenseClass || false}
-                      onChange={(e, newValue) =>
-                        updateResourceField(id, "expenseClass", newValue)
-                      }
-                    >
-                      <Option value={true}>MOOE</Option>
-                      <Option value={false}>CO</Option>
-                    </Select>
+                    <>
+                      <AutocompleteComponent
+                        placeholder="Select Expense Class"
+                        value={selectedExpenseClass}
+                        setValue={(val) => {
+                          // console.log(val)
+                          setSelectedExpenseClass(val);
+                          updateResourceField(id, "expenseClass", val.value);
+                        }}
+                        options={expenseClassOptions}
+                      />
+                    </>
+
                   ) : (
                     <Typography>
-                      {localResource?.[id]?.expenseClass}
-                      {expenseClass ? "MOOE" : "CO"}
+                      {expenseClass || "-"}
                     </Typography>
                   )}
                 </td>

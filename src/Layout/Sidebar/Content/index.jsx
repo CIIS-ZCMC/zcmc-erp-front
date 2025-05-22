@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Box, Stack } from "@mui/joy";
+import { Box, Stack, Tooltip } from "@mui/joy";
 
 import MenuItemWithChildren from "./MenuItemComponent/MenuItemWithChildren";
 import { sidebarRoutes } from "../../../Data";

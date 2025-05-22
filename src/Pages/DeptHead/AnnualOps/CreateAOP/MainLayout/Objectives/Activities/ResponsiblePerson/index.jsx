@@ -40,11 +40,11 @@ const ResponsiblePerson = () => {
   // )
 
 
- // Check if at least one responsible entity exists
-    const hasData =
-      activity?.users?.length > 0 ||
-      activity?.designations?.length > 0 ||
-      activity?.areas?.length > 0;
+  // Check if at least one responsible entity exists
+  const hasData =
+    activity?.users?.length > 0 ||
+    activity?.designations?.length > 0 ||
+    activity?.areas?.length > 0;
 
   const handleSaveAssignment = () => {
     if (!activity) {
@@ -107,18 +107,18 @@ const ResponsiblePerson = () => {
           {/* {isAssigned ? */}
 
           {!hasData ? <ButtonComponent
-            onClick={() => navigate(`/aop-create/activities/${rowId}`)}
-            label={"Back to activities"}
-            size={"md"}
-            variant={"outlined"}
-          /> 
-           : 
-           <ButtonComponent
             onClick={() => handleCancel(activityId)}
             label={"Cancel Selection"}
             size={"md"}
             variant={"outlined"}
-           />
+          />
+            :
+            <ButtonComponent
+              onClick={() => navigate(-1)}
+              label={"Back to activities"}
+              size={"md"}
+              variant={"outlined"}
+            />
           }
           <ButtonComponent
             label={"Save Assignment"}
