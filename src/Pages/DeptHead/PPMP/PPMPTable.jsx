@@ -21,9 +21,7 @@ const PPMPTable = memo(
     stickLast = true,
     stickSecond = true,
     stripe = true,
-    // ppmpTable,
     items = [],
-    // setPPMPTable,
     modes = [],
     categories = [],
     classifications = [],
@@ -410,13 +408,6 @@ const PPMPTable = memo(
     const lastColumnWidth = columns[columns.length - 1]?.width || "144px";
 
     //USEEFFECT
-    useEffect(() => {
-      setLoading(true);
-      getPPMPItems((status, message) => {
-        setLoading(false);
-        console.log(status, message);
-      });
-    }, []);
 
     useEffect(() => {
       const storedSearch = localStorage.getItem("search-value");
@@ -424,6 +415,7 @@ const PPMPTable = memo(
         setSearchVal(storedSearch);
       }
     }, []);
+
     return (
       <Box sx={{ width: "100%", overflow: "auto" }}>
         <Stack direction="row" mb={2} justifyContent="space-between">
