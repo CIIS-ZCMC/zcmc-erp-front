@@ -79,6 +79,15 @@ export const PPMP_CONSTANTS = {
     "Receive PPMP requests here. Each request is therefore recognized as completed its processing once received.",
 };
 
+export const LIBRARY_CONSTANTS = {
+  LIBRARY_TITLE: "Item information management",
+  LIBRARY_SUBTITLE:
+    "All information used by end-users around the system, across different modules and areas can be managed here.",
+  LIBRARY_HEADER: "Lis of records ready for AOP and PPMP",
+  LIBRARY_SUBHEADER:
+    "The following records of information are used to define user-inputted values",
+};
+
 export const MONTHS = [
   { label: "January", value: "01" },
   { label: "February", value: "02" },

@@ -31,6 +31,11 @@ import PPMPDashboard from "../Pages/DeptHead/PPMP/PPMPDashboard";
 import PPMPApproval from "../Pages/PPMP/Approval/PPMPApproval";
 import ManagePPMP from "../Pages/PPMP/Approval/ManagePPMP";
 
+import { Items as ConsolidatorItems } from "../Pages/Consolidators/Tabs/Items";
+import { Classification } from "../Pages/Consolidators/Tabs/Classification";
+import { Category } from "../Pages/Consolidators/Tabs/Category";
+import { Variant } from "../Pages/Consolidators/Tabs/Variant";
+
 export const sidebarRoutes = [
   {
     path: "/dashboard",
@@ -220,5 +225,23 @@ export const sidebarRoutes = [
     element: <ItemLibrary />,
     roles: ["super_admin"],
     abilities: ["M-001:read", "M-001:write", "M-001:edit", "M-001:delete"],
+    children: [
+      {
+        index: true,
+        element: <ConsolidatorItems />,
+      },
+      {
+        path: "classification",
+        element: <Classification />,
+      },
+      {
+        path: "category",
+        element: <Category />,
+      },
+      {
+        path: "variant",
+        element: <Variant />,
+      },
+    ],
   },
 ];

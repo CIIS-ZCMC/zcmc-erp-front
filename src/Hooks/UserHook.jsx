@@ -1,11 +1,8 @@
 import { create } from "zustand";
 import { API } from "../Data/constants";
-import { read } from "../Services/RequestMethods";
-import { mockUserData } from "../Data/TestData";
+import { read, post } from "../Services/RequestMethods";
 
 const useUserHook = create((set) => ({
-  user: { ...mockUserData },
-
   users: [],
 
   getUsers: (callBack) => {
@@ -19,6 +16,15 @@ const useUserHook = create((set) => ({
       },
     });
   },
+
+  getAuthorized: (pin, Callback) => {
+    if (pin == "12345") {
+      Callback(true);
+      return;
+    }
+    Callback(false);
+  },
+
 }));
 
 export const useUserTypes = () => {

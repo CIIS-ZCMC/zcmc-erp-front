@@ -207,6 +207,7 @@ export const AOP_HEADER = [
     // isDropdown: false,
     // position: "sticky",
     width: 150,
+    width: 150,
     align: "center",
   },
 ];
@@ -320,7 +321,6 @@ export const AOP_RESOURCE_HEADER = [
     width: "20%",
     align: "center",
   },
-
 
   {
     field: "action",
