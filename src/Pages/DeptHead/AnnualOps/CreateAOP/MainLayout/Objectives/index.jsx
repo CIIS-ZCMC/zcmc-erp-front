@@ -246,7 +246,7 @@ const Objectives = () => {
             label={"Cancel Request"}
             size={"md"}
             variant={"outlined"}
-            onClick={() => navigate(-1)}
+            onClick={() => navigate('/aop/all')}
           />
 
           <ButtonComponent

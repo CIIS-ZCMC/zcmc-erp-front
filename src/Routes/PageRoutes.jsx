@@ -11,7 +11,7 @@ import Pending from "../Pages/DeptHead/AnnualOps/TableViews/Pending";
 import Returned from "../Pages/DeptHead/AnnualOps/TableViews/Returned";
 
 import CreateAOP from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout";
-import AOPDashboard from "../Pages/DeptHead/AnnualOps/AOPDashboard";
+
 import AnnualOpsPlanning from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives";
 import Activities from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities";
 import Resources from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities/Resources";
@@ -92,56 +92,6 @@ export const sidebarRoutes = [
       },
     ],
   },
-
-  // {
-  //   path: "/aop-create",
-  //   // element: <CreateAOP />,
-  //   element: <AOPDashboard />,
-  //   roles: ["super_admin"],
-  //   abilities: ["M-001:read", "M-001:write", "M-001:edit", "M-001:delete"],
-  //   children: [
-  //     {
-  //       index: true,
-  //       path: 'create',
-  //       element: <AnnualOpsPlanning />,
-  //       children: [
-  //         {
-  //           path: "activities/:objectiveId",
-  //           element: <Activities />,
-  //           children: [
-  //             {
-  //               path: "items/:activityId",
-  //               element: <Items />
-  //             },
-  //             {
-  //               path: "resources/:activityId",
-  //               element: <Resources />,
-  //               roles: ["super_admin"],
-  //               abilities: [
-  //                 "M-001:read",
-  //                 "M-001:write",
-  //                 "M-001:edit",
-  //                 "M-001:delete",
-  //               ],
-  //             },
-
-  //             {
-  //               path: "person/:activityId",
-  //               element: <ResponsibePerson />,
-  //               roles: ["super_admin"],
-  //               abilities: [
-  //                 "M-001:read",
-  //                 "M-001:write",
-  //                 "M-001:edit",
-  //                 "M-001:delete",
-  //               ],
-  //             },
-  //           ],
-  //         },
-  //       ]
-  //     }, //Entry Point
-  //   ],
-  // },
 
   {
     path: "/aop-create",
