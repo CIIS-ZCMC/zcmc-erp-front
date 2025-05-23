@@ -10,6 +10,7 @@ import ButtonComponent from "../../../Components/Common/ButtonComponent";
 import SearchBarComponent from "../../../Components/SearchBarComponent";
 import DatePickerComponent from "../../../Components/Form/DatePickerComponent";
 import PageTitle from "../../../Components/Common/PageTitle";
+import BoxComponent from "../../../Components/Common/Card/BoxComponent";
 
 import { AOP_CONSTANTS } from "../../../Data/constants";
 import { AOPPathMap } from "../../../Data";
@@ -26,12 +27,19 @@ const AnnualOps = () => {
   return (
     <Fragment>
       {parentRoute && (
-        <ContainerComponent
-          title={AOP_CONSTANTS.TABLE_TITLE}
-          description={AOP_CONSTANTS.TABLE_SUBHEADING}
+        <Fragment>
+          <ContainerComponent
+          // title={AOP_CONSTANTS.TABLE_TITLE}
+          // description={AOP_CONSTANTS.TABLE_SUBHEADING}
           // sx={{ mt: 3 }}
-          actions={
-            <Stack direction={"row"} gap={2}>
+          >
+
+            <Stack
+              direction={"row"}
+              justifyContent={'center'}
+              alignItems={'center'}
+              gap={2}
+            >
               <ButtonComponent
                 label={"Request new item"}
                 variant={"outlined"}
@@ -45,30 +53,23 @@ const AnnualOps = () => {
                 onClick={() => navigate("/aop-create")}
               />
             </Stack>
-          }
-        >
-          {/* 
-            <TabsComponent
-                tabs={['View all', 'Pending', 'Returned', 'Approved']}
-                pathMap={AOPPathMap}
-            /> */}
+
+          </ContainerComponent>
 
           <Box
-            sx={{
-              mt: 2,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-            }}
+            marginTop={2}
           >
-            <SearchBarComponent
-              size="md"
-              placeholder="Find records by document number, year, items, etc."
-            />
-            <DatePickerComponent />
+            <BoxComponent
+              height={'70vh'}
+            >
+
+            </BoxComponent>
+
           </Box>
-        </ContainerComponent>
+
+        </Fragment>
       )}
+      <Outlet></Outlet>
     </Fragment>
   );
 };
