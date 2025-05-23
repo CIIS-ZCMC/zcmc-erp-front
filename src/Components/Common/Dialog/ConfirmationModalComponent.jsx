@@ -142,7 +142,7 @@ function ConfirmationModalComponent({
                   variant="outlined"
                   label={leftButtonLabel}
                   onClick={leftButtonAction ?? closeConfirmation}
-                  isDisabled={isLoading}
+                  disabled={isLoading}
                   fullWidth={!rightButtonAction}
                 />
 

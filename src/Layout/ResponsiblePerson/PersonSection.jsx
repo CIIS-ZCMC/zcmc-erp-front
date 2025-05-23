@@ -41,7 +41,7 @@ const SelectPersonComponent = ({ parentId }) => {
 
 const ResponsiblePersonList = ({ parentId }) => {
 
-    const { responsible_people } = useResponsiblePeopleHook()
+    const { responsible_people, removeData } = useResponsiblePeopleHook()
 
     const filteredData = responsible_people?.filter((element) => element.activityId === parentId)[0] ?? []
     const users = filteredData?.users;

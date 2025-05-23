@@ -5,11 +5,8 @@ import { post, read, remove } from "../Services/RequestMethods";
 const PATH = "ppmp";
 
 const usePPMPHook = create((set) => ({
-  ppmp: {},
   modes: [],
   activities: [],
-  ppmpLoading: false,
-  ppmpError: null,
 
   getPPMPItems: (callBack) => {
     read({
@@ -17,7 +14,10 @@ const usePPMPHook = create((set) => ({
       failed: callBack,
       success: (res) => {
         const { status, message, data } = res;
-        set({ ppmp: data });
+        localStorage.setItem(
+          "ppmp-items",
+          JSON.stringify(data.data.ppmp_items)
+        );
         callBack(status, message, data);
       },
     });
@@ -81,6 +81,19 @@ const usePPMPHook = create((set) => ({
         callback(response.status, message, data);
       },
       failed: callback,
+    });
+  },
+
+  search: async (params, callBack) => {
+    read({
+      url: `${PATH}-item-search`,
+      params: { search: params },
+      failed: callBack,
+      success: (res) => {
+        const { status, message, data } = res;
+        set({ items: data.data });
+        callBack(status, message, data.data);
+      },
     });
   },
 }));

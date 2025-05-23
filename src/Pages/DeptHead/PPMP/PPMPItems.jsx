@@ -40,6 +40,7 @@ function PPMPItems(props) {
   const {
     modes,
     activities,
+    getPPMPItems,
     getProcModes,
     getActivities,
     postPPMP,
@@ -289,6 +290,11 @@ function PPMPItems(props) {
       const wrap = (fn) => new Promise((resolve) => fn(() => resolve()));
 
       try {
+        const localData = localStorage.getItem("ppmp-items");
+        if (!localData) {
+          wrap(getPPMPItems);
+        }
+
         // Step 3: Fetch all other needed data
         await Promise.all([
           wrap(getActivities),

@@ -93,6 +93,10 @@ const Items = () => {
     }
   }, [items]);
 
+  useEffect(() => {
+    console.log(items)
+  }, [items])
+
   const handleOpenItemDialog = (item) => {
     setSelectedItem(item);
     setIsDialogOpen(true);
@@ -121,6 +125,7 @@ const Items = () => {
         state: {
           parentId: activityId,
           objectiveRowId: objectiveRowId,
+
         },
       }
     ); //navigate with activity row id

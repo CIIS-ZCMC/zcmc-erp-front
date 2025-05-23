@@ -2,6 +2,13 @@ import { create } from "zustand";
 
 const useModalHook = create((set, get) => ({
   modalState: { isOpen: false },
+  successDialog: true,
+  setSuccessDialog: (state) => set({ successDialog: state }),
+  openModal: {
+    isNew: false,
+    isDelete: false,
+    isOpen: false,
+  },
   confirmationModalState: {
     isOpen: false,
     status: null,
@@ -28,6 +35,15 @@ const useModalHook = create((set, get) => ({
     description: "This is subtitle.",
   },
 
+  setOpenModal: (isNew, isDelete, Open) => {
+    set({
+      openModal: {
+        isNew: isNew,
+        isDelete: isDelete,
+        isOpen: Open,
+      },
+    });
+  },
   // HANDLE ALERT STATE
   setAlertDialog: (data) => {
     const { status, title, description, isGlobal = true } = data ?? null;
@@ -81,6 +97,8 @@ const useModalHook = create((set, get) => ({
       setAuthPin,
       pinHelperText,
     } = data ?? null;
+
+    get().closeConfirmation();
 
     try {
       set(() => ({

@@ -115,7 +115,7 @@ const TableRow = ({
                   >
                     <Link
                       component="button"
-                      onClick={() => navigate(`activities/${rowId}`, { state: { parentId: id, rowId: rowId } })}
+                      onClick={() => navigate(`/aop-create/create/activities/${rowId}`, { state: { parentId: id, rowId: rowId } })}
                       fontSize={14}
                     >
                       Manage Activities

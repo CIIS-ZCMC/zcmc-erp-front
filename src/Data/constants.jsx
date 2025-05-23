@@ -67,10 +67,6 @@ export const AOP_CONSTANTS = {
   MODAL_RESOURCE_SUBHEADING:
     "Select a request status and reasons (if returned) to continue. You may add remarks if necessary.",
 
-
-
-
-
 };
 
 export const PPMP_CONSTANTS = {
@@ -81,6 +77,15 @@ export const PPMP_CONSTANTS = {
   PPMP_RECEIVE_TITLE: "PPMP Management: Receiving",
   PPMP_RECEIVE_SUBHEADING:
     "Receive PPMP requests here. Each request is therefore recognized as completed its processing once received.",
+};
+
+export const LIBRARY_CONSTANTS = {
+  LIBRARY_TITLE: "Item information management",
+  LIBRARY_SUBTITLE:
+    "All information used by end-users around the system, across different modules and areas can be managed here.",
+  LIBRARY_HEADER: "Lis of records ready for AOP and PPMP",
+  LIBRARY_SUBHEADER:
+    "The following records of information are used to define user-inputted values",
 };
 
 export const MONTHS = [
@@ -113,6 +118,7 @@ export const approvalActions = [
 
 export const API = {
   AOP_APPLICATIONS: "aop-applications",
+  AOP_APPLICATIONS_STORE: 'aop-application-store',
   TYPE_OF_FUNCTIONS: "type-of-functions",
   TYPE_OF_PURCHASE: "purchase-types",
 

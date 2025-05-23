@@ -9,6 +9,7 @@ const initialResource = (
   purchaseTypeId = null
 ) => ({
   id: uuid(),
+  item_id: null,
   parentId: parentId,
   rowId: rowId,
   name: "",
@@ -66,6 +67,7 @@ const useResourceHook = create(
                 ...cartItem,
                 aop_quantity: cartItem.aop_quantity + quantity,
                 parentId: parentId,
+                // item_id: item.id,
               }
               : cartItem
           );
@@ -76,6 +78,7 @@ const useResourceHook = create(
             ...item,
             aop_quantity: quantity || 1,
             parentId: parentId,
+            // item_id: item.id,
           };
 
           const updatedCart = [...cart, newItem];
@@ -111,6 +114,7 @@ const useResourceHook = create(
           name: item.name,
           quantity: item.aop_quantity,
           individualPrice: item.estimated_budget,
+          item_id: item.id,
           totalCost: totalPrice,
         }));
 
@@ -169,7 +173,7 @@ const useResourceHook = create(
           .resources
           .filter((item) => item.parentId === activityId)
           .map((item) => ({
-            item_id: item.id,
+            item_id: item.item_id,
             purchase_type_id: item.purchaseTypeId?.id || item.purchaseTypeId, // handles both object and raw id
             quantity: item.quantity,
             expense_class: item.expenseClass,

@@ -1,11 +1,11 @@
-import { Fragment } from 'react';
+import { Fragment } from "react";
 
-import { Outlet } from 'react-router-dom';
+import { Outlet } from "react-router-dom";
 
 //custom components
-import PageTitle from '../../../../../Components/Common/PageTitle';
+import PageTitle from "../../../../../Components/Common/PageTitle";
 
-import { AOP_CONSTANTS } from '../../../../../Data/constants';
+import { AOP_CONSTANTS } from "../../../../../Data/constants";
 
 const CreateAOP = () => (
   <Fragment>
