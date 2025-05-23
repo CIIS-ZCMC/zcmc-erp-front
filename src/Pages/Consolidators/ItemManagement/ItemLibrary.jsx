@@ -31,9 +31,9 @@ import useVariantHooks from "../../../Hooks/Libraries/LibVarianHooks";
 import { libaryTabs } from "../../../Data/Options";
 const ItemLibrary = () => {
   const [index, setIndex] = useState("");
-  const { setType: setTypeclassi } = useClassificationHooks();
-  const { setType: setTypecateg } = useCategoryHooks();
-  const { setType: setTypevariant } = useVariantHooks();
+  const setTypeclassi = useClassificationHooks((state) => state.setType);
+  const setTypecateg = useCategoryHooks((state) => state.setType);
+  const setTypevariant = useVariantHooks((state) => state.setType);
 
   // Unified setter
   const setAllTypes = (type) => {

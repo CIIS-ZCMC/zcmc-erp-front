@@ -14,6 +14,7 @@ import { MdInfoOutline } from "react-icons/md";
 import useLibrariesHook from "../../../Hooks/Libraries/LibHooks";
 import useModalHook from "../../../Hooks/ModalHook";
 import useClassificationHooks from "../../../Hooks/Libraries/LibClassificationHooks";
+import useItemsHook from "../../../Hooks/ItemsHook";
 
 // ['create', 'update', 'delete']
 
@@ -28,6 +29,7 @@ export const ClassificationModalContent = () => {
     setLoading,
     selectedData,
   } = useClassificationHooks();
+
   const { openModal, setOpenModal, setSuccessDialog } = useModalHook();
 
   const MetaData = {
