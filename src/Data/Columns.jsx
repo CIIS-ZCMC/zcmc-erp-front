@@ -207,7 +207,6 @@ export const AOP_HEADER = [
     // isDropdown: false,
     // position: "sticky",
     width: 150,
-    width: 150,
     align: "center",
   },
 ];
