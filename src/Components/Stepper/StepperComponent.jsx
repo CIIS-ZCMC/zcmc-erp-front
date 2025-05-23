@@ -59,7 +59,7 @@ const StepperComponent = ({ data = [] }) => {
           }
         }
       )}
-
+      {/* 
       <Step
         indicator={
           <StepIndicator>
@@ -81,7 +81,7 @@ const StepperComponent = ({ data = [] }) => {
             Office name
           </Typography>
         </Stack>
-      </Step>
+      </Step> */}
 
       {/* <Step
         indicator={

@@ -34,6 +34,21 @@ export const AOP_CONSTANTS = {
   TABLE_SUBHEADING:
     "This is a subheading.It should add more context to the interaction.",
 
+  TABLE_ACTIVITY_HEADER: "Step 2 of 4: Manage activities",
+  TABLE_ACTIVITY_SUBHEADING:
+    "This is a subheading. It should add more context to the interaction.",
+
+  TABLE_ITEMS_HEADER: "Select resources (items) to add",
+  TABLE_ITEMS_SUBHEADER: "All resources you’ll select here only applies to the specified activity above.",
+
+  TABLE_RESOURCES_HEADER: "Step 3.2 of 4: Manage resources",
+  TABLE_RESOURCES_SUBHEADING:
+    "This is a subheading. It should add more context to the interaction.",
+
+  TABLE_PERSON_HEADER: "Manage responsible persons",
+  TABLE_PERSON_SUBHEADING: `Select people you’d like to assign for the selected activity. Assign more and include generic
+   selections such as areas and job positions as necessary`,
+
   CREATE_AOP_TITLE: "Create a new AOP",
   CREATE_AOP_SUBHEADING:
     "This is a subheading. It should add more context to the interaction.",
@@ -45,25 +60,13 @@ export const AOP_CONSTANTS = {
   MANAGE_ACTIVITIES_HEADER: `You're Managing activities for Objective:`,
   MANAGE_ACTIVITIES_SUBHEADER: `Collapse this card to view more information about the selected objective.`,
 
-  TABLE_ACTIVITY_HEADER: "Step 2 of 4: Manage activities",
-  TABLE_ACTIVITY_SUBHEADING:
-    "This is a subheading. It should add more context to the interaction.",
+  MANAGE_HEADER: 'You are managing resources for',
+  MANAGE_SUBHEADER: `Collapse this card to view more information about the selected`,
 
   MODAL_RESOURCE_HEADER: "Select resources for activity Activity",
   MODAL_RESOURCE_SUBHEADING:
     "Select a request status and reasons (if returned) to continue. You may add remarks if necessary.",
 
-  ITEMS_HEADER: "Select resources (items) for activity Activity",
-  ITEMS_SUBHEADER:
-    "Select a request status and reasons (if returned) to continue. You may add remarks if necessary.",
-
-  TABLE_RESOURCES_HEADER: "Step 3.2 of 4: Manage resources",
-  TABLE_RESOURCES_SUBHEADING:
-    "This is a subheading. It should add more context to the interaction.",
-
-  TABLE_PERSON_HEADER: "Manage responsible persons",
-  TABLE_PERSON_SUBHEADING: `Select people you’d like to assign for the selected activity. Assign more and include generic
-   selections such as areas and job positions as necessary`,
 };
 
 export const PPMP_CONSTANTS = {
@@ -74,6 +77,15 @@ export const PPMP_CONSTANTS = {
   PPMP_RECEIVE_TITLE: "PPMP Management: Receiving",
   PPMP_RECEIVE_SUBHEADING:
     "Receive PPMP requests here. Each request is therefore recognized as completed its processing once received.",
+};
+
+export const LIBRARY_CONSTANTS = {
+  LIBRARY_TITLE: "Item information management",
+  LIBRARY_SUBTITLE:
+    "All information used by end-users around the system, across different modules and areas can be managed here.",
+  LIBRARY_HEADER: "Lis of records ready for AOP and PPMP",
+  LIBRARY_SUBHEADER:
+    "The following records of information are used to define user-inputted values",
 };
 
 export const MONTHS = [
@@ -106,7 +118,9 @@ export const approvalActions = [
 
 export const API = {
   AOP_APPLICATIONS: "aop-applications",
+  AOP_APPLICATIONS_STORE: 'aop-application-store',
   TYPE_OF_FUNCTIONS: "type-of-functions",
+  TYPE_OF_PURCHASE: "purchase-types",
 
   USERS: "get-users",
   JOB_POSITIONS: "get-designations",

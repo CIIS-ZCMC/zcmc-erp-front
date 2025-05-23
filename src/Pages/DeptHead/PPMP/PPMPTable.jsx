@@ -21,18 +21,23 @@ const PPMPTable = memo(
     stickLast = true,
     stickSecond = true,
     stripe = true,
-    // ppmpTable,
     items = [],
-    // setPPMPTable,
     modes = [],
     categories = [],
     classifications = [],
   }) => {
-    const { ppmp, getPPMPItems, getProcModes, removeItem } = usePPMPHook();
-    const { setAlertDialog, setConfirmationModal, closeConfirmation } =
-      useModalHook();
+    const { getPPMPItems, removeItem, search } = usePPMPHook();
+    const {
+      setAlertDialog,
+      setConfirmationModal,
+      closeConfirmation,
+      closeAlertDialog,
+    } = useModalHook();
     // const { items, getItems } = useItemsHook();
-    const [ppmpTable, setPPMPTable] = useState([]);
+
+    const [ppmpTable, setPPMPTable] = useState(
+      JSON.parse(localStorage.getItem("ppmp-items")) ?? []
+    );
     const [loading, setLoading] = useState(false);
     const [openDel, setOpenDel] = useState(false);
     const [searchVal, setSearchVal] = useState("");
@@ -43,12 +48,11 @@ const PPMPTable = memo(
 
     //COLUMN
     const handleOpenDel = (params) => {
-      console.log(params);
       const data = {
         status: "error",
-        title: ` Are you sure you want to delete item ${params?.item?.code}`,
+        title: ` Are you sure you want to delete item ${params?.item?.code}?`,
         description:
-          "The selected item will be removed from the table. Please input authorization pin to proceed",
+          "The selected item will be removed from the table. Please input authorization pin to proceed.",
         leftButtonLabel: "Cancel",
         rightButtonLabel: "Proceed",
         rightButtonAction: () => handleDeleteRow(params),
@@ -62,27 +66,40 @@ const PPMPTable = memo(
     const childHeaders = flattenColumns(columns);
 
     //DELETE ITEM
-    const handleDeleteRow = async (params) => {
-      // const formData = new FormData();
-      // formData.append("pin", pin);
-      setLoading(true);
-      setTimeout(() => {
-        const updated = ppmpTable.filter((row) => row.id !== params.id);
-        const data = {
-          status: "success",
-          title: "Item Deleted",
-          description: "Item has been deleted",
-        };
+    const handleDeleteRow = (params) => {
+      const formData = new FormData();
+      formData.append("pin", pin);
+
+      setLoading(true); // Move this here for immediate feedback
+
+      removeItem(params.id, formData, (status, message) => {
+        if (status === 200) {
+          const updated = ppmpTable?.filter((row) => row.id !== params.id);
+
+          setPPMPTable(updated);
+          localStorage.setItem("ppmp-items", JSON.stringify(updated));
+
+          setAlertDialog({
+            status: "success",
+            title: message,
+            description: message,
+          });
+
+          closeConfirmation();
+        } else {
+          setAlertDialog({
+            status: "error",
+            title: message,
+            description: message,
+          });
+        }
+
         setLoading(false);
-        closeConfirmation();
-        setAlertDialog(data);
-        setPPMPTable(updated);
-        localStorage.setItem("ppmp-items", JSON.stringify(updated));
-      }, 1000);
+      });
     };
 
     //FILTER
-    const filteredTable = ppmpTable.filter((item) => {
+    const filteredTable = ppmpTable?.filter((item) => {
       const matchesClass =
         !selectedClass?.name || item?.classification === selectedClass?.name;
       const matchesCat =
@@ -197,6 +214,56 @@ const PPMPTable = memo(
       localStorage.setItem("ppmp-items", JSON.stringify(updatedData));
     };
 
+    //SEARCH
+    const handleSearch = async () => {
+      if (searchVal) {
+        await search(searchVal, (status, message, data) => {
+          console.log(status, message, data);
+          const currentPPMP = localStorage.getItem("ppmp-items");
+          localStorage.setItem("ppmp-edits", currentPPMP);
+          localStorage.setItem("search-value", searchVal); // Save searchVal
+          if (data?.ppmp_items.length > 0) {
+            setPPMPTable(data?.ppmp_items);
+            localStorage.setItem(
+              "ppmp-items",
+              JSON.stringify(data?.ppmp_items)
+            );
+          } else {
+            const data = {
+              status: "error",
+              title: `Item ${searchVal} not found.`,
+              description: "",
+            };
+            setAlertDialog(data);
+          }
+        });
+      } else {
+        const data = {
+          status: "error",
+          title: `Invalid search value`,
+          description: "Please input first a search value.",
+        };
+        setAlertDialog(data);
+      }
+    };
+
+    //clear search
+
+    const handleResetSearch = async () => {
+      setSearchVal("");
+      localStorage.removeItem("search-value");
+
+      setLoading(true);
+      setTimeout(() => {
+        const ppmp_items_raw = localStorage.getItem("ppmp-edits");
+        const ppmp_items = JSON.parse(ppmp_items_raw || "[]"); // safely parse
+
+        setPPMPTable(ppmp_items);
+        localStorage.setItem("ppmp-items", JSON.stringify(ppmp_items));
+        setLoading(false);
+      }, 300);
+    };
+
     //RENDER TABLE HEADER
     const renderHeader = () => {
       return (
@@ -234,8 +301,8 @@ const PPMPTable = memo(
                     width: isFirstColumn
                       ? "var(--Table-firstColumnWidth)"
                       : isLastColumn && stickLast
-                      ? "var(--Table-lastColumnWidth)"
-                      : column.width || 200,
+                        ? "var(--Table-lastColumnWidth)"
+                        : column.width || 200,
                     fontSize: 13,
                     textAlign: column.align || "left",
                     backgroundColor: "rgba(240, 240, 240, 1)",
@@ -341,44 +408,13 @@ const PPMPTable = memo(
     const lastColumnWidth = columns[columns.length - 1]?.width || "144px";
 
     //USEEFFECT
+
     useEffect(() => {
-      async function fetchPPMPItemsIfNeeded() {
-        setLoading(true);
-
-        const localItems = localStorage.getItem("ppmp-items");
-
-        if (localItems) {
-          const parsed = JSON.parse(localItems);
-          if (parsed.length > 0) {
-            setPPMPTable(parsed);
-            setLoading(false);
-            return; // ✅ Stop here; no need to fetch
-          }
-        }
-
-        // No valid localStorage, fetch from API
-        try {
-          await getPPMPItems((status, message, data) => {
-            localStorage.setItem(
-              "ppmp-items",
-              JSON.stringify(data.data.ppmp_items)
-            );
-            setPPMPTable(data?.data.ppmp_items);
-          });
-        } catch (error) {
-          console.error("Error fetching ppmp_items:", error);
-        } finally {
-          setLoading(false);
-        }
+      const storedSearch = localStorage.getItem("search-value");
+      if (storedSearch) {
+        setSearchVal(storedSearch);
       }
-
-      fetchPPMPItemsIfNeeded();
     }, []);
-
-    useEffect(() => {
-      // localStorage.setItem("ppmp-items", JSON.stringify(ppmp.ppmp_items));
-      console.log("tableData updated:", ppmpTable); // Logs tableData after it's updated
-    }, [ppmp]);
 
     return (
       <Box sx={{ width: "100%", overflow: "auto" }}>
@@ -391,7 +427,12 @@ const PPMPTable = memo(
               value={searchVal}
               setValue={setSearchVal}
             />
-            <ButtonComponent label="Search" />
+            <ButtonComponent label="Search" onClick={() => handleSearch()} />
+            <ButtonComponent
+              variant="outlined"
+              label="Clear search"
+              onClick={() => handleResetSearch()}
+            />
           </Stack>
           <Stack direction="row" gap={1} alignItems="flex-end">
             <AutocompleteComponent

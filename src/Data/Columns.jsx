@@ -202,11 +202,12 @@ export const AOP_HEADER = [
     align: "center",
   },
   {
-    field: "action",
-    name: "Actions",
-    isDropdown: false,
-    position: "sticky",
-    width: "150px",
+    // field: "action",
+    // name: "Actions",
+    // isDropdown: false,
+    // position: "sticky",
+    width: 150,
+    width: 150,
     align: "center",
   },
 ];
@@ -221,7 +222,7 @@ export const AOP_ACTIVITIES_HEADER = [
   {
     field: "name",
     name: "Activities",
-    width: "10%",
+    width: 50,
     align: "center",
   },
 
@@ -229,7 +230,7 @@ export const AOP_ACTIVITIES_HEADER = [
     field: "timeframe",
     name: "Timeframe",
     align: "center",
-    width: "15%",
+    width: 100,
     children: [
       { field: "startMonth", name: "Start(Month)" },
       { field: "endMonth", name: "End(Month)" },
@@ -239,34 +240,36 @@ export const AOP_ACTIVITIES_HEADER = [
     field: "target",
     name: "Target (by quarter)",
     align: "center",
-    width: "20%",
+    width: 200,
     children: [
-      { field: "quarter", name: "Q1", width: "10%" },
-      { field: "quarter2", name: "Q2", width: "10%" },
-      { field: "quarter3", name: "Q3", width: "10%" },
-      { field: "quarter4", name: "Q4", width: "10%" },
+      { field: "quarter", name: "Q1", width: 20 },
+      { field: "quarter2", name: "Q2", width: 20 },
+      { field: "quarter3", name: "Q3", width: 20 },
+      { field: "quarter4", name: "Q4", width: 20 },
     ],
   },
 
   {
     field: "cost",
     name: "Cost",
-    width: "5%",
+    width: 50,
     align: "center",
   },
 
   {
     field: "gad_related_activity",
     name: "Is GAD-related activity",
-    width: "10%",
+    width: 70,
     align: "center",
   },
 
   {
     field: "action",
-    width: "15%",
-    align: "center",
     name: "Actions",
+    isDropdown: false,
+    position: "sticky",
+    width: 150,
+    align: "center",
   },
 ];
 
@@ -280,26 +283,41 @@ export const AOP_RESOURCE_HEADER = [
   {
     field: "item_name",
     name: "Item Name",
-    width: "15%",
+    width: "20%",
     align: "left",
   },
+
   {
-    field: "resource_type",
-    name: "Type of Resource",
-    width: "15%",
+    field: "quantity",
+    name: " Quantity",
+    width: "10%",
+    align: "center",
+  },
+
+  {
+    field: "individual_price",
+    name: "individual Price",
+    width: "20%",
+    align: "center",
+  },
+
+  {
+    field: "total_cost",
+    name: "Total Cost",
+    width: "20%",
+    align: "center",
+  },
+
+  {
+    field: "purchase_type",
+    name: "Purchase Type",
+    width: "20%",
     align: "center",
   },
 
   {
     field: "expense_class",
     name: "Expense class of unit",
-    width: "20%",
-    align: "center",
-  },
-
-  {
-    field: "procurement_mode",
-    name: "Mode of procurement",
     width: "20%",
     align: "center",
   },

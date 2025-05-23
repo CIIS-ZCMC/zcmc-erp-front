@@ -33,7 +33,9 @@ const ObjectivesList = () => {
   // HOOKS
   const AOPApplicationObjectives = useAOPApplicationObjectives();
   const AppicationObjectives = useMemo(
-    () => AOPApplicationObjectives ?? localStorageGetter("aopApplication"),
+    () =>
+      AOPApplicationObjectives ??
+      localStorageGetter("aopApplicationObjectives"),
     [AOPApplicationObjectives]
   );
   const { setActiveActivity, getActivityById } = useActivityActions();
@@ -90,8 +92,8 @@ const ObjectivesList = () => {
   };
 
   useEffect(() => {
-    if (AOPApplicationObjectives?.[0]?.activities?.[0]?.id && !activeActivity) {
-      setActiveActivity(AOPApplicationObjectives[0].activities[0].id);
+    if (AOPApplicationObjectives) {
+      setActiveActivity(AOPApplicationObjectives[0]?.activities[0]?.id);
     }
   }, []);
 

@@ -14,6 +14,7 @@ const useObjectivesHook = create(
     (set, get) => ({
       objectives: [],
       current_parent_id: null,
+      current_row_id: null,
 
       //update field
       updateObjectiveField: (id, field, value) => {
@@ -21,16 +22,17 @@ const useObjectivesHook = create(
           objectives: state.objectives?.map((row) =>
             row.id === id
               ? {
-                ...row,
-                [field]: value,
-                ...(field === "objective_id" && {
-                  success_indicator_id: null,
-                }),
-              }
+                  ...row,
+                  [field]: value,
+                  ...(field === "objective_id" && {
+                    success_indicator_id: null,
+                  }),
+                }
               : row
           ),
         }));
       },
+
       // add row objective
       addObjective: () => {
         const current = get().objectives;
@@ -41,11 +43,18 @@ const useObjectivesHook = create(
           ],
         }));
       },
+
       setCurrentObjective: (objectiveuuid) => {
         set(() => ({
           current_parent_id: objectiveuuid,
         }));
       },
+
+      setCurrentRowId: (objectiveRowId) => {
+        set(() => ({
+          current_row_id: objectiveRowId
+        }))
+      }
     }),
     {
       name: "objectives-storage",
