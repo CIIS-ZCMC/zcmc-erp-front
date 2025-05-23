@@ -32,7 +32,6 @@ const useManageObjHook = create((set) => ({
       success: (response) => {
         const { message, data } = response.data;
         console.log(data);
-        // Append the new objective to the list
         set((state) => ({
           objectives: [...state.objectives, data],
         }));
@@ -50,7 +49,6 @@ const useManageObjHook = create((set) => ({
       success: (response) => {
         const { message, data } = response.data;
         console.log(data);
-        // Update the objectives array in state
         set((state) => ({
           objectives: state.objectives.map((obj) =>
             obj.id === data.id ? { ...obj, ...data } : obj

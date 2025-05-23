@@ -301,8 +301,8 @@ const PPMPTable = memo(
                     width: isFirstColumn
                       ? "var(--Table-firstColumnWidth)"
                       : isLastColumn && stickLast
-                        ? "var(--Table-lastColumnWidth)"
-                        : column.width || 200,
+                      ? "var(--Table-lastColumnWidth)"
+                      : column.width || 200,
                     fontSize: 13,
                     textAlign: column.align || "left",
                     backgroundColor: "rgba(240, 240, 240, 1)",

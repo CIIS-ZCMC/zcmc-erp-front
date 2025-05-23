@@ -4,12 +4,16 @@ import {
   CircularProgress,
   IconButton,
   Sheet,
+  Stack,
   Table,
   Typography,
 } from "@mui/joy";
 import { useMemo, useState } from "react";
 import NoResultComponent from "./NoResultComponent";
 import PaginationComponent from "./PaginationComponent";
+import { ThreeDots } from "react-loader-spinner";
+import get from "lodash.get";
+import InputComponent from "../../Form/InputComponent";
 
 function ServerTableComponent({
   data = [],
@@ -25,17 +29,19 @@ function ServerTableComponent({
   bordered = false,
   footer,
   stripe,
-  search,
   fieldsToSearch = [],
   hoverRow,
+  highlightedRowId,
 }) {
+  const [search, setSearch] = useState("");
+
   const lastColumnWidth = columns[columns.length - 1]?.width || "144px";
 
   const filteredData = useMemo(() => {
     if (!search) return data;
     return data.filter((item) =>
       fieldsToSearch.some((field) => {
-        const value = item[field];
+        const value = get(item, field); // e.g., "objective.description"
         return (
           typeof value === "string" &&
           value.toLowerCase().includes(search.toLowerCase())
@@ -45,6 +51,14 @@ function ServerTableComponent({
   }, [search, data, fieldsToSearch]);
   return (
     <Box sx={{ width: "100%", overflow: "auto" }}>
+      <Stack gap={1} mb={2} justifyContent="space-between">
+        <InputComponent
+          label="Search"
+          width="30%"
+          value={search}
+          setValue={setSearch}
+        />
+      </Stack>
       <Sheet
         variant="outlined"
         sx={() => ({
@@ -166,22 +180,40 @@ function ServerTableComponent({
                       justifyContent: "center",
                     }}
                   >
-                    <CircularProgress />
+                    <ThreeDots
+                      visible={true}
+                      width="80"
+                      color="#4fa94d"
+                      radius="9"
+                      ariaLabel="three-dots-loading"
+                      wrapperStyle={{}}
+                      wrapperClass=""
+                    />
                   </Box>
                 </td>
               </tr>
-            ) : data?.length > 0 ? (
-              data?.map((row, rowIndex) => (
-                <tr key={rowIndex}>
-                  {columns.map(({ field, render, align }, colIndex) => {
-                    return (
-                      <td key={colIndex} style={{ textAlign: align }}>
-                        {render ? render(row) : row[field] ?? "-"}
-                      </td>
-                    );
-                  })}
-                </tr>
-              ))
+            ) : filteredData?.length > 0 ? (
+              filteredData?.map((row, rowIndex) => {
+                console.log(row.id, highlightedRowId);
+                const isHighlighted = row.id === highlightedRowId;
+                return (
+                  <tr
+                    key={rowIndex}
+                    style={{
+                      backgroundColor: isHighlighted ? "#d2f0ff" : "none",
+                      transition: "background-color 0.3s ease-in-out",
+                    }}
+                  >
+                    {columns.map(({ field, render, align }, colIndex) => {
+                      return (
+                        <td key={colIndex} style={{ textAlign: align }}>
+                          {render ? render(row) : row[field] ?? "-"}
+                        </td>
+                      );
+                    })}
+                  </tr>
+                );
+              })
             ) : (
               <tr>
                 <td colSpan={columns?.length} style={{ padding: 0 }}>
