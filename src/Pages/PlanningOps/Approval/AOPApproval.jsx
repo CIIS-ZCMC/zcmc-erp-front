@@ -102,7 +102,6 @@ const AOPApproval = () => {
                 color="primary"
                 startDecorator={<Search size={14} />}
               />
-
               <Stack direction={"row"} gap={2} alignItems={"center"}>
                 <YearSelectorComponent
                   width="auto"

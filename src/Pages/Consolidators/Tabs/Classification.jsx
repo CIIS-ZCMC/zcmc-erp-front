@@ -1,5 +1,5 @@
 import React, { Fragment } from "react";
-// import { classificationCols } from "../../../Data/Columns";
+import { classificationCols } from "../../../Data/Columns";
 import ScrollableTableComponent from "../../../Components/Common/Table/ScrollableTableComponent";
 import useModalHook from "../../../Hooks/ModalHook";
 import useClassificationHooks from "../../../Hooks/Libraries/LibClassificationHooks";
@@ -144,7 +144,7 @@ export const Classification = () => {
     <Fragment>
       <ScrollableTableComponent
         data={data}
-        // columns={classificationCols(setUpdateType, setDeleteType)}
+        columns={classificationCols(setUpdateType, setDeleteType)}
         pageSize={5}
         stripe="even"
         bordered

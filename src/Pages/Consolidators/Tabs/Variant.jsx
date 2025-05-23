@@ -143,7 +143,7 @@ export const Variant = () => {
     <Fragment>
       <ScrollableTableComponent
         data={data}
-        // columns={variantCols(setUpdateType, setDeleteType)}
+        columns={variantCols(setUpdateType, setDeleteType)}
         pageSize={5}
         stripe="even"
         bordered
