@@ -2,12 +2,15 @@ import React, { Fragment, useState, useEffect, act } from "react";
 import { Stack, Grid } from "@mui/joy";
 import { useNavigate, useLocation } from "react-router-dom";
 
-import useAOPObjectivesHooks from "../../../../../../../../Hooks/AOP/AOPObjectivesHook";
 import useResponsiblePeopleHook from "../../../../../../../../Hooks/ResponsiblePeopleHook";
+import useModalHook from "../../../../../../../../Hooks/ModalHook";
 
 //Custom Components
 import ButtonComponent from "../../../../../../../../Components/Common/ButtonComponent";
 import ContainerComponent from "../../../../../../../../Components/Common/ContainerComponent";
+import AlertDialogComponent from "../../../../../../../../Components/Common/Dialog/AlertDialogComponent";
+import ModalComponent from "../../../../../../../../Components/Common/Dialog/ModalComponent";
+import ConfirmationModalComponent from "../../../../../../../../Components/Common/Dialog/ConfirmationModalComponent";
 
 // Layouts
 import PersonSection from "../../../../../../../../Layout/ResponsiblePerson/PersonSection";
@@ -26,10 +29,14 @@ const ResponsiblePerson = () => {
   const rowId = location.state.activityrowId; //refers to activity row id
 
   const { responsible_people, resetValues, setAssignmentStatus } = useResponsiblePeopleHook();
+  const { setConfirmationModal } = useModalHook();
 
   const activity = responsible_people?.find((item) => {
     return item.activityId === activityId;
   });
+
+  const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [openConfirmDialog, setOpenConfirmDialog] = useState(false)
 
   // useEffect(() => {
   //   console.log(location.state)
@@ -39,14 +46,14 @@ const ResponsiblePerson = () => {
   //     activity.isAssigned
   // )
 
-
- // Check if at least one responsible entity exists
-    const hasData =
-      activity?.users?.length > 0 ||
-      activity?.designations?.length > 0 ||
-      activity?.areas?.length > 0;
+  // Check if at least one responsible entity exists
+  const hasData =
+    activity?.users?.length > 0 ||
+    activity?.designations?.length > 0 ||
+    activity?.areas?.length > 0;
 
   const handleSaveAssignment = () => {
+
     if (!activity) {
       console.warn("No responsible person data found for this activity.");
       return;
@@ -58,14 +65,28 @@ const ResponsiblePerson = () => {
     }
 
     setAssignmentStatus(activityId, true);
+    // alert('saving responsible person');
+    setOpenConfirmDialog(true)
 
-    // navigate(`/aop-create/activities/${rowId}`);
+    const data = {
+      status: "warning",
+      title: "Confirm Comment Submission",
+      description:
+        "Please confirm your action before proceeding. Once submitted, this comment will be permanently recorded and cannot be modified or deleted.",
+    };
+
+    setConfirmationModal(data);
   };
+
+  const proceed = () => {
+    navigate(`/aop-create/`);
+  }
 
   const handleCancel = (activityId) => {
     resetValues(activityId);
     navigate(`/aop-create/activities/${rowId}`);
   };
+
   // console.log(responsible_persons)
 
   return (
@@ -107,18 +128,18 @@ const ResponsiblePerson = () => {
           {/* {isAssigned ? */}
 
           {!hasData ? <ButtonComponent
-            onClick={() => navigate(`/aop-create/activities/${rowId}`)}
-            label={"Back to activities"}
-            size={"md"}
-            variant={"outlined"}
-          /> 
-           : 
-           <ButtonComponent
             onClick={() => handleCancel(activityId)}
             label={"Cancel Selection"}
             size={"md"}
             variant={"outlined"}
-           />
+          />
+            :
+            <ButtonComponent
+              onClick={() => navigate(-1)}
+              label={"Back to activities"}
+              size={"md"}
+              variant={"outlined"}
+            />
           }
           <ButtonComponent
             label={"Save Assignment"}
@@ -129,6 +150,19 @@ const ResponsiblePerson = () => {
           />
         </Stack>
       </ContainerComponent>
+
+      {/* <ModalComponent
+        isOpen={openConfirmDialog}
+      /> */}
+
+      {openConfirmDialog && (
+        <ConfirmationModalComponent
+          leftButtonLabel="Cancel"
+          rightButtonAction={proceed}
+          rightButtonLabel="Proceed"
+        // isLoading={ }\
+        />
+      )}
     </Fragment>
   );
 };

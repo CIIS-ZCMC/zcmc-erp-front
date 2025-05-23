@@ -16,6 +16,7 @@ const useUserHook = create((set) => ({
       },
     });
   },
+
   getAuthorized: (pin, Callback) => {
     if (pin == "12345") {
       Callback(true);
@@ -23,6 +24,17 @@ const useUserHook = create((set) => ({
     }
     Callback(false);
   },
+
 }));
+
+export const useUserTypes = () => {
+  const user = useUserHook((state) => state.user);
+  return {
+    isDivisionHead: true,
+    // user.position === "division",
+    isPlanning: user.position === "planning",
+    isDepartmentHead: user.position === "department-head",
+  };
+};
 
 export default useUserHook;

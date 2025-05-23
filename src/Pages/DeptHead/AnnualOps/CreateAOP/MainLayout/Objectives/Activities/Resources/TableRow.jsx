@@ -1,215 +1,181 @@
-import { Fragment, useEffect, useState } from 'react'
+import { Fragment, useEffect, useState } from "react";
 
-import { useNavigate } from 'react-router-dom'
-import { Typography, Input, Select, Option } from '@mui/joy'
-import { Trash } from 'lucide-react'
+import { useNavigate } from "react-router-dom";
+import { Typography, Input, Select, Option } from "@mui/joy";
+import { Trash } from "lucide-react";
 
-import useResourceHook from '../../../../../../../../Hooks/ResourceHook'
-import AutocompleteComponent from '../../../../../../../../Components/Form/AutocompleteComponent'
-import IconButtonComponent from '../../../../../../../../Components/Common/IconButtonComponent'
-
+import useResourceHook from "../../../../../../../../Hooks/ResourceHook";
+import AutocompleteComponent from "../../../../../../../../Components/Form/AutocompleteComponent";
+import IconButtonComponent from "../../../../../../../../Components/Common/IconButtonComponent";
 
 const TableRow = ({
-    rows,
-    parentId,
-    resources,
-    handleEdit,
-    handleBlur,
-    purchase_type,
+  rows,
+  parentId,
+  resources,
+  handleEdit,
+  handleBlur,
+  purchase_types,
 }) => {
+  const navigate = useNavigate();
 
-    const navigate = useNavigate()
+  const {
+    resources: resourceHooks,
+    removeItemResource,
+    updateResourceField,
+  } = useResourceHook();
 
-    const { removeItemResource, updateResourceField } = useResourceHook();
+  const [localResources, setLocalResources] = useState(rows);
+  const [editRowId, setEditRowId] = useState(null);
 
-    const [localResource, setLocalResource] = useState({});
-    const [editRowId, setEditRowId] = useState(null);
+  const handleOnRowClick = (id) => setEditRowId(id);
 
-    const filtered = rows.filter((value) => value.parentId === parentId)
+  function onChangeFieldValue(id, key, value) {
+    setLocalResources((prev) => [
+      ...prev.map((item) => {
+        if (item.id !== id) return item;
 
-    useEffect(() => {
-        console.log(purchase_type)
-    }, [purchase_type])
+        const updatedItem = {
+          ...item,
+          [key]: value,
+        };
 
-    const handleOnRowClick = (id) => {
-        setEditRowId(id)
+        if (key === "quantity") {
+          updatedItem.totalCost = value * item.individualPrice;
+          updateResourceField(id, key, value)
+        };
 
-        if (localResource[id]) return;
+        return {
+          ...item,
+          [key]: value,
+        };
+      }),
+    ]);
+  }
 
-        const currentRow = rows.find((row) => row.id === id);
-        if (!currentRow) return
+  // useEffect(() => {
+  //   console.log(localResources)
+  // }, [localResources])
 
-        const { name, quantity, expenseClass, individualPrice, totalCost } = currentRow;
+  const expenseClassOptions = [
+    { id: 1, label: 'MOOE', value: 'MOOE' },
+    { id: 2, label: 'CO', value: 'CO' }
+  ]
 
-        setLocalResource((prev) => ({
-            ...prev,
-            [id]: {
-                // localName: name || '',
-                localQuantity: quantity || '',
-                localPrice: individualPrice || '',
-                localCost: totalCost || '',
-                localExpenseClass: expenseClass || false,
-            }
-        }));
-    }
+  return (
+    <Fragment>
+      {localResources
+        ?.filter((value) => value.parentId === parentId)
+        .map(
+          (
+            {
+              id,
+              name,
+              quantity,
+              individualPrice,
+              purchaseTypeId,
+              expenseClass,
+            },
+            index
+          ) => {
+            const isEditing = editRowId === id;
+            const [selectPurchaseType, setSelectPurchaseType] = useState(purchaseTypeId ?? null);
+            const [selectedExpenseClass, setSelectedExpenseClass] = useState(expenseClass ?? "")
 
-    return (
-        <Fragment>
-            {filtered?.map(({ id, name, quantity, individualPrice, totalCost, purchaseTypeId, expenseClass }, index) => {
+            return (
+              <tr key={id}>
+                <td>
+                  <Typography>{index + 1}</Typography>
+                </td>
 
-                const isEditing = editRowId === id;
+                <td onClick={() => handleOnRowClick(id)}>
+                  <Typography>{name || "-"}</Typography>
+                </td>
 
-                return (
+                <td onClick={() => handleOnRowClick(id)}>
+                  {isEditing ? (
+                    <Input
+                      value={quantity ?? 0}
+                      size="sm"
+                      placeholder="Quantity"
+                      onChange={(e) => {
+                        const intValue = parseInt(e.target.value, 10) || 0;
+                        onChangeFieldValue(id, "quantity", intValue)
+                      }}
+                    />
+                  ) : (
+                    <Typography>{quantity ?? "-"}</Typography>
+                  )}
+                </td>
 
-                    < tr key={id} >
-                        <td>
-                            <Typography>
-                                {index + 1}
-                            </Typography>
-                        </td>
+                <td>
+                  <Typography>{individualPrice || "-"}</Typography>
+                </td>
 
-                        <td onClick={() => handleOnRowClick(id)}>
-                            {isEditing ? (
-                                <>
-                                    <AutocompleteComponent
-                                        placeholder="Select item resource"
-                                        value={name}
-                                        setValue={(val) => { val.name }}
-                                        getOptionLabel={(item) => String(item.name)}
-                                        options={resources}
-                                    />
-                                </>
+                <td onClick={() => handleOnRowClick(id)}>
+                  <Typography>
+                    {Number(quantity * individualPrice).toFixed(2) || "-"}
+                  </Typography>
+                </td>
 
-                            ) : (
-                                <Typography>{name || '-'}</Typography>
-                            )}
-                        </td >
+                <td onClick={() => handleOnRowClick(id)}>
+                  {isEditing ? (
+                    <>
+                      <AutocompleteComponent
+                        placeholder="Select Purchase"
+                        value={selectPurchaseType}
+                        setValue={(val) => {
+                          // console.log(val)
+                          setSelectPurchaseType(val);
+                          updateResourceField(id, "purchaseTypeId", val);
+                        }}
+                        options={purchase_types.map((item) => {
+                          console.log(item)
+                          return { id: item.id, label: item.code };
+                        })}
+                      />
+                    </>
+                  ) : (
+                    <Typography>{purchaseTypeId?.label || "-"}</Typography>
+                  )}
+                </td>
 
-                        <td onClick={() => handleOnRowClick(id)}>
-                            {isEditing ? (
-                                <Input
-                                    value={localResource[id]?.localQuantity || ''}
-                                    size='sm'
-                                    placeholder='Quantity'
-                                    onChange={(e) =>
-                                        setLocalResource((prev) => ({
-                                            ...prev,
-                                            [id]: {
-                                                ...prev[id],
-                                                localQuantity: e.target.value,
-                                            },
-                                        }))
-                                    }
-                                    onBlur={() => {
-                                        updateResourceField(id, 'quantity', localResource[id]?.localQuantity);
-                                        setEditRowId(null);
-                                    }}
-                                />
-                            ) : (
-                                <Typography>{quantity || '-'}</Typography>
-                            )}
-                        </td>
+                <td onClick={() => handleOnRowClick(id)}>
+                  {isEditing ? (
+                    <>
+                      <AutocompleteComponent
+                        placeholder="Select Expense Class"
+                        value={selectedExpenseClass}
+                        setValue={(val) => {
+                          // console.log(val)
+                          setSelectedExpenseClass(val);
+                          updateResourceField(id, "expenseClass", val.value);
+                        }}
+                        options={expenseClassOptions}
+                      />
+                    </>
 
-                        <td onClick={() => handleOnRowClick(id)}>
-                            {isEditing ? (
-                                <Input
-                                    value={localResource[id]?.localPrice || ''}
-                                    size='sm'
-                                    placeholder='Individual Price'
-                                    onChange={(e) =>
-                                        setLocalResource((prev) => ({
-                                            ...prev,
-                                            [id]: {
-                                                ...prev[id],
-                                                localPrice: e.target.value,
-                                            },
-                                        }))
-                                    }
-                                    onBlur={() => {
-                                        updateResourceField(id, 'individualPrice', localResource[id]?.localPrice);
-                                        setEditRowId(null);
-                                    }}
-                                />
-                            ) : (
-                                <Typography>{individualPrice || '-'}</Typography>
-                            )}
-                        </td>
+                  ) : (
+                    <Typography>
+                      {expenseClass || "-"}
+                    </Typography>
+                  )}
+                </td>
 
-                        <td onClick={() => handleOnRowClick(id)}>
-                            {isEditing ? (
-                                <Input
-                                    // value={localAopActivity[id]?.localName || ''}
-                                    size='sm'
-                                    placeholder='Total Cost'
-                                // onChange={(e) =>
-                                //     setLocalAopActivity((prev) => ({
-                                //         ...prev,
-                                //         [id]: {
-                                //             ...prev[id],
-                                //             localName: e.target.value,
-                                //         },
-                                //     }))
-                                // }
-                                // onBlur={() => {
-                                //     handleChange(id, 'name', localAopActivity[id]?.localName);
-                                //     setEditRowId(null);
-                                // }}
-                                />
-                            ) : (
-                                <Typography>{totalCost || '-'}</Typography>
-                            )}
-                        </td>
+                <td>
+                  <IconButtonComponent
+                    onClick={() => removeItemResource(id)}
+                    icon={<Trash size={14} />}
+                    size={"sm"}
+                    // color={'danger'}
+                    variant={"text"}
+                  />
+                </td>
+              </tr>
+            );
+          }
+        )}
+    </Fragment>
+  );
+};
 
-                        <td onClick={() => handleOnRowClick(id)}>
-                            {isEditing ? (
-                                <>
-                                    <AutocompleteComponent
-                                        placeholder="Select Purchase"
-                                        value={name}
-                                        setValue={(val) => { val.name }}
-                                        getOptionLabel={(item) => String(item.name)}
-                                        options={resources}
-                                    />
-                                </>
-
-                            ) : (
-                                <Typography>{name || '-'}</Typography>
-                            )}
-                        </td >
-
-                        <td onClick={() => handleOnRowClick(id)}>
-                            {isEditing ? (
-                                <Select
-                                    size='sm'
-                                    value={localResource?.[id]?.expenseClass || false}
-                                    onChange={(e, newValue) => updateResourceField(id, "expenseClass", newValue)}
-                                >
-                                    <Option value={true}>MOOE</Option>
-                                    <Option value={false}>CO</Option>
-                                </Select>
-                            ) : (
-                                <Typography>
-                                    {localResource?.[id]?.expenseClass}
-                                    {expenseClass ? 'MOOE' : 'CO'}
-                                </Typography>
-                            )}
-                        </td>
-
-                        <td>
-                            <IconButtonComponent
-                                onClick={() => removeItemResource(id)}
-                                icon={<Trash size={14} />}
-                                size={'sm'}
-                                // color={'danger'}
-                                variant={'text'}
-                            />
-                        </td>
-                    </tr >
-                )
-
-            })}
-        </Fragment >
-    )
-}
-
-export default TableRow
+export default TableRow;

@@ -2,7 +2,7 @@ import { create } from "zustand";
 
 const useModalHook = create((set, get) => ({
   modalState: { isOpen: false },
-  successDialog:true,
+  successDialog: true,
   setSuccessDialog: (state) => set({ successDialog: state }),
   openModal: {
     isNew: false,
@@ -15,6 +15,16 @@ const useModalHook = create((set, get) => ({
     title: "This is a sample confirmation modal title message (?)",
     description: "This is a sample description for your confirmation modal.",
     content: null,
+    rightButtonLabel: "Proceed",
+    rightButtonAction: null,
+    rightButtonDisabled: false,
+    leftButtonLabel: "Cancel",
+    leftButtonAction: null,
+    isLoading: false,
+    withAuthPin: false,
+    withDivider: false,
+    setAuthPin: null,
+    pinHelperText: "Confirm your action by entering your PIN.",
   },
 
   alertDialogState: {
@@ -25,7 +35,7 @@ const useModalHook = create((set, get) => ({
     description: "This is subtitle.",
   },
 
-  setOpenModal: (isNew, isDelete, Open ) => {
+  setOpenModal: (isNew, isDelete, Open) => {
     set({
       openModal: {
         isNew: isNew,
@@ -71,7 +81,24 @@ const useModalHook = create((set, get) => ({
 
   // CONFIRMATION MODAL
   setConfirmationModal: (data) => {
-    const { status, title, description } = data ?? null;
+    const {
+      status,
+      title,
+      description,
+      content,
+      leftButtonLabel,
+      withDivider,
+      rightButtonLabel,
+      rightButtonAction,
+      rightButtonDisabled,
+      leftButtonAction,
+      isLoading,
+      withAuthPin,
+      setAuthPin,
+      pinHelperText,
+    } = data ?? null;
+
+    get().closeConfirmation();
 
     try {
       set(() => ({
@@ -80,6 +107,17 @@ const useModalHook = create((set, get) => ({
           status: status,
           title: title,
           description: description,
+          content: content,
+          leftButtonLabel: leftButtonLabel,
+          withDivider: withDivider,
+          rightButtonLabel: rightButtonLabel,
+          rightButtonAction: rightButtonAction,
+          rightButtonDisabled: rightButtonDisabled,
+          leftButtonAction: leftButtonAction,
+          isLoading: isLoading,
+          withAuthPin: withAuthPin,
+          setAuthPin: setAuthPin,
+          pinHelperText: pinHelperText,
         },
       }));
     } catch (e) {
@@ -94,6 +132,19 @@ const useModalHook = create((set, get) => ({
         status: null,
         title: null,
         description: null,
+        modalContent: null,
+        withDvdr: false,
+        content: null,
+        rightButtonLabel: "Proceed",
+        rightButtonAction: null,
+        rightButtonDisabled: false,
+        leftButtonLabel: "Cancel",
+        leftButtonAction: null,
+        isLoading: false,
+        withAuthPin: false,
+        withDivider: false,
+        setAuthPin: null,
+        pinHelperText: "Confirm your action by entering your PIN.",
       },
     }));
   },

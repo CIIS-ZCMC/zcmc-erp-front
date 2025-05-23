@@ -28,6 +28,8 @@ import AOPApproval from "../Pages/PlanningOps/Approval/AOPApproval";
 import AddItems from "../Pages/DeptHead/PPMP/AddItems";
 import PPMPItems from "../Pages/DeptHead/PPMP/PPMPItems";
 import PPMPDashboard from "../Pages/DeptHead/PPMP/PPMPDashboard";
+import PPMPApproval from "../Pages/PPMP/Approval/PPMPApproval";
+import ManagePPMP from "../Pages/PPMP/Approval/ManagePPMP";
 
 import { Items as ConsolidatorItems } from "../Pages/Consolidators/Tabs/Items";
 import { Classification } from "../Pages/Consolidators/Tabs/Classification";
@@ -39,6 +41,8 @@ export const sidebarRoutes = [
     path: "/dashboard",
     name: "Dashboard",
     element: <Dashboard />,
+    roles: ["super_admin"],
+    abilities: ["M-001:read"],
   },
 
   //Planning and Operations routes
@@ -46,26 +50,44 @@ export const sidebarRoutes = [
     path: "/aop",
     name: "AOP Management",
     element: <AnnualOps />,
+    roles: ["super_admin"],
+    abilities: [
+      "M-001:read",
+      "M-001:write",
+      "M-001:edit",
+      "M-001:delete",
+      "M-001:approve",
+    ],
     children: [
       {
         index: true,
         element: <Navigate to="all" replace />,
+        roles: ["super_admin"],
+        abilities: ["M-001:read"],
       },
       {
         path: "all",
         element: <All />,
+        roles: ["super_admin"],
+        abilities: ["M-001:read"],
       },
       {
         path: "approved",
         element: <Approved />,
+        roles: ["super_admin"],
+        abilities: ["M-001:approve"],
       },
       {
         path: "pending",
         element: <Pending />,
+        roles: ["super_admin"],
+        abilities: ["M-001:read", "M-001:approve"],
       },
       {
         path: "returned",
         element: <Returned />,
+        roles: ["super_admin"],
+        abilities: ["M-001:read", "M-001:edit", "M-001:approve"],
       },
     ],
   },
@@ -73,6 +95,8 @@ export const sidebarRoutes = [
   {
     path: "/aop-create",
     element: <CreateAOP />,
+    roles: ["super_admin"],
+    abilities: ["M-001:read", "M-001:write", "M-001:edit", "M-001:delete"],
     children: [
       { index: true, element: <AnnualOpsPlanning /> }, //ENTRY POINT
       {
@@ -86,11 +110,25 @@ export const sidebarRoutes = [
           {
             path: "resources/:activityId",
             element: <Resources />,
+            roles: ["super_admin"],
+            abilities: [
+              "M-001:read",
+              "M-001:write",
+              "M-001:edit",
+              "M-001:delete",
+            ],
           },
 
           {
             path: "person/:activityId",
             element: <ResponsibePerson />,
+            roles: ["super_admin"],
+            abilities: [
+              "M-001:read",
+              "M-001:write",
+              "M-001:edit",
+              "M-001:delete",
+            ],
           },
         ],
       },
@@ -106,7 +144,12 @@ export const sidebarRoutes = [
     path: "/aop-approval",
     children: [
       { index: true, element: <AOPApproval /> },
-      { path: "objectives/:id", element: <ManageAOP /> },
+      {
+        path: "objectives/:id",
+        element: <ManageAOP />,
+        roles: ["super_admin"],
+        abilities: ["M-001:read", "M-001:write", "M-001:edit", "M-001:delete"],
+      },
     ],
   },
 
@@ -135,17 +178,36 @@ export const sidebarRoutes = [
       {
         path: "ppmp-items",
         element: <PPMPItems />,
+        roles: ["super_admin"],
+        abilities: ["M-001:read", "M-001:write", "M-001:edit", "M-001:delete"],
       },
       {
         path: "add-item/:expenseId",
         element: <AddItems />,
+        roles: ["super_admin"],
+        abilities: ["M-001:read", "M-001:write", "M-001:edit", "M-001:delete"],
       },
     ],
   },
   {
+    path: "/ppmp-approval",
+    children: [
+      { index: true, element: <PPMPApproval /> },
+      {
+        path: "view/:id",
+        element: <ManagePPMP />,
+        roles: ["super_admin"],
+        abilities: ["M-001:read", "M-001:write", "M-001:edit", "M-001:delete"],
+      },
+    ],
+  },
+
+  {
     path: "/objectives",
     name: "Objectives and KPIs",
     element: <Objectives />,
+    roles: ["super_admin"],
+    abilities: ["M-001:read", "M-001:write", "M-001:edit", "M-001:delete"],
   },
 
   //Item Management routes
@@ -153,12 +215,16 @@ export const sidebarRoutes = [
     path: "/item-requests",
     name: "Request",
     element: <ItemRequest />,
+    roles: ["super_admin"],
+    abilities: ["M-001:read", "M-001:write", "M-001:edit", "M-001:delete"],
   },
 
   {
     path: "/item-library",
     name: "Library",
     element: <ItemLibrary />,
+    roles: ["super_admin"],
+    abilities: ["M-001:read", "M-001:write", "M-001:edit", "M-001:delete"],
     children: [
       {
         index: true,

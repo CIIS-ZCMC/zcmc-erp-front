@@ -7,7 +7,7 @@ import ButtonComponent from "../../../Components/Common/ButtonComponent";
 import { ExternalLink } from "lucide-react";
 import { Stack, Box } from "@mui/joy";
 import { Outlet } from "react-router-dom";
-import TabsComponent from "../../../Components/Common/TabsComponent";
+import TabComponent from "../../../Components/Common/TabComponent";
 import ScrollableTableComponent from "../../../Components/Common/Table/ScrollableTableComponent";
 import { objHeaders } from "../../../Data/Columns";
 import SearchBarComponent from "../../../Components/SearchBarComponent";
@@ -92,7 +92,7 @@ const ItemLibrary = () => {
             </Stack>
           }
         >
-          <TabsComponent
+          <TabComponent
             tabs={["Items", "Classification", "Category", "Variant"]}
             pathMap={["", "classification", "category", "variant"]}
           />

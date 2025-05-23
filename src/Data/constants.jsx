@@ -27,6 +27,9 @@ export const AOP_CONSTANTS = {
   AOP_SUBHEADING:
     "This is a subheading. It should add more context to the interaction.",
 
+  AOP_REQUEST_SUBHEADING:
+    "All AOP requests sent by Department/Section/Unit Heads or Officers in charge appear here.",
+
   TABLE_TITLE: "List of AOP requests",
   TABLE_SUBHEADING:
     "This is a subheading.It should add more context to the interaction.",
@@ -64,10 +67,16 @@ export const AOP_CONSTANTS = {
   MODAL_RESOURCE_SUBHEADING:
     "Select a request status and reasons (if returned) to continue. You may add remarks if necessary.",
 
+};
 
+export const PPMP_CONSTANTS = {
+  PPMP_TITLE: "PPMP Management",
+  PPMP_SUBHEADING:
+    "This is a subheading. It should add more context to the interaction.",
 
-
-
+  PPMP_RECEIVE_TITLE: "PPMP Management: Receiving",
+  PPMP_RECEIVE_SUBHEADING:
+    "Receive PPMP requests here. Each request is therefore recognized as completed its processing once received.",
 };
 
 export const LIBRARY_CONSTANTS = {
@@ -96,12 +105,12 @@ export const MONTHS = [
 
 export const approvalActions = [
   {
-    value: "Approve",
+    value: "approved",
     label: "Approve",
     color: "success",
   },
   {
-    value: "Returned",
+    value: "returned",
     label: "Return",
     color: "warning",
   },
@@ -109,12 +118,25 @@ export const approvalActions = [
 
 export const API = {
   AOP_APPLICATIONS: "aop-applications",
+  AOP_APPLICATIONS_STORE: 'aop-application-store',
   TYPE_OF_FUNCTIONS: "type-of-functions",
   TYPE_OF_PURCHASE: "purchase-types",
 
   USERS: "get-users",
   JOB_POSITIONS: "get-designations",
   AREAS: "get-areas",
+
+  // AOP REQUESTS
+  AOP_REQUESTS: "aop-requests",
+  MANAGE_AOP_REQUEST: "manage-aop-request",
+  SHOW_OBJECTIVE: "show-objective-activity",
+  PROCESS_AOP_REQUEST: "process-aop-request",
+
+  // TIMELINE
+  APPROVAL_TIMELINE: "application-timelines",
+
+  // OBJECTIVES
+  EDIT_OBJECTIVE: "edit-objective-and-success-indicator",
 };
 
 export const expenseClassData = [

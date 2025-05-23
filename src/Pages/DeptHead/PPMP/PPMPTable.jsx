@@ -1,83 +1,270 @@
-import {
-  Autocomplete,
-  Box,
-  Button,
-  CircularProgress,
-  IconButton,
-  Sheet,
-  Table,
-  Typography,
-} from "@mui/joy";
-import { memo, useCallback, useEffect, useMemo, useRef, useState } from "react";
+import { Autocomplete, Box, Sheet, Stack, Table, Typography } from "@mui/joy";
+import { memo, useEffect, useState } from "react";
 import NoResultComponent from "../../../Components/Common/Table/NoResultComponent";
-import PaginationComponent from "../../../Components/Common/Table/PaginationComponent";
 import InputComponent from "../../../Components/Form/InputComponent";
-import debounce from "lodash.debounce";
 import { ThreeDots } from "react-loader-spinner";
 import { flattenColumns } from "../../../Utils/FlattenColumns";
-import { MdDeleteOutline } from "react-icons/md";
-import { usePPMPItemsHook } from "../../../Hooks/PPMPItemsHook";
+import usePPMPHook from "../../../Hooks/PPMPHook";
+import useItemsHook from "../../../Hooks/ItemsHook";
+import { ppmpHeaders } from "../../../Data/Columns";
+import ButtonComponent from "../../../Components/Common/ButtonComponent";
+import PaginationComponent from "../../../Components/Common/Table/PaginationComponent";
+import AlertDialogComponent from "../../../Components/Common/Dialog/AlertDialogComponent";
+import useModalHook from "../../../Hooks/ModalHook";
+import AutocompleteComponent from "../../../Components/Form/AutocompleteComponent";
+import ConfirmationModalComponent from "../../../Components/Common/Dialog/ConfirmationModalComponent";
+import ConfirmationModal from "../../../Components/Common/Dialog/ConfirmationModal";
+import PageLoader from "../../../Components/Loading/PageLoader";
 
 const PPMPTable = memo(
   ({
-    stickLast = false,
-    stickSecond = false,
-    data,
-    columns,
-    stripe,
-    isLoading,
-    setData,
-    onFieldChange,
+    stickLast = true,
+    stickSecond = true,
+    stripe = true,
+    items = [],
+    modes = [],
+    categories = [],
+    classifications = [],
   }) => {
-    const childHeaders = flattenColumns(columns);
-    const [editedCells, setEditedCells] = useState({});
-    const [loading, setLoading] = useState(false);
+    const { getPPMPItems, removeItem, search } = usePPMPHook();
+    const {
+      setAlertDialog,
+      setConfirmationModal,
+      closeConfirmation,
+      closeAlertDialog,
+    } = useModalHook();
+    // const { items, getItems } = useItemsHook();
 
-    const handleCellEdit = (rowId, field, value) => {
-      setEditedCells((prev) => ({
-        ...prev,
-        [rowId]: {
-          ...prev[rowId],
-          [field]: value,
-        },
-      }));
+    const [ppmpTable, setPPMPTable] = useState(
+      JSON.parse(localStorage.getItem("ppmp-items")) ?? []
+    );
+    const [loading, setLoading] = useState(false);
+    const [openDel, setOpenDel] = useState(false);
+    const [searchVal, setSearchVal] = useState("");
+    const [selectedClass, setSelectedClass] = useState({});
+    const [selectedCat, setSelectedCat] = useState({});
+    const [editedCell, setEditedCell] = useState({ rowId: null, field: null });
+    const [pin, setPin] = useState("");
+
+    //COLUMN
+    const handleOpenDel = (params) => {
+      const data = {
+        status: "error",
+        title: ` Are you sure you want to delete item ${params?.item?.code}?`,
+        description:
+          "The selected item will be removed from the table. Please input authorization pin to proceed.",
+        leftButtonLabel: "Cancel",
+        rightButtonLabel: "Proceed",
+        rightButtonAction: () => handleDeleteRow(params),
+        withAuthPin: true,
+        setAuthPin: setPin,
+      };
+      setConfirmationModal(data);
     };
 
-    // Commit the local edited value to the main data
-    const commitEditToData = (rowId, field) => {
-      const editedValue = editedCells[rowId]?.[field];
-      if (editedValue === undefined) return;
+    const columns = ppmpHeaders(handleOpenDel, items, modes);
+    const childHeaders = flattenColumns(columns);
 
-      const row = data.find((item) => item.id === rowId);
-      if (!row) return;
+    //DELETE ITEM
+    const handleDeleteRow = (params) => {
+      const formData = new FormData();
+      formData.append("pin", pin);
 
-      // Only commit if the value actually changed
-      if (row[field] !== editedValue) {
-        onFieldChange(field, editedValue, row);
-      }
+      setLoading(true); // Move this here for immediate feedback
 
-      // Remove the committed field from the state
-      setEditedCells((prev) => {
-        const updatedRow = { ...prev[rowId] };
-        delete updatedRow[field];
+      removeItem(params.id, formData, (status, message) => {
+        if (status === 200) {
+          const updated = ppmpTable?.filter((row) => row.id !== params.id);
 
-        const newState = { ...prev };
-        if (Object.keys(updatedRow).length > 0) {
-          newState[rowId] = updatedRow;
+          setPPMPTable(updated);
+          localStorage.setItem("ppmp-items", JSON.stringify(updated));
+
+          setAlertDialog({
+            status: "success",
+            title: message,
+            description: message,
+          });
+
+          closeConfirmation();
         } else {
-          delete newState[rowId];
+          setAlertDialog({
+            status: "error",
+            title: message,
+            description: message,
+          });
         }
-        return newState;
+
+        setLoading(false);
       });
     };
 
-    // Apply commit on blur with debounce for performance optimization
-    const debouncedCommit = useCallback(
-      debounce((rowId, field) => {
-        commitEditToData(rowId, field);
-      }, 300),
-      []
+    //FILTER
+    const filteredTable = ppmpTable?.filter((item) => {
+      const matchesClass =
+        !selectedClass?.name || item?.classification === selectedClass?.name;
+      const matchesCat =
+        !selectedCat?.name || item?.category === selectedCat?.name;
+      return matchesClass && matchesCat;
+    });
+    const handleClear = () => {
+      setSelectedCat({});
+      setSelectedClass({});
+    };
+
+    //PAGINATION
+    const [currentPage, setCurrentPage] = useState(1);
+    const pageSize = 10;
+    const paginatedData = filteredTable.slice(
+      (currentPage - 1) * pageSize,
+      currentPage * pageSize
     );
+    const totalPages = Math.ceil(filteredTable.length / pageSize);
+
+    const handleNextPage = () => {
+      if (currentPage < totalPages) setCurrentPage((prev) => prev + 1);
+    };
+
+    const handlePrevPage = () => {
+      if (currentPage > 1) setCurrentPage((prev) => prev - 1);
+    };
+
+    //CHANGES IN TABLE
+    const calculateQuantity = (target) => {
+      return Object.values(target).reduce((sum, value) => sum + value, 0);
+    };
+
+    const handleFieldChange = (fieldName, newValue, row) => {
+      if (!row?.id) return;
+
+      const updatedRow = { ...row };
+
+      if (fieldName === "item") {
+        setLoading(true);
+
+        const selected = items.find((item) => item.name === newValue.name);
+        if (!selected) {
+          console.warn("Selected item not found.");
+          return;
+        }
+
+        updatedRow.item = selected;
+        updatedRow.item_code = selected?.code || "";
+        updatedRow.classification = selected?.classification || "";
+        updatedRow.category = selected?.category || "";
+        updatedRow.unit = selected?.unit || "";
+        updatedRow.estimated_budget = selected?.estimated_budget || "";
+
+        setLoading(false);
+      } else if (fieldName === "procurement_mode") {
+        updatedRow.procurement_mode = newValue;
+      } else {
+        if (
+          [
+            "jan",
+            "feb",
+            "mar",
+            "apr",
+            "may",
+            "jun",
+            "jul",
+            "aug",
+            "sep",
+            "oct",
+            "nov",
+            "dec",
+          ].includes(fieldName)
+        ) {
+          const newQuarterValue = parseInt(newValue) || 0;
+
+          const updatedTargets = {
+            ...row.target_by_quarter,
+            [fieldName]: newQuarterValue,
+          };
+
+          const newQuantity = calculateQuantity(updatedTargets);
+
+          if (row.aop_quantity && newQuantity > row.aop_quantity) {
+            const data = {
+              status: "error",
+              title: "Exceeded quantity",
+              description: `Total quantity (${newQuantity}) exceeds AOP quantity (${row.aop_quantity}).`,
+            };
+            setAlertDialog(data);
+            return; // Stop further updates if invalid
+          }
+
+          updatedRow.target_by_quarter = updatedTargets;
+          updatedRow.quantity = newQuantity;
+          updatedRow.total_amount =
+            newQuantity * (parseFloat(updatedRow.estimated_budget) || 0);
+        } else if (fieldName === "quantity") {
+          updatedRow.quantity = parseFloat(newValue) || 0;
+          updatedRow.total_amount =
+            updatedRow.quantity *
+            (parseFloat(updatedRow.estimated_budget) || 0);
+        } else {
+          updatedRow[fieldName] = newValue;
+        }
+      }
+
+      const updatedData = ppmpTable.map((r) =>
+        r.id === row.id ? updatedRow : r
+      );
+      setPPMPTable(updatedData);
+      localStorage.setItem("ppmp-items", JSON.stringify(updatedData));
+    };
+
+    //SEARCH
+    const handleSearch = async () => {
+      if (searchVal) {
+        await search(searchVal, (status, message, data) => {
+          console.log(status, message, data);
+          const currentPPMP = localStorage.getItem("ppmp-items");
+          localStorage.setItem("ppmp-edits", currentPPMP);
+          localStorage.setItem("search-value", searchVal); // Save searchVal
+          if (data?.ppmp_items.length > 0) {
+            setPPMPTable(data?.ppmp_items);
+            localStorage.setItem(
+              "ppmp-items",
+              JSON.stringify(data?.ppmp_items)
+            );
+          } else {
+            const data = {
+              status: "error",
+              title: `Item ${searchVal} not found.`,
+              description: "",
+            };
+            setAlertDialog(data);
+          }
+        });
+      } else {
+        const data = {
+          status: "error",
+          title: `Invalid search value`,
+          description: "Please input first a search value.",
+        };
+        setAlertDialog(data);
+      }
+    };
+
+    //clear search
+
+    const handleResetSearch = async () => {
+      setSearchVal("");
+      localStorage.removeItem("search-value");
+
+      setLoading(true);
+      setTimeout(() => {
+        const ppmp_items_raw = localStorage.getItem("ppmp-edits");
+        const ppmp_items = JSON.parse(ppmp_items_raw || "[]"); // safely parse
+
+        setPPMPTable(ppmp_items);
+        localStorage.setItem("ppmp-items", JSON.stringify(ppmp_items));
+        setLoading(false);
+      }, 300);
+    };
+
+    //RENDER TABLE HEADER
     const renderHeader = () => {
       return (
         <>
@@ -114,8 +301,8 @@ const PPMPTable = memo(
                     width: isFirstColumn
                       ? "var(--Table-firstColumnWidth)"
                       : isLastColumn && stickLast
-                      ? "var(--Table-lastColumnWidth)"
-                      : column.width || 200,
+                        ? "var(--Table-lastColumnWidth)"
+                        : column.width || 200,
                     fontSize: 13,
                     textAlign: column.align || "left",
                     backgroundColor: "rgba(240, 240, 240, 1)",
@@ -152,38 +339,63 @@ const PPMPTable = memo(
         </>
       );
     };
-    const renderCell = (header, row) => {
-      const value = row[header.field];
 
-      if (header.inputType === "dropdown") {
-        return (
-          <Autocomplete
-            options={header.options || []}
-            getOptionLabel={(option) => option?.name || "-"}
-            value={value || null}
-            onChange={(e, newVal) => {
-              // your onChange logic
-            }}
-            renderInput={(params) => <TextField {...params} />}
-          />
-        );
-      }
+    //RENDER TABLE CELL
+    const renderCell = (header, row, isEditing) => {
+      const getFieldValue = () => {
+        if (
+          [
+            "jan",
+            "feb",
+            "mar",
+            "apr",
+            "may",
+            "jun",
+            "jul",
+            "aug",
+            "sep",
+            "oct",
+            "nov",
+            "dec",
+          ].includes(header.field)
+        ) {
+          return isEditing
+            ? row.target_by_quarter[header.field]
+            : row.target_by_quarter[header.field];
+        }
+        return isEditing ? row[header.field] : row[header.field];
+      };
 
-      if (header.inputType === "input") {
-        const editedValue =
-          editedCells?.[row.id]?.[header.field] ?? row[header.field] ?? "";
-        return (
-          <InputComponent
-            value={editedValue}
-            onChange={(e) => {
-              handleCellEdit(row.id, header.field, e.target.value);
-            }}
-            onBlur={() => {
-              debouncedCommit(row.id, header.field); // now commit with fresh value
-            }}
-            fullWidth
-          />
-        );
+      const value = getFieldValue();
+
+      const handleChange = (field, rowId, newValue) => {
+        setEditedCell((prev) => ({ ...prev, rowId, field }));
+        handleFieldChange(field, newValue, row);
+      };
+
+      if (isEditing) {
+        if (header.inputType === "dropdown") {
+          return (
+            <Autocomplete
+              options={header.options || []}
+              getOptionLabel={(option) => option?.name || "-"}
+              value={value}
+              onChange={(e, newValue) =>
+                handleChange(header.field, row.id, newValue)
+              }
+            />
+          );
+        }
+        if (header.inputType === "input") {
+          return (
+            <InputComponent
+              value={value}
+              onChange={(e) =>
+                handleChange(header.field, row.id, e.target.value)
+              }
+            />
+          );
+        }
       }
 
       return header.render ? (
@@ -194,18 +406,74 @@ const PPMPTable = memo(
     };
 
     const lastColumnWidth = columns[columns.length - 1]?.width || "144px";
+
+    //USEEFFECT
+
+    useEffect(() => {
+      const storedSearch = localStorage.getItem("search-value");
+      if (storedSearch) {
+        setSearchVal(storedSearch);
+      }
+    }, []);
+
     return (
       <Box sx={{ width: "100%", overflow: "auto" }}>
-        {console.log("re-render")}
+        <Stack direction="row" mb={2} justifyContent="space-between">
+          <Stack direction="row" alignItems="flex-end" gap={1}>
+            <InputComponent
+              label="Search"
+              placeholder="Search for an item"
+              width="auto"
+              value={searchVal}
+              setValue={setSearchVal}
+            />
+            <ButtonComponent label="Search" onClick={() => handleSearch()} />
+            <ButtonComponent
+              variant="outlined"
+              label="Clear search"
+              onClick={() => handleResetSearch()}
+            />
+          </Stack>
+          <Stack direction="row" gap={1} alignItems="flex-end">
+            <AutocompleteComponent
+              label={"Filter by classification"}
+              placeholder={"Select classification"}
+              size="md"
+              options={classifications}
+              getOptionLabel={(option) => option.name || ""}
+              value={
+                classifications?.find((el) => el.id === selectedClass?.id) ||
+                null
+              }
+              setValue={setSelectedClass}
+            />
+            <AutocompleteComponent
+              label={"Filter by category"}
+              placeholder={"Select category"}
+              size="md"
+              options={categories}
+              getOptionLabel={(option) => option.name || ""}
+              value={
+                categories?.find((el) => el.id === selectedCat?.id) || null
+              }
+              setValue={setSelectedCat}
+            />
+            <ButtonComponent
+              label={"Clear filters"}
+              variant="plain"
+              width="100%"
+              onClick={() => handleClear()}
+            />
+          </Stack>
+        </Stack>
+
         <Sheet
           variant="outlined"
           sx={() => ({
             "--TableCell-height": "40px",
-            // the number is the amount of the header rows.
             "--TableHeader-height": "calc(1 * var(--TableCell-height))",
             "--Table-firstColumnWidth": columns[0]?.width, //set the width of the first column in px
             "--Table-lastColumnWidth": lastColumnWidth, //set the width of the first column in px
-            // background needs to have transparency to show the scrolling shadows
             "--TableRow-stripeBackground": "rgba(0 0 0 / 0.04)",
             "--TableRow-hoverBackground": "rgba(0 0 0 / 0.08)",
             overflow: "auto",
@@ -249,10 +517,10 @@ const PPMPTable = memo(
               }),
             }}
           >
-            {data?.length !== 0 ? <thead>{renderHeader()}</thead> : ""}
+            {filteredTable?.length !== 0 ? <thead>{renderHeader()}</thead> : ""}
 
             <tbody>
-              {isLoading ? (
+              {loading ? (
                 <tr>
                   <td colSpan={columns?.length} style={{ padding: 0 }}>
                     <Box
@@ -275,14 +543,29 @@ const PPMPTable = memo(
                     </Box>
                   </td>
                 </tr>
-              ) : data?.length > 0 ? (
-                data.map((row) => (
+              ) : filteredTable?.length > 0 ? (
+                paginatedData.map((row) => (
                   <tr key={row.id}>
-                    {childHeaders.map((header) => (
-                      <td key={header.field} align="center">
-                        {renderCell(header, row)}
-                      </td>
-                    ))}
+                    {childHeaders.map((header) => {
+                      const isEditing =
+                        editedCell?.rowId === row.id &&
+                        editedCell?.field === header.field;
+
+                      return (
+                        <td
+                          key={header.field}
+                          align="center"
+                          onClick={() =>
+                            setEditedCell({
+                              rowId: row.id,
+                              field: header.field,
+                            })
+                          }
+                        >
+                          {renderCell(header, row, isEditing)}
+                        </td>
+                      );
+                    })}
                   </tr>
                 ))
               ) : (
@@ -308,15 +591,19 @@ const PPMPTable = memo(
         </Sheet>
 
         {/* Pagination Component */}
-        {/* {data?.length >= pageSize && (
-        <PaginationComponent
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onNextPage={handleNextPage}
-          onPrevPage={handlePrevPage}
-          totalRows={data?.length}
-        />
-      )} */}
+        {ppmpTable?.length >= pageSize && (
+          <PaginationComponent
+            currentPage={currentPage}
+            totalPages={totalPages}
+            onNextPage={handleNextPage}
+            onPrevPage={handlePrevPage}
+            totalRows={ppmpTable?.length}
+          />
+        )}
+
+        <ConfirmationModal />
+
+        <AlertDialogComponent />
       </Box>
     );
   }

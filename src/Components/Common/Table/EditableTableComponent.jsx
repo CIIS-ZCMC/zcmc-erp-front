@@ -5,38 +5,38 @@ import { Table, Sheet, Box, Typography, Input, Select, Option } from "@mui/joy";
 const sheetStyles = (columns, lastColumnWidth) => (
   {
     "--TableCell-height": "40px",
-          // the number is the amount of the header rows.
-          "--TableHeader-height": "calc(1 * var(--TableCell-height))",
-          "--Table-firstColumnWidth": columns[0]?.width, //set the width of the first column in px
-          "--Table-lastColumnWidth": lastColumnWidth, //set the width of the first column in px
-          // background needs to have transparency to show the scrolling shadows
-          "--TableRow-stripeBackground": "rgba(0 0 0 / 0.04)",
-          "--TableRow-hoverBackground": "rgba(0 0 0 / 0.08)",
-          overflow: "auto",
-          backgroundRepeat: "no-repeat",
-          backgroundAttachment: "local, local, scroll, scroll",
-          backgroundPosition:
-            "var(--Table-firstColumnWidth) var(--TableCell-height), calc(100% - var(--Table-lastColumnWidth)) var(--TableCell-height), var(--Table-firstColumnWidth) var(--TableCell-height), calc(100% - var(--Table-lastColumnWidth)) var(--TableCell-height)",
-          backgroundColor: "background.surface",
+    // the number is the amount of the header rows.
+    "--TableHeader-height": "calc(1 * var(--TableCell-height))",
+    "--Table-firstColumnWidth": columns[0]?.width, //set the width of the first column in px
+    "--Table-lastColumnWidth": lastColumnWidth, //set the width of the first column in px
+    // background needs to have transparency to show the scrolling shadows
+    "--TableRow-stripeBackground": "rgba(0 0 0 / 0.04)",
+    "--TableRow-hoverBackground": "rgba(0 0 0 / 0.08)",
+    overflow: "auto",
+    backgroundRepeat: "no-repeat",
+    backgroundAttachment: "local, local, scroll, scroll",
+    backgroundPosition:
+      "var(--Table-firstColumnWidth) var(--TableCell-height), calc(100% - var(--Table-lastColumnWidth)) var(--TableCell-height), var(--Table-firstColumnWidth) var(--TableCell-height), calc(100% - var(--Table-lastColumnWidth)) var(--TableCell-height)",
+    backgroundColor: "background.surface",
   }
 )
 
 const tableStyles = (stickLast) => (
   {
-     tableLayout: "fixed",
-            "& tr > *:first-of-type": {
-              position: "sticky",
-              left: 0,
-              boxShadow: "1px 0 var(--TableCell-borderColor)",
-              bgcolor: "background.surface",
-            },
-            ...(stickLast && {
-              "& tr > *:last-child": {
-                position: "sticky",
-                right: 0,
-                bgcolor: "var(--TableCell-headBackground)",
-              },
-            }),
+    tableLayout: "fixed",
+    "& tr > *:first-of-type": {
+      position: "sticky",
+      left: 0,
+      boxShadow: "1px 0 var(--TableCell-borderColor)",
+      bgcolor: "background.surface",
+    },
+    ...(stickLast && {
+      "& tr > *:last-child": {
+        position: "sticky",
+        right: 0,
+        bgcolor: "var(--TableCell-headBackground)",
+      },
+    }),
   }
 )
 
@@ -50,6 +50,7 @@ const EditableTableComponent = ({
   border = "none",
   stickLast = false,
   textWrap,
+  secondaryHeader,
 }) => {
   // useEffect(() => console.log(stickLast), []);
 
@@ -57,6 +58,9 @@ const EditableTableComponent = ({
 
   return (
     <Box sx={{ width: "100%", overflow: "auto" }}>
+
+      {secondaryHeader}
+
       <Sheet
         variant="outlined"
         sx={sheetStyles(columns, lastColumnWidth)}
@@ -70,7 +74,7 @@ const EditableTableComponent = ({
           <thead>
             {/* First row - parent headers */}
             <tr>
-              {columns.map((header, index) => {  
+              {columns.map((header, index) => {
                 const isFirstColumn = index === 0;
                 const isLastColumn = index === columns.length - 1;
                 return header.children ? (

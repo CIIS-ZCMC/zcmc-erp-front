@@ -9,6 +9,7 @@ const initialResource = (
   purchaseTypeId = null
 ) => ({
   id: uuid(),
+  item_id: null,
   parentId: parentId,
   rowId: rowId,
   name: "",
@@ -26,15 +27,28 @@ const useResourceHook = create(
       resources: [],
       cart: [],
 
-      updateResourceField: (id, fieldPath, value) => {
-        set((state) => ({
-          resources: state.resources.map((resource) => {
+      // setResources: () => {
+      //   set((state) => {
+      //     console.log(state.resources)
+      //   })
+      // },
+
+      updateResourceField: (id, field, value) => {
+        set((state) => {
+          const updatedResources = state.resources.map((resource) => {
             if (resource.id === id) {
-              return setNestedValue(resource, fieldPath, value)
+              const updated = {
+                ...resource,
+                [field]: value,
+              };
+              // console.log(`Updating resource ${id}:`, updated);
+              return updated;
             }
             return resource;
-          })
-        }))
+          });
+
+          return { resources: updatedResources };
+        });
       },
 
       addResourceToCart: (item, parentId, quantity = 1) => {
@@ -53,6 +67,7 @@ const useResourceHook = create(
                 ...cartItem,
                 aop_quantity: cartItem.aop_quantity + quantity,
                 parentId: parentId,
+                // item_id: item.id,
               }
               : cartItem
           );
@@ -63,6 +78,7 @@ const useResourceHook = create(
             ...item,
             aop_quantity: quantity || 1,
             parentId: parentId,
+            // item_id: item.id,
           };
 
           const updatedCart = [...cart, newItem];
@@ -87,22 +103,20 @@ const useResourceHook = create(
           ),
         })),
 
-
       //handle assigment of data from cart to table row resources
       // navigate to resources Table
 
       saveItems: (parentId = null, totalPrice) => {
         const { resources, cart } = get();
 
-        const updatedResources = cart.map((item, index) =>
-        ({
+        const updatedResources = cart.map((item, index) => ({
           ...initialResource(resources.length + index + 1, parentId, null),
           name: item.name,
           quantity: item.aop_quantity,
           individualPrice: item.estimated_budget,
+          item_id: item.id,
           totalCost: totalPrice,
-        })
-        );
+        }));
 
         console.log("Updated Resources:", updatedResources);
 
@@ -112,8 +126,8 @@ const useResourceHook = create(
         }));
       },
 
-      cancelResources : () => {
-        set((state) => state.cart = [])
+      cancelResources: () => {
+        set((state) => (state.cart = []));
       },
 
       addResource: (parentId) => {
@@ -127,13 +141,13 @@ const useResourceHook = create(
             ),
           ],
           initialRender: false,
-        }))
+        }));
       },
 
       removeItemResource: (id) => {
         const resources = get().resources;
 
-        const filtered = resources.filter((item) => item.id !== id)
+        const filtered = resources.filter((item) => item.id !== id);
 
         const groupedByParent = {};
 
@@ -144,20 +158,27 @@ const useResourceHook = create(
           groupedByParent[item.parentId].push(item);
         });
 
-        const newResources = Object.values(groupedByParent)
-          .flatMap((group) =>
-            group.map((item, index) => ({
-              ...item,
-              rowId: index + 1,
-            }))
-          );
+        const newResources = Object.values(groupedByParent).flatMap((group) =>
+          group.map((item, index) => ({
+            ...item,
+            rowId: index + 1,
+          }))
+        );
 
         set({ resources: newResources });
       },
 
       findResourcesByActivityID: (activityId) => {
-        return get().resources.filter((item) => item.parentId == activityId);
-      },
+        return get()
+          .resources
+          .filter((item) => item.parentId === activityId)
+          .map((item) => ({
+            item_id: item.item_id,
+            purchase_type_id: item.purchaseTypeId?.id || item.purchaseTypeId, // handles both object and raw id
+            quantity: item.quantity,
+            expense_class: item.expenseClass,
+          }));
+      }
     }),
 
     {
