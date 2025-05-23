@@ -4,6 +4,7 @@ import ScrollableTableComponent from "../../../Components/Common/Table/Scrollabl
 import { Typography } from "@mui/joy";
 import useModalHook from "../../../Hooks/ModalHook";
 import useLibrariesHook from "../../../Hooks/Libraries/LibHooks";
+import { classificationCols } from "../../../Data/Columns";
 
 export const Category = () => {
   const { setType, setSelectedData } = useLibrariesHook();

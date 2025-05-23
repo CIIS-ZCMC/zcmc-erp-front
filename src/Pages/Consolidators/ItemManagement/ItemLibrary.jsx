@@ -6,7 +6,7 @@ import ContainerComponent from "../../../Components/Common/ContainerComponent";
 import ButtonComponent from "../../../Components/Common/ButtonComponent";
 import { ExternalLink } from "lucide-react";
 import { Stack, Box } from "@mui/joy";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import TabComponent from "../../../Components/Common/TabComponent";
 import ScrollableTableComponent from "../../../Components/Common/Table/ScrollableTableComponent";
 import { objHeaders } from "../../../Data/Columns";
@@ -28,12 +28,15 @@ import useModalHook from "../../../Hooks/ModalHook";
 import useLibrariesHook from "../../../Hooks/Libraries/LibHooks";
 import IndicatorDialog from "../Modals/IndicatorDialog";
 import RenderDialog from "../Modals/RenderDialog";
+import { libaryTabs } from "../../../Data/Options";
 const ItemLibrary = () => {
   const { setType } = useLibrariesHook();
+  const [index, setIndex] = useState("");
   const { openModal, setOpenModal, successDialog, setSuccessDialog } =
     useModalHook();
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const UrllastSegment = location.pathname.split("/").filter(Boolean).pop();
 
   const ModalContent = () => {
@@ -48,6 +51,10 @@ const ItemLibrary = () => {
         return <ItemModalContent />;
     }
   };
+
+  useEffect(() => {
+    navigate(index);
+  }, [index]);
 
   return (
     <Fragment>
@@ -80,11 +87,12 @@ const ItemLibrary = () => {
             </Stack>
           }
         >
-          <TabComponent
-            tabs={["Items", "Classification", "Category", "Variant"]}
-            pathMap={["", "classification", "category", "variant"]}
-          />
-
+          <TabComponent tabs={libaryTabs} index={index} setIndex={setIndex} />
+          {/* <TabComponent
+            tabs={approvalPageTabs}
+            index={index}
+            setIndex={setIndex}
+          /> */}
           <Box
             sx={{
               mt: 2,
@@ -100,7 +108,6 @@ const ItemLibrary = () => {
             />
             {/* <DatePickerComponent /> */}
           </Box>
-
           <Outlet />
         </ContainerComponent>
       </Box>
