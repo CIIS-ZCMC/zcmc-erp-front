@@ -7,18 +7,18 @@ import PageTitle from '../../../../../Components/Common/PageTitle';
 
 import { AOP_CONSTANTS } from '../../../../../Data/constants';
 
-const CreateAOP = () => {
-  return (
-    <Fragment>
+const CreateAOP = () => (
+  <Fragment>
 
-      <PageTitle
-        title={AOP_CONSTANTS.CREATE_AOP_TITLE}
-        description={AOP_CONSTANTS.CREATE_AOP_SUBHEADING}
-      />
-      <Outlet />
+    <PageTitle
+      title={AOP_CONSTANTS.CREATE_AOP_TITLE}
+      description={AOP_CONSTANTS.CREATE_AOP_SUBHEADING} />
 
-    </Fragment >
-  )
-}
+
+
+    <Outlet />
+
+  </Fragment>
+)
 
 export default CreateAOP;
