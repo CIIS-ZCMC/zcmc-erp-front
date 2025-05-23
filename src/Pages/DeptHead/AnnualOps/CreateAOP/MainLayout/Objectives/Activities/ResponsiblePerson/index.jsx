@@ -35,18 +35,11 @@ const ResponsiblePerson = () => {
     return item.activityId === activityId;
   });
 
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [openConfirmDialog, setOpenConfirmDialog] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
+  // const [isEnabledSave, setIsEnabledSave] = useState(false);
+  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
 
-  // useEffect(() => {
-  //   console.log(location.state)
-  // }, [])
 
-  // const isAssigned = activity && (
-  //     activity.isAssigned
-  // )
-
-  // Check if at least one responsible entity exists
   const hasData =
     activity?.users?.length > 0 ||
     activity?.designations?.length > 0 ||
@@ -64,7 +57,7 @@ const ResponsiblePerson = () => {
       return;
     }
 
-    setAssignmentStatus(activityId, true);
+    // setAssignmentStatus(activityId, true);
     // alert('saving responsible person');
     setOpenConfirmDialog(true)
 
@@ -78,16 +71,24 @@ const ResponsiblePerson = () => {
     setConfirmationModal(data);
   };
 
+  //proceed to objectives page/step 1
   const proceed = () => {
-    navigate(`/aop-create/`);
+    setIsLoading(true)
+
+    setTimeout(() => {
+      navigate(`/aop-create/`);
+    }, 3000);
   }
 
   const handleCancel = (activityId) => {
     resetValues(activityId);
-    navigate(`/aop-create/activities/${rowId}`);
+    navigate(-1)
+    // navigate(`/aop-create/activities/${rowId}`);
   };
 
-  // console.log(responsible_persons)
+  // useEffect(() => {
+  //   setIsEnabledSave(true)
+  // }, [activity])
 
   return (
     <Fragment>
@@ -127,7 +128,7 @@ const ResponsiblePerson = () => {
         >
           {/* {isAssigned ? */}
 
-          {!hasData ? <ButtonComponent
+          {hasData ? <ButtonComponent
             onClick={() => handleCancel(activityId)}
             label={"Cancel Selection"}
             size={"md"}
@@ -151,16 +152,13 @@ const ResponsiblePerson = () => {
         </Stack>
       </ContainerComponent>
 
-      {/* <ModalComponent
-        isOpen={openConfirmDialog}
-      /> */}
-
+      {/* Confirmation modal to proceed */}
       {openConfirmDialog && (
         <ConfirmationModalComponent
-          leftButtonLabel="Cancel"
+          leftButtonLabel={"Cancel"}
           rightButtonAction={proceed}
           rightButtonLabel="Proceed"
-        // isLoading={ }\
+          isLoading={isLoading}
         />
       )}
     </Fragment>
