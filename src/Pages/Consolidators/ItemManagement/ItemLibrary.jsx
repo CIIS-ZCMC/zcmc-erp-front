@@ -23,14 +23,12 @@ import { CategoryModalContent } from "../Modals/CategoryModalContent";
 import { ClassificationModalContent } from "../Modals/ClassificationModalContent";
 import { VariantModalContent } from "../Modals/VariantModalContent";
 import { ItemModalContent } from "../Modals/ItemModalContent";
-import useLibItemHook from "../../../Hooks/Libraries/LibItemHooks";
 import useModalHook from "../../../Hooks/ModalHook";
-import useLibrariesHook from "../../../Hooks/Libraries/LibHooks";
-import IndicatorDialog from "../Modals/IndicatorDialog";
 import RenderDialog from "../Modals/RenderDialog";
 import useClassificationHooks from "../../../Hooks/Libraries/LibClassificationHooks";
 import useCategoryHooks from "../../../Hooks/Libraries/LibCategoryHooks";
 import useVariantHooks from "../../../Hooks/Libraries/LibVarianHooks";
+import { libaryTabs } from "../../../Data/Options";
 const ItemLibrary = () => {
   const [index, setIndex] = useState("");
   const { setType: setTypeclassi } = useClassificationHooks();
