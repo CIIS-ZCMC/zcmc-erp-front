@@ -1,8 +1,9 @@
-import { Fragment } from 'react';
+import { Fragment, useState, useEffect } from 'react';
 
 import { Stack, Typography, } from '@mui/joy';
 
 import useAOPObjectivesHooks from '../../../Hooks/AOP/AOPObjectivesHook';
+import { useApprovalActions, useApprovalLoading, useApprovalTimeline } from '../../../Hooks/AOP/AOPApprovalHook';
 
 import BoxComponent from '../../../Components/Common/Card/BoxComponent';
 import StepperComponent from '../../../Components/Stepper/StepperComponent';
@@ -10,11 +11,27 @@ import StepperComponent from '../../../Components/Stepper/StepperComponent';
 import { APPROVAL_TIMELINE } from '../../../Data/TestData';
 
 
-
 const Timeline = () => {
 
+    const { getAOPApprovalTimeline } = useApprovalActions();
 
-    const { getTimeline } = useAOPObjectivesHooks();
+    // const { aop_timeline, getTimeline } = useAOPObjectivesHooks();
+    const [isLoading, setIsLoading] = useState();
+
+    useEffect(() => {
+        // setIsLoading(true)
+        // getTimeline((status, message) => {
+        //     // console.log(status)
+        //     if (!(status >= 200 && status < 300)) {
+        //         return; //Toast error
+        //     }
+        //     setIsLoading(false)
+        // })
+    }, [])
+
+    // useEffect(() => {
+    //     console.log(aop_timeline)
+    // }, [aop_timeline])
 
     return (
         <Fragment>

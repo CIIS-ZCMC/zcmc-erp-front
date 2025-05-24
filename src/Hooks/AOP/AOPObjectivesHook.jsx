@@ -5,6 +5,7 @@ import { API } from "../../Data/constants";
 const useAOPObjectivesHooks = create((set, get) => ({
   aopObjectives: [],
   aop_summary: {},
+  aop_timeline: [],
 
   getSummary: (callBack) => {
     read({
@@ -25,7 +26,7 @@ const useAOPObjectivesHooks = create((set, get) => ({
 
   getTimeline: (callBack) => {
     read({
-      url: API.AOP_APPLICATION_SUMMARY,
+      url: API.AOP_APPLICATION_TIMELINE,
       failed: callBack,
       success: (res) => {
         console.log(res);
@@ -34,7 +35,7 @@ const useAOPObjectivesHooks = create((set, get) => ({
           message,
           data: { data },
         } = res;
-        set({ aop_summary: data });
+        set({ aop_timeline: data });
         callBack(status, message)
       }
     })
