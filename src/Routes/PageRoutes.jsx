@@ -136,6 +136,12 @@ export const sidebarRoutes = [
     ],
   },
 
+  {
+    path: "/aop-edit/:id",
+    element: <>Edit AOP </>,
+    roles: ["super_admin"],
+  },
+
   // {
   //   path: "/items/:activityId",
   //   children: [{ index: true, element: <Items /> }],

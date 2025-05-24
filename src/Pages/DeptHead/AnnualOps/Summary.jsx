@@ -1,5 +1,6 @@
 import { Fragment } from 'react'
 
+import { useNavigate } from 'react-router-dom';
 import { Stack, Typography, Grid, } from '@mui/joy'
 import { ExternalLink, CloudDownload, } from "lucide-react";
 
@@ -23,6 +24,8 @@ const Summary = (
         total_resources,
     }
 ) => {
+
+    const navigate = useNavigate();
 
     const objectivesContent = `Contains (${total_success_indicators}) success indicators in total on this request `
     const activitiesContent = ` Where (${total_gad_related}) are GAD-related and (${total_not_gad_related}) are not GAD-related on this reques`
@@ -90,6 +93,7 @@ const Summary = (
                         label={'Open request'}
                         variant={'outlined'}
                         size={'sm'}
+                        onClick={() => navigate(`/aop-edit/${1}`)}
                         endDecorator={<ExternalLink size={16} />}
                     />
 
