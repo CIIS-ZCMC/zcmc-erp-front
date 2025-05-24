@@ -1,5 +1,6 @@
 import { create } from "zustand";
-
+import { read } from "../../Services/RequestMethods";
+import { API } from "../../Data/constants";
 const useClassificationHooks = create((set) => ({
   inputs: {
     currentLibName: "sada",
@@ -9,6 +10,30 @@ const useClassificationHooks = create((set) => ({
   isloading: false,
   hasError: true,
   selectedData: null,
+  classifications: [],
+  unit: [],
+  getClassifications: async (callBack) => {
+    read({
+      url: `${API.ITEM_CLASSIFICATIONS}?mode=selection`,
+      failed: callBack,
+      success: (res) => {
+        const { status, message, data } = res;
+        set({ classifications: data.data });
+        callBack(status, message);
+      },
+    });
+  },
+  getUnit: async (callBack) => {
+    read({
+      url: `${API.ITEM_UNIT}?mode=selection`,
+      failed: callBack,
+      success: (res) => {
+        const { status, message, data } = res;
+        set({ unit: data.data });
+        callBack(status, message);
+      },
+    });
+  },
   setSelectedData: (data) => {
     set({ selectedData: data });
   },
