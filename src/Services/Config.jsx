@@ -11,6 +11,7 @@ export const BASE_URL = {
   production_landing_page: "https://zcmc.online", // This will be the production landing page url
   production: "https://api_name.zcmc.online/api/", // Change the sub domain name to your prefer name
   development: "http://localhost:8000/api", // You can change the port or ip here
+  socket_development: "http://localhost:3025/",
 };
 
 export const TEST_MODE = false;
