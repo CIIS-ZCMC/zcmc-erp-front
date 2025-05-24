@@ -27,6 +27,12 @@ export const AOP_CONSTANTS = {
   AOP_SUBHEADING:
     "This is a subheading. It should add more context to the interaction.",
 
+  AOP_EMPTY_STATE_TITLE: ' You didn’t have an AOP for this year yet.',
+  AOP_CREATE_NEW_AOP: 'Begin by creating a new request',
+  AOP_EMPTY_STATE_CONTENT: `  Nothing to show yet for this year’s AOP. You may request new items for the
+                <br></br>
+                meantime or create a new AOP request.`,
+
   AOP_REQUEST_SUBHEADING:
     "All AOP requests sent by Department/Section/Unit Heads or Officers in charge appear here.",
 

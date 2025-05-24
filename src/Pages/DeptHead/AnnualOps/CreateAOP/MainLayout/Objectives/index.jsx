@@ -82,8 +82,6 @@ const Objectives = () => {
   }, [objectives, addObjective]);
 
 
-
-
   useEffect(() => {
     console.log(resources)
   }, [])
