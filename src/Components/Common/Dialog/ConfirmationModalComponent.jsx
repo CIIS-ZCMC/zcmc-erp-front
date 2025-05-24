@@ -51,13 +51,7 @@ function ConfirmationModalComponent({
   errors = {},
 }) {
   const {
-    confirmationModalState: {
-      isOpen = false,
-      title,
-      description,
-      status,
-      leftBtnLbl,
-    },
+    confirmationModalState: { isOpen = false, title, description, status },
     closeConfirmation,
   } = useModalHook();
 

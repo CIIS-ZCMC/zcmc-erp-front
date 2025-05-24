@@ -25,8 +25,11 @@ const PPMPTable = memo(
     modes = [],
     categories = [],
     classifications = [],
+    openDel,
+    setOpenDel,
+    setOpensave,
   }) => {
-    const { getPPMPItems, removeItem, search } = usePPMPHook();
+    const { removeItem, search } = usePPMPHook();
     const {
       setAlertDialog,
       setConfirmationModal,
@@ -39,7 +42,6 @@ const PPMPTable = memo(
       JSON.parse(localStorage.getItem("ppmp-items")) ?? []
     );
     const [loading, setLoading] = useState(false);
-    const [openDel, setOpenDel] = useState(false);
     const [searchVal, setSearchVal] = useState("");
     const [selectedClass, setSelectedClass] = useState({});
     const [selectedCat, setSelectedCat] = useState({});
@@ -48,16 +50,13 @@ const PPMPTable = memo(
 
     //COLUMN
     const handleOpenDel = (params) => {
+      setOpensave(false);
+      setOpenDel(true);
       const data = {
         status: "error",
         title: ` Are you sure you want to delete item ${params?.item?.code}?`,
         description:
           "The selected item will be removed from the table. Please input authorization pin to proceed.",
-        leftButtonLabel: "Cancel",
-        rightButtonLabel: "Proceed",
-        rightButtonAction: () => handleDeleteRow(params),
-        withAuthPin: true,
-        setAuthPin: setPin,
       };
       setConfirmationModal(data);
     };
@@ -84,7 +83,7 @@ const PPMPTable = memo(
             title: message,
             description: message,
           });
-
+          setOpenDel(false);
           closeConfirmation();
         } else {
           setAlertDialog({
@@ -418,6 +417,7 @@ const PPMPTable = memo(
 
     return (
       <Box sx={{ width: "100%", overflow: "auto" }}>
+        {console.log("del", openDel)}
         <Stack direction="row" mb={2} justifyContent="space-between">
           <Stack direction="row" alignItems="flex-end" gap={1}>
             <InputComponent
@@ -601,7 +601,19 @@ const PPMPTable = memo(
           />
         )}
 
-        <ConfirmationModal />
+        {openDel && (
+          <ConfirmationModalComponent
+            withAuthPin={true}
+            leftButtonLabel="Cancel"
+            leftButtonAction={() => {
+              setOpenDel(false);
+              closeConfirmation();
+            }}
+            rightButtonLabel="Proceed"
+            rightButtonAction={(params) => handleDeleteRow(params)}
+            setAuthPin={setPin}
+          />
+        )}
 
         <AlertDialogComponent />
       </Box>

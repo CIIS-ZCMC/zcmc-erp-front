@@ -2,7 +2,7 @@ import { create } from "zustand";
 
 const useModalHook = create((set, get) => ({
   modalState: { isOpen: false },
-  successDialog:true,
+  successDialog: true,
   setSuccessDialog: (state) => set({ successDialog: state }),
   openModal: {
     isNew: false,
@@ -23,7 +23,6 @@ const useModalHook = create((set, get) => ({
     isLoading: false,
     withAuthPin: false,
     withDivider: false,
-    setAuthPin: null,
     pinHelperText: "Confirm your action by entering your PIN.",
   },
 
@@ -35,7 +34,7 @@ const useModalHook = create((set, get) => ({
     description: "This is subtitle.",
   },
 
-  setOpenModal: (isNew, isDelete, Open ) => {
+  setOpenModal: (isNew, isDelete, Open) => {
     set({
       openModal: {
         isNew: isNew,
@@ -94,7 +93,6 @@ const useModalHook = create((set, get) => ({
       leftButtonAction,
       isLoading,
       withAuthPin,
-      setAuthPin,
       pinHelperText,
     } = data ?? null;
 
@@ -116,7 +114,6 @@ const useModalHook = create((set, get) => ({
           leftButtonAction: leftButtonAction,
           isLoading: isLoading,
           withAuthPin: withAuthPin,
-          setAuthPin: setAuthPin,
           pinHelperText: pinHelperText,
         },
       }));
@@ -143,7 +140,6 @@ const useModalHook = create((set, get) => ({
         isLoading: false,
         withAuthPin: false,
         withDivider: false,
-        setAuthPin: null,
         pinHelperText: "Confirm your action by entering your PIN.",
       },
     }));
