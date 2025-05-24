@@ -42,9 +42,11 @@ const PPMPTable = memo(
       JSON.parse(localStorage.getItem("ppmp-items")) ?? []
     );
     const [loading, setLoading] = useState(false);
+    const [btnLoad, setBtnLoad] = useState(false);
     const [searchVal, setSearchVal] = useState("");
     const [selectedClass, setSelectedClass] = useState({});
     const [selectedCat, setSelectedCat] = useState({});
+    const [selected, setSelected] = useState({});
     const [editedCell, setEditedCell] = useState({ rowId: null, field: null });
     const [pin, setPin] = useState("");
 
@@ -58,6 +60,7 @@ const PPMPTable = memo(
         description:
           "The selected item will be removed from the table. Please input authorization pin to proceed.",
       };
+      setSelected(params);
       setConfirmationModal(data);
     };
 
@@ -66,12 +69,13 @@ const PPMPTable = memo(
 
     //DELETE ITEM
     const handleDeleteRow = (params) => {
+      console.log(params);
       const formData = new FormData();
       formData.append("pin", pin);
 
-      setLoading(true); // Move this here for immediate feedback
+      setBtnLoad(true);
 
-      removeItem(params.id, formData, (status, message) => {
+      removeItem(formData, (status, message) => {
         if (status === 200) {
           const updated = ppmpTable?.filter((row) => row.id !== params.id);
 
@@ -83,6 +87,7 @@ const PPMPTable = memo(
             title: message,
             description: message,
           });
+          setSelected({});
           setOpenDel(false);
           closeConfirmation();
         } else {
@@ -93,7 +98,7 @@ const PPMPTable = memo(
           });
         }
 
-        setLoading(false);
+        setBtnLoad(false);
       });
     };
 
@@ -610,8 +615,9 @@ const PPMPTable = memo(
               closeConfirmation();
             }}
             rightButtonLabel="Proceed"
-            rightButtonAction={(params) => handleDeleteRow(params)}
+            rightButtonAction={() => handleDeleteRow(selected)}
             setAuthPin={setPin}
+            isLoading={btnLoad}
           />
         )}
 

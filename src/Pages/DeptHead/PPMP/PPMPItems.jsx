@@ -155,57 +155,81 @@ function PPMPItems(props) {
     setConfirmationModal(data);
   };
 
+  //SAVE CHANGES
   const handleSubmit = async (is_draft) => {
     if (pin === null && is_draft === 0) {
-      setError("pin", true, "Please enter your authorization PIN.");
+      setAlertDialog({
+        status: "error",
+        title: "Missing Authorization PIN",
+        description: "Please enter your authorization PIN before submitting.",
+      });
       return;
     }
 
+    setButtonLoader(true);
+
     try {
-      setButtonLoader(true);
       const ppmp_items = JSON.parse(localStorage.getItem("ppmp-items")) || [];
       const formData = new FormData();
       formData.append("is_draft", is_draft);
       formData.append("PPMP_Items", JSON.stringify(ppmp_items));
 
-      await postPPMP(formData, (status, message, data) => {
-        setButtonLoader(false);
-        localStorage.setItem("ppmp-items", JSON.stringify(data.ppmp_items));
-
-        const alertData =
-          status === 201
-            ? {
-                status: "success",
-                title:
-                  "PPMP for F.Y. 2026 successfully submitted for approval.",
-                description:
-                  "Your PPMP request has been sent to the next approving body and they have been notified for approvals.",
-              }
-            : {
-                status: "error",
-                title: message,
-                description: message,
-              };
-
-        if (status === 201) {
-          closeConfirmation();
-          setOpenSave(false);
-        }
-
-        setAlertDialog(alertData);
+      const result = await new Promise((resolve) => {
+        postPPMP(formData, (status, message, data) =>
+          resolve({ status, message, data })
+        );
       });
+
+      const { status, message, data } = result;
+
+      const alertData =
+        status === 201
+          ? {
+              status: "success",
+              title: "PPMP for F.Y. 2026 successfully submitted for approval.",
+              description:
+                "Your PPMP request has been sent to the next approving body and they have been notified for approvals.",
+            }
+          : {
+              status: "error",
+              title: message,
+              description: message,
+            };
+
+      setAlertDialog(alertData);
+
+      if (status === 201) {
+        localStorage.setItem("ppmp-items", JSON.stringify(data.ppmp_items));
+        closeConfirmation();
+        setOpenSave(false);
+      }
     } catch (error) {
-      setButtonLoader(false);
+      console.error("Submission Error:", error);
       setAlertDialog({
         status: "error",
         title: "Submission Failed",
         description: "An unexpected error occurred. Please try again.",
       });
-      console.error("Submission Error:", error);
+    } finally {
+      setButtonLoader(false);
     }
   };
 
   const handleRequest = async () => {
+    clearErrors();
+    let hasError = false;
+    if (!itemReq?.specs?.length || itemReq.specs.some((s) => !s.value.trim())) {
+      setError("specs", true, "Please complete all specifications.");
+      hasError = true;
+    }
+
+    if (!itemReq?.pin?.trim()) {
+      setError("pin", true, "Authorization PIN is required.");
+      hasError = true;
+    }
+
+    if (hasError) return;
+
     try {
       setButtonLoader(true);
       const formData = new FormData();
@@ -246,8 +270,55 @@ function PPMPItems(props) {
     }
   };
 
+  const isEmptyObject = (obj) =>
+    obj && typeof obj === "object" && Object.keys(obj).length === 0;
+
   const handleNextStep = () => {
-    console.log(itemReq);
+    clearErrors();
+    let hasError = false;
+    console.log(isEmptyObject(activity));
+    if (step === 1) {
+      if (isEmptyObject(activity)) {
+        setError("activity", true, "Please select an option");
+        hasError = true;
+      }
+      if (isEmptyObject(expenseClass)) {
+        setError("expenseClass", true, "Please select an option");
+        hasError = true;
+      }
+
+      if (hasError) return;
+    }
+    if (step === 2) {
+      let hasError = false;
+      if (!itemReq.classification) {
+        setError("classification", true, "Please select a classification");
+        hasError = true;
+      }
+      if (!itemReq.category) {
+        setError("category", true, "Please select a category");
+        hasError = true;
+      }
+      if (!itemReq?.item_name || itemReq.item_name.trim() === "") {
+        setError("item_name", true, "Item name is required");
+        hasError = true;
+      }
+      if (!itemReq.unit) {
+        setError("unit", true, "Please select a unit of measure");
+        hasError = true;
+      }
+      if (!itemReq?.estimated_budget || isNaN(itemReq.estimated_budget)) {
+        setError("estimated_budget", true, "Please enter a valid budget");
+        hasError = true;
+      }
+      if (!itemReq.variant) {
+        setError("variant", true, "Please select a variant");
+        hasError = true;
+      }
+
+      if (hasError) return;
+    }
+
     setStep((prev) => Math.min(prev + 1, 3));
   };
 
@@ -475,6 +546,7 @@ function PPMPItems(props) {
 
                   <AutocompleteComponent
                     label={"Select expense class"}
+                    name="expenseClass"
                     helperText={
                       "Expense class determine the type of budget to be used for the items that are to be selected."
                     }
@@ -624,6 +696,7 @@ function PPMPItems(props) {
                             <TextareaComponent
                               label={`Specification ${index + 1}:`}
                               placeholder="e.g., Size: Large"
+                              name={`spec-${index}`}
                               value={spec.value}
                               onChange={(e) =>
                                 handleChange(spec.id, e.target.value)
