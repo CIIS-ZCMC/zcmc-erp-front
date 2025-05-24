@@ -7,7 +7,7 @@ const useAOPObjectivesHooks = create((set, get) => ({
 
   create: (form, callBack) => {
     post({
-      url: API.AOP_APPLICATIONS_STORE,
+      url: API.AOP_APPLICATION_STORE,
       form: form,
       failed: callBack,
       success: (res) => {
