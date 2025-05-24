@@ -7,6 +7,7 @@ const PATH = "ppmp";
 const usePPMPHook = create((set) => ({
   modes: [],
   activities: [],
+  dashboard: {},
 
   getPPMPItems: (callBack) => {
     read({
@@ -18,6 +19,18 @@ const usePPMPHook = create((set) => ({
           "ppmp-items",
           JSON.stringify(data.data.ppmp_items)
         );
+        callBack(status, message, data);
+      },
+    });
+  },
+
+  getPPMPDashboard: (callBack) => {
+    read({
+      url: `${PATH}-applications`,
+      failed: callBack,
+      success: (res) => {
+        const { status, message, data } = res;
+        set({ dashboard: data.data });
         callBack(status, message, data);
       },
     });

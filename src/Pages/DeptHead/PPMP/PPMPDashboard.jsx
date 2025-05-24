@@ -1,14 +1,26 @@
 import { Typography } from "@mui/material";
-import React, { Fragment } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import BoxComponent from "../../../Components/Common/Card/BoxComponent";
 import { Box, Stack } from "@mui/joy";
 import { TargetIcon } from "lucide-react";
 import ButtonComponent from "../../../Components/Common/ButtonComponent";
 import { useNavigate } from "react-router-dom";
+import usePPMPHook from "../../../Hooks/PPMPHook";
 
 function PPMPDashboard(props) {
   const navigate = useNavigate();
+  const { dashboard, getPPMPDashboard } = usePPMPHook();
 
+  useEffect(() => {
+    getPPMPDashboard((status, message) => {
+      // console.log(status)
+      if (!(status >= 200 && status < 300)) {
+        // if status not success
+        return; //Toast error
+      }
+      // setisLoading(false);
+    });
+  }, []);
   return (
     <Fragment>
       <BoxComponent mt={3}>
@@ -36,37 +48,48 @@ function PPMPDashboard(props) {
             sx={{ borderBottomLeftRadius: 10, borderBottomRightRadius: 10 }}
             gap={2}
           >
-            <Box
-              display="flex"
-              alignItems="center"
-              justifyContent="space-between"
-              width="100%"
-            >
-              <BoxComponent width="100%" padding={2}>
-                <Typography fontWeight={600} pb={2} fontSize={20}>
-                  Plan summary
+            <Stack width="100%" gap={1}>
+              <Box
+                display="flex"
+                alignItems="center"
+                justifyContent="space-between"
+                width="100%"
+              >
+                <BoxComponent width="100%" padding={2}>
+                  <Typography fontWeight={600} pb={2} fontSize={20}>
+                    Plan summary:
+                  </Typography>
+                  <Stack direction={"row"} spacing={2}>
+                    <BoxComponent width="100%">
+                      <Typography fontSize={16} fontWeight={600} py={1}>
+                        {dashboard?.item_count.toLocaleString()}
+                      </Typography>
+                      <Typography alignItems="center" display="flex" gap={1}>
+                        {" "}
+                        <TargetIcon style={{ fontSize: 10 }} />
+                        <Typography>
+                          Contained from <b>(14)</b> total combined activities
+                        </Typography>
+                      </Typography>
+                    </BoxComponent>
+                    <BoxComponent width="100%">
+                      <Typography fontSize={16} fontWeight={600} py={1}>
+                        14,000 total item quantity
+                      </Typography>
+                      <Typography>
+                        With (₱22,000,000.00) total allocated budget
+                      </Typography>
+                    </BoxComponent>
+                  </Stack>
+                </BoxComponent>
+              </Box>
+              <BoxComponent>
+                <Typography fontSize={20} fontWeight={600}>
+                  PPMP Total:
                 </Typography>
-                <Stack direction={"row"} spacing={2}>
-                  <BoxComponent width="100%">
-                    <Typography fontSize={16} fontWeight={600} py={1}>
-                      1,200 items
-                    </Typography>
-                    <Typography alignItems="center" display="flex" gap={1}>
-                      {" "}
-                      <TargetIcon style={{ fontSize: 10 }} /> ₱ 1,000,000.00
-                    </Typography>
-                  </BoxComponent>
-                  <BoxComponent width="100%">
-                    <Typography fontSize={16} fontWeight={600} py={1}>
-                      14,000 total item quantity
-                    </Typography>
-                    <Typography>
-                      With (₱22,000,000.00) total allocated budget
-                    </Typography>
-                  </BoxComponent>
-                </Stack>
               </BoxComponent>
-            </Box>
+            </Stack>
+
             <BoxComponent width="100%">
               <Typography fontWeight={600} fontSize={20}>
                 About your PPMP
