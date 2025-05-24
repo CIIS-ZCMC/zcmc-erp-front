@@ -54,7 +54,7 @@ const NotificationMain = ({ unread = 2 }) => {
   useNotificationEvents(); // Start listening for new notifications via socket
 
   useEffect(() => {
-    console.log("Updated notifications:", notifications);
+    // console.log("Updated notifications:", notifications);
   }, [notifications]);
 
   return (
