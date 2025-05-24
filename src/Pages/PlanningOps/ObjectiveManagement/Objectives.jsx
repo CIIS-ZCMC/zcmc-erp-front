@@ -269,7 +269,7 @@ function Objectives({ props }) {
         title="Objectives and Success Indicators"
         description="This is a subheading. It should add more context to the interaction."
       />
-
+      {JSON.stringify(pagination)}
       <ContainerComponent
         title={"List of Objectives and Success Indicators"}
         description={
