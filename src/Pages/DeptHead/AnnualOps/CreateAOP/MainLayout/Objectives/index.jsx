@@ -214,7 +214,7 @@ const Objectives = () => {
           secondaryHeader={
             <Link component="button" onClick={() => handleOpenDialog()} pb={1}>
               <Stack direction={"row"} gap={1} alignItems={"center"}>
-                Create a Mission
+                Create Mission
                 <ExternalLink size={16} />
               </Stack>
             </Link>

@@ -59,6 +59,10 @@ export const AOP_CONSTANTS = {
   CREATE_AOP_SUBHEADING:
     "This is a subheading. It should add more context to the interaction.",
 
+  EDIT_AOP_TITLE: "Edit AOP",
+  EDIT_AOP_SUBHEADING:
+    "This is a subheading. It should add more context to the interaction.",
+
   MANAGE_OBJECTIVES_HEADER: "Step 1 of 4: Manage functions and objectives",
   MANAGE_OBJECTIVES_SUBHEADER:
     "This is a subheading. It should add more context to the interaction.",

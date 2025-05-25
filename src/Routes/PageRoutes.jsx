@@ -12,7 +12,14 @@ import Returned from "../Pages/DeptHead/AnnualOps/TableViews/Returned";
 
 import CreateAOP from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout";
 
+import EditAOP from "../Pages/DeptHead/AnnualOps/EditAOP";
+import EditObjectives from '../Pages/DeptHead/AnnualOps/EditAOP/Objectives/'
+import EditActivities from "../Pages/DeptHead/AnnualOps/EditAOP/Objectives/Activities";
+import EditResources from "../Pages/DeptHead/AnnualOps/EditAOP/Objectives/Activities/Resources";
+import EditResponsiblePerson from "../Pages/DeptHead/AnnualOps/EditAOP/Objectives/Activities/Responsible";
+
 import AnnualOpsPlanning from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives";
+
 import Activities from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities";
 import Resources from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities/Resources";
 import ResponsibePerson from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities/ResponsiblePerson";
@@ -36,6 +43,7 @@ import { Items as ConsolidatorItems } from "../Pages/Consolidators/Tabs/Items";
 import { Classification } from "../Pages/Consolidators/Tabs/Classification";
 import { Category } from "../Pages/Consolidators/Tabs/Category";
 import { Variant } from "../Pages/Consolidators/Tabs/Variant";
+
 
 export const sidebarRoutes = [
   {
@@ -122,7 +130,7 @@ export const sidebarRoutes = [
 
           {
             path: "person/:activityId",
-            element: <ResponsibePerson />,
+            element: <EditResponsiblePerson />,
             roles: ["super_admin"],
             abilities: [
               "M-001:read",
@@ -138,8 +146,45 @@ export const sidebarRoutes = [
 
   {
     path: "/aop-edit/:id",
-    element: <>Edit AOP </>,
+    element: <EditAOP />,
     roles: ["super_admin"],
+    abilities: ["M-001:read", "M-001:write", "M-001:edit", "M-001:delete"],
+    children: [
+      { index: true, element: <EditObjectives /> }, //ENTRY POINT
+      {
+        path: "activities/:objectiveId",
+        element: <EditActivities />,
+        children: [
+          {
+            path: "items/:activityId",
+            element: <Items />
+          },
+          {
+            path: "resources/:activityId",
+            element: <EditResources />,
+            roles: ["super_admin"],
+            abilities: [
+              "M-001:read",
+              "M-001:write",
+              "M-001:edit",
+              "M-001:delete",
+            ],
+          },
+
+          {
+            path: "person/:activityId",
+            element: <EditResponsiblePerson />,
+            roles: ["super_admin"],
+            abilities: [
+              "M-001:read",
+              "M-001:write",
+              "M-001:edit",
+              "M-001:delete",
+            ],
+          },
+        ],
+      },
+    ]
   },
 
   // {
