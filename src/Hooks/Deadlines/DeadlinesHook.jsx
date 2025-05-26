@@ -44,7 +44,7 @@ const useDeadlinesHook = create((set) => ({
         //update aop deadline
         updateAopDeadline: (params, form, callback) => {
             update({
-                url: API.AOP_DEADLINE_UPDATE,
+                url: `${API.AOP_DEADLINE_UPDATE}/${id}`,
                 params: params,
                 form: form,
                 failed: callback,
@@ -72,9 +72,9 @@ const useDeadlinesHook = create((set) => ({
         },
 
         //update ppmp deadline
-        updateAopDeadline: (params, form, callback) => {
+        updateAopDeadline: (id, params, form, callback) => {
             update({
-                url: API.PPMP_DEADLINE_UPDATE,
+                url: `${API.PPMP_DEADLINE_UPDATE}/${id}`,
                 params: params,
                 form: form,
                 failed: callback,
