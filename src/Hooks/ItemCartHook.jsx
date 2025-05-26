@@ -21,15 +21,15 @@ const useItemCartHook = create(
 
         set((state) => {
           const existing = cart?.find((i) => i?.item_id === item?.id);
-          console.log(existing);
+
           if (existing) {
             return {
               cart: cart?.map((i) =>
                 i.item_id === item.id
                   ? {
-                    ...i,
-                    aop_quantity: i.aop_quantity + quantity,
-                  }
+                      ...i,
+                      aop_quantity: i.aop_quantity + quantity,
+                    }
                   : i
               ),
             };

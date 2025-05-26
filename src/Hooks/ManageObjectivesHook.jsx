@@ -31,7 +31,6 @@ const useManageObjHook = create((set) => ({
       form: body,
       success: (response) => {
         const { message, data } = response.data;
-        console.log(data);
         set((state) => ({
           objectives: [...state.objectives, data],
         }));
@@ -48,7 +47,6 @@ const useManageObjHook = create((set) => ({
       form: body,
       success: (response) => {
         const { message, data } = response.data;
-        console.log(data);
         set((state) => ({
           objectives: state.objectives.map((obj) =>
             obj.id === data.id ? { ...obj, ...data } : obj

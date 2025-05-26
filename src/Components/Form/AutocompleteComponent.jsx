@@ -45,7 +45,6 @@ function AutocompleteComponent({
         size={size}
         placeholder={placeholder}
         onChange={(_, newValue) => {
-          // console.log("newValue", newValue);
           handleSelect ? handleSelect(newValue) : handleChange(newValue);
         }}
         renderOption={
@@ -91,7 +90,7 @@ function AutocompleteComponent({
           color: darkMode ? "white" : "inherit",
         }}
       />
-      {console.log(errors)}
+
       {(fieldError?.isError || helperText) && (
         <FormHelperText
           sx={{

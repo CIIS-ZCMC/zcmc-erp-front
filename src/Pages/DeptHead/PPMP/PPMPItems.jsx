@@ -74,6 +74,7 @@ function PPMPItems(props) {
   const [openReq, setOpenReq] = useState(false);
   const [pageLoader, setPageLoader] = useState(false);
   const [buttonLoader, setButtonLoader] = useState(false);
+  const [selectedID, setSelectedID] = useState(null);
   const [step, setStep] = useState(1);
   const [pin, setPin] = useState("");
   const [tableData, setTableData] = useState([]);
@@ -141,6 +142,7 @@ function PPMPItems(props) {
     }));
   };
 
+  //CONFIRMATION MODAL
   const handleConfirmationModal = () => {
     setOpenDel(false);
     setOpenSave(true);
@@ -204,7 +206,6 @@ function PPMPItems(props) {
         setOpenSave(false);
       }
     } catch (error) {
-      console.error("Submission Error:", error);
       setAlertDialog({
         status: "error",
         title: "Submission Failed",
@@ -215,6 +216,7 @@ function PPMPItems(props) {
     }
   };
 
+  //SUBMIT ADD ITEM REQUEST
   const handleRequest = async () => {
     clearErrors();
     let hasError = false;
@@ -266,8 +268,25 @@ function PPMPItems(props) {
         title: "Request Failed",
         description: "An unexpected error occurred. Please try again.",
       });
-      console.error("Item request error:", error);
     }
+  };
+
+  const handleNavigate = () => {
+    clearErrors();
+    let hasError = false;
+    if (isEmptyObject(activity)) {
+      setError("activity", true, "Please select an option");
+      hasError = true;
+    }
+    if (isEmptyObject(expenseClass)) {
+      setError("expenseClass", true, "Please select an option");
+      hasError = true;
+    }
+    if (hasError) return;
+
+    navigate(`/edit-ppmp/add-item/${expenseClass}`, {
+      state: { activity },
+    });
   };
 
   const isEmptyObject = (obj) =>
@@ -276,7 +295,6 @@ function PPMPItems(props) {
   const handleNextStep = () => {
     clearErrors();
     let hasError = false;
-    console.log(isEmptyObject(activity));
     if (step === 1) {
       if (isEmptyObject(activity)) {
         setError("activity", true, "Please select an option");
@@ -367,7 +385,6 @@ function PPMPItems(props) {
 
   return (
     <Fragment>
-      {console.log("save", openSave)}
       <ContainerComponent
         title={"List of items"}
         description={
@@ -413,7 +430,7 @@ function PPMPItems(props) {
             </Select>
 
             <ButtonComponent
-              label={"Save changes"}
+              label={"Submit PPMP"}
               color="primary"
               onClick={() => handleConfirmationModal()}
             />
@@ -430,6 +447,8 @@ function PPMPItems(props) {
           openDel={openDel}
           setOpenDel={setOpenDel}
           setOpensave={setOpenSave}
+          setSelectedID={setSelectedID}
+          id={selectedID}
         />
       </ContainerComponent>
 
@@ -448,6 +467,7 @@ function PPMPItems(props) {
             <Stack spacing={2}>
               <AutocompleteComponent
                 label={"Select one activity"}
+                name={"activity"}
                 options={activities}
                 getOptionLabel={(option) => option.activity_code || ""}
                 setValue={setActivity}
@@ -472,6 +492,7 @@ function PPMPItems(props) {
                 helperText={
                   "Expense class determine the type of budget to be used for the items that are to be selected."
                 }
+                name={"expenseClass"}
                 options={expenseClassData}
                 getOptionLabel={(option) => option?.label || ""}
                 value={expenseClass}
@@ -482,11 +503,7 @@ function PPMPItems(props) {
         }
         leftButtonLabel="Cancel"
         rightButtonLabel="Continue"
-        rightButtonAction={() =>
-          navigate(`/edit-ppmp/add-item/${expenseClass}`, {
-            state: { activity },
-          })
-        }
+        rightButtonAction={() => handleNavigate()}
         hasActionButtons
       />
 
@@ -638,7 +655,6 @@ function PPMPItems(props) {
                       color="primary"
                     />
                   </Stack>
-                  {console.log(variants)}
                   <AutocompleteComponent
                     label="Variant"
                     name="variant"
@@ -763,30 +779,28 @@ function PPMPItems(props) {
       {openSave && (
         <ConfirmationModalComponent
           content={
-            openSave && (
-              <>
-                <Typography fontSize={12} sx={{ color: grey[600] }}>
-                  Available preview:
+            <>
+              <Typography fontSize={12} sx={{ color: grey[600] }}>
+                Available preview:
+              </Typography>
+              <Stack
+                direction={"row"}
+                justifyContent={"space-between"}
+                alignItems={"center"}
+              >
+                <Typography fontSize={13} py={2}>
+                  Project Procurement Management Plan - 2023-0031.xls
                 </Typography>
-                <Stack
-                  direction={"row"}
-                  justifyContent={"space-between"}
-                  alignItems={"center"}
+                <Link
+                  endDecorator={<MdOpenInNew />}
+                  fontSize={12}
+                  underline="always"
+                  color="success"
                 >
-                  <Typography fontSize={13} py={2}>
-                    Project Procurement Management Plan - 2023-0031.xls
-                  </Typography>
-                  <Link
-                    endDecorator={<MdOpenInNew />}
-                    fontSize={12}
-                    underline="always"
-                    color="success"
-                  >
-                    Open preview
-                  </Link>
-                </Stack>
-              </>
-            )
+                  Open preview
+                </Link>
+              </Stack>
+            </>
           }
           leftButtonLabel="Back to editor"
           withDivider={true}

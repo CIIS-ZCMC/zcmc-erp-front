@@ -24,7 +24,6 @@ function PPMPDashboard(props) {
   useEffect(() => {
     setPageLoader(true);
     getPPMPDashboard((status, message) => {
-      // console.log(status)
       if (!(status >= 200 && status < 300)) {
         // if status not success
         return; //Toast error

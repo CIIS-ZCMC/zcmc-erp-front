@@ -1,5 +1,5 @@
 import { Autocomplete, Box, Sheet, Stack, Table, Typography } from "@mui/joy";
-import { memo, useEffect, useState } from "react";
+import { memo, useEffect, useRef, useState } from "react";
 import NoResultComponent from "../../../Components/Common/Table/NoResultComponent";
 import InputComponent from "../../../Components/Form/InputComponent";
 import { ThreeDots } from "react-loader-spinner";
@@ -28,6 +28,8 @@ const PPMPTable = memo(
     openDel,
     setOpenDel,
     setOpensave,
+    id,
+    setSelectedID,
   }) => {
     const { removeItem, search } = usePPMPHook();
     const {
@@ -46,12 +48,12 @@ const PPMPTable = memo(
     const [searchVal, setSearchVal] = useState("");
     const [selectedClass, setSelectedClass] = useState({});
     const [selectedCat, setSelectedCat] = useState({});
-    const [selected, setSelected] = useState({});
     const [editedCell, setEditedCell] = useState({ rowId: null, field: null });
     const [pin, setPin] = useState("");
 
-    //COLUMN
+    //HANDLEOPEN
     const handleOpenDel = (params) => {
+      setSelectedID(params.id);
       setOpensave(false);
       setOpenDel(true);
       const data = {
@@ -60,47 +62,13 @@ const PPMPTable = memo(
         description:
           "The selected item will be removed from the table. Please input authorization pin to proceed.",
       };
-      setSelected(params);
+
       setConfirmationModal(data);
     };
 
+    //COLUMN HEADER
     const columns = ppmpHeaders(handleOpenDel, items, modes);
     const childHeaders = flattenColumns(columns);
-
-    //DELETE ITEM
-    const handleDeleteRow = (params) => {
-      console.log(params);
-      const formData = new FormData();
-      formData.append("pin", pin);
-
-      setBtnLoad(true);
-
-      removeItem(formData, (status, message) => {
-        if (status === 200) {
-          const updated = ppmpTable?.filter((row) => row.id !== params.id);
-
-          setPPMPTable(updated);
-          localStorage.setItem("ppmp-items", JSON.stringify(updated));
-
-          setAlertDialog({
-            status: "success",
-            title: message,
-            description: message,
-          });
-          setSelected({});
-          setOpenDel(false);
-          closeConfirmation();
-        } else {
-          setAlertDialog({
-            status: "error",
-            title: message,
-            description: message,
-          });
-        }
-
-        setBtnLoad(false);
-      });
-    };
 
     //FILTER
     const filteredTable = ppmpTable?.filter((item) => {
@@ -130,6 +98,52 @@ const PPMPTable = memo(
 
     const handlePrevPage = () => {
       if (currentPage > 1) setCurrentPage((prev) => prev - 1);
+    };
+
+    //DELETE ITEM
+    const handleDeleteRow = async () => {
+      try {
+        setBtnLoad(true);
+
+        const formData = new FormData();
+        formData.append("pin", pin);
+
+        const result = await new Promise((resolve) => {
+          removeItem(formData, (status, message) =>
+            resolve({ status, message })
+          );
+        });
+
+        const { status, message } = result;
+
+        if (status === 200) {
+          const updated = ppmpTable?.filter((row) => row.id !== id);
+          setPPMPTable(updated);
+          localStorage.setItem("ppmp-items", JSON.stringify(updated));
+          setAlertDialog({
+            status: "success",
+            title: message,
+            description: message,
+          });
+          setSelectedID(null);
+          setOpenDel(false);
+          closeConfirmation();
+        } else {
+          setAlertDialog({
+            status: "error",
+            title: message,
+            description: message,
+          });
+        }
+      } catch (err) {
+        setAlertDialog({
+          status: "error",
+          title: "Unexpected error",
+          description: "Something went wrong. Please try again.",
+        });
+      } finally {
+        setBtnLoad(false);
+      }
     };
 
     //CHANGES IN TABLE
@@ -222,7 +236,6 @@ const PPMPTable = memo(
     const handleSearch = async () => {
       if (searchVal) {
         await search(searchVal, (status, message, data) => {
-          console.log(status, message, data);
           const currentPPMP = localStorage.getItem("ppmp-items");
           localStorage.setItem("ppmp-edits", currentPPMP);
           localStorage.setItem("search-value", searchVal); // Save searchVal
@@ -251,8 +264,7 @@ const PPMPTable = memo(
       }
     };
 
-    //clear search
-
+    //CLEAR SEARCH
     const handleResetSearch = async () => {
       setSearchVal("");
       localStorage.removeItem("search-value");
@@ -422,7 +434,7 @@ const PPMPTable = memo(
 
     return (
       <Box sx={{ width: "100%", overflow: "auto" }}>
-        {console.log("del", openDel)}
+        {console.log(id)}
         <Stack direction="row" mb={2} justifyContent="space-between">
           <Stack direction="row" alignItems="flex-end" gap={1}>
             <InputComponent
@@ -615,7 +627,7 @@ const PPMPTable = memo(
               closeConfirmation();
             }}
             rightButtonLabel="Proceed"
-            rightButtonAction={() => handleDeleteRow(selected)}
+            rightButtonAction={() => handleDeleteRow()}
             setAuthPin={setPin}
             isLoading={btnLoad}
           />
