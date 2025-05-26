@@ -49,9 +49,9 @@ const AnnualOps = () => {
     })
   }, [])
 
-  // useEffect(() => {
-  //   console.log(aop_summary)
-  // }, [aop_summary])
+  useEffect(() => {
+    console.log(aop_summary)
+  }, [aop_summary])
 
   return (
     <Fragment>
