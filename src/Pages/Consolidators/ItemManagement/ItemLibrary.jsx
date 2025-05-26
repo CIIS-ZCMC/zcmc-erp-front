@@ -31,6 +31,7 @@ import useVariantHooks from "../../../Hooks/Libraries/LibVarianHooks";
 import { libaryTabs } from "../../../Data/Options";
 const ItemLibrary = () => {
   const [index, setIndex] = useState("");
+
   const setTypeclassi = useClassificationHooks((state) => state.setType);
   const setTypecateg = useCategoryHooks((state) => state.setType);
   const setTypevariant = useVariantHooks((state) => state.setType);
@@ -55,7 +56,7 @@ const ItemLibrary = () => {
       case "category":
         return <CategoryModalContent />;
       case "variant":
-        return <VariantModalContent />;
+        return <VariantModalConttent />;
       default:
         return <ItemModalContent />;
     }

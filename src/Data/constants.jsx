@@ -76,7 +76,13 @@ export const AOP_CONSTANTS = {
   MODAL_RESOURCE_HEADER: "Select resources for activity Activity",
   MODAL_RESOURCE_SUBHEADING:
     "Select a request status and reasons (if returned) to continue. You may add remarks if necessary.",
+};
 
+export const DEADLINES_CONSTANTS = {
+  DEADLINE_TITLE: 'Deadline management',
+  DEADLINE_SUBHEADER: 'Fully control when submissions of AOP and PMP requests will begin and close, to be imposed for all users.',
+  DEADLINE_TABLE_TITLE: 'List of deadlines',
+  DEADLINE_TABLE_SUBHEADER: 'Create, change and remove deadlines here, including advance deadlines for future years.',
 };
 
 export const PPMP_CONSTANTS = {
@@ -134,6 +140,12 @@ export const API = {
 
   TYPE_OF_FUNCTIONS: "type-of-functions",
   TYPE_OF_PURCHASE: "purchase-types",
+
+  DEADLINES: 'deadlines',
+  AOP_DEADLINE_STORE: 'aop-deadline-store',
+  AOP_DEADLINE_UPDATE: 'aop-deadline-update',
+  PPMP_DEADLINE_STORE: 'ppmp-deadline-store',
+  PPMP_DEADLINE_UPDATE: 'ppmp-deadline-update',
 
   USERS: "get-users",
   JOB_POSITIONS: "get-designations",
