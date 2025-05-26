@@ -21,10 +21,10 @@ import ObjectivesList from "./Contents/ObjectivesList";
 import { useAllComments, useCommentActions } from "../../../Hooks/CommentHook";
 import { ActivityDetails } from "./Contents/ActivityDetails";
 import { CommentsDetails } from "./Contents/CommentsDetails";
-import { useUserTypes } from "../../../Hooks/UserHook";
+
 import { FeedbackContent } from "./Contents/FeedbackContent";
 import { useApprovalActions } from "../../../Hooks/AOP/AOPApprovalHook";
-import { useAuthActions } from "../../../Store/AuthStore";
+import { useAuthActions, useUserTypes } from "../../../Store/AuthStore";
 
 export default function ManageAOP() {
   const { id } = useParams();
@@ -81,7 +81,7 @@ export default function ManageAOP() {
 
     const fetch = () => {
       if (!isDivisionHead) {
-        getCommentsByApplication(AOP_APPLICATION_ID, () => { });
+        getCommentsByApplication(AOP_APPLICATION_ID, () => {});
       }
 
       getRemarksByApplication(AOP_APPLICATION_ID, () => {
@@ -143,9 +143,9 @@ export default function ManageAOP() {
     if (activityId == defaultActivityId) return;
 
     Promise.all([
-      getActivityById(defaultActivityId, () => { }),
-      getCommentsByActivity(defaultActivityId, () => { }),
-      getCommentsByApplication(AOP_APPLICATION_ID, () => { }),
+      getActivityById(defaultActivityId, () => {}),
+      getCommentsByActivity(defaultActivityId, () => {}),
+      getCommentsByApplication(AOP_APPLICATION_ID, () => {}),
     ]).catch((error) => {
       console.error("Error fetching data:", error);
     });

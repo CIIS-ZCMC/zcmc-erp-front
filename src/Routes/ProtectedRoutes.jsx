@@ -1,32 +1,53 @@
-import { useLocation } from "react-router-dom";
+// App.js
 
-// ProtectedRoutes component for both children and direct elements
-const ProtectedRoutes = ({ children, requiredRoles = [] }) => {
-  const { user } = useAuthStore();
+import { useLocation, useNavigate } from "react-router-dom";
+import { BASE_URL, ROOT_PATH, SSO_SIGNING_PATH } from "../Services/Config";
+import { useEffect } from "react";
+import axios from "axios";
+import { localStorageGetter } from "../Utils/LocalStorage";
+import { useAuthActions } from "../Store/AuthStore";
+
+function ProtectedRoutes({ children }) {
+  const navigate = useNavigate();
   const location = useLocation();
+  const { sessionValidation } = useAuthActions();
+  // const [loading, setLoading] = useState(true);
 
-  if (!user) {
-    // Redirect to login with return location
-    return <Navigate to="/welcome" state={{ from: location }} replace />; // how to fix this when page reload I want to stay in the selected path
+  function initialize(token) {
+    if (location.pathname.includes(SSO_SIGNING_PATH)) {
+      const regenerateSigningSessionURL = `${location.pathname}${location.search}`;
+      navigate(regenerateSigningSessionURL);
+      return;
+    }
+
+    sessionValidation(token, (status) => {
+      if (!(status >= 200 && status < 300)) {
+        window.location.href = BASE_URL.development_landing_page;
+
+        // setLoading(false);
+        return;
+      }
+      if (status === 200) {
+        if (!localStorageGetter("path")) {
+          // setLoading(false);
+          return navigate(ROOT_PATH);
+        }
+        // setLoading(false);
+        return navigate(localStorageGetter("path") ?? ROOT_PATH);
+      }
+      // setLoading(false);
+    });
   }
 
-  // Check if user has required role (if specified)
-  if (requiredRoles.length > 0 && !requiredRoles.includes(user.role)) {
-    // Return to previous route with warning
-    return (
-      <Navigate
-        to={location.state?.from?.pathname || "/"}
-        state={{
-          from: location,
-          roleWarning: true,
-        }}
-        replace
-      />
-    );
-  }
+  useEffect(() => {
+    const cancelToken = axios.CancelToken.source();
 
-  // Return children if provided, otherwise return Outlet
-  return children || <Outlet />;
-};
+    initialize(cancelToken.token);
+
+    return () => cancelToken.cancel();
+  }, []);
+
+  return children;
+}
 
 export default ProtectedRoutes;

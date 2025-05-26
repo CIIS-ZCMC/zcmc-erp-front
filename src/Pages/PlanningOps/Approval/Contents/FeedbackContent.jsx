@@ -1,6 +1,5 @@
 import React, { Fragment, useMemo, useState } from "react";
 import { useAllComments, useRemarks } from "../../../../Hooks/CommentHook";
-import { useUserTypes } from "../../../../Hooks/UserHook";
 import { groupByDate } from "../../../../Utils/GroupData";
 import { feedbackTabOptions } from "../../../../Data/Options";
 import moment from "moment";
@@ -10,6 +9,7 @@ import NoResultComponent from "../../../../Components/Common/Table/NoResultCompo
 import CommentContainerComponent from "../../../../Components/Comments/CommentContainerComponent";
 import DrawerComponent from "../../../../Components/Common/DrawerComponent";
 import { ThreeDots } from "react-loader-spinner";
+import { useUserTypes } from "../../../../Store/AuthStore";
 
 export const FeedbackContent = ({
   openFeedbackModal,
