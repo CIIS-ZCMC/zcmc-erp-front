@@ -331,7 +331,7 @@ export const AOP_RESOURCE_HEADER = [
   },
 ];
 
-export const ppmpHeaders = (handleOpenDel, items, modes) => [
+export const ppmpHeaders = (handleOpenDel, items, modes, isEditing) => [
   {
     field: "id",
     name: "Row #",
@@ -546,6 +546,7 @@ export const ppmpHeaders = (handleOpenDel, items, modes) => [
             }}
             color="danger"
             size="lg"
+            disabled={!isEditing}
           >
             <MdDeleteOutline />
           </IconButton>

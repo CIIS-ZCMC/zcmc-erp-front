@@ -34,6 +34,7 @@ import { handleInputValidation } from "../../../Utils/HandleInput";
 import PageLoader from "../../../Components/Loading/PageLoader";
 import PPMPTable from "./PPMPTable";
 import ConfirmationModal from "../../../Components/Common/Dialog/ConfirmationModal";
+import { InfoIcon } from "lucide-react";
 
 function PPMPItems(props) {
   const navigate = useNavigate();
@@ -74,6 +75,8 @@ function PPMPItems(props) {
   const [openReq, setOpenReq] = useState(false);
   const [pageLoader, setPageLoader] = useState(false);
   const [buttonLoader, setButtonLoader] = useState(false);
+  const [isEditing, setIsEditing] = useState(false);
+  const [editLoad, setEditLoad] = useState(false);
   const [selectedID, setSelectedID] = useState(null);
   const [step, setStep] = useState(1);
   const [pin, setPin] = useState("");
@@ -204,6 +207,7 @@ function PPMPItems(props) {
         localStorage.setItem("ppmp-items", JSON.stringify(data.ppmp_items));
         closeConfirmation();
         setOpenSave(false);
+        setIsEditing(false);
       }
     } catch (error) {
       setAlertDialog({
@@ -363,6 +367,14 @@ function PPMPItems(props) {
     setPin("");
   };
 
+  const handleEditClick = () => {
+    setEditLoad(true);
+    setTimeout(() => {
+      setIsEditing(true);
+      setEditLoad(false);
+    }, 500);
+  };
+
   useEffect(() => {
     async function fetchAll() {
       // Step 2: Wrap callbacks in Promises for async/await
@@ -406,9 +418,38 @@ function PPMPItems(props) {
         actions={
           <Stack direction={"row"} spacing={1}>
             <ButtonComponent
-              label={"Add item"}
+              label={"Add Item Request"}
               color="primary"
               variant={"outlined"}
+              endDecorator={<BiPlus />}
+              onClick={() => {
+                setActivity({});
+                setExpenseClass({});
+                setOpenReq(true);
+              }}
+            />
+          </Stack>
+        }
+      >
+        <Stack mb={2} direction="row" justifyContent="space-between">
+          <Stack direction="row" alignItems="center" gap={1}>
+            <InfoIcon size={20} style={{ color: "primary" }} />
+            <Typography fontSize={14} color="primary">
+              This is for viewing only. Click the <b>"Edit PPMP"</b> button to
+              update your PPMP.
+            </Typography>
+          </Stack>
+          <Stack direction="row" gap={1}>
+            <ButtonComponent
+              label="Edit PPMP"
+              onClick={() => handleEditClick()}
+              isLoading={editLoad}
+              disabled={isEditing}
+            />
+            <ButtonComponent
+              label="Add Item"
+              variant="outlined"
+              disabled={!isEditing}
               endDecorator={<BiPlus />}
               onClick={() => {
                 setActivity({});
@@ -416,39 +457,20 @@ function PPMPItems(props) {
                 setOpenAdd(true);
               }}
             />
-            <Select
-              placeholder="More options"
-              color="primary"
-              indicator={<MdKeyboardArrowDown />}
-              sx={{
-                width: "150px",
-                [`& .${selectClasses.indicator}`]: {
-                  transition: "0.2s",
-                  [`&.${selectClasses.expanded}`]: {
-                    transform: "rotate(-180deg)",
-                  },
-                },
-              }}
-            >
-              {options.map((option, index) => (
-                <Option
-                  key={index}
-                  value={option?.value}
-                  onClick={option?.action}
-                >
-                  {option?.name}
-                </Option>
-              ))}
-            </Select>
-
             <ButtonComponent
-              label={"Submit PPMP"}
-              color="primary"
+              label="Save as draft"
+              onClick={() => handleSubmit(1)}
+              disabled={!isEditing}
+              isLoading={buttonLoader}
+            />
+            <ButtonComponent
+              label="Submit PPMP"
+              disabled={!isEditing}
               onClick={() => handleConfirmationModal()}
             />
           </Stack>
-        }
-      >
+        </Stack>
+        <Divider sx={{ mb: 2 }} />
         <PPMPTable
           ppmpTable={tableData}
           items={items}
@@ -463,6 +485,8 @@ function PPMPItems(props) {
           id={selectedID}
           loading={pageLoader}
           setLoading={setPageLoader}
+          isEditing={isEditing}
+          setIsEditing={setIsEditing}
         />
       </ContainerComponent>
 
@@ -831,7 +855,6 @@ function PPMPItems(props) {
       )}
 
       <AlertDialogComponent leftButtonAction={() => handleClose()} />
-      <PageLoader isLoading={pageLoader} />
     </Fragment>
   );
 }

@@ -1,4 +1,12 @@
-import { Autocomplete, Box, Sheet, Stack, Table, Typography } from "@mui/joy";
+import {
+  Autocomplete,
+  Box,
+  Divider,
+  Sheet,
+  Stack,
+  Table,
+  Typography,
+} from "@mui/joy";
 import { memo, useEffect, useRef, useState } from "react";
 import NoResultComponent from "../../../Components/Common/Table/NoResultComponent";
 import InputComponent from "../../../Components/Form/InputComponent";
@@ -15,6 +23,8 @@ import AutocompleteComponent from "../../../Components/Form/AutocompleteComponen
 import ConfirmationModalComponent from "../../../Components/Common/Dialog/ConfirmationModalComponent";
 import ConfirmationModal from "../../../Components/Common/Dialog/ConfirmationModal";
 import PageLoader from "../../../Components/Loading/PageLoader";
+import { ThreeDotsLoader } from "../../../Components/Common/Loading/ThreeDotsLoader";
+import { InfoIcon } from "lucide-react";
 
 const PPMPTable = memo(
   ({
@@ -32,6 +42,8 @@ const PPMPTable = memo(
     setSelectedID,
     loading,
     setLoading,
+    isEditing,
+    setIsEditing,
   }) => {
     const { removeItem, search } = usePPMPHook();
     const {
@@ -68,7 +80,7 @@ const PPMPTable = memo(
     };
 
     //COLUMN HEADER
-    const columns = ppmpHeaders(handleOpenDel, items, modes);
+    const columns = ppmpHeaders(handleOpenDel, items, modes, isEditing);
     const childHeaders = flattenColumns(columns);
 
     //FILTER
@@ -435,7 +447,6 @@ const PPMPTable = memo(
 
     return (
       <Box sx={{ width: "100%", overflow: "auto" }}>
-        {console.log(id)}
         <Stack direction="row" mb={2} justifyContent="space-between">
           <Stack direction="row" alignItems="flex-end" gap={1}>
             <InputComponent
@@ -541,34 +552,13 @@ const PPMPTable = memo(
               {loading ? (
                 <tr>
                   <td colSpan={columns?.length} style={{ padding: 0 }}>
-                    <Box
-                      sx={{
-                        py: 10,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <ThreeDots
-                        height="80"
-                        width="80"
-                        color="#4fa94d"
-                        ariaLabel="three-dots-loading"
-                        wrapperStyle={{}}
-                        wrapperClass=""
-                        visible={true}
-                      />
-                    </Box>
+                    <ThreeDotsLoader />
                   </td>
                 </tr>
               ) : filteredTable?.length > 0 ? (
                 paginatedData.map((row) => (
                   <tr key={row.id}>
                     {childHeaders.map((header) => {
-                      const isEditing =
-                        editedCell?.rowId === row.id &&
-                        editedCell?.field === header.field;
-
                       return (
                         <td
                           key={header.field}
