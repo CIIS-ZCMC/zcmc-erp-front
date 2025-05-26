@@ -84,10 +84,10 @@ const usePPMPHook = create((set) => ({
     });
   },
 
-  removeItem: async (params, body, callback) => {
+  removeItem: async (body, callback) => {
     remove({
-      url: `${PATH}-items/${params}`,
-      param: { id: params },
+      url: `${PATH}-items/`,
+      // param: { id: params },
       form: body,
       success: (response) => {
         const { message, data } = response.data;

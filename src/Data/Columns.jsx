@@ -331,7 +331,7 @@ export const AOP_RESOURCE_HEADER = [
   },
 ];
 
-export const ppmpHeaders = (handleDeleteRow, items, modes) => [
+export const ppmpHeaders = (handleOpenDel, items, modes) => [
   {
     field: "id",
     name: "Row #",
@@ -541,7 +541,9 @@ export const ppmpHeaders = (handleDeleteRow, items, modes) => [
       return (
         <>
           <IconButton
-            onClick={() => handleDeleteRow(params)}
+            onClick={() => {
+              handleOpenDel(params);
+            }}
             color="danger"
             size="lg"
           >

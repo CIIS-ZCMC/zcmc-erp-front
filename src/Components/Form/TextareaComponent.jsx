@@ -1,4 +1,6 @@
 import { FormControl, FormHelperText, FormLabel, Textarea } from "@mui/joy";
+import userErrorInputHook from "../../Hooks/ErrorInputHook";
+import { getFontSize } from "../../Utils/Typography";
 
 function TextareaComponent({
   label,
@@ -16,6 +18,8 @@ function TextareaComponent({
   isRequired = false,
   onChange,
 }) {
+  const { errors } = userErrorInputHook(); // Get error state
+  const fieldError = errors?.[name];
   const handleInput = (e) => {
     setValue(e.target.value);
   };
@@ -50,7 +54,16 @@ function TextareaComponent({
           whiteSpace: "pre-wrap",
         }}
       />
-      {helperText && <FormHelperText>{helperText}</FormHelperText>}
+      {(fieldError?.isError || helperText) && (
+        <FormHelperText
+          sx={{
+            fontSize: getFontSize(size) ?? 12,
+            color: fieldError?.isError ? "red" : "inherit",
+          }}
+        >
+          {fieldError?.isError ? fieldError.message : helperText}
+        </FormHelperText>
+      )}
     </FormControl>
   );
 }
