@@ -70,9 +70,9 @@ function Objectives({ props }) {
   const indicatorsContainerRef = useRef(null);
 
   //PAGINATION
-  // Extract these for cleaner access
   const totalPages = pagination?.last_page || 1;
 
+  //ADDING SUCCESS INDICATOR
   const addIndicator = (mode = "create") => {
     if (mode === "create") {
       setNewObj((prev) => {
@@ -102,6 +102,7 @@ function Objectives({ props }) {
     }
   };
 
+  //REMOVE SUCCESS INDICATOR
   const removeIndicator = (index, mode = "create") => {
     if (mode === "create") {
       setNewObj((prev) => ({
@@ -122,6 +123,7 @@ function Objectives({ props }) {
     }
   };
 
+  //STORE INDICATOR INPUT
   const handleChangeIndicator = (index, value, mode = "create") => {
     if (mode === "create") {
       setNewObj((prev) => {
@@ -143,6 +145,10 @@ function Objectives({ props }) {
 
   // HANDLE MODAL NEXT
   const handleNext = () => {
+    if (openCreate) {
+      if (step === 1) {
+      }
+    }
     setCurrentStep((prev) => prev + 1);
     // setIsLoading(false); // STOP LOADING
   };
@@ -434,6 +440,7 @@ function Objectives({ props }) {
                 <Stack gap={2}>
                   <AutocompleteComponent
                     label={"Select a function"}
+                    name="function"
                     options={function_types}
                     value={newObj.function}
                     getOptionLabel={(option) => option?.type || ""}
@@ -447,6 +454,7 @@ function Objectives({ props }) {
 
                   <TextareaComponent
                     label={"Objective"}
+                    name="objective"
                     value={newObj.objective}
                     onChange={(e) =>
                       setNewObj((prev) => ({
@@ -496,6 +504,7 @@ function Objectives({ props }) {
                       <TextareaComponent
                         isRequired={true}
                         value={indicator}
+                        name="indicator"
                         onChange={(e) =>
                           handleChangeIndicator(index, e.target.value, "create")
                         }
@@ -517,6 +526,7 @@ function Objectives({ props }) {
                 <Divider sx={{ my: 1 }} />
                 <InputComponent
                   type="password"
+                  name="pin"
                   label="Authorization pin"
                   helperText={
                     "Confirm your action by typing-in your authorization PIN."

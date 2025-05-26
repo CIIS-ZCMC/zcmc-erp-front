@@ -194,7 +194,6 @@ function ServerTableComponent({
               </tr>
             ) : filteredData?.length > 0 ? (
               filteredData?.map((row, rowIndex) => {
-                console.log(row.id, highlightedRowId);
                 const isHighlighted = row.id === highlightedRowId;
                 return (
                   <tr
