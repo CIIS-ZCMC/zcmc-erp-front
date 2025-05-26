@@ -15,6 +15,7 @@ import {
 } from "react-icons/md";
 import no_result from "../../../assets/not-found.png";
 import PageLoader from "../../../Components/Loading/PageLoader";
+import { ThreeDotsLoader } from "../../../Components/Common/Loading/ThreeDotsLoader";
 
 function PPMPDashboard(props) {
   const navigate = useNavigate();
@@ -33,9 +34,11 @@ function PPMPDashboard(props) {
   }, []);
   return (
     <Fragment>
-      {dashboard &&
-      Object.keys(dashboard).length === 0 &&
-      dashboard.constructor === Object ? (
+      {pageLoader ? (
+        <ThreeDotsLoader />
+      ) : dashboard &&
+        Object.keys(dashboard).length === 0 &&
+        dashboard.constructor === Object ? (
         <>
           <Stack
             height="85vh"
@@ -193,7 +196,8 @@ function PPMPDashboard(props) {
           </BoxComponent>
         </>
       )}
-      <PageLoader isLoading={pageLoader} />
+
+      {/* <PageLoader isLoading={pageLoader} /> */}
     </Fragment>
   );
 }

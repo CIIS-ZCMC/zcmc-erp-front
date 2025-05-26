@@ -29,6 +29,7 @@ import PageLoader from "../../../Components/Loading/PageLoader";
 import ConfirmationModalComponent from "../../../Components/Common/Dialog/ConfirmationModalComponent";
 import useFunctionTypeHook from "../../../Hooks/FunctionTypeHook";
 import ServerTableComponent from "../../../Components/Common/Table/ServerTableComponent";
+import userErrorInputHook from "../../../Hooks/ErrorInputHook";
 
 function Objectives({ props }) {
   const {
@@ -43,6 +44,8 @@ function Objectives({ props }) {
   const { function_types, getFunctionType } = useFunctionTypeHook();
   const { setAlertDialog, setConfirmationModal, closeConfirmation } =
     useModalHook();
+  const { errors, setError, clearErrors } = userErrorInputHook();
+
   const [searchTerm, setSearchTerm] = useState("");
   const [inputValue, setInputValue] = useState(""); // immediate input value
   const [openCreate, setOpenCreate] = useState(false);
@@ -143,12 +146,40 @@ function Objectives({ props }) {
     }
   };
 
+  const isEmptyObject = (obj) =>
+    obj && typeof obj === "object" && Object.keys(obj).length === 0;
+
   // HANDLE MODAL NEXT
-  const handleNext = () => {
-    if (openCreate) {
-      if (step === 1) {
+  const handleNext = (mode = "create") => {
+    let hasError = false;
+    if (mode === "create") {
+      if (currentStep === 1) {
+        if (!newObj.function) {
+          setError("function", true, "Please select a function");
+          hasError = true;
+        }
+        if (!newObj.objective) {
+          setError("objective", true, "Please input an objective");
+          hasError = true;
+        }
+        if (hasError) return;
       }
     }
+
+    if (mode === "update") {
+      if (currentStep === 1) {
+        if (!updateObj.function) {
+          setError("function", true, "Please select a function");
+          hasError = true;
+        }
+        if (!updateObj.objective) {
+          setError("objective", true, "Please input an objective");
+          hasError = true;
+        }
+        if (hasError) return;
+      }
+    }
+
     setCurrentStep((prev) => prev + 1);
     // setIsLoading(false); // STOP LOADING
   };
@@ -159,10 +190,12 @@ function Objectives({ props }) {
   };
 
   const handleClose = () => {
+    clearErrors();
     setOpenCreate(false);
     setCurrentStep(1);
   };
 
+  //UPDATE
   const handleOpenUpdate = (row) => {
     setCurrentStep(1);
     setSelected(row);
@@ -176,6 +209,7 @@ function Objectives({ props }) {
     });
     setOpenUpdate(true);
   };
+
   const handleOpenDel = (row) => {
     const data = {
       status: "error",
@@ -223,6 +257,23 @@ function Objectives({ props }) {
 
   //UPDATE
   const update = async () => {
+    let hasError = false;
+
+    updateObj.indicators.forEach((i, index) => {
+      if (!i?.description?.trim()) {
+        setError(
+          `indicator-[${index}]`,
+          true,
+          `Success Indicator ${index + 1} is required.`
+        );
+        hasError = true;
+      }
+    });
+    if (!pin?.trim()) {
+      setError("pin", true, "Authorization PIN is required.");
+      hasError = true;
+    }
+    if (hasError) return;
     setButtonLoader(true);
 
     const formData = new FormData();
@@ -230,6 +281,7 @@ function Objectives({ props }) {
     formData.append("function", JSON.stringify(updateObj.function));
     formData.append("objective", updateObj.objective);
     formData.append("indicators", JSON.stringify(updateObj.indicators));
+    formData.append("pin", JSON.stringify(pin));
 
     try {
       const { status, message, data } = await new Promise((resolve) => {
@@ -267,14 +319,32 @@ function Objectives({ props }) {
 
   //POST
   const submit = async () => {
-    setButtonLoader(true);
+    let hasError = false;
 
-    const formData = new FormData();
-    formData.append("function", JSON.stringify(newObj.function));
-    formData.append("objective", newObj.objective);
-    formData.append("indicators", JSON.stringify(newObj.indicators));
+    newObj.indicators.forEach((i, index) => {
+      if (!i.trim()) {
+        setError(
+          `indicator-[${index}]`,
+          true,
+          `Success Indicator ${index + 1} is required.`
+        );
+        hasError = true;
+      }
+    });
+    if (!pin?.trim()) {
+      setError("pin", true, "Authorization PIN is required.");
+      hasError = true;
+    }
+    if (hasError) return;
 
     try {
+      setButtonLoader(true);
+
+      const formData = new FormData();
+      formData.append("function", JSON.stringify(newObj.function));
+      formData.append("objective", newObj.objective);
+      formData.append("indicators", JSON.stringify(newObj.indicators));
+      formData.append("pin", JSON.stringify(pin));
       const result = await new Promise((resolve) => {
         postObjective(formData, (status, message, data) =>
           resolve({ status, message, data })
@@ -317,6 +387,7 @@ function Objectives({ props }) {
     }
   };
 
+  //FETCH ALL
   const fetchAll = async () => {
     const wrap = (fn) => new Promise((resolve) => fn(() => resolve()));
     setIsLoading(true);
@@ -332,6 +403,7 @@ function Objectives({ props }) {
     }
   };
 
+  //DISPLAY INDICATORS
   const handleViewIndicators = (row) => {
     setObj(row.objective);
     setObjIndicators(row.success_indicator);
@@ -374,6 +446,7 @@ function Objectives({ props }) {
             label="Create new"
             color="primary"
             onClick={() => {
+              clearErrors();
               setCurrentStep(1);
               setOpenCreate(true);
             }}
@@ -404,7 +477,6 @@ function Objectives({ props }) {
             "objective.code",
           ]}
           isLoading={isLoading}
-          search={searchTerm}
           bordered
           hoverRow
           stickLast
@@ -416,6 +488,7 @@ function Objectives({ props }) {
         isOpen={openCreate}
         hasActionButtons
         handleClose={() => {
+          clearErrors();
           setNewObj({
             function: null,
             objective: "",
@@ -432,7 +505,9 @@ function Objectives({ props }) {
         }
         rightButtonLabel={currentStep === 1 ? "Next step" : "Confirm and save"}
         isLoading={buttonLoader}
-        rightButtonAction={() => (currentStep === 2 ? submit() : handleNext())}
+        rightButtonAction={() =>
+          currentStep === 2 ? submit() : handleNext("create")
+        }
         content={
           <Fragment>
             {currentStep === 1 && (
@@ -504,7 +579,7 @@ function Objectives({ props }) {
                       <TextareaComponent
                         isRequired={true}
                         value={indicator}
-                        name="indicator"
+                        name={`indicator-[${index}]`}
                         onChange={(e) =>
                           handleChangeIndicator(index, e.target.value, "create")
                         }
@@ -545,6 +620,7 @@ function Objectives({ props }) {
         isOpen={openUpdate}
         hasActionButtons
         handleClose={() => {
+          clearErrors();
           setUpdateObj({
             function: null,
             objective: "",
@@ -567,7 +643,9 @@ function Objectives({ props }) {
           currentStep === 1 ? handleClose() : handleBack()
         }
         rightButtonLabel={currentStep === 1 ? "Next step" : "Confirm and save"}
-        rightButtonAction={() => (currentStep === 2 ? update() : handleNext())}
+        rightButtonAction={() =>
+          currentStep === 2 ? update() : handleNext("update")
+        }
         isLoading={buttonLoader}
         content={
           <Fragment>
@@ -638,6 +716,7 @@ function Objectives({ props }) {
                       <TextareaComponent
                         isRequired={true}
                         value={indicator.description}
+                        name={`indicator-[${index}]`}
                         onChange={(e) =>
                           handleChangeIndicator(index, e.target.value, "update")
                         }
@@ -663,6 +742,7 @@ function Objectives({ props }) {
                   helperText={
                     "Confirm your action by typing-in your authorization PIN."
                   }
+                  name="pin"
                   setValue={setPin}
                   value={pin}
                 />

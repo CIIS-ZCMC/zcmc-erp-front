@@ -30,6 +30,8 @@ const PPMPTable = memo(
     setOpensave,
     id,
     setSelectedID,
+    loading,
+    setLoading,
   }) => {
     const { removeItem, search } = usePPMPHook();
     const {
@@ -43,7 +45,6 @@ const PPMPTable = memo(
     const [ppmpTable, setPPMPTable] = useState(
       JSON.parse(localStorage.getItem("ppmp-items")) ?? []
     );
-    const [loading, setLoading] = useState(false);
     const [btnLoad, setBtnLoad] = useState(false);
     const [searchVal, setSearchVal] = useState("");
     const [selectedClass, setSelectedClass] = useState({});

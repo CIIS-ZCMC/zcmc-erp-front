@@ -220,11 +220,20 @@ function PPMPItems(props) {
   const handleRequest = async () => {
     clearErrors();
     let hasError = false;
-    if (!itemReq?.specs?.length || itemReq.specs.some((s) => !s.value.trim())) {
-      setError("specs", true, "Please complete all specifications.");
-      hasError = true;
-    }
-
+    // if (!itemReq?.specs?.length || itemReq.specs.some((s) => !s.value.trim())) {
+    //   setError("specs", true, "Please complete all specifications.");
+    //   hasError = true;
+    // }
+    itemReq.specs.forEach((spec, index) => {
+      if (!spec.value.trim()) {
+        setError(
+          `specs[${index}]`,
+          true,
+          `Specification ${index + 1} is required.`
+        );
+        hasError = true;
+      }
+    });
     if (!itemReq?.pin?.trim()) {
       setError("pin", true, "Authorization PIN is required.");
       hasError = true;
@@ -360,6 +369,7 @@ function PPMPItems(props) {
       const wrap = (fn) => new Promise((resolve) => fn(() => resolve()));
 
       try {
+        setPageLoader(true);
         const localData = localStorage.getItem("ppmp-items");
         if (!localData) {
           wrap(getPPMPItems);
@@ -377,6 +387,8 @@ function PPMPItems(props) {
         ]);
       } catch (err) {
         console.error("Fetching error:", err);
+      } finally {
+        setPageLoader(false);
       }
     }
 
@@ -449,6 +461,8 @@ function PPMPItems(props) {
           setOpensave={setOpenSave}
           setSelectedID={setSelectedID}
           id={selectedID}
+          loading={pageLoader}
+          setLoading={setPageLoader}
         />
       </ContainerComponent>
 
