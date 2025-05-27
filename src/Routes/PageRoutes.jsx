@@ -134,7 +134,7 @@ export const sidebarRoutes = [
 
           {
             path: "person/:activityId",
-            element: <EditResponsiblePerson />,
+            element: <ResponsibePerson />,
             roles: ["super_admin"],
             abilities: [
               "M-001:read",

@@ -10,11 +10,19 @@ const initialObjective = (rowId = 1) => ({
   rowId,
 });
 const useObjectivesHook = create(
+
   persist(
     (set, get) => ({
       objectives: [],
       current_parent_id: null,
       current_row_id: null,
+
+      setObjectives: (data) => {
+        console.log(data)
+        set(() => ({
+          objectives: data
+        }))
+      },
 
       //update field
       updateObjectiveField: (id, field, value) => {

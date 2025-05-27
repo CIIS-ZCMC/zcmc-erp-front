@@ -15,7 +15,7 @@ const useAOPObjectivesHooks = create((set, get) => ({
         url: API.AOP_APPLICATION_SUMMARY,
         failed: callBack,
         success: (res) => {
-          console.log(res);
+          // console.log(res)
           const {
             status,
             message,

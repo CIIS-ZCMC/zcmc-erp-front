@@ -1,4 +1,4 @@
-import { Fragment, useState, useEffect } from 'react'
+import { Fragment, useState, useEffect, useMemo } from 'react'
 
 import { Typography, Stack, Link, Chip } from '@mui/joy';
 import { useNavigate } from 'react-router-dom';
@@ -11,11 +11,11 @@ import AutoCompleteComponent from '../../../../../Components/Form/AutocompleteCo
 import IconButtonComponent from '../../../../../Components/Common/IconButtonComponent';
 
 const TableRow = ({
-    data,
     rows,
+    aopId,
 }) => {
 
-    const { updateObjectiveField, deleteRow } = useObjectivesHook();
+    const { updateObjectiveField, deleteRow, setObjectives } = useObjectivesHook();
     const { function_types } = useFunctionTypeHook();
 
     const navigate = useNavigate();
@@ -25,9 +25,9 @@ const TableRow = ({
     const [editRowId, setEditRowId] = useState(null);
     const [isLoading, setisLoading] = useState(false);
 
-    useEffect(() => {
-        console.log(data)
-    }, [data])
+    // useEffect(() => {
+    //     console.log(rows)
+    // }, [])
 
     return (
         <Fragment>
@@ -120,7 +120,7 @@ const TableRow = ({
                                     >
                                         <Link
                                             component="button"
-                                            onClick={() => navigate(`activities/${rowId}`, { state: { parentId: id, rowId: rowId } })}
+                                            onClick={() => navigate(`activities/${rowId}`, { state: { aopId: aopId, rowId: rowId } })}
                                             fontSize={14}
                                         >
                                             Manage Activities
