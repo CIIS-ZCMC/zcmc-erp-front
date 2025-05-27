@@ -58,12 +58,12 @@ const useAOPObjectivesHooks = create((set, get) => ({
       });
     },
 
-    getSingleAOP: (id, callBack) => {
+    getSingleAOP: (callBack) => {
       read({
-        url: `${API.AOP_APPLICATION_SHOW}/${id}`,
+        url: `${API.AOP_APPLICATION_EDIT}`,
         failed: callBack,
         success: (res) => {
-          console.log(res)
+          // console.log(res)
           set({ aopObjective: res.data.data });
           callBack(200, "Success");
           aopObjective

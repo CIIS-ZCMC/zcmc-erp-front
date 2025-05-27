@@ -149,7 +149,7 @@ export const sidebarRoutes = [
   },
 
   {
-    path: "/aop-edit/:id",
+    path: "/aop-edit",
     element: <EditAOP />,
     roles: ["super_admin"],
     abilities: ["M-001:read", "M-001:write", "M-001:edit", "M-001:delete"],

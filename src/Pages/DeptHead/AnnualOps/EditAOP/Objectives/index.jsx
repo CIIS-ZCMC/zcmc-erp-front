@@ -37,26 +37,27 @@ const index = () => {
     const { findActivitiesByObjectiveID, activities } = useActivitiesHook();
     const { setAlertDialog } = useModalHook();
 
-    const { application_objectives } = aopObjective;
+    const { type_of_functions } = aopObjective;
 
     const formattedObjectives = useMemo(() => {
-        return application_objectives?.map((aop, index) => ({
+        return type_of_functions?.map((objectives, index) => ({
             id: uuid(),
             rowId: index + 1,
-            functionTypeId: aop.function_type_id,
-            objective: aop.objective_id,
-            successIndicatorId: aop.success_indicator_id,
+            functionType: objectives,
+            objective: objectives.objectives,
+            successIndicator: objectives.objectives.success_indicators
         })) || [];
 
-    }, [application_objectives]);
+    }, [type_of_functions]);
 
     useEffect(() => {
+        console.log('formatted', formattedObjectives)
         setObjectives(formattedObjectives)
-    }, [formattedObjectives])
+    }, [type_of_functions])
 
     // check pag walang objectives then add default objective
     useEffect(() => {
-        if (objectives.length === 0) {
+        if (objectives?.length === 0) {
             addObjective();
         }
     }, [objectives, addObjective]);

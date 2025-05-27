@@ -25,14 +25,15 @@ const TableRow = ({
     const [editRowId, setEditRowId] = useState(null);
     const [isLoading, setisLoading] = useState(false);
 
-    // useEffect(() => {
-    //     console.log(rows)
-    // }, [])
+    useEffect(() => {
+        console.log('tablerows:', rows)
+    }, [])
 
     return (
         <Fragment>
             {
                 rows?.map(({ id, rowId, functionType, objective, successIndicator }, index) => {
+
                     return (
                         <tr key={id}>
                             <td>
@@ -72,13 +73,15 @@ const TableRow = ({
                                                 updateObjectiveField(id, 'objective', val);
                                                 setEditRowId(null);
                                             }}
-                                            options={functionType?.objectives ?? []}
+                                            options={functionType?.objective ?? []}
+
                                         />
                                     )
                                     :
                                     (
                                         <Typography>
-                                            {objective?.code || "-"}
+                                            {JSON.stringify(objective)} *
+                                            {/* {objective?.code || "-"} */}
                                         </Typography>
                                     )
                                 }

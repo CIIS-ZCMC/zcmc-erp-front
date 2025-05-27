@@ -52,6 +52,7 @@ const TableRow = ({
                   :
                   (<Typography>
                     {functionType?.label || "-"}
+                    {/* {JSON.stringify(functionType)} */}
                   </Typography>)
                 }
               </td>
