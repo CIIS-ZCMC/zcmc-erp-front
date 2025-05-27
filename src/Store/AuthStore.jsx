@@ -106,18 +106,3 @@ export const useUserTypes = () => {
     isDepartmentHead: false,
   };
 };
-
-export const useUserTypes = () => {
-  const user = useAuthStore((state) => state.user);
-
-  const area = useAuthStore((state) => state.getUserArea);
-  return {
-    isDivisionHead: false,
-    // user.position === "division",
-    // isPlanning: user.position === "planning",
-    // isDepartmentHead: user.position === "department-head",
-
-    isPlanning: area === "Planning Unit",
-    isDepartmentHead: false,
-  };
-};
