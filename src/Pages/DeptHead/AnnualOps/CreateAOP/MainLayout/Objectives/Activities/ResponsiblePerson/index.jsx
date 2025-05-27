@@ -8,8 +8,6 @@ import useModalHook from "../../../../../../../../Hooks/ModalHook";
 //Custom Components
 import ButtonComponent from "../../../../../../../../Components/Common/ButtonComponent";
 import ContainerComponent from "../../../../../../../../Components/Common/ContainerComponent";
-import AlertDialogComponent from "../../../../../../../../Components/Common/Dialog/AlertDialogComponent";
-import ModalComponent from "../../../../../../../../Components/Common/Dialog/ModalComponent";
 import ConfirmationModalComponent from "../../../../../../../../Components/Common/Dialog/ConfirmationModalComponent";
 
 // Layouts

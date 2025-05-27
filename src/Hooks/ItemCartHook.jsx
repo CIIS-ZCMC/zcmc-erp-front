@@ -39,7 +39,7 @@ const useItemCartHook = create(
             item_id: item.id,
             item: item,
             item_code: item.code,
-            variant: item.variant,
+            variant: item.variant.name,
             description: item.name,
             category: item.category,
             classification: item.classification,
