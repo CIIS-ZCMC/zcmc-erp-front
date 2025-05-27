@@ -57,12 +57,9 @@ const SearchBarWithdeBounce = ({
         fullWidth={fullWidth}
       />
       {value && (
-        <>
-          {value}
-          <Typography level="body-xs" sx={{ mt: 1 }}>
-            Searching for: {value}
-          </Typography>
-        </>
+        <Typography level="body-xs" sx={{ mt: 1 }}>
+          Searching for: {value}
+        </Typography>
       )}
     </FormControl>
   );

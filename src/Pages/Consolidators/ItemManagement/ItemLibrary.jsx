@@ -5,7 +5,7 @@ import { LIBRARY_CONSTANTS } from "../../../Data/constants";
 import ContainerComponent from "../../../Components/Common/ContainerComponent";
 import ButtonComponent from "../../../Components/Common/ButtonComponent";
 import { ExternalLink } from "lucide-react";
-import { Stack, Box } from "@mui/joy";
+import { Stack, Box, Input } from "@mui/joy";
 import { Outlet, useNavigate } from "react-router-dom";
 import TabComponent from "../../../Components/Common/TabComponent";
 import ScrollableTableComponent from "../../../Components/Common/Table/ScrollableTableComponent";
@@ -37,6 +37,11 @@ const ItemLibrary = () => {
   const setTypecateg = useCategoryHooks((state) => state.setType);
   const setTypevariant = useVariantHooks((state) => state.setType);
 
+  const setSearchQuery = useClassificationDataTable(
+    (state) => state.setSearchQuery
+  );
+  const { search_Query } = useClassificationDataTable();
+
   // Unified setter
   const setAllTypes = (type) => {
     setTypeclassi(type);
@@ -46,7 +51,6 @@ const ItemLibrary = () => {
   const { openModal, setOpenModal, successDialog, setSuccessDialog } =
     useModalHook();
   const [isOpen, setIsOpen] = useState(false);
-  const [searchQuery, setSearchQueryState] = useState("");
   const location = useLocation();
   const navigate = useNavigate();
   const UrllastSegment = location.pathname.split("/").filter(Boolean).pop();
@@ -114,13 +118,11 @@ const ItemLibrary = () => {
               mb: 2,
             }}
           >
-            <SearchBarComponent
-              size="md"
-              placeholder="Find records by document number, year, items, etc."
-            />
+            {/* {searchQuery} */}
+
             <SearchBarWithdeBounce
-              value={searchQuery}
-              setValue={setSearchQueryState}
+              value={search_Query}
+              setValue={setSearchQuery}
             />
             {/* <DatePickerComponent /> */}
           </Box>
@@ -143,7 +145,6 @@ const ItemLibrary = () => {
           <ModalContent />
         </Sheet>
       </Modal>
-      {/* Success Indicators modal */}
       <Modal
         aria-labelledby="modal-title"
         aria-describedby="modal-desc"

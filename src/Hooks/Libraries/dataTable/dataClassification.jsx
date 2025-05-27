@@ -14,20 +14,26 @@ const useClassificationDataTable = create((set, get) => ({
     set({ currentPage: page });
   },
   setSearchQuery: (query) => {
+    console.log("Setting search query:", query);
     set({ search_Query: query });
   },
-  getClassification: (failedCallback) => {
-    const { currentPage: page } = get(); // 🔥 correctly access the current state
+  getClassifications: (failedCallback) => {
+    const { currentPage: page, search_Query: search } = get(); // 🔥 correctly access the current state
+
+    const params = {
+      page: page,
+      per_page: 15, // Set the number of items per page
+    };
+
+    if (search && search.length > 1) {
+      params.search = search; // Add search query to params if it has more than 1 character
+    }
 
     read({
       url: API.ClASSIFICATION,
-      params: {
-        page: page,
-        per_page: 2, // Set the number of items per page
-      },
+      params,
       failed: failedCallback,
       success: (res) => {
-        console.log("Fetched classification data");
         const {
           data: { data, meta, links },
         } = res;
@@ -39,6 +45,7 @@ const useClassificationDataTable = create((set, get) => ({
           currentPage: meta.current_page,
           totalPages: meta.last_page,
         });
+        return res;
       },
     });
   },

@@ -16,6 +16,15 @@ ContainerComponent.propTypes = {
   noBoxShadow: PropTypes.bool,
 };
 
+const CustomSheet = styled(Sheet)(({ theme, noBoxShadow }) => ({
+  backgroundColor: "white",
+  borderRadius: 12,
+  padding: theme.spacing(2.5),
+  border: noBoxShadow ? `1px solid ${theme.palette.neutral[200]}` : "none",
+  boxShadow: noBoxShadow ? "none" : theme.shadow.md,
+  position: "static",
+}));
+
 function ContainerComponent({
   children,
   title,
@@ -30,17 +39,8 @@ function ContainerComponent({
   isLoading,
   ...props
 }) {
-  const CustomSheet = styled(Sheet)(({ theme }) => ({
-    backgroundColor: "white",
-    borderRadius: 12,
-    padding: theme.spacing(2.5),
-    border: noBoxShadow ? `1px solid ${theme.palette.neutral[200]}` : "none",
-    boxShadow: noBoxShadow ? "none" : theme.shadow.md,
-    position: "static",
-  }));
-
   return (
-    <CustomSheet {...props}>
+    <CustomSheet {...props} noBoxShadow={noBoxShadow}>
       {title && (
         <Stack gap={1.5} mb={2}>
           <Stack

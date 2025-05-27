@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect } from "react";
+import React, { Fragment, useEffect, useRef } from "react";
 import { classificationCols } from "../../../Data/Columns";
 import ScrollableTableComponent from "../../../Components/Common/Table/ScrollableTableComponent";
 import useModalHook from "../../../Hooks/ModalHook";
@@ -8,15 +8,27 @@ import ServerTableComponent from "../../../Components/Common/Table/ServerTableCo
 export const Classification = () => {
   const { setType, setSelectedData } = useClassificationHooks();
   const { setOpenModal } = useModalHook();
-  const { classi_dataTable, pagination, currentPage, totalPages } =
-    useClassificationDataTable();
+  const {
+    classi_dataTable,
+    pagination,
+    currentPage,
+    totalPages,
+    setSearchQuery,
+    search_Query,
+  } = useClassificationDataTable();
   const setCurrentPage = useClassificationDataTable(
     (state) => state.setCurrentPage
   );
-  const getClassification = useClassificationDataTable(
-    (state) => state.getClassification
+  const getClassifications = useClassificationDataTable(
+    (state) => state.getClassifications
   );
 
+  // const search_Query = useClassificationDataTable(
+  //   (state) => state.search_Query
+  // );
+  // const setSearchQuery = useClassificationDataTable(
+  //   (state) => state.setSearchQuery
+  // );
   function transformData(data) {
     return data.map((item) => ({
       id: item.id,
@@ -38,26 +50,31 @@ export const Classification = () => {
     setOpenModal(true, false, true);
     setSelectedData(data);
   };
-
   useEffect(() => {
-    getClassification((message) => {
+    console.log(
+      "Fetching classification data with search query:",
+      search_Query
+    );
+    getClassifications((message) => {
       console.log("Error fetching classification data:", message);
     });
-  }, [getClassification, currentPage]);
+  }, [currentPage]);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      console.log("Search query changed:", search_Query);
+      getClassifications((message) => {
+        console.log("Error fetching classification data:", message);
+      });
+    }, 500); // Debounce the search query
+
+    return () => {
+      clearTimeout(handler); // Cancel previous timeout if input changes quickly
+    };
+  }, [search_Query]);
 
   return (
     <Fragment>
-      {/* <>{JSON.stringify(pagination)}</>
-      <ScrollableTableComponent
-        data={transformData(classi_dataTable)}
-        columns={classificationCols(setUpdateType, setDeleteType)}
-        pageSize={15}
-        stripe="even"
-        bordered
-        hoverRow
-        isLoading={false}
-        stickLast
-      /> */}
       <ServerTableComponent
         data={transformData(classi_dataTable)}
         columns={classificationCols(setUpdateType, setDeleteType)}
