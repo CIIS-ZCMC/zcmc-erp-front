@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import erp_api from "../Services/ERP_API";
-import { localStorageSetter, localStorageGetter } from "../Utils/LocalStorage";
+import { read } from "../Services/RequestMethods";
+import { localStorageGetter, localStorageSetter } from "../Utils/LocalStorage";
 
 const useAuthStore = create((set, get) => ({
   user: localStorageGetter("user") ?? null,
@@ -26,7 +27,7 @@ const useAuthStore = create((set, get) => ({
 
           set({ user: data.data, meta: data.meta, loading: false });
 
-          localStorageSetter("user", data.data); // STORE USER TO LOCAL STORAGE
+          localStorageSetter("user", data.data);
           return data.meta.redirect_to;
         })
         .catch((err) => {
@@ -34,6 +35,7 @@ const useAuthStore = create((set, get) => ({
           return;
         });
     },
+
     logout: async () => {
       return await erp_api
         .delete("/logout")
@@ -49,6 +51,24 @@ const useAuthStore = create((set, get) => ({
           return data.meta.redirect_to;
         })
         .catch((err) => set({ error: err.cause }));
+    },
+
+    sessionValidation: (token, callBack) => {
+      read({
+        url: "/user",
+        token: token,
+        success: (res) => {
+          const { data, status } = res;
+
+          if (!(status >= 200 && status < 300)) {
+            throw new Error("Bad response", { cause: res });
+          }
+
+          set({ user: data.data, meta: data.meta, loading: false });
+          localStorageSetter("user", data.data);
+        },
+        failed: callBack,
+      });
     },
 
     getUserArea: () => {
@@ -70,6 +90,21 @@ export const useAuthActions = () => {
   const actions = useAuthStore((state) => state.actions);
 
   return { ...actions };
+};
+
+export const useUserTypes = () => {
+  const user = useAuthStore((state) => state.user);
+
+  const area = useAuthStore((state) => state.getUserArea);
+  return {
+    isDivisionHead: false,
+    // user.position === "division",
+    // isPlanning: user.position === "planning",
+    // isDepartmentHead: user.position === "department-head",
+
+    isPlanning: area === "Planning Unit",
+    isDepartmentHead: false,
+  };
 };
 
 export const useUserTypes = () => {

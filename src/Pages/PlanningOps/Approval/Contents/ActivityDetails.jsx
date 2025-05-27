@@ -12,7 +12,7 @@ import ContainerComponent from "../../../../Components/Common/ContainerComponent
 import { MarkReviewFooter } from "./MarkReviewFooter";
 import ScrollableTableComponent from "../../../../Components/Common/Table/ScrollableTableComponent";
 import { RESOURCES_HEADER } from "../../../../Data/Columns";
-import { useUserTypes } from "../../../../Hooks/UserHook";
+import { useUserTypes } from "../../../../Store/AuthStore";
 
 export const ActivityDetails = () => {
   const { isDivisionHead } = useUserTypes();
