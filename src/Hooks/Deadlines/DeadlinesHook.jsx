@@ -91,5 +91,6 @@ const useDeadlinesHook = create((set) => ({
 
 export default useDeadlinesHook;
 
-export const useDeadlinesActions = () => useDeadlinesHook((state) => state.actions)
+export const useDeadlinesActions = () =>
+    useDeadlinesHook((state) => state.actions);
 
