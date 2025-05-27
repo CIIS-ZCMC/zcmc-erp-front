@@ -13,14 +13,11 @@ const MenuItemComponent = styled(RouterLink)(({ theme, color = {} }) => ({
   borderRadius: 10,
   transition: "background-color 0.3s",
   backgroundColor: "transparent",
-  "&:hover": {
-    backgroundColor: color.hover || "rgba(255, 255, 255, 0.1)",
+  "&.hover": {
+    bgcolor: "neutral.50",
+    transition: "background 0.2s",
   },
   // If you want to handle active state, you can use the 'active' class added by React Router
-  "&.active": {
-    fontWeight: 600,
-    backgroundColor: color.active || "rgba(255, 255, 255, 0.2)",
-  },
 }));
 
 export default MenuItemComponent;

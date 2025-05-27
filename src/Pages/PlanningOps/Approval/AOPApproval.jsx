@@ -29,6 +29,7 @@ import {
   useApprovalTimeline,
 } from "../../../Hooks/AOP/AOPApprovalHook";
 import { ThreeDotsLoader } from "../../../Components/Common/Loading/ThreeDotsLoader";
+import PageLoader from "../../../Components/Loading/PageLoader";
 
 const AOPApproval = () => {
   const navigate = useNavigate();
@@ -45,11 +46,15 @@ const AOPApproval = () => {
   const [openTimelineModal, setOpenTimelineModal] = useState(false);
   const [index, setIndex] = useState("all");
   const [year, setYear] = useState(new Date().getFullYear());
-  // const [search, setSearch] = useState("");
+  const [pageLoading, setPageLoading] = useState("");
 
   // FUNCTIONS
   const handleClickCard = (id, area_code) => {
-    getAOPApplicationById(id, () => navigate(`/aop-approval/objectives/${id}`));
+    setPageLoading(true);
+    getAOPApplicationById(id, () => {
+      setPageLoading(false);
+      navigate(`/aop-approval/objectives/${id}`);
+    });
 
     localStorageSetter("aop_application_id", id);
     localStorageSetter("aop_application_area_code", area_code);
@@ -172,6 +177,9 @@ const AOPApproval = () => {
           </Stack>
         }
       />
+
+      {/* LOADER */}
+      <PageLoader isLoading={pageLoading} />
     </Fragment>
   );
 };

@@ -38,7 +38,6 @@ const MenuItemWithChildren = ({ name, children, icon, path, isCollapsed }) => {
     display: "flex",
     justifyContent: "space-between",
     alignItems: "center",
-    // bgcolor: "red",
   };
 
   const handleClick = () => {
@@ -88,7 +87,7 @@ const MenuItemWithChildren = ({ name, children, icon, path, isCollapsed }) => {
       <Stack direction="row" alignItems="center">
         <Box>{icon}</Box>
         {!isCollapsed && (
-          <Typography ml={1} color="white" fontSize={{ xs: 12, md: 14 }}>
+          <Typography ml={1} color="white" fontSize={{ xs: 12, md: 13 }}>
             {name}
           </Typography>
         )}
@@ -103,18 +102,27 @@ const MenuItemWithChildren = ({ name, children, icon, path, isCollapsed }) => {
       position="relative"
       onMouseEnter={handleParentMouseEnter}
       onMouseLeave={handleParentMouseLeave}
+      sx={{
+        py: isExpanded ? 0.5 : 0,
+        borderRadius: "md",
+        backgroundColor: isExpanded ? "rgba(255,255,255,0.05)" : "transparent",
+        transition: "background-color 0.2s ease, padding 0.1s ease",
+      }}
     >
-      <MenuItemComponent onClick={handleClick}>{content}</MenuItemComponent>
-
+      <MenuItemComponent onClick={handleClick} to={firstChild}>
+        {content}
+      </MenuItemComponent>
+      {filteredChildren?.length > 1 ? (
+        <Divider sx={{ mt: !isExpanded && 1, mx: 1.5 }} />
+      ) : null}
       {/* Inline children for expanded sidebar */}
       {!isCollapsed && isExpanded && (
-        <Stack spacing={1.5} mt={1} px={2}>
+        <Stack spacing={1} my={isExpanded && 1} px={2}>
           {filteredChildren.map((child, index) => (
             <ChildMenuItem key={index} path={path} {...child} />
           ))}
         </Stack>
-      )}
-
+      )}{" "}
       {/* Hover popout menu for collapsed sidebar */}
       {isCollapsed &&
         showPopout &&
@@ -131,7 +139,6 @@ const MenuItemWithChildren = ({ name, children, icon, path, isCollapsed }) => {
               boxShadow: "lg",
               borderRadius: "md",
               zIndex: 9999,
-              // ✨ Animation styles:
               opacity: showPopout ? 1 : 0,
               transform: showPopout ? "translateX(0)" : "translateX(-10px)",
               transition: "opacity 100ms ease, transform 100ms ease",
@@ -147,9 +154,7 @@ const MenuItemWithChildren = ({ name, children, icon, path, isCollapsed }) => {
             </Stack>
           </Sheet>,
           document.body
-        )}
-
-      <Divider sx={{ mt: 1 }} />
+        )}{" "}
     </Box>
   );
 };

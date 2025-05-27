@@ -61,6 +61,7 @@ export const sidebarRoutes = [
 
   // SUPERVISOR ROUTES
   {
+    parentPath: "/supervisor",
     name: "Supervisor",
     icon: <MdSupervisorAccount {...iconStyles} />,
     permissions: ["ERP-AOP-CREATE:write", "ERP-PPMP-CREATE:write"],
@@ -120,6 +121,7 @@ export const sidebarRoutes = [
 
   // AOP AND PPPMP
   {
+    parentPath: "/planning-ops",
     name: "Planning and Operations",
     icon: <MdLibraryBooks {...iconStyles} />,
     permissions: [
@@ -185,6 +187,7 @@ export const sidebarRoutes = [
 
   // CONSOLIDATOR ROUTES
   {
+    parentPath: "/consolidator",
     name: "Item Management",
     icon: <MdSettings {...iconStyles} />,
     permissions: [

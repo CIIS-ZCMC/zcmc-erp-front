@@ -24,17 +24,21 @@ const ChildMenuItem = ({ icon, name, path, isInPopout = false }) => {
         transition: "background 0.2s",
 
         backgroundColor: isActive ? "primary.100" : "transparent",
-
         ...(isInPopout
           ? {
-              bgcolor: "transparent",
-              color: "neutral.900",
+              bgcolor: isActive ? "primary.900" : "transparent",
+              color: isActive ? "white" : "neutral.900",
               "&:hover": {
-                bgcolor: "neutral.100",
+                bgcolor: !isActive && "neutral.100",
               },
             }
           : {
               color: isActive ? "primary.900" : "white",
+              "&:hover": {
+                color: !isActive && "white",
+                bgcolor: !isActive && "rgba(255,255,255,0.09)",
+                transition: "background 0.2s",
+              },
             }),
       }}
     >

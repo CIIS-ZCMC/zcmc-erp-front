@@ -185,8 +185,8 @@ export default function ManageAOP() {
             columnSpacing={{ md: 0, lg: 3 }}
             rowSpacing={{ xs: 1, sm: 3, md: 1 }}
             sx={{
-              minHeight: "84vh",
-              height: "84vh",
+              minHeight: "85vh",
+              height: "85vh",
               msOverflowY: "auto",
               overflowY: "auto",
             }}

@@ -26,7 +26,7 @@ const Content = () => {
   });
 
   return (
-    <Stack pt={4} gap={1} flexGrow={1} width="100%">
+    <Stack pt={4} gap={1} flexGrow={1} width={isCollapsed ? "auto" : "100%"}>
       {filteredRoutes?.map((item, index) =>
         item.children ? (
           <MenuItemWithChildren
