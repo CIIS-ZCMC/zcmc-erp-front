@@ -1,8 +1,9 @@
 import { create } from "zustand";
 import erp_api from "../Services/ERP_API";
+import { localStorageSetter, localStorageGetter } from "../Utils/LocalStorage";
 
 const useAuthStore = create((set, get) => ({
-  user: null,
+  user: localStorageGetter("user") ?? null,
   loading: false,
   error: null,
   meta: null,
@@ -21,9 +22,11 @@ const useAuthStore = create((set, get) => ({
             throw new Error("Bad response", { cause: res });
           }
 
+          console.log(res);
+
           set({ user: data.data, meta: data.meta, loading: false });
 
-          console.log(data.meta);
+          localStorageSetter("user", data.data); // STORE USER TO LOCAL STORAGE
           return data.meta.redirect_to;
         })
         .catch((err) => {
@@ -67,4 +70,19 @@ export const useAuthActions = () => {
   const actions = useAuthStore((state) => state.actions);
 
   return { ...actions };
+};
+
+export const useUserTypes = () => {
+  const user = useAuthStore((state) => state.user);
+
+  const area = useAuthStore((state) => state.getUserArea);
+  return {
+    isDivisionHead: false,
+    // user.position === "division",
+    // isPlanning: user.position === "planning",
+    // isDepartmentHead: user.position === "department-head",
+
+    isPlanning: area === "Planning Unit",
+    isDepartmentHead: false,
+  };
 };
