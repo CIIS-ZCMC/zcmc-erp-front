@@ -447,6 +447,7 @@ const PPMPTable = memo(
 
     return (
       <Box sx={{ width: "100%", overflow: "auto" }}>
+        {console.log(isEditing)}
         <Stack direction="row" mb={2} justifyContent="space-between">
           <Stack direction="row" alignItems="flex-end" gap={1}>
             <InputComponent

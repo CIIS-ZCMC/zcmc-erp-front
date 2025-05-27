@@ -13,10 +13,12 @@ import {
   Select,
   selectClasses,
   Option,
+  Snackbar,
+  Alert,
 } from "@mui/joy";
 import ModalComponent from "../../../Components/Common/Dialog/ModalComponent";
 import AutocompleteComponent from "../../../Components/Form/AutocompleteComponent";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import { usePPMPItemsHook } from "../../../Hooks/PPMPItemsHook";
 import usePPMPHook from "../../../Hooks/PPMPHook";
 import useItemsHook from "../../../Hooks/ItemsHook";
@@ -35,6 +37,8 @@ import PageLoader from "../../../Components/Loading/PageLoader";
 import PPMPTable from "./PPMPTable";
 import ConfirmationModal from "../../../Components/Common/Dialog/ConfirmationModal";
 import { InfoIcon } from "lucide-react";
+import { useAuth } from "../../../Store/AuthStore";
+import { socket } from "../../../Services/Socket";
 
 function PPMPItems(props) {
   const navigate = useNavigate();
@@ -75,11 +79,14 @@ function PPMPItems(props) {
   const [openReq, setOpenReq] = useState(false);
   const [pageLoader, setPageLoader] = useState(false);
   const [buttonLoader, setButtonLoader] = useState(false);
-  const [isEditing, setIsEditing] = useState(false);
+  const [disabled, setDisabled] = useState(false);
+  const [show, setShow] = useState(false);
   const [editLoad, setEditLoad] = useState(false);
   const [selectedID, setSelectedID] = useState(null);
   const [step, setStep] = useState(1);
+  const [openNotify, setOpenNotify] = useState(false);
   const [pin, setPin] = useState("");
+  const [editor, setEditor] = useState(null);
   const [tableData, setTableData] = useState([]);
   const [itemReq, setItemReq] = useState({
     specs: [
@@ -88,23 +95,49 @@ function PPMPItems(props) {
       { id: Date.now() + 2, value: "" },
     ],
   });
+  const location = useLocation();
+  const { user } = useAuth();
+  const { name, id } = user ?? {};
 
-  const options = [
-    {
-      name: "Save as draft",
-      value: "draft",
-      action: () => handleSubmit(1),
-    },
-    {
-      name: "Add item request",
-      value: "add",
-      action: () => {
-        setActivity({});
-        setExpenseClass({});
-        setOpenReq(true);
-      },
-    },
-  ];
+  //SNACKBAR
+  const notify = () => setOpenNotify(true);
+  const handleCloseSnack = () => {
+    setEditor(null);
+    setOpenNotify(false);
+  };
+
+  const sendSignal = () => {
+    socket.emit("register-user", { userId: id, name: name });
+  };
+
+  const disconnectSignal = () => {
+    socket.emit("logout", { userId: id, name: name });
+    setShow(false);
+    handleCloseSnack();
+  };
+
+  const handleEditing = ({ editable, editorName, editorId }) => {
+    console.log("editable", editable);
+    setDisabled(!editable);
+    setOpenNotify(editable ? false : true);
+
+    setEditor(() => {
+      return { editorName: editorName, editorId: editorId };
+    });
+
+    if (!editable) {
+      return notify();
+    }
+  };
+
+  const handleEditClick = () => {
+    socket.emit("register-user", { userId: id, name: name });
+    setEditLoad(true);
+    setTimeout(() => {
+      setShow(true);
+      setEditLoad(false);
+    }, 500);
+  };
 
   const specsContainerRef = useRef(null);
 
@@ -207,9 +240,12 @@ function PPMPItems(props) {
         localStorage.setItem("ppmp-items", JSON.stringify(data.ppmp_items));
         closeConfirmation();
         setOpenSave(false);
-        setIsEditing(false);
+        setIsEditable(false);
+        disconnectSignal();
+        handleCloseSnack();
       }
     } catch (error) {
+      disconnectSignal(); //remove this later
       setAlertDialog({
         status: "error",
         title: "Submission Failed",
@@ -367,14 +403,6 @@ function PPMPItems(props) {
     setPin("");
   };
 
-  const handleEditClick = () => {
-    setEditLoad(true);
-    setTimeout(() => {
-      setIsEditing(true);
-      setEditLoad(false);
-    }, 500);
-  };
-
   useEffect(() => {
     async function fetchAll() {
       // Step 2: Wrap callbacks in Promises for async/await
@@ -407,8 +435,26 @@ function PPMPItems(props) {
     fetchAll();
   }, []);
 
+  useEffect(() => {
+    socket.on("editing", handleEditing);
+    return () => {
+      socket.off("editing"); // Clean up on unmount
+    };
+  }, [socket]);
+
+  // AUTHENTICATE
+  useEffect(() => {
+    socket.emit("authenticate", { id: id, name: name });
+
+    return () => {
+      socket.disconnect(); // Clean up on unmount
+    };
+  }, []);
+
   return (
     <Fragment>
+      {console.log("disabled", disabled)}
+      {console.log("show", show)}
       <ContainerComponent
         title={"List of items"}
         description={
@@ -428,6 +474,14 @@ function PPMPItems(props) {
                 setOpenReq(true);
               }}
             />
+
+            {show && (
+              <ButtonComponent
+                label={"Exit Edit Mode"}
+                onClick={() => disconnectSignal()}
+                color="danger"
+              />
+            )}
           </Stack>
         }
       >
@@ -444,12 +498,12 @@ function PPMPItems(props) {
               label="Edit PPMP"
               onClick={() => handleEditClick()}
               isLoading={editLoad}
-              disabled={isEditing}
+              disabled={disabled}
             />
             <ButtonComponent
               label="Add Item"
               variant="outlined"
-              disabled={!isEditing}
+              disabled={!show}
               endDecorator={<BiPlus />}
               onClick={() => {
                 setActivity({});
@@ -460,12 +514,12 @@ function PPMPItems(props) {
             <ButtonComponent
               label="Save as draft"
               onClick={() => handleSubmit(1)}
-              disabled={!isEditing}
+              disabled={!show}
               isLoading={buttonLoader}
             />
             <ButtonComponent
               label="Submit PPMP"
-              disabled={!isEditing}
+              disabled={!show}
               onClick={() => handleConfirmationModal()}
             />
           </Stack>
@@ -485,8 +539,8 @@ function PPMPItems(props) {
           id={selectedID}
           loading={pageLoader}
           setLoading={setPageLoader}
-          isEditing={isEditing}
-          setIsEditing={setIsEditing}
+          isEditing={show}
+          setIsEditing={setShow}
         />
       </ContainerComponent>
 
@@ -855,6 +909,21 @@ function PPMPItems(props) {
       )}
 
       <AlertDialogComponent leftButtonAction={() => handleClose()} />
+      <Snackbar
+        open={openNotify}
+        // autoHideDuration={2000}
+        onClose={handleCloseSnack}
+        color="success"
+      >
+        <Alert
+          onClose={handleCloseSnack}
+          severity="success"
+          variant="filled"
+          sx={{ width: "100%" }}
+        >
+          {editor?.editorName} is currently editing
+        </Alert>
+      </Snackbar>
     </Fragment>
   );
 }
