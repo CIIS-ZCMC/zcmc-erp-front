@@ -32,9 +32,9 @@ function ServerTableComponent({
   fieldsToSearch = [],
   hoverRow,
   highlightedRowId,
+  search,
+  setSearch,
 }) {
-  const [search, setSearch] = useState("");
-
   const lastColumnWidth = columns[columns.length - 1]?.width || "144px";
 
   const filteredData = useMemo(() => {
@@ -192,8 +192,8 @@ function ServerTableComponent({
                   </Box>
                 </td>
               </tr>
-            ) : filteredData?.length > 0 ? (
-              filteredData?.map((row, rowIndex) => {
+            ) : data?.length > 0 ? (
+              data?.map((row, rowIndex) => {
                 const isHighlighted = row.id === highlightedRowId;
                 return (
                   <tr

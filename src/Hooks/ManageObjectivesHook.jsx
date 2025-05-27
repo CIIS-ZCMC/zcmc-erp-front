@@ -3,15 +3,28 @@ import { post, read, remove, update } from "../Services/RequestMethods";
 
 const PATH = "objective";
 
-const useManageObjHook = create((set) => ({
+const useManageObjHook = create((set, get) => ({
   objectives: [],
   pagination: {},
   navLinks: {},
+  searchQuery: "",
+  setSearchQuery: (query) => {
+    set({ searchQuery: query });
+  },
 
   getObjectives: (page = 1, callBack) => {
+    const { searchQuery } = get();
+    const params = {
+      page: page,
+      per_page: 15, // Set the number of items per page
+    };
+    if (searchQuery && searchQuery.length > 1) {
+      params.search = searchQuery; // Add search query to params if it has more than 1 character
+    }
+
     read({
       url: `${PATH}s`,
-      params: { page: page },
+      params,
       failed: callBack,
       success: (res) => {
         const { status, message, data } = res;
