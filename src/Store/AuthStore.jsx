@@ -8,6 +8,7 @@ const useAuthStore = create((set, get) => ({
   loading: false,
   error: null,
   meta: null,
+  permissions: [],
   //Actions
   actions: {
     // Session ID must be pass in call
@@ -23,7 +24,12 @@ const useAuthStore = create((set, get) => ({
             throw new Error("Bad response", { cause: res });
           }
 
-          set({ user: data.data, meta: data.meta, loading: false });
+          set({
+            user: data.data,
+            meta: data.meta,
+            permissions: data.data.meta.permissions,
+            loading: false,
+          });
 
           localStorageSetter("user", data.data);
           return data.meta.redirect_to;
@@ -62,7 +68,12 @@ const useAuthStore = create((set, get) => ({
             throw new Error("Bad response", { cause: res });
           }
 
-          set({ user: data.data, meta: data.meta, loading: false });
+          set({
+            user: data.data,
+            meta: data.meta,
+            permissions: data.data.meta.permissions,
+            loading: false,
+          });
           localStorageSetter("user", data.data);
         },
         failed: callBack,
@@ -78,10 +89,11 @@ const useAuthStore = create((set, get) => ({
 export const useAuth = () => {
   const user = useAuthStore((state) => state.user);
   const meta = useAuthStore((state) => state.meta);
+  const permissions = useAuthStore((state) => state.permissions);
   const loading = useAuthStore((state) => state.login);
   const error = useAuthStore((state) => state.error);
 
-  return { user, meta, loading, error };
+  return { user, meta, permissions, loading, error };
 };
 
 export const useAuthActions = () => {

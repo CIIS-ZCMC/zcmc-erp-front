@@ -15,7 +15,7 @@ const SimpleMenuItem = ({ name, path, icon, isCollapsed }) => {
       <MenuItemComponent to={path} path={path}>
         <Box sx={simpleIconStyles}>{icon}</Box>
         {!isCollapsed && (
-          <Typography ml={1} color="white" fontSize={{ xs: 12, md: 14 }}>
+          <Typography ml={1} color={"white"} fontSize={{ xs: 12, md: 14 }}>
             {name}
           </Typography>
         )}

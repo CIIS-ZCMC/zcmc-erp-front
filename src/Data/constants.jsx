@@ -22,6 +22,11 @@ export const EPR_API_ENDPOINTS = {
   //ERP END POINTS RELATED HERE
 };
 
+export const AREA_ID = {
+  PLANNING_UNIT: "planning-unit",
+  OMCC: "omcc",
+};
+
 export const AOP_CONSTANTS = {
   AOP_TITLE: "Annual Operations Planning",
   AOP_SUBHEADING:
@@ -39,7 +44,8 @@ export const AOP_CONSTANTS = {
     "This is a subheading. It should add more context to the interaction.",
 
   TABLE_ITEMS_HEADER: "Select resources (items) to add",
-  TABLE_ITEMS_SUBHEADER: "All resources you’ll select here only applies to the specified activity above.",
+  TABLE_ITEMS_SUBHEADER:
+    "All resources you’ll select here only applies to the specified activity above.",
 
   TABLE_RESOURCES_HEADER: "Step 3.2 of 4: Manage resources",
   TABLE_RESOURCES_SUBHEADING:
@@ -60,13 +66,12 @@ export const AOP_CONSTANTS = {
   MANAGE_ACTIVITIES_HEADER: `You're Managing activities for Objective:`,
   MANAGE_ACTIVITIES_SUBHEADER: `Collapse this card to view more information about the selected objective.`,
 
-  MANAGE_HEADER: 'You are managing resources for',
+  MANAGE_HEADER: "You are managing resources for",
   MANAGE_SUBHEADER: `Collapse this card to view more information about the selected`,
 
   MODAL_RESOURCE_HEADER: "Select resources for activity Activity",
   MODAL_RESOURCE_SUBHEADING:
     "Select a request status and reasons (if returned) to continue. You may add remarks if necessary.",
-
 };
 
 export const PPMP_CONSTANTS = {
@@ -118,7 +123,7 @@ export const approvalActions = [
 
 export const API = {
   AOP_APPLICATIONS: "aop-applications",
-  AOP_APPLICATIONS_STORE: 'aop-application-store',
+  AOP_APPLICATIONS_STORE: "aop-application-store",
   TYPE_OF_FUNCTIONS: "type-of-functions",
   TYPE_OF_PURCHASE: "purchase-types",
 

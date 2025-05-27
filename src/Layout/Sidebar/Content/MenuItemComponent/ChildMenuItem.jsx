@@ -9,15 +9,22 @@ const childIconStyles = {
 };
 
 const ChildMenuItem = ({ icon, name, path, isInPopout = false }) => {
+  const location = window.location.pathname;
+  const isActive = location === path;
+
   return (
     <MenuItemComponent
       to={path}
       path={path}
       sx={{
         px: 1.5,
-        py: 1,
+        py: 1.5,
+
         borderRadius: "md",
         transition: "background 0.2s",
+
+        backgroundColor: isActive ? "primary.100" : "transparent",
+
         ...(isInPopout
           ? {
               bgcolor: "transparent",
@@ -27,7 +34,7 @@ const ChildMenuItem = ({ icon, name, path, isInPopout = false }) => {
               },
             }
           : {
-              color: "white",
+              color: isActive ? "primary.900" : "white",
             }),
       }}
     >
