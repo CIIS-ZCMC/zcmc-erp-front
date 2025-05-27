@@ -29,6 +29,8 @@ import useClassificationHooks from "../../../Hooks/Libraries/LibClassificationHo
 import useCategoryHooks from "../../../Hooks/Libraries/LibCategoryHooks";
 import useVariantHooks from "../../../Hooks/Libraries/LibVarianHooks";
 import { libaryTabs } from "../../../Data/Options";
+import SearchBarWithdeBounce from "../../../Components/SearchBarWithdeBounce";
+import useClassificationDataTable from "../../../Hooks/Libraries/dataTable/dataClassification";
 const ItemLibrary = () => {
   const [index, setIndex] = useState("");
   const setTypeclassi = useClassificationHooks((state) => state.setType);
@@ -44,6 +46,7 @@ const ItemLibrary = () => {
   const { openModal, setOpenModal, successDialog, setSuccessDialog } =
     useModalHook();
   const [isOpen, setIsOpen] = useState(false);
+  const [searchQuery, setSearchQueryState] = useState("");
   const location = useLocation();
   const navigate = useNavigate();
   const UrllastSegment = location.pathname.split("/").filter(Boolean).pop();
@@ -114,6 +117,10 @@ const ItemLibrary = () => {
             <SearchBarComponent
               size="md"
               placeholder="Find records by document number, year, items, etc."
+            />
+            <SearchBarWithdeBounce
+              value={searchQuery}
+              setValue={setSearchQueryState}
             />
             {/* <DatePickerComponent /> */}
           </Box>
