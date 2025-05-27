@@ -119,21 +119,19 @@ function PPMPItems(props) {
   const handleEditing = ({ editable, editorName, editorId }) => {
     console.log("editable", editable);
     setDisabled(!editable);
-    setOpenNotify(editable ? false : true);
-
-    setEditor(() => {
-      return { editorName: editorName, editorId: editorId };
-    });
-
+    // setShow(editable ? false : true);
     if (!editable) {
-      return notify();
+      setShow(false); // You're not the editor → can't edit
+      notify(); // Show notification: "Someone else is editing"
+    } else {
+      setShow(true); // You ARE the editor → allow editing
     }
   };
 
   const handleEditClick = () => {
-    socket.emit("register-user", { userId: id, name: name });
     setEditLoad(true);
     setTimeout(() => {
+      sendSignal();
       setShow(true);
       setEditLoad(false);
     }, 500);
@@ -240,12 +238,10 @@ function PPMPItems(props) {
         localStorage.setItem("ppmp-items", JSON.stringify(data.ppmp_items));
         closeConfirmation();
         setOpenSave(false);
-        setIsEditable(false);
         disconnectSignal();
         handleCloseSnack();
       }
     } catch (error) {
-      disconnectSignal(); //remove this later
       setAlertDialog({
         status: "error",
         title: "Submission Failed",
@@ -453,8 +449,7 @@ function PPMPItems(props) {
 
   return (
     <Fragment>
-      {console.log("disabled", disabled)}
-      {console.log("show", show)}
+      {console.log(disabled)}
       <ContainerComponent
         title={"List of items"}
         description={
@@ -474,14 +469,21 @@ function PPMPItems(props) {
                 setOpenReq(true);
               }}
             />
+            <ButtonComponent
+              label={show ? "Exit Edit Mode" : "Edit PPMP"}
+              onClick={() => (show ? disconnectSignal() : handleEditClick())}
+              isLoading={editLoad}
+              color={show ? "danger" : "primary"}
+              disabled={disabled}
+            />
 
-            {show && (
+            {/* {show && (
               <ButtonComponent
                 label={"Exit Edit Mode"}
                 onClick={() => disconnectSignal()}
                 color="danger"
               />
-            )}
+            )} */}
           </Stack>
         }
       >
@@ -494,12 +496,6 @@ function PPMPItems(props) {
             </Typography>
           </Stack>
           <Stack direction="row" gap={1}>
-            <ButtonComponent
-              label="Edit PPMP"
-              onClick={() => handleEditClick()}
-              isLoading={editLoad}
-              disabled={disabled}
-            />
             <ButtonComponent
               label="Add Item"
               variant="outlined"
