@@ -52,6 +52,12 @@ const useObjectivesHook = create(
         }));
       },
 
+      deleteObjective: (id) => {
+        const objectives = get().objectives;
+        const filtered = objectives.filter((item) => item.id !== id)
+        set({ objectives: filtered })
+      },
+
       setCurrentObjective: (objectiveuuid) => {
         set(() => ({
           current_parent_id: objectiveuuid,

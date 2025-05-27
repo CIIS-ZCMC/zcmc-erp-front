@@ -70,14 +70,7 @@ const useAOPObjectivesHooks = create((set, get) => ({
         }
       })
     }
-  }
-
-  // Delete an entire objective
-  // deleteObjective: (id, objectives) => {
-  //   set((state) => ({
-  //     objectives: state.objectives.filter((row) => console.log(row)),
-  //   }));
-  // },
+  },
 
 }));
 
