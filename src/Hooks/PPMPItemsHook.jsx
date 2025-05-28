@@ -34,7 +34,6 @@ export const usePPMPItemsHook = create(
         Object.values(target).reduce((sum, value) => sum + value, 0),
 
       handleFieldChange: (fieldName, newValue, row) => {
-        console.log(fieldName, newValue);
         const { calculateQuantity, itemsData } = get();
 
         if (!row?.id) return;

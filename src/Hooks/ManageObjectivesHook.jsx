@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { post, read, remove } from "../Services/RequestMethods";
+import { post, read, remove, update } from "../Services/RequestMethods";
 
 const PATH = "objective";
 
@@ -31,8 +31,6 @@ const useManageObjHook = create((set) => ({
       form: body,
       success: (response) => {
         const { message, data } = response.data;
-        console.log(data);
-        // Append the new objective to the list
         set((state) => ({
           objectives: [...state.objectives, data],
         }));
@@ -44,13 +42,11 @@ const useManageObjHook = create((set) => ({
   },
 
   updateObjective: async (body, callback) => {
-    post({
+    update({
       url: `${PATH}s`,
       form: body,
       success: (response) => {
         const { message, data } = response.data;
-        console.log(data);
-        // Update the objectives array in state
         set((state) => ({
           objectives: state.objectives.map((obj) =>
             obj.id === data.id ? { ...obj, ...data } : obj

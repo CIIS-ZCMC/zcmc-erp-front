@@ -7,7 +7,7 @@ export const handleChangeInput = (name, setValue, value) => {
   });
 };
 
-export const handleInputValidation = (e, setData, setError) => {
+export const handleInputValidation = (e, setData) => {
   const { value, name } = e.target;
   console.log(value, name);
   setData((prevData) => ({

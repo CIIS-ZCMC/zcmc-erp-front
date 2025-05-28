@@ -64,13 +64,13 @@ export const sidebarRoutes = [
     parentPath: "/supervisor",
     name: "Supervisor",
     icon: <MdSupervisorAccount {...iconStyles} />,
-    permissions: ["ERP-AOP-CREATE:write", "ERP-PPMP-CREATE:write"],
+    permissions: ["ERP-AOP-MAN:write", "ERP-PPMP-MAN:write"],
     children: [
       {
         path: "/aop/all",
         name: "Create AOP",
         element: <AnnualOps />,
-        childPermissions: ["ERP-AOP-CREATE:write"],
+        childPermissions: ["ERP-AOP-MAN:write"],
         children: [
           {
             path: "/aop/all",
@@ -100,7 +100,7 @@ export const sidebarRoutes = [
         path: "/edit-ppmp",
         name: "Edit PPMP",
         element: <EditPPMP />,
-        childPermissions: ["ERP-PPMP-CREATE:write"],
+        childPermissions: ["ERP-PPMP-MAN:write"],
         children: [
           {
             index: true,

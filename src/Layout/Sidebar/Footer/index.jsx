@@ -1,12 +1,15 @@
 import React from "react";
 
-import { Sheet, Typography, Stack, Link, IconButton } from "@mui/joy";
-import { ExternalLink } from "lucide-react";
+import { Sheet, Typography, Stack, Link, IconButton, Divider } from "@mui/joy";
+import { ExternalLink, LogOutIcon } from "lucide-react";
 import useSidebarHook from "../../../Hooks/SidebarHook";
 import { MdHelpOutline } from "react-icons/md";
-
+import { BASE_URL } from "../../../Services/Config";
 const Footer = () => {
   const { isCollapsed } = useSidebarHook();
+  const handleLogOut = () => {
+    window.location.href = BASE_URL.development_landing_page;
+  };
   return (
     <div>
       <Sheet
@@ -62,6 +65,20 @@ const Footer = () => {
           </IconButton>
         )}
       </Sheet>
+
+      <Divider sx={{ mb: 2, mt: 3 }} />
+      {!isCollapsed ? (
+        <Link
+          fontSize={14}
+          sx={{ color: "white" }}
+          startDecorator={<LogOutIcon size={20} />}
+          onClick={() => handleLogOut()}
+        >
+          Log out
+        </Link>
+      ) : (
+        <LogOutIcon />
+      )}
     </div>
   );
 };

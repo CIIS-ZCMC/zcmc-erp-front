@@ -207,7 +207,6 @@ export const AOP_HEADER = [
     // isDropdown: false,
     // position: "sticky",
     width: 150,
-    width: 150,
     align: "center",
   },
 ];
@@ -332,7 +331,7 @@ export const AOP_RESOURCE_HEADER = [
   },
 ];
 
-export const ppmpHeaders = (handleDeleteRow, items, modes) => [
+export const ppmpHeaders = (handleOpenDel, items, modes, isEditing) => [
   {
     field: "id",
     name: "Row #",
@@ -542,9 +541,12 @@ export const ppmpHeaders = (handleDeleteRow, items, modes) => [
       return (
         <>
           <IconButton
-            onClick={() => handleDeleteRow(params)}
+            onClick={() => {
+              handleOpenDel(params);
+            }}
             color="danger"
             size="lg"
+            disabled={!isEditing}
           >
             <MdDeleteOutline />
           </IconButton>
