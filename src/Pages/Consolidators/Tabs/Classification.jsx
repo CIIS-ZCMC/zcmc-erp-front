@@ -86,10 +86,11 @@ export const Classification = () => {
         stripe="even"
         withCount={pagination?.pagination?.total}
         fieldsToSearch={["title", "description"]}
-        search={""}
         bordered
         hoverRow
         stickLast
+        search={search_Query}
+        setSearch={setSearchQuery}
       />
     </Fragment>
   );

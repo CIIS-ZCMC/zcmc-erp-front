@@ -11,7 +11,7 @@ import { Search, X } from "lucide-react";
 import React from "react";
 import useClassificationDataTable from "../Hooks/Libraries/dataTable/dataClassification";
 
-const SearchBarWithdeBounce = ({
+const SearchBarComponentv2 = ({
   value,
   setValue,
   placeholder = "Search...",
@@ -26,9 +26,6 @@ const SearchBarWithdeBounce = ({
   endDecorator,
   label,
 }) => {
-  const { search_Query, setSearchQuery } = useClassificationDataTable();
-
-  const [searchValue, setSearchValue] = React.useState(value);
   const handleClear = () => {
     setValue("");
   };
@@ -65,4 +62,4 @@ const SearchBarWithdeBounce = ({
   );
 };
 
-export default SearchBarWithdeBounce;
+export default SearchBarComponentv2;

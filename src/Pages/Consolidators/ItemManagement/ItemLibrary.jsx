@@ -29,7 +29,7 @@ import useClassificationHooks from "../../../Hooks/Libraries/LibClassificationHo
 import useCategoryHooks from "../../../Hooks/Libraries/LibCategoryHooks";
 import useVariantHooks from "../../../Hooks/Libraries/LibVarianHooks";
 import { libaryTabs } from "../../../Data/Options";
-import SearchBarWithdeBounce from "../../../Components/SearchBarWithdeBounce";
+import SearchBarComponentv2 from "../../../Components/SearchBarWithdeBounce";
 import useClassificationDataTable from "../../../Hooks/Libraries/dataTable/dataClassification";
 const ItemLibrary = () => {
   const [index, setIndex] = useState("");
@@ -120,10 +120,10 @@ const ItemLibrary = () => {
           >
             {/* {searchQuery} */}
 
-            <SearchBarWithdeBounce
+            {/* <SearchBarComponentv2
               value={search_Query}
               setValue={setSearchQuery}
-            />
+            /> */}
             {/* <DatePickerComponent /> */}
           </Box>
           <Outlet />
