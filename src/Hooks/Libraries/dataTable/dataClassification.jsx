@@ -14,6 +14,7 @@ const useClassificationDataTable = create((set, get) => ({
     set({ currentPage: page });
   },
   setSearchQuery: (query) => {
+    console.log("Setting search query:", query);
     set({ search_Query: query });
   },
   getClassifications: (failedCallback) => {
@@ -31,13 +32,9 @@ const useClassificationDataTable = create((set, get) => ({
 
     read({
       url: API.ClASSIFICATION,
-      params: {
-        page: page,
-        per_page: 2, // Set the number of items per page
-      },
+      params,
       failed: failedCallback,
       success: (res) => {
-        console.log("Fetched classification data");
         const {
           data: { data, meta, links },
         } = res;
@@ -49,6 +46,7 @@ const useClassificationDataTable = create((set, get) => ({
           currentPage: meta.current_page,
           totalPages: meta.last_page,
         });
+        return res;
       },
     });
   },
