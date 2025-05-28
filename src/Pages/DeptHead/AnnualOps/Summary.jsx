@@ -11,6 +11,7 @@ import SummaryCard from './SummaryCard';
 
 const Summary = (
     {
+        aopObjectives,
         total_objectives,
         total_success_indicators,
         total_activities,
@@ -94,7 +95,7 @@ const Summary = (
                         label={'Open request'}
                         variant={'outlined'}
                         size={'sm'}
-                        onClick={() => navigate(`/aop-edit`)}
+                        onClick={() => navigate(`/aop-edit`, { state: { data: aopObjectives } })}
                         endDecorator={<ExternalLink size={16} />}
                     />
 

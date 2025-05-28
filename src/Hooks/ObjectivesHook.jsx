@@ -18,7 +18,7 @@ const useObjectivesHook = create(
       current_row_id: null,
 
       setObjectives: (data) => {
-        console.log(data)
+        // console.log(data)
         set(() => ({
           objectives: data
         }))

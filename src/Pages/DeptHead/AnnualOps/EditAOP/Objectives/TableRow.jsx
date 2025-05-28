@@ -74,14 +74,13 @@ const TableRow = ({
                                                 setEditRowId(null);
                                             }}
                                             options={functionType?.objective ?? []}
-
                                         />
                                     )
                                     :
                                     (
                                         <Typography>
-                                            {JSON.stringify(objective)} *
-                                            {/* {objective?.code || "-"} */}
+                                            {/* {JSON.stringify(objective)} */}
+                                            {objective?.code || "-"}
                                         </Typography>
                                     )
                                 }

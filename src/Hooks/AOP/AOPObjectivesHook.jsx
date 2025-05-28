@@ -64,9 +64,9 @@ const useAOPObjectivesHooks = create((set, get) => ({
         failed: callBack,
         success: (res) => {
           // console.log(res)
-          set({ aopObjective: res.data.data });
+          set({ aopObjectives: res.data.data });
           callBack(200, "Success");
-          aopObjective
+          aopObjectives
         }
       })
     }

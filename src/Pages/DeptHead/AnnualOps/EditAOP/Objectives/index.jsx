@@ -29,31 +29,29 @@ const index = () => {
     const location = useLocation();
     const id = location.state?.id;
 
-    const { getSingleAOP } = useAOPActions();
+    const applicationObjectives = location.state.data.application_objectives;
 
-    const { aopObjective, deleteObjective } = useAOPObjectivesHooks();
     const { function_types, getFunctionType } = useFunctionTypeHook();
     const { objectives, addObjective, setObjectives } = useObjectivesHook();
     const { findActivitiesByObjectiveID, activities } = useActivitiesHook();
     const { setAlertDialog } = useModalHook();
 
-    const { type_of_functions } = aopObjective;
 
     const formattedObjectives = useMemo(() => {
-        return type_of_functions?.map((objectives, index) => ({
+        return applicationObjectives?.map(({ function_type, objective, success_indicator }, index) => ({
             id: uuid(),
             rowId: index + 1,
-            functionType: objectives,
-            objective: objectives.objectives,
-            successIndicator: objectives.objectives.success_indicators
+            functionType: function_type,
+            objective: objective,
+            successIndicator: success_indicator
         })) || [];
 
-    }, [type_of_functions]);
+    }, [applicationObjectives]);
 
     useEffect(() => {
         console.log('formatted', formattedObjectives)
         setObjectives(formattedObjectives)
-    }, [type_of_functions])
+    }, [applicationObjectives])
 
     // check pag walang objectives then add default objective
     useEffect(() => {
@@ -61,17 +59,6 @@ const index = () => {
             addObjective();
         }
     }, [objectives, addObjective]);
-
-    useEffect(() => {
-        getSingleAOP(id, status => {
-            // console.log(status)
-            if (!(status >= 200 && status < 300)) {
-                // if status not success
-                return; //Toast error
-            }
-            setisLoading(false);
-        });
-    }, []);
 
     useEffect(() => {
         const params = { with_sub_data: 1 };
