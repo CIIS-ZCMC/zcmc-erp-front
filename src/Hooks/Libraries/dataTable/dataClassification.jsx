@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { read } from "../../../Services/RequestMethods";
+import { post, read } from "../../../Services/RequestMethods";
 import { API } from "../../../Data/constants";
 
 const useClassificationDataTable = create((set, get) => ({
@@ -16,8 +16,18 @@ const useClassificationDataTable = create((set, get) => ({
   setSearchQuery: (query) => {
     set({ search_Query: query });
   },
-  getClassification: (failedCallback) => {
-    const { currentPage: page } = get(); // 🔥 correctly access the current state
+  getClassifications: (failedCallback) => {
+    const { currentPage: page, search_Query: search } = get(); // 🔥 correctly access the current state
+
+    const params = {
+      page: page,
+      per_page: 15, // Set the number of items per page
+    };
+
+    if (search && search.length > 1) {
+      params.search = search; // Add search query to params if it has more than 1 character
+      params.page = 1; // Reset to the first page when searching
+    }
 
     read({
       url: API.ClASSIFICATION,
@@ -39,6 +49,34 @@ const useClassificationDataTable = create((set, get) => ({
           currentPage: meta.current_page,
           totalPages: meta.last_page,
         });
+      },
+    });
+  },
+  addClassification: (
+    form,
+    setLoading,
+    setSuccessDialog,
+    setError,
+    setCloseModal,
+    clearInputs
+  ) => {
+    setLoading(true);
+    post({
+      url: API.ClASSIFICATION,
+      form: form,
+      success: (res) => {
+        const { data } = res;
+        console.log("Classification added successfully:", data);
+        setLoading(false);
+        setSuccessDialog(true);
+        setCloseModal(false);
+        clearInputs();
+      },
+      failed: (err) => {
+        console.error("Error adding classification:", err);
+        setLoading(false);
+        setError(true);
+        setSuccessDialog(false);
       },
     });
   },

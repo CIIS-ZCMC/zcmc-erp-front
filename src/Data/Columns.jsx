@@ -889,8 +889,9 @@ export const categoryCols = (updateCallBack, delCallback) => [
 
 export const classificationCols = (updateCallBack, delCallback) => [
   { field: "id", name: "Row #", align: "left", width: "50px" },
+  { field: "code", name: "Code", width: 100, align: "left" },
   { field: "clName", name: "Classification", width: 200, align: "left" },
-
+  { field: "description", name: "Description", width: 250, align: "left" },
   { field: "created_at", name: "Created at", width: 200, align: "left" },
   { field: "updated_at", name: "Updated at", width: 200, align: "left" },
   {

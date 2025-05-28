@@ -50,6 +50,9 @@ const ItemLibrary = () => {
   const location = useLocation();
   const navigate = useNavigate();
   const UrllastSegment = location.pathname.split("/").filter(Boolean).pop();
+  const closeModal = () => {
+    setSuccessDialog(false);
+  };
 
   const ModalContent = () => {
     switch (UrllastSegment) {
@@ -100,11 +103,7 @@ const ItemLibrary = () => {
           }
         >
           <TabComponent tabs={libaryTabs} index={index} setIndex={setIndex} />
-          {/* <TabComponent
-            tabs={approvalPageTabs}
-            index={index}
-            setIndex={setIndex}
-          /> */}
+
           <Box
             sx={{
               mt: 2,
@@ -156,7 +155,7 @@ const ItemLibrary = () => {
           sx={{ maxWidth: 500, borderRadius: "md", p: 3, boxShadow: "lg" }}
         >
           <ModalClose variant="plain" sx={{ m: 1 }} />
-          <RenderDialog lib={UrllastSegment} />
+          <RenderDialog lib={UrllastSegment} closeModal={closeModal} />
         </Sheet>
       </Modal>
     </Fragment>

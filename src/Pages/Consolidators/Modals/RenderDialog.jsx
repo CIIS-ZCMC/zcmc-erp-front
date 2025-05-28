@@ -8,19 +8,21 @@ import useLibrariesHook from "../../../Hooks/Libraries/LibHooks";
 import useClassificationHooks from "../../../Hooks/Libraries/LibClassificationHooks";
 import useCategoryHooks from "../../../Hooks/Libraries/LibCategoryHooks";
 import useVariantHooks from "../../../Hooks/Libraries/LibVarianHooks";
-const RenderDialog = ({ lib }) => {
+import useModalHook from "../../../Hooks/ModalHook";
+const RenderDialog = ({ lib, closeModal }) => {
   return (
     <IndicatorDialog>
-      <SuccessClassification lib={lib} />
+      <SuccessClassification lib={lib} closeModal={closeModal} />
     </IndicatorDialog>
   );
 };
 
 const SuccessClassification = (props) => {
+  const { setOpenModal } = useModalHook();
   const { type: typeclassi } = useClassificationHooks();
   const { type: typecateg } = useCategoryHooks();
   const { type: typevariant } = useVariantHooks();
-  const { lib } = props; // "classification","category","variant"
+  const { lib, closeModal } = props; // "classification","category","variant"
 
   const getType = () => {
     switch (lib) {
@@ -132,7 +134,15 @@ const SuccessClassification = (props) => {
             Open item
           </Button>
         )}
-        <Button sx={{ flex: 1 }} variant="solid" color="primary">
+        <Button
+          onClick={() => {
+            console.log("Close modal");
+            closeModal();
+          }}
+          sx={{ flex: 1 }}
+          variant="solid"
+          color="primary"
+        >
           Close
         </Button>
       </Box>

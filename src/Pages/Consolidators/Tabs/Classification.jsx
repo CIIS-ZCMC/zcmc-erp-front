@@ -43,7 +43,20 @@ export const Classification = () => {
     getClassification((message) => {
       console.log("Error fetching classification data:", message);
     });
-  }, [getClassification, currentPage]);
+  }, [currentPage]);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      console.log("Search query changed:", search_Query);
+      getClassifications((message) => {
+        console.log("Error fetching classification data:", message);
+      });
+    }, 300); // Debounce the search query
+
+    return () => {
+      clearTimeout(handler); // Cancel previous timeout if input changes quickly
+    };
+  }, [search_Query]);
 
   return (
     <Fragment>
