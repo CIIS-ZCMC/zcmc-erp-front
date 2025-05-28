@@ -37,7 +37,7 @@ export const ClassificationModalContent = () => {
     (state) => state.addClassification
   );
 
-  const { openModal, setOpenModal, setSuccessDialog } = useModalHook();
+  const { setOpenModal, setAlertDialog } = useModalHook();
 
   const MetaData = {
     create: {
@@ -215,10 +215,10 @@ export const ClassificationModalContent = () => {
             addClassification(
               getFormData(),
               setLoading,
-              setSuccessDialog,
               setError,
-              setOpenModal,
-              resetInput
+              resetInput,
+              setAlertDialog,
+              setOpenModal
             );
           }}
           variant="solid"

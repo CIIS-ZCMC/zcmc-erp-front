@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { post, read } from "../../../Services/RequestMethods";
 import { API } from "../../../Data/constants";
+import { Typography } from "@mui/joy";
 
 const useClassificationDataTable = create((set, get) => ({
   classi_dataTable: [],
@@ -53,10 +54,10 @@ const useClassificationDataTable = create((set, get) => ({
   addClassification: (
     form,
     setLoading,
-    setSuccessDialog,
     setError,
-    setCloseModal,
-    clearInputs
+    clearInputs,
+    setAlertDialog,
+    setOpenModal
   ) => {
     setLoading(true);
     post({
@@ -66,15 +67,35 @@ const useClassificationDataTable = create((set, get) => ({
         const { data } = res;
         console.log("Classification added successfully:", data);
         setLoading(false);
-        setSuccessDialog(true);
-        setCloseModal(false);
         clearInputs();
+        setAlertDialog({
+          isOpen: true,
+          status: "success",
+          title: (
+            <>
+              <Typography level="title-md" fontWeight="lg">
+                New item {data?.data?.name}{" "}
+                <Typography
+                  sx={{ color: "custom.darkgreen" }}
+                  component="span"
+                  color="primary"
+                  fontWeight="lg"
+                >
+                  #{data?.data?.id}
+                </Typography>{" "}
+                successfully saved to the library.
+              </Typography>
+            </>
+          ),
+          description:
+            "You can now use it for requesting AOP and PPMP documents. Everyone can see and use the new item.",
+        });
+        setOpenModal(false, false, false);
       },
       failed: (err) => {
         console.error("Error adding classification:", err);
         setLoading(false);
         setError(true);
-        setSuccessDialog(false);
       },
     });
   },
