@@ -45,7 +45,7 @@ const AOPApproval = () => {
   // STATES
   const [openTimelineModal, setOpenTimelineModal] = useState(false);
   const [index, setIndex] = useState("all");
-  const [year, setYear] = useState(new Date().getFullYear());
+  const [year, setYear] = useState(new Date().getFullYear()?.toString());
   const [pageLoading, setPageLoading] = useState("");
 
   // FUNCTIONS

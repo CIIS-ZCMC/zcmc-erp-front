@@ -105,7 +105,7 @@ const NotificationMain = ({ unread = 2 }) => {
             borderRadius: 10,
             boxShadow: "xl",
             bgcolor: "white",
-            width: "29vw",
+            width: { sm: "80vw", md: "50vw", lg: "30vw" },
             position: "absolute",
             right: 87,
             top: 85,

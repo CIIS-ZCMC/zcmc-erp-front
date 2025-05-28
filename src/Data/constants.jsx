@@ -23,8 +23,8 @@ export const EPR_API_ENDPOINTS = {
 };
 
 export const AREA_ID = {
-  PLANNING_UNIT: "planning-unit",
-  OMCC: "omcc",
+  PLANNING_UNIT: "OMCC-PLAN-SE-047",
+  OMCC: "OMCC-DI-001",
 };
 
 export const AOP_CONSTANTS = {

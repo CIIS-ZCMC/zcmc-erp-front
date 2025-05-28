@@ -1,14 +1,13 @@
 // src/hooks/useNotifications.js
 import { create } from "zustand";
-import { useEffect } from "react";
 import useSocketStore from "./Socket/SocketHook";
 import { NOTIFICATIONS } from "../Data/TestData";
 import { useAuth } from "../Store/AuthStore";
 
 // Zustand store
 const useNotificationsHook = create((set) => ({
-  // notifications: NOTIFICATIONS ?? [],
-  notifications: [],
+  notifications: NOTIFICATIONS ?? [],
+  // notifications: [],
 
   // Store actions
   addNotification: (newNotification) =>

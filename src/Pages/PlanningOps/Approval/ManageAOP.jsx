@@ -28,7 +28,7 @@ import { useAuthActions, useUserTypes } from "../../../Store/AuthStore";
 
 export default function ManageAOP() {
   const { id } = useParams();
-  const { isDivisionHead } = useUserTypes();
+  const { isDivisionHead, isPlanning } = useUserTypes();
   const AOPApplication = useAOPApplication();
 
   const { status: applicationStatus } = AOPApplication || {};
@@ -67,13 +67,9 @@ export default function ManageAOP() {
   const { setAlertDialog } = useModalHook();
   const [openProcessModal, setOpenProcessModal] = useState(false);
   const [openFeedbackModal, setOpenFeedbackModal] = useState(false);
-  const { getUserArea } = useAuthActions();
 
-  const disabledProcessRequest = () => {
-    return (
-      applicationStatus === "approved" && getUserArea() === "Planning Unit"
-    );
-  };
+  const disabledProcessRequest = applicationStatus === "approved" && isPlanning;
+
   // FUNCTIONS
   const handleViewFeedback = () => {
     setOpenFeedbackModal(true);
@@ -88,6 +84,7 @@ export default function ManageAOP() {
         setTimeout(() => setIsRemarksLoading(false), 1000);
       });
     };
+
     Promise.all(fetch())
       .then(() => {
         setIsRemarksLoading(false);
@@ -185,8 +182,8 @@ export default function ManageAOP() {
             columnSpacing={{ md: 0, lg: 3 }}
             rowSpacing={{ xs: 1, sm: 3, md: 1 }}
             sx={{
-              minHeight: "85vh",
-              height: "85vh",
+              minHeight: "84vh",
+              height: "84vh",
               msOverflowY: "auto",
               overflowY: "auto",
             }}

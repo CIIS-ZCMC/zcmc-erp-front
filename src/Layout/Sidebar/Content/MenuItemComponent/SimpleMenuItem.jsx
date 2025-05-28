@@ -6,7 +6,7 @@ import MenuItemComponent from ".";
 
 const SimpleMenuItem = ({ name, path, icon, isCollapsed }) => {
   const location = window.location.pathname;
-  const isActive = location === path;
+  const isActive = location?.includes(path);
 
   const simpleIconStyles = {
     fontSize: { xs: 16, md: 20 },
