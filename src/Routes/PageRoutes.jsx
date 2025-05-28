@@ -27,6 +27,10 @@ import ResponsibePerson from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/O
 import Items from "../Pages/Items";
 import Item from "../Pages/Items/Item";
 
+import Deadlines from "../Pages/PlanningOps/Deadlines/Deadlines";
+import AOP from "../Pages/PlanningOps/Deadlines/Tabs/AOP";
+import PPMP from "../Pages/PlanningOps/Deadlines/Tabs/PPMP";
+
 import ItemRequest from "../Pages/Consolidators/ItemManagement/ItemRequest";
 import ItemLibrary from "../Pages/Consolidators/ItemManagement/ItemLibrary";
 import Objectives from "../Pages/PlanningOps/ObjectiveManagement/Objectives";
@@ -260,6 +264,25 @@ export const sidebarRoutes = [
     element: <Objectives />,
     roles: ["super_admin"],
     abilities: ["M-001:read", "M-001:write", "M-001:edit", "M-001:delete"],
+  },
+
+  //Manage Deadline routes
+  {
+    path: "/manage-deadlines",
+    name: "Deadline",
+    element: <Deadlines />,
+    roles: ["super_admin"],
+    abilities: ["M-001:read", "M-001:write", "M-001:edit", "M-001:delete"],
+    children: [
+      {
+        index: true,
+        element: <AOP />
+      },
+      {
+        path: 'ppmp',
+        element: <PPMP />
+      },
+    ]
   },
 
   //Item Management routes

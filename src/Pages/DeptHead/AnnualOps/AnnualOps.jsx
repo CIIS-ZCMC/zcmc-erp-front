@@ -4,6 +4,7 @@ import { Stack, Typography, Grid, CircularProgress } from '@mui/joy'
 import { useNavigate } from "react-router-dom";
 
 import useAOPObjectivesHooks from '../../../Hooks/AOP/AOPObjectivesHook';
+import { useAOPActions, } from '../../../Hooks/AOP/AOPObjectivesHook';
 
 import Header from './Header';
 import Summary from './Summary';
@@ -22,9 +23,11 @@ const AnnualOps = () => {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const { aop_summary, getSummary } = useAOPObjectivesHooks();
+  const { aop_summary } = useAOPObjectivesHooks();
+  const { getSummary } = useAOPActions();
 
   const {
+    aop_application_id,
     total_objectives,
     total_success_indicators,
     total_activities,
@@ -49,9 +52,9 @@ const AnnualOps = () => {
     })
   }, [])
 
-  // useEffect(() => {
-  //   console.log(aop_summary)
-  // }, [aop_summary])
+  useEffect(() => {
+    console.log(aop_summary)
+  }, [aop_summary])
 
   return (
     <Fragment>
@@ -67,7 +70,7 @@ const AnnualOps = () => {
           <CircularProgress />
         </BoxComponent>
           :
-          !aop_summary ?
+          !aop_application_id ?
             <BoxComponent
               mt={10}
               height={'83vh'}
@@ -149,6 +152,7 @@ const AnnualOps = () => {
                       total_areas={total_areas}
                       total_users={total_users}
                       total_responsible_people={total_responsible_people}
+                      aop_application_id={aop_application_id}
                     />
                   </Grid>
 

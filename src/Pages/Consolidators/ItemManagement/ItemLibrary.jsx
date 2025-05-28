@@ -33,6 +33,7 @@ import SearchBarWithdeBounce from "../../../Components/SearchBarWithdeBounce";
 import useClassificationDataTable from "../../../Hooks/Libraries/dataTable/dataClassification";
 const ItemLibrary = () => {
   const [index, setIndex] = useState("");
+
   const setTypeclassi = useClassificationHooks((state) => state.setType);
   const setTypecateg = useCategoryHooks((state) => state.setType);
   const setTypevariant = useVariantHooks((state) => state.setType);
@@ -65,7 +66,7 @@ const ItemLibrary = () => {
       case "category":
         return <CategoryModalContent />;
       case "variant":
-        return <VariantModalContent />;
+        return <VariantModalConttent />;
       default:
         return <ItemModalContent />;
     }

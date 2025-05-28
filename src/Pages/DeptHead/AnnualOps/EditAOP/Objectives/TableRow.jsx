@@ -11,6 +11,7 @@ import AutoCompleteComponent from '../../../../../Components/Form/AutocompleteCo
 import IconButtonComponent from '../../../../../Components/Common/IconButtonComponent';
 
 const TableRow = ({
+    data,
     rows,
 }) => {
 
@@ -25,8 +26,8 @@ const TableRow = ({
     const [isLoading, setisLoading] = useState(false);
 
     useEffect(() => {
-        console.log(function_types)
-    }, [])
+        console.log(data)
+    }, [data])
 
     return (
         <Fragment>

@@ -2,10 +2,13 @@ import { Fragment, useEffect } from 'react'
 
 import { Stack, Link } from '@mui/joy';
 import { ExternalLink, Plus } from 'lucide-react';
+import { useLocation } from 'react-router-dom';
 
 import ContainerComponent from '../../../../../Components/Common/ContainerComponent'
 import EditableTableComponent from '../../../../../Components/Common/Table/EditableTableComponent';
 import ButtonComponent from '../../../../../Components/Common/ButtonComponent';
+
+import { useAOPActions } from '../../../../../Hooks/AOP/AOPObjectivesHook';
 
 import useFunctionTypeHook from '../../../../../Hooks/FunctionTypeHook';
 import useAOPObjectivesHooks from '../../../../../Hooks/AOP/AOPObjectivesHook';
@@ -21,7 +24,13 @@ import { AOP_HEADER } from '../../../../../Data/Columns';
 
 const index = () => {
 
-    const { aopObjectives, deleteObjective } = useAOPObjectivesHooks();
+    const location = useLocation();
+    const id = location.state?.id;
+
+
+    const { getSingleAOP } = useAOPActions();
+
+    const { aopObjective, deleteObjective } = useAOPObjectivesHooks();
     const { function_types, getFunctionType } = useFunctionTypeHook();
     const { objectives, addObjective } = useObjectivesHook();
     const { findActivitiesByObjectiveID, activities } = useActivitiesHook();
@@ -33,6 +42,17 @@ const index = () => {
             addObjective();
         }
     }, [objectives, addObjective]);
+
+    useEffect(() => {
+        getSingleAOP(id, status => {
+            // console.log(status)
+            if (!(status >= 200 && status < 300)) {
+                // if status not success
+                return; //Toast error
+            }
+            setisLoading(false);
+        });
+    }, []);
 
     useEffect(() => {
         const params = { with_sub_data: 1 };
@@ -81,6 +101,7 @@ const index = () => {
                     }
                     tableRow={
                         <TableRow
+                            data={aopObjective}
                             rows={objectives}
                             function_types={function_types}
                         />
