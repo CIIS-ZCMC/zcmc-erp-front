@@ -69,10 +69,14 @@ const Footer = () => {
       <Divider sx={{ mb: 2, mt: 3 }} />
       {!isCollapsed ? (
         <Link
-          fontSize={14}
-          sx={{ color: "white" }}
+          component="button"
+          fontSize={15}
+          sx={{
+            color: "orange",
+          }}
           startDecorator={<LogOutIcon size={20} />}
           onClick={() => handleLogOut()}
+          underline="none"
         >
           Log out
         </Link>
