@@ -16,7 +16,7 @@ const useManageObjHook = create((set, get) => ({
     const { searchQuery } = get();
     const params = {
       page: page,
-      per_page: 15, // Set the number of items per page
+      per_page: 10, // Set the number of items per page
     };
     if (searchQuery && searchQuery.length > 1) {
       params.search = searchQuery; // Add search query to params if it has more than 1 character
