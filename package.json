@@ -21,6 +21,7 @@
     "axios": "^1.8.4",
     "crypto-js": "^4.2.0",
     "lodash.debounce": "^4.0.8",
+    "lodash.get": "^4.4.2",
     "lucide-react": "^0.483.0",
     "moment": "^2.30.1",
     "motion": "^12.6.3",

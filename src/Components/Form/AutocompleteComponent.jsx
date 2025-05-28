@@ -8,6 +8,7 @@ import {
   FormLabel,
 } from "@mui/joy";
 import { getFontSize } from "../../Utils/Typography";
+import userErrorInputHook from "../../Hooks/ErrorInputHook";
 
 function AutocompleteComponent({
   multiple = false,
@@ -28,6 +29,8 @@ function AutocompleteComponent({
   isRenderOption = false,
   ...props
 }) {
+  const { errors } = userErrorInputHook(); // Get error state
+  const fieldError = errors?.[name];
   const handleChange = (event) => {
     setValue(event);
   };
@@ -42,7 +45,6 @@ function AutocompleteComponent({
         size={size}
         placeholder={placeholder}
         onChange={(_, newValue) => {
-          // console.log("newValue", newValue);
           handleSelect ? handleSelect(newValue) : handleChange(newValue);
         }}
         renderOption={
@@ -80,7 +82,7 @@ function AutocompleteComponent({
         value={value}
         options={options}
         onClose={onClose}
-        // name={name}
+        name={name}
         getOptionLabel={getOptionLabel}
         sx={{
           fontSize: getFontSize(size),
@@ -88,9 +90,15 @@ function AutocompleteComponent({
           color: darkMode ? "white" : "inherit",
         }}
       />
-      {helperText && (
-        <FormHelperText sx={{ fontSize: getFontSize(size) ?? 12 }}>
-          {helperText}
+
+      {(fieldError?.isError || helperText) && (
+        <FormHelperText
+          sx={{
+            fontSize: getFontSize(size) ?? 12,
+            color: fieldError?.isError ? "red" : "inherit",
+          }}
+        >
+          {fieldError?.isError ? fieldError.message : helperText}
         </FormHelperText>
       )}
     </FormControl>

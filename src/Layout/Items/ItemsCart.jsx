@@ -47,7 +47,7 @@ const ItemsCart = ({
           >
             {item?.variant ? (
               <>
-                {item?.variant} <LucideDot />
+                {item?.variant?.name} <LucideDot />
               </>
             ) : (
               ""

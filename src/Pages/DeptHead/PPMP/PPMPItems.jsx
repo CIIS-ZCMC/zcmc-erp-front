@@ -70,10 +70,13 @@ function PPMPItems(props) {
   const [expenseClass, setExpenseClass] = useState({});
   const [openAdd, setOpenAdd] = useState(false);
   const [openSave, setOpenSave] = useState(false);
+  const [openDel, setOpenDel] = useState(false);
   const [openReq, setOpenReq] = useState(false);
   const [pageLoader, setPageLoader] = useState(false);
+  const [buttonLoader, setButtonLoader] = useState(false);
+  const [selectedID, setSelectedID] = useState(null);
   const [step, setStep] = useState(1);
-  const [pin, setPin] = useState(null);
+  const [pin, setPin] = useState("");
   const [tableData, setTableData] = useState([]);
   const [itemReq, setItemReq] = useState({
     specs: [
@@ -139,7 +142,9 @@ function PPMPItems(props) {
     }));
   };
 
+  //CONFIRMATION MODAL
   const handleConfirmationModal = () => {
+    setOpenDel(false);
     setOpenSave(true);
     const data = {
       status: "success",
@@ -147,127 +152,200 @@ function PPMPItems(props) {
         "Changes on PPMP are ready to be reflected to your AOP. Would you like to have a preview first before saving changes?",
       description:
         "Document previews will be generated and downloaded in Microsoft Excel Spreadsheet (.xls) file format. The document preview is for viewing purposes only to help you ensure that all fields are filled-up correctly and accurately.",
-      content: (
-        <>
-          <Typography fontSize={12} sx={{ color: grey[600] }}>
-            Available preview:
-          </Typography>
-          <Stack
-            direction={"row"}
-            justifyContent={"space-between"}
-            alignItems={"center"}
-          >
-            <Typography fontSize={13} py={2}>
-              Project Procurement Management Plan - 2023-0031.xls
-            </Typography>
-            <Link
-              endDecorator={<MdOpenInNew />}
-              fontSize={12}
-              underline="always"
-              color="success"
-            >
-              Open preview
-            </Link>
-          </Stack>
-        </>
-      ),
-      leftButtonLabel: "Back to editor",
-      withDivider: true,
-      rightButtonLabel: "Save changes",
-      rightButtonAction: () => handleSubmit(0),
-      onClose: () => closeConfirmation(),
-      withAuthPin: true,
-      setAuthPin: setPin,
     };
 
     setConfirmationModal(data);
   };
 
+  //SAVE CHANGES
   const handleSubmit = async (is_draft) => {
     if (pin === null && is_draft === 0) {
-      setError("pin", true, "Please enter your authorization PIN.");
-    } else {
-      setPageLoader(true);
+      setAlertDialog({
+        status: "error",
+        title: "Missing Authorization PIN",
+        description: "Please enter your authorization PIN before submitting.",
+      });
+      return;
+    }
 
+    setButtonLoader(true);
+
+    try {
       const ppmp_items = JSON.parse(localStorage.getItem("ppmp-items")) || [];
       const formData = new FormData();
       formData.append("is_draft", is_draft);
       formData.append("PPMP_Items", JSON.stringify(ppmp_items));
 
-      await postPPMP(formData, (status, message, data) => {
-        //return data then save sa localstorage
-        localStorage.setItem("ppmp-items", JSON.stringify(data.ppmp_items));
-        setPageLoader(false);
-        if (status === 201) {
-          const data = {
-            status: "success",
-            title: "PPMP for F.Y. 2026 successfully submitted for approval.",
-            description:
-              "Your PPMP request has been sent to designated to the next approving body and notified them for approvals.",
-          };
-          closeConfirmation();
-          setOpenSave(false);
-          setAlertDialog(data);
-        } else {
-          const data = {
-            status: "error",
-            title: message,
-            description: message,
-          };
+      const result = await new Promise((resolve) => {
+        postPPMP(formData, (status, message, data) =>
+          resolve({ status, message, data })
+        );
+      });
 
-          setAlertDialog(data);
-        }
+      const { status, message, data } = result;
+
+      const alertData =
+        status === 201
+          ? {
+              status: "success",
+              title: "PPMP for F.Y. 2026 successfully submitted for approval.",
+              description:
+                "Your PPMP request has been sent to the next approving body and they have been notified for approvals.",
+            }
+          : {
+              status: "error",
+              title: message,
+              description: message,
+            };
+
+      setAlertDialog(alertData);
+
+      if (status === 201) {
+        localStorage.setItem("ppmp-items", JSON.stringify(data.ppmp_items));
+        closeConfirmation();
+        setOpenSave(false);
+      }
+    } catch (error) {
+      setAlertDialog({
+        status: "error",
+        title: "Submission Failed",
+        description: "An unexpected error occurred. Please try again.",
+      });
+    } finally {
+      setButtonLoader(false);
+    }
+  };
+
+  //SUBMIT ADD ITEM REQUEST
+  const handleRequest = async () => {
+    clearErrors();
+    let hasError = false;
+    // if (!itemReq?.specs?.length || itemReq.specs.some((s) => !s.value.trim())) {
+    //   setError("specs", true, "Please complete all specifications.");
+    //   hasError = true;
+    // }
+    itemReq.specs.forEach((spec, index) => {
+      if (!spec.value.trim()) {
+        setError(
+          `specs[${index}]`,
+          true,
+          `Specification ${index + 1} is required.`
+        );
+        hasError = true;
+      }
+    });
+    if (!itemReq?.pin?.trim()) {
+      setError("pin", true, "Authorization PIN is required.");
+      hasError = true;
+    }
+
+    if (hasError) return;
+
+    try {
+      setButtonLoader(true);
+      const formData = new FormData();
+      formData.append("activity", JSON.stringify(activity));
+      formData.append("expense_class", JSON.stringify(expenseClass));
+      formData.append("classification", JSON.stringify(itemReq.classification));
+      formData.append("category", JSON.stringify(itemReq.category));
+      formData.append("item_name", itemReq.item_name || "");
+      formData.append("unit", JSON.stringify(itemReq.unit));
+      formData.append("estimated_budget", itemReq.estimated_budget || "");
+      formData.append("variant", JSON.stringify(itemReq.variant));
+      formData.append(
+        "market_research",
+        itemReq.market_research ? "true" : "false"
+      );
+      formData.append("specifications", JSON.stringify(itemReq.specs));
+      formData.append("pin", itemReq.pin || "");
+
+      await postItemRequest(formData, (status, message, data) => {
+        setButtonLoader(false);
+
+        const alertData = {
+          status: status === 201 ? "success" : "error",
+          title: message,
+          description: message,
+        };
+
+        setAlertDialog(alertData);
+      });
+    } catch (error) {
+      setButtonLoader(false);
+      setAlertDialog({
+        status: "error",
+        title: "Request Failed",
+        description: "An unexpected error occurred. Please try again.",
       });
     }
   };
 
-  const handleRequest = async () => {
-    const formData = new FormData();
+  const handleNavigate = () => {
+    clearErrors();
+    let hasError = false;
+    if (isEmptyObject(activity)) {
+      setError("activity", true, "Please select an option");
+      hasError = true;
+    }
+    if (isEmptyObject(expenseClass)) {
+      setError("expenseClass", true, "Please select an option");
+      hasError = true;
+    }
+    if (hasError) return;
 
-    formData.append("activity", JSON.stringify(activity));
-    formData.append("expense_class", JSON.stringify(expenseClass));
-    formData.append("classification", JSON.stringify(itemReq.classification));
-    formData.append("category", JSON.stringify(itemReq.category));
-    formData.append("item_name", itemReq.item_name || "");
-    formData.append("unit", JSON.stringify(itemReq.unit));
-    formData.append("estimated_budget", itemReq.estimated_budget || "");
-    formData.append("variant", JSON.stringify(itemReq.variant));
-    formData.append(
-      "market_research",
-      itemReq.market_research ? "true" : "false"
-    );
-    formData.append("specifications", JSON.stringify(itemReq.specs));
-    formData.append("pin", itemReq.pin || "");
-
-    // for (let [key, value] of formData.entries()) {
-    //   console.log(`${key}: ${value}`);
-    // }
-
-    await postItemRequest(formData, (status, message, data) => {
-      //return data then save sa localstorage
-      setPageLoader(false);
-      if (status === 201) {
-        const data = {
-          status: "success",
-          title: message,
-          description: message,
-        };
-
-        setAlertDialog(data);
-      } else {
-        const data = {
-          status: "error",
-          title: message,
-          description: message,
-        };
-
-        setAlertDialog(data);
-      }
+    navigate(`/edit-ppmp/add-item/${expenseClass}`, {
+      state: { activity },
     });
   };
 
+  const isEmptyObject = (obj) =>
+    obj && typeof obj === "object" && Object.keys(obj).length === 0;
+
   const handleNextStep = () => {
-    console.log(itemReq);
+    clearErrors();
+    let hasError = false;
+    if (step === 1) {
+      if (isEmptyObject(activity)) {
+        setError("activity", true, "Please select an option");
+        hasError = true;
+      }
+      if (isEmptyObject(expenseClass)) {
+        setError("expenseClass", true, "Please select an option");
+        hasError = true;
+      }
+
+      if (hasError) return;
+    }
+    if (step === 2) {
+      let hasError = false;
+      if (!itemReq.classification) {
+        setError("classification", true, "Please select a classification");
+        hasError = true;
+      }
+      if (!itemReq.category) {
+        setError("category", true, "Please select a category");
+        hasError = true;
+      }
+      if (!itemReq?.item_name || itemReq.item_name.trim() === "") {
+        setError("item_name", true, "Item name is required");
+        hasError = true;
+      }
+      if (!itemReq.unit) {
+        setError("unit", true, "Please select a unit of measure");
+        hasError = true;
+      }
+      if (!itemReq?.estimated_budget || isNaN(itemReq.estimated_budget)) {
+        setError("estimated_budget", true, "Please enter a valid budget");
+        hasError = true;
+      }
+      if (!itemReq.variant) {
+        setError("variant", true, "Please select a variant");
+        hasError = true;
+      }
+
+      if (hasError) return;
+    }
+
     setStep((prev) => Math.min(prev + 1, 3));
   };
 
@@ -276,6 +354,7 @@ function PPMPItems(props) {
   };
 
   const handleClose = () => {
+    close;
     closeAlertDialog();
     setOpenReq(false);
     setItemReq({});
@@ -290,6 +369,7 @@ function PPMPItems(props) {
       const wrap = (fn) => new Promise((resolve) => fn(() => resolve()));
 
       try {
+        setPageLoader(true);
         const localData = localStorage.getItem("ppmp-items");
         if (!localData) {
           wrap(getPPMPItems);
@@ -307,6 +387,8 @@ function PPMPItems(props) {
         ]);
       } catch (err) {
         console.error("Fetching error:", err);
+      } finally {
+        setPageLoader(false);
       }
     }
 
@@ -360,7 +442,7 @@ function PPMPItems(props) {
             </Select>
 
             <ButtonComponent
-              label={"Save changes"}
+              label={"Submit PPMP"}
               color="primary"
               onClick={() => handleConfirmationModal()}
             />
@@ -374,6 +456,13 @@ function PPMPItems(props) {
           modes={modes.data}
           categories={categories}
           classifications={classification}
+          openDel={openDel}
+          setOpenDel={setOpenDel}
+          setOpensave={setOpenSave}
+          setSelectedID={setSelectedID}
+          id={selectedID}
+          loading={pageLoader}
+          setLoading={setPageLoader}
         />
       </ContainerComponent>
 
@@ -392,6 +481,7 @@ function PPMPItems(props) {
             <Stack spacing={2}>
               <AutocompleteComponent
                 label={"Select one activity"}
+                name={"activity"}
                 options={activities}
                 getOptionLabel={(option) => option.activity_code || ""}
                 setValue={setActivity}
@@ -416,6 +506,7 @@ function PPMPItems(props) {
                 helperText={
                   "Expense class determine the type of budget to be used for the items that are to be selected."
                 }
+                name={"expenseClass"}
                 options={expenseClassData}
                 getOptionLabel={(option) => option?.label || ""}
                 value={expenseClass}
@@ -426,35 +517,33 @@ function PPMPItems(props) {
         }
         leftButtonLabel="Cancel"
         rightButtonLabel="Continue"
-        rightButtonAction={() =>
-          navigate(`/edit-ppmp/add-item/${expenseClass}`, {
-            state: { activity },
-          })
-        }
+        rightButtonAction={() => handleNavigate()}
         hasActionButtons
       />
 
       {/* Submit item request */}
       <ModalComponent
         isOpen={openReq}
-        handleClose={() => setOpenReq(false)}
+        handleClose={() => {
+          setOpenReq(false);
+        }}
         title={
           step === 1
             ? "On what activity shall we assign the resources you’ll add?"
             : step === 2
-              ? "General information"
-              : step === 3
-                ? "Specifications"
-                : ""
+            ? "General information"
+            : step === 3
+            ? "Specifications"
+            : ""
         }
         description={
           step === 1
             ? "Select a request status and reasons (if returned) to continue. You may add remarks if necessary."
             : step === 2
-              ? "Fill in the item information to create it."
-              : step === 3
-                ? "List down details for the item you want to cretae to specify it."
-                : ""
+            ? "Fill in the item information to create it."
+            : step === 3
+            ? "List down details for the item you want to cretae to specify it."
+            : ""
         }
         minWidth={"400px"}
         maxWidth={"480px"}
@@ -488,6 +577,7 @@ function PPMPItems(props) {
 
                   <AutocompleteComponent
                     label={"Select expense class"}
+                    name="expenseClass"
                     helperText={
                       "Expense class determine the type of budget to be used for the items that are to be selected."
                     }
@@ -579,7 +669,6 @@ function PPMPItems(props) {
                       color="primary"
                     />
                   </Stack>
-                  {console.log(variants)}
                   <AutocompleteComponent
                     label="Variant"
                     name="variant"
@@ -637,6 +726,7 @@ function PPMPItems(props) {
                             <TextareaComponent
                               label={`Specification ${index + 1}:`}
                               placeholder="e.g., Size: Large"
+                              name={`spec-${index}`}
                               value={spec.value}
                               onChange={(e) =>
                                 handleChange(spec.id, e.target.value)
@@ -697,9 +787,48 @@ function PPMPItems(props) {
             handleRequest();
           }
         }}
+        isLoading={buttonLoader}
         hasActionButtons
       />
-      {openSave && <ConfirmationModal />}
+      {openSave && (
+        <ConfirmationModalComponent
+          content={
+            <>
+              <Typography fontSize={12} sx={{ color: grey[600] }}>
+                Available preview:
+              </Typography>
+              <Stack
+                direction={"row"}
+                justifyContent={"space-between"}
+                alignItems={"center"}
+              >
+                <Typography fontSize={13} py={2}>
+                  Project Procurement Management Plan - 2023-0031.xls
+                </Typography>
+                <Link
+                  endDecorator={<MdOpenInNew />}
+                  fontSize={12}
+                  underline="always"
+                  color="success"
+                >
+                  Open preview
+                </Link>
+              </Stack>
+            </>
+          }
+          leftButtonLabel="Back to editor"
+          withDivider={true}
+          rightButtonLabel="Save changes"
+          rightButtonAction={() => handleSubmit(0)}
+          leftButtonAction={() => {
+            setOpenSave(false);
+            closeConfirmation();
+          }}
+          isLoading={buttonLoader}
+          setAuthPin={setPin}
+          withAuthPin={true}
+        />
+      )}
 
       <AlertDialogComponent leftButtonAction={() => handleClose()} />
       <PageLoader isLoading={pageLoader} />

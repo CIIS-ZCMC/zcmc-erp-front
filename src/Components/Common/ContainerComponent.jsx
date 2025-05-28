@@ -35,7 +35,6 @@ function ContainerComponent({
   actions,
   noPadding,
   footer,
-  noBoxShadow,
   isLoading,
   ...props
 }) {

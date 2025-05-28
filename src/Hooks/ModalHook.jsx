@@ -24,7 +24,6 @@ const useModalHook = create((set, get) => ({
     isLoading: false,
     withAuthPin: false,
     withDivider: false,
-    setAuthPin: null,
     pinHelperText: "Confirm your action by entering your PIN.",
   },
 
@@ -94,7 +93,6 @@ const useModalHook = create((set, get) => ({
       leftButtonAction,
       isLoading,
       withAuthPin,
-      setAuthPin,
       pinHelperText,
     } = data ?? null;
 
@@ -116,7 +114,6 @@ const useModalHook = create((set, get) => ({
           leftButtonAction: leftButtonAction,
           isLoading: isLoading,
           withAuthPin: withAuthPin,
-          setAuthPin: setAuthPin,
           pinHelperText: pinHelperText,
         },
       }));
@@ -143,7 +140,6 @@ const useModalHook = create((set, get) => ({
         isLoading: false,
         withAuthPin: false,
         withDivider: false,
-        setAuthPin: null,
         pinHelperText: "Confirm your action by entering your PIN.",
       },
     }));

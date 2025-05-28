@@ -1,17 +1,30 @@
 import { create } from "zustand";
-import { post, read, remove } from "../Services/RequestMethods";
+import { post, read, remove, update } from "../Services/RequestMethods";
 
 const PATH = "objective";
 
-const useManageObjHook = create((set) => ({
+const useManageObjHook = create((set, get) => ({
   objectives: [],
   pagination: {},
   navLinks: {},
+  searchQuery: "",
+  setSearchQuery: (query) => {
+    set({ searchQuery: query });
+  },
 
   getObjectives: (page = 1, callBack) => {
+    const { searchQuery } = get();
+    const params = {
+      page: page,
+      per_page: 15, // Set the number of items per page
+    };
+    if (searchQuery && searchQuery.length > 1) {
+      params.search = searchQuery; // Add search query to params if it has more than 1 character
+    }
+
     read({
       url: `${PATH}s`,
-      params: { page: page },
+      params,
       failed: callBack,
       success: (res) => {
         const { status, message, data } = res;
@@ -31,8 +44,6 @@ const useManageObjHook = create((set) => ({
       form: body,
       success: (response) => {
         const { message, data } = response.data;
-        console.log(data);
-        // Append the new objective to the list
         set((state) => ({
           objectives: [...state.objectives, data],
         }));
@@ -44,13 +55,11 @@ const useManageObjHook = create((set) => ({
   },
 
   updateObjective: async (body, callback) => {
-    post({
+    update({
       url: `${PATH}s`,
       form: body,
       success: (response) => {
         const { message, data } = response.data;
-        console.log(data);
-        // Update the objectives array in state
         set((state) => ({
           objectives: state.objectives.map((obj) =>
             obj.id === data.id ? { ...obj, ...data } : obj
