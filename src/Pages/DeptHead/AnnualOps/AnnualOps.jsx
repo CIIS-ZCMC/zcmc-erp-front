@@ -4,6 +4,7 @@ import { Stack, Typography, Grid, CircularProgress } from '@mui/joy'
 import { useNavigate } from "react-router-dom";
 
 import useAOPObjectivesHooks from '../../../Hooks/AOP/AOPObjectivesHook';
+import useActivitiesHook from '../../../Hooks/ActivitiesHook';
 import { useAOPActions, } from '../../../Hooks/AOP/AOPObjectivesHook';
 
 import Header from './Header';
@@ -24,6 +25,7 @@ const AnnualOps = () => {
 
   const [isLoading, setIsLoading] = useState(false);
 
+  const { setActivities } = useActivitiesHook();
   const { aopObjectives, aop_summary } = useAOPObjectivesHooks();
   const { getSummary, getSingleAOP } = useAOPActions();
 
@@ -62,6 +64,15 @@ const AnnualOps = () => {
       }
       setIsLoading(false)
     })
+  }, [])
+
+  const activitiesData = aopObjectives.application_objectives?.map((data) => (
+    data.activity.map((act) => act)
+  )) || [];
+
+  useEffect(() => {
+    console.log(aopObjectives)
+    // setActivities(activitiesData)
   }, [])
 
   return (

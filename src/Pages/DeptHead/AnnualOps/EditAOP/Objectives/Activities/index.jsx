@@ -27,7 +27,7 @@ const EditActivities = () => {
     const objectiveRowId = location.state?.rowId;
 
     const currentPath = location.pathname;
-    const childPath = currentPath === `/aop-edit/${aopId}/activities/${objectiveRowId}`;
+    const childPath = currentPath === `/aop-edit/activities/${objectiveRowId}`;
 
     const { activities, addActivity } = useActivitiesHook();
 
@@ -112,7 +112,8 @@ const EditActivities = () => {
                             tableRow={
                                 <TableRow
                                     // handleChange={updateActivityField}
-                                    aopId={aopId ?? current_parent_id}
+                                    // aopId={aopId ?? current_parent_id}
+                                    parentId={aopId}
                                     objectiveRowId={objectiveRowId ?? current_row_id}
                                     rows={activities}
                                 // deleteRow={removeActivity}

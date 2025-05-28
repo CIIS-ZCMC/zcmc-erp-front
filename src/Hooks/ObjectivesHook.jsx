@@ -19,7 +19,7 @@ const useObjectivesHook = create(
 
       setObjectives: (data) => {
         // console.log(data)
-        set(() => ({
+        set((state) => ({
           objectives: data
         }))
       },

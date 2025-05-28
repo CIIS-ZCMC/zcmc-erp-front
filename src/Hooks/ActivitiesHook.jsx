@@ -27,6 +27,12 @@ const useActivitiesHook = create(
             activities: [],
             initialRender: true,
 
+            setActivities: (data) => {
+                set(() => ({
+                    activities: data
+                }))
+            },
+
             //Update specific field in an activity row
             updateActivityField: (id, fieldPath, value) => {
                 set((state) => ({
@@ -41,6 +47,7 @@ const useActivitiesHook = create(
 
             //add activity Row
             addActivity: (parentId = null) => {
+                console.log(parentId)
                 const current = get().activities;
                 set((state) => ({
                     activities: [

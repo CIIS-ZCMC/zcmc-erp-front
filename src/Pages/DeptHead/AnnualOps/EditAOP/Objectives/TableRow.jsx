@@ -15,7 +15,7 @@ const TableRow = ({
     aopId,
 }) => {
 
-    const { updateObjectiveField, deleteRow, setObjectives } = useObjectivesHook();
+    const { updateObjectiveField, deleteRow, objectives } = useObjectivesHook();
     const { function_types } = useFunctionTypeHook();
 
     const navigate = useNavigate();
@@ -24,10 +24,7 @@ const TableRow = ({
 
     const [editRowId, setEditRowId] = useState(null);
     const [isLoading, setisLoading] = useState(false);
-
-    useEffect(() => {
-        console.log('tablerows:', rows)
-    }, [])
+    const [initialData, setInitialData] = useState(true)
 
     return (
         <Fragment>
@@ -50,6 +47,7 @@ const TableRow = ({
                                             placeholder="Select function type"
                                             value={functionType}
                                             setValue={(val) => {
+                                                setInitialData(false)
                                                 updateObjectiveField(id, 'functionType', val);
                                                 setEditRowId(null);
                                             }}
@@ -73,13 +71,13 @@ const TableRow = ({
                                                 updateObjectiveField(id, 'objective', val);
                                                 setEditRowId(null);
                                             }}
-                                            options={functionType?.objective ?? []}
+                                            //initial set kunese
+                                            options={functionType?.objectives ?? []}
                                         />
                                     )
                                     :
                                     (
                                         <Typography>
-                                            {/* {JSON.stringify(objective)} */}
                                             {objective?.code || "-"}
                                         </Typography>
                                     )
@@ -122,12 +120,11 @@ const TableRow = ({
                                     >
                                         <Link
                                             component="button"
-                                            onClick={() => navigate(`activities/${rowId}`, { state: { aopId: aopId, rowId: rowId } })}
+                                            onClick={() => navigate(`activities/${rowId}`, { state: { aopId: aopId, rowId: rowId, data: objectives } })}
                                             fontSize={14}
                                         >
                                             Manage Activities
                                         </Link>
-
 
                                         <Chip
                                             variant="outlined"
