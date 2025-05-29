@@ -10,11 +10,19 @@ const initialObjective = (rowId = 1) => ({
   rowId,
 });
 const useObjectivesHook = create(
+
   persist(
     (set, get) => ({
       objectives: [],
       current_parent_id: null,
       current_row_id: null,
+
+      setObjectives: (data) => {
+        // console.log(data)
+        set((state) => ({
+          objectives: data
+        }))
+      },
 
       //update field
       updateObjectiveField: (id, field, value) => {
@@ -42,6 +50,12 @@ const useObjectivesHook = create(
             initialObjective(current.length + 1),
           ],
         }));
+      },
+
+      deleteObjective: (id) => {
+        const objectives = get().objectives;
+        const filtered = objectives.filter((item) => item.id !== id)
+        set({ objectives: filtered })
       },
 
       setCurrentObjective: (objectiveuuid) => {

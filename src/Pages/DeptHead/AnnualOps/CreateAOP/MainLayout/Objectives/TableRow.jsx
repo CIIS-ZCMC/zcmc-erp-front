@@ -6,6 +6,8 @@ import { useNavigate } from "react-router-dom";
 import AutoCompleteComponent from '../../../../../../Components/Form/AutocompleteComponent'
 import IconButtonComponent from "../../../../../../Components/Common/IconButtonComponent";
 
+import useObjectivesHook from "../../../../../../Hooks/ObjectivesHook";
+
 const TableRow = ({
   rows,
   handleChange,
@@ -18,6 +20,13 @@ const TableRow = ({
   const navigate = useNavigate();
 
   const tableDataStyles = { cursor: 'pointer' }
+
+  const { deleteObjective } = useObjectivesHook();
+
+  const handleRemoveObjective = (id) => {
+    localStorage.removeItem('activities-storage');
+    deleteObjective(id)
+  }
 
   return (
     <Fragment>
@@ -52,6 +61,7 @@ const TableRow = ({
                   :
                   (<Typography>
                     {functionType?.label || "-"}
+                    {/* {JSON.stringify(functionType)} */}
                   </Typography>)
                 }
               </td>
@@ -94,6 +104,7 @@ const TableRow = ({
                   :
                   (
                     <Typography>
+                      {console.info({ objective })}
                       {successIndicator?.code || "-"}
                     </Typography>
                   )
@@ -130,7 +141,7 @@ const TableRow = ({
                   </Stack>
 
                   <IconButtonComponent
-                    onClick={() => deleteRow(id)}
+                    onClick={() => handleRemoveObjective(id)}
                     icon={<Trash size={14} />}
                     // color={'danger'}
                     size={'sm'}
