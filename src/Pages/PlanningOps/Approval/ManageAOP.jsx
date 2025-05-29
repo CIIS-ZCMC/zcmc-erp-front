@@ -1,38 +1,29 @@
 import { Fragment, useEffect, useState } from "react";
 import PageTitle from "../../../Components/Common/PageTitle";
 import { useParams } from "react-router-dom";
-import { approvalActions } from "../../../Data/constants";
-import { Box, Divider, Grid, Stack, Typography } from "@mui/joy";
+import { Box, Grid, Stack, Typography } from "@mui/joy";
 import ContainerComponent from "../../../Components/Common/ContainerComponent";
 import ButtonComponent from "../../../Components/Common/ButtonComponent";
 import { ExternalLink } from "lucide-react";
-import TextareaComponent from "../../../Components/Form/TextareaComponent";
-import ModalComponent from "../../../Components/Common/Dialog/ModalComponent";
-import useModalHook from "../../../Hooks/ModalHook";
-import InputComponent from "../../../Components/Form/InputComponent";
 import {
   useAOPApplication,
   useAOPApplicationObjectives,
 } from "../../../Hooks/AOP/AOPApplicationsHook";
 import { useActivityActions } from "../../../Hooks/AOP/ActivityHook";
 import { localStorageGetter } from "../../../Utils/LocalStorage";
-import RadioButtonComponent from "../../../Components/Common/RadioButtonComponent";
 import ObjectivesList from "./Contents/ObjectivesList";
 import { useAllComments, useCommentActions } from "../../../Hooks/CommentHook";
 import { ActivityDetails } from "./Contents/ActivityDetails";
 import { CommentsDetails } from "./Contents/CommentsDetails";
 
 import { FeedbackContent } from "./Contents/FeedbackContent";
-import { useApprovalActions } from "../../../Hooks/AOP/AOPApprovalHook";
-import { useAuthActions, useUserTypes } from "../../../Store/AuthStore";
+import { useUserTypes } from "../../../Store/AuthStore";
 import ProcessAOPContent from "./Contents/ProcessAOPContent";
 
 export default function ManageAOP() {
   const { id } = useParams();
   const { isDivisionHead, isPlanning } = useUserTypes();
   const AOPApplication = useAOPApplication();
-
-  const { status: applicationStatus } = AOPApplication || {};
 
   // AOP HOOK
   const AOPApplicationObjectives =
@@ -55,15 +46,12 @@ export default function ManageAOP() {
   const allComments = useAllComments();
 
   // STATES
-  // const [activityLoading, setActivityLoading] = useState(false);
-  const [action, setAction] = useState("approved");
   const [isRemarksLoading, setIsRemarksLoading] = useState(true);
 
   const AREA_CODE = localStorageGetter("aop_application_area_code");
   const FISCAL_YEAR = 2026;
 
   // MODAL
-  const { setAlertDialog } = useModalHook();
   const [openFeedbackModal, setOpenFeedbackModal] = useState(false);
 
   // FUNCTIONS
