@@ -11,12 +11,24 @@ import Pending from "../Pages/DeptHead/AnnualOps/TableViews/Pending";
 import Returned from "../Pages/DeptHead/AnnualOps/TableViews/Returned";
 
 import CreateAOP from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout";
+
+import EditAOP from "../Pages/DeptHead/AnnualOps/EditAOP";
+import EditObjectives from "../Pages/DeptHead/AnnualOps/EditAOP/Objectives/";
+import EditActivities from "../Pages/DeptHead/AnnualOps/EditAOP/Objectives/Activities";
+import EditResources from "../Pages/DeptHead/AnnualOps/EditAOP/Objectives/Activities/Resources";
+import EditResponsiblePerson from "../Pages/DeptHead/AnnualOps/EditAOP/Objectives/Activities/Responsible";
+
 import AnnualOpsPlanning from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives";
+
 import Activities from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities";
 import Resources from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities/Resources";
 import ResponsibePerson from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities/ResponsiblePerson";
 
 import Items from "../Pages/Items";
+
+import Deadlines from "../Pages/PlanningOps/Deadlines/Deadlines";
+import AOP from "../Pages/PlanningOps/Deadlines/Tabs/AOP";
+import PPMP from "../Pages/PlanningOps/Deadlines/Tabs/PPMP";
 
 import ItemRequest from "../Pages/Consolidators/ItemManagement/ItemRequest";
 import ItemLibrary from "../Pages/Consolidators/ItemManagement/ItemLibrary";
@@ -64,21 +76,23 @@ export const sidebarRoutes = [
     parentPath: "/supervisor",
     name: "Supervisor",
     icon: <MdSupervisorAccount {...iconStyles} />,
-    permissions: [
-      "ERP-AOP-CREATE:write",
-      "ERP-PPMP-CREATE:write",
-      "ERP-AOP-MAN:write",
-      "ERP-AOP-MAN:view",
-    ],
+    permissions: ["ERP-AOP-MAN:write", "ERP-PPMP-MAN:write"],
     children: [
       {
-        path: "/aop/all",
-        name: "Create AOP",
-        element: <CreateAOP />,
+        path: "/aop",
+        name: "AOP",
+        element: <AnnualOps />,
         childPermissions: ["ERP-AOP-MAN:write"],
+      },
+      {
+        path: "/aop-create",
+        name: "Create AOP",
 
+        element: <CreateAOP />,
+        roles: ["super_admin"],
+        childPermissions: ["ERP-AOP-MAN:write"],
         children: [
-          { index: true, element: <AnnualOpsPlanning /> }, //ENTRY POINT
+          { index: true, element: <AnnualOpsPlanning /> }, //objective index
           {
             path: "activities/:objectiveId",
             element: <Activities />,
@@ -90,23 +104,50 @@ export const sidebarRoutes = [
               {
                 path: "resources/:activityId",
                 element: <Resources />,
+                roles: ["super_admin"],
               },
 
-              // {
-              //   path: "person/:activityId",
-              //   element: <EditResponsiblePerson />,
-              //   roles: ["super_admin"],
-              //   abilities: [
-              //     "M-001:read",
-              //     "M-001:write",
-              //     "M-001:edit",
-              //     "M-001:delete",
-              //   ],
-              // },
+              {
+                path: "person/:activityId",
+                element: <EditResponsiblePerson />,
+                roles: ["super_admin"],
+              },
             ],
           },
         ],
       },
+      {
+        path: "/aop-edit/:id",
+        element: <EditAOP />,
+        name: "Edit AOP",
+        roles: ["super_admin"],
+        childPermissions: ["ERP-AOP-MAN:write"],
+        children: [
+          { index: true, element: <EditObjectives /> }, //ENTRY POINT
+          {
+            path: "activities/:objectiveId",
+            element: <EditActivities />,
+            children: [
+              {
+                path: "items/:activityId",
+                element: <Items />,
+              },
+              {
+                path: "resources/:activityId",
+                element: <EditResources />,
+                roles: ["super_admin"],
+              },
+
+              {
+                path: "person/:activityId",
+                element: <EditResponsiblePerson />,
+                roles: ["super_admin"],
+              },
+            ],
+          },
+        ],
+      },
+
       {
         path: "/edit-ppmp",
         name: "Edit PPMP",
@@ -131,20 +172,20 @@ export const sidebarRoutes = [
   },
 
   // AOP AND PPPMP
+
+  // {
+  //   path: "/items/:activityId",
+  //   children: [{ index: true, element: <Items /> }],
+  // },
   {
     parentPath: "/planning-ops",
     name: "Planning and Operations",
     icon: <MdLibraryBooks {...iconStyles} />,
     permissions: [
-      "ERP-AOP-MAN:write",
-      "ERP-AOP-MAN:view",
-      "ERP-AOP-MAN:update",
       "ERP-AOP-MAN:approve",
       "ERP-AOP-MAN:view-all",
-      "ERP-PPMP-MAN:update",
-      "ERP-PPMP-MAN:view",
+      "ERP-PPMP-MAN:approve",
       "ERP-PPMP-MAN:view-all",
-      "ERP-PPMP-MAN:write",
       "ERP-PPMP-MAN:delete",
       "ERP-OBJ-MAN:write",
       "ERP-OBJ-MAN:view",

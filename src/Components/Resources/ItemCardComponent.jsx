@@ -12,7 +12,6 @@ import {
 import { Circle, CircleSmall } from "lucide-react";
 import React, { Fragment } from "react";
 
-
 import useResourceHook from "../../Hooks/ResourceHook";
 
 import ButtonComponent from "../Common/ButtonComponent";
@@ -71,7 +70,7 @@ const ItemCardComponent = ({
 
         <CardContent sx={{ justifyContent: "flex-end", padding: 1 }}>
           <ChipComponent
-            label={item?.variant}
+            label={item?.variant?.name}
             size="sm"
             color={"primary"}
             startDecorator={<CircleSmall size={12} />}

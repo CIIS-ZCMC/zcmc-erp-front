@@ -13,7 +13,7 @@ const StepperComponent = ({ data = [] }) => {
             user_position = "Department Head",
             area_code = "IISU",
             area = "Innovations",
-            status = "submitted",
+            status = status,
             date_approved = null,
             remarks = null,
             activities_with_comments = null, // e.g 4 comments in 2 activities
@@ -24,6 +24,7 @@ const StepperComponent = ({ data = [] }) => {
           key
         ) => {
           if (key === 0) {
+            console.log(key)
             return (
               <StepItem
                 isLast={data?.length - 1 === key}

@@ -21,15 +21,15 @@ const useItemCartHook = create(
 
         set((state) => {
           const existing = cart?.find((i) => i?.item_id === item?.id);
-          console.log(existing);
+
           if (existing) {
             return {
               cart: cart?.map((i) =>
                 i.item_id === item.id
                   ? {
-                    ...i,
-                    aop_quantity: i.aop_quantity + quantity,
-                  }
+                      ...i,
+                      aop_quantity: i.aop_quantity + quantity,
+                    }
                   : i
               ),
             };
@@ -39,7 +39,7 @@ const useItemCartHook = create(
             item_id: item.id,
             item: item,
             item_code: item.code,
-            variant: item.variant,
+            variant: item.variant.name,
             description: item.name,
             category: item.category,
             classification: item.classification,

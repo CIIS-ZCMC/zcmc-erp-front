@@ -51,13 +51,7 @@ function ConfirmationModalComponent({
   errors = {},
 }) {
   const {
-    confirmationModalState: {
-      isOpen = false,
-      title,
-      description,
-      status,
-      leftBtnLbl,
-    },
+    confirmationModalState: { isOpen = false, title, description, status },
     closeConfirmation,
   } = useModalHook();
 
@@ -142,7 +136,7 @@ function ConfirmationModalComponent({
                   variant="outlined"
                   label={leftButtonLabel}
                   onClick={leftButtonAction ?? closeConfirmation}
-                  isDisabled={isLoading}
+                  disabled={isLoading}
                   fullWidth={!rightButtonAction}
                 />
 

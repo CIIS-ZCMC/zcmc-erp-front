@@ -21,6 +21,7 @@ import useActivitiesHook from "../../../../../../../Hooks/ActivitiesHook";
 import useObjectivesHook from "../../../../../../../Hooks/ObjectivesHook";
 
 const Activities = () => {
+
   const location = useLocation();
   const navigate = useNavigate();
   const params = useParams();
@@ -72,10 +73,8 @@ const Activities = () => {
 
   return (
     <Fragment>
-
-
       {childPath && (
-        <>
+        <Fragment>
           <ContainerComponent
             title={AOP_CONSTANTS.MANAGE_ACTIVITIES_HEADER}
             description={AOP_CONSTANTS.MANAGE_ACTIVITIES_SUBHEADER}
@@ -159,7 +158,7 @@ const Activities = () => {
               />
             </Stack>
           </ContainerComponent>
-        </>
+        </Fragment>
       )}
       <Outlet />
     </Fragment>

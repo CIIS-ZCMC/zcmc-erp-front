@@ -207,7 +207,6 @@ export const AOP_HEADER = [
     // isDropdown: false,
     // position: "sticky",
     width: 150,
-    width: 150,
     align: "center",
   },
 ];
@@ -332,7 +331,7 @@ export const AOP_RESOURCE_HEADER = [
   },
 ];
 
-export const ppmpHeaders = (handleDeleteRow, items, modes) => [
+export const ppmpHeaders = (handleOpenDel, items, modes, isEditing) => [
   {
     field: "id",
     name: "Row #",
@@ -542,9 +541,12 @@ export const ppmpHeaders = (handleDeleteRow, items, modes) => [
       return (
         <>
           <IconButton
-            onClick={() => handleDeleteRow(params)}
+            onClick={() => {
+              handleOpenDel(params);
+            }}
             color="danger"
             size="lg"
+            disabled={!isEditing}
           >
             <MdDeleteOutline />
           </IconButton>
@@ -786,5 +788,152 @@ export const PPMP_VIEW_HEADER = [
     width: 200,
     inputType: "input",
     align: "center",
+  },
+];
+
+export const variantCols = (updateCallBack, delCallback) => [
+  { field: "id", name: "Row #", align: "left", width: "50px" },
+  { field: "clName", name: "Classification", width: 200, align: "left" },
+
+  { field: "created_at", name: "Created at", width: 200, align: "left" },
+  { field: "updated_at", name: "Updated at", width: 200, align: "left" },
+  {
+    field: "action",
+    name: "Actions",
+    position: "sticky",
+    width: "150px",
+    right: 0,
+    align: "center",
+    render: (params) => {
+      return (
+        <>
+          <Stack
+            direction="row"
+            sx={{ justifyContent: "space-around", alignItems: "center" }}
+          >
+            <Link
+              onClick={() => updateCallBack(params)}
+              size="md"
+              variant="plain"
+              color="primary"
+              underline="hover"
+              fontSize={14}
+              endDecorator={<IoOpenOutline />}
+            >
+              Update
+            </Link>
+            <Link
+              onClick={() => delCallback(params)}
+              size="md"
+              variant="plain"
+              color="danger"
+              underline="hover"
+              fontSize={14}
+              endDecorator={<IoOpenOutline />}
+            >
+              Delete
+            </Link>
+          </Stack>
+        </>
+      );
+    },
+  },
+];
+
+export const categoryCols = (updateCallBack, delCallback) => [
+  { field: "id", name: "Row #", align: "left", width: "50px" },
+  { field: "clName", name: "Classification", width: 200, align: "left" },
+
+  { field: "created_at", name: "Created at", width: 200, align: "left" },
+  { field: "updated_at", name: "Updated at", width: 200, align: "left" },
+  {
+    field: "action",
+    name: "Actions",
+    position: "sticky",
+    width: "150px",
+    right: 0,
+    align: "center",
+    render: (params) => {
+      return (
+        <>
+          <Stack
+            direction="row"
+            sx={{ justifyContent: "space-around", alignItems: "center" }}
+          >
+            <Link
+              onClick={() => updateCallBack(params)}
+              size="md"
+              variant="plain"
+              color="primary"
+              underline="hover"
+              fontSize={14}
+              endDecorator={<IoOpenOutline />}
+            >
+              Update
+            </Link>
+            <Link
+              onClick={() => delCallback(params)}
+              size="md"
+              variant="plain"
+              color="danger"
+              underline="hover"
+              fontSize={14}
+              endDecorator={<IoOpenOutline />}
+            >
+              Delete
+            </Link>
+          </Stack>
+        </>
+      );
+    },
+  },
+];
+
+export const classificationCols = (updateCallBack, delCallback) => [
+  { field: "id", name: "Row #", align: "left", width: "50px" },
+  { field: "clName", name: "Classification", width: 200, align: "left" },
+
+  { field: "created_at", name: "Created at", width: 200, align: "left" },
+  { field: "updated_at", name: "Updated at", width: 200, align: "left" },
+  {
+    field: "action",
+    name: "Actions",
+    position: "sticky",
+    width: "150px",
+    right: 0,
+    align: "center",
+    render: (params) => {
+      return (
+        <>
+          <Stack
+            direction="row"
+            sx={{ justifyContent: "space-around", alignItems: "center" }}
+          >
+            <Link
+              onClick={() => updateCallBack(params)}
+              size="md"
+              variant="plain"
+              color="primary"
+              underline="hover"
+              fontSize={14}
+              endDecorator={<IoOpenOutline />}
+            >
+              Update
+            </Link>
+            <Link
+              onClick={() => delCallback(params)}
+              size="md"
+              variant="plain"
+              color="danger"
+              underline="hover"
+              fontSize={14}
+              endDecorator={<IoOpenOutline />}
+            >
+              Delete
+            </Link>
+          </Stack>
+        </>
+      );
+    },
   },
 ];

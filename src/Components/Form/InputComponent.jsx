@@ -10,6 +10,7 @@ import {
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import userErrorInputHook from "../../Hooks/ErrorInputHook";
+import { getFontSize } from "../../Utils/Typography";
 // import { getFontSize } from "../../Utils/Typography";
 // import { BsEye, BsEyeSlash } from "react-icons/bs";
 // import userErrorInputHook from "../../Hooks/ErrorInputHook";
@@ -37,7 +38,8 @@ const InputComponent = ({
   const isPassword = type == "password";
   const [showPassword, setShowPassword] = useState(false);
 
-  const { errors } = userErrorInputHook();
+  const { errors } = userErrorInputHook(); // Get error state
+  const fieldError = errors?.[name];
 
   const eyeColor = darkMode ? "white" : "black";
   const getIcon = () => {
@@ -98,13 +100,15 @@ const InputComponent = ({
         {...props}
       />
 
-      {helperText && (
-        <FormHelperText sx={{ fontSize: 12 }}>{helperText}</FormHelperText>
-      )}
-      {errors[name]?.isError && (
-        <Typography fontSize={"xs"} color="danger">
-          {errors[name]?.message}
-        </Typography>
+      {(fieldError?.isError || helperText) && (
+        <FormHelperText
+          sx={{
+            fontSize: getFontSize(size) ?? 12,
+            color: fieldError?.isError ? "red" : "inherit",
+          }}
+        >
+          {fieldError?.isError ? fieldError.message : helperText}
+        </FormHelperText>
       )}
     </FormControl>
   );

@@ -119,6 +119,8 @@ const Items = () => {
 
   const handleSaveResources = () => {
     saveItems(activityId, totalPrice, itemTotal);
+
+    //make a condition here if id of aop is exisitng change the route to /aop-edit/id/activities/id/resources/rowNumber
     navigate(
       `/aop-create/activities/${objectiveRowId}/resources/${rowNumber}`,
       {
