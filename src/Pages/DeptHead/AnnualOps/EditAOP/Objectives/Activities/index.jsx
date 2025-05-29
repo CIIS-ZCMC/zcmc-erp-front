@@ -47,6 +47,10 @@ const EditActivities = () => {
     //     }
     // }, [activities, parentId]);
 
+    // useEffect(() => {
+    //     console.log(activities)
+    // }, [activities])
+
     return (
         <Fragment>
             {childPath && (

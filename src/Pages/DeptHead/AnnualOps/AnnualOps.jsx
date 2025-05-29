@@ -5,6 +5,7 @@ import { useNavigate } from "react-router-dom";
 
 import useAOPObjectivesHooks from '../../../Hooks/AOP/AOPObjectivesHook';
 import useActivitiesHook from '../../../Hooks/ActivitiesHook';
+import useResourceHook from '../../../Hooks/ResourceHook';
 import { useAOPActions, } from '../../../Hooks/AOP/AOPObjectivesHook';
 
 import Header from './Header';
@@ -26,6 +27,7 @@ const AnnualOps = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const { setActivities } = useActivitiesHook();
+  const { setResources, setCart } = useResourceHook();
   const { aopObjectives, aop_summary } = useAOPObjectivesHooks();
   const { getSummary, getSingleAOP } = useAOPActions();
 
@@ -66,13 +68,18 @@ const AnnualOps = () => {
     })
   }, [])
 
-  const activitiesData = aopObjectives.application_objectives?.map((data) => (
-    data.activity.map((act) => act)
-  )) || [];
+  // get activities
+  const flatActivities = aopObjectives.application_objectives?.flatMap(data => data.activity) || [];
+
+  //get item resources
+  const flatResources = aopObjectives.application_objectives?.flatMap(data =>
+    data.activity.flatMap(item => item.resources)
+  ) || [];
 
   useEffect(() => {
-    console.log(aopObjectives)
-    // setActivities(activitiesData)
+    console.log('resources', flatResources)
+    setResources(flatResources)
+    setActivities(flatActivities)
   }, [])
 
   return (
