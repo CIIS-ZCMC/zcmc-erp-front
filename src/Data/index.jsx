@@ -41,6 +41,11 @@ export const sidebarRoutes = [
         path: "/objectives",
         name: "Objectives",
       },
+
+      {
+        path: "/manage-deadlines",
+        name: "Manage Deadlines",
+      },
     ],
   },
 

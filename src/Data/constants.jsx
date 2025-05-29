@@ -32,6 +32,12 @@ export const AOP_CONSTANTS = {
   AOP_SUBHEADING:
     "This is a subheading. It should add more context to the interaction.",
 
+  AOP_EMPTY_STATE_TITLE: " You didn’t have an AOP for this year yet.",
+  AOP_CREATE_NEW_AOP: "Begin by creating a new request",
+  AOP_EMPTY_STATE_CONTENT: `  Nothing to show yet for this year’s AOP. You may request new items for the
+                <br></br>
+                meantime or create a new AOP request.`,
+
   AOP_REQUEST_SUBHEADING:
     "All AOP requests sent by Department/Section/Unit Heads or Officers in charge appear here.",
 
@@ -59,6 +65,10 @@ export const AOP_CONSTANTS = {
   CREATE_AOP_SUBHEADING:
     "This is a subheading. It should add more context to the interaction.",
 
+  EDIT_AOP_TITLE: "Edit AOP",
+  EDIT_AOP_SUBHEADING:
+    "This is a subheading. It should add more context to the interaction.",
+
   MANAGE_OBJECTIVES_HEADER: "Step 1 of 4: Manage functions and objectives",
   MANAGE_OBJECTIVES_SUBHEADER:
     "This is a subheading. It should add more context to the interaction.",
@@ -72,6 +82,15 @@ export const AOP_CONSTANTS = {
   MODAL_RESOURCE_HEADER: "Select resources for activity Activity",
   MODAL_RESOURCE_SUBHEADING:
     "Select a request status and reasons (if returned) to continue. You may add remarks if necessary.",
+};
+
+export const DEADLINES_CONSTANTS = {
+  DEADLINE_TITLE: "Deadline management",
+  DEADLINE_SUBHEADER:
+    "Fully control when submissions of AOP and PMP requests will begin and close, to be imposed for all users.",
+  DEADLINE_TABLE_TITLE: "List of deadlines",
+  DEADLINE_TABLE_SUBHEADER:
+    "Create, change and remove deadlines here, including advance deadlines for future years.",
 };
 
 export const PPMP_CONSTANTS = {
@@ -123,9 +142,19 @@ export const approvalActions = [
 
 export const API = {
   AOP_APPLICATIONS: "aop-applications",
-  AOP_APPLICATIONS_STORE: "aop-application-store",
+  AOP_APPLICATION_SHOW: "aop-application-show",
+  AOP_APPLICATION_STORE: "aop-application-store",
+  AOP_APPLICATION_SUMMARY: "aop-application-summary",
+  AOP_APPLICATION_TIMELINE: "aop-application-timeline",
+
   TYPE_OF_FUNCTIONS: "type-of-functions",
   TYPE_OF_PURCHASE: "purchase-types",
+
+  DEADLINES: "deadlines",
+  AOP_DEADLINE_STORE: "aop-deadline-store",
+  AOP_DEADLINE_UPDATE: "aop-deadline-update",
+  PPMP_DEADLINE_STORE: "ppmp-deadline-store",
+  PPMP_DEADLINE_UPDATE: "ppmp-deadline-update",
 
   USERS: "get-users",
   JOB_POSITIONS: "get-designations",

@@ -13,6 +13,7 @@ import React from "react";
 import { MdInfoOutline } from "react-icons/md";
 import useLibrariesHook from "../../../Hooks/Libraries/LibHooks";
 import useModalHook from "../../../Hooks/ModalHook";
+import useCategoryHooks from "../../../Hooks/Libraries/LibCategoryHooks";
 
 export const CategoryModalContent = () => {
   const {
@@ -24,7 +25,7 @@ export const CategoryModalContent = () => {
     type,
     setLoading,
     selectedData,
-  } = useLibrariesHook();
+  } = useCategoryHooks();
   const { openModal, setOpenModal, setSuccessDialog } = useModalHook();
 
   const MetaData = {
@@ -81,25 +82,65 @@ export const CategoryModalContent = () => {
 
       {/* Name input */}
       {type !== "delete" && (
-        <FormControl sx={{ mt: 2 }}>
-          <FormLabel>Name of Category</FormLabel>
-          <Textarea
-            placeholder={getStateOfModal().plholder}
-            variant="outlined"
-            size="md"
-            minRows={2}
-            onChange={(e) => setInputs("currentLibName", e.target.value)}
-            value={inputs.currentLibName}
-            sx={{ minHeight: 100, maxHeight: 200 }}
-          />
-          <Typography
-            level="body-xs"
-            textColor="text.tertiary"
-            sx={{ mt: 0.5 }}
-          >
-            Use a specific and descriptive naming convention for best results.
-          </Typography>
-        </FormControl>
+        <>
+          <FormControl sx={{ mt: 2 }}>
+            <FormLabel>Name of Category</FormLabel>
+            <Input
+              placeholder={getStateOfModal().plholder}
+              variant="outlined"
+              size="md"
+              onChange={(e) => setInputs("currentLibName", e.target.value)}
+              value={inputs.currentLibName}
+            />
+            <Typography
+              level="body-xs"
+              textColor="text.tertiary"
+              sx={{ mt: 0.5 }}
+            >
+              Use a specific and descriptive naming convention for best results.
+            </Typography>
+          </FormControl>
+          <FormControl sx={{ mt: 2 }}>
+            <FormLabel>Code</FormLabel>
+            <Textarea
+              placeholder="Enter unique code identifier"
+              variant="outlined"
+              size="md"
+              minRows={1}
+              onChange={(e) => setInputs("currentLibCode", e.target.value)}
+              value={inputs.currentLibCode}
+              sx={{ minHeight: 60, maxHeight: 120 }}
+            />
+            <Typography
+              level="body-xs"
+              textColor="text.tertiary"
+              sx={{ mt: 0.5 }}
+            >
+              Use short, unique codes for easier reference (e.g., CAT001).
+            </Typography>
+          </FormControl>
+
+          <FormControl sx={{ mt: 2 }}>
+            <FormLabel>Description</FormLabel>
+            <Textarea
+              placeholder="Enter a brief description"
+              variant="outlined"
+              size="md"
+              minRows={3}
+              onChange={(e) => setInputs("currentLibDesc", e.target.value)}
+              value={inputs.currentLibDesc}
+              sx={{ minHeight: 100, maxHeight: 300 }}
+            />
+            <Typography
+              level="body-xs"
+              textColor="text.tertiary"
+              sx={{ mt: 0.5 }}
+            >
+              Provide a clear and concise description to explain the
+              classification's purpose.
+            </Typography>
+          </FormControl>
+        </>
       )}
 
       {/* Authorization PIN input */}

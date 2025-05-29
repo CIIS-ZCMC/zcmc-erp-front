@@ -6,7 +6,7 @@ import ContainerComponent from "../../../Components/Common/ContainerComponent";
 import ButtonComponent from "../../../Components/Common/ButtonComponent";
 import { ExternalLink } from "lucide-react";
 import { Stack, Box } from "@mui/joy";
-import { Outlet } from "react-router-dom";
+import { Outlet, useNavigate } from "react-router-dom";
 import TabComponent from "../../../Components/Common/TabComponent";
 import ScrollableTableComponent from "../../../Components/Common/Table/ScrollableTableComponent";
 import { objHeaders } from "../../../Data/Columns";
@@ -23,17 +23,30 @@ import { CategoryModalContent } from "../Modals/CategoryModalContent";
 import { ClassificationModalContent } from "../Modals/ClassificationModalContent";
 import { VariantModalContent } from "../Modals/VariantModalContent";
 import { ItemModalContent } from "../Modals/ItemModalContent";
-import useLibItemHook from "../../../Hooks/Libraries/LibItemHooks";
 import useModalHook from "../../../Hooks/ModalHook";
-import useLibrariesHook from "../../../Hooks/Libraries/LibHooks";
-import IndicatorDialog from "../Modals/IndicatorDialog";
 import RenderDialog from "../Modals/RenderDialog";
+import useClassificationHooks from "../../../Hooks/Libraries/LibClassificationHooks";
+import useCategoryHooks from "../../../Hooks/Libraries/LibCategoryHooks";
+import useVariantHooks from "../../../Hooks/Libraries/LibVarianHooks";
+import { libaryTabs } from "../../../Data/Options";
 const ItemLibrary = () => {
-  const { setType } = useLibrariesHook();
+  const [index, setIndex] = useState("");
+
+  const setTypeclassi = useClassificationHooks((state) => state.setType);
+  const setTypecateg = useCategoryHooks((state) => state.setType);
+  const setTypevariant = useVariantHooks((state) => state.setType);
+
+  // Unified setter
+  const setAllTypes = (type) => {
+    setTypeclassi(type);
+    setTypecateg(type);
+    setTypevariant(type);
+  };
   const { openModal, setOpenModal, successDialog, setSuccessDialog } =
     useModalHook();
   const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
+  const navigate = useNavigate();
   const UrllastSegment = location.pathname.split("/").filter(Boolean).pop();
 
   const ModalContent = () => {
@@ -43,11 +56,15 @@ const ItemLibrary = () => {
       case "category":
         return <CategoryModalContent />;
       case "variant":
-        return <VariantModalContent />;
+        return <VariantModalConttent />;
       default:
         return <ItemModalContent />;
     }
   };
+
+  useEffect(() => {
+    navigate(index);
+  }, [index]);
 
   return (
     <Fragment>
@@ -73,18 +90,19 @@ const ItemLibrary = () => {
                 variant={"solid"}
                 size={"sm"}
                 onClick={() => {
-                  setType("create");
+                  setAllTypes("create");
                   setOpenModal(true, false, true);
                 }}
               />
             </Stack>
           }
         >
-          <TabComponent
-            tabs={["Items", "Classification", "Category", "Variant"]}
-            pathMap={["", "classification", "category", "variant"]}
-          />
-
+          <TabComponent tabs={libaryTabs} index={index} setIndex={setIndex} />
+          {/* <TabComponent
+            tabs={approvalPageTabs}
+            index={index}
+            setIndex={setIndex}
+          /> */}
           <Box
             sx={{
               mt: 2,
@@ -100,7 +118,6 @@ const ItemLibrary = () => {
             />
             {/* <DatePickerComponent /> */}
           </Box>
-
           <Outlet />
         </ContainerComponent>
       </Box>

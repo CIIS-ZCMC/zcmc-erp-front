@@ -5,6 +5,9 @@ import CheckCircleOutlineIcon from "@mui/icons-material/CheckCircleOutline";
 import OpenInNewIcon from "@mui/icons-material/OpenInNew";
 import { Box, Typography, Button, IconButton, Sheet } from "@mui/joy";
 import useLibrariesHook from "../../../Hooks/Libraries/LibHooks";
+import useClassificationHooks from "../../../Hooks/Libraries/LibClassificationHooks";
+import useCategoryHooks from "../../../Hooks/Libraries/LibCategoryHooks";
+import useVariantHooks from "../../../Hooks/Libraries/LibVarianHooks";
 const RenderDialog = ({ lib }) => {
   return (
     <IndicatorDialog>
@@ -14,16 +17,23 @@ const RenderDialog = ({ lib }) => {
 };
 
 const SuccessClassification = (props) => {
-  const {
-    inputs,
-    setInputs,
-    resetInput,
-    isloading,
-    hasError,
-    type,
-    selectedData,
-  } = useLibrariesHook();
+  const { type: typeclassi } = useClassificationHooks();
+  const { type: typecateg } = useCategoryHooks();
+  const { type: typevariant } = useVariantHooks();
   const { lib } = props; // "classification","category","variant"
+
+  const getType = () => {
+    switch (lib) {
+      case "classification":
+        return typeclassi;
+      case "category":
+        return typecateg;
+      case "variant":
+        return typevariant;
+      default:
+        return typeclassi;
+    }
+  };
 
   const getLabel = () => {
     switch (lib) {
@@ -100,7 +110,7 @@ const SuccessClassification = (props) => {
     },
   };
 
-  const getStateOfModal = () => MetaData[type];
+  const getStateOfModal = () => MetaData[getType()];
 
   return (
     <>
@@ -112,7 +122,7 @@ const SuccessClassification = (props) => {
         {getStateOfModal().desc}
       </Typography>
       <Box sx={{ display: "flex", gap: 1, mt: 1 }}>
-        {type !== "delete" && (
+        {getType() !== "delete" && (
           <Button
             sx={{ flex: 1, padding: 1.5 }}
             variant="outlined"

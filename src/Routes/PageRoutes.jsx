@@ -11,12 +11,24 @@ import Pending from "../Pages/DeptHead/AnnualOps/TableViews/Pending";
 import Returned from "../Pages/DeptHead/AnnualOps/TableViews/Returned";
 
 import CreateAOP from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout";
+
+import EditAOP from "../Pages/DeptHead/AnnualOps/EditAOP";
+import EditObjectives from '../Pages/DeptHead/AnnualOps/EditAOP/Objectives/'
+import EditActivities from "../Pages/DeptHead/AnnualOps/EditAOP/Objectives/Activities";
+import EditResources from "../Pages/DeptHead/AnnualOps/EditAOP/Objectives/Activities/Resources";
+import EditResponsiblePerson from "../Pages/DeptHead/AnnualOps/EditAOP/Objectives/Activities/Responsible";
+
 import AnnualOpsPlanning from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives";
+
 import Activities from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities";
 import Resources from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities/Resources";
 import ResponsibePerson from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities/ResponsiblePerson";
 
 import Items from "../Pages/Items";
+
+import Deadlines from "../Pages/PlanningOps/Deadlines/Deadlines";
+import AOP from "../Pages/PlanningOps/Deadlines/Tabs/AOP";
+import PPMP from "../Pages/PlanningOps/Deadlines/Tabs/PPMP";
 
 import ItemRequest from "../Pages/Consolidators/ItemManagement/ItemRequest";
 import ItemLibrary from "../Pages/Consolidators/ItemManagement/ItemLibrary";
@@ -49,6 +61,7 @@ const iconStyles = {
   size: 24,
 };
 
+
 export const sidebarRoutes = [
   // DASHBOARD ROUTE
   {
@@ -71,31 +84,73 @@ export const sidebarRoutes = [
         name: "Create AOP",
         element: <AnnualOps />,
         childPermissions: ["ERP-AOP-MAN:write"],
+      },
+      {
+    path: "/aop-create",
+    element: <CreateAOP />,
+    roles: ["super_admin"],
+    abilities: ["M-001:read", "M-001:write", "M-001:edit", "M-001:delete"],
+    children: [
+      { index: true, element: <AnnualOpsPlanning /> }, //ENTRY POINT
+      {
+        path: "activities/:objectiveId",
+        element: <Activities />,
         children: [
           {
-            path: "/aop/all",
-            name: "AOP Management",
-            index: true,
-            element: <Navigate to="all" replace />,
+            path: "items/:activityId",
+            element: <Items />
           },
           {
-            path: "all",
-            element: <All />,
+            path: "resources/:activityId",
+            element: <Resources />,
+            roles: ["super_admin"],
+         
           },
+
           {
-            path: "approved",
-            element: <Approved />,
-          },
-          {
-            path: "pending",
-            element: <Pending />,
-          },
-          {
-            path: "returned",
-            element: <Returned />,
+            path: "person/:activityId",
+            element: <EditResponsiblePerson />,
+            roles: ["super_admin"],
+           
           },
         ],
       },
+    ],
+  },
+   {
+    path: "/aop-edit/:id",
+    element: <EditAOP />,
+    roles: ["super_admin"],
+    abilities: ["M-001:read", "M-001:write", "M-001:edit", "M-001:delete"],
+    children: [
+      { index: true, element: <EditObjectives /> }, //ENTRY POINT
+      {
+        path: "activities/:objectiveId",
+        element: <EditActivities />,
+        children: [
+          {
+            path: "items/:activityId",
+            element: <Items />
+          },
+          {
+            path: "resources/:activityId",
+            element: <EditResources />,
+            roles: ["super_admin"],
+            
+          },
+
+          {
+            path: "person/:activityId",
+            element: <EditResponsiblePerson />,
+            roles: ["super_admin"],
+         
+          },
+        ],
+      },
+    ]
+  },
+
+
       {
         path: "/edit-ppmp",
         name: "Edit PPMP",
@@ -119,7 +174,15 @@ export const sidebarRoutes = [
     ],
   },
 
+<<<<<<< HEAD
   // AOP AND PPPMP
+
+  // {
+  //   path: "/items/:activityId",
+  //   children: [{ index: true, element: <Items /> }],
+  // },
+
+>>>>>>> 8265aa3e920592dd35fb34243b8512a029c4f4b2
   {
     parentPath: "/planning-ops",
     name: "Planning and Operations",
@@ -181,7 +244,7 @@ export const sidebarRoutes = [
   },
 
   // CONSOLIDATOR ROUTES
-  {
+ {
     parentPath: "/consolidator",
     name: "Item Management",
     icon: <MdSettings {...iconStyles} />,

@@ -63,7 +63,7 @@ const AOPApproval = () => {
   const handleViewTimeline = (id) => {
     setOpenTimelineModal(true);
 
-    getAOPApprovalTimeline(id, () => {});
+    getAOPApprovalTimeline(id, () => { });
   };
 
   useEffect(() => {
@@ -72,7 +72,7 @@ const AOPApproval = () => {
       year: year,
     };
 
-    getAOPApplications(params, () => {});
+    getAOPApplications(params, () => { });
   }, [index, year, getAOPApplications]);
 
   const APPLICATIONS = TEST_MODE ? MANAGE_AOP_APPROVAL : AOPApplications;
@@ -107,7 +107,6 @@ const AOPApproval = () => {
                 color="primary"
                 startDecorator={<Search size={14} />}
               />
-
               <Stack direction={"row"} gap={2} alignItems={"center"}>
                 <YearSelectorComponent
                   width="auto"

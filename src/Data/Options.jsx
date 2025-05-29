@@ -14,6 +14,18 @@ export const approvalPageTabs = [
   { id: 1, name: "All requests", value: "all" },
 ];
 
+export const libaryTabs = [
+  { id: 2, name: "Item", value: "" },
+  { id: 2, name: "Classification", value: "classification" },
+  { id: 3, name: "Category", value: "category" },
+  { id: 4, name: "Variant", value: "variant" },
+];
+
+export const deadlineTabs = [
+  { id: 1, name: "Annual Operations Plan (AOP)", value: "" },
+  { id: 2, name: "Project Procurement Management Plan", value: "ppmp" },
+]
+
 export const ppmpReceivingTabs = [
   { id: 2, name: "Pending", value: "pending" },
   { id: 2, name: "Received", value: "received" },

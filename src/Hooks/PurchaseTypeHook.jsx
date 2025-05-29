@@ -10,7 +10,7 @@ const usePurchaseTypeHook = create((set) => ({
       url: API.TYPE_OF_PURCHASE,
       failed: callBack,
       success: (res) => {
-        console.log("fetch purchase type");
+        // console.log("fetch purchase type");
         const {
           status,
           message,
