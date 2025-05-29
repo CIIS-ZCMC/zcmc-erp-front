@@ -13,7 +13,7 @@ import Returned from "../Pages/DeptHead/AnnualOps/TableViews/Returned";
 import CreateAOP from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout";
 
 import EditAOP from "../Pages/DeptHead/AnnualOps/EditAOP";
-import EditObjectives from '../Pages/DeptHead/AnnualOps/EditAOP/Objectives/'
+import EditObjectives from "../Pages/DeptHead/AnnualOps/EditAOP/Objectives/";
 import EditActivities from "../Pages/DeptHead/AnnualOps/EditAOP/Objectives/Activities";
 import EditResources from "../Pages/DeptHead/AnnualOps/EditAOP/Objectives/Activities/Resources";
 import EditResponsiblePerson from "../Pages/DeptHead/AnnualOps/EditAOP/Objectives/Activities/Responsible";
@@ -61,7 +61,6 @@ const iconStyles = {
   size: 24,
 };
 
-
 export const sidebarRoutes = [
   // DASHBOARD ROUTE
   {
@@ -80,76 +79,74 @@ export const sidebarRoutes = [
     permissions: ["ERP-AOP-MAN:write", "ERP-PPMP-MAN:write"],
     children: [
       {
-        path: "/aop/all",
-        name: "Create AOP",
+        path: "/aop",
+        name: "AOP",
         element: <AnnualOps />,
         childPermissions: ["ERP-AOP-MAN:write"],
       },
       {
-    path: "/aop-create",
-    element: <CreateAOP />,
-    roles: ["super_admin"],
-    abilities: ["M-001:read", "M-001:write", "M-001:edit", "M-001:delete"],
-    children: [
-      { index: true, element: <AnnualOpsPlanning /> }, //ENTRY POINT
-      {
-        path: "activities/:objectiveId",
-        element: <Activities />,
-        children: [
-          {
-            path: "items/:activityId",
-            element: <Items />
-          },
-          {
-            path: "resources/:activityId",
-            element: <Resources />,
-            roles: ["super_admin"],
-         
-          },
+        path: "/aop-create",
+        name: "Create AOP",
 
+        element: <CreateAOP />,
+        roles: ["super_admin"],
+        childPermissions: ["ERP-AOP-MAN:write"],
+        children: [
+          { index: true, element: <AnnualOpsPlanning /> }, //objective index
           {
-            path: "person/:activityId",
-            element: <EditResponsiblePerson />,
-            roles: ["super_admin"],
-           
+            path: "activities/:objectiveId",
+            element: <Activities />,
+            children: [
+              {
+                path: "items/:activityId",
+                element: <Items />,
+              },
+              {
+                path: "resources/:activityId",
+                element: <Resources />,
+                roles: ["super_admin"],
+              },
+
+              {
+                path: "person/:activityId",
+                element: <EditResponsiblePerson />,
+                roles: ["super_admin"],
+              },
+            ],
           },
         ],
       },
-    ],
-  },
-   {
-    path: "/aop-edit/:id",
-    element: <EditAOP />,
-    roles: ["super_admin"],
-    abilities: ["M-001:read", "M-001:write", "M-001:edit", "M-001:delete"],
-    children: [
-      { index: true, element: <EditObjectives /> }, //ENTRY POINT
       {
-        path: "activities/:objectiveId",
-        element: <EditActivities />,
+        path: "/aop-edit/:id",
+        element: <EditAOP />,
+        name: "Edit AOP",
+        roles: ["super_admin"],
+        childPermissions: ["ERP-AOP-MAN:write"],
         children: [
+          { index: true, element: <EditObjectives /> }, //ENTRY POINT
           {
-            path: "items/:activityId",
-            element: <Items />
-          },
-          {
-            path: "resources/:activityId",
-            element: <EditResources />,
-            roles: ["super_admin"],
-            
-          },
+            path: "activities/:objectiveId",
+            element: <EditActivities />,
+            children: [
+              {
+                path: "items/:activityId",
+                element: <Items />,
+              },
+              {
+                path: "resources/:activityId",
+                element: <EditResources />,
+                roles: ["super_admin"],
+              },
 
-          {
-            path: "person/:activityId",
-            element: <EditResponsiblePerson />,
-            roles: ["super_admin"],
-         
+              {
+                path: "person/:activityId",
+                element: <EditResponsiblePerson />,
+                roles: ["super_admin"],
+              },
+            ],
           },
         ],
       },
-    ]
-  },
-
 
       {
         path: "/edit-ppmp",
@@ -174,15 +171,12 @@ export const sidebarRoutes = [
     ],
   },
 
-<<<<<<< HEAD
   // AOP AND PPPMP
 
   // {
   //   path: "/items/:activityId",
   //   children: [{ index: true, element: <Items /> }],
   // },
-
->>>>>>> 8265aa3e920592dd35fb34243b8512a029c4f4b2
   {
     parentPath: "/planning-ops",
     name: "Planning and Operations",
@@ -244,7 +238,7 @@ export const sidebarRoutes = [
   },
 
   // CONSOLIDATOR ROUTES
- {
+  {
     parentPath: "/consolidator",
     name: "Item Management",
     icon: <MdSettings {...iconStyles} />,
