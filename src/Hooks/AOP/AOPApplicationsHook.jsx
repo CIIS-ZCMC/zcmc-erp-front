@@ -1,13 +1,17 @@
 import { create } from "zustand";
 // import { erp_api } from "../../Services/ERP_API";
-import { localStorageSetter } from "../../Utils/LocalStorage";
+import {
+  localStorageGetter,
+  localStorageSetter,
+} from "../../Utils/LocalStorage";
 import { read, update } from "../../Services/RequestMethods";
 import { API } from "../../Data/constants";
 
 const useAOPApplicationsHook = create((set) => ({
   aopApplications: [],
-  aopApplicationObjectives: null,
-  aopApplication: null,
+  aopApplicationObjectives:
+    localStorageGetter("aopApplicationObjectives") ?? null,
+  aopApplication: localStorageGetter("aopApplication") ?? null,
 
   // approvalTimeline: [],
   isLoading: false,
@@ -48,7 +52,7 @@ const useAOPApplicationsHook = create((set) => ({
             aopApplication: application,
             isLoading: false,
           });
-
+          localStorageSetter("aopApplication", application); // STORE TO LOCALSTORAGE
           localStorageSetter("aopApplicationObjectives", objectives); // STORE TO LOCALSTORAGE
 
           callback(200, message);

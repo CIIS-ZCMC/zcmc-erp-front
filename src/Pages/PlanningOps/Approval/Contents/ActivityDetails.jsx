@@ -15,7 +15,7 @@ import { RESOURCES_HEADER } from "../../../../Data/Columns";
 import { useUserTypes } from "../../../../Store/AuthStore";
 
 export const ActivityDetails = () => {
-  const { isDivisionHead } = useUserTypes();
+  const { isPlanning } = useUserTypes();
 
   const [openResourcesModal, setOpenResourcesModal] = useState(false);
   const [openMarkModal, setOpenMarkModal] = useState(false);
@@ -26,12 +26,7 @@ export const ActivityDetails = () => {
     activity_name,
     start_month,
     end_month,
-    target: {
-      first_quarter,
-      second_quarter,
-      third_quarter,
-      fourth_quarter,
-    } = {},
+    target: { q1, q2, q3, q4 } = {},
     resources = [],
     responsible_people = [],
   } = activity || {};
@@ -54,12 +49,10 @@ export const ActivityDetails = () => {
         }
         isLoading={isLoading}
         scrollable
-        contentMaxHeight={isDivisionHead ? "52vh" : "47vh"}
-        contentMinHeight={isDivisionHead ? "52vh" : "47vh"}
+        contentMaxHeight={!isPlanning ? "52vh" : "47vh"}
+        contentMinHeight={!isPlanning ? "52vh" : "47vh"}
         footer={
-          isDivisionHead ? (
-            false
-          ) : (
+          isPlanning && (
             <MarkReviewFooter
               openMarkModal={openMarkModal}
               setOpenMarkModal={setOpenMarkModal}
@@ -70,12 +63,12 @@ export const ActivityDetails = () => {
         <Grid
           container
           columns={{ md: 4, lg: 12 }}
-          sx={{ width: isDivisionHead ? "100%" : "auto" }}
-          columnSpacing={isDivisionHead ? 2 : 0}
+          sx={{ width: !isPlanning ? "100%" : "auto" }}
+          columnSpacing={!isPlanning ? 4 : 0}
           overflow={"hidden"}
         >
-          <Grid item={"true"} xs={isDivisionHead ? 6 : 12}>
-            <Stack spacing={isDivisionHead ? 2 : 1.5}>
+          <Grid item={"true"} xs={!isPlanning ? 6 : 12}>
+            <Stack spacing={!isPlanning ? 2 : 1.5}>
               {/* ACTIVITY NAME */}
               <Typography
                 level={titleStyles.level}
@@ -99,12 +92,7 @@ export const ActivityDetails = () => {
                 Target (by quarter)
               </Typography>
               <Grid container columns={{ xs: 2, sm: 4 }} spacing={1}>
-                {[
-                  first_quarter,
-                  second_quarter,
-                  third_quarter,
-                  fourth_quarter,
-                ]?.map((element, index) => (
+                {[q1, q2, q3, q4]?.map((element, index) => (
                   <Grid xs={1} key={index}>
                     <BoxComponent>
                       <Stack gap={1}>
@@ -157,8 +145,8 @@ export const ActivityDetails = () => {
             </Stack>
           </Grid>
 
-          <Grid item="true" xs={isDivisionHead ? 6 : 12}>
-            <Stack spacing={isDivisionHead ? 2 : 1.5}>
+          <Grid item="true" xs={!isPlanning ? 6 : 12} mt={isPlanning && 2}>
+            <Stack spacing={!isPlanning ? 2 : 1.5}>
               {/* PERSON */}
               <Typography
                 level={titleStyles.level}
@@ -167,15 +155,7 @@ export const ActivityDetails = () => {
                 Responsible person
               </Typography>
               {responsible_people?.map(
-                (
-                  {
-                    user: {
-                      name: person_name,
-                      assignedArea: { name },
-                    },
-                  },
-                  index
-                ) => (
+                ({ name: person_name, designation = null }, index) => (
                   <Box
                     key={index}
                     display={"flex"}
@@ -194,18 +174,20 @@ export const ActivityDetails = () => {
                       >
                         {person_name}
                       </Typography>
-                      <Typography
-                        level={titleStyles.level}
-                        fontWeight={titleStyles.fontWeight}
-                      >
-                        {name}
-                      </Typography>
+                      {designation && (
+                        <Typography
+                          level={titleStyles.level}
+                          fontWeight={titleStyles.fontWeight}
+                        >
+                          {designation}
+                        </Typography>
+                      )}
                     </Box>
                   </Box>
                 )
               )}
 
-              {isDivisionHead && (
+              {/* {!isPlanning && (
                 <>
                   <Divider />
                   <MarkReviewFooter
@@ -213,7 +195,7 @@ export const ActivityDetails = () => {
                     setOpenMarkModal={setOpenMarkModal}
                   />
                 </>
-              )}
+              )} */}
             </Stack>
           </Grid>
         </Grid>

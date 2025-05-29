@@ -64,35 +64,46 @@ export const sidebarRoutes = [
     parentPath: "/supervisor",
     name: "Supervisor",
     icon: <MdSupervisorAccount {...iconStyles} />,
-    permissions: ["ERP-AOP-CREATE:write", "ERP-PPMP-CREATE:write"],
+    permissions: [
+      "ERP-AOP-CREATE:write",
+      "ERP-PPMP-CREATE:write",
+      "ERP-AOP-MAN:write",
+      "ERP-AOP-MAN:view",
+    ],
     children: [
       {
         path: "/aop/all",
         name: "Create AOP",
-        element: <AnnualOps />,
-        childPermissions: ["ERP-AOP-CREATE:write"],
+        element: <CreateAOP />,
+        childPermissions: ["ERP-AOP-MAN:write"],
+
         children: [
+          { index: true, element: <AnnualOpsPlanning /> }, //ENTRY POINT
           {
-            path: "/aop/all",
-            name: "AOP Management",
-            index: true,
-            element: <Navigate to="all" replace />,
-          },
-          {
-            path: "all",
-            element: <All />,
-          },
-          {
-            path: "approved",
-            element: <Approved />,
-          },
-          {
-            path: "pending",
-            element: <Pending />,
-          },
-          {
-            path: "returned",
-            element: <Returned />,
+            path: "activities/:objectiveId",
+            element: <Activities />,
+            children: [
+              {
+                path: "items/:activityId",
+                element: <Items />,
+              },
+              {
+                path: "resources/:activityId",
+                element: <Resources />,
+              },
+
+              // {
+              //   path: "person/:activityId",
+              //   element: <EditResponsiblePerson />,
+              //   roles: ["super_admin"],
+              //   abilities: [
+              //     "M-001:read",
+              //     "M-001:write",
+              //     "M-001:edit",
+              //     "M-001:delete",
+              //   ],
+              // },
+            ],
           },
         ],
       },
@@ -100,7 +111,7 @@ export const sidebarRoutes = [
         path: "/edit-ppmp",
         name: "Edit PPMP",
         element: <EditPPMP />,
-        childPermissions: ["ERP-PPMP-CREATE:write"],
+        childPermissions: ["ERP-PPMP-MAN:write"],
         children: [
           {
             index: true,

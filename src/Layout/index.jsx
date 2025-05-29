@@ -1,5 +1,5 @@
 import { Outlet } from "react-router-dom";
-import { Avatar, Box, Grid, Stack, useTheme } from "@mui/joy";
+import { Avatar, Box, Grid, Stack, Typography, useTheme } from "@mui/joy";
 import Sidebar from "./Sidebar";
 import useModalHook from "../Hooks/ModalHook";
 import { Fragment, useEffect, useState } from "react";
@@ -9,6 +9,7 @@ import { useMediaQuery } from "@mui/material";
 import NotificationMain from "../Components/Notification/NotificationMain";
 import SnackbarComponent from "../Components/Common/SnackbarComponent";
 import useSnackbarHook from "../Components/Common/SnackbarHook";
+import { useAuth } from "../Store/AuthStore";
 
 function Layout() {
   const theme = useTheme();
@@ -16,6 +17,7 @@ function Layout() {
 
   const { alertDialogState } = useModalHook();
   const { isOpen: snackbarIsOpen } = useSnackbarHook();
+  const { user } = useAuth();
 
   const { isCollapsed, toggleSidebar, setCollapsed } = useSidebarHook();
   const isSmallScreen = useMediaQuery("(max-width:1500px)");
@@ -29,6 +31,7 @@ function Layout() {
         {/* Notification */}
         <Box position={"absolute"} right={10} p={4}>
           <Stack direction={"row"} spacing={1} alignItems={"center"}>
+            <Typography fontWeight={"bold"}> {user?.name}</Typography>
             <NotificationMain />
             <Avatar
               size="lg"

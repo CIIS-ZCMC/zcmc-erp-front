@@ -111,9 +111,10 @@ export const useUserTypes = () => {
 
   if (area) {
     return {
-      isDivisionHead: area.area_id === AREA_ID.OMCC || false,
-      isPlanning: area.area_id === AREA_ID.PLANNING_UNIT || false,
-      isDepartmentHead: false,
+      isDivisionHead: false,
+      isPlanning:
+        area.area_id === AREA_ID.PLANNING_UNIT || area.name === "Planning Unit",
+      isDepartmentHead: area.area_id === AREA_ID.OMCC || false,
     };
   }
 };
