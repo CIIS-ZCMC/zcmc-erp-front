@@ -37,15 +37,13 @@ StepItem.propTypes = {
 function StepItem({
   position,
   name,
-  area_code,
-  area,
   status,
-  created_at,
-  date_submitted,
   approved_at,
   remarks,
   activities_with_comments,
   number_of_comments,
+  isLast,
+  date_approved,
 }) {
   const theme = useTheme();
   const color = theme.palette.custom;
@@ -89,13 +87,15 @@ function StepItem({
         >
           {position}
         </Typography>
-        <ChipComponent
-          sx={{ px: window.innerWidth >= 1200 ? 0.8 : 1, fontWeight: 400 }}
-          size={"sm"}
-          label={toCapitalize(status) ?? "Pending"}
-          color={getStatusColorScheme(status?.toLowerCase())}
-          variant={status === "submitted" ? "outlined" : "solid"}
-        />
+        {isLast && (
+          <ChipComponent
+            sx={{ px: window.innerWidth >= 1200 ? 0.8 : 1, fontWeight: 400 }}
+            size={"sm"}
+            label={toCapitalize(status) ?? "Pending"}
+            color={getStatusColorScheme(status?.toLowerCase())}
+            variant={status === "submitted" ? "outlined" : "solid"}
+          />
+        )}
       </Stack>
 
       <Stack gap={1.5} ml={0.7}>
@@ -111,7 +111,7 @@ function StepItem({
           <>
             <StepTextDisplay
               label={"Approved on:"}
-              value={moment().format("LLL")}
+              value={moment(date_approved).format("LLL")}
             />
             <Divider sx={dividerStyles} />
           </>

@@ -10,7 +10,7 @@ const childIconStyles = {
 
 const ChildMenuItem = ({ icon, name, path, isInPopout = false }) => {
   const location = window.location.pathname;
-  const isActive = location === path;
+  const isActive = location?.includes(path);
 
   return (
     <MenuItemComponent
