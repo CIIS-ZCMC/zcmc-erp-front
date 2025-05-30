@@ -9,10 +9,12 @@ import ContainerComponent from "../../../Components/Common/ContainerComponent";
 import ModalComponent from "../../../Components/Common/Dialog/ModalComponent";
 import InputComponent from "../../../Components/Form/InputComponent";
 import useModalHook from "../../../Hooks/ModalHook";
+import { usePPMP } from "../../../Hooks/PPMP/PPMPApplicationHook";
 
 function ManagePPMP() {
   // HOOKS
   const { setAlertDialog } = useModalHook();
+  const { ppmpApplicationItems, ppmpApplication } = usePPMP();
 
   // STATES
   const [receiveModalOpen, setReceiveModalOpen] = useState(false);
@@ -34,6 +36,7 @@ function ManagePPMP() {
     setAlertDialog(data);
   };
 
+  console.log(ppmpApplicationItems);
   const handleBack = () => {
     // Navigate back to the previous page
     window.history.back();
@@ -75,7 +78,10 @@ function ManagePPMP() {
             </Stack>
           }
         >
-          <ScrollableTableComponent columns={PPMP_VIEW_HEADER} />
+          <ScrollableTableComponent
+            columns={PPMP_VIEW_HEADER}
+            data={ppmpApplicationItems}
+          />
         </ContainerComponent>
       </Stack>
 
