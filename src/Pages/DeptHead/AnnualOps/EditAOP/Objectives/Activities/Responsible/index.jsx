@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { Fragment, useState, useEffect } from "react";
 
 import { Grid, Stack } from "@mui/joy";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -27,6 +27,11 @@ const EditResponsiblePerson = () => {
 
     const { responsible_people, resetValues, setAssignmentStatus } = useResponsiblePeopleHook();
     const { setConfirmationModal } = useModalHook();
+
+
+    useEffect(() => {
+        console.log(responsible_people)
+    }, [responsible_people])
 
     const activity = responsible_people?.find((item) => {
         return item.activityId === activityId;

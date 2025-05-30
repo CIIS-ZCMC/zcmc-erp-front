@@ -21,7 +21,28 @@ const TableRow = ({
         updateResourceField,
     } = useResourceHook();
 
+<<<<<<< Updated upstream
     const [localResources, setLocalResources] = useState(rows);
+=======
+    const formattedResources = rows?.map((resource, index) => ({
+        id: uuid(),
+        item_id: resource.item?.id,
+        parentId: parentId,
+        rowId: index + 1,
+        name: resource.item?.name,
+        // typeofResources: resource,
+        quantity: resource.quantity,
+        individualPrice: resource.item?.estimated_budget,
+        expenseClass: resource.expense_class,
+        purchaseTypeId: resource.purchase_type?.id,
+        totalCost: Number((resource.item?.estimated_budget * resource.quantity).toFixed(2)),
+    }));
+
+
+    // formatted responsible person
+
+    const [localResources, setLocalResources] = useState(formattedResources);
+>>>>>>> Stashed changes
     const [editRowId, setEditRowId] = useState(null);
 
     const handleOnRowClick = (id) => setEditRowId(id);
@@ -49,9 +70,16 @@ const TableRow = ({
         ]);
     }
 
+<<<<<<< Updated upstream
     // useEffect(() => {
     //   console.log(localResources)
     // }, [localResources])
+=======
+    useEffect(() => {
+        console.log('rows', rows)
+        console.log('formatted Resources', formattedResources)
+    }, [formattedResources])
+>>>>>>> Stashed changes
 
     const expenseClassOptions = [
         { id: 1, label: 'MOOE', value: 'MOOE' },

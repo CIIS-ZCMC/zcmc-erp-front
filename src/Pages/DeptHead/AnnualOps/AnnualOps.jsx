@@ -4,6 +4,12 @@ import { Stack, Typography, Grid, CircularProgress } from '@mui/joy'
 import { useNavigate } from "react-router-dom";
 
 import useAOPObjectivesHooks from '../../../Hooks/AOP/AOPObjectivesHook';
+<<<<<<< Updated upstream
+=======
+import useActivitiesHook from '../../../Hooks/ActivitiesHook';
+import useResourceHook from '../../../Hooks/ResourceHook';
+import useResponsiblePeopleHook from '../../../Hooks/ResponsiblePeopleHook';
+>>>>>>> Stashed changes
 import { useAOPActions, } from '../../../Hooks/AOP/AOPObjectivesHook';
 
 import Header from './Header';
@@ -23,8 +29,16 @@ const AnnualOps = () => {
 
   const [isLoading, setIsLoading] = useState(false);
 
+<<<<<<< Updated upstream
   const { aop_summary } = useAOPObjectivesHooks();
   const { getSummary } = useAOPActions();
+=======
+  const { setActivities } = useActivitiesHook();
+  const { setResources, setCart } = useResourceHook();
+  const { aopObjectives, aop_summary } = useAOPObjectivesHooks();
+  const { getSummary, getSingleAOP } = useAOPActions();
+  const { setResponsiblePeople } = useResponsiblePeopleHook();
+>>>>>>> Stashed changes
 
   const {
     aop_application_id,
@@ -53,8 +67,40 @@ const AnnualOps = () => {
   }, [])
 
   useEffect(() => {
+<<<<<<< Updated upstream
     console.log(aop_summary)
   }, [aop_summary])
+=======
+    setIsLoading(true)
+    getSingleAOP((status, message) => {
+      // console.log(status)
+      if (!(status >= 200 && status < 300)) {
+        return; //Toast error
+      }
+      setIsLoading(false)
+    })
+  }, [])
+
+  // get activities
+  const flatActivities = aopObjectives.application_objectives?.flatMap(data => data.activity) || [];
+
+  //get item resources
+  const flatResources = aopObjectives.application_objectives?.flatMap(data =>
+    data.activity.flatMap(item => item.resources)
+  ) || [];
+
+  //get responsible person
+  const flatResponsiblePerson = aopObjectives.application_objectives?.flatMap(data =>
+    data.activity.flatMap(res => res.responsible_people)
+  ) || [];
+
+  useEffect(() => {
+    console.log('responsible person from server', flatResponsiblePerson)
+    setResponsiblePeople(flatResponsiblePerson)
+    setResources(flatResources)
+    setActivities(flatActivities)
+  }, [])
+>>>>>>> Stashed changes
 
   return (
     <Fragment>

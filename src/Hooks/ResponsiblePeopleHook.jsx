@@ -13,13 +13,19 @@ const useResponsiblePeopleHook = create(
       //   isAssigned: false,
       // },
 
+      setResponsiblePeople: (data) => {
+        set(() => ({
+          responsible_people: data
+        }))
+      },
+
       setAssignmentStatus: (activityId, status) => {
         set((state) => {
           const updated = state.responsible_people.map((item) => {
             if (item.activityId === activityId) {
               return {
                 ...item,
-                isAssigned: status,
+                // isAssigned: status,
               };
             }
             return item;

@@ -13,9 +13,8 @@ import TextareaComponent from "../../../../../../Components/Form/TextareaCompone
 import TableRow from "./TableRow";
 
 // hooks
-import { useAOPActions } from "../../../../../../Hooks/AOP/AOPObjectivesHook";
 import useFunctionTypeHook from "../../../../../../Hooks/FunctionTypeHook";
-import useAOPObjectivesHooks from "../../../../../../Hooks/AOP/AOPObjectivesHook";
+import useAOPObjectivesHooks, { useAOPActions } from "../../../../../../Hooks/AOP/AOPObjectivesHook";
 import useObjectivesHook from "../../../../../../Hooks/ObjectivesHook";
 import useActivitiesHook from "../../../../../../Hooks/ActivitiesHook";
 import useModalHook from "../../../../../../Hooks/ModalHook";
@@ -27,7 +26,6 @@ import useResourceHook from "../../../../../../Hooks/ResourceHook";
 import useResponsiblePeopleHook from "../../../../../../Hooks/ResponsiblePeopleHook";
 
 const Objectives = () => {
-
   const { create } = useAOPActions();
   const { aopObjectives, deleteObjective } = useAOPObjectivesHooks();
   const { function_types, getFunctionType } = useFunctionTypeHook();
@@ -140,6 +138,7 @@ const Objectives = () => {
     const payload = {
       mission: mission,
       has_discussed: true,
+
       application_objectives: aopPayload
     }
 

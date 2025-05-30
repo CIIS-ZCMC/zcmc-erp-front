@@ -15,9 +15,9 @@ const SelectPersonComponent = ({ parentId }) => {
     const responsible = getByActivityId(parentId);
     const selectedUsers = responsible?.users || [];
 
-    // useEffect(() => {
-    //     console.log('responsible:', responsible);
-    // }, [])
+    useEffect(() => {
+        console.log('responsible:', responsible);
+    }, [])
 
     return <Stack gap={1}>
         <AutocompleteComponent
