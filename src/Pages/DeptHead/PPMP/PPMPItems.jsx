@@ -97,7 +97,7 @@ function PPMPItems(props) {
   });
   const location = useLocation();
   const { user } = useAuth();
-  const { name, id } = user ?? {};
+  const { name, id, assignedArea } = user ?? {};
 
   //SNACKBAR
   const notify = () => setOpenNotify(true);
@@ -107,7 +107,11 @@ function PPMPItems(props) {
   };
 
   const sendSignal = () => {
-    socket.emit("register-user", { userId: id, name: name });
+    socket.emit("register-user", {
+      userId: id,
+      name: name,
+      area: assignedArea.area_id,
+    });
   };
 
   const disconnectSignal = () => {

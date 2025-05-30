@@ -48,11 +48,8 @@ import { Category } from "../Pages/Consolidators/Tabs/Category";
 import { Variant } from "../Pages/Consolidators/Tabs/Variant";
 import { LayoutDashboard, Lock, PersonStanding } from "lucide-react";
 import {
-  MdBook,
   MdDashboard,
   MdLibraryBooks,
-  MdNextPlan,
-  MdOutlineDocumentScanner,
   MdSettings,
   MdSupervisorAccount,
 } from "react-icons/md";
