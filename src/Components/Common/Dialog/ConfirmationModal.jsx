@@ -33,7 +33,7 @@ ConfirmationModal.propTypes = {
   pinHelperText: PropTypes.string,
 };
 
-function ConfirmationModal({ errors = {} }) {
+function ConfirmationModal({ errors = {}, onPinChange, withAuthPin = false }) {
   const {
     confirmationModalState: {
       isOpen = false,
@@ -48,8 +48,6 @@ function ConfirmationModal({ errors = {} }) {
       rightButtonDisabled,
       leftButtonAction,
       isLoading,
-      withAuthPin,
-      setAuthPin,
       pinHelperText,
     },
     closeConfirmation,
@@ -58,8 +56,8 @@ function ConfirmationModal({ errors = {} }) {
   const [pin, setPin] = useState(null);
 
   const handlePinInput = (value) => {
-    if (setAuthPin) setAuthPin(value);
     setPin(value);
+    if (onPinChange) onPinChange(value); // this replaces setAuthPin
   };
 
   return (

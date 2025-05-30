@@ -2,12 +2,15 @@ import { create } from "zustand";
 import erp_api from "../Services/ERP_API";
 import { read } from "../Services/RequestMethods";
 import { localStorageGetter, localStorageSetter } from "../Utils/LocalStorage";
+import { AREA_ID } from "../Data/constants";
 
-const useAuthStore = create((set, get) => ({
+const useAuthStore = create((set) => ({
   user: localStorageGetter("user") ?? null,
   loading: false,
   error: null,
   meta: null,
+  permissions: [],
+  area: localStorageGetter("user")?.assignedArea ?? null,
   //Actions
   actions: {
     // Session ID must be pass in call
@@ -23,9 +26,16 @@ const useAuthStore = create((set, get) => ({
             throw new Error("Bad response", { cause: res });
           }
 
-          set({ user: data.data, meta: data.meta, loading: false });
+          set({
+            user: data.data,
+            area: data.data.assignedArea,
+            meta: data.meta,
+            permissions: data.data.meta.permissions,
+            loading: false,
+          });
 
           localStorageSetter("user", data.data);
+
           return data.meta.redirect_to;
         })
         .catch((err) => {
@@ -62,15 +72,17 @@ const useAuthStore = create((set, get) => ({
             throw new Error("Bad response", { cause: res });
           }
 
-          set({ user: data.data, meta: data.meta, loading: false });
+          set({
+            user: data.data,
+            area: data.data.assignedArea,
+            meta: data.meta,
+            permissions: data.data.meta.permissions,
+            loading: false,
+          });
           localStorageSetter("user", data.data);
         },
         failed: callBack,
       });
-    },
-
-    getUserArea: () => {
-      return get().user.assignedArea.name;
     },
   },
 }));
@@ -78,10 +90,12 @@ const useAuthStore = create((set, get) => ({
 export const useAuth = () => {
   const user = useAuthStore((state) => state.user);
   const meta = useAuthStore((state) => state.meta);
+  const permissions = useAuthStore((state) => state.permissions);
+  const area = useAuthStore((state) => state.area);
   const loading = useAuthStore((state) => state.login);
   const error = useAuthStore((state) => state.error);
 
-  return { user, meta, loading, error };
+  return { user, meta, area, permissions, loading, error };
 };
 
 export const useAuthActions = () => {
@@ -93,14 +107,14 @@ export const useAuthActions = () => {
 export const useUserTypes = () => {
   const user = useAuthStore((state) => state.user);
 
-  const area = useAuthStore((state) => state.getUserArea);
-  return {
-    isDivisionHead: false,
-    // user.position === "division",
-    // isPlanning: user.position === "planning",
-    // isDepartmentHead: user.position === "department-head",
+  const area = useAuthStore((state) => state.area);
 
-    isPlanning: area === "Planning Unit",
-    isDepartmentHead: false,
-  };
+  if (area) {
+    return {
+      isDivisionHead: false,
+      isPlanning:
+        area.area_id === AREA_ID.PLANNING_UNIT || area.name === "Planning Unit",
+      isDepartmentHead: area.area_id === AREA_ID.OMCC || false,
+    };
+  }
 };

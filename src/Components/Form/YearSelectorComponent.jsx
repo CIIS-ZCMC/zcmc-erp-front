@@ -10,11 +10,10 @@ function YearSelectorComponent({
   placeholder = "",
   startDecorator,
   darkMode = false,
-  value = { year: "2024" },
+  value,
   setValue,
   ...props
 }) {
-  // Generate a range of years
   const startYear = 2010;
   const endYear = new Date().getFullYear();
   const years = Array.from({ length: endYear - startYear + 1 }, (_, i) => ({

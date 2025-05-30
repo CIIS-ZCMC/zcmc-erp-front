@@ -10,20 +10,14 @@ import { useLocation, useNavigate, useParams } from "react-router-dom";
 import ContainerComponent from "../../../Components/Common/ContainerComponent";
 import IconButtonComponent from "../../../Components/Common/IconButtonComponent";
 import { ChevronDown, ChevronUp } from "lucide-react";
-import SheetComponent from "../../../Components/Common/SheetComponent";
 import BoxComponent from "../../../Components/Common/Card/BoxComponent";
-import ItemsList from "../../../Layout/Items/ItemsList";
 import ItemCardComponent from "../../../Components/Resources/ItemCardComponent";
 import ButtonComponent from "../../../Components/Common/ButtonComponent";
 import { MdOpenInNew } from "react-icons/md";
 import ItemsCart from "../../../Layout/Items/ItemsCart";
 import SearchBarComponent from "../../../Components/SearchBarComponent";
-import InfiniteScroll from "react-infinite-scroll-component";
 import empty_cart from "../../../assets/empty-cart.png";
 import useItemsHook from "../../../Hooks/ItemsHook";
-import { productNames } from "../../../Data/dummy";
-import { categories } from "../../../Data/dummy";
-import { images } from "../../../Data/dummy";
 import useItemCartHook from "../../../Hooks/ItemCartHook";
 import ConfirmationModalComponent from "../../../Components/Common/Dialog/ConfirmationModalComponent";
 import useModalHook from "../../../Hooks/ModalHook";
@@ -170,7 +164,6 @@ function AddItems(props) {
 
     const mergedItemsArray = Array.from(mergedMap.values());
     // 3. Save to hook and localStorage
-    console.log("Merged items:", mergedItemsArray);
 
     localStorage.setItem(localKey, JSON.stringify(mergedItemsArray));
     setTableData(mergedItemsArray);

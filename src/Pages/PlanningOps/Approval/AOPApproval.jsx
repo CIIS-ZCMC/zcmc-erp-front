@@ -1,11 +1,9 @@
-import React, { Fragment, useEffect, useMemo, useState } from "react";
-import PropTypes from "prop-types";
+import { Fragment, useEffect, useState } from "react";
 import PageTitle from "../../../Components/Common/PageTitle";
 import { AOP_CONSTANTS } from "../../../Data/constants";
 import ContainerComponent from "../../../Components/Common/ContainerComponent";
 import { Box, Grid, Link, Stack } from "@mui/joy";
 import InputComponent from "../../../Components/Form/InputComponent";
-import DatePickerComponent from "../../../Components/Form/DatePickerComponent";
 import { Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -29,6 +27,7 @@ import {
   useApprovalTimeline,
 } from "../../../Hooks/AOP/AOPApprovalHook";
 import { ThreeDotsLoader } from "../../../Components/Common/Loading/ThreeDotsLoader";
+import PageLoader from "../../../Components/Loading/PageLoader";
 
 const AOPApproval = () => {
   const navigate = useNavigate();
@@ -44,12 +43,16 @@ const AOPApproval = () => {
   // STATES
   const [openTimelineModal, setOpenTimelineModal] = useState(false);
   const [index, setIndex] = useState("all");
-  const [year, setYear] = useState(new Date().getFullYear());
-  // const [search, setSearch] = useState("");
+  const [year, setYear] = useState(new Date().getFullYear()?.toString());
+  const [pageLoading, setPageLoading] = useState("");
 
   // FUNCTIONS
   const handleClickCard = (id, area_code) => {
-    getAOPApplicationById(id, () => navigate(`/aop-approval/objectives/${id}`));
+    setPageLoading(true);
+    getAOPApplicationById(id, () => {
+      setPageLoading(false);
+      navigate(`/aop-approval/objectives/${id}`);
+    });
 
     localStorageSetter("aop_application_id", id);
     localStorageSetter("aop_application_area_code", area_code);
@@ -134,11 +137,12 @@ const AOPApproval = () => {
 
               {APPLICATIONS?.map(
                 (
-                  { id, created_on, date_approved, area_code, status },
+                  { id, created_on, date_approved, area_code, status, year },
                   index
                 ) => (
                   <Grid key={index} item="true" xs={4}>
                     <AOPCardComponent
+                      year={year}
                       date_requested={created_on}
                       date_approved={date_approved}
                       status={status}
@@ -171,6 +175,9 @@ const AOPApproval = () => {
           </Stack>
         }
       />
+
+      {/* LOADER */}
+      <PageLoader isLoading={pageLoading} />
     </Fragment>
   );
 };

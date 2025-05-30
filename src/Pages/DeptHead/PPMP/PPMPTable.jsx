@@ -1,5 +1,13 @@
-import { Autocomplete, Box, Sheet, Stack, Table, Typography } from "@mui/joy";
-import { memo, useEffect, useState } from "react";
+import {
+  Autocomplete,
+  Box,
+  Divider,
+  Sheet,
+  Stack,
+  Table,
+  Typography,
+} from "@mui/joy";
+import { memo, useEffect, useRef, useState } from "react";
 import NoResultComponent from "../../../Components/Common/Table/NoResultComponent";
 import InputComponent from "../../../Components/Form/InputComponent";
 import { ThreeDots } from "react-loader-spinner";
@@ -15,6 +23,8 @@ import AutocompleteComponent from "../../../Components/Form/AutocompleteComponen
 import ConfirmationModalComponent from "../../../Components/Common/Dialog/ConfirmationModalComponent";
 import ConfirmationModal from "../../../Components/Common/Dialog/ConfirmationModal";
 import PageLoader from "../../../Components/Loading/PageLoader";
+import { ThreeDotsLoader } from "../../../Components/Common/Loading/ThreeDotsLoader";
+import { InfoIcon } from "lucide-react";
 
 const PPMPTable = memo(
   ({
@@ -25,8 +35,17 @@ const PPMPTable = memo(
     modes = [],
     categories = [],
     classifications = [],
+    openDel,
+    setOpenDel,
+    setOpensave,
+    id,
+    setSelectedID,
+    loading,
+    setLoading,
+    isEditing,
+    setIsEditing,
   }) => {
-    const { getPPMPItems, removeItem, search } = usePPMPHook();
+    const { removeItem, search } = usePPMPHook();
     const {
       setAlertDialog,
       setConfirmationModal,
@@ -38,65 +57,31 @@ const PPMPTable = memo(
     const [ppmpTable, setPPMPTable] = useState(
       JSON.parse(localStorage.getItem("ppmp-items")) ?? []
     );
-    const [loading, setLoading] = useState(false);
-    const [openDel, setOpenDel] = useState(false);
+    const [btnLoad, setBtnLoad] = useState(false);
     const [searchVal, setSearchVal] = useState("");
     const [selectedClass, setSelectedClass] = useState({});
     const [selectedCat, setSelectedCat] = useState({});
     const [editedCell, setEditedCell] = useState({ rowId: null, field: null });
     const [pin, setPin] = useState("");
 
-    //COLUMN
+    //HANDLEOPEN
     const handleOpenDel = (params) => {
+      setSelectedID(params.id);
+      setOpensave(false);
+      setOpenDel(true);
       const data = {
         status: "error",
         title: ` Are you sure you want to delete item ${params?.item?.code}?`,
         description:
           "The selected item will be removed from the table. Please input authorization pin to proceed.",
-        leftButtonLabel: "Cancel",
-        rightButtonLabel: "Proceed",
-        rightButtonAction: () => handleDeleteRow(params),
-        withAuthPin: true,
-        setAuthPin: setPin,
       };
+
       setConfirmationModal(data);
     };
 
-    const columns = ppmpHeaders(handleOpenDel, items, modes);
+    //COLUMN HEADER
+    const columns = ppmpHeaders(handleOpenDel, items, modes, isEditing);
     const childHeaders = flattenColumns(columns);
-
-    //DELETE ITEM
-    const handleDeleteRow = (params) => {
-      const formData = new FormData();
-      formData.append("pin", pin);
-
-      setLoading(true); // Move this here for immediate feedback
-
-      removeItem(params.id, formData, (status, message) => {
-        if (status === 200) {
-          const updated = ppmpTable?.filter((row) => row.id !== params.id);
-
-          setPPMPTable(updated);
-          localStorage.setItem("ppmp-items", JSON.stringify(updated));
-
-          setAlertDialog({
-            status: "success",
-            title: message,
-            description: message,
-          });
-
-          closeConfirmation();
-        } else {
-          setAlertDialog({
-            status: "error",
-            title: message,
-            description: message,
-          });
-        }
-
-        setLoading(false);
-      });
-    };
 
     //FILTER
     const filteredTable = ppmpTable?.filter((item) => {
@@ -126,6 +111,52 @@ const PPMPTable = memo(
 
     const handlePrevPage = () => {
       if (currentPage > 1) setCurrentPage((prev) => prev - 1);
+    };
+
+    //DELETE ITEM
+    const handleDeleteRow = async () => {
+      try {
+        setBtnLoad(true);
+
+        const formData = new FormData();
+        formData.append("pin", pin);
+
+        const result = await new Promise((resolve) => {
+          removeItem(formData, (status, message) =>
+            resolve({ status, message })
+          );
+        });
+
+        const { status, message } = result;
+
+        if (status === 200) {
+          const updated = ppmpTable?.filter((row) => row.id !== id);
+          setPPMPTable(updated);
+          localStorage.setItem("ppmp-items", JSON.stringify(updated));
+          setAlertDialog({
+            status: "success",
+            title: message,
+            description: message,
+          });
+          setSelectedID(null);
+          setOpenDel(false);
+          closeConfirmation();
+        } else {
+          setAlertDialog({
+            status: "error",
+            title: message,
+            description: message,
+          });
+        }
+      } catch (err) {
+        setAlertDialog({
+          status: "error",
+          title: "Unexpected error",
+          description: "Something went wrong. Please try again.",
+        });
+      } finally {
+        setBtnLoad(false);
+      }
     };
 
     //CHANGES IN TABLE
@@ -218,7 +249,6 @@ const PPMPTable = memo(
     const handleSearch = async () => {
       if (searchVal) {
         await search(searchVal, (status, message, data) => {
-          console.log(status, message, data);
           const currentPPMP = localStorage.getItem("ppmp-items");
           localStorage.setItem("ppmp-edits", currentPPMP);
           localStorage.setItem("search-value", searchVal); // Save searchVal
@@ -247,8 +277,7 @@ const PPMPTable = memo(
       }
     };
 
-    //clear search
-
+    //CLEAR SEARCH
     const handleResetSearch = async () => {
       setSearchVal("");
       localStorage.removeItem("search-value");
@@ -301,8 +330,8 @@ const PPMPTable = memo(
                     width: isFirstColumn
                       ? "var(--Table-firstColumnWidth)"
                       : isLastColumn && stickLast
-                        ? "var(--Table-lastColumnWidth)"
-                        : column.width || 200,
+                      ? "var(--Table-lastColumnWidth)"
+                      : column.width || 200,
                     fontSize: 13,
                     textAlign: column.align || "left",
                     backgroundColor: "rgba(240, 240, 240, 1)",
@@ -523,34 +552,13 @@ const PPMPTable = memo(
               {loading ? (
                 <tr>
                   <td colSpan={columns?.length} style={{ padding: 0 }}>
-                    <Box
-                      sx={{
-                        py: 10,
-                        display: "flex",
-                        alignItems: "center",
-                        justifyContent: "center",
-                      }}
-                    >
-                      <ThreeDots
-                        height="80"
-                        width="80"
-                        color="#4fa94d"
-                        ariaLabel="three-dots-loading"
-                        wrapperStyle={{}}
-                        wrapperClass=""
-                        visible={true}
-                      />
-                    </Box>
+                    <ThreeDotsLoader />
                   </td>
                 </tr>
               ) : filteredTable?.length > 0 ? (
                 paginatedData.map((row) => (
                   <tr key={row.id}>
                     {childHeaders.map((header) => {
-                      const isEditing =
-                        editedCell?.rowId === row.id &&
-                        editedCell?.field === header.field;
-
                       return (
                         <td
                           key={header.field}
@@ -601,7 +609,20 @@ const PPMPTable = memo(
           />
         )}
 
-        <ConfirmationModal />
+        {openDel && (
+          <ConfirmationModalComponent
+            withAuthPin={true}
+            leftButtonLabel="Cancel"
+            leftButtonAction={() => {
+              setOpenDel(false);
+              closeConfirmation();
+            }}
+            rightButtonLabel="Proceed"
+            rightButtonAction={() => handleDeleteRow()}
+            setAuthPin={setPin}
+            isLoading={btnLoad}
+          />
+        )}
 
         <AlertDialogComponent />
       </Box>

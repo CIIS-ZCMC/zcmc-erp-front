@@ -9,25 +9,36 @@ const childIconStyles = {
 };
 
 const ChildMenuItem = ({ icon, name, path, isInPopout = false }) => {
+  const location = window.location.pathname;
+  const isActive = location?.includes(path);
+
   return (
     <MenuItemComponent
       to={path}
       path={path}
       sx={{
         px: 1.5,
-        py: 1,
+        py: 1.5,
+
         borderRadius: "md",
         transition: "background 0.2s",
+
+        backgroundColor: isActive ? "primary.100" : "transparent",
+        color: isActive ? "primary.900" : "white",
         ...(isInPopout
           ? {
-              bgcolor: "transparent",
-              color: "neutral.900",
+              bgcolor: isActive ? "primary.900" : "transparent",
+              color: isActive ? "white" : "neutral.900",
               "&:hover": {
-                bgcolor: "neutral.100",
+                bgcolor: !isActive && "neutral.100",
               },
             }
           : {
-              color: "white",
+              "&:hover": {
+                color: !isActive && "white",
+                bgcolor: !isActive && "rgba(255,255,255,0.09)",
+                transition: "background 0.2s",
+              },
             }),
       }}
     >

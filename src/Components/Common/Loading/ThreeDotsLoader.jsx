@@ -12,7 +12,7 @@ export const ThreeDotsLoader = () => {
       <ThreeDots
         visible={true}
         width="80"
-        color="#4fa94d"
+        color="#003049"
         radius="9"
         ariaLabel="three-dots-loading"
         wrapperStyle={{}}

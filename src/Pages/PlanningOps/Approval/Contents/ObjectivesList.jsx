@@ -1,17 +1,11 @@
 import React, { Fragment, useEffect, useMemo, useState } from "react";
 import { localStorageGetter } from "../../../../Utils/LocalStorage";
-import {
-  useAOPApplication,
-  useAOPApplicationObjectives,
-} from "../../../../Hooks/AOP/AOPApplicationsHook";
+import { useAOPApplicationObjectives } from "../../../../Hooks/AOP/AOPApplicationsHook";
 import { toCapitalize } from "../../../../Utils/Typography";
-import { Divider, Stack, Typography } from "@mui/joy";
+import { Stack, Typography } from "@mui/joy";
 import CustomAccordionComponent from "../../../../Components/Common/Accordion/CustomAccordionComponent";
 import EllipsisComponent from "../../../../Components/Common/Typography/EllipsisComponent";
 import { ActivityContainerComponent } from "../../../../Components/Activities/ActivityContainerComponent";
-import ModalComponent from "../../../../Components/Common/Dialog/ModalComponent";
-import TextareaComponent from "../../../../Components/Form/TextareaComponent";
-import InputComponent from "../../../../Components/Form/InputComponent";
 import {
   useActivityActions,
   useActivityUIStates,
@@ -22,6 +16,7 @@ import {
 } from "../../../../Hooks/AccordionHook";
 import { useCommentActions } from "../../../../Hooks/CommentHook";
 import EditObjective from "./EditObjective";
+import { useUserTypes } from "../../../../Store/AuthStore";
 
 const ObjectivesList = () => {
   // STATES
@@ -31,6 +26,7 @@ const ObjectivesList = () => {
   });
 
   // HOOKS
+  const { isPlanning } = useUserTypes();
   const AOPApplicationObjectives = useAOPApplicationObjectives();
   const AppicationObjectives = useMemo(
     () =>
@@ -163,7 +159,7 @@ const ObjectivesList = () => {
                           label={`Activity #${activity_key + 1} `}
                           text={name}
                           withComment={with_comments}
-                          reviewed={is_reviewed}
+                          reviewed={isPlanning ? is_reviewed : false}
                         />
                       )
                     )}

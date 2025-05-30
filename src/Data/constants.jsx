@@ -22,13 +22,18 @@ export const EPR_API_ENDPOINTS = {
   //ERP END POINTS RELATED HERE
 };
 
+export const AREA_ID = {
+  PLANNING_UNIT: "OMCC-PLAN-SE-047",
+  OMCC: "OMCC-DI-001",
+};
+
 export const AOP_CONSTANTS = {
   AOP_TITLE: "Annual Operations Planning",
   AOP_SUBHEADING:
     "This is a subheading. It should add more context to the interaction.",
 
-  AOP_EMPTY_STATE_TITLE: ' You didn’t have an AOP for this year yet.',
-  AOP_CREATE_NEW_AOP: 'Begin by creating a new request',
+  AOP_EMPTY_STATE_TITLE: " You didn’t have an AOP for this year yet.",
+  AOP_CREATE_NEW_AOP: "Begin by creating a new request",
   AOP_EMPTY_STATE_CONTENT: `  Nothing to show yet for this year’s AOP. You may request new items for the
                 <br></br>
                 meantime or create a new AOP request.`,
@@ -45,7 +50,8 @@ export const AOP_CONSTANTS = {
     "This is a subheading. It should add more context to the interaction.",
 
   TABLE_ITEMS_HEADER: "Select resources (items) to add",
-  TABLE_ITEMS_SUBHEADER: "All resources you’ll select here only applies to the specified activity above.",
+  TABLE_ITEMS_SUBHEADER:
+    "All resources you’ll select here only applies to the specified activity above.",
 
   TABLE_RESOURCES_HEADER: "Step 3.2 of 4: Manage resources",
   TABLE_RESOURCES_SUBHEADING:
@@ -70,7 +76,7 @@ export const AOP_CONSTANTS = {
   MANAGE_ACTIVITIES_HEADER: `You're Managing activities for Objective:`,
   MANAGE_ACTIVITIES_SUBHEADER: `Collapse this card to view more information about the selected objective.`,
 
-  MANAGE_HEADER: 'You are managing resources for',
+  MANAGE_HEADER: "You are managing resources for",
   MANAGE_SUBHEADER: `Collapse this card to view more information about the selected`,
 
   MODAL_RESOURCE_HEADER: "Select resources for activity Activity",
@@ -79,10 +85,12 @@ export const AOP_CONSTANTS = {
 };
 
 export const DEADLINES_CONSTANTS = {
-  DEADLINE_TITLE: 'Deadline management',
-  DEADLINE_SUBHEADER: 'Fully control when submissions of AOP and PMP requests will begin and close, to be imposed for all users.',
-  DEADLINE_TABLE_TITLE: 'List of deadlines',
-  DEADLINE_TABLE_SUBHEADER: 'Create, change and remove deadlines here, including advance deadlines for future years.',
+  DEADLINE_TITLE: "Deadline management",
+  DEADLINE_SUBHEADER:
+    "Fully control when submissions of AOP and PMP requests will begin and close, to be imposed for all users.",
+  DEADLINE_TABLE_TITLE: "List of deadlines",
+  DEADLINE_TABLE_SUBHEADER:
+    "Create, change and remove deadlines here, including advance deadlines for future years.",
 };
 
 export const PPMP_CONSTANTS = {
@@ -133,21 +141,21 @@ export const approvalActions = [
 ];
 
 export const API = {
-  AOP_APPLICATIONS: 'aop-applications',
-  AOP_APPLICATION_SHOW: 'aop-application-show',
-  AOP_APPLICATION_EDIT: 'aop-application-edit',
-  AOP_APPLICATION_STORE: 'aop-application-store',
-  AOP_APPLICATION_SUMMARY: 'aop-application-summary',
-  AOP_APPLICATION_TIMELINE: 'aop-application-timeline',
+  AOP_APPLICATIONS: "aop-applications",
+  AOP_APPLICATION_SHOW: "aop-application-show",
+  AOP_APPLICATION_EDIT: "aop-application-edit",
+  AOP_APPLICATION_STORE: "aop-application-store",
+  AOP_APPLICATION_SUMMARY: "aop-application-summary",
+  AOP_APPLICATION_TIMELINE: "aop-application-timeline",
 
   TYPE_OF_FUNCTIONS: "type-of-functions",
   TYPE_OF_PURCHASE: "purchase-types",
 
-  DEADLINES: 'deadlines',
-  AOP_DEADLINE_STORE: 'aop-deadline-store',
-  AOP_DEADLINE_UPDATE: 'aop-deadline-update',
-  PPMP_DEADLINE_STORE: 'ppmp-deadline-store',
-  PPMP_DEADLINE_UPDATE: 'ppmp-deadline-update',
+  DEADLINES: "deadlines",
+  AOP_DEADLINE_STORE: "aop-deadline-store",
+  AOP_DEADLINE_UPDATE: "aop-deadline-update",
+  PPMP_DEADLINE_STORE: "ppmp-deadline-store",
+  PPMP_DEADLINE_UPDATE: "ppmp-deadline-update",
 
   USERS: "get-users",
   JOB_POSITIONS: "get-designations",
