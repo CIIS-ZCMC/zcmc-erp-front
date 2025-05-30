@@ -1,20 +1,21 @@
-import { Fragment, useEffect } from 'react'
+import { Fragment, useState, useEffect, useMemo } from 'react';
 
 import { Stack, Link } from '@mui/joy';
 import { ExternalLink, Plus } from 'lucide-react';
-import { useLocation } from 'react-router-dom';
+import { useLocation, Outlet } from 'react-router-dom';
+import { v4 as uuid } from "uuid";
 
-import ContainerComponent from '../../../../../Components/Common/ContainerComponent'
+import ContainerComponent from '../../../../../Components/Common/ContainerComponent';
 import EditableTableComponent from '../../../../../Components/Common/Table/EditableTableComponent';
 import ButtonComponent from '../../../../../Components/Common/ButtonComponent';
-
-import { useAOPActions } from '../../../../../Hooks/AOP/AOPObjectivesHook';
 
 import useFunctionTypeHook from '../../../../../Hooks/FunctionTypeHook';
 import useAOPObjectivesHooks from '../../../../../Hooks/AOP/AOPObjectivesHook';
 import useObjectivesHook from '../../../../../Hooks/ObjectivesHook';
 import useActivitiesHook from '../../../../../Hooks/ActivitiesHook';
 import useModalHook from '../../../../../Hooks/ModalHook';
+
+import { useAOPActions } from '../../../../../Hooks/AOP/AOPObjectivesHook';
 
 
 import TableRow from './TableRow'
@@ -25,34 +26,41 @@ import { AOP_HEADER } from '../../../../../Data/Columns';
 const index = () => {
 
     const location = useLocation();
-    const id = location.state?.id;
+    const id = location.state?.data.id;
 
+    const applicationObjectives = location.state.data.application_objectives;
 
-    const { getSingleAOP } = useAOPActions();
-
-    const { aopObjective, deleteObjective } = useAOPObjectivesHooks();
     const { function_types, getFunctionType } = useFunctionTypeHook();
-    const { objectives, addObjective } = useObjectivesHook();
+    const { objectives, addObjective, setObjectives } = useObjectivesHook();
     const { findActivitiesByObjectiveID, activities } = useActivitiesHook();
     const { setAlertDialog } = useModalHook();
 
+    const [mission, setMission] = useState("");
+    const [isDraft, setIsDraft] = useState(false)
+    const [openSaveMissionModal, setOpenSaveMissionModal] = useState(false);
+
+    const formattedObjectives = useMemo(() => {
+        return applicationObjectives?.map(({ function_type, objective, success_indicator }, index) => ({
+            id: uuid(),
+            rowId: index + 1,
+            functionType: function_type,
+            objective: objective,
+            successIndicator: success_indicator
+        })) || [];
+
+    }, [applicationObjectives]);
+
+    useEffect(() => {
+        // console.log('formatted', formattedObjectives)
+        setObjectives(formattedObjectives)
+    }, [applicationObjectives])
+
     // check pag walang objectives then add default objective
     useEffect(() => {
-        if (objectives.length === 0) {
+        if (objectives?.length === 0) {
             addObjective();
         }
     }, [objectives, addObjective]);
-
-    useEffect(() => {
-        getSingleAOP(id, status => {
-            // console.log(status)
-            if (!(status >= 200 && status < 300)) {
-                // if status not success
-                return; //Toast error
-            }
-            setisLoading(false);
-        });
-    }, []);
 
     useEffect(() => {
         const params = { with_sub_data: 1 };
@@ -66,9 +74,30 @@ const index = () => {
         });
     }, []);
 
-    useEffect(() => {
-        console.log(objectives)
-    }, [objectives])
+    // console.log(objectives)
+
+    const handleOpenDialog = () => {
+        setOpenSaveMissionModal(true);
+    };
+
+    const handleSubmit = () => {
+        const objectivesData = objectives.map((item) => {
+            console.log(item)
+            return {
+                objective_id: item.objective.id,
+                success_indicator_id: item.successIndicator.id
+            }
+        })
+
+        const payload = {
+            mission: mission,
+            has_discussed: true,
+            status: isDraft ? isDraft : 'pending',
+            application_objectives: objectivesData,
+        }
+
+        console.log(payload)
+    }
 
     return (
         <Fragment>
@@ -91,7 +120,7 @@ const index = () => {
                     secondaryHeader={
                         <Link
                             component="button"
-                            // onClick={() => handleOpenDialog()}
+                            onClick={() => handleOpenDialog()}
                             pb={1}>
                             <Stack direction={"row"} gap={1} alignItems={"center"}>
                                 Update Mission
@@ -101,7 +130,7 @@ const index = () => {
                     }
                     tableRow={
                         <TableRow
-                            data={aopObjective}
+                            aopId={id}
                             rows={objectives}
                             function_types={function_types}
                         />
@@ -109,7 +138,27 @@ const index = () => {
                     stickLast
                 />
 
+                <Stack
+                    mt={2}
+                    direction={"flex"}
+                    alignItems={"center"}
+                    justifyContent={"start"}
+                    gap={1}
+                >
+                    <ButtonComponent
+                        label={"Cancel Request"}
+                        size={"md"}
+                        variant={"outlined"}
+                        onClick={() => handleCancelRequest()}
+                    />
 
+                    <ButtonComponent
+                        label={"Submit AOP"}
+                        size={"md"}
+                        variant={"solid"}
+                        onClick={() => handleSubmit()}
+                    />
+                </Stack>
             </ContainerComponent>
         </Fragment>
     )

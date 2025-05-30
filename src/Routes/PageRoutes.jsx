@@ -104,17 +104,21 @@ export const sidebarRoutes = [
                 roles: ["super_admin"],
               },
 
-              {
-                path: "person/:activityId",
-                element: <EditResponsiblePerson />,
-                roles: ["super_admin"],
-              },
+          {
+            path: "person/:activityId",
+            element: <ResponsibePerson />,
+            roles: ["super_admin"],
+            abilities: [
+              "M-001:read",
+              "M-001:write",
+              "M-001:edit",
+              "M-001:delete",
             ],
           },
         ],
       },
       {
-        path: "/aop-edit/:id",
+        path: "/aop-edit",
         element: <EditAOP />,
         name: "Edit AOP",
         roles: ["super_admin"],

@@ -4,6 +4,8 @@ import { Stack, Typography, Grid, CircularProgress } from '@mui/joy'
 import { useNavigate } from "react-router-dom";
 
 import useAOPObjectivesHooks from '../../../Hooks/AOP/AOPObjectivesHook';
+import useActivitiesHook from '../../../Hooks/ActivitiesHook';
+import useResourceHook from '../../../Hooks/ResourceHook';
 import { useAOPActions, } from '../../../Hooks/AOP/AOPObjectivesHook';
 
 import Header from './Header';
@@ -12,6 +14,7 @@ import Timeline from './Timeline';
 
 import ButtonComponent from "../../../Components/Common/ButtonComponent";
 import BoxComponent from "../../../Components/Common/Card/BoxComponent";
+import PageTitle from '../../../Components/Common/PageTitle';
 
 import no_result from '../../../assets/empty-state-icon-base.png';
 import { AOP_CONSTANTS } from '../../../Data/constants';
@@ -19,12 +22,14 @@ import { AOP_CONSTANTS } from '../../../Data/constants';
 const AnnualOps = () => {
   const navigate = useNavigate();
 
-  const [aopObjectives, setAopObjectives] = useState([]);
+  // const [aopObjectives, setAopObjectives] = useState([]);
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const { aop_summary } = useAOPObjectivesHooks();
-  const { getSummary } = useAOPActions();
+  const { setActivities } = useActivitiesHook();
+  const { setResources, setCart } = useResourceHook();
+  const { aopObjectives, aop_summary } = useAOPObjectivesHooks();
+  const { getSummary, getSingleAOP } = useAOPActions();
 
   const {
     aop_application_id,
@@ -53,14 +58,39 @@ const AnnualOps = () => {
   }, [])
 
   useEffect(() => {
-    console.log(aop_summary)
-  }, [aop_summary])
+    setIsLoading(true)
+    getSingleAOP((status, message) => {
+      // console.log(status)
+      if (!(status >= 200 && status < 300)) {
+        return; //Toast error
+      }
+      setIsLoading(false)
+    })
+  }, [])
+
+  // get activities
+  const flatActivities = aopObjectives.application_objectives?.flatMap(data => data.activity) || [];
+
+  //get item resources
+  const flatResources = aopObjectives.application_objectives?.flatMap(data =>
+    data.activity.flatMap(item => item.resources)
+  ) || [];
+
+  useEffect(() => {
+    console.log('resources', flatResources)
+    setResources(flatResources)
+    setActivities(flatActivities)
+  }, [])
 
   return (
     <Fragment>
+      <PageTitle
+        title={AOP_CONSTANTS.CREATE_AOP_TITLE}
+        description={AOP_CONSTANTS.CREATE_AOP_SUBHEADING}
+      />
       {
         isLoading ? <BoxComponent
-          mt={10}
+          mt={3}
           height={'83vh'}
           display={'flex'}
           flexDirection={'column'}
@@ -70,9 +100,9 @@ const AnnualOps = () => {
           <CircularProgress />
         </BoxComponent>
           :
-          !aop_application_id ?
+          !aopObjectives ?
             <BoxComponent
-              mt={10}
+              mt={3}
               height={'83vh'}
               display={'flex'}
               flexDirection={'column'}
@@ -128,7 +158,7 @@ const AnnualOps = () => {
             :
             <>
               <BoxComponent
-                mt={10}
+                mt={3}
                 height={'83vh'}
               >
                 <Header />
@@ -141,6 +171,7 @@ const AnnualOps = () => {
                 >
                   <Grid item={"true"} xs={12} md={6}>
                     <Summary
+                      aopObjectives={aopObjectives}
                       total_objectives={total_objectives}
                       total_success_indicators={total_success_indicators}
                       total_activities={total_activities}

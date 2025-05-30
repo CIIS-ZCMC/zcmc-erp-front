@@ -1,13 +1,16 @@
-import { Fragment, useState } from 'react';
+import { Fragment, useState, useEffect } from 'react';
 
 import { Stack, Link, Typography, Input, Select, Option } from '@mui/joy';
 import { useNavigate } from 'react-router-dom';
 import { Trash } from 'lucide-react';
+import { v4 as uuid } from 'uuid';
 
+import useAOPObjectivesHooks from '../../../../../../Hooks/AOP/AOPObjectivesHook';
 import useResourceHook from '../../../../../../Hooks/ResourceHook';
 import useActivitiesHook from '../../../../../../Hooks/ActivitiesHook';
 
 import IconButtonComponent from '../../../../../../Components/Common/IconButtonComponent';
+import { createJSONStorage } from 'zustand/middleware';
 
 const TableRow = ({
     rows,
@@ -17,20 +20,39 @@ const TableRow = ({
 
     const navigate = useNavigate();
 
-    const { findResourcesByActivityID } = useResourceHook();
+    const { resources, findResourcesByActivityID } = useResourceHook();
     const { updateActivityField, removeActivity } = useActivitiesHook();
 
     //local state
     const [localAopActivity, setLocalAopActivity] = useState({});
     const [editRowId, setEditRowId] = useState(null);
 
+    //format the activities array for the table
+    const formattedActivities = rows.map(({ activity_uuid, name, is_gad_related, cost, start_month, end_month, target }, index) => ({
+        id: activity_uuid ? activity_uuid : uuid(),
+        parentId: objectiveRowId,
+        rowId: index + 1,
+        name: name,
+        isGadRelated: is_gad_related,
+        cost: cost,
+        startMonth: start_month,
+        endMonth: end_month,
+        target: {
+            firstQuarter: target.first_quarter,
+            secondQuarter: target.second_quarter,
+            thirdQuarter: target.third_quarter,
+            fourthQuarter: target.fourth_quarter,
+        }
+    }));
+
     const handleOnRowClick = (id) => {
+
         setEditRowId(id);
 
         if (localAopActivity[id]) return;
 
         // Find the current row by ID
-        const currentRow = rows.find((row) => row.id === id);
+        const currentRow = formattedActivities.find((row) => row.id === id);
         if (!currentRow) return;
 
         const { name, startMonth, endMonth, target, cost, isGadRelated } = currentRow;
@@ -57,7 +79,7 @@ const TableRow = ({
     return (
         <Fragment>
 
-            {rows?.filter(value => value?.parentId === parentId)?.map(({ rowId, id, name, isGadRelated, cost, startMonth, endMonth, target }, index) => {
+            {formattedActivities?.filter(value => value?.parentId === parentId)?.map(({ rowId, id, name, isGadRelated, cost, startMonth, endMonth, target }, index) => {
 
                 const isEditing = editRowId === id;
 
@@ -67,6 +89,7 @@ const TableRow = ({
                         <td>
                             <Typography>
                                 {index + 1}
+                                {/* {id} */}
                             </Typography>
                         </td>
 
@@ -91,7 +114,10 @@ const TableRow = ({
                                     }}
                                 />
                             ) : (
-                                <Typography>{name || '-'}</Typography>
+                                <Typography>
+                                    {/* {console.info(localAopActivity[id]?.localName || '')} */}
+                                    {name || '-'}
+                                </Typography>
                             )}
                         </td>
 
@@ -142,7 +168,7 @@ const TableRow = ({
                                                 localEndMonth: newValue
                                             },
                                         }));
-                                        console.log(newValue)
+                                        // console.log(newValue)
 
                                         updateActivityField(id, 'endMonth', newValue);
                                     }}
@@ -331,10 +357,10 @@ const TableRow = ({
                                     component="button"
                                     onClick={() => {
 
-                                        const resources = findResourcesByActivityID(id)
+                                        // const resources = findResourcesByActivityID(id)
                                         // console.log(resources)
 
-                                        navigate(resources.length > 0 ? `resources/${rowId}` : `items/${rowId}`, {
+                                        navigate(resources.length !== 0 ? `resources/${rowId}` : `items/${rowId}`, {
                                             state: {
                                                 parentId: id,
                                                 objectiveRowId: objectiveRowId,
@@ -375,7 +401,7 @@ const TableRow = ({
                     </tr>
                 )
             })}
-        </Fragment>
+        </Fragment >
     )
 }
 

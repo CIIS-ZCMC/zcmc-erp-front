@@ -3,6 +3,7 @@ import { Fragment, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Typography, Input, Select, Option } from "@mui/joy";
 import { Trash } from "lucide-react";
+import { v4 as uuid } from "uuid";
 
 import useResourceHook from "../../../../../../../Hooks/ResourceHook";
 import AutocompleteComponent from "../../../../../../../Components/Form/AutocompleteComponent";
@@ -16,12 +17,25 @@ const TableRow = ({
     const navigate = useNavigate();
 
     const {
-        resources: resourceHooks,
         removeItemResource,
         updateResourceField,
     } = useResourceHook();
 
-    const [localResources, setLocalResources] = useState(rows);
+    const formattedResources = rows?.map((resource) => ({
+        id: uuid(),
+        item_id: resource.item?.id,
+        parentId: parentId,
+        rowId: resource.rowId,
+        name: resource.item?.name,
+        // typeofResources: resource,
+        quantity: resource.quantity,
+        individualPrice: resource.item?.estimated_budget,
+        expenseClass: resource.expense_class,
+        purchaseTypeId: resource.purchase_type?.id,
+        totalCost: Number((resource.item?.estimated_budget * resource.quantity).toFixed(2)),
+    }));
+
+    const [localResources, setLocalResources] = useState(formattedResources);
     const [editRowId, setEditRowId] = useState(null);
 
     const handleOnRowClick = (id) => setEditRowId(id);
@@ -49,20 +63,19 @@ const TableRow = ({
         ]);
     }
 
-    // useEffect(() => {
-    //   console.log(localResources)
-    // }, [localResources])
+    //"id": "7dba8a4d-f9cb-4b3c-8862-ea9b3a123f93",
+    //"rowId": 1,
+    //"totalCost": 0,
+
+    useEffect(() => {
+        console.log(rows)
+        console.log('formatted Resources', formattedResources)
+    }, [formattedResources])
 
     const expenseClassOptions = [
         { id: 1, label: 'MOOE', value: 'MOOE' },
         { id: 2, label: 'CO', value: 'CO' }
     ]
-
-    useEffect(() => (
-        console.log(localResources)
-    ), [])
-
-    //fix the parentId current value returns undefined
 
     return (
         <Fragment>

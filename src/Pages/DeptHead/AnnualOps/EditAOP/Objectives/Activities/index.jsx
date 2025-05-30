@@ -1,4 +1,4 @@
-import { Fragment, useState } from 'react';
+import { Fragment, useEffect, useState } from 'react';
 
 import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { Stack, Box } from '@mui/joy';
@@ -23,12 +23,11 @@ const EditActivities = () => {
     const navigate = useNavigate();
     const params = useParams();
 
-    const parentId = location.state?.parentId;
+    const aopId = location.state?.aopId;
     const objectiveRowId = location.state?.rowId;
 
-    const { objectiveId } = params; //objective Id lang for url path pero yung value is from row
-
-    const currentPath = location.pathname === `/aop-edit/1/activities/${objectiveId}`;
+    const currentPath = location.pathname;
+    const childPath = currentPath === `/aop-edit/activities/${objectiveRowId}`;
 
     const { activities, addActivity } = useActivitiesHook();
 
@@ -38,9 +37,23 @@ const EditActivities = () => {
         setIsCollapsed((prev) => !prev);
     };
 
+    // useEffect(() => {
+    //     //  console.log(activities);
+    //     const hasActivitiesForParent = activities.some(
+    //         (act) => act.parentId === parentId
+    //     );
+    //     if (!hasActivitiesForParent && parentId) {
+    //         addActivity(parentId ?? current_parent_id);
+    //     }
+    // }, [activities, parentId]);
+
+    // useEffect(() => {
+    //     console.log(activities)
+    // }, [activities])
+
     return (
         <Fragment>
-            {currentPath &&
+            {childPath && (
                 <Fragment>
                     <ContainerComponent
                         title={AOP_CONSTANTS.MANAGE_ACTIVITIES_HEADER}
@@ -90,7 +103,7 @@ const EditActivities = () => {
                         actions={
                             <Stack>
                                 <ButtonComponent
-                                    onClick={() => addActivity(parentId)}
+                                    onClick={() => addActivity(aopId)}
                                     label={"Add an Activity"}
                                     endDecorator={<Plus size={16} />}
                                 />
@@ -103,7 +116,8 @@ const EditActivities = () => {
                             tableRow={
                                 <TableRow
                                     // handleChange={updateActivityField}
-                                    parentId={parentId ?? current_parent_id}
+                                    // aopId={aopId ?? current_parent_id}
+                                    parentId={aopId}
                                     objectiveRowId={objectiveRowId ?? current_row_id}
                                     rows={activities}
                                 // deleteRow={removeActivity}
@@ -112,13 +126,24 @@ const EditActivities = () => {
                             stickLast
                         />
 
+                        <Stack
+                            mt={2}
+                            direction={"flex"}
+                            alignItems={"center"}
+                            justifyContent={"start"}
+                            gap={1}
+                        >
+                            <ButtonComponent
+                                label={"Back"}
+                                size={"md"}
+                                variant={"outlined"}
+                                onClick={() => navigate(-1)}
+                            />
+                        </Stack>
+
                     </ContainerComponent>
-
-
-
                 </Fragment>
-            }
-
+            )}
             <Outlet />
         </Fragment>
     )
