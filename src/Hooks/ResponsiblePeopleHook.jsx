@@ -154,7 +154,7 @@ const useResponsiblePeopleHook = create(
       },
     }),
     {
-      name: "resources-storage",
+      name: "responsible-storage",
       getStorage: () => localStorage,
     }
   )

@@ -129,7 +129,7 @@ const TableRow = ({
                           updateResourceField(id, "purchaseTypeId", val);
                         }}
                         options={purchase_types.map((item) => {
-                          console.log(item)
+                          // console.log(item)
                           return { id: item.id, label: item.code };
                         })}
                       />

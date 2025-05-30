@@ -90,7 +90,7 @@ const Resources = () => {
             label={"Back"}
             size={"md"}
             variant={"outlined"}
-            onClick={() => navigate(-1)}
+            onClick={() => navigate(`/aop-create/activities/${objectiveRowId}`)}
           />
         </Stack>
       </ContainerComponent>

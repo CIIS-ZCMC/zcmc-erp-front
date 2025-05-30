@@ -142,7 +142,6 @@ const Objectives = () => {
     localStorage.removeItem('resources-storage');
   }
 
-
   // handle submit aop objective
   const handleSubmit = () => {
     const aopPayload = buildAOP();

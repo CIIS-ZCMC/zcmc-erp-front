@@ -18,7 +18,7 @@ const TableRow = ({
 
     const navigate = useNavigate();
 
-    const { findResourcesByActivityID } = useResourceHook();
+    const { resources, findResourcesByActivityID } = useResourceHook();
 
     //local state
     const [localAopActivity, setLocalAopActivity] = useState({});
@@ -330,17 +330,18 @@ const TableRow = ({
                                     component="button"
                                     onClick={() => {
 
-                                        const resources = findResourcesByActivityID(id)
+                                        const resources = findResourcesByActivityID(id);
+
                                         console.log(resources)
 
-                                        navigate(resources.length > 0 ? `resources/${rowId}` : `items/${rowId}`, {
-                                            state: {
-                                                parentId: id,
-                                                objectiveRowId: objectiveRowId,
-                                                activityRowId: rowId,
-                                                cost: cost
-                                            }
-                                        })
+                                        // navigate(resources.length > 0 ? `resources/${rowId}` : `items/${rowId}`, {
+                                        //     state: {
+                                        //         parentId: id,
+                                        //         objectiveRowId: objectiveRowId,
+                                        //         activityRowId: rowId,
+                                        //         cost: cost
+                                        //     }
+                                        // })
                                     }}
                                     fontSize={12}
                                 >
