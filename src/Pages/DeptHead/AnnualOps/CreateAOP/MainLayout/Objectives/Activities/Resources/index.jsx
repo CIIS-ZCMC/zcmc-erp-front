@@ -46,9 +46,9 @@ const Resources = () => {
     });
   }, []);
 
-  useEffect(() => {
-    console.log(resources)
-  }, [resources])
+  // useEffect(() => {
+  //   console.log(resources)
+  // }, [resources])
 
   return (
     <Fragment>

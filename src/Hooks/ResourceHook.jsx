@@ -177,10 +177,10 @@ const useResourceHook = create(
       findResourcesByActivityID: (activityId) => {
         return get()
           .resources
-          .filter((item) => {
-            console.log(item.parentId === activityId)
+          .filter((item) =>
+            // console.log(item.parentId === activityId)
             item.parentId === activityId
-          })
+          )
           .map((item) => ({
             item_id: item.item_id,
             purchase_type_id: item.purchaseTypeId?.id || item.purchaseTypeId, // handles both object and raw id

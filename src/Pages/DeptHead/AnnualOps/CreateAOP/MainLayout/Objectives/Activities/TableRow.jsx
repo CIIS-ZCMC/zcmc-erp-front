@@ -1,9 +1,10 @@
 import { Fragment, useEffect, useState } from 'react'
 
-import { Stack, Link, Typography, Input, Select, Option } from '@mui/joy';
+import { Chip, Stack, Link, Typography, Input, Select, Option } from '@mui/joy';
 import { useNavigate } from 'react-router-dom';
 import { Trash } from 'lucide-react';
 
+import useActivitiesHook from '../../../../../../../Hooks/ActivitiesHook';
 import useResourceHook from '../../../../../../../Hooks/ResourceHook';
 
 import IconButtonComponent from '../../../../../../../Components/Common/IconButtonComponent';
@@ -18,7 +19,19 @@ const TableRow = ({
 
     const navigate = useNavigate();
 
+    const { activities } = useActivitiesHook();
     const { resources, findResourcesByActivityID } = useResourceHook();
+
+    // const activitiesId = activities.map((activity) => activity.id)
+
+    const resourcesCount = resources.map((resource, index) => (
+        findResourcesByActivityID(resource.parentId)
+    ))
+
+
+    useEffect(() => (
+        console.log(resourcesCount.length)
+    ), [])
 
     //local state
     const [localAopActivity, setLocalAopActivity] = useState({});
@@ -53,6 +66,7 @@ const TableRow = ({
         }));
 
     };
+
 
     return (
         <Fragment>
@@ -325,28 +339,39 @@ const TableRow = ({
                                 justifyContent={'space-between'}
                                 gap={1}
                             >
-
-                                <Link
-                                    component="button"
-                                    onClick={() => {
-
-                                        const resources = findResourcesByActivityID(id);
-
-                                        console.log(resources)
-
-                                        // navigate(resources.length > 0 ? `resources/${rowId}` : `items/${rowId}`, {
-                                        //     state: {
-                                        //         parentId: id,
-                                        //         objectiveRowId: objectiveRowId,
-                                        //         activityRowId: rowId,
-                                        //         cost: cost
-                                        //     }
-                                        // })
-                                    }}
-                                    fontSize={12}
+                                <Stack
+                                    direction={'row'}
+                                    alignItems={'center'}
+                                    gap={1}
                                 >
-                                    Resources
-                                </Link>
+
+                                    <Link
+                                        component="button"
+                                        onClick={() => {
+
+                                            const resources = findResourcesByActivityID(id);
+                                            navigate(resources.length > 0 ? `resources/${rowId}` : `items/${rowId}`, {
+                                                state: {
+                                                    parentId: id,
+                                                    objectiveRowId: objectiveRowId,
+                                                    activityRowId: rowId,
+                                                    cost: cost
+                                                }
+                                            })
+                                        }}
+                                        fontSize={12}
+                                    >
+                                        Resources
+                                    </Link>
+
+                                    <Chip
+                                        variant="outlined"
+                                        color="success"
+                                    >
+                                        {resourcesCount[index]?.length || 0}
+                                    </Chip>
+
+                                </Stack>
 
                                 <Link
                                     component="button"

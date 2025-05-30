@@ -52,7 +52,6 @@ const Objectives = () => {
   const [mission, setMission] = useState("");
 
   const activitiesCount = objectives.map((objective) =>
-    // console.log(item.id)
     activities.filter((activity) => activity.parentId === objective.id)
   );
 
@@ -64,9 +63,9 @@ const Objectives = () => {
     }
   }, []);
 
-  useEffect(() => {
-    console.log(aopObjectives)
-  }, [aopObjectives])
+  // useEffect(() => {
+  //   console.log(activitiesCount)
+  // }, [activitiesCount])
 
   useEffect(() => {
     const params = { with_sub_data: 1 };
@@ -150,6 +149,7 @@ const Objectives = () => {
       mission: mission,
       has_discussed: true,
       status: isDraft ? isDraft : 'pending',
+      authorization_pin: '123456',
       application_objectives: aopPayload
     }
 

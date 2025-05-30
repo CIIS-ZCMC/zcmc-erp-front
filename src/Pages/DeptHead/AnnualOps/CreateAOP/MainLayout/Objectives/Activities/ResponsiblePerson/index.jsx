@@ -126,6 +126,14 @@ const ResponsiblePerson = () => {
         >
           {/* {isAssigned ? */}
 
+
+          <ButtonComponent
+            onClick={() => navigate(-1)}
+            label={"Back to activities"}
+            size={"md"}
+            variant={"outlined"}
+          />
+          {/* 
           {hasData ? <ButtonComponent
             onClick={() => handleCancel(activityId)}
             label={"Cancel Selection"}
@@ -139,7 +147,8 @@ const ResponsiblePerson = () => {
               size={"md"}
               variant={"outlined"}
             />
-          }
+          } */}
+
           <ButtonComponent
             label={"Save Assignment"}
             size={"md"}
