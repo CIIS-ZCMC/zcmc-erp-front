@@ -15,7 +15,7 @@ const useAOPObjectivesHooks = create((set, get) => ({
         url: API.AOP_APPLICATION_SUMMARY,
         failed: callBack,
         success: (res) => {
-          console.log(res);
+          // console.log(res)
           const {
             status,
             message,
@@ -58,26 +58,19 @@ const useAOPObjectivesHooks = create((set, get) => ({
       });
     },
 
-    getSingleAOP: (id, callBack) => {
+    getSingleAOP: (callBack) => {
       read({
-        url: `${API.AOP_APPLICATION_SHOW}/${id}`,
+        url: `${API.AOP_APPLICATION_EDIT}`,
         failed: callBack,
         success: (res) => {
-          console.log(res)
-          set({ aopObjective: res.data.data });
+          // console.log(res)
+          set({ aopObjectives: res.data.data });
           callBack(200, "Success");
-          aopObjective
+          aopObjectives
         }
       })
     }
-  }
-
-  // Delete an entire objective
-  // deleteObjective: (id, objectives) => {
-  //   set((state) => ({
-  //     objectives: state.objectives.filter((row) => console.log(row)),
-  //   }));
-  // },
+  },
 
 }));
 

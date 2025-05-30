@@ -3,32 +3,18 @@ import { Navigate } from "react-router-dom";
 import Dashboard from "../Pages/Dashboard";
 
 import AnnualOps from "../Pages/DeptHead/AnnualOps/AnnualOps";
-
-// table views routes
-import All from "../Pages/DeptHead/AnnualOps/TableViews/All";
-import Approved from "../Pages/DeptHead/AnnualOps/TableViews/Approved";
-import Pending from "../Pages/DeptHead/AnnualOps/TableViews/Pending";
-import Returned from "../Pages/DeptHead/AnnualOps/TableViews/Returned";
-
 import CreateAOP from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout";
-
 import EditAOP from "../Pages/DeptHead/AnnualOps/EditAOP";
 import EditObjectives from "../Pages/DeptHead/AnnualOps/EditAOP/Objectives/";
 import EditActivities from "../Pages/DeptHead/AnnualOps/EditAOP/Objectives/Activities";
 import EditResources from "../Pages/DeptHead/AnnualOps/EditAOP/Objectives/Activities/Resources";
 import EditResponsiblePerson from "../Pages/DeptHead/AnnualOps/EditAOP/Objectives/Activities/Responsible";
-
 import AnnualOpsPlanning from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives";
-
 import Activities from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities";
 import Resources from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities/Resources";
 import ResponsibePerson from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities/ResponsiblePerson";
 
 import Items from "../Pages/Items";
-
-import Deadlines from "../Pages/PlanningOps/Deadlines/Deadlines";
-import AOP from "../Pages/PlanningOps/Deadlines/Tabs/AOP";
-import PPMP from "../Pages/PlanningOps/Deadlines/Tabs/PPMP";
 
 import ItemRequest from "../Pages/Consolidators/ItemManagement/ItemRequest";
 import ItemLibrary from "../Pages/Consolidators/ItemManagement/ItemLibrary";
@@ -48,11 +34,8 @@ import { Category } from "../Pages/Consolidators/Tabs/Category";
 import { Variant } from "../Pages/Consolidators/Tabs/Variant";
 import { LayoutDashboard, Lock, PersonStanding } from "lucide-react";
 import {
-  MdBook,
   MdDashboard,
   MdLibraryBooks,
-  MdNextPlan,
-  MdOutlineDocumentScanner,
   MdSettings,
   MdSupervisorAccount,
 } from "react-icons/md";
@@ -87,7 +70,6 @@ export const sidebarRoutes = [
       {
         path: "/aop-create",
         name: "Create AOP",
-
         element: <CreateAOP />,
         roles: ["super_admin"],
         childPermissions: ["ERP-AOP-MAN:write"],
@@ -109,7 +91,7 @@ export const sidebarRoutes = [
 
               {
                 path: "person/:activityId",
-                element: <EditResponsiblePerson />,
+                element: <ResponsibePerson />,
                 roles: ["super_admin"],
               },
             ],
@@ -117,7 +99,7 @@ export const sidebarRoutes = [
         ],
       },
       {
-        path: "/aop-edit/:id",
+        path: "/aop-edit",
         element: <EditAOP />,
         name: "Edit AOP",
         roles: ["super_admin"],

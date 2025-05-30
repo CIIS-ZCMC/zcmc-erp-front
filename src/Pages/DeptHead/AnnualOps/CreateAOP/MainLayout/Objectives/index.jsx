@@ -18,6 +18,7 @@ import useAOPObjectivesHooks from "../../../../../../Hooks/AOP/AOPObjectivesHook
 import useObjectivesHook from "../../../../../../Hooks/ObjectivesHook";
 import useActivitiesHook from "../../../../../../Hooks/ActivitiesHook";
 import useModalHook from "../../../../../../Hooks/ModalHook";
+import { useAOPActions } from "../../../../../../Hooks/AOP/AOPObjectivesHook";
 
 //data related
 import { AOP_CONSTANTS } from "../../../../../../Data/constants";
@@ -26,7 +27,10 @@ import useResourceHook from "../../../../../../Hooks/ResourceHook";
 import useResponsiblePeopleHook from "../../../../../../Hooks/ResponsiblePeopleHook";
 
 const Objectives = () => {
-  const { aopObjectives, create, deleteObjective } = useAOPObjectivesHooks();
+
+  const { create } = useAOPActions();
+
+  const { aopObjectives, deleteObjective } = useAOPObjectivesHooks();
   const { function_types, getFunctionType } = useFunctionTypeHook();
   const { objectives, addObjective, updateObjectiveField } =
     useObjectivesHook();
@@ -37,11 +41,13 @@ const Objectives = () => {
 
   const navigate = useNavigate();
 
+
   // local states
   const [editRowId, setEditRowId] = useState(null);
   const [isLoading, setisLoading] = useState(false);
   const [openSubmitModal, setOpenSubmitModal] = useState(false);
   const [openSaveMissionModal, setOpenSaveMissionModal] = useState(false)
+  const [isDraft, setIsDraft] = useState(false)
 
   const [mission, setMission] = useState("");
 
@@ -76,15 +82,15 @@ const Objectives = () => {
 
   // check pag walang objectives then add default objective
   useEffect(() => {
-    if (objectives.length === 0) {
+    if (objectives?.length === 0) {
       addObjective();
     }
   }, [objectives, addObjective]);
 
 
   useEffect(() => {
-    console.log(resources)
-  }, [])
+    console.log(isDraft)
+  }, [isDraft])
 
   function buildAOP() {
     const objectiveData = objectives.map((item) => {
@@ -130,6 +136,13 @@ const Objectives = () => {
     return objectiveData;
   }
 
+  const clearLocalStorage = () => {
+    localStorage.removeItem('objectives-storage');
+    localStorage.removeItem('activities-storage');
+    localStorage.removeItem('resources-storage');
+  }
+
+
   // handle submit aop objective
   const handleSubmit = () => {
     const aopPayload = buildAOP();
@@ -137,6 +150,7 @@ const Objectives = () => {
     const payload = {
       mission: mission,
       has_discussed: true,
+      status: isDraft ? isDraft : 'pending',
       application_objectives: aopPayload
     }
 
@@ -144,27 +158,43 @@ const Objectives = () => {
       // console.log(message)
       let data = {}
 
-      if (!(status === 200)) {
+      // if existing
+      if (status === 200 && message === 'You already have an AOP application in your area.') {
         data = {
           status: 200,
-          title: 'AOP created successfully!',
-          description: ''
+          title: 'Existing AOP',
+          description: 'You already have an AOP application in your area.',
         };
-        setOpenSubmitModal(false)
-      } else {
-        data = {
-          status: !200,
-          title: message,
-          description: message,
-        }
+        setAlertDialog(data);
+        return;
       }
 
+      //create new 
+      if (status === 200) {
+        data = {
+          status: 200,
+          title: 'Successfully submitted for approval.',
+          description: 'Your AOP request has been sent to the next approving body and they have been notified.',
+        };
+
+        setOpenSubmitModal(false);
+        clearLocalStorage()
+        setMission('');
+        navigate('/aop/all');
+
+        setAlertDialog(data);
+        return;
+      }
+
+      //failed
+      data = {
+        status: status,
+        title: 'Submission failed',
+        description: message || 'An unexpected error occurred.',
+      };
       setAlertDialog(data);
     });
 
-    setMission('');
-
-    // console.log('final payload', payload)
   };
 
   // handle save mission
@@ -193,6 +223,12 @@ const Objectives = () => {
     // setMission('')
   };
 
+  const handleCancelRequest = () => {
+    {
+      clearLocalStorage()
+      navigate('/aop/all')
+    }
+  };
 
   return (
     <Fragment>
@@ -200,12 +236,23 @@ const Objectives = () => {
         title={AOP_CONSTANTS.MANAGE_OBJECTIVES_HEADER}
         description={AOP_CONSTANTS.MANAGE_OBJECTIVES_SUBHEADER}
         actions={
-          <Stack>
+          <Stack
+            direction={'row'}
+            gap={1}
+          >
             <ButtonComponent
               onClick={addObjective}
               label={"Add an Objective"}
               endDecorator={<Plus size={16} />}
             />
+
+            <ButtonComponent
+              onClick={() => setIsDraft(true)}
+              label={"Save as Draft"}
+              variant={'outlined'}
+              disabled={isDraft}
+            />
+
           </Stack>
         }
       >
@@ -244,7 +291,7 @@ const Objectives = () => {
             label={"Cancel Request"}
             size={"md"}
             variant={"outlined"}
-            onClick={() => navigate('/aop/all')}
+            onClick={() => handleCancelRequest()}
           />
 
           <ButtonComponent

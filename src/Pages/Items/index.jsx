@@ -93,9 +93,9 @@ const Items = () => {
     }
   }, [items]);
 
-  useEffect(() => {
-    console.log(items)
-  }, [items])
+  // useEffect(() => {
+  //   console.log(items)
+  // }, [items])
 
   const handleOpenItemDialog = (item) => {
     setSelectedItem(item);
