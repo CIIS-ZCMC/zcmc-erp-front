@@ -179,7 +179,7 @@ const Objectives = () => {
         setOpenSubmitModal(false);
         clearLocalStorage()
         setMission('');
-        navigate('/aop/all');
+        navigate('/aop');
 
         setAlertDialog(data);
         return;
@@ -225,7 +225,7 @@ const Objectives = () => {
   const handleCancelRequest = () => {
     {
       clearLocalStorage()
-      navigate('/aop/all')
+      navigate('/aop')
     }
   };
 
