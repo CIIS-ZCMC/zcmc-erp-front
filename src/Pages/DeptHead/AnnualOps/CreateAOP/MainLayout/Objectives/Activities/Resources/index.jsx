@@ -24,8 +24,13 @@ const Resources = () => {
 
   const navigate = useNavigate();
   const location = useLocation();
-  const parentId = location.state?.parentId; // refers to objectiveId as parent
+  const parentId = location.state?.parentId; // refers to activity id as parent
   const objectiveRowId = location.state?.objectiveRowId;
+  const activityRowId = location.state?.activityRowId;
+
+  useEffect(() => {
+    console.log('objectiveRowId', objectiveRowId);
+  })
 
   useEffect(() => {
     getItems((status, message, data) => {
@@ -58,7 +63,7 @@ const Resources = () => {
         actions={
           <Stack>
             <ButtonComponent
-              onClick={() => addResource(parentId)}
+              // onClick={() => addResource(parentId)}
               label={"Add Resource"}
               endDecorator={<Plus size={16} />}
             />
@@ -90,7 +95,7 @@ const Resources = () => {
             label={"Back"}
             size={"md"}
             variant={"outlined"}
-            onClick={() => navigate(-1)}
+            onClick={() => navigate(`/aop-create/activities/${objectiveRowId}`)}
           />
         </Stack>
       </ContainerComponent>

@@ -13,6 +13,7 @@ import TextareaComponent from "../../../../../../Components/Form/TextareaCompone
 import TableRow from "./TableRow";
 
 // hooks
+import { useAOPActions } from "../../../../../../Hooks/AOP/AOPObjectivesHook";
 import useFunctionTypeHook from "../../../../../../Hooks/FunctionTypeHook";
 import useAOPObjectivesHooks from "../../../../../../Hooks/AOP/AOPObjectivesHook";
 import useObjectivesHook from "../../../../../../Hooks/ObjectivesHook";
@@ -26,7 +27,9 @@ import useResourceHook from "../../../../../../Hooks/ResourceHook";
 import useResponsiblePeopleHook from "../../../../../../Hooks/ResponsiblePeopleHook";
 
 const Objectives = () => {
-  const { aopObjectives, create, deleteObjective } = useAOPObjectivesHooks();
+
+  const { create } = useAOPActions();
+  const { aopObjectives, deleteObjective } = useAOPObjectivesHooks();
   const { function_types, getFunctionType } = useFunctionTypeHook();
   const { objectives, addObjective, updateObjectiveField } =
     useObjectivesHook();

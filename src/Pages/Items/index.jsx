@@ -50,11 +50,12 @@ const Items = () => {
   const objectiveRowId = location.state.objectiveRowId;
   const cost = location.state?.cost;
   const activityId = location.state?.parentId;
+
   // const objectiveId = location.state.objectiveId;
 
-  // useEffect(() => {
-  //     console.log(location.state)
-  // }, [])
+  useEffect(() => {
+    console.log(location.state)
+  }, [])
 
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);

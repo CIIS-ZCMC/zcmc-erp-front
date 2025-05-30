@@ -74,7 +74,7 @@ const EditResponsiblePerson = () => {
 
         //add id of aop here
         setTimeout(() => {
-            navigate(`/aop-edit/`);
+            navigate(`/aop-create`);
         }, 3000);
     }
 
