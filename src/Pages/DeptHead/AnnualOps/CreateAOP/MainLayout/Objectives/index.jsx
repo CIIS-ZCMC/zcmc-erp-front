@@ -9,6 +9,7 @@ import ButtonComponent from "../../../../../../Components/Common/ButtonComponent
 import ContainerComponent from "../../../../../../Components/Common/ContainerComponent";
 import EditableTableComponent from "../../../../../../Components/Common/Table/EditableTableComponent";
 import ModalComponent from "../../../../../../Components/Common/Dialog/ModalComponent";
+import ConfirmationModalComponent from "../../../../../../Components/Common/Dialog/ConfirmationModalComponent";
 import TextareaComponent from "../../../../../../Components/Form/TextareaComponent";
 import TableRow from "./TableRow";
 
@@ -37,7 +38,7 @@ const Objectives = () => {
   const { findActivitiesByObjectiveID, activities } = useActivitiesHook();
   const { responsible_people, findResponsiblePeopleByActivityID } = useResponsiblePeopleHook();
   const { resources, findResourcesByActivityID } = useResourceHook();
-  const { setAlertDialog } = useModalHook();
+  const { setAlertDialog, setConfirmationModal } = useModalHook();
 
   const navigate = useNavigate();
 
@@ -46,7 +47,8 @@ const Objectives = () => {
   const [editRowId, setEditRowId] = useState(null);
   const [isLoading, setisLoading] = useState(false);
   const [openSubmitModal, setOpenSubmitModal] = useState(false);
-  const [openSaveMissionModal, setOpenSaveMissionModal] = useState(false)
+  const [openSaveMissionModal, setOpenSaveMissionModal] = useState(false);
+  const [authorizationPin, setAuthorizationPin] = useState('');
   const [isDraft, setIsDraft] = useState(false)
 
   const [mission, setMission] = useState("");
@@ -91,108 +93,137 @@ const Objectives = () => {
     console.log(isDraft)
   }, [isDraft])
 
-  function buildAOP() {
-    const objectiveData = objectives.map((item) => {
-      const activities = findActivitiesByObjectiveID(item.id);
-      const activitiesWithResourceAndResponsiblePeople = activities.map(
-        (act) => {
-          const {
-            parentId,
-            id,
-            startMonth,
-            endMonth,
-            target,
-            isGadRelated,
-            ...actData
-          } = act;
-          const resources = findResourcesByActivityID(act.id);
-          const responsible_people = findResponsiblePeopleByActivityID(act.id);
+  // function buildAOP() {
+  //   const objectiveData = objectives.map((item) => {
+  //     const activities = findActivitiesByObjectiveID(item.id);
+  //     const activitiesWithResourceAndResponsiblePeople = activities.map(
+  //       (act) => {
+  //         const {
+  //           parentId,
+  //           id,
+  //           startMonth,
+  //           endMonth,
+  //           target,
+  //           isGadRelated,
+  //           ...actData
+  //         } = act;
+  //         const resources = findResourcesByActivityID(act.id);
+  //         const responsible_people = findResponsiblePeopleByActivityID(act.id);
 
-          return {
-            ...actData,
-            start_month: startMonth,
-            end_month: endMonth,
-            is_gad_related: isGadRelated,
-            target: {
-              first_quarter: target.firstQuarter,
-              second_quarter: target.secondQuarter,
-              third_quarter: target.thirdQuarter,
-              fourth_quarter: target.fourthQuarter,
-            },
-            resources: resources,
-            responsible_people: responsible_people,
-          };
-        }
-      );
+  //         return {
+  //           ...actData,
+  //           start_month: startMonth,
+  //           end_month: endMonth,
+  //           is_gad_related: isGadRelated,
+  //           target: {
+  //             first_quarter: target.firstQuarter,
+  //             second_quarter: target.secondQuarter,
+  //             third_quarter: target.thirdQuarter,
+  //             fourth_quarter: target.fourthQuarter,
+  //           },
+  //           resources: resources,
+  //           responsible_people: responsible_people,
+  //         };
+  //       }
+  //     );
 
-      return {
-        objective_id: item.objective.id,
-        success_indicator_id: item.successIndicator.id,
-        activities: activitiesWithResourceAndResponsiblePeople,
-      };
-    });
+  //     return {
+  //       objective_id: item.objective.id,
+  //       success_indicator_id: item.successIndicator.id,
+  //       activities: activitiesWithResourceAndResponsiblePeople,
+  //     };
+  //   });
 
-    return objectiveData;
-  }
+  //   return objectiveData;
+  // }
 
   const clearLocalStorage = () => {
+
+    //set objectives, activities, resources into empty state then clear localStorrage
+
     localStorage.removeItem('objectives-storage');
     localStorage.removeItem('activities-storage');
     localStorage.removeItem('resources-storage');
   }
 
+  const handleShowAlert = (status) => {
+    const data = {
+      status: status,
+      title: "AOP for F.Y. 2026 successfully submitted for approval.",
+      description:
+        "Your AOP request has been sent to designated to the next approving body and notified them for approvals.",
+    };
+
+    setAlertDialog(data);
+
+  };
+
+  const handleConfirmationModal = () => {
+    const data = {
+      status: 200,
+      title:
+        "Changes on PPMP are ready to be reflected to your AOP. Would you like to have a preview first before saving changes?",
+      description:
+        "Document previews will be generated and downloaded in Microsoft Excel Spreadsheet (.xls) file format. The document preview is for viewing purposes only to help you ensure all fields are filled-up correctly and accurately.",
+    };
+
+    setConfirmationModal(data);
+  };
+
   // handle submit aop objective
   const handleSubmit = () => {
-    const aopPayload = buildAOP();
 
-    const payload = {
-      mission: mission,
-      has_discussed: true,
-      status: isDraft ? isDraft : 'pending',
-      authorization_pin: '123456',
-      application_objectives: aopPayload
-    }
+    alert('submitting aop...')
 
-    create(payload, (status, message) => {
-      // console.log(message)
-      let data = {}
+    // const aopPayload = buildAOP();
 
-      // if existing
-      if (status === 200 && message === 'You already have an AOP application in your area.') {
-        data = {
-          status: 200,
-          title: 'Existing AOP',
-          description: 'You already have an AOP application in your area.',
-        };
-        setAlertDialog(data);
-        return;
-      }
+    // const payload = {
+    //   mission: mission,
+    //   has_discussed: true,
+    //   status: isDraft ? isDraft : 'pending',
+    //   authorization_pin: authorizationPin,
+    //   application_objectives: aopPayload
+    // }
 
-      //create new 
-      if (status === 200) {
-        data = {
-          status: 200,
-          title: 'Successfully submitted for approval.',
-          description: 'Your AOP request has been sent to the next approving body and they have been notified.',
-        };
+    // create(payload, (status, message) => {
+    //   // console.log(message)
+    //   let data = {}
 
-        setOpenSubmitModal(false);
-        clearLocalStorage()
-        setMission('');
-        navigate('/aop');
+    //   // if existing
+    //   if (status === 200 && message === 'You already have an AOP application in your area.') {
+    //     data = {
+    //       status: 200,
+    //       title: 'Existing AOP',
+    //       description: 'You already have an AOP application in your area.',
+    //     };
+    //     setAlertDialog(data);
+    //     return;
+    //   }
 
-        setAlertDialog(data);
-        return;
-      }
+    //   //create new 
+    //   if (status === 200) {
+    //     data = {
+    //       status: 200,
+    //       title: 'Successfully submitted for approval.',
+    //       description: 'Your AOP request has been sent to the next approving body and they have been notified.',
+    //     };
 
-      //failed
-      data = {
-        status: status,
-        title: 'Submission failed',
-        description: message || 'An unexpected error occurred.',
-      };
-      setAlertDialog(data);
-    });
+    //     setOpenSubmitModal(false);
+    //     clearLocalStorage()
+    //     setMission('');
+    //     navigate('/aop');
+    //     setAlertDialog(data);
+    //     return;
+    //   }
+
+    //   //failed
+    //   data = {
+    //     status: status,
+    //     title: 'Submission failed',
+    //     description: message || 'An unexpected error occurred.',
+    //   };
+    //   setAlertDialog(data);
+    // });
 
   };
 
@@ -228,6 +259,8 @@ const Objectives = () => {
       navigate('/aop')
     }
   };
+
+
 
   return (
     <Fragment>
@@ -297,8 +330,8 @@ const Objectives = () => {
             label={"Submit AOP"}
             size={"md"}
             variant={"solid"}
-            disabled={!mission || resources.length === 0 || responsible_people.length === 0}
-            onClick={() => handleSubmit()}
+            // disabled={!mission || resources.length === 0 || responsible_people.length === 0}
+            onClick={() => handleConfirmationModal()}
           />
         </Stack>
       </ContainerComponent>
@@ -322,6 +355,16 @@ const Objectives = () => {
         rightButtonLabel={"Save"}
         rightButtonAction={() => handleSaveMission()}
       />
+
+      <ConfirmationModalComponent
+        leftButtonlabel={"Back to editor"}
+        rightButtonAction={() => handleSubmit()}
+        withAuthPin
+        withDivider
+        content={"this is a content"}
+        setAuthPin={setAuthorizationPin}
+      />
+
     </Fragment>
   );
 };

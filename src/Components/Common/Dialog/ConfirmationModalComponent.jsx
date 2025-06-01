@@ -58,6 +58,7 @@ function ConfirmationModalComponent({
   const [pin, setPin] = useState(null);
 
   const handlePinInput = (value) => {
+    console.log(value)
     if (setAuthPin) setAuthPin(value);
     setPin(value);
   };
