@@ -33,7 +33,7 @@ const Objectives = () => {
 
   const { aopObjectives, deleteObjective } = useAOPObjectivesHooks();
   const { function_types, getFunctionType } = useFunctionTypeHook();
-  const { objectives, addObjective, updateObjectiveField } =
+  const { objectives, hasDiscussed, addObjective, updateObjectiveField } =
     useObjectivesHook();
   const { findActivitiesByObjectiveID, activities } = useActivitiesHook();
   const { responsible_people, findResponsiblePeopleByActivityID } = useResponsiblePeopleHook();
@@ -93,49 +93,49 @@ const Objectives = () => {
     console.log(isDraft)
   }, [isDraft])
 
-  // function buildAOP() {
-  //   const objectiveData = objectives.map((item) => {
-  //     const activities = findActivitiesByObjectiveID(item.id);
-  //     const activitiesWithResourceAndResponsiblePeople = activities.map(
-  //       (act) => {
-  //         const {
-  //           parentId,
-  //           id,
-  //           startMonth,
-  //           endMonth,
-  //           target,
-  //           isGadRelated,
-  //           ...actData
-  //         } = act;
-  //         const resources = findResourcesByActivityID(act.id);
-  //         const responsible_people = findResponsiblePeopleByActivityID(act.id);
+  function buildAOP() {
+    const objectiveData = objectives.map((item) => {
+      const activities = findActivitiesByObjectiveID(item.id);
+      const activitiesWithResourceAndResponsiblePeople = activities.map(
+        (act) => {
+          const {
+            parentId,
+            id,
+            startMonth,
+            endMonth,
+            target,
+            isGadRelated,
+            ...actData
+          } = act;
+          const resources = findResourcesByActivityID(act.id);
+          const responsible_people = findResponsiblePeopleByActivityID(act.id);
 
-  //         return {
-  //           ...actData,
-  //           start_month: startMonth,
-  //           end_month: endMonth,
-  //           is_gad_related: isGadRelated,
-  //           target: {
-  //             first_quarter: target.firstQuarter,
-  //             second_quarter: target.secondQuarter,
-  //             third_quarter: target.thirdQuarter,
-  //             fourth_quarter: target.fourthQuarter,
-  //           },
-  //           resources: resources,
-  //           responsible_people: responsible_people,
-  //         };
-  //       }
-  //     );
+          return {
+            ...actData,
+            start_month: startMonth,
+            end_month: endMonth,
+            is_gad_related: isGadRelated,
+            target: {
+              first_quarter: target.firstQuarter,
+              second_quarter: target.secondQuarter,
+              third_quarter: target.thirdQuarter,
+              fourth_quarter: target.fourthQuarter,
+            },
+            resources: resources,
+            responsible_people: responsible_people,
+          };
+        }
+      );
 
-  //     return {
-  //       objective_id: item.objective.id,
-  //       success_indicator_id: item.successIndicator.id,
-  //       activities: activitiesWithResourceAndResponsiblePeople,
-  //     };
-  //   });
+      return {
+        objective_id: item.objective.id,
+        success_indicator_id: item.successIndicator.id,
+        activities: activitiesWithResourceAndResponsiblePeople,
+      };
+    });
 
-  //   return objectiveData;
-  // }
+    return objectiveData;
+  }
 
   const clearLocalStorage = () => {
 
@@ -173,57 +173,55 @@ const Objectives = () => {
   // handle submit aop objective
   const handleSubmit = () => {
 
-    alert('submitting aop...')
+    const aopPayload = buildAOP();
 
-    // const aopPayload = buildAOP();
+    const payload = {
+      mission: mission,
+      has_discussed: hasDiscussed ? True : false,
+      status: isDraft ? isDraft : 'pending',
+      authorization_pin: authorizationPin,
+      application_objectives: aopPayload
+    }
 
-    // const payload = {
-    //   mission: mission,
-    //   has_discussed: true,
-    //   status: isDraft ? isDraft : 'pending',
-    //   authorization_pin: authorizationPin,
-    //   application_objectives: aopPayload
-    // }
+    create(payload, (status, message) => {
+      // console.log(message)
+      let data = {}
 
-    // create(payload, (status, message) => {
-    //   // console.log(message)
-    //   let data = {}
+      // if existing
+      if (status === 200 && message === 'You already have an AOP application in your area.') {
+        data = {
+          status: 200,
+          title: 'Existing AOP',
+          description: 'You already have an AOP application in your area.',
+        };
+        setAlertDialog(data);
+        return;
+      }
 
-    //   // if existing
-    //   if (status === 200 && message === 'You already have an AOP application in your area.') {
-    //     data = {
-    //       status: 200,
-    //       title: 'Existing AOP',
-    //       description: 'You already have an AOP application in your area.',
-    //     };
-    //     setAlertDialog(data);
-    //     return;
-    //   }
+      //create new 
+      if (status === 200) {
+        data = {
+          status: 200,
+          title: 'Successfully submitted for approval.',
+          description: 'Your AOP request has been sent to the next approving body and they have been notified.',
+        };
 
-    //   //create new 
-    //   if (status === 200) {
-    //     data = {
-    //       status: 200,
-    //       title: 'Successfully submitted for approval.',
-    //       description: 'Your AOP request has been sent to the next approving body and they have been notified.',
-    //     };
+        setOpenSubmitModal(false);
+        clearLocalStorage()
+        setMission('');
+        navigate('/aop');
+        setAlertDialog(data);
+        return;
+      }
 
-    //     setOpenSubmitModal(false);
-    //     clearLocalStorage()
-    //     setMission('');
-    //     navigate('/aop');
-    //     setAlertDialog(data);
-    //     return;
-    //   }
-
-    //   //failed
-    //   data = {
-    //     status: status,
-    //     title: 'Submission failed',
-    //     description: message || 'An unexpected error occurred.',
-    //   };
-    //   setAlertDialog(data);
-    // });
+      //failed
+      data = {
+        status: status,
+        title: 'Submission failed',
+        description: message || 'An unexpected error occurred.',
+      };
+      setAlertDialog(data);
+    });
 
   };
 
@@ -284,7 +282,6 @@ const Objectives = () => {
               variant={'outlined'}
               disabled={isDraft}
             />
-
           </Stack>
         }
       >
