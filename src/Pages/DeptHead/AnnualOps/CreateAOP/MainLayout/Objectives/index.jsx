@@ -28,20 +28,29 @@ import useResourceHook from "../../../../../../Hooks/ResourceHook";
 import useResponsiblePeopleHook from "../../../../../../Hooks/ResponsiblePeopleHook";
 
 const Objectives = () => {
-
   const { create } = useAOPActions();
 
   const { aopObjectives, deleteObjective } = useAOPObjectivesHooks();
   const { function_types, getFunctionType } = useFunctionTypeHook();
-  const { objectives, hasDiscussed, addObjective, updateObjectiveField, clearObjectives } =
-    useObjectivesHook();
-  const { findActivitiesByObjectiveID, activities, clearActivities, } = useActivitiesHook();
-  const { responsible_people, findResponsiblePeopleByActivityID, clearResponsiblePeople } = useResponsiblePeopleHook();
-  const { resources, findResourcesByActivityID, clearResources } = useResourceHook();
+  const {
+    objectives,
+    hasDiscussed,
+    addObjective,
+    updateObjectiveField,
+    clearObjectives,
+  } = useObjectivesHook();
+  const { findActivitiesByObjectiveID, activities, clearActivities } =
+    useActivitiesHook();
+  const {
+    responsible_people,
+    findResponsiblePeopleByActivityID,
+    clearResponsiblePeople,
+  } = useResponsiblePeopleHook();
+  const { resources, findResourcesByActivityID, clearResources } =
+    useResourceHook();
   const { setAlertDialog, setConfirmationModal } = useModalHook();
 
   const navigate = useNavigate();
-
 
   // local states
   const [editRowId, setEditRowId] = useState(null);
@@ -49,8 +58,8 @@ const Objectives = () => {
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [openSubmitModal, setOpenSubmitModal] = useState(false);
   const [openSaveMissionModal, setOpenSaveMissionModal] = useState(false);
-  const [authorizationPin, setAuthorizationPin] = useState('');
-  const [isDraft, setIsDraft] = useState(false)
+  const [authorizationPin, setAuthorizationPin] = useState(null);
+  const [isDraft, setIsDraft] = useState(false);
 
   const [mission, setMission] = useState("");
 
@@ -89,10 +98,9 @@ const Objectives = () => {
     }
   }, [objectives, addObjective]);
 
-
   useEffect(() => {
-    console.log(isDraft)
-  }, [isDraft])
+    console.log(isDraft);
+  }, [isDraft]);
 
   function buildAOP() {
     const objectiveData = objectives.map((item) => {
@@ -139,17 +147,16 @@ const Objectives = () => {
   }
 
   const clearLocalStorage = () => {
-
     //set objectives, activities, resources into empty state then clear localStorrage
-    clearObjectives()
-    clearActivities()
-    clearResponsiblePeople()
-    clearResources()
+    clearObjectives();
+    clearActivities();
+    clearResponsiblePeople();
+    clearResources();
 
-    localStorage.removeItem('objectives-storage');
-    localStorage.removeItem('activities-storage');
-    localStorage.removeItem('resources-storage');
-  }
+    localStorage.removeItem("objectives-storage");
+    localStorage.removeItem("activities-storage");
+    localStorage.removeItem("resources-storage");
+  };
 
   const handleShowAlert = (status) => {
     const data = {
@@ -160,10 +167,10 @@ const Objectives = () => {
     };
 
     setAlertDialog(data);
-
   };
 
   const handleConfirmationModal = () => {
+    setOpenConfirmDialog(true);
     const data = {
       status: 200,
       title:
@@ -177,46 +184,49 @@ const Objectives = () => {
 
   // handle submit aop objective
   const handleSubmit = () => {
-
-    setOpenConfirmDialog(true)
+    // setOpenConfirmDialog(true);
 
     const aopPayload = buildAOP();
 
     const payload = {
       mission: mission,
-      has_discussed: hasDiscussed === 'on' ? true : false,
-      status: isDraft ? isDraft : 'pending',
+      has_discussed: hasDiscussed === "on" ? true : false,
+      status: isDraft ? isDraft : "pending",
       authorization_pin: authorizationPin,
-      application_objectives: aopPayload
-    }
+      application_objectives: aopPayload,
+    };
 
     create(payload, (status, message) => {
       // console.log(message)
-      let data = {}
+      let data = {};
 
       // if existing
-      if (status === 200 && message === 'You already have an AOP application in your area.') {
+      if (
+        status === 200 &&
+        message === "You already have an AOP application in your area."
+      ) {
         data = {
           status: 200,
-          title: 'Existing AOP',
-          description: 'You already have an AOP application in your area.',
+          title: "Existing AOP",
+          description: "You already have an AOP application in your area.",
         };
         setAlertDialog(data);
         return;
       }
 
-      //create new 
+      //create new
       if (status === 200) {
         data = {
           status: 200,
-          title: 'Successfully submitted for approval.',
-          description: 'Your AOP request has been sent to the next approving body and they have been notified.',
+          title: "Successfully submitted for approval.",
+          description:
+            "Your AOP request has been sent to the next approving body and they have been notified.",
         };
 
         setOpenSubmitModal(false);
-        clearLocalStorage()
-        setMission('');
-        navigate('/aop');
+        clearLocalStorage();
+        setMission("");
+        window.location.reload(false);
         setAlertDialog(data);
         return;
       }
@@ -224,29 +234,28 @@ const Objectives = () => {
       //failed
       data = {
         status: status,
-        title: 'Submission failed',
-        description: message || 'An unexpected error occurred.',
+        title: "Submission failed",
+        description: message || "An unexpected error occurred.",
       };
       setAlertDialog(data);
     });
-
   };
 
   // handle save mission
   const handleSaveMission = () => {
-    let data = {}
+    let data = {};
 
     // alert("saving...");
     data = {
       status: 200,
-      title: 'Mission created successfully!',
-      description: ''
-    }
-    setOpenSaveMissionModal(false)
+      title: "Mission created successfully!",
+      description: "",
+    };
+    setOpenSaveMissionModal(false);
     setAlertDialog(data);
 
     // Save to local storage
-    localStorage.setItem('mission', JSON.stringify(mission));
+    localStorage.setItem("mission", JSON.stringify(mission));
   };
 
   const handleOpenDialog = () => {
@@ -260,8 +269,8 @@ const Objectives = () => {
 
   const handleCancelRequest = () => {
     {
-      clearLocalStorage()
-      navigate('/aop')
+      clearLocalStorage();
+      navigate("/aop");
     }
   };
 
@@ -271,10 +280,7 @@ const Objectives = () => {
         title={AOP_CONSTANTS.MANAGE_OBJECTIVES_HEADER}
         description={AOP_CONSTANTS.MANAGE_OBJECTIVES_SUBHEADER}
         actions={
-          <Stack
-            direction={'row'}
-            gap={1}
-          >
+          <Stack direction={"row"} gap={1}>
             <ButtonComponent
               onClick={addObjective}
               label={"Add an Objective"}
@@ -284,7 +290,7 @@ const Objectives = () => {
             <ButtonComponent
               onClick={() => setIsDraft(true)}
               label={"Save as Draft"}
-              variant={'outlined'}
+              variant={"outlined"}
               disabled={isDraft}
             />
           </Stack>
@@ -332,7 +338,11 @@ const Objectives = () => {
             label={"Submit AOP"}
             size={"md"}
             variant={"solid"}
-            disabled={!mission || resources.length === 0 || responsible_people.length === 0}
+            disabled={
+              !mission ||
+              resources.length === 0 ||
+              responsible_people.length === 0
+            }
             onClick={() => handleConfirmationModal()}
           />
         </Stack>
@@ -358,18 +368,15 @@ const Objectives = () => {
         rightButtonAction={() => handleSaveMission()}
       />
 
-      {openConfirmDialog &&
+      {openConfirmDialog && (
         <ConfirmationModalComponent
           leftButtonlabel={"Back to editor"}
           rightButtonAction={() => handleSubmit()}
           withAuthPin
-          withDivider
-          // content={"this is a content"}
+          rightButtonDisabled={!authorizationPin}
           setAuthPin={setAuthorizationPin}
         />
-      }
-
-
+      )}
     </Fragment>
   );
 };

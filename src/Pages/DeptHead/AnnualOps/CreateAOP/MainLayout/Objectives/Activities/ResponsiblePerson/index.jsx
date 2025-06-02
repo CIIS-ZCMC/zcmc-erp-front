@@ -27,9 +27,10 @@ const ResponsiblePerson = () => {
   const activityId = location.state.parentId; //refers to parent id/activity id
   const rowId = location.state.activityrowId; //refers to activity row id
 
-  const { responsible_people, resetValues, setAssignmentStatus } = useResponsiblePeopleHook();
+  const { responsible_people, resetValues, setAssignmentStatus } =
+    useResponsiblePeopleHook();
   const { hasDiscussed, setIsDiscussed } = useObjectivesHook();
-  const { setConfirmationModal } = useModalHook();
+  const { setConfirmationModal, closeConfirmation } = useModalHook();
 
   const activity = responsible_people?.find((item) => {
     return item.activityId === activityId;
@@ -39,16 +40,12 @@ const ResponsiblePerson = () => {
   // const [isEnabledSave, setIsEnabledSave] = useState(false);s
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
 
-
   const hasData =
     activity?.users?.length > 0 ||
     activity?.designations?.length > 0 ||
     activity?.areas?.length > 0;
 
   const handleSaveAssignment = () => {
-
-    console.log(openConfirmDialog)
-
     if (!activity) {
       console.warn("No responsible person data found for this activity.");
       return;
@@ -61,7 +58,7 @@ const ResponsiblePerson = () => {
 
     // setAssignmentStatus(activityId, true);
     // alert('saving responsible person');
-    setOpenConfirmDialog(true)
+    setOpenConfirmDialog(true);
 
     const data = {
       status: "warning",
@@ -75,22 +72,19 @@ const ResponsiblePerson = () => {
 
   //proceed to objectives page/step 1
   const proceed = () => {
-    setIsLoading(true)
+    setIsLoading(true);
 
     setTimeout(() => {
       navigate(`/aop-create/`);
-    }, 2000);
-  }
+      closeConfirmation();
+    }, 1000);
+  };
 
   const handleCancel = (activityId) => {
     resetValues(activityId);
-    navigate(-1)
+    navigate(-1);
     // navigate(`/aop-create/activities/${rowId}`);
   };
-
-  useEffect(() => {
-    console.log(hasDiscussed)
-  }, [hasDiscussed])
 
   return (
     <Fragment>
@@ -108,15 +102,15 @@ const ResponsiblePerson = () => {
             p: 1,
           }}
         >
-          <Grid item={'true'} xs={12} sm={2} md={4}>
+          <Grid item={"true"} xs={12} sm={2} md={4}>
             <PersonSection />
           </Grid>
 
-          <Grid item={'true'} xs={12} sm={2} md={4}>
+          <Grid item={"true"} xs={12} sm={2} md={4}>
             <JobPositionsSection />
           </Grid>
 
-          <Grid item={'true'} xs={12} sm={2} md={4}>
+          <Grid item={"true"} xs={12} sm={2} md={4}>
             <AreasSection />
           </Grid>
         </Grid>
@@ -130,29 +124,28 @@ const ResponsiblePerson = () => {
         >
           {/* {isAssigned ? */}
 
-
-          <ButtonComponent
+          {/* <ButtonComponent
             onClick={() => navigate(-1)}
             label={"Back to activities"}
             size={"md"}
             variant={"outlined"}
-          />
+          /> */}
 
-          {/* 
-          {hasData ? <ButtonComponent
-            onClick={() => handleCancel(activityId)}
-            label={"Cancel Selection"}
-            size={"md"}
-            variant={"outlined"}
-          />
-            :
+          {hasData ? (
+            <ButtonComponent
+              onClick={() => handleCancel(activityId)}
+              label={"Cancel Selection"}
+              size={"md"}
+              variant={"outlined"}
+            />
+          ) : (
             <ButtonComponent
               onClick={() => navigate(-1)}
               label={"Back to activities"}
               size={"md"}
               variant={"outlined"}
             />
-          } */}
+          )}
 
           <ButtonComponent
             label={"Save Assignment"}
@@ -170,12 +163,18 @@ const ResponsiblePerson = () => {
           leftButtonLabel={"Back to editor"}
           rightButtonAction={() => proceed(200)}
           rightButtonLabel="Proceed"
-          // rightButtonDisabled={true}
+          rightButtonDisabled={!hasDiscussed}
           isLoading={isLoading}
           content={
             <>
-              <Checkbox label={'Yes, I have discussed these plans with my Division Chief.'}
-                onChange={(e) => setIsDiscussed(e.target.value)}
+              <Checkbox
+                label={
+                  "Yes, I have discussed these plans with my Division Chief."
+                }
+                onChange={(e) => {
+                  setIsDiscussed(e.target.checked);
+                }}
+                checked={hasDiscussed}
               />
             </>
           }
