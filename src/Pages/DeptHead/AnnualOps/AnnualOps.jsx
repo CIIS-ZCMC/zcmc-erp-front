@@ -26,7 +26,7 @@ const AnnualOps = () => {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const { setActivities } = useActivitiesHook();
+  const { activities, setActivities } = useActivitiesHook();
   const { setResources, setCart } = useResourceHook();
   const { aopObjectives, aop_summary } = useAOPObjectivesHooks();
   const { getSummary, getSingleAOP } = useAOPActions();
@@ -76,10 +76,19 @@ const AnnualOps = () => {
     data.activity.flatMap(item => item.resources)
   ) || [];
 
+  const flatResponsiblePeople = aopObjectives.application_objectives?.flatMap(data =>
+    data.activity.flatMap(item => item.responsible_people));
+
   useEffect(() => {
-    console.log('resources', flatResources)
-    setResources(flatResources)
-    setActivities(flatActivities)
+    console.log('responsible people', flatResponsiblePeople)
+    // console.log('activities', flatActivities)
+    // console.log('resources', flatResources)
+
+    // if (!activities || activities.length === 0) {
+    //   setActivities(flatActivities);
+    // }
+    // setResources(flatResources)
+
   }, [])
 
   // useEffect(() => {

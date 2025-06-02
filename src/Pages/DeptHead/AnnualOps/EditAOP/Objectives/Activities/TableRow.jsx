@@ -45,9 +45,9 @@ const TableRow = ({
         }
     }));
 
-    useEffect(() => {
-        console.log(formattedActivities);
-    }, [])
+    // useEffect(() => {
+    //     console.log('formatted activities', formattedActivities);
+    // }, [])
 
     const handleOnRowClick = (id) => {
 

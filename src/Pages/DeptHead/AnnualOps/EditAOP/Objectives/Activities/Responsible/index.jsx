@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 
 import { Grid, Stack } from "@mui/joy";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -36,6 +36,34 @@ const EditResponsiblePerson = () => {
     // const [isEnabledSave, setIsEnabledSave] = useState(false);
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
 
+    // activityId
+    // :
+    // "2a61fa4b-cf2b-484e-a1d6-7173e56bd1ec"
+    // areas
+    // :
+    // [{… }]
+    // designations
+    // :
+    // []
+    // isAssigned
+    // :
+    // false
+    // users
+    // :
+    // []
+
+
+    const formattedResponsiblePeople = responsible_people.map(({ id, department, designation, division, section, unit, user }, index) => ({
+        activityId: '',
+        areas: [],
+        designations: [],
+        isAssigned: false,
+        users: [],
+    }))
+
+    useEffect(() => (
+        console.log(responsible_people)
+    ), [responsible_people])
 
     const hasData =
         activity?.users?.length > 0 ||
