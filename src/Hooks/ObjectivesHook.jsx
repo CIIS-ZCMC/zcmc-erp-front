@@ -31,6 +31,12 @@ const useObjectivesHook = create(
         }))
       },
 
+      clearObjectives: () => {
+        set(() => ({
+          objectives: []
+        }))
+      },
+
       //update field
       updateObjectiveField: (id, field, value) => {
         set((state) => ({

@@ -26,6 +26,7 @@ const useResourceHook = create(
     (set, get) => ({
       resources: [],
       cart: [],
+      totalCost: 0,
 
       setResources: (data) => {
         set(() => ({
@@ -33,9 +34,21 @@ const useResourceHook = create(
         }))
       },
 
+      clearResources: () => {
+        set(() => ({
+          resources: []
+        }))
+      },
+
       setCart: () => {
         set(() => ({
           cart: data
+        }))
+      },
+
+      setTotalCost: (data) => {
+        set(() => ({
+          totalCost: data,
         }))
       },
 

@@ -7,6 +7,7 @@ import ButtonComponent from "../../Components/Common/ButtonComponent";
 import ContainerComponent from "../../Components/Common/ContainerComponent";
 import ModalComponent from "../../Components/Common/Dialog/ModalComponent";
 
+
 //layouts
 import ItemSummaryHeader from "../../Layout/Resources/ItemSummaryHeader";
 import ItemList from "../../Layout/Resources/ItemList";
@@ -44,6 +45,8 @@ const Items = () => {
     cancelResources,
   } = useResourceHook();
 
+  const { setTotalCost } = useResourceHook();
+
   const [displayedItems, setDisplayedItems] = useState([]);
 
   const rowNumber = location.state?.activityRowId;
@@ -62,6 +65,8 @@ const Items = () => {
   const [itemTotal, setItemTotal] = useState(null);
   const [quantity, setQuantity] = useState(1);
 
+
+
   const filteredCart =
     cart?.filter((item) => item.parentId === activityId) || [];
 
@@ -75,9 +80,9 @@ const Items = () => {
     0
   );
 
-  // useEffect(() => {
-  //     console.log(itemTotal)
-  // }, [itemTotal])
+  useEffect(() => {
+    setTotalCost(totalPrice)
+  }, [totalPrice])
 
   useEffect(() => {
     getItems((status, message, data) => {

@@ -20,14 +20,13 @@ const TableRow = ({
     const navigate = useNavigate();
 
     const { activities } = useActivitiesHook();
-    const { resources, findResourcesByActivityID } = useResourceHook();
+    const { resources, findResourcesByActivityID, totalCost } = useResourceHook();
 
     // const activitiesId = activities.map((activity) => activity.id)
 
     const resourcesCount = resources.map((resource, index) => (
         findResourcesByActivityID(resource.parentId)
     ))
-
 
     useEffect(() => (
         console.log(resourcesCount.length)
@@ -291,26 +290,11 @@ const TableRow = ({
                             )}
                         </td>
 
-                        <td onClick={() => handleOnRowClick(id)}>
-                            {isEditing ? (
-                                <Input
-                                    value={localAopActivity[id]?.localCost}
-                                    size='sm'
-                                    onChange={(e) =>
-                                        setLocalAopActivity((prev) => ({
-                                            ...prev,
-                                            localCost: e.target.value,
-                                        }))
-                                    }
-                                    onBlur={() => {
-                                        handleChange(id, 'cost', localAopActivity.localCost);
-                                        setEditRowId(null);
-                                    }}
-                                    disabled
-                                />
-                            ) : (
-                                <Typography>{cost}</Typography>
-                            )}
+                        <td >
+                            <Typography>
+                                {/* {totalCost} */}
+                                {0}
+                            </Typography>
                         </td>
 
                         <td onClick={() => handleOnRowClick(id)}>

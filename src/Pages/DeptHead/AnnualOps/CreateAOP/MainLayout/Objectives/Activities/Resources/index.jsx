@@ -58,7 +58,7 @@ const Resources = () => {
         actions={
           <Stack>
             <ButtonComponent
-              onClick={() => addResource(parentId)}
+              // onClick={() => addResource(parentId)}
               label={"Add Resource"}
               endDecorator={<Plus size={16} />}
             />

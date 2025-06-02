@@ -1,8 +1,9 @@
 import React, { Fragment, useState, useEffect, act } from "react";
-import { Stack, Grid } from "@mui/joy";
+import { Stack, Grid, Checkbox } from "@mui/joy";
 import { useNavigate, useLocation } from "react-router-dom";
 
 import useResponsiblePeopleHook from "../../../../../../../../Hooks/ResponsiblePeopleHook";
+import useObjectivesHook from "../../../../../../../../Hooks/ObjectivesHook";
 import useModalHook from "../../../../../../../../Hooks/ModalHook";
 
 //Custom Components
@@ -27,6 +28,7 @@ const ResponsiblePerson = () => {
   const rowId = location.state.activityrowId; //refers to activity row id
 
   const { responsible_people, resetValues, setAssignmentStatus } = useResponsiblePeopleHook();
+  const { hasDiscussed, setIsDiscussed } = useObjectivesHook();
   const { setConfirmationModal } = useModalHook();
 
   const activity = responsible_people?.find((item) => {
@@ -34,7 +36,7 @@ const ResponsiblePerson = () => {
   });
 
   const [isLoading, setIsLoading] = useState(false);
-  // const [isEnabledSave, setIsEnabledSave] = useState(false);
+  // const [isEnabledSave, setIsEnabledSave] = useState(false);s
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
 
 
@@ -44,6 +46,8 @@ const ResponsiblePerson = () => {
     activity?.areas?.length > 0;
 
   const handleSaveAssignment = () => {
+
+    console.log(openConfirmDialog)
 
     if (!activity) {
       console.warn("No responsible person data found for this activity.");
@@ -61,9 +65,9 @@ const ResponsiblePerson = () => {
 
     const data = {
       status: "warning",
-      title: "Confirm Comment Submission",
+      title: "Have you discussed this AOP request with your Division Chief?",
       description:
-        "Please confirm your action before proceeding. Once submitted, this comment will be permanently recorded and cannot be modified or deleted.",
+        "We need to make sure that you already have a previous discussion and official go-signal for creating and submitting this request.",
     };
 
     setConfirmationModal(data);
@@ -75,7 +79,7 @@ const ResponsiblePerson = () => {
 
     setTimeout(() => {
       navigate(`/aop-create/`);
-    }, 3000);
+    }, 2000);
   }
 
   const handleCancel = (activityId) => {
@@ -84,9 +88,9 @@ const ResponsiblePerson = () => {
     // navigate(`/aop-create/activities/${rowId}`);
   };
 
-  // useEffect(() => {
-  //   setIsEnabledSave(true)
-  // }, [activity])
+  useEffect(() => {
+    console.log(hasDiscussed)
+  }, [hasDiscussed])
 
   return (
     <Fragment>
@@ -133,6 +137,7 @@ const ResponsiblePerson = () => {
             size={"md"}
             variant={"outlined"}
           />
+
           {/* 
           {hasData ? <ButtonComponent
             onClick={() => handleCancel(activityId)}
@@ -162,10 +167,18 @@ const ResponsiblePerson = () => {
       {/* Confirmation modal to proceed */}
       {openConfirmDialog && (
         <ConfirmationModalComponent
-          leftButtonLabel={"Cancel"}
-          rightButtonAction={proceed}
+          leftButtonLabel={"Back to editor"}
+          rightButtonAction={() => proceed(200)}
           rightButtonLabel="Proceed"
+          // rightButtonDisabled={true}
           isLoading={isLoading}
+          content={
+            <>
+              <Checkbox label={'Yes, I have discussed these plans with my Division Chief.'}
+                onChange={(e) => setIsDiscussed(e.target.value)}
+              />
+            </>
+          }
         />
       )}
     </Fragment>

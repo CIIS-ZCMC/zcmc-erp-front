@@ -33,6 +33,12 @@ const useActivitiesHook = create(
                 }))
             },
 
+            clearActivities: () => {
+                set(() => ({
+                    activities: []
+                }));
+            },
+
             //Update specific field in an activity row
             updateActivityField: (id, fieldPath, value) => {
                 set((state) => ({

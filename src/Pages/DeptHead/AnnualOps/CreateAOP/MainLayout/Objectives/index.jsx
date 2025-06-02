@@ -33,11 +33,11 @@ const Objectives = () => {
 
   const { aopObjectives, deleteObjective } = useAOPObjectivesHooks();
   const { function_types, getFunctionType } = useFunctionTypeHook();
-  const { objectives, hasDiscussed, addObjective, updateObjectiveField } =
+  const { objectives, hasDiscussed, addObjective, updateObjectiveField, clearObjectives } =
     useObjectivesHook();
-  const { findActivitiesByObjectiveID, activities } = useActivitiesHook();
-  const { responsible_people, findResponsiblePeopleByActivityID } = useResponsiblePeopleHook();
-  const { resources, findResourcesByActivityID } = useResourceHook();
+  const { findActivitiesByObjectiveID, activities, clearActivities, } = useActivitiesHook();
+  const { responsible_people, findResponsiblePeopleByActivityID, clearResponsiblePeople } = useResponsiblePeopleHook();
+  const { resources, findResourcesByActivityID, clearResources } = useResourceHook();
   const { setAlertDialog, setConfirmationModal } = useModalHook();
 
   const navigate = useNavigate();
@@ -46,6 +46,7 @@ const Objectives = () => {
   // local states
   const [editRowId, setEditRowId] = useState(null);
   const [isLoading, setisLoading] = useState(false);
+  const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
   const [openSubmitModal, setOpenSubmitModal] = useState(false);
   const [openSaveMissionModal, setOpenSaveMissionModal] = useState(false);
   const [authorizationPin, setAuthorizationPin] = useState('');
@@ -140,6 +141,10 @@ const Objectives = () => {
   const clearLocalStorage = () => {
 
     //set objectives, activities, resources into empty state then clear localStorrage
+    clearObjectives()
+    clearActivities()
+    clearResponsiblePeople()
+    clearResources()
 
     localStorage.removeItem('objectives-storage');
     localStorage.removeItem('activities-storage');
@@ -162,9 +167,9 @@ const Objectives = () => {
     const data = {
       status: 200,
       title:
-        "Changes on PPMP are ready to be reflected to your AOP. Would you like to have a preview first before saving changes?",
+        "Your AOP request is now ready for submission, would you like to get a preview first?",
       description:
-        "Document previews will be generated and downloaded in Microsoft Excel Spreadsheet (.xls) file format. The document preview is for viewing purposes only to help you ensure all fields are filled-up correctly and accurately.",
+        "Document previews will be generated and downloaded in Microsoft Excel Spreadsheet (.xls) file format. The document preview is for viewing purposes only to help you ensure that all fields are filled-up correctly and accurately.",
     };
 
     setConfirmationModal(data);
@@ -173,11 +178,13 @@ const Objectives = () => {
   // handle submit aop objective
   const handleSubmit = () => {
 
+    setOpenConfirmDialog(true)
+
     const aopPayload = buildAOP();
 
     const payload = {
       mission: mission,
-      has_discussed: hasDiscussed ? True : false,
+      has_discussed: hasDiscussed === 'on' ? true : false,
       status: isDraft ? isDraft : 'pending',
       authorization_pin: authorizationPin,
       application_objectives: aopPayload
@@ -258,8 +265,6 @@ const Objectives = () => {
     }
   };
 
-
-
   return (
     <Fragment>
       <ContainerComponent
@@ -327,7 +332,7 @@ const Objectives = () => {
             label={"Submit AOP"}
             size={"md"}
             variant={"solid"}
-            // disabled={!mission || resources.length === 0 || responsible_people.length === 0}
+            disabled={!mission || resources.length === 0 || responsible_people.length === 0}
             onClick={() => handleConfirmationModal()}
           />
         </Stack>
@@ -353,14 +358,17 @@ const Objectives = () => {
         rightButtonAction={() => handleSaveMission()}
       />
 
-      <ConfirmationModalComponent
-        leftButtonlabel={"Back to editor"}
-        rightButtonAction={() => handleSubmit()}
-        withAuthPin
-        withDivider
-        content={"this is a content"}
-        setAuthPin={setAuthorizationPin}
-      />
+      {openConfirmDialog &&
+        <ConfirmationModalComponent
+          leftButtonlabel={"Back to editor"}
+          rightButtonAction={() => handleSubmit()}
+          withAuthPin
+          withDivider
+          // content={"this is a content"}
+          setAuthPin={setAuthorizationPin}
+        />
+      }
+
 
     </Fragment>
   );
