@@ -112,7 +112,6 @@ function PPMPItems(props) {
     socket.emit("register-user", {
       userId: id,
       name: name,
-      area: assignedArea.id,
     });
   };
 
@@ -122,15 +121,16 @@ function PPMPItems(props) {
     handleCloseSnack();
   };
 
-  const handleEditing = ({ editable, editorName, editorId }) => {
-    console.log("editable", editable);
+  const handleEditing = ({ editable, showEdit, editorName, editorId }) => {
     setDisabled(!editable);
-    // setShow(editable ? false : true);
+    setShow(showEdit);
+    setOpenNotify(editable ? false : true);
+    setEditor(() => {
+      return { editorName: editorName, editorId: editorId };
+    });
+
     if (!editable) {
-      setShow(false); // You're not the editor → can't edit
-      notify(); // Show notification: "Someone else is editing"
-    } else {
-      setShow(true); // You ARE the editor → allow editing
+      return notify();
     }
   };
 
