@@ -23,6 +23,7 @@ import React from "react";
 import moment from "moment";
 import { BiTrash } from "react-icons/bi";
 import { getStatusColorScheme } from "../Utils/ColorScheme";
+import { toCapitalize } from "../Utils/Typography";
 
 export const objHeaders = ({ onUpdate, onDelete, onViewIndicators }) => [
   { field: "id", name: "Row #", align: "center", width: "50px" },
@@ -624,19 +625,19 @@ export const PPMP_REQUEST_HEADER = (handleOpen, handleDelete) => [
     width: "40px",
     align: "center",
   },
-  {
-    field: "request_number",
-    name: "Request number",
-    width: 150,
-    align: "start",
-    render: (params) => {
-      return (
-        <Link sx={{ textDecoration: "underline" }}>
-          {params.request_number}
-        </Link>
-      );
-    },
-  },
+  // {
+  //   field: "request_number",
+  //   name: "Request number",
+  //   width: 150,
+  //   align: "start",
+  //   render: (params) => {
+  //     return (
+  //       <Link sx={{ textDecoration: "underline" }}>
+  //         {params.request_number}
+  //       </Link>
+  //     );
+  //   },
+  // },
   {
     field: "requester",
     name: "Requester",
@@ -644,21 +645,23 @@ export const PPMP_REQUEST_HEADER = (handleOpen, handleDelete) => [
     align: "start",
   },
   {
-    field: "total",
+    field: "total_items",
     name: "Total number of items",
     width: 150,
     align: "start",
     render: (params) => {
-      return params.total.toLocaleString();
+      return params.total_items.toLocaleString();
     },
   },
   {
-    field: "amount",
+    field: "total_budget",
     name: "Amount",
     width: 200,
     align: "start",
     render: (params) => {
-      return <Typography>&#8369; {params.amount.toLocaleString()}</Typography>;
+      return (
+        <Typography>&#8369; {params.total_budget.toLocaleString()}</Typography>
+      );
     },
   },
   {
@@ -669,7 +672,7 @@ export const PPMP_REQUEST_HEADER = (handleOpen, handleDelete) => [
     render: (params) => {
       return (
         <ChipComponent
-          label={params.status}
+          label={toCapitalize(params.status)}
           endDecorator
           status={params.status?.toLowerCase()}
           color={getStatusColorScheme(params.status?.toLowerCase())}
@@ -720,35 +723,35 @@ export const PPMP_VIEW_HEADER = [
     align: "center",
   },
   {
-    field: "description",
+    field: "general_description",
     name: "General description",
     inputType: "dropdown",
     width: 200,
-    align: "center",
+    // align: "start",
   },
   {
     field: "classification",
     name: "Item Classification",
     width: 150,
-    align: "center",
+    // align: "center",
   },
   {
-    field: "category",
+    field: "item_category",
     name: "Item Category",
     width: 150,
-    align: "center",
+    // align: "center",
   },
   {
     field: "quantity",
     name: "Quantity",
     width: 100,
-    align: "center",
+    // align: "center",
   },
   {
     field: "unit",
     name: "Unit",
     width: 100,
-    align: "center",
+    // align: "center",
   },
   {
     field: "total_amount",
@@ -776,19 +779,19 @@ export const PPMP_VIEW_HEADER = [
     width: 1000,
     align: "center",
   },
-  {
-    field: "fund_source",
-    name: "Mode of procurement",
-    width: 150,
-    align: "center",
-  },
-  {
-    field: "remarks",
-    name: "Remarks",
-    width: 200,
-    inputType: "input",
-    align: "center",
-  },
+  // {
+  //   field: "fund_source",
+  //   name: "Mode of procurement",
+  //   width: 150,
+  //   align: "center",
+  // },
+  // {
+  //   field: "remarks",
+  //   name: "Remarks",
+  //   width: 200,
+  //   inputType: "input",
+  //   align: "center",
+  // },
 ];
 
 export const variantCols = (updateCallBack, delCallback) => [

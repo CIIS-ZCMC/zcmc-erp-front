@@ -172,6 +172,9 @@ export const API = {
 
   // OBJECTIVES
   EDIT_OBJECTIVE: "edit-objective-and-success-indicator",
+
+  // PPMP
+  PPMP_APPLICATION: "ppmp-receiving-list",
 };
 
 export const expenseClassData = [

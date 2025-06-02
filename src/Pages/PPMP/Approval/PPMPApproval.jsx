@@ -1,5 +1,5 @@
 import { Link, Stack } from "@mui/joy";
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import PageTitle from "../../../Components/Common/PageTitle";
 import { PPMP_CONSTANTS } from "../../../Data/constants";
 import ContainerComponent from "../../../Components/Common/ContainerComponent";
@@ -14,19 +14,35 @@ import ScrollableTableComponent from "../../../Components/Common/Table/Scrollabl
 import { useNavigate } from "react-router-dom";
 import ModalComponent from "../../../Components/Common/Dialog/ModalComponent";
 import YearSelectorComponent from "../../../Components/Form/YearSelectorComponent";
+import {
+  usePPMP,
+  usePPMPApplicationActions,
+} from "../../../Hooks/PPMP/PPMPApplicationHook";
 
 function PPMPApproval() {
   // HOOKS
   let navigate = useNavigate();
+  const { getPPMPApplications, getPPMPApplicationByID } =
+    usePPMPApplicationActions();
+  const { ppmpApplications } = usePPMP();
 
   // STATES
   const [index, setIndex] = React.useState("all");
+
   // FUNCTIONS
   const handleOpen = (id) => {
-    navigate(`view/${id}`);
+    getPPMPApplicationByID(id, (status) => {
+      if (status === 200) {
+        navigate(`view/${id}`);
+      }
+    });
   };
 
   const handleDelete = (id) => {};
+
+  useEffect(() => {
+    getPPMPApplications();
+  }, []);
 
   return (
     <Fragment>
@@ -78,7 +94,7 @@ function PPMPApproval() {
 
             <ScrollableTableComponent
               columns={PPMP_REQUEST_HEADER(handleOpen, handleDelete)}
-              data={PPMP_REQUESTS}
+              data={ppmpApplications}
             />
           </Stack>
         </ContainerComponent>
