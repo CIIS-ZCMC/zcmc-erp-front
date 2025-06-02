@@ -164,7 +164,9 @@ function PPMPDashboard(props) {
                             <Typography>
                               With a PPMP total of{" "}
                               <b style={{ color: "#004366" }}>
-                                ({dashboard?.ppmp_application?.ppmp_total})
+                                ( &#8369;{" "}
+                                {dashboard?.ppmp_application?.ppmp_total?.toLocaleString()}
+                                )
                               </b>
                             </Typography>
                           </Stack>
