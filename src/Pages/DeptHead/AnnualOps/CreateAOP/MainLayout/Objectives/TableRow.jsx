@@ -104,7 +104,7 @@ const TableRow = ({
                   :
                   (
                     <Typography>
-                      {console.info({ objective })}
+                      {/* {console.info({ objective })} */}
                       {successIndicator?.code || "-"}
                     </Typography>
                   )

@@ -45,6 +45,10 @@ const TableRow = ({
         }
     }));
 
+    useEffect(() => {
+        console.log(formattedActivities);
+    }, [])
+
     const handleOnRowClick = (id) => {
 
         setEditRowId(id);

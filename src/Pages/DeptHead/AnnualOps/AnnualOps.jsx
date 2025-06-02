@@ -82,6 +82,10 @@ const AnnualOps = () => {
     setActivities(flatActivities)
   }, [])
 
+  // useEffect(() => {
+  //   console.log(aopObjectives)
+  // }, [])
+
   return (
     <Fragment>
       <PageTitle
@@ -100,7 +104,7 @@ const AnnualOps = () => {
           <CircularProgress />
         </BoxComponent>
           :
-          !aopObjectives ?
+          aopObjectives.length === 0 ?
             <BoxComponent
               mt={3}
               height={'83vh'}

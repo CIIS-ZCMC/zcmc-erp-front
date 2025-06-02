@@ -14,6 +14,7 @@ const useObjectivesHook = create(
   persist(
     (set, get) => ({
       objectives: [],
+      hasDiscussed: false,
       current_parent_id: null,
       current_row_id: null,
 
@@ -21,6 +22,18 @@ const useObjectivesHook = create(
         // console.log(data)
         set((state) => ({
           objectives: data
+        }))
+      },
+
+      setIsDiscussed: (data) => {
+        set(() => ({
+          hasDiscussed: data
+        }))
+      },
+
+      clearObjectives: () => {
+        set(() => ({
+          objectives: []
         }))
       },
 

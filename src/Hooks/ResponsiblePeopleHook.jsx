@@ -13,6 +13,12 @@ const useResponsiblePeopleHook = create(
       //   isAssigned: false,
       // },
 
+      clearResponsiblePeople: () => {
+        set(() => ({
+          responsible_people: []
+        }))
+      },
+
       setAssignmentStatus: (activityId, status) => {
         set((state) => {
           const updated = state.responsible_people.map((item) => {
@@ -154,7 +160,7 @@ const useResponsiblePeopleHook = create(
       },
     }),
     {
-      name: "resources-storage",
+      name: "responsible-storage",
       getStorage: () => localStorage,
     }
   )
