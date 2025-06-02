@@ -50,6 +50,7 @@ function PPMPItems(props) {
     getActivities,
     postPPMP,
     postItemRequest,
+    exportPPMP,
   } = usePPMPHook();
   const {
     classification,
@@ -79,6 +80,7 @@ function PPMPItems(props) {
   const [openReq, setOpenReq] = useState(false);
   const [pageLoader, setPageLoader] = useState(false);
   const [buttonLoader, setButtonLoader] = useState(false);
+  const [dlLoader, setDlLoader] = useState(false);
   const [disabled, setDisabled] = useState(false);
   const [show, setShow] = useState(false);
   const [editLoad, setEditLoad] = useState(false);
@@ -97,7 +99,7 @@ function PPMPItems(props) {
   });
   const location = useLocation();
   const { user } = useAuth();
-  const { name, id } = user ?? {};
+  const { name, id, assignedArea } = user ?? {};
 
   //SNACKBAR
   const notify = () => setOpenNotify(true);
@@ -107,7 +109,11 @@ function PPMPItems(props) {
   };
 
   const sendSignal = () => {
-    socket.emit("register-user", { userId: id, name: name });
+    socket.emit("register-user", {
+      userId: id,
+      name: name,
+      area: assignedArea.id,
+    });
   };
 
   const disconnectSignal = () => {
@@ -116,17 +122,15 @@ function PPMPItems(props) {
     handleCloseSnack();
   };
 
-  const handleEditing = ({ editable, showEdit, editorName, editorId }) => {
+  const handleEditing = ({ editable, editorName, editorId }) => {
+    console.log("editable", editable);
     setDisabled(!editable);
-    setShow(showEdit);
-    setOpenNotify(editable ? false : true);
-
-    setEditor(() => {
-      return { editorName: editorName, editorId: editorId };
-    });
     // setShow(editable ? false : true);
     if (!editable) {
-      return notify();
+      setShow(false); // You're not the editor → can't edit
+      notify(); // Show notification: "Someone else is editing"
+    } else {
+      setShow(true); // You ARE the editor → allow editing
     }
   };
 
@@ -185,9 +189,9 @@ function PPMPItems(props) {
     const data = {
       status: "success",
       title:
-        "Changes on PPMP are ready to be reflected to your AOP. Would you like to have a preview first before saving changes?",
+        "Changes on PPMP are ready to be reflected to your AOP. Would you like to proceed with the changes?",
       description:
-        "Document previews will be generated and downloaded in Microsoft Excel Spreadsheet (.xls) file format. The document preview is for viewing purposes only to help you ensure that all fields are filled-up correctly and accurately.",
+        "After submission, a document preview will be available and can be downloaded in Microsoft Excel Spreadsheet (.xls) file format. Please input your authorization pin to proceed with the submission.",
     };
 
     setConfirmationModal(data);
@@ -195,7 +199,7 @@ function PPMPItems(props) {
 
   //SAVE CHANGES
   const handleSubmit = async (is_draft) => {
-    if (pin === null && is_draft === 0) {
+    if (pin === "" && is_draft === 0) {
       setAlertDialog({
         status: "error",
         title: "Missing Authorization PIN",
@@ -209,6 +213,9 @@ function PPMPItems(props) {
     try {
       const ppmp_items = JSON.parse(localStorage.getItem("ppmp-items")) || [];
       const formData = new FormData();
+      if (is_draft === 0) {
+        formData.append("pin", pin);
+      }
       formData.append("is_draft", is_draft);
       formData.append("PPMP_Items", JSON.stringify(ppmp_items));
 
@@ -401,6 +408,27 @@ function PPMPItems(props) {
     setPin("");
   };
 
+  const exportToCSV = () => {
+    setDlLoader(true);
+    exportPPMP({ export: true }, (status, message) => {
+      if (status === 200) {
+        setDlLoader(false);
+        setAlertDialog({
+          status: "success",
+          title: "PPMP Downloaded",
+          description: "Your PPMP has been successfully downloaded.",
+        });
+      } else {
+        setDlLoader(false);
+        setAlertDialog({
+          status: "error",
+          title: "PPMP Download failed",
+          description: "An unexpected error occurred. Please try again.",
+        });
+      }
+    });
+  };
+
   useEffect(() => {
     async function fetchAll() {
       // Step 2: Wrap callbacks in Promises for async/await
@@ -472,6 +500,13 @@ function PPMPItems(props) {
               }}
             />
             <ButtonComponent
+              label="Export PPMP"
+              onClick={() => exportToCSV()}
+              isLoading={dlLoader}
+              loadingLabel={"Exporting..."}
+              variant="outlined"
+            />
+            <ButtonComponent
               label={show ? "Exit Edit Mode" : "Edit PPMP"}
               onClick={() => (show ? disconnectSignal() : handleEditClick())}
               isLoading={editLoad}
@@ -514,6 +549,7 @@ function PPMPItems(props) {
               onClick={() => handleSubmit(1)}
               disabled={!show}
               isLoading={buttonLoader}
+              loadingLabel={"Saving..."}
             />
             <ButtonComponent
               label="Submit PPMP"
@@ -868,32 +904,7 @@ function PPMPItems(props) {
       />
       {openSave && (
         <ConfirmationModalComponent
-          content={
-            <>
-              <Typography fontSize={12} sx={{ color: grey[600] }}>
-                Available preview:
-              </Typography>
-              <Stack
-                direction={"row"}
-                justifyContent={"space-between"}
-                alignItems={"center"}
-              >
-                <Typography fontSize={13} py={2}>
-                  Project Procurement Management Plan - 2023-0031.xls
-                </Typography>
-                <Link
-                  endDecorator={<MdOpenInNew />}
-                  fontSize={12}
-                  underline="always"
-                  color="success"
-                >
-                  Open preview
-                </Link>
-              </Stack>
-            </>
-          }
           leftButtonLabel="Back to editor"
-          withDivider={true}
           rightButtonLabel="Save changes"
           rightButtonAction={() => handleSubmit(0)}
           leftButtonAction={() => {
