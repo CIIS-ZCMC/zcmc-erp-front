@@ -169,6 +169,11 @@ export const API = {
 
   //library
   ClASSIFICATION: "item-classifications",
+  ITEM_CATEGORIES: "item-categories",
+  ITEM_CLASSIFICATIONS: "item-classifications",
+  ITEM_UNIT: "item-units",
+  ITEM_VARIANT: "variants",
+  ITEMS_: "items",
 };
 
 export const expenseClassData = [
