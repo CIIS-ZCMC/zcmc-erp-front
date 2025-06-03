@@ -34,6 +34,12 @@ const useResourceHook = create(
         }))
       },
 
+      setUpdatedResources: (data) => {
+        set(() => ({
+          resources: data,
+        }))
+      },
+
       clearResources: () => {
         set(() => ({
           resources: []

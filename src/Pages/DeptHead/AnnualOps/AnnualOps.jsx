@@ -1,11 +1,14 @@
 import { Fragment, useEffect, useState } from 'react';
 import { Stack, Typography, Grid, CircularProgress } from '@mui/joy'
+import { v4 as uuid } from 'uuid';
 
 import { useNavigate } from "react-router-dom";
 
 import useAOPObjectivesHooks from '../../../Hooks/AOP/AOPObjectivesHook';
+import useObjectivesHook from '../../../Hooks/ObjectivesHook';
 import useActivitiesHook from '../../../Hooks/ActivitiesHook';
 import useResourceHook from '../../../Hooks/ResourceHook';
+import useResponsiblePeopleHook from '../../../Hooks/ResponsiblePeopleHook';
 import { useAOPActions, } from '../../../Hooks/AOP/AOPObjectivesHook';
 
 import Header from './Header';
@@ -26,10 +29,13 @@ const AnnualOps = () => {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const { activities, setActivities } = useActivitiesHook();
-  const { setResources, setCart } = useResourceHook();
   const { aopObjectives, aop_summary } = useAOPObjectivesHooks();
   const { getSummary, getSingleAOP } = useAOPActions();
+
+  const { objectives, setObjectives } = useObjectivesHook();
+  const { activities, setActivities } = useActivitiesHook();
+  const { resources, setResources, setCart } = useResourceHook();
+  const { responsible_people, setResponsiblePeople } = useResponsiblePeopleHook();
 
   const {
     aop_application_id,
@@ -68,32 +74,77 @@ const AnnualOps = () => {
     })
   }, [])
 
-  // get activities
+  // formatted objectives
+  const formattedObjectives = aopObjectives.application_objectives?.map(({ function_type, objective, success_indicator }, index) => (
+    {
+      id: uuid(),
+      rowId: index + 1,
+      functionType: function_type,
+      objective: objective,
+      successIndicator: success_indicator
+    }
+  ))
+
+  // get flat activities
   const flatActivities = aopObjectives.application_objectives?.flatMap(data => data.activity) || [];
 
-  //get item resources
+  // formatted activities
+  const formattedActivities = flatActivities.map(({ activity_uuid, name, is_gad_related, cost, start_month, end_month, target }, index) => ({
+    id: activity_uuid ? activity_uuid : uuid(),
+    // parentId: objectiveId,
+    rowId: index + 1,
+    name: name,
+    isGadRelated: is_gad_related,
+    cost: cost,
+    startMonth: start_month,
+    endMonth: end_month,
+    target: {
+      firstQuarter: target.first_quarter,
+      secondQuarter: target.second_quarter,
+      thirdQuarter: target.third_quarter,
+      fourthQuarter: target.fourth_quarter,
+    }
+  }));
+
+  //get item resourcese
   const flatResources = aopObjectives.application_objectives?.flatMap(data =>
     data.activity.flatMap(item => item.resources)
   ) || [];
 
+  // formatted resources
+  const formattedResources = flatResources?.map((resource) => ({
+    id: uuid(),
+    item_id: resource.item?.id,
+    name: resource.item?.name,
+    quantity: resource.quantity,
+    individualPrice: resource.item?.estimated_budget,
+    expenseClass: resource.expense_class,
+    purchaseTypeId: resource.purchase_type?.id,
+    totalCost: Number((resource.item?.estimated_budget * resource.quantity).toFixed(2)),
+  }));
+
   const flatResponsiblePeople = aopObjectives.application_objectives?.flatMap(data =>
     data.activity.flatMap(item => item.responsible_people));
 
+  const formattedResponsiblePeople = flatResponsiblePeople?.map((responsible) => (responsible
+
+    // users: [responsible.user] || [],
+    // designations: [responsible.designation] || [],
+    // areas: [responsible.division || responsible.department || responsible.section || responsible.unit] || []
+
+  ))
+
   useEffect(() => {
-    console.log('responsible people', flatResponsiblePeople)
-    // console.log('activities', flatActivities)
-    // console.log('resources', flatResources)
+    // console.log('AOP OBJECTIVES:', aopObjectives);
+    // console.log('responsible people:', flatResponsiblePeople)
+    console.log('formatted', formattedResponsiblePeople)
 
-    // if (!activities || activities.length === 0) {
-    //   setActivities(flatActivities);
-    // }
-    // setResources(flatResources)
-
+    setObjectives(formattedObjectives);
+    setActivities(formattedActivities);
+    setResources(formattedResources);
+    // setResponsiblePeople(formattedResponsiblePeople);
   }, [])
 
-  // useEffect(() => {
-  //   console.log(aopObjectives)
-  // }, [])
 
   return (
     <Fragment>

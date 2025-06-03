@@ -25,7 +25,7 @@ const EditResponsiblePerson = () => {
     const activityId = location.state.parentId; //refers to parent id/activity id
     const rowId = location.state.activityrowId; //refers to activity row id
 
-    const { responsible_people, resetValues, setAssignmentStatus } = useResponsiblePeopleHook();
+    const { responsible_people, resetValues, setUpdatedResponsiblePeople, setAssignmentStatus } = useResponsiblePeopleHook();
     const { setConfirmationModal } = useModalHook();
 
     const activity = responsible_people?.find((item) => {
@@ -36,34 +36,15 @@ const EditResponsiblePerson = () => {
     // const [isEnabledSave, setIsEnabledSave] = useState(false);
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
 
-    // activityId
-    // :
-    // "2a61fa4b-cf2b-484e-a1d6-7173e56bd1ec"
-    // areas
-    // :
-    // [{… }]
-    // designations
-    // :
-    // []
-    // isAssigned
-    // :
-    // false
-    // users
-    // :
-    // []
-
-
-    const formattedResponsiblePeople = responsible_people.map(({ id, department, designation, division, section, unit, user }, index) => ({
-        activityId: '',
-        areas: [],
-        designations: [],
-        isAssigned: false,
-        users: [],
+    const responsibleRowData = responsible_people.map((responsible) => ({
+        ...responsible,
+        activityId: activityId,
     }))
 
-    useEffect(() => (
-        console.log(responsible_people)
-    ), [responsible_people])
+    useEffect(() => {
+        setUpdatedResponsiblePeople(responsibleRowData)
+        console.log('updated responsible people', responsibleRowData)
+    }, [])
 
     const hasData =
         activity?.users?.length > 0 ||

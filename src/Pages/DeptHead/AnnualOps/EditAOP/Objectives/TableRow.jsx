@@ -26,6 +26,10 @@ const TableRow = ({
     const [isLoading, setisLoading] = useState(false);
     const [initialData, setInitialData] = useState(true)
 
+    // useEffect(() => {
+    //     console.log('objectives rows:', rows)
+    // }, [rows])
+
     return (
         <Fragment>
             {
@@ -120,7 +124,7 @@ const TableRow = ({
                                     >
                                         <Link
                                             component="button"
-                                            onClick={() => navigate(`activities/${rowId}`, { state: { aopId: aopId, rowId: rowId, data: objectives } })}
+                                            onClick={() => navigate(`activities/${rowId}`, { state: { aopId: aopId, rowId: rowId, objectiveId: id, data: objectives } })}
                                             fontSize={14}
                                         >
                                             Manage Activities

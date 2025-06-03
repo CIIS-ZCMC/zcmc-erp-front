@@ -2,7 +2,7 @@ import { Fragment, useState, useEffect, useMemo } from 'react';
 
 import { Stack, Link } from '@mui/joy';
 import { ExternalLink, Plus } from 'lucide-react';
-import { useLocation, Outlet } from 'react-router-dom';
+import { useLocation, useNavigate, Outlet } from 'react-router-dom';
 import { v4 as uuid } from "uuid";
 
 import ContainerComponent from '../../../../../Components/Common/ContainerComponent';
@@ -13,10 +13,10 @@ import useFunctionTypeHook from '../../../../../Hooks/FunctionTypeHook';
 import useAOPObjectivesHooks from '../../../../../Hooks/AOP/AOPObjectivesHook';
 import useObjectivesHook from '../../../../../Hooks/ObjectivesHook';
 import useActivitiesHook from '../../../../../Hooks/ActivitiesHook';
+import useResourceHook from '../../../../../Hooks/ResourceHook';
 import useModalHook from '../../../../../Hooks/ModalHook';
 
 import { useAOPActions } from '../../../../../Hooks/AOP/AOPObjectivesHook';
-
 
 import TableRow from './TableRow'
 
@@ -25,43 +25,24 @@ import { AOP_HEADER } from '../../../../../Data/Columns';
 
 const index = () => {
 
+    const navigate = useNavigate()
     const location = useLocation();
     const id = location.state?.data.id;
 
-    const applicationObjectives = location.state.data.application_objectives;
-
+    const { aopObjectives } = useAOPObjectivesHooks();
     const { function_types, getFunctionType } = useFunctionTypeHook();
-    const { objectives, addObjective, setObjectives } = useObjectivesHook();
-    const { findActivitiesByObjectiveID, activities } = useActivitiesHook();
+    const { objectives, addObjective, setObjectives, clearObjectives } = useObjectivesHook();
+    const { findActivitiesByObjectiveID, activities, clearActivities } = useActivitiesHook();
+    const { resources, findResourcesByActivityID } = useResourceHook();
     const { setAlertDialog } = useModalHook();
 
     const [mission, setMission] = useState("");
     const [isDraft, setIsDraft] = useState(false)
     const [openSaveMissionModal, setOpenSaveMissionModal] = useState(false);
 
-    const formattedObjectives = useMemo(() => {
-        return applicationObjectives?.map(({ function_type, objective, success_indicator }, index) => ({
-            id: uuid(),
-            rowId: index + 1,
-            functionType: function_type,
-            objective: objective,
-            successIndicator: success_indicator
-        })) || [];
-
-    }, [applicationObjectives]);
-
     useEffect(() => {
-        if (objectives.length === 0) {
-            setObjectives(formattedObjectives)
-        }
-    }, [applicationObjectives])
-
-    // check pag walang objectives then add default objective
-    useEffect(() => {
-        if (objectives?.length === 0) {
-            addObjective();
-        }
-    }, [objectives, addObjective]);
+        console.log('aop objectives', aopObjectives)
+    }, [])
 
     useEffect(() => {
         const params = { with_sub_data: 1 };
@@ -81,31 +62,70 @@ const index = () => {
         setOpenSaveMissionModal(true);
     };
 
-    const handleSubmit = () => {
+    function buildAOP() {
         const objectivesData = objectives.map((item) => {
-            console.log(item)
+            const activities = findActivitiesByObjectiveID(item.id);
+            const activitiesWithResourceAndResponsiblePeople = activities.map(
+                (act) => {
+                    const {
+                        parentId,
+                        id,
+                        startMonth,
+                        endMonth,
+                        target,
+                        isGadRelated,
+                        ...actData
+                    } = act;
+                    const resources = findResourcesByActivityID(act.id);
+                    // const responsible_people = findResponsiblePeopleByActivityID(act.id);
+
+                    return {
+                        ...actData,
+                        start_month: startMonth,
+                        end_month: endMonth,
+                        is_gad_related: isGadRelated,
+                        target: {
+                            first_quarter: target.firstQuarter,
+                            second_quarter: target.secondQuarter,
+                            third_quarter: target.thirdQuarter,
+                            fourth_quarter: target.fourthQuarter,
+                        },
+                        resources: resources,
+                        // responsible_people: responsible_people,
+                    };
+                }
+            );
+            // console.log(item)
             return {
                 objective_id: item.objective.id,
-                success_indicator_id: item.successIndicator.id
+                success_indicator_id: item.successIndicator.id,
+                activities: activitiesWithResourceAndResponsiblePeople,
             }
         })
+
+        return objectivesData;
+    }
+
+    const handleSubmit = () => {
+
+        const aopPayload = buildAOP();
 
         const payload = {
             mission: mission,
             has_discussed: true,
             status: isDraft ? isDraft : 'pending',
-            application_objectives: objectivesData,
+            application_objectives: aopPayload,
         }
 
-        console.log(payload)
+        console.log('submitting payload', payload)
     }
 
     const clearLocalStorage = () => {
         //set objectives, activities, resources into empty state then clear localStorrage
         clearObjectives();
         clearActivities();
-        clearResponsiblePeople();
-        clearResources();
+        // clearResponsiblePeople();
+        // clearResources();
 
         localStorage.removeItem("objectives-storage");
         localStorage.removeItem("activities-storage");

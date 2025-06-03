@@ -41,22 +41,22 @@ const JobPositionList = ({ parentId }) => {
     const filteredData = responsible_people?.filter((element) => element.activityId === parentId)[0] ?? []
     const designations = filteredData?.designations
 
-    if (designations?.length === 0) {
-        return <Stack
-            m={2}
-            alignItems={'center'}
-            justifyContent={'center'}
-        >
-            <Typography
-                level='body-xs'
-            >
-                Please select job position(s)
-            </Typography>
-        </Stack>
-    }
+    // if (designations?.length === 0) {
+    //     return <Stack
+    //         m={2}
+    //         alignItems={'center'}
+    //         justifyContent={'center'}
+    //     >
+    //         <Typography
+    //             level='body-xs'
+    //         >
+    //             Please select job position(s)
+    //         </Typography>
+    //     </Stack>
+    // }
 
     return <>
-        {designations?.map(({ id, label, code }) => (
+        {/* {designations?.map(({ id, label, code }) => (
             < Box
                 m={1}
             >
@@ -103,7 +103,7 @@ const JobPositionList = ({ parentId }) => {
 
                 <Divider />
             </Box >
-        ))}
+        ))} */}
     </>
 }
 

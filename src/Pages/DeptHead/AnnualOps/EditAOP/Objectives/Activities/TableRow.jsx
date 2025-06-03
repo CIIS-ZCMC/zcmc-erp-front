@@ -1,20 +1,21 @@
 import { Fragment, useState, useEffect } from 'react';
 
 import { Stack, Link, Typography, Input, Select, Option } from '@mui/joy';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation, } from 'react-router-dom';
 import { Trash } from 'lucide-react';
-import { v4 as uuid } from 'uuid';
+import { v4 as uuid, validate } from 'uuid';
 
 import useAOPObjectivesHooks from '../../../../../../Hooks/AOP/AOPObjectivesHook';
-import useResourceHook from '../../../../../../Hooks/ResourceHook';
 import useActivitiesHook from '../../../../../../Hooks/ActivitiesHook';
+import useResourceHook from '../../../../../../Hooks/ResourceHook';
 
 import IconButtonComponent from '../../../../../../Components/Common/IconButtonComponent';
 import { createJSONStorage } from 'zustand/middleware';
 
 const TableRow = ({
     rows,
-    parentId,
+    aopRowId,
+    parentId, //this will be the parent id for activity
     objectiveRowId,
 }) => {
 
@@ -27,36 +28,13 @@ const TableRow = ({
     const [localAopActivity, setLocalAopActivity] = useState({});
     const [editRowId, setEditRowId] = useState(null);
 
-    //format the activities array for the table
-    const formattedActivities = rows.map(({ activity_uuid, name, is_gad_related, cost, start_month, end_month, target }, index) => ({
-        id: activity_uuid ? activity_uuid : uuid(),
-        parentId: objectiveRowId,
-        rowId: index + 1,
-        name: name,
-        isGadRelated: is_gad_related,
-        cost: cost,
-        startMonth: start_month,
-        endMonth: end_month,
-        target: {
-            firstQuarter: target.first_quarter,
-            secondQuarter: target.second_quarter,
-            thirdQuarter: target.third_quarter,
-            fourthQuarter: target.fourth_quarter,
-        }
-    }));
-
-    // useEffect(() => {
-    //     console.log('formatted activities', formattedActivities);
-    // }, [])
-
     const handleOnRowClick = (id) => {
-
         setEditRowId(id);
 
         if (localAopActivity[id]) return;
 
         // Find the current row by ID
-        const currentRow = formattedActivities.find((row) => row.id === id);
+        const currentRow = rows.find((row) => row.id === id);
         if (!currentRow) return;
 
         const { name, startMonth, endMonth, target, cost, isGadRelated } = currentRow;
@@ -83,7 +61,7 @@ const TableRow = ({
     return (
         <Fragment>
 
-            {formattedActivities?.filter(value => value?.parentId === parentId)?.map(({ rowId, id, name, isGadRelated, cost, startMonth, endMonth, target }, index) => {
+            {rows?.filter(value => value?.parentId === parentId)?.map(({ rowId, id, name, isGadRelated, cost, startMonth, endMonth, target }, index) => {
 
                 const isEditing = editRowId === id;
 
@@ -119,7 +97,6 @@ const TableRow = ({
                                 />
                             ) : (
                                 <Typography>
-                                    {/* {console.info(localAopActivity[id]?.localName || '')} */}
                                     {name || '-'}
                                 </Typography>
                             )}

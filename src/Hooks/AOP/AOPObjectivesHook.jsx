@@ -10,6 +10,13 @@ const useAOPObjectivesHooks = create((set, get) => ({
   aop_timeline: [],
 
   actions: {
+
+    setAopObjectives: (data) => {
+      set(() => ({
+        activities: data
+      }))
+    },
+
     getSummary: (callBack) => {
       read({
         url: API.AOP_APPLICATION_SUMMARY,

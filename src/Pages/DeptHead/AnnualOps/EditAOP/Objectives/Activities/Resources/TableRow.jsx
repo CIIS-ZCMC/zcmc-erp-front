@@ -21,21 +21,8 @@ const TableRow = ({
         updateResourceField,
     } = useResourceHook();
 
-    const formattedResources = rows?.map((resource) => ({
-        id: uuid(),
-        item_id: resource.item?.id,
-        parentId: parentId,
-        rowId: resource.rowId,
-        name: resource.item?.name,
-        // typeofResources: resource,
-        quantity: resource.quantity,
-        individualPrice: resource.item?.estimated_budget,
-        expenseClass: resource.expense_class,
-        purchaseTypeId: resource.purchase_type?.id,
-        totalCost: Number((resource.item?.estimated_budget * resource.quantity).toFixed(2)),
-    }));
 
-    const [localResources, setLocalResources] = useState(formattedResources);
+    const [localResources, setLocalResources] = useState(rows);
     const [editRowId, setEditRowId] = useState(null);
 
     const handleOnRowClick = (id) => setEditRowId(id);
@@ -68,9 +55,8 @@ const TableRow = ({
     //"totalCost": 0,
 
     useEffect(() => {
-        console.log(rows)
-        console.log('formatted Resources', formattedResources)
-    }, [formattedResources])
+        console.log(localResources)
+    }, [])
 
     const expenseClassOptions = [
         { id: 1, label: 'MOOE', value: 'MOOE' },
