@@ -42,7 +42,7 @@ export const Items = () => {
       name: row.name,
       classification: row.classification,
       item_category: row.category,
-      variant: row.variant.name,
+      variant: row.variant,
       unit: row.unit,
       estimated_budget: row.estimated_budget,
     })) || [];

@@ -1,4 +1,4 @@
-import { Navigate } from "react-router-dom";
+import { Navigate, Outlet } from "react-router-dom";
 
 import Dashboard from "../Pages/Dashboard";
 
@@ -13,7 +13,7 @@ import Returned from "../Pages/DeptHead/AnnualOps/TableViews/Returned";
 import CreateAOP from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout";
 
 import EditAOP from "../Pages/DeptHead/AnnualOps/EditAOP";
-import EditObjectives from '../Pages/DeptHead/AnnualOps/EditAOP/Objectives/'
+import EditObjectives from "../Pages/DeptHead/AnnualOps/EditAOP/Objectives/";
 import EditActivities from "../Pages/DeptHead/AnnualOps/EditAOP/Objectives/Activities";
 import EditResources from "../Pages/DeptHead/AnnualOps/EditAOP/Objectives/Activities/Resources";
 import EditResponsiblePerson from "../Pages/DeptHead/AnnualOps/EditAOP/Objectives/Activities/Responsible";
@@ -47,7 +47,7 @@ import { Items as ConsolidatorItems } from "../Pages/Consolidators/Tabs/Items";
 import { Classification } from "../Pages/Consolidators/Tabs/Classification";
 import { Category } from "../Pages/Consolidators/Tabs/Category";
 import { Variant } from "../Pages/Consolidators/Tabs/Variant";
-
+import ItemSubmittedRequestsList from "../Pages/TEMP/ItemSubmittedRequestsList";
 
 export const sidebarRoutes = [
   {
@@ -118,7 +118,7 @@ export const sidebarRoutes = [
         children: [
           {
             path: "items/:activityId",
-            element: <Items />
+            element: <Items />,
           },
           {
             path: "resources/:activityId",
@@ -161,7 +161,7 @@ export const sidebarRoutes = [
         children: [
           {
             path: "items/:activityId",
-            element: <Items />
+            element: <Items />,
           },
           {
             path: "resources/:activityId",
@@ -188,7 +188,7 @@ export const sidebarRoutes = [
           },
         ],
       },
-    ]
+    ],
   },
 
   // {
@@ -276,13 +276,13 @@ export const sidebarRoutes = [
     children: [
       {
         index: true,
-        element: <AOP />
+        element: <AOP />,
       },
       {
-        path: 'ppmp',
-        element: <PPMP />
+        path: "ppmp",
+        element: <PPMP />,
       },
-    ]
+    ],
   },
 
   //Item Management routes
@@ -316,6 +316,27 @@ export const sidebarRoutes = [
       {
         path: "variant",
         element: <Variant />,
+      },
+    ],
+  },
+  {
+    path: "/submitted-items",
+    name: "Submitted Items",
+    element: <ItemSubmittedRequestsList />,
+    roles: ["super_admin"],
+    abilities: ["M-001:read", "M-001:write", "M-001:edit", "M-001:delete"],
+    children: [
+      {
+        index: true,
+        element: <>the index</>,
+      },
+      {
+        path: "pending",
+        element: <>pending</>,
+      },
+      {
+        path: "added",
+        element: <>added</>,
       },
     ],
   },

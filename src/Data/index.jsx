@@ -41,7 +41,10 @@ export const sidebarRoutes = [
         path: "/objectives",
         name: "Objectives",
       },
-
+      {
+        path: "/Submitted-items",
+        name: "Requested Items",
+      },
       {
         path: "/manage-deadlines",
         name: "Manage Deadlines",
