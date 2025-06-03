@@ -51,8 +51,9 @@ const index = () => {
     }, [applicationObjectives]);
 
     useEffect(() => {
-        // console.log('formatted', formattedObjectives)
-        setObjectives(formattedObjectives)
+        if (objectives.length === 0) {
+            setObjectives(formattedObjectives)
+        }
     }, [applicationObjectives])
 
     // check pag walang objectives then add default objective
@@ -98,6 +99,25 @@ const index = () => {
 
         console.log(payload)
     }
+
+    const clearLocalStorage = () => {
+        //set objectives, activities, resources into empty state then clear localStorrage
+        clearObjectives();
+        clearActivities();
+        clearResponsiblePeople();
+        clearResources();
+
+        localStorage.removeItem("objectives-storage");
+        localStorage.removeItem("activities-storage");
+        localStorage.removeItem("resources-storage");
+    };
+
+    const handleCancelRequest = () => {
+        {
+            clearLocalStorage();
+            navigate("/aop");
+        }
+    };
 
     return (
         <Fragment>
