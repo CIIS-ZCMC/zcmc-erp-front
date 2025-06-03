@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import erp_api from "../Services/ERP_API";
-import { post, read, remove } from "../Services/RequestMethods";
+import { download, post, read, remove } from "../Services/RequestMethods";
 
 const PATH = "ppmp";
 
@@ -106,6 +106,20 @@ const usePPMPHook = create((set) => ({
         const { status, message, data } = res;
         set({ items: data.data });
         callBack(status, message, data.data);
+      },
+    });
+  },
+
+  exportPPMP: async (params, callBack) => {
+    download({
+      url: `${PATH}-item-export`,
+      title: "PPMP-Items",
+      fileName: "ppmp_item.xlsx",
+      success: (status, message) => {
+        callBack(status, message);
+      },
+      failed: (status, message) => {
+        callBack(status, message);
       },
     });
   },
