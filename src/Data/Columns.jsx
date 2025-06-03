@@ -275,7 +275,7 @@ export const AOP_ACTIVITIES_HEADER = [
 
 export const AOP_RESOURCE_HEADER = [
   {
-    field: "id",
+    field: "id_count",
     name: "Row #",
     width: "5%",
     align: "center",
@@ -559,61 +559,66 @@ export const ppmpHeaders = (handleOpenDel, items, modes, isEditing) => [
 
 export const RESOURCES_HEADER = [
   {
-    field: "id",
+    field: "id_count",
     name: "Row #",
-    width: "70px",
+    width: "50px",
     align: "center",
   },
   {
-    field: "item",
+    field: "resource_requirements",
     name: "Resource Requirements",
     children: [
       {
-        field: "item",
+        field: "item_name",
         name: "Item name",
         width: 400,
-        align: "center",
       },
-
       {
         field: "quantity",
         name: "Quantity of item",
         width: 50,
-        align: "center",
       },
       {
-        field: "price",
+        field: "unit_cost",
         name: "Individual price",
         width: 50,
-        align: "center",
+        render: (params) => {
+          return (
+            <Typography textAlign={"end"}>
+              &#8369; {params.toLocaleString()}
+            </Typography>
+          );
+        },
       },
       {
-        field: "total_amount",
+        field: "total_cost",
         name: "Total cost",
         width: 50,
-        align: "center",
+        render: (params) => {
+          return (
+            <Typography textAlign={"end"}>
+              &#8369; {params.toLocaleString()}
+            </Typography>
+          );
+        },
       },
     ],
-    width: 1000,
+    width: 1100,
     align: "center",
   },
   {
-    field: "expense",
+    field: "expense_class",
     name: "Expense class of unit",
     width: 150,
     align: "center",
+    render: (params) => {
+      return params.total_cost;
+    },
   },
   {
-    field: "gad",
+    field: "is_gad",
     name: "Is GAD-related activity",
     width: 150,
-    align: "center",
-  },
-  {
-    field: "remarks",
-    name: "Remarks",
-    width: 200,
-    inputType: "input",
     align: "center",
   },
 ];
@@ -625,19 +630,6 @@ export const PPMP_REQUEST_HEADER = (handleOpen, handleDelete) => [
     width: "40px",
     align: "center",
   },
-  // {
-  //   field: "request_number",
-  //   name: "Request number",
-  //   width: 150,
-  //   align: "start",
-  //   render: (params) => {
-  //     return (
-  //       <Link sx={{ textDecoration: "underline" }}>
-  //         {params.request_number}
-  //       </Link>
-  //     );
-  //   },
-  // },
   {
     field: "requester",
     name: "Requester",
@@ -646,8 +638,8 @@ export const PPMP_REQUEST_HEADER = (handleOpen, handleDelete) => [
   },
   {
     field: "total_items",
-    name: "Total number of items",
-    width: 150,
+    name: "Total items",
+    width: 100,
     align: "start",
     render: (params) => {
       return params.total_items.toLocaleString();
@@ -660,7 +652,9 @@ export const PPMP_REQUEST_HEADER = (handleOpen, handleDelete) => [
     align: "start",
     render: (params) => {
       return (
-        <Typography>&#8369; {params.total_budget.toLocaleString()}</Typography>
+        <Typography textAlign={"end"}>
+          &#8369; {params.total_budget.toLocaleString()}
+        </Typography>
       );
     },
   },
@@ -717,16 +711,16 @@ export const PPMP_REQUEST_HEADER = (handleOpen, handleDelete) => [
 
 export const PPMP_VIEW_HEADER = [
   {
-    field: "id",
+    field: "id_count",
     name: "Row #",
-    width: "70px",
+    width: "50px",
     align: "center",
   },
   {
     field: "general_description",
     name: "General description",
     inputType: "dropdown",
-    width: 200,
+    width: 300,
     // align: "start",
   },
   {
@@ -744,8 +738,8 @@ export const PPMP_VIEW_HEADER = [
   {
     field: "quantity",
     name: "Quantity",
-    width: 100,
-    // align: "center",
+    width: 70,
+    align: "center",
   },
   {
     field: "unit",
@@ -757,10 +751,17 @@ export const PPMP_VIEW_HEADER = [
     field: "total_amount",
     name: "Total amount",
     width: 100,
-    align: "center",
+    align: "end",
+    render: (params) => {
+      return (
+        <Typography textAlign={"end"}>
+          &#8369; {params.total_amount.toLocaleString() ?? 0}
+        </Typography>
+      );
+    },
   },
   {
-    field: "target_by_quarter",
+    field: "monthly_distribution",
     name: "Target (by quarter)",
     children: [
       { field: "jan", name: "Jan", width: 100, inputType: "input" },

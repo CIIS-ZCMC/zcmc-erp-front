@@ -5,7 +5,7 @@ import {
 } from "../../../../Hooks/AOP/ActivityHook";
 import moment from "moment";
 import ModalComponent from "../../../../Components/Common/Dialog/ModalComponent";
-import { Box, Divider, Grid, Link, Stack, Typography } from "@mui/joy";
+import { Box, Divider, Grid, Link, Sheet, Stack, Typography } from "@mui/joy";
 import { CornerDownRight, ExternalLink } from "lucide-react";
 import BoxComponent from "../../../../Components/Common/Card/BoxComponent";
 import ContainerComponent from "../../../../Components/Common/ContainerComponent";
@@ -13,6 +13,9 @@ import { MarkReviewFooter } from "./MarkReviewFooter";
 import ScrollableTableComponent from "../../../../Components/Common/Table/ScrollableTableComponent";
 import { RESOURCES_HEADER } from "../../../../Data/Columns";
 import { useUserTypes } from "../../../../Store/AuthStore";
+import { AOP_RESOURCES } from "../../../../Data/TestData";
+import DrawerComponent from "../../../../Components/Common/DrawerComponent";
+import ButtonComponent from "../../../../Components/Common/ButtonComponent";
 
 export const ActivityDetails = () => {
   const { isPlanning } = useUserTypes();
@@ -202,7 +205,7 @@ export const ActivityDetails = () => {
       </ContainerComponent>
 
       {/* VIEW RESOURCES */}
-      <ModalComponent
+      {/* <ModalComponent
         isOpen={openResourcesModal}
         handleClose={() => setOpenResourcesModal(false)}
         title={`Resources for activity`}
@@ -210,13 +213,26 @@ export const ActivityDetails = () => {
           "This is a subheading. It should add more context to the interaction."
         }
         content={
-          <Stack>
-            <ScrollableTableComponent
-              columns={RESOURCES_HEADER}
-              data={resources}
-            />
-          </Stack>
+          <ScrollableTableComponent
+            columns={RESOURCES_HEADER}
+            data={resources}
+          />
         }
+      /> */}
+
+      <DrawerComponent
+        open={openResourcesModal}
+        setOpen={setOpenResourcesModal}
+        title={`Approval timeline for this AOP`}
+        description={"The list below shows the current status of the request."}
+        size="full"
+        content={
+          <ScrollableTableComponent
+            columns={RESOURCES_HEADER}
+            data={resources}
+          />
+        }
+        // footer={<ButtonComponent label={"Close"} width={"auto"} />}
       />
     </Fragment>
   );
