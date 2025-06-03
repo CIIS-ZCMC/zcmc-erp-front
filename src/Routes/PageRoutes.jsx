@@ -1,8 +1,7 @@
 import { Navigate } from "react-router-dom";
 
-import Dashboard from "../Pages/Dashboard";
-
 import AnnualOps from "../Pages/DeptHead/AnnualOps/AnnualOps";
+import Dashboard from "../Pages/Dashboard";
 
 // table views routes
 import All from "../Pages/DeptHead/AnnualOps/TableViews/All";

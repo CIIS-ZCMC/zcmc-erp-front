@@ -101,6 +101,8 @@ function PPMPItems(props) {
   const { user } = useAuth();
   const { name, id, assignedArea } = user ?? {};
 
+  const { is_draft } = location.state || {};
+
   //SNACKBAR
   const notify = () => setOpenNotify(true);
   const handleCloseSnack = () => {
@@ -108,15 +110,19 @@ function PPMPItems(props) {
     setOpenNotify(false);
   };
 
-  const sendSignal = () => {
-    socket.emit("register-user", {
+  const editSignal = () => {
+    socket.emit("start-edit", {
       userId: id,
       name: name,
+      area: assignedArea?.name,
     });
   };
 
   const disconnectSignal = () => {
-    socket.emit("logout", { userId: id, name: name });
+    socket.emit("stop-edit", {
+      userId: id,
+      area: assignedArea?.name,
+    });
     setShow(false);
     handleCloseSnack();
   };
@@ -137,7 +143,7 @@ function PPMPItems(props) {
   const handleEditClick = () => {
     setEditLoad(true);
     setTimeout(() => {
-      sendSignal();
+      editSignal();
       setShow(true);
       setEditLoad(false);
     }, 500);
@@ -462,6 +468,16 @@ function PPMPItems(props) {
   }, []);
 
   useEffect(() => {
+    if (!assignedArea?.name) return;
+
+    socket.emit("register-user", {
+      userId: id,
+      name: name,
+      area: assignedArea.name,
+    });
+  }, [assignedArea]);
+
+  useEffect(() => {
     socket.on("editing", handleEditing);
     return () => {
       socket.off("editing"); // Clean up on unmount
@@ -470,7 +486,10 @@ function PPMPItems(props) {
 
   // AUTHENTICATE
   useEffect(() => {
-    socket.emit("authenticate", { id: id, name: name });
+    socket.emit("authenticate", {
+      id: id,
+      area: assignedArea?.name,
+    });
 
     return () => {
       socket.disconnect(); // Clean up on unmount
@@ -479,7 +498,7 @@ function PPMPItems(props) {
 
   return (
     <Fragment>
-      {console.log(disabled)}
+      {console.log(is_draft)}
       <ContainerComponent
         title={"List of items"}
         description={
@@ -505,6 +524,7 @@ function PPMPItems(props) {
               isLoading={dlLoader}
               loadingLabel={"Exporting..."}
               variant="outlined"
+              disabled={is_draft?.status === 1}
             />
             <ButtonComponent
               label={show ? "Exit Edit Mode" : "Edit PPMP"}
@@ -553,7 +573,7 @@ function PPMPItems(props) {
             />
             <ButtonComponent
               label="Submit PPMP"
-              disabled={!show}
+              disabled={!show || is_draft.status === 0}
               onClick={() => handleConfirmationModal()}
             />
           </Stack>
