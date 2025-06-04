@@ -22,6 +22,7 @@ import TabComponent from "../../Components/Common/TabComponent";
 import SearchBarComponent from "../../Components/SearchBarComponent";
 import RenderDialog from "../Consolidators/Modals/RenderDialog";
 import { submittedRequestsTabs } from "../../Data/Options";
+import ItemSubmittedRequestModalContent from "./ItemSubmittedRequestModalContent";
 const ItemSubmittedRequestsList = () => {
   const [index, setIndex] = useState("");
 
@@ -80,7 +81,7 @@ const ItemSubmittedRequestsList = () => {
                 size={"sm"}
               />
               <ButtonComponent
-                label={"New record"}
+                label={"Request new item"}
                 variant={"solid"}
                 size={"sm"}
                 onClick={() => {
@@ -124,12 +125,14 @@ const ItemSubmittedRequestsList = () => {
       >
         <Sheet
           variant="outlined"
-          sx={{ maxWidth: 500, borderRadius: "md", p: 3, boxShadow: "lg" }}
+          sx={{ maxWidth: 700, borderRadius: "md", p: 3, boxShadow: "lg" }}
         >
           <ModalClose variant="plain" sx={{ m: 1 }} />
           {/* <ModalContent /> */}
+          <ItemSubmittedRequestModalContent />
         </Sheet>
       </Modal>
+
       {/* Success Indicators modal */}
       <Modal
         aria-labelledby="modal-title"
