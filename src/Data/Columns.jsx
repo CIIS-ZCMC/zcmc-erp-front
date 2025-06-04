@@ -623,9 +623,9 @@ export const RESOURCES_HEADER = [
   },
 ];
 
-export const PPMP_REQUEST_HEADER = (handleOpen, handleDelete) => [
+export const PPMP_REQUEST_HEADER = (handleOpen, handleExport) => [
   {
-    field: "id",
+    field: "id_count",
     name: "Row #",
     width: "40px",
     align: "center",
@@ -694,7 +694,7 @@ export const PPMP_REQUEST_HEADER = (handleOpen, handleDelete) => [
             Open request
           </Link>
           <Link
-            onClick={() => alert(`Action clicked for ID: ${params.id}`)}
+            onClick={() => handleExport(params.id, params.requester_area)}
             level="body-xs"
             textColor={"neutral.700"}
             underline="hover"

@@ -7,10 +7,7 @@ import RadioButtonComponent from "../../../../Components/Common/RadioButtonCompo
 import TextareaComponent from "../../../../Components/Form/TextareaComponent";
 import InputComponent from "../../../../Components/Form/InputComponent";
 import { useApprovalActions } from "../../../../Hooks/AOP/AOPApprovalHook";
-import {
-  useAOPApplication,
-  useAOPApplicationObjectives,
-} from "../../../../Hooks/AOP/AOPApplicationsHook";
+import { useAOPApplication } from "../../../../Hooks/AOP/AOPApplicationsHook";
 import { localStorageGetter } from "../../../../Utils/LocalStorage";
 import useModalHook from "../../../../Hooks/ModalHook";
 import ButtonComponent from "../../../../Components/Common/ButtonComponent";
@@ -23,11 +20,13 @@ const ProcessAOPContent = () => {
   const aopApplication = useAOPApplication();
   const { status: applicationStatus } = aopApplication || {};
   const { processAOP } = useApprovalActions();
-  const { setAlertDialog } = useModalHook();
+  const { setAlertDialog, closeAlertDialog } = useModalHook();
 
   // STATE
   const [processData, setProcessData] = useState({ action: "approved" });
-  const disabledProcessRequest = applicationStatus === "approved";
+  const [disabledProcessRequest, setDisabledProcessRequest] = useState(
+    applicationStatus === "approved"
+  );
   const AOP_APPLICATION_ID = localStorageGetter("aop_application_id");
   const [openProcessModal, setOpenProcessModal] = useState(false);
   const [btnLoading, setBtnLoading] = useState(false);
@@ -58,6 +57,7 @@ const ProcessAOPContent = () => {
       if (status === 200) {
         data = {
           status: 200,
+          isGlobal: false,
           title: "AOP request for F.Y. “2026” successfully approved.",
           description:
             "Everyone can now see the changes you’ve made. The request is now ready for processing of the next approving body (Division Chief).",
@@ -65,6 +65,7 @@ const ProcessAOPContent = () => {
       } else {
         data = {
           status: "error",
+          isGlobal: false,
           title: "Failed to update status",
           description:
             message ??
@@ -76,11 +77,17 @@ const ProcessAOPContent = () => {
     });
   };
 
+  const handleCloseConfirmation = () => {
+    setOpenProcessModal(false);
+    setDisabledProcessRequest(true);
+    closeAlertDialog();
+  };
+
   return (
     <Fragment>
       <ButtonComponent
         label={"Process request"}
-        disabled={disabledProcessRequest}
+        // disabled={disabledProcessRequest}
         onClick={handleProcessRequest}
       />
 
@@ -151,6 +158,8 @@ const ProcessAOPContent = () => {
           </Stack>
         }
       />
+
+      <AlertDialogComponent leftButtonAction={handleCloseConfirmation} />
     </Fragment>
   );
 };

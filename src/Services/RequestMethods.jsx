@@ -66,9 +66,17 @@ export const read = ({ url, params, token, success, failed }) => {
  * @param {function} success : function to be triggered on success request
  * @param {function} failed : function to be triggered on fail request or error encountered.
  */
-export const download = ({ url, token, title, fileName, success, failed }) => {
+export const download = ({
+  url,
+  params,
+  token,
+  title,
+  fileName,
+  success,
+  failed,
+}) => {
   erp_api
-    .get(url, { cancelToken: token, responseType: "blob" })
+    .get(url, params, { cancelToken: token, responseType: "blob" })
     .then((res) => validateStatusOk(res))
     .then((res) => {
       if (res.status === 200) {
@@ -76,8 +84,6 @@ export const download = ({ url, token, title, fileName, success, failed }) => {
         const contentDisposition =
           res.headers["content-disposition"] ||
           res.headers["Content-Disposition"];
-
-        console.log(contentDisposition);
 
         const filename = contentDisposition
           ? contentDisposition.split("filename=")[1].replace(/"/g, "")

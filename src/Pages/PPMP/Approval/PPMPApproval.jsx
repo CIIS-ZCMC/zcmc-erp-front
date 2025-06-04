@@ -18,6 +18,8 @@ import {
   usePPMP,
   usePPMPApplicationActions,
 } from "../../../Hooks/PPMP/PPMPApplicationHook";
+import usePPMPHook from "../../../Hooks/PPMPHook";
+import useModalHook from "../../../Hooks/ModalHook";
 
 function PPMPApproval() {
   // HOOKS
@@ -25,9 +27,12 @@ function PPMPApproval() {
   const { getPPMPApplications, getPPMPApplicationByID } =
     usePPMPApplicationActions();
   const { ppmpApplications } = usePPMP();
+  const { exportPPMP } = usePPMPHook();
+  const { setAlertDialog } = useModalHook();
 
   // STATES
   const [index, setIndex] = React.useState("all");
+  const [dlLoader, setDlLoader] = useState(false);
 
   // FUNCTIONS
   const handleOpen = (id) => {
@@ -38,7 +43,26 @@ function PPMPApproval() {
     });
   };
 
-  const handleDelete = (id) => {};
+  const handleExportToCSV = (id, area_details) => {
+    const { code } = area_details;
+    exportPPMP({ ppmp_application_id: id }, code, (status) => {
+      if (status === 200) {
+        setDlLoader(false);
+        setAlertDialog({
+          status: "success",
+          title: "PPMP Downloaded",
+          description: "PPMP has been successfully downloaded.",
+        });
+      } else {
+        setDlLoader(false);
+        setAlertDialog({
+          status: "error",
+          title: "PPMP Download failed",
+          description: "An unexpected error occurred. Please try again.",
+        });
+      }
+    });
+  };
 
   useEffect(() => {
     getPPMPApplications();
@@ -93,7 +117,7 @@ function PPMPApproval() {
             </Stack>
 
             <ScrollableTableComponent
-              columns={PPMP_REQUEST_HEADER(handleOpen, handleDelete)}
+              columns={PPMP_REQUEST_HEADER(handleOpen, handleExportToCSV)}
               data={ppmpApplications}
             />
           </Stack>

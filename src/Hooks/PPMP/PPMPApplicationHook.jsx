@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { read } from "../../Services/RequestMethods";
+import { post, read } from "../../Services/RequestMethods";
 import { API } from "../../Data/constants";
 
 const usePPMPApplicationHook = create((set) => ({
@@ -32,6 +32,25 @@ const usePPMPApplicationHook = create((set) => ({
             ppmpApplicationItems: data.items,
             ppmpApplication: data,
           }));
+          callback(200, message);
+        },
+
+        failed: callback,
+      });
+    },
+
+    receivePPMP: (form, callback) => {
+      post({
+        url: `ppmp-receiving-list-receive`,
+        form: form,
+        success: (res) => {
+          const { data, message } = res.data;
+
+          console.log(data);
+          // set(() => ({
+          //   ppmpApplicationItems: data.items,
+          //   ppmpApplication: data,
+          // }));
           callback(200, message);
         },
 

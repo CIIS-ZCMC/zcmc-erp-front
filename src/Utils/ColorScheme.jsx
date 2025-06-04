@@ -28,10 +28,10 @@ export const getModeColorScheme = (type) => {
 };
 
 // STATUS
-
 export const getStatusColorScheme = (status) => {
   const colorMap = {
     approved: "success",
+    received: "success",
     pending: "neutral",
     submitted: "neutral",
     cancelled: "error",

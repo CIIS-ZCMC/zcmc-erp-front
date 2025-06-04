@@ -61,7 +61,7 @@ const AOPApproval = () => {
   const handleViewTimeline = (id) => {
     setOpenTimelineModal(true);
 
-    getAOPApprovalTimeline(id, () => { });
+    getAOPApprovalTimeline(id, () => {});
   };
 
   useEffect(() => {
@@ -70,7 +70,7 @@ const AOPApproval = () => {
       year: year,
     };
 
-    getAOPApplications(params, () => { });
+    getAOPApplications(params, () => {});
   }, [index, year, getAOPApplications]);
 
   const APPLICATIONS = TEST_MODE ? MANAGE_AOP_APPROVAL : AOPApplications;
