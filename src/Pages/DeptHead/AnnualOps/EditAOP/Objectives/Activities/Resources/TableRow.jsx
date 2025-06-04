@@ -54,9 +54,9 @@ const TableRow = ({
     //"rowId": 1,
     //"totalCost": 0,
 
-    useEffect(() => {
-        console.log(localResources)
-    }, [])
+    // useEffect(() => {
+    //     console.log(localResources)
+    // }, [])
 
     const expenseClassOptions = [
         { id: 1, label: 'MOOE', value: 'MOOE' },
@@ -131,13 +131,16 @@ const TableRow = ({
                                                     updateResourceField(id, "purchaseTypeId", val);
                                                 }}
                                                 options={purchase_types.map((item) => {
-                                                    console.log(item)
+                                                    // console.log(item)
                                                     return { id: item.id, label: item.code };
                                                 })}
                                             />
                                         </>
                                     ) : (
-                                        <Typography>{purchaseTypeId?.label || "-"}</Typography>
+                                        <Typography>
+                                            {/* {console.info('valye if purchseTypeId', purchaseTypeId)} */}
+                                            {purchaseTypeId?.label || "-"}
+                                        </Typography>
                                     )}
                                 </td>
 

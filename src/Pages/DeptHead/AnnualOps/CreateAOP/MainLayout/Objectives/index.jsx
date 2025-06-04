@@ -103,7 +103,7 @@ const Objectives = () => {
   }, [isDraft]);
 
   function buildAOP() {
-    const objectiveData = objectives.map((item) => {
+    const objectiveData = objectives?.map((item) => {
       const activities = findActivitiesByObjectiveID(item.id);
       const activitiesWithResourceAndResponsiblePeople = activities.map(
         (act) => {

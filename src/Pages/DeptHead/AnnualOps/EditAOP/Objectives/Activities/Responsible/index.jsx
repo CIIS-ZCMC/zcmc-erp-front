@@ -25,8 +25,8 @@ const EditResponsiblePerson = () => {
     const activityId = location.state.parentId; //refers to parent id/activity id
     const rowId = location.state.activityrowId; //refers to activity row id
 
-    const { responsible_people, resetValues, setUpdatedResponsiblePeople, setAssignmentStatus } = useResponsiblePeopleHook();
-    const { setConfirmationModal } = useModalHook();
+    const { responsible_people, resetValues, setAssignmentStatus } = useResponsiblePeopleHook();
+    const { setConfirmationModal, closeConfirmation } = useModalHook();
 
     const activity = responsible_people?.find((item) => {
         return item.activityId === activityId;
@@ -35,16 +35,6 @@ const EditResponsiblePerson = () => {
     const [isLoading, setIsLoading] = useState(false);
     // const [isEnabledSave, setIsEnabledSave] = useState(false);
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
-
-    const responsibleRowData = responsible_people.map((responsible) => ({
-        ...responsible,
-        activityId: activityId,
-    }))
-
-    useEffect(() => {
-        setUpdatedResponsiblePeople(responsibleRowData)
-        console.log('updated responsible people', responsibleRowData)
-    }, [])
 
     const hasData =
         activity?.users?.length > 0 ||
@@ -84,7 +74,8 @@ const EditResponsiblePerson = () => {
         //add id of aop here
         setTimeout(() => {
             navigate(`/aop-edit/`);
-        }, 3000);
+            closeConfirmation();
+        }, 1000);
     }
 
     const handleCancel = (activityId) => {
@@ -131,7 +122,14 @@ const EditResponsiblePerson = () => {
                 >
                     {/* {isAssigned ? */}
 
-                    {hasData ? <ButtonComponent
+                    <ButtonComponent
+                        onClick={() => navigate(-1)}
+                        label={"Back to activities"}
+                        size={"md"}
+                        variant={"outlined"}
+                    />
+
+                    {/* {hasData ? <ButtonComponent
                         onClick={() => handleCancel(activityId)}
                         label={"Cancel Selection"}
                         size={"md"}
@@ -144,7 +142,9 @@ const EditResponsiblePerson = () => {
                             size={"md"}
                             variant={"outlined"}
                         />
-                    }
+                    } */}
+
+
                     <ButtonComponent
                         label={"Save Assignment"}
                         size={"md"}

@@ -50,17 +50,6 @@ const EditResources = () => {
         });
     }, []);
 
-    const resourcesRowData = resources.map((resource, index) => ({
-        ...resource,
-        rowId: index + 1,
-        parentId: parentId,
-    }))
-
-    useEffect(() => {
-        console.log('updated Resource Data', resourcesRowData)
-        setUpdatedResources(resourcesRowData)
-    }, [])
-
     return (
         <Fragment>
             <ContainerComponent

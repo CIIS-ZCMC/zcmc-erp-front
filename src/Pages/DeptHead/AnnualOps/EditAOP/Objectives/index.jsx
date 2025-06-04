@@ -3,7 +3,6 @@ import { Fragment, useState, useEffect, useMemo } from 'react';
 import { Stack, Link } from '@mui/joy';
 import { ExternalLink, Plus } from 'lucide-react';
 import { useLocation, useNavigate, Outlet } from 'react-router-dom';
-import { v4 as uuid } from "uuid";
 
 import ContainerComponent from '../../../../../Components/Common/ContainerComponent';
 import EditableTableComponent from '../../../../../Components/Common/Table/EditableTableComponent';
@@ -14,6 +13,7 @@ import useAOPObjectivesHooks from '../../../../../Hooks/AOP/AOPObjectivesHook';
 import useObjectivesHook from '../../../../../Hooks/ObjectivesHook';
 import useActivitiesHook from '../../../../../Hooks/ActivitiesHook';
 import useResourceHook from '../../../../../Hooks/ResourceHook';
+import useResponsiblePeopleHook from '../../../../../Hooks/ResponsiblePeopleHook';
 import useModalHook from '../../../../../Hooks/ModalHook';
 
 import { useAOPActions } from '../../../../../Hooks/AOP/AOPObjectivesHook';
@@ -24,25 +24,33 @@ import { AOP_CONSTANTS } from '../../../../../Data/constants';
 import { AOP_HEADER } from '../../../../../Data/Columns';
 
 const index = () => {
+    const { updateAOP } = useAOPActions();
 
     const navigate = useNavigate()
     const location = useLocation();
     const id = location.state?.data.id;
 
-    const { aopObjectives } = useAOPObjectivesHooks();
+    const { aopObjectives, mission, aop_id, deleteObjective } = useAOPObjectivesHooks();
     const { function_types, getFunctionType } = useFunctionTypeHook();
-    const { objectives, addObjective, setObjectives, clearObjectives } = useObjectivesHook();
+    const { objectives, addObjective, clearObjectives } = useObjectivesHook();
     const { findActivitiesByObjectiveID, activities, clearActivities } = useActivitiesHook();
-    const { resources, findResourcesByActivityID } = useResourceHook();
+    const { findResourcesByActivityID, clearResources } = useResourceHook();
+    const { findResponsiblePeopleByActivityID, clearResponsiblePeople } = useResponsiblePeopleHook();
     const { setAlertDialog } = useModalHook();
 
-    const [mission, setMission] = useState("");
-    const [isDraft, setIsDraft] = useState(false)
+    // const [mission, setMission] = useState();
+    const [isDraft, setIsDnraft] = useState(false)
+    const [authorizationPin, setAuthorizationPin] = useState('12345');
+
     const [openSaveMissionModal, setOpenSaveMissionModal] = useState(false);
 
+    const activitiesCount = objectives.map((objective) =>
+        activities.filter((activity) => activity.parentId === objective.id)
+    );
+
     useEffect(() => {
-        console.log('aop objectives', aopObjectives)
-    }, [])
+        console.log(mission)
+    }, [mission])
 
     useEffect(() => {
         const params = { with_sub_data: 1 };
@@ -55,8 +63,6 @@ const index = () => {
             setisLoading(false);
         });
     }, []);
-
-    // console.log(objectives)
 
     const handleOpenDialog = () => {
         setOpenSaveMissionModal(true);
@@ -77,7 +83,7 @@ const index = () => {
                         ...actData
                     } = act;
                     const resources = findResourcesByActivityID(act.id);
-                    // const responsible_people = findResponsiblePeopleByActivityID(act.id);
+                    const responsible_people = findResponsiblePeopleByActivityID(act.id);
 
                     return {
                         ...actData,
@@ -91,11 +97,11 @@ const index = () => {
                             fourth_quarter: target.fourthQuarter,
                         },
                         resources: resources,
-                        // responsible_people: responsible_people,
+                        responsible_people: responsible_people,
                     };
                 }
             );
-            // console.log(item)
+
             return {
                 objective_id: item.objective.id,
                 success_indicator_id: item.successIndicator.id,
@@ -106,6 +112,15 @@ const index = () => {
         return objectivesData;
     }
 
+    const clearLocalStorage = () => {
+        //set objectives, activities, resources into empty state then clear localStorrage
+        clearObjectives();
+        clearActivities();
+        clearResources();
+        clearResponsiblePeople();
+
+    };
+
     const handleSubmit = () => {
 
         const aopPayload = buildAOP();
@@ -114,23 +129,50 @@ const index = () => {
             mission: mission,
             has_discussed: true,
             status: isDraft ? isDraft : 'pending',
+            authorization_pin: authorizationPin,
             application_objectives: aopPayload,
         }
 
         console.log('submitting payload', payload)
+
+        updateAOP(payload, aop_id, (status, message) => {
+
+            let data = {}
+
+            // if existing
+            // if (
+            //     status === 200 &&
+            //     message === "You already have an AOP application in your area."
+            // ) {
+            //     data = {
+            //         status: 200,
+            //         title: "Existing AOP",
+            //         description: "You already have an AOP application in your area.",
+            //     };
+            //     setAlertDialog(data);
+            //     return;
+            // }
+
+            //create new
+            if (status === 200) {
+                data = {
+                    status: 200,
+                    title: "Successfully submitted for approval.",
+                    description:
+                        "Your AOP request has been sent to the next approving body and they have been notified.",
+                };
+
+                // setOpenSubmitModal(false);
+                // clearLocalStorage();
+                // setMission("");
+                // window.location.reload(false);
+                // setAlertDialog(data);
+                return;
+            }
+
+        })
+
     }
-
-    const clearLocalStorage = () => {
-        //set objectives, activities, resources into empty state then clear localStorrage
-        clearObjectives();
-        clearActivities();
-        // clearResponsiblePeople();
-        // clearResources();
-
-        localStorage.removeItem("objectives-storage");
-        localStorage.removeItem("activities-storage");
-        localStorage.removeItem("resources-storage");
-    };
 
     const handleCancelRequest = () => {
         {
@@ -193,7 +235,7 @@ const index = () => {
                     />
 
                     <ButtonComponent
-                        label={"Submit AOP"}
+                        label={"Update AOP"}
                         size={"md"}
                         variant={"solid"}
                         onClick={() => handleSubmit()}

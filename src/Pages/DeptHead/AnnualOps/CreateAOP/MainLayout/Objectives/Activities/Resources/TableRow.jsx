@@ -144,7 +144,10 @@ const TableRow = ({
                       />
                     </>
                   ) : (
-                    <Typography>{purchaseTypeId?.label || "-"}</Typography>
+                    <Typography>
+
+                      {purchaseTypeId?.label || "-"}
+                    </Typography>
                   )}
                 </td>
 
