@@ -13,7 +13,7 @@ import {
   MdOutlineShop,
   MdOutlineShoppingCartCheckout,
 } from "react-icons/md";
-import no_result from "../../../assets/not-found.png";
+import no_result from "../../../assets/empty-state-icon-base.png";
 import PageLoader from "../../../Components/Loading/PageLoader";
 import { ThreeDotsLoader } from "../../../Components/Common/Loading/ThreeDotsLoader";
 import { socket } from "../../../Services/Socket";

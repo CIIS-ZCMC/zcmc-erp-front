@@ -54,9 +54,8 @@ const PPMPTable = memo(
     } = useModalHook();
     // const { items, getItems } = useItemsHook();
 
-    const [ppmpTable, setPPMPTable] = useState(
-      JSON.parse(localStorage.getItem("ppmp-items")) ?? []
-    );
+    const [ppmpTable, setPPMPTable] = useState([]);
+
     const [btnLoad, setBtnLoad] = useState(false);
     const [searchVal, setSearchVal] = useState("");
     const [selectedClass, setSelectedClass] = useState({});
@@ -437,6 +436,14 @@ const PPMPTable = memo(
     const lastColumnWidth = columns[columns.length - 1]?.width || "144px";
 
     //USEEFFECT
+    useEffect(() => {
+      setLoading(true); // start loading
+      const storedItems = localStorage.getItem("ppmp-items");
+      if (storedItems) {
+        setPPMPTable(JSON.parse(storedItems));
+      }
+      setLoading(false); // finish loading
+    }, []);
 
     useEffect(() => {
       const storedSearch = localStorage.getItem("search-value");

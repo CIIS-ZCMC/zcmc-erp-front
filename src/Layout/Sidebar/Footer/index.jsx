@@ -30,6 +30,8 @@ const Footer = () => {
     setConfirmationModal(data);
   };
   const handleLogOut = () => {
+    localStorage.removeItem("ppmp-items");
+    localStorage.removeItem("ppmp-edits");
     window.location.href = BASE_URL.development_landing_page;
   };
 
