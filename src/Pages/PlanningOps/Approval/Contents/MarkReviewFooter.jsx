@@ -9,6 +9,7 @@ import {
 import { localStorageGetter } from "../../../../Utils/LocalStorage";
 import useSnackbarHook from "../../../../Components/Common/SnackbarHook";
 import {
+  Box,
   Checkbox,
   FormControl,
   FormHelperText,
@@ -82,7 +83,7 @@ export const MarkReviewFooter = ({ openMarkModal, setOpenMarkModal }) => {
         >
           Double-checking support
         </Typography>
-        <FormControl sx={{ gap: 1 }}>
+        <Box sx={{ gap: 1 }}>
           <Checkbox
             label="Mark activity as “Reviewed”"
             size="sm"
@@ -91,6 +92,7 @@ export const MarkReviewFooter = ({ openMarkModal, setOpenMarkModal }) => {
             defaultChecked={is_reviewed}
             onChange={handleClickMarkCheckbox}
           />
+
           <FormHelperText sx={{ fontSize: 11, color: "neutral.400" }}>
             Showing marks helps you determine which among all activities has
             successfully passed your double-checking so that you don't have to
@@ -103,7 +105,7 @@ export const MarkReviewFooter = ({ openMarkModal, setOpenMarkModal }) => {
               {moment(is_reviewed_date).format("ll")}
             </FormHelperText>
           )} */}
-        </FormControl>
+        </Box>
       </Stack>
 
       {/* CONFIRM MARK REVIEWED */}

@@ -43,7 +43,7 @@ export default function ManageAOP() {
     getCommentsByApplication,
     getRemarksByApplication,
   } = useCommentActions();
-  const allComments = useAllComments();
+  const allComments = useAllComments() ?? localStorageGetter("all_comments");
 
   // STATES
   const [isRemarksLoading, setIsRemarksLoading] = useState(true);
@@ -60,9 +60,9 @@ export default function ManageAOP() {
     setIsRemarksLoading(true);
 
     const fetch = () => {
-      if (!isDivisionHead) {
-        getCommentsByApplication(AOP_APPLICATION_ID, () => {});
-      }
+      // if (!isDivisionHead || !isMCC) {
+      getCommentsByApplication(AOP_APPLICATION_ID, () => {});
+      // }
 
       getRemarksByApplication(AOP_APPLICATION_ID, () => {
         setTimeout(() => setIsRemarksLoading(false), 1000);
@@ -177,11 +177,13 @@ export default function ManageAOP() {
       </Stack>
 
       {/* PROCESS REQUEST */}
-      <FeedbackContent
-        openFeedbackModal={openFeedbackModal}
-        setOpenFeedbackModal={setOpenFeedbackModal}
-        isLoading={isRemarksLoading}
-      />
+      {openFeedbackModal && (
+        <FeedbackContent
+          openFeedbackModal={openFeedbackModal}
+          setOpenFeedbackModal={setOpenFeedbackModal}
+          isLoading={isRemarksLoading}
+        />
+      )}
     </Fragment>
   );
 }

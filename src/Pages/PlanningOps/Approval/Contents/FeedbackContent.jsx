@@ -10,6 +10,7 @@ import CommentContainerComponent from "../../../../Components/Comments/CommentCo
 import DrawerComponent from "../../../../Components/Common/DrawerComponent";
 import { ThreeDots } from "react-loader-spinner";
 import { useUserTypes } from "../../../../Store/AuthStore";
+import { localStorageGetter } from "../../../../Utils/LocalStorage";
 
 export const FeedbackContent = ({
   openFeedbackModal,
@@ -21,19 +22,22 @@ export const FeedbackContent = ({
 
   // COMMENTS HOOK
   const remarks = useRemarks();
-  const allComments = useAllComments();
+  const allComments = localStorageGetter("all_comments");
 
   // DATA
   const feedbackDisplay = useMemo(() => {
-    const dataToDisplay = isDivisionHead
-      ? remarks
-      : activeTab === 0
-      ? allComments
-      : remarks;
+    let dataToDisplay;
+
+    if (isDivisionHead) {
+      dataToDisplay = remarks;
+    } else {
+      dataToDisplay = activeTab === 0 ? allComments : remarks;
+    }
+
     return groupByDate(dataToDisplay);
   }, [activeTab, allComments, isDivisionHead, remarks]);
 
-  const feedbackCount = allComments?.length;
+  const feedbackCount = Array.isArray(allComments) ? allComments?.length : 0;
 
   return (
     <DrawerComponent
@@ -73,7 +77,7 @@ export const FeedbackContent = ({
                   <Divider />
                 </>
               )}
-              <Stack gap={1.8} maxHeight={"70vh"} overflow={"auto"} pr={1}>
+              <Stack gap={1.8} maxHeight={"60vh"} overflow={"auto"} pr={1}>
                 {feedbackCount === 0 && (
                   <Box
                     sx={{
@@ -88,7 +92,7 @@ export const FeedbackContent = ({
                 )}
                 {Object.entries(feedbackDisplay).map(
                   ([date, messages], key) => (
-                    <Fragment key={key}>
+                    <Fragment key={`${date}-${key}`}>
                       {date !== moment().format("dddd, MMMM D") && (
                         <Divider sx={{ fontSize: "xs", mt: 0.5 }}>
                           {date}

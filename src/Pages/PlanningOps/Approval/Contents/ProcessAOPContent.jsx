@@ -127,6 +127,7 @@ const ProcessAOPContent = () => {
                     Select the action you would like to take:
                   </Typography>
                   <RadioButtonComponent
+                    disabled={btnLoading}
                     actions={approvalActions}
                     value={processData?.action}
                     handleChange={(e) =>

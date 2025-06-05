@@ -99,7 +99,7 @@ function AOPCardComponent({
             variant={"soft"}
             label={
               toCapitalize(statusLabel) === "Approved"
-                ? "Approved by Planning"
+                ? "Approved"
                 : statusLabel
             }
             color={getStatusColorScheme(status)}

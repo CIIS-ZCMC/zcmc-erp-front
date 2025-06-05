@@ -571,7 +571,7 @@ export const RESOURCES_HEADER = [
       {
         field: "item_name",
         name: "Item name",
-        width: 400,
+        width: 500,
       },
       {
         field: "quantity",
@@ -609,16 +609,16 @@ export const RESOURCES_HEADER = [
   {
     field: "expense_class",
     name: "Expense class of unit",
-    width: 150,
+    width: 120,
     align: "center",
     render: (params) => {
-      return params.total_cost;
+      return params.expense_class;
     },
   },
   {
-    field: "is_gad",
-    name: "Is GAD-related activity",
-    width: 150,
+    field: "type_of_resource",
+    name: "Type of resource",
+    width: 200,
     align: "center",
   },
 ];

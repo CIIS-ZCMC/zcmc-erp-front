@@ -223,8 +223,10 @@ export const ActivityDetails = () => {
       <DrawerComponent
         open={openResourcesModal}
         setOpen={setOpenResourcesModal}
-        title={`Approval timeline for this AOP`}
-        description={"The list below shows the current status of the request."}
+        title={`Resources for this activity`}
+        description={
+          "The list below shows the list of all resources selected for this activity."
+        }
         size="full"
         content={
           <ScrollableTableComponent
