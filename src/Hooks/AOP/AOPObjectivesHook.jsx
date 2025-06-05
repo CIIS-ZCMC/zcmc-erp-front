@@ -92,7 +92,7 @@ const useAOPObjectivesHooks = create((set, get) => ({
     },
 
     updateAOP: (form, params, callBack) => {
-      post({
+      update({
         url: `${API.AOP_APPLICATION_UPDATE}/${params}`,
         form: form,
         failed: callBack,

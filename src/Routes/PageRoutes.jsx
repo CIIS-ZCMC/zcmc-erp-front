@@ -69,7 +69,8 @@ export const sidebarRoutes = [
       },
       {
         path: "/aop-create",
-        name: "Create AOP",
+        name: "Create AOP ",
+        hidden: true,
         element: <CreateAOP />,
         roles: ["super_admin"],
         childPermissions: ["ERP-AOP-MAN:write"],
@@ -98,6 +99,7 @@ export const sidebarRoutes = [
           },
         ],
       },
+
       {
         path: "/aop-edit",
         element: <EditAOP />,
@@ -199,6 +201,7 @@ export const sidebarRoutes = [
           },
         ],
       },
+
       {
         path: "/objectives",
         name: "Objectives and KPIs",
