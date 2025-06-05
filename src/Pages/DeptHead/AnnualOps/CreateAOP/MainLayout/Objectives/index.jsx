@@ -197,8 +197,6 @@ const Objectives = () => {
       application_objectives: aopPayload,
     };
 
-    console.log(payload)
-
     create(payload, (status, message) => {
       // console.log(message)
       let data = {};
@@ -231,6 +229,7 @@ const Objectives = () => {
         setMission("");
         window.location.reload(false);
         setAlertDialog(data);
+        navigate('/aop')
         return;
       }
 

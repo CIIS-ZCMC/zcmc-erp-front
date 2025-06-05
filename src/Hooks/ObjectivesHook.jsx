@@ -18,10 +18,18 @@ const useObjectivesHook = create(
       current_parent_id: null,
       current_row_id: null,
 
+
       setObjectives: (data) => {
         // console.log(data)
         set((state) => ({
           objectives: data
+        }))
+      },
+
+      clearParentId: () => {
+        // console.log(data)
+        set(() => ({
+          current_parent_id: null,
         }))
       },
 

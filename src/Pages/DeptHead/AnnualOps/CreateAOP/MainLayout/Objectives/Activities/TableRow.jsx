@@ -29,8 +29,8 @@ const TableRow = ({
     ))
 
     useEffect(() => (
-        console.log(resourcesCount.length)
-    ), [])
+        console.log('current parent id on table row', parentId)
+    ), [parentId])
 
     //local state
     const [localAopActivity, setLocalAopActivity] = useState({});
@@ -66,10 +66,9 @@ const TableRow = ({
 
     };
 
-    useEffect(() => {
-        console.log(rows)
-    }, [rows])
-
+    // useEffect(() => {
+    //     console.log(rows)
+    // }, [rows])
 
     return (
         <Fragment>

@@ -40,7 +40,7 @@ const EditActivities = () => {
     };
 
     // useEffect(() => {
-    //     //  console.log(activities);
+    //     console.log('activities', activities);
     //     const hasActivitiesForParent = activities.some(
     //         (act) => act.parentId === parentId
     //     );

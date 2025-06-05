@@ -140,17 +140,15 @@ const AnnualOps = () => {
   ));
 
   useEffect(() => {
-    // console.log('AOP OBJECTIVES FETCH FROM SERVER:', aopObjectives);
-    // console.log('aop mission:', aopObjectives.mission)
-    // console.log('aop id:', aopObjectives.aop_application_id)
+    console.log('AOP OBJECTIVES FETCH FROM SERVER:', aopObjectives);
 
     setMission(aopObjectives.mission);
     setAOPId(aopObjectives.aop_application_id);
-    setObjectives(formattedObjectives);
-    setActivities(formattedActivities);
+    setObjectives(formattedObjectives ? formattedObjectives : []);
+    setActivities(formattedActivities ? formattedActivities : []);
     //add set cart
-    setResources(formattedResources);
-    setResponsiblePeople(formattedResponsiblePeople);
+    setResources(formattedResources ? formattedResources : []);
+    setResponsiblePeople(formattedResponsiblePeople ? formattedResponsiblePeople : []);
   }, [aopObjectives])
 
   return (
