@@ -1,13 +1,34 @@
-import React, { Fragment, useEffect } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import ScrollableTableComponent from "../../../Components/Common/Table/ScrollableTableComponent";
 import { Typography } from "@mui/joy";
 import { Stack, Link } from "@mui/joy";
 import { IoInformationOutline, IoOpen, IoOpenOutline } from "react-icons/io5";
 import useLibItemHook from "../../../Hooks/Libraries/LibItemHooks";
 import useModalHook from "../../../Hooks/ModalHook";
+import ServerTableComponent from "../../../Components/Common/Table/ServerTableComponent";
+
 export const Items = () => {
   const { resetInput, setUpdateData, updateData } = useLibItemHook();
   const { openModal, setOpenModal } = useModalHook();
+  const { Items, getItems, pagination, navLinks, currentPage, setCurrentPage } =
+    useLibItemHook();
+
+  const fetchAll = async () => {
+    const wrap = (fn) => new Promise((resolve) => fn(() => resolve()));
+
+    try {
+      await Promise.all([
+        wrap(getItems(currentPage)),
+        // wrap((done) => getFunctionType({ mode: "selection" }, done)),
+      ]);
+    } catch (err) {
+      console.error("Fetching error:", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchAll();
+  }, [currentPage]);
 
   useEffect(() => {
     if (openModal.isNew) {
@@ -15,54 +36,16 @@ export const Items = () => {
       resetInput();
     }
   }, [openModal]);
-
-  const data = [
-    {
-      id: 1,
-      name: "Ballpen",
-      classification: "Office Supply",
-      item_category: "Writing Instrument",
-      variant: "Blue Ink",
-      unit: "Piece",
-      estimated_budget: "15.00",
-    },
-    {
-      id: 2,
-      name: "Printer Paper",
-      classification: "Office Supply",
-      item_category: "Paper",
-      variant: "A4, 80gsm",
-      unit: "Ream",
-      estimated_budget: "250.00",
-    },
-    {
-      id: 3,
-      name: "Alcohol",
-      classification: "Medical Supply",
-      item_category: "Disinfectant",
-      variant: "70% Solution",
-      unit: "Bottle",
-      estimated_budget: "120.00",
-    },
-    {
-      id: 4,
-      name: "Stapler",
-      classification: "Office Equipment",
-      item_category: "Fastening Tool",
-      variant: "Heavy Duty",
-      unit: "Unit",
-      estimated_budget: "350.00",
-    },
-    {
-      id: 5,
-      name: "Face Mask",
-      classification: "Medical Supply",
-      item_category: "PPE",
-      variant: "3-ply Disposable",
-      unit: "Box",
-      estimated_budget: "200.00",
-    },
-  ];
+  const data =
+    Items.map((row) => ({
+      id: row.id,
+      name: row.name,
+      classification: row.classification,
+      item_category: row.category,
+      variant: row.variant,
+      unit: row.unit,
+      estimated_budget: row.estimated_budget,
+    })) || [];
 
   const objHeaders = [
     { field: "id", name: "Row #", align: "center", width: "50px" },
@@ -139,7 +122,23 @@ export const Items = () => {
 
   return (
     <Fragment>
-      <ScrollableTableComponent
+      <ServerTableComponent
+        data={data}
+        columns={objHeaders}
+        pageSize={pagination?.per_page}
+        currentPage={currentPage}
+        totalPages={0}
+        onPageChange={setCurrentPage}
+        paginationMeta={pagination}
+        stripe="even"
+        withCount={pagination?.total}
+        fieldsToSearch={["title", "description"]}
+        search={""}
+        bordered
+        hoverRow
+        stickLast
+      />
+      {/* <ScrollableTableComponent
         data={data}
         columns={objHeaders}
         pageSize={5}
@@ -148,7 +147,7 @@ export const Items = () => {
         hoverRow
         isLoading={false}
         stickLast
-      />
+      /> */}
     </Fragment>
   );
 };

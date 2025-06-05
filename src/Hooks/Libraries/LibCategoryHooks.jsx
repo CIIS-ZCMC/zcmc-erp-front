@@ -1,9 +1,22 @@
 import { create } from "zustand";
-
+import { read } from "../../Services/RequestMethods";
+import { API } from "../../Data/constants";
 const useCategoryHooks = create((set) => ({
   inputs: {
     currentLibName: "sada",
     pin: null,
+  },
+  categories: [],
+  getCategories: async (callBack) => {
+    read({
+      url: `${API.ITEM_CATEGORIES}?mode=selection`,
+      failed: callBack,
+      success: (res) => {
+        const { status, message, data } = res;
+        set({ categories: data.data });
+        callBack(status, message);
+      },
+    });
   },
   type: "create", // ['create', 'update', 'delete']
   isloading: false,

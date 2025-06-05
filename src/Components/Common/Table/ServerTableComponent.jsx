@@ -14,6 +14,7 @@ import PaginationComponent from "./PaginationComponent";
 import { ThreeDots } from "react-loader-spinner";
 import get from "lodash.get";
 import InputComponent from "../../Form/InputComponent";
+import SearchBarComponentv2 from "../../SearchBarWithdeBounce";
 
 function ServerTableComponent({
   data = [],
@@ -52,12 +53,9 @@ function ServerTableComponent({
   return (
     <Box sx={{ width: "100%", overflow: "auto" }}>
       <Stack gap={1} mb={2} justifyContent="space-between">
-        <InputComponent
-          label="Search"
-          width="30%"
-          value={search}
-          setValue={setSearch}
-        />
+        <Box width="30%">
+          <SearchBarComponentv2 value={search} setValue={setSearch} />
+        </Box>
       </Stack>
       <Sheet
         variant="outlined"

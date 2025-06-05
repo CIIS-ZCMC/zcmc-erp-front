@@ -36,10 +36,11 @@ function ContainerComponent({
   noPadding,
   footer,
   isLoading,
+  noBoxShadow = false,
   ...props
 }) {
   return (
-    <CustomSheet {...props}>
+    <CustomSheet {...props} noBoxShadow={noBoxShadow}>
       {title && (
         <Stack gap={1.5} mb={2}>
           <Stack

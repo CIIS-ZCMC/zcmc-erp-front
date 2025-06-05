@@ -59,6 +59,7 @@ import {
 const iconStyles = {
   size: 24,
 };
+import ItemSubmittedRequestsList from "../Pages/TEMP/ItemSubmittedRequestsList";
 
 export const sidebarRoutes = [
   // DASHBOARD ROUTE
@@ -86,7 +87,6 @@ export const sidebarRoutes = [
       {
         path: "/aop-create",
         name: "Create AOP",
-
         element: <CreateAOP />,
         roles: ["super_admin"],
         childPermissions: ["ERP-AOP-MAN:write"],
@@ -146,7 +146,6 @@ export const sidebarRoutes = [
           },
         ],
       },
-
       {
         path: "/edit-ppmp",
         name: "Edit PPMP",
@@ -291,6 +290,48 @@ export const sidebarRoutes = [
             element: <Variant />,
           },
         ],
+      },
+    ],
+  },
+  {
+    path: "/submitted-items",
+    name: "Submitted Items",
+    element: <ItemSubmittedRequestsList />,
+    roles: ["super_admin"],
+    permissions: ["M-001:read", "M-001:write", "M-001:edit", "M-001:delete"],
+    children: [
+      {
+        index: true,
+        element: <>the index</>,
+      },
+      {
+        path: "pending",
+        element: <>pending</>,
+      },
+      {
+        path: "added",
+        element: <>added</>,
+      },
+    ],
+  },
+  {
+    path: "/submitted-items",
+    name: "Submitted Items",
+    element: <ItemSubmittedRequestsList />,
+    roles: ["super_admin"],
+    permissions: ["M-001:read", "M-001:write", "M-001:edit", "M-001:delete"],
+    children: [
+      {
+        index: true,
+        element: <>the index</>,
+      },
+      {
+        path: "pending",
+        element: <>pending</>,
+      },
+      {
+        path: "added",
+        element: <>added</>,
       },
     ],
   },

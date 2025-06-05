@@ -1,4 +1,6 @@
 import { create } from "zustand";
+import { API } from "../../Data/constants";
+import { read } from "../../Services/RequestMethods";
 
 const useVariantHooks = create((set) => ({
   inputs: {
@@ -9,6 +11,7 @@ const useVariantHooks = create((set) => ({
   isloading: false,
   hasError: true,
   selectedData: null,
+  variants: [],
   setSelectedData: (data) => {
     set({ selectedData: data });
   },
@@ -25,6 +28,18 @@ const useVariantHooks = create((set) => ({
       inputs: {
         currentLibName: "",
         pin: null,
+      },
+    });
+  },
+
+  getVariants: async (callBack) => {
+    read({
+      url: `${API.ITEM_VARIANT}?mode=selection`,
+      failed: callBack,
+      success: (res) => {
+        const { status, message, data } = res;
+        set({ variants: data.data });
+        callBack(status, message);
       },
     });
   },

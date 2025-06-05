@@ -112,6 +112,14 @@ export const LIBRARY_CONSTANTS = {
     "The following records of information are used to define user-inputted values",
 };
 
+export const ITEM_SUBMITTED_LIST_CONSTANTS = {
+  ITEM_SUBMITTED_LIST_TITLE: "Submitted Item Requests",
+  ITEM_SUBMITTED_LIST_SUBTITLE: "All your item requests this year appear here.",
+  ITEM_SUBMITTED_LIST_HEADER: "List of requests",
+  ITEM_SUBMITTED_LIST_SUBHEADER:
+    "You can request new items here if you wish to. Requested items cannot be canceled and are subject to processing by the assigned consolidators.",
+};
+
 export const MONTHS = [
   { label: "January", value: "01" },
   { label: "February", value: "02" },
@@ -171,6 +179,14 @@ export const API = {
 
   // OBJECTIVES
   EDIT_OBJECTIVE: "edit-objective-and-success-indicator",
+
+  //library
+  ClASSIFICATION: "item-classifications",
+  ITEM_CATEGORIES: "item-categories",
+  ITEM_CLASSIFICATIONS: "item-classifications",
+  ITEM_UNIT: "item-units",
+  ITEM_VARIANT: "variants",
+  ITEMS_: "items",
 };
 
 export const expenseClassData = [

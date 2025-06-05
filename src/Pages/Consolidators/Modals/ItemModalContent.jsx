@@ -22,6 +22,11 @@ import useLibItemHook from "../../../Hooks/Libraries/LibItemHooks";
 import { IoCheckmarkOutline } from "react-icons/io5";
 import { IoAddCircleOutline } from "react-icons/io5";
 import useModalHook from "../../../Hooks/ModalHook";
+import useCategoryHooks from "../../../Hooks/Libraries/LibCategoryHooks";
+import { ChevronsRightLeft } from "lucide-react";
+import useClassificationHooks from "../../../Hooks/Libraries/LibClassificationHooks";
+import useVariantHooks from "../../../Hooks/Libraries/LibVarianHooks";
+
 export const ItemModalContent = () => {
   const [step, setStep] = useState(0);
   const { openModal, setOpenModal } = useModalHook();
@@ -56,24 +61,28 @@ export const ItemModalContent = () => {
   };
   const Step1 = ({ setStep }) => {
     const { inputs, setInputs, updateData } = useLibItemHook();
-    const classificationOptions = [
-      { id: 1, name: "Office Supplies" },
-      { id: 2, name: "IT Equipment" },
-      { id: 3, name: "Furniture" },
-    ];
-    const categoryOptions = [
-      { id: 101, name: "Paper Products" },
-      { id: 102, name: "Writing Instruments" },
-      { id: 103, name: "Computer Peripherals" },
-      { id: 104, name: "Network Devices" },
-      { id: 105, name: "Office Chairs" },
-      { id: 106, name: "Filing Cabinets" },
-    ];
-    const unitOptions = [
-      { id: 101, name: "Per Piece" },
-      { id: 102, name: "Gallons" },
-      { id: 103, name: "Box" },
-    ];
+    const categories = useCategoryHooks((state) => state.categories);
+    const classifications = useClassificationHooks(
+      (state) => state.classifications
+    );
+    const unit = useClassificationHooks((state) => state.unit);
+    const classificationOptions =
+      classifications.map((row) => ({
+        id: row.id,
+        name: row.name,
+      })) || [];
+    const categoryOptions =
+      categories?.map((row) => ({ id: row.id, name: row.name })) || [];
+    const unitOptions =
+      unit?.map((row) => ({
+        id: row.id,
+        name: row.name,
+      })) || [];
+    const variantOptions =
+      useVariantHooks((state) => state.variants).map((row) => ({
+        id: row.id,
+        name: row.name,
+      })) || [];
     return (
       <Fragment>
         <Typography level="body-lg" fontWeight={"bold"}>
@@ -157,7 +166,27 @@ export const ItemModalContent = () => {
           <Grid item xs={12}>
             <Box>
               <FormLabel sx={{ mb: 1 }}>Variants</FormLabel>
-              <Grid container spacing={2}>
+              <Autocomplete
+                required
+                placeholder="Select variants"
+                options={variantOptions}
+                value={variantOptions.find(
+                  (item) => item.id === inputs?.variant_id
+                )}
+                getOptionLabel={(option) => option.name}
+                onChange={(e, value) => {
+                  setInputs("variant_id", value?.id || null);
+                }}
+                renderInput={(params) => (
+                  <TextField
+                    {...params}
+                    name="variant_id"
+                    label="variant_id"
+                    required
+                  />
+                )}
+              />
+              {/* <Grid container spacing={2}>
                 <Grid item xs={4}>
                   <ToggleCard
                     label={"Low-end"}
@@ -179,7 +208,7 @@ export const ItemModalContent = () => {
                     inputs={inputs}
                   />
                 </Grid>
-              </Grid>
+              </Grid> */}
             </Box>
           </Grid>
 
@@ -259,6 +288,7 @@ export const ItemModalContent = () => {
       updated[index].description = value;
       setInputSpecification(updated);
     };
+    const SaveItem = useLibItemHook((state) => state.SaveItem);
     return (
       <Fragment>
         <Typography level="body-lg" fontWeight={"bold"}>
@@ -371,9 +401,23 @@ export const ItemModalContent = () => {
             loadingPosition="end"
             onClick={() => {
               //Saved here
-              setLoader(true);
+              // setLoader(true);
               /////////////////////////////////////
 
+              SaveItem(inputs, (status, message) => {
+                if (!status) {
+                  console.error("Error saving item:", message);
+                  return;
+                }
+
+                console.log("awww");
+                // setLoader(false);
+                // setStep(2);
+
+                return;
+              });
+
+              return;
               setTimeout(() => {
                 setLoader(false);
                 setStep(2);
@@ -389,6 +433,7 @@ export const ItemModalContent = () => {
 
   const Step3 = () => {
     const { resetInput } = useLibItemHook();
+    const [isAuthorized, setIsAuthorized] = useState(false);
     return (
       <Fragment>
         <Typography level="body-lg" fontWeight={"bold"}>
@@ -399,7 +444,7 @@ export const ItemModalContent = () => {
           and use the new item
         </Typography>
 
-        <AuthorizationPinComponent setIsAuthorized={setIsAuthorized} />
+        {/* <AuthorizationPinComponent setIsAuthorized={setIsAuthorized} /> */}
 
         <Stack direction="row" spacing={1} mt={5}>
           <Button
@@ -447,11 +492,11 @@ export const ItemModalContent = () => {
           </>
         ) : (
           <>
-            <Typography  level="body-lg" fontWeight={"bold"}>
+            <Typography level="body-lg" fontWeight={"bold"}>
               Delete item " <span style={{ color: "#CB0404" }}>#2023-0031</span>{" "}
               " ?
             </Typography>
-            <Typography  level="body-md">
+            <Typography level="body-md">
               This action cannot be undone
             </Typography>
             <Divider sx={{ marginTop: "20px", marginBottom: "10px" }} />
@@ -494,6 +539,20 @@ export const ItemModalContent = () => {
       </Fragment>
     );
   };
+
+  const getCategories = useCategoryHooks((state) => state.getCategories);
+  const getClassifications = useClassificationHooks(
+    (state) => state.getClassifications
+  );
+  const getUnit = useClassificationHooks((state) => state.getUnit);
+  const getVariants = useVariantHooks((state) => state.getVariants);
+
+  useEffect(() => {
+    getCategories((status, message) => {});
+    getClassifications((status, message) => {});
+    getUnit((status, message) => {});
+    getVariants((status, message) => {});
+  }, []);
   return (
     <Fragment>
       {openModal.isDelete ? (

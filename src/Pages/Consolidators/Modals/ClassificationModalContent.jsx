@@ -15,6 +15,7 @@ import useLibrariesHook from "../../../Hooks/Libraries/LibHooks";
 import useModalHook from "../../../Hooks/ModalHook";
 import useClassificationHooks from "../../../Hooks/Libraries/LibClassificationHooks";
 import useItemsHook from "../../../Hooks/ItemsHook";
+import useClassificationDataTable from "../../../Hooks/Libraries/dataTable/dataClassification";
 
 // ['create', 'update', 'delete']
 
@@ -28,9 +29,15 @@ export const ClassificationModalContent = () => {
     type,
     setLoading,
     selectedData,
+    getFormData,
+    setError,
   } = useClassificationHooks();
 
-  const { openModal, setOpenModal, setSuccessDialog } = useModalHook();
+  const addClassification = useClassificationDataTable(
+    (state) => state.addClassification
+  );
+
+  const { setOpenModal, setAlertDialog } = useModalHook();
 
   const MetaData = {
     create: {
@@ -203,7 +210,17 @@ export const ClassificationModalContent = () => {
         </Button>
         <Button
           sx={{ flex: 1 }}
-          onClick={() => setSuccessDialog(true)}
+          onClick={() => {
+            console.log("getFormData", getFormData());
+            addClassification(
+              getFormData(),
+              setLoading,
+              setError,
+              resetInput,
+              setAlertDialog,
+              setOpenModal
+            );
+          }}
           variant="solid"
           color={type === "delete" ? "danger" : "primary"}
           disabled={isloading}
