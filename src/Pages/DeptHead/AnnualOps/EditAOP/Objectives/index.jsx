@@ -49,10 +49,6 @@ const index = () => {
     );
 
     useEffect(() => {
-        console.log(mission)
-    }, [mission])
-
-    useEffect(() => {
         const params = { with_sub_data: 1 };
         getFunctionType(params, (status, message) => {
             // console.log(status)
@@ -62,7 +58,94 @@ const index = () => {
             }
             setisLoading(false);
         });
+
+
+        getSingleAOP((status, message) => {
+            setIsLoading(false)
+            // console.log(status)
+            if (!(status >= 200 && status < 300)) {
+                return; //Toast error
+            }
+        })
     }, []);
+
+    // formatted objectives
+    const formattedObjectives = aopObjectives.application_objectives?.map(({ function_type, objective, success_indicator }, index) => (
+        {
+            id: uuid(),
+            rowId: index + 1,
+            functionType: function_type,
+            objective: objective,
+            successIndicator: success_indicator
+        }
+    ))
+
+    // get flat activities
+    const flatActivities = aopObjectives.application_objectives?.flatMap(data => data.activity) || [];
+
+
+    // formatted activities
+    const formattedActivities = flatActivities.map(({ activity_uuid, name, is_gad_related, cost, start_month, end_month, target }, index) => ({
+        id: activity_uuid ? activity_uuid : uuid(),
+        // parentId: objectiveId,
+        rowId: index + 1,
+        name: name,
+        isGadRelated: is_gad_related,
+        cost: cost,
+        startMonth: start_month,
+        endMonth: end_month,
+        target: {
+            firstQuarter: target.first_quarter,
+            secondQuarter: target.second_quarter,
+            thirdQuarter: target.third_quarter,
+            fourthQuarter: target.fourth_quarter,
+        }
+    }));
+
+    //get item resourcese
+    const flatResources = aopObjectives.application_objectives?.flatMap(data =>
+        data.activity.flatMap(item => item.resources)
+    ) || [];
+
+
+    const flatResponsiblePeople = aopObjectives.application_objectives?.flatMap(data =>
+        data.activity.flatMap(item => item.responsible_people));
+
+    const formattedResponsiblePeople = flatResponsiblePeople?.map((responsible) => (
+        {
+            activityId: responsible.activity_uuid,
+            users: responsible.users,
+            designations: responsible.designations,
+            areas: responsible.areas
+        }
+    ));
+
+
+    // formatted resources
+    const formattedResources = flatResources?.map((resource, index) => ({
+        id: uuid(),
+        item_id: resource.item?.id,
+        parentId: resource.item.parentId,
+        rowId: index + 1,
+        name: resource.item?.name,
+        quantity: resource.quantity,
+        individualPrice: resource.item?.estimated_budget,
+        totalCost: Number((resource.item?.estimated_budget * resource.quantity).toFixed(2)),
+        expenseClass: resource.expense_class,
+        purchaseTypeId: resource.purchase_type,
+    }));
+
+    useEffect(() => {
+        // console.log('AOP OBJECTIVES FETCH FROM SERVER:', aopObjectives);
+        setObjectives(formattedObjectives ? formattedObjectives : []);
+        setActivities(formattedActivities ? formattedActivities : []);
+        //add set cart
+        setResources(formattedResources ? formattedResources : []);
+        setResponsiblePeople(formattedResponsiblePeople ? formattedResponsiblePeople : []);
+    }, [aopObjectives])
+
+
+
 
     const handleOpenDialog = () => {
         setOpenSaveMissionModal(true);
