@@ -49,6 +49,8 @@ const AOPApproval = () => {
   // FUNCTIONS
   const handleClickCard = (id, area_code) => {
     setPageLoading(true);
+
+    getAOPApprovalTimeline(id, () => {});
     getAOPApplicationById(id, () => {
       setPageLoading(false);
       navigate(`/aop-approval/objectives/${id}`);

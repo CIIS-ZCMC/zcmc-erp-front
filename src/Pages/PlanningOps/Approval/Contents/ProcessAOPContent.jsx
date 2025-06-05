@@ -1,18 +1,23 @@
 import React, { Fragment, useState } from "react";
-import { useUserTypes } from "../../../../Store/AuthStore";
+import { useAuth, useUserTypes } from "../../../../Store/AuthStore";
 import { approvalActions } from "../../../../Data/constants";
 import { handleChangeInput } from "../../../../Utils/HandleInput";
 import { Box, Divider, Stack, Typography } from "@mui/joy";
 import RadioButtonComponent from "../../../../Components/Common/RadioButtonComponent";
 import TextareaComponent from "../../../../Components/Form/TextareaComponent";
 import InputComponent from "../../../../Components/Form/InputComponent";
-import { useApprovalActions } from "../../../../Hooks/AOP/AOPApprovalHook";
+import {
+  useApprovalActions,
+  useApprovalTimeline,
+} from "../../../../Hooks/AOP/AOPApprovalHook";
 import { useAOPApplication } from "../../../../Hooks/AOP/AOPApplicationsHook";
 import { localStorageGetter } from "../../../../Utils/LocalStorage";
 import useModalHook from "../../../../Hooks/ModalHook";
 import ButtonComponent from "../../../../Components/Common/ButtonComponent";
 import ModalComponent from "../../../../Components/Common/Dialog/ModalComponent";
 import AlertDialogComponent from "../../../../Components/Common/Dialog/AlertDialogComponent";
+import { TEST_MODE } from "../../../../Services/Config";
+import { APPROVAL_TIMELINE } from "../../../../Data/TestData";
 
 const ProcessAOPContent = () => {
   // HOOKS
@@ -21,12 +26,19 @@ const ProcessAOPContent = () => {
   const { status: applicationStatus } = aopApplication || {};
   const { processAOP } = useApprovalActions();
   const { setAlertDialog, closeAlertDialog } = useModalHook();
+  const approvalTimeline = useApprovalTimeline();
+  const { user } = useAuth();
+
+  const timeline = TEST_MODE ? APPROVAL_TIMELINE : approvalTimeline;
 
   // STATE
   const [processData, setProcessData] = useState({ action: "approved" });
   const [disabledProcessRequest, setDisabledProcessRequest] = useState(
-    applicationStatus === "approved"
+    timeline?.some(
+      (item) => item.approver_user_id === user?.id && item.status === "approved"
+    )
   );
+
   const AOP_APPLICATION_ID = localStorageGetter("aop_application_id");
   const [openProcessModal, setOpenProcessModal] = useState(false);
   const [btnLoading, setBtnLoading] = useState(false);
@@ -87,7 +99,7 @@ const ProcessAOPContent = () => {
     <Fragment>
       <ButtonComponent
         label={"Process request"}
-        // disabled={disabledProcessRequest}
+        disabled={disabledProcessRequest}
         onClick={handleProcessRequest}
       />
 

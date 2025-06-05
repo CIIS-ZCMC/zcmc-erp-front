@@ -62,93 +62,95 @@ function StepItem({
     borderRadius: "50%",
   };
   return (
-    <Step
-      indicator={
-        status === "Pending" ? (
-          <StepIndicator sx={{ bgcolor: color.lighter }}>
-            <BiCircle sx={{ bgcolor: color.active }} />
-          </StepIndicator>
-        ) : (
-          <Box sx={boxStyles}>
-            <Check size={12} />
-          </Box>
-        )
-      }
-    >
-      <Stack
-        direction={"row"}
-        sx={{ justifyContent: "space-between", alignItems: "center" }}
-        ml={0.5}
-        width={"100%"}
+    <Fragment>
+      <Step
+        indicator={
+          status === "Pending" ? (
+            <StepIndicator sx={{ bgcolor: color.lighter }}>
+              <BiCircle sx={{ bgcolor: color.active }} />
+            </StepIndicator>
+          ) : (
+            <Box sx={boxStyles}>
+              <Check size={12} />
+            </Box>
+          )
+        }
       >
-        <Typography
-          level={window.innerWidth < 1200 ? "body-xs" : "title-sm"}
-          fontWeight={600}
+        <Stack
+          direction={"row"}
+          sx={{ justifyContent: "space-between", alignItems: "center" }}
+          ml={0.5}
+          width={"100%"}
         >
-          {position}
-        </Typography>
-        {isLast && (
-          <ChipComponent
-            sx={{ px: window.innerWidth >= 1200 ? 0.8 : 1, fontWeight: 400 }}
-            size={"sm"}
-            label={toCapitalize(status) ?? "Pending"}
-            color={getStatusColorScheme(status?.toLowerCase())}
-            variant={status === "submitted" ? "outlined" : "solid"}
-          />
-        )}
-      </Stack>
-
-      <Stack gap={1.5} ml={0.7}>
-        <Typography fontWeight={400} level="body-xs">
-          <Typography>
-            {status === "pending" ? "Updated " : "Approved"} by:{" "}
-          </Typography>
-
-          <Typography textColor={"neutral.900"}> {name}</Typography>
-        </Typography>
-        <Divider sx={dividerStyles} />
-        {approved_at && (
-          <>
-            <StepTextDisplay
-              label={"Approved on:"}
-              value={moment(date_approved).format("LLL")}
-            />
-            <Divider sx={dividerStyles} />
-          </>
-        )}
-
-        {number_of_comments > 0 && (
-          <>
-            <StepTextDisplay
-              label={"Has wrote:"}
-              value={`${number_of_comments} comments in ${activities_with_comments} activities`}
-            />
-            <Divider sx={dividerStyles} />
-          </>
-        )}
-        {remarks && (
           <Typography
-            level="body-xs"
-            fontWeight={400}
-            textColor={"neutral.900"}
+            level={window.innerWidth < 1200 ? "body-xs" : "title-sm"}
+            fontWeight={600}
           >
-            {remarks}
+            {position}
           </Typography>
-        )}
-      </Stack>
+          {isLast && (
+            <ChipComponent
+              sx={{ px: window.innerWidth >= 1200 ? 0.8 : 1, fontWeight: 400 }}
+              size={"sm"}
+              label={toCapitalize(status) ?? "Pending"}
+              color={getStatusColorScheme(status?.toLowerCase())}
+              variant={status === "submitted" ? "outlined" : "solid"}
+            />
+          )}
+        </Stack>
 
-      {/* <Divider sx={{ my: 0.3 }} /> */}
-      {/* BODY */}
-      <Stack my={1} gap={{ xs: 2, sm: 1 }}>
-        {remarks !== null && (
-          <Link
-            sx={{ fontSize: 12, textDecoration: "underline" }}
-            onClick={() => setViewCommentModal(true)}
-          >
-            See remarks
-          </Link>
-        )}
-      </Stack>
+        <Stack gap={1.5} ml={0.7}>
+          <Typography fontWeight={400} level="body-xs">
+            <Typography>
+              {status === "pending" ? "Updated " : "Approved"} by:{" "}
+            </Typography>
+
+            <Typography textColor={"neutral.900"}> {name}</Typography>
+          </Typography>
+          <Divider sx={dividerStyles} />
+          {approved_at && (
+            <>
+              <StepTextDisplay
+                label={"Approved on:"}
+                value={moment(date_approved).format("LLL")}
+              />
+              {/* <Divider sx={dividerStyles} /> */}
+            </>
+          )}
+
+          {number_of_comments > 0 && (
+            <>
+              <StepTextDisplay
+                label={"Has wrote:"}
+                value={`${number_of_comments} comments in ${activities_with_comments} activities`}
+              />
+              <Divider sx={dividerStyles} />
+            </>
+          )}
+          {remarks && (
+            <Typography
+              level="body-xs"
+              fontWeight={400}
+              textColor={"neutral.900"}
+            >
+              {remarks}
+            </Typography>
+          )}
+        </Stack>
+
+        {/* <Divider sx={{ my: 0.3 }} /> */}
+        {/* BODY */}
+        <Stack my={1} gap={{ xs: 2, sm: 1 }}>
+          {remarks !== null && (
+            <Link
+              sx={{ fontSize: 12, textDecoration: "underline" }}
+              onClick={() => setViewCommentModal(true)}
+            >
+              See remarks
+            </Link>
+          )}
+        </Stack>
+      </Step>
 
       {/* COMMENT */}
       <ModalComponent
@@ -172,7 +174,7 @@ function StepItem({
           </Stack>
         }
       />
-    </Step>
+    </Fragment>
   );
 }
 
