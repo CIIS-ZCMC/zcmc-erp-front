@@ -59,8 +59,8 @@ const useActivitiesHook = create(
             },
 
             //add activity Row
-            addActivity: (parentId = null) => {
-                console.log(parentId)
+            addActivity: (parentId) => {
+                // console.log(parentId)
                 const current = get().activities;
                 set((state) => ({
                     activities: [
@@ -78,7 +78,7 @@ const useActivitiesHook = create(
 
             removeActivity: (id) => {
 
-                console.log(id)
+                // console.log(id)
 
                 const activities = get().activities;
 

@@ -197,8 +197,6 @@ const Objectives = () => {
       application_objectives: aopPayload,
     };
 
-    console.log(payload)
-
     create(payload, (status, message) => {
       // console.log(message)
       let data = {};
@@ -230,6 +228,7 @@ const Objectives = () => {
         clearLocalStorage();
         setMission("");
         window.location.reload(false);
+        navigate('/aop')
         setAlertDialog(data);
         return;
       }

@@ -4,6 +4,8 @@ import { Stack, Typography, } from '@mui/joy';
 
 import useAOPObjectivesHooks from '../../../Hooks/AOP/AOPObjectivesHook';
 import { useApprovalActions, useApprovalLoading, useApprovalTimeline } from '../../../Hooks/AOP/AOPApprovalHook';
+import { useAOPActions } from '../../../Hooks/AOP/AOPObjectivesHook';
+
 
 import BoxComponent from '../../../Components/Common/Card/BoxComponent';
 import StepperComponent from '../../../Components/Stepper/StepperComponent';
@@ -15,11 +17,11 @@ const Timeline = () => {
 
     const { getAOPApprovalTimeline } = useApprovalActions();
 
-    // const { aop_timeline, getTimeline } = useAOPObjectivesHooks();
+    const { aop_timeline, getTimeline } = useAOPObjectivesHooks();
     const [isLoading, setIsLoading] = useState();
 
     useEffect(() => {
-        // setIsLoading(true)
+        setIsLoading(true)
         // getTimeline((status, message) => {
         //     // console.log(status)
         //     if (!(status >= 200 && status < 300)) {
@@ -29,9 +31,9 @@ const Timeline = () => {
         // })
     }, [])
 
-    // useEffect(() => {
-    //     console.log(aop_timeline)
-    // }, [aop_timeline])
+    useEffect(() => {
+        console.log(aop_timeline)
+    }, [aop_timeline])
 
     return (
         <Fragment>

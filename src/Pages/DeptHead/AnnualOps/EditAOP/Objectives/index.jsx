@@ -40,7 +40,7 @@ const index = () => {
 
     // const [mission, setMission] = useState();
     const [isDraft, setIsDnraft] = useState(false)
-    const [authorizationPin, setAuthorizationPin] = useState('12345');
+    const [authorizationPin, setAuthorizationPin] = useState('123456');
 
     const [openSaveMissionModal, setOpenSaveMissionModal] = useState(false);
 

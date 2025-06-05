@@ -147,7 +147,7 @@ export const API = {
   AOP_APPLICATION_UPDATE: 'aop-application-update',
   AOP_APPLICATION_STORE: "aop-application-store",
   AOP_APPLICATION_SUMMARY: "aop-application-summary",
-  AOP_APPLICATION_TIMELINE: "aop-application-timeline",
+  AOP_APPLICATION_TIMELINE: "application-timelines",
 
   TYPE_OF_FUNCTIONS: "type-of-functions",
   TYPE_OF_PURCHASE: "purchase-types",
