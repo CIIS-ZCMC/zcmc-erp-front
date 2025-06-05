@@ -228,8 +228,8 @@ const Objectives = () => {
         clearLocalStorage();
         setMission("");
         window.location.reload(false);
-        setAlertDialog(data);
         navigate('/aop')
+        setAlertDialog(data);
         return;
       }
 

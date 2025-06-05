@@ -58,12 +58,10 @@ const AnnualOps = () => {
     setIsLoading(true)
 
     getSummary((status, message) => {
-      if (aopObjectives.length !== 0) {
-        setIsLoading(false)
-        // console.log(status)
-        if (!(status >= 200 && status < 300)) {
-          return; //Toast error
-        }
+      setIsLoading(false)
+      // console.log(status)
+      if (!(status >= 200 && status < 300)) {
+        return; //Toast error
       }
     })
 

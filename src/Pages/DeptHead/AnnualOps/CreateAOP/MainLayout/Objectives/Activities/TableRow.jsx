@@ -28,9 +28,9 @@ const TableRow = ({
         findResourcesByActivityID(resource.parentId)
     ))
 
-    useEffect(() => (
-        console.log('current parent id on table row', parentId)
-    ), [parentId])
+    // useEffect(() => (
+    //     console.log('current parent id on table row', parentId)
+    // ), [parentId])
 
     //local state
     const [localAopActivity, setLocalAopActivity] = useState({});

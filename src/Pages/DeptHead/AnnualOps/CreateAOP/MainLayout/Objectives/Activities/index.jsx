@@ -56,7 +56,7 @@ const Activities = () => {
 
     if (current_row_id !== null) {
       if (current_parent_id !== objectiveRowId && !!objectiveRowId) {
-        console.log('current row id', current_row_id)
+        // console.log('current row id', current_row_id)
         setCurrentRowId(objectiveRowId);
       }
     } else {
@@ -130,8 +130,8 @@ const Activities = () => {
                   label={"Add an Activity"}
                   endDecorator={<Plus size={16} />}
                 />
-                {current_parent_id} <br />
-                {parentId ? parentId : <>none</>}
+                {/* {current_parent_id} <br />
+                {parentId ? parentId : <>none</>} */}
               </Stack>
             }
           >
