@@ -33,7 +33,8 @@ const useObjectivesHook = create(
 
       clearObjectives: () => {
         set(() => ({
-          objectives: []
+          objectives: [],
+          hasDiscussed: false
         }))
       },
 

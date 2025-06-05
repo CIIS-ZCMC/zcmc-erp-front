@@ -1,15 +1,38 @@
 import { create } from "zustand";
-import { read, post } from "../../Services/RequestMethods";
+import { read, post, update } from "../../Services/RequestMethods";
 import { API } from "../../Data/constants";
-
 
 const useAOPObjectivesHooks = create((set, get) => ({
   aopObjectives: [],
   aopObjective: {},
   aop_summary: {},
   aop_timeline: [],
+  mission: '',
+  aop_id: null,
+  isLoading: (false),
 
   actions: {
+
+    setAopObjectives: (data) => {
+      set(() => ({
+        aopObjectives: data
+      }))
+    },
+
+    setMission: (data) => {
+      set(() => ({
+        mission: data
+      }))
+    },
+
+
+    setAOPId: (data) => {
+      set(() => ({
+        aop_id: data
+      }))
+    },
+
+
     getSummary: (callBack) => {
       read({
         url: API.AOP_APPLICATION_SUMMARY,
@@ -44,6 +67,17 @@ const useAOPObjectivesHooks = create((set, get) => ({
       })
     },
 
+    getSingleAOP: (callBack) => {
+      read({
+        url: `${API.AOP_APPLICATION_EDIT}`,
+        failed: callBack,
+
+        success: (res) => {
+          set({ aopObjectives: res.data.data });
+          callBack(200, "Success");
+        }
+      })
+    },
 
     create: (form, callBack) => {
       post({
@@ -53,23 +87,22 @@ const useAOPObjectivesHooks = create((set, get) => ({
         success: (res) => {
           set({ aopObjectives: res.data });
           callBack(200, "Success");
-          aopObjectives
         },
       });
     },
 
-    getSingleAOP: (callBack) => {
-      read({
-        url: `${API.AOP_APPLICATION_EDIT}`,
+    updateAOP: (form, params, callBack) => {
+      update({
+        url: `${API.AOP_APPLICATION_UPDATE}/${params}`,
+        form: form,
         failed: callBack,
         success: (res) => {
-          // console.log(res)
-          set({ aopObjectives: res.data.data });
+          set({ aopObjectives: res.data });
           callBack(200, "Success");
-          aopObjectives
         }
       })
     }
+
   },
 
 }));

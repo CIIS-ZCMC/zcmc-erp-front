@@ -16,7 +16,7 @@ const SelectPersonComponent = ({ parentId }) => {
     const selectedUsers = responsible?.users || [];
 
     // useEffect(() => {
-    //     console.log('responsible:', responsible);
+    //     console.log('responsible:', selectedUsers);
     // }, [])
 
     return <Stack gap={1}>
@@ -43,6 +43,10 @@ const ResponsiblePersonList = ({ parentId }) => {
 
     const filteredData = responsible_people?.filter((element) => element.activityId === parentId)[0] ?? []
     const users = filteredData?.users;
+
+    useEffect(() => {
+        console.log('current users', responsible_people)
+    }, [])
 
     if (users?.length === 0) {
         return (

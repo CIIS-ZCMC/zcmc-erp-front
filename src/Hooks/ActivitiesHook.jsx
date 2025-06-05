@@ -25,11 +25,18 @@ const useActivitiesHook = create(
     persist(
         (set, get) => ({
             activities: [],
+            updatedActivities: [],
             initialRender: true,
 
             setActivities: (data) => {
                 set(() => ({
                     activities: data
+                }))
+            },
+
+            setUpdatedActivities: (data) => {
+                set(() => ({
+                    activities: data,
                 }))
             },
 
@@ -70,6 +77,9 @@ const useActivitiesHook = create(
             setInitialRender: (value) => set({ initialRender: value }),
 
             removeActivity: (id) => {
+
+                console.log(id)
+
                 const activities = get().activities;
 
                 const filtered = activities.filter((item) => item.id !== id);

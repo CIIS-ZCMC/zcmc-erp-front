@@ -103,7 +103,7 @@ const Objectives = () => {
   }, [isDraft]);
 
   function buildAOP() {
-    const objectiveData = objectives.map((item) => {
+    const objectiveData = objectives?.map((item) => {
       const activities = findActivitiesByObjectiveID(item.id);
       const activitiesWithResourceAndResponsiblePeople = activities.map(
         (act) => {
@@ -156,6 +156,7 @@ const Objectives = () => {
     localStorage.removeItem("objectives-storage");
     localStorage.removeItem("activities-storage");
     localStorage.removeItem("resources-storage");
+    localStorage.removeItem("mission");
   };
 
   const handleShowAlert = (status) => {
@@ -191,10 +192,12 @@ const Objectives = () => {
     const payload = {
       mission: mission,
       has_discussed: hasDiscussed === "on" ? true : false,
-      status: isDraft ? isDraft : "pending",
+      status: isDraft ? "draft" : "pending",
       authorization_pin: authorizationPin,
       application_objectives: aopPayload,
     };
+
+    console.log(payload)
 
     create(payload, (status, message) => {
       // console.log(message)
@@ -270,6 +273,7 @@ const Objectives = () => {
   const handleCancelRequest = () => {
     {
       clearLocalStorage();
+      setMission('');
       navigate("/aop");
     }
   };

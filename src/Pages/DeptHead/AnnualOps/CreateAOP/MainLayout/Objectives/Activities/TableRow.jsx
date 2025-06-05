@@ -66,6 +66,10 @@ const TableRow = ({
 
     };
 
+    useEffect(() => {
+        console.log(rows)
+    }, [rows])
+
 
     return (
         <Fragment>

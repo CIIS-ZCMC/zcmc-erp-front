@@ -13,6 +13,18 @@ const useResponsiblePeopleHook = create(
       //   isAssigned: false,
       // },
 
+      setResponsiblePeople: (data) => {
+        set(() => ({
+          responsible_people: data
+        }))
+      },
+
+      setUpdatedResponsiblePeople: (data) => {
+        set(() => ({
+          responsible_people: data
+        }))
+      },
+
       clearResponsiblePeople: () => {
         set(() => ({
           responsible_people: []

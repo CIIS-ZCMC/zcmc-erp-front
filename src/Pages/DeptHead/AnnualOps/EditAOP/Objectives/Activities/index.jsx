@@ -3,6 +3,7 @@ import { Fragment, useEffect, useState } from 'react';
 import { Outlet, useLocation, useNavigate, useParams } from 'react-router-dom';
 import { Stack, Box } from '@mui/joy';
 import { ChevronDown, ChevronUp, Plus } from 'lucide-react';
+import { v4 as uuid } from 'uuid';
 
 import useActivitiesHook from '../../../../../../Hooks/ActivitiesHook';
 
@@ -25,11 +26,12 @@ const EditActivities = () => {
 
     const aopId = location.state?.aopId;
     const objectiveRowId = location.state?.rowId;
+    const objectiveId = location.state.objectiveId;
 
     const currentPath = location.pathname;
     const childPath = currentPath === `/aop-edit/activities/${objectiveRowId}`;
 
-    const { activities, addActivity } = useActivitiesHook();
+    const { activities, setUpdatedActivities, addActivity } = useActivitiesHook();
 
     const [isCollapsed, setIsCollapsed] = useState(false);
 
@@ -47,9 +49,16 @@ const EditActivities = () => {
     //     }
     // }, [activities, parentId]);
 
-    // useEffect(() => {
-    //     console.log(activities)
-    // }, [activities])
+    const activitiesRowData = activities.map((data, index) => ({
+        ...data,
+        rowId: index + 1,
+        parentId: objectiveId,
+    }))
+
+    useEffect(() => {
+        // console.log('updated Activities', activitiesRowData)
+        setUpdatedActivities(activitiesRowData)
+    }, [])
 
     return (
         <Fragment>
@@ -103,7 +112,7 @@ const EditActivities = () => {
                         actions={
                             <Stack>
                                 <ButtonComponent
-                                    onClick={() => addActivity(aopId)}
+                                    onClick={() => addActivity(objectiveId)}
                                     label={"Add an Activity"}
                                     endDecorator={<Plus size={16} />}
                                 />
@@ -117,8 +126,9 @@ const EditActivities = () => {
                                 <TableRow
                                     // handleChange={updateActivityField}
                                     // aopId={aopId ?? current_parent_id}
-                                    parentId={aopId}
+                                    aopRowId={aopId}
                                     objectiveRowId={objectiveRowId ?? current_row_id}
+                                    parentId={objectiveId}
                                     rows={activities}
                                 // deleteRow={removeActivity}
                                 />

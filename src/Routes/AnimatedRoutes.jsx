@@ -3,6 +3,7 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { CircularProgress } from "@mui/joy";
 
 import { sidebarRoutes } from "./PageRoutes";
+// import { sidebarRoutes } from "../Data";
 import Layout from "../Layout";
 import ComponentTestPage from "../Pages/ComponentTestPage";
 import useModalHook from "../Hooks/ModalHook";
