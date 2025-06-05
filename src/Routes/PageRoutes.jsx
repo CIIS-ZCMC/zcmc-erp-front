@@ -1,8 +1,14 @@
 import { Navigate } from "react-router-dom";
 
+import AnnualOps from "../Pages/DeptHead/AnnualOps/AnnualOps";
 import Dashboard from "../Pages/Dashboard";
 
-import AnnualOps from "../Pages/DeptHead/AnnualOps/AnnualOps";
+// table views routes
+import All from "../Pages/DeptHead/AnnualOps/TableViews/All";
+import Approved from "../Pages/DeptHead/AnnualOps/TableViews/Approved";
+import Pending from "../Pages/DeptHead/AnnualOps/TableViews/Pending";
+import Returned from "../Pages/DeptHead/AnnualOps/TableViews/Returned";
+
 import CreateAOP from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout";
 import EditAOP from "../Pages/DeptHead/AnnualOps/EditAOP";
 import EditObjectives from "../Pages/DeptHead/AnnualOps/EditAOP/Objectives/";
