@@ -84,6 +84,7 @@ function PPMPItems(props) {
   const [disabled, setDisabled] = useState(false);
   const [show, setShow] = useState(false);
   const [editLoad, setEditLoad] = useState(false);
+  const [reloadFlag, setReloadFlag] = useState(false);
   const [selectedID, setSelectedID] = useState(null);
   const [step, setStep] = useState(1);
   const [openNotify, setOpenNotify] = useState(false);
@@ -444,7 +445,8 @@ function PPMPItems(props) {
         setPageLoader(true);
         const localData = localStorage.getItem("ppmp-items");
         if (!localData) {
-          wrap(getPPMPItems);
+          await wrap(getPPMPItems); // ✅ await here
+          setReloadFlag((prev) => !prev);
         }
 
         // Step 3: Fetch all other needed data
@@ -595,6 +597,7 @@ function PPMPItems(props) {
           setLoading={setPageLoader}
           isEditing={show}
           setIsEditing={setShow}
+          reloadFlag={reloadFlag}
         />
       </ContainerComponent>
 

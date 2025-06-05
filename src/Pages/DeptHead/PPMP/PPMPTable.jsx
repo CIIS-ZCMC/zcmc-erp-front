@@ -44,6 +44,7 @@ const PPMPTable = memo(
     setLoading,
     isEditing,
     setIsEditing,
+    reloadFlag,
   }) => {
     const { removeItem, search } = usePPMPHook();
     const {
@@ -443,7 +444,7 @@ const PPMPTable = memo(
         setPPMPTable(JSON.parse(storedItems));
       }
       setLoading(false); // finish loading
-    }, []);
+    }, [reloadFlag]);
 
     useEffect(() => {
       const storedSearch = localStorage.getItem("search-value");
