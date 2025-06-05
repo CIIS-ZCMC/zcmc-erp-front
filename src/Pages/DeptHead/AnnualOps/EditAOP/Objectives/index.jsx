@@ -1,14 +1,18 @@
-import { Fragment, useState, useEffect, useMemo } from 'react';
+import { Fragment, useState, useEffect } from 'react';
 
 import { Stack, Link } from '@mui/joy';
 import { ExternalLink, Plus } from 'lucide-react';
 import { useLocation, useNavigate, Outlet } from 'react-router-dom';
+import { v4 as uuid } from 'uuid';
 
+import BoxComponent from '../../../../../Components/Common/Card/BoxComponent';
 import ContainerComponent from '../../../../../Components/Common/ContainerComponent';
 import EditableTableComponent from '../../../../../Components/Common/Table/EditableTableComponent';
 import ButtonComponent from '../../../../../Components/Common/ButtonComponent';
+import { ThreeDotsLoader } from '../../../../../Components/Common/Loading/ThreeDotsLoader';
 
 import useFunctionTypeHook from '../../../../../Hooks/FunctionTypeHook';
+import { useAOPActions } from '../../../../../Hooks/AOP/AOPObjectivesHook';
 import useAOPObjectivesHooks from '../../../../../Hooks/AOP/AOPObjectivesHook';
 import useObjectivesHook from '../../../../../Hooks/ObjectivesHook';
 import useActivitiesHook from '../../../../../Hooks/ActivitiesHook';
@@ -16,31 +20,31 @@ import useResourceHook from '../../../../../Hooks/ResourceHook';
 import useResponsiblePeopleHook from '../../../../../Hooks/ResponsiblePeopleHook';
 import useModalHook from '../../../../../Hooks/ModalHook';
 
-import { useAOPActions } from '../../../../../Hooks/AOP/AOPObjectivesHook';
-
 import TableRow from './TableRow'
 
 import { AOP_CONSTANTS } from '../../../../../Data/constants';
 import { AOP_HEADER } from '../../../../../Data/Columns';
 
 const index = () => {
-    const { updateAOP } = useAOPActions();
+    const { getSingleAOP, updateAOP } = useAOPActions();
 
     const navigate = useNavigate()
     const location = useLocation();
-    const id = location.state?.data.id;
+    const aopId = location.state?.aopAppId;
 
     const { aopObjectives, mission, aop_id, deleteObjective } = useAOPObjectivesHooks();
     const { function_types, getFunctionType } = useFunctionTypeHook();
-    const { objectives, addObjective, clearObjectives } = useObjectivesHook();
-    const { findActivitiesByObjectiveID, activities, clearActivities } = useActivitiesHook();
-    const { findResourcesByActivityID, clearResources } = useResourceHook();
-    const { findResponsiblePeopleByActivityID, clearResponsiblePeople } = useResponsiblePeopleHook();
+    const { objectives, addObjective, setObjectives, clearObjectives } = useObjectivesHook();
+    const { findActivitiesByObjectiveID, setActivities, activities, clearActivities } = useActivitiesHook();
+    const { findResourcesByActivityID, setResources, clearResources } = useResourceHook();
+    const { findResponsiblePeopleByActivityID, clearResponsiblePeople, setResponsiblePeople } = useResponsiblePeopleHook();
     const { setAlertDialog } = useModalHook();
 
     // const [mission, setMission] = useState();
     const [isDraft, setIsDnraft] = useState(false)
     const [authorizationPin, setAuthorizationPin] = useState('123456');
+
+    const [isLoading, setIsLoading] = useState(false);
 
     const [openSaveMissionModal, setOpenSaveMissionModal] = useState(false);
 
@@ -50,6 +54,7 @@ const index = () => {
 
     useEffect(() => {
         const params = { with_sub_data: 1 };
+
         getFunctionType(params, (status, message) => {
             // console.log(status)
             if (!(status >= 200 && status < 300)) {
@@ -58,16 +63,19 @@ const index = () => {
             }
             setisLoading(false);
         });
+    }, []);
 
-
-        getSingleAOP((status, message) => {
+    useEffect(() => {
+        const id = aopId
+        setIsLoading(true)
+        getSingleAOP(id, (status, message) => {
             setIsLoading(false)
             // console.log(status)
             if (!(status >= 200 && status < 300)) {
                 return; //Toast error
             }
         })
-    }, []);
+    }, [])
 
     // formatted objectives
     const formattedObjectives = aopObjectives.application_objectives?.map(({ function_type, objective, success_indicator }, index) => (
@@ -136,16 +144,13 @@ const index = () => {
     }));
 
     useEffect(() => {
-        // console.log('AOP OBJECTIVES FETCH FROM SERVER:', aopObjectives);
+        console.log('AOP OBJECTIVES FETCH FROM SERVER:', aopObjectives);
         setObjectives(formattedObjectives ? formattedObjectives : []);
         setActivities(formattedActivities ? formattedActivities : []);
         //add set cart
         setResources(formattedResources ? formattedResources : []);
         setResponsiblePeople(formattedResponsiblePeople ? formattedResponsiblePeople : []);
     }, [aopObjectives])
-
-
-
 
     const handleOpenDialog = () => {
         setOpenSaveMissionModal(true);
@@ -280,28 +285,41 @@ const index = () => {
                 }
             >
 
-                <EditableTableComponent
-                    columns={AOP_HEADER}
-                    secondaryHeader={
-                        <Link
-                            component="button"
-                            onClick={() => handleOpenDialog()}
-                            pb={1}>
-                            <Stack direction={"row"} gap={1} alignItems={"center"}>
-                                Update Mission
-                                <ExternalLink size={16} />
-                            </Stack>
-                        </Link>
-                    }
-                    tableRow={
-                        <TableRow
-                            aopId={id}
-                            rows={objectives}
-                            function_types={function_types}
-                        />
-                    }
-                    stickLast
-                />
+                {isLoading ?
+                    <BoxComponent
+                        mt={3}
+                        height={'65vh'}
+                        display={'flex'}
+                        flexDirection={'column'}
+                        justifyContent={'center'}
+                        alignContent={'center'}
+                    >
+                        <ThreeDotsLoader />
+                    </BoxComponent>
+                    :
+                    <EditableTableComponent
+                        columns={AOP_HEADER}
+                        secondaryHeader={
+                            <Link
+                                component="button"
+                                onClick={() => handleOpenDialog()}
+                                pb={1}>
+                                <Stack direction={"row"} gap={1} alignItems={"center"}>
+                                    Update Mission
+                                    <ExternalLink size={16} />
+                                </Stack>
+                            </Link>
+                        }
+                        tableRow={
+                            <TableRow
+                                aopId={aopId}
+                                rows={objectives}
+                                function_types={function_types}
+                            />
+                        }
+                        stickLast
+                    />
+                }
 
                 <Stack
                     mt={2}

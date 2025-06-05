@@ -95,7 +95,7 @@ const Summary = (
                         label={'Open request'}
                         variant={'outlined'}
                         size={'sm'}
-                        onClick={() => navigate(`/aop-edit`, { state: { data: aopObjectives } })}
+                        onClick={() => navigate(`/aop-edit`, { state: { aopAppId: aop_application_id } })}
                         endDecorator={<ExternalLink size={16} />}
                     />
 

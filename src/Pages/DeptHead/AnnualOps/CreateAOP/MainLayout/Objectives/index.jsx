@@ -209,7 +209,7 @@ const Objectives = () => {
         data = {
           status: 200,
           title: "Existing AOP",
-          description: "You already have an AOP application in your area.",
+          description: "You already have an AO6P application in your area.",
         };
         setAlertDialog(data);
         return;

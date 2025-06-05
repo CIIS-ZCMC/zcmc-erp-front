@@ -6,7 +6,7 @@ import { Trash } from 'lucide-react';
 
 import useActivitiesHook from '../../../../../../../Hooks/ActivitiesHook';
 import useResourceHook from '../../../../../../../Hooks/ResourceHook';
-
+import AutocompleteComponent from '../../../../../../../Components/Form/AutocompleteComponent';
 import IconButtonComponent from '../../../../../../../Components/Common/IconButtonComponent';
 
 const TableRow = ({
@@ -70,11 +70,17 @@ const TableRow = ({
     //     console.log(rows)
     // }, [rows])
 
+    const gadRelatedOptions = [
+        { id: 1, label: 'Yes', value: 'yes' },
+        { id: 2, label: 'No', value: 'no' }
+    ]
+
     return (
         <Fragment>
             {rows?.filter(value => value?.parentId === parentId)?.map(({ rowId, id, name, isGadRelated, cost, startMonth, endMonth, target }, index) => {
 
                 const isEditing = editRowId === id;
+                const [selectedGadRelated, setSelectedGadRelated] = useState(isGadRelated ?? "")
 
                 return (
 
@@ -302,17 +308,32 @@ const TableRow = ({
 
                         <td onClick={() => handleOnRowClick(id)}>
                             {isEditing ? (
-                                <Select
-                                    size='sm'
-                                    value={localAopActivity?.[id]?.isGadRelated || false}
-                                    onChange={(e, newValue) => handleChange(id, "isGadRelated", newValue)}
-                                >
-                                    <Option value={true}>Yes</Option>
-                                    <Option value={false}>No</Option>
-                                </Select>
+
+                                <AutocompleteComponent
+                                    placeholder="is GAD related activity"
+                                    value={selectedGadRelated}
+                                    setValue={(val) => {
+                                        // console.log(val)
+                                        setSelectedGadRelated(val);
+                                        handleChange(id, "expenseClass", val.value);
+                                    }}
+                                    options={gadRelatedOptions}
+                                />
+
+                                // <Select
+                                //     size='sm'
+                                //     value={localAopActivity?.[id]?.isGadRelated || false}
+                                //     onChange={(e, newValue) =>
+                                //         console.log(newValue)
+                                //         // handleChange(id, "isGadRelated", newValue)
+                                //     }
+                                // >
+                                //     <Option value={true}>Yes</Option>
+                                //     <Option value={false}>No</Option>
+                                // </Select>
                             ) : (
                                 <Typography>
-                                    {localAopActivity?.[id]?.isGadRelated}
+                                    {/* {localAopActivity?.[id]?.isGadRelated} */}
                                     {isGadRelated ? 'Yes' : 'No'}
                                 </Typography>
                             )}

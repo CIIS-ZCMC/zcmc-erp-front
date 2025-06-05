@@ -1,14 +1,9 @@
 import { Fragment, useEffect, useState } from 'react';
-import { Stack, Typography, Grid, CircularProgress } from '@mui/joy'
-import { v4 as uuid } from 'uuid';
+import { Stack, Typography, Grid } from '@mui/joy'
 
 import { useNavigate } from "react-router-dom";
 
 import useAOPObjectivesHooks from '../../../Hooks/AOP/AOPObjectivesHook';
-import useObjectivesHook from '../../../Hooks/ObjectivesHook';
-import useActivitiesHook from '../../../Hooks/ActivitiesHook';
-import useResourceHook from '../../../Hooks/ResourceHook';
-import useResponsiblePeopleHook from '../../../Hooks/ResponsiblePeopleHook';
 import { useAOPActions, } from '../../../Hooks/AOP/AOPObjectivesHook';
 
 import Header from './Header';
@@ -32,12 +27,7 @@ const AnnualOps = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const { aopObjectives, aop_summary } = useAOPObjectivesHooks();
-  const { getSummary, getSingleAOP, setMission, setAOPId } = useAOPActions();
-
-  const { setObjectives } = useObjectivesHook();
-  const { setActivities } = useActivitiesHook();
-  const { setResources, setCart } = useResourceHook();
-  const { setResponsiblePeople } = useResponsiblePeopleHook();
+  const { getSummary } = useAOPActions();
 
   const {
     aop_application_id,

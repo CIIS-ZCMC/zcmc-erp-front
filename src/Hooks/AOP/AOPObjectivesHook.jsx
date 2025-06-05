@@ -19,20 +19,6 @@ const useAOPObjectivesHooks = create((set, get) => ({
       }))
     },
 
-    setMission: (data) => {
-      set(() => ({
-        mission: data
-      }))
-    },
-
-
-    setAOPId: (data) => {
-      set(() => ({
-        aop_id: data
-      }))
-    },
-
-
     getSummary: (callBack) => {
       read({
         url: API.AOP_APPLICATION_SUMMARY,
@@ -67,9 +53,9 @@ const useAOPObjectivesHooks = create((set, get) => ({
       })
     },
 
-    getSingleAOP: (callBack) => {
+    getSingleAOP: (id, callBack) => {
       read({
-        url: `${API.AOP_APPLICATION_EDIT}`,
+        url: `${API.AOP_APPLICATION_EDIT}/${id}`,
         failed: callBack,
 
         success: (res) => {
