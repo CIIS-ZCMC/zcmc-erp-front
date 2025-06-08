@@ -311,6 +311,35 @@ const TableRow = ({
                             {isEditing ? (
                                 <Select
                                     size='sm'
+                                    value={localAopActivity[id]?.localIsGadRelated || false}
+                                    onChange={(e, newValue) => {
+                                        // console.log('value selectd:', newValue)
+                                        setLocalAopActivity((prev) => ({
+                                            ...prev,
+                                            [id]: {
+                                                ...prev[id],
+                                                localIsGadRelated: newValue
+                                            }
+                                        }))
+                                        handleChange(id, "isGadRelated", newValue)
+                                    }}
+                                >
+                                    <Option value={true}>Yes</Option>
+                                    <Option value={false}>No</Option>
+                                </Select>
+                            ) : (
+                                <Typography>
+                                    {console.info(isGadRelated)}
+                                    {isGadRelated ? 'Yes' : 'No'}
+                                </Typography>
+                            )}
+                        </td>
+
+                        {/* 
+                        <td onClick={() => handleOnRowClick(id)}>
+                            {isEditing ? (
+                                <Select
+                                    size='sm'
                                     value={localAopActivity?.[id]?.isGadRelated || false}
                                     onChange={(e, newValue) => updateActivityField(id, "isGadRelated", newValue)}
                                 >
@@ -323,7 +352,7 @@ const TableRow = ({
                                     {isGadRelated ? 'Yes' : 'No'}
                                 </Typography>
                             )}
-                        </td>
+                        </td> */}
 
                         <td >
 

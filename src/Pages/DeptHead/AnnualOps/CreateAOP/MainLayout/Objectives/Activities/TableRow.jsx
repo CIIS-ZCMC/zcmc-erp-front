@@ -80,7 +80,7 @@ const TableRow = ({
             {rows?.filter(value => value?.parentId === parentId)?.map(({ rowId, id, name, isGadRelated, cost, startMonth, endMonth, target }, index) => {
 
                 const isEditing = editRowId === id;
-                const [selectedGadRelated, setSelectedGadRelated] = useState(isGadRelated ?? "")
+                // const [selectedGadRelated, setSelectedGadRelated] = useState(isGadRelated)
 
                 return (
 
@@ -112,7 +112,8 @@ const TableRow = ({
                                     }}
                                 />
                             ) : (
-                                <Typography>{name || '-'}</Typography>
+                                <Typography>
+                                    {name || '-'}</Typography>
                             )}
                         </td>
 
@@ -308,32 +309,27 @@ const TableRow = ({
 
                         <td onClick={() => handleOnRowClick(id)}>
                             {isEditing ? (
-
-                                <AutocompleteComponent
-                                    placeholder="is GAD related activity"
-                                    value={selectedGadRelated}
-                                    setValue={(val) => {
-                                        // console.log(val)
-                                        setSelectedGadRelated(val);
-                                        handleChange(id, "expenseClass", val.value);
+                                <Select
+                                    size='sm'
+                                    value={localAopActivity[id]?.localIsGadRelated || false}
+                                    onChange={(e, newValue) => {
+                                        // console.log('value selectd:', newValue)
+                                        setLocalAopActivity((prev) => ({
+                                            ...prev,
+                                            [id]: {
+                                                ...prev[id],
+                                                localIsGadRelated: newValue
+                                            }
+                                        }))
+                                        handleChange(id, "isGadRelated", newValue)
                                     }}
-                                    options={gadRelatedOptions}
-                                />
-
-                                // <Select
-                                //     size='sm'
-                                //     value={localAopActivity?.[id]?.isGadRelated || false}
-                                //     onChange={(e, newValue) =>
-                                //         console.log(newValue)
-                                //         // handleChange(id, "isGadRelated", newValue)
-                                //     }
-                                // >
-                                //     <Option value={true}>Yes</Option>
-                                //     <Option value={false}>No</Option>
-                                // </Select>
+                                >
+                                    <Option value={true}>Yes</Option>
+                                    <Option value={false}>No</Option>
+                                </Select>
                             ) : (
                                 <Typography>
-                                    {/* {localAopActivity?.[id]?.isGadRelated} */}
+                                    {/* {console.info(isGadRelated)} */}
                                     {isGadRelated ? 'Yes' : 'No'}
                                 </Typography>
                             )}
