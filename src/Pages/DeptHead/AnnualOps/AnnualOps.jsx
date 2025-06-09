@@ -171,7 +171,9 @@ const AnnualOps = () => {
 
                   <Grid item={"true"} xs={12} md={4}>
                     <>
-                      <Timeline />
+                      <Timeline
+                        aop_id={aop_application_id}
+                      />
                     </>
                   </Grid>
                 </Grid>
