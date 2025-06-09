@@ -227,8 +227,9 @@ const Objectives = () => {
         setOpenSubmitModal(false);
         clearLocalStorage();
         setMission("");
-        window.location.reload(false);
-        navigate('/aop')
+        // window.location.reload(false);
+        // navigate('/aop')
+        window.location.href = '/aop';
         setAlertDialog(data);
         return;
       }
