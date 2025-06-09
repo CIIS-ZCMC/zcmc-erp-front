@@ -156,6 +156,7 @@ export const API = {
   AOP_APPLICATION_STORE: "aop-application-store",
   AOP_APPLICATION_SUMMARY: "aop-application-summary",
   AOP_APPLICATION_TIMELINE: "application-timelines",
+  AOP_EXPORT_EXCEL: 'export-aop',
 
   TYPE_OF_FUNCTIONS: "type-of-functions",
   TYPE_OF_PURCHASE: "purchase-types",

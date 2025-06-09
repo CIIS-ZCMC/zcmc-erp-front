@@ -7,6 +7,8 @@ import { ExternalLink, CloudDownload, } from "lucide-react";
 import BoxComponent from '../../../Components/Common/Card/BoxComponent';
 import ButtonComponent from '../../../Components/Common/ButtonComponent';
 
+import { useAOPActions } from '../../../Hooks/AOP/AOPObjectivesHook';
+
 import SummaryCard from './SummaryCard';
 
 const Summary = (
@@ -27,12 +29,19 @@ const Summary = (
     }
 ) => {
 
+    const { exportAsExcel } = useAOPActions();
+
     const navigate = useNavigate();
 
     const objectivesContent = `Contains (${total_success_indicators}) success indicators in total on this request `
     const activitiesContent = ` Where (${total_gad_related}) are GAD-related and (${total_not_gad_related}) are not GAD-related on this reques`
     const resourcesContent = ` With (${total_cost}) total allocated budget`
     const responsiblePersonContent = `Includes (${total_job_positions}) job positions, (${total_areas}) areas (${total_users}) user/s in total`
+
+    const handleExport = () => {
+
+        exportAsExcel(aop_application_id)
+    }
 
     return (
         <Fragment>
@@ -85,9 +94,10 @@ const Summary = (
                     gap={2}
                 >
                     <ButtonComponent
-                        label={'Print as (.XLS)'}
+                        label={'Export as (.XLS)'}
                         variant={'outlined'}
                         size={'sm'}
+                        onClick={() => handleExport()}
                         endDecorator={<CloudDownload size={16} />}
                     />
 

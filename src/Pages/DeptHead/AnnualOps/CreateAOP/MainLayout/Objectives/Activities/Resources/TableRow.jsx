@@ -145,8 +145,8 @@ const TableRow = ({
                     </>
                   ) : (
                     <Typography>
-
-                      {purchaseTypeId?.label || "-"}
+                      {/* {console.info(selectPurchaseType.label)} */}
+                      {selectPurchaseType.label || "-"}
                     </Typography>
                   )}
                 </td>
@@ -160,7 +160,7 @@ const TableRow = ({
                         setValue={(val) => {
                           // console.log(val)
                           setSelectedExpenseClass(val);
-                          updateResourceField(id, "expenseClass", val.value);
+                          updateResourceField(id, "expenseClass", val);
                         }}
                         options={expenseClassOptions}
                       />
@@ -168,7 +168,8 @@ const TableRow = ({
 
                   ) : (
                     <Typography>
-                      {expenseClass || "-"}
+                      {console.info(selectedExpenseClass)}
+                      {selectedExpenseClass.label || "-"}
                     </Typography>
                   )}
                 </td>

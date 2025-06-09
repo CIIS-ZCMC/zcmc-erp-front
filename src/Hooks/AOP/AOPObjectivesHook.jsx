@@ -87,6 +87,17 @@ const useAOPObjectivesHooks = create((set, get) => ({
           callBack(200, "Success");
         }
       })
+    },
+
+    exportAsExcel: (id, callBack) => {
+      post({
+        url: `${API.AOP_EXPORT_EXCEL}/${id}`,
+        failed: callBack,
+        success: (res) => {
+          console.log(res)
+          callBack(200, "Success");
+        }
+      })
     }
 
   },
