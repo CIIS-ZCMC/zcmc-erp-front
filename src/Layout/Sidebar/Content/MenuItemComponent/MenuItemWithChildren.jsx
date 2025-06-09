@@ -21,10 +21,10 @@ const MenuItemWithChildren = ({ name, children, icon, path, isCollapsed }) => {
 
   // Filter out children with assigned childPermissions
   const filteredChildren = children?.filter((child) => {
-    if (child.childPermissions && child.childPermissions[0] === "*")
+    if (child?.childPermissions && child?.childPermissions[0] === "*")
       return true; // No abilities means it's always accessible
 
-    const hasPermission = child.childPermissions.some((permission) =>
+    const hasPermission = child?.childPermissions?.some((permission) =>
       permissions.includes(permission)
     );
 
