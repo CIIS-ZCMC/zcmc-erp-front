@@ -16,6 +16,7 @@ export const getStatusIcon = (status, iconOnly) => {
     submitted: <Hourglass size={13} />,
     pending: <Hourglass size={13} />,
     approved: <CheckCircle size={13} />,
+    received: <CheckCircle size={13} />,
     returned: <CornerDownLeft size={13} />,
     info: <InfoIcon />,
     200: <CheckCheck />,

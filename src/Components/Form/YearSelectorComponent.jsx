@@ -14,10 +14,10 @@ function YearSelectorComponent({
   setValue,
   ...props
 }) {
-  const startYear = 2010;
+  const startYear = 2024;
   const endYear = new Date().getFullYear();
   const years = Array.from({ length: endYear - startYear + 1 }, (_, i) => ({
-    year: `${startYear + i}`,
+    year: `${startYear + 1 + i}`,
   }));
 
   return (

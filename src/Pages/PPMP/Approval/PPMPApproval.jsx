@@ -1,5 +1,5 @@
 import { Link, Stack } from "@mui/joy";
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import PageTitle from "../../../Components/Common/PageTitle";
 import { PPMP_CONSTANTS } from "../../../Data/constants";
 import ContainerComponent from "../../../Components/Common/ContainerComponent";
@@ -14,19 +14,84 @@ import ScrollableTableComponent from "../../../Components/Common/Table/Scrollabl
 import { useNavigate } from "react-router-dom";
 import ModalComponent from "../../../Components/Common/Dialog/ModalComponent";
 import YearSelectorComponent from "../../../Components/Form/YearSelectorComponent";
+import {
+  usePPMP,
+  usePPMPApplicationActions,
+} from "../../../Hooks/PPMP/PPMPApplicationHook";
+import usePPMPHook from "../../../Hooks/PPMPHook";
+import useModalHook from "../../../Hooks/ModalHook";
+import debounce from "lodash.debounce";
 
 function PPMPApproval() {
   // HOOKS
   let navigate = useNavigate();
+  const { getPPMPApplications, getPPMPApplicationByID } =
+    usePPMPApplicationActions();
+  const { ppmpApplications } = usePPMP();
+  const { exportPPMP } = usePPMPHook();
+  const { setAlertDialog } = useModalHook();
 
   // STATES
   const [index, setIndex] = React.useState("all");
+  const [year, setYear] = useState(new Date().getFullYear()?.toString());
+  const [dlLoader, setDlLoader] = useState(false);
+  const [search, setSearch] = useState(null);
+  const [isFetchLoading, setIsFetchLoading] = useState(false);
+
   // FUNCTIONS
   const handleOpen = (id) => {
-    navigate(`view/${id}`);
+    getPPMPApplicationByID(id, (status) => {
+      if (status === 200) {
+        navigate(`view/${id}`);
+      }
+    });
   };
 
-  const handleDelete = (id) => {};
+  const handleExportToCSV = (id, area_details) => {
+    const { code } = area_details;
+    exportPPMP({ export: true, ppmp_application_id: id }, code, (status) => {
+      if (status === 200) {
+        setDlLoader(false);
+        setAlertDialog({
+          status: "success",
+          title: "PPMP Downloaded",
+          description: "PPMP has been successfully downloaded.",
+        });
+      } else {
+        setDlLoader(false);
+        setAlertDialog({
+          status: "error",
+          title: "PPMP Download failed",
+          description: "An unexpected error occurred. Please try again.",
+        });
+      }
+    });
+  };
+
+  useEffect(() => {
+    // Debounced function to trigger the API call
+    const debouncedFetch = debounce((params) => {
+      setIsFetchLoading(true);
+      getPPMPApplications(params, () => {
+        setIsFetchLoading(false);
+      });
+    }, 500); // 500ms debounce delay when search is present
+
+    // Prepare params
+    const params = {
+      status: index === "all" ? null : index,
+      year,
+      search,
+    };
+
+    // Trigger the debounced fetch
+    debouncedFetch(params);
+
+    // Cleanup debounced function on component unmount or dependencies change
+    return () => {
+      debouncedFetch.cancel();
+    };
+  }, [index, year, search, getPPMPApplications]);
 
   return (
     <Fragment>
@@ -61,14 +126,16 @@ function PPMPApproval() {
                 width={400}
                 color="primary"
                 startDecorator={<Search size={14} />}
+                setValue={setSearch}
+                value={search}
               />
 
               <Stack direction={"row"} gap={2} alignItems={"center"}>
                 <YearSelectorComponent
                   width="auto"
                   label={"Select year"}
-                  // setValue={setYear}
-                  // value={{ year: year }}
+                  setValue={setYear}
+                  value={{ year: year }}
                 />
                 <Link fontSize={13} mt={3} mr={1}>
                   Clear filters
@@ -77,8 +144,9 @@ function PPMPApproval() {
             </Stack>
 
             <ScrollableTableComponent
-              columns={PPMP_REQUEST_HEADER(handleOpen, handleDelete)}
-              data={PPMP_REQUESTS}
+              isLoading={isFetchLoading}
+              columns={PPMP_REQUEST_HEADER(handleOpen, handleExportToCSV)}
+              data={ppmpApplications}
             />
           </Stack>
         </ContainerComponent>

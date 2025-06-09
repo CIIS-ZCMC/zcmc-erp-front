@@ -115,6 +115,7 @@ export const useUserTypes = () => {
       isPlanning:
         area.area_id === AREA_ID.PLANNING_UNIT || area.name === "Planning Unit",
       isDepartmentHead: area.area_id === AREA_ID.OMCC || false,
+      isMCC: area.area_id === AREA_ID.OMCC,
     };
   }
 };

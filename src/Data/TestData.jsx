@@ -364,48 +364,29 @@ export const mockUserData = {
   },
 };
 
-
-// {
-//     "data": {
-//         "id": 2384,
-//         "umis_id": null,
-//         "name": "Reenjay M. Caimor",
-//         "email": "zcmc.caimor@gmail.com",
-//         "assignedArea": {
-//             "id": 53,
-//             "area_id": null,
-//             "name": "Planning Unit",
-//             "type": "section",
-//             "is_head": true
-//         },
-//         "designation": {
-//             "id": 287,
-//             "umis_designation_id": null,
-//             "name": "COMPUTER PROGRAMMER II",
-//             "label": "COMPUTER PROGRAMMER II",
-//             "code": "CP II",
-//             "probation": 6
-//         },
-//         "meta": {
-//             "permissions": [
-//                 "ERP-AOP-MAN:write",
-//                 "ERP-AOP-MAN:view",
-//                 "ERP-AOP-MAN:update",
-//                 "ERP-AOP-MAN:approve",
-//                 "ERP-AOP-MAN:view-all",
-//                 "ERP-PPMP-MAN:approve",
-//                 "ERP-PPMP-MAN:update",
-//                 "ERP-PPMP-MAN:view",
-//                 "ERP-PPMP-MAN:view-all",
-//                 "ERP-PPMP-MAN:write",
-//                 "ERP-PPMP-MAN:delete"
-//             ],
-//             "created_at": "2025-06-03T00:54:36.000000Z",
-//             "updated_at": "2025-06-03T00:54:36.000000Z"
-//         }
-//     },
-//     "message": "Successfully signin.",
-//     "meta": {
-//         "redirect_to": "/dashboard"
-//     }
-// }
+export const AOP_RESOURCES = [
+  {
+    id: 79,
+    resource_requirements: {
+      item_name: "Item name 1",
+      quantity: 1,
+      unit_cost: 2000,
+      total_cost: 2000,
+    },
+    expense_class: "CO",
+    is_gad: true,
+    type_of_resource: "Other Fees, Subscription, Processing",
+  },
+  {
+    id: 80,
+    resource_requirements: {
+      item_name: "Item name 2",
+      quantity: 2,
+      unit_cost: 15000,
+      total_cost: 30000,
+    },
+    expense_class: "MOOE",
+    is_gad: true,
+    type_of_resource: "Book, Journal, Publication",
+  },
+];

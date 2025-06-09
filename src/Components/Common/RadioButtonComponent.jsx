@@ -4,7 +4,13 @@ import Sheet from "@mui/joy/Sheet";
 import Radio, { radioClasses } from "@mui/joy/Radio";
 import { MdCheckCircleOutline } from "react-icons/md";
 
-function RadioButtonComponent({ actions, handleChange, setValue, value }) {
+function RadioButtonComponent({
+  actions,
+  handleChange,
+  setValue,
+  value,
+  disabled = false,
+}) {
   return (
     <RadioGroup
       value={value} // Use value instead of defaultValue for controlled component
@@ -40,6 +46,7 @@ function RadioButtonComponent({ actions, handleChange, setValue, value }) {
             color={color}
             value={element_value}
             checked={element_value === value}
+            disabled={disabled}
           />
           <Typography
             color={color}

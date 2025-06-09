@@ -28,6 +28,7 @@ import {
 } from "../../../Hooks/AOP/AOPApprovalHook";
 import { ThreeDotsLoader } from "../../../Components/Common/Loading/ThreeDotsLoader";
 import PageLoader from "../../../Components/Loading/PageLoader";
+import { ThreeDots } from "react-loader-spinner";
 
 const AOPApproval = () => {
   const navigate = useNavigate();
@@ -45,10 +46,13 @@ const AOPApproval = () => {
   const [index, setIndex] = useState("all");
   const [year, setYear] = useState(new Date().getFullYear()?.toString());
   const [pageLoading, setPageLoading] = useState("");
+  const [isFetchLoading, setIsFetchLoading] = useState(false);
 
   // FUNCTIONS
   const handleClickCard = (id, area_code) => {
     setPageLoading(true);
+
+    getAOPApprovalTimeline(id, () => { });
     getAOPApplicationById(id, () => {
       setPageLoading(false);
       navigate(`/aop-approval/objectives/${id}`);
@@ -65,12 +69,16 @@ const AOPApproval = () => {
   };
 
   useEffect(() => {
+    setIsFetchLoading(true);
     const params = {
       status: index == "all" ? null : index,
       year: year,
     };
 
-    getAOPApplications(params, () => { });
+    getAOPApplications(params, () => {
+      setIsFetchLoading(false);
+    });
+    localStorage.removeItem("all_comments");
   }, [index, year, getAOPApplications]);
 
   const APPLICATIONS = TEST_MODE ? MANAGE_AOP_APPROVAL : AOPApplications;
@@ -129,29 +137,48 @@ const AOPApproval = () => {
                 overflow: "auto",
               }}
             >
-              {APPLICATIONS?.length === 0 && (
+              {isFetchLoading ? (
+                <Box
+                  display="flex"
+                  alignItems={"center"}
+                  justifyContent={"center"}
+                  width="100%"
+                // minHeight={contentMaxHeight}
+                >
+                  <ThreeDots
+                    visible={true}
+                    // height={contentMinHeight}
+                    width="80"
+                    color="#003049"
+                    radius="9"
+                    ariaLabel="three-dots-loading"
+                    wrapperStyle={{}}
+                    wrapperClass=""
+                  />
+                </Box>
+              ) : APPLICATIONS?.length === 0 ? (
                 <Box width="100%">
                   <NoResultComponent />
                 </Box>
-              )}
-
-              {APPLICATIONS?.map(
-                (
-                  { id, created_on, date_approved, area_code, status, year },
-                  index
-                ) => (
-                  <Grid key={index} item="true" xs={4}>
-                    <AOPCardComponent
-                      year={year}
-                      date_requested={created_on}
-                      date_approved={date_approved}
-                      status={status}
-                      area_code={area_code ?? "-"}
-                      statusLabel={toCapitalize(status)}
-                      leftClick={() => handleClickCard(id, area_code)}
-                      rightClick={() => handleViewTimeline(id)}
-                    />
-                  </Grid>
+              ) : (
+                APPLICATIONS?.map(
+                  (
+                    { id, created_on, date_approved, area_code, status, year },
+                    index
+                  ) => (
+                    <Grid key={index} item="true" xs={4}>
+                      <AOPCardComponent
+                        year={year}
+                        date_requested={created_on}
+                        date_approved={date_approved}
+                        status={status}
+                        area_code={area_code ?? "-"}
+                        statusLabel={toCapitalize(status)}
+                        leftClick={() => handleClickCard(id, area_code)}
+                        rightClick={() => handleViewTimeline(id)}
+                      />
+                    </Grid>
+                  )
                 )
               )}
             </Grid>

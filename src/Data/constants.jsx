@@ -189,6 +189,8 @@ export const API = {
   ITEM_UNIT: "item-units",
   ITEM_VARIANT: "variants",
   ITEMS_: "items",
+  // PPMP
+  PPMP_APPLICATION: "ppmp-receiving-list",
 };
 
 export const expenseClassData = [
