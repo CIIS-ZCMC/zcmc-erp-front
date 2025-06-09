@@ -24,7 +24,6 @@ const StepperComponent = ({ data = [] }) => {
           key
         ) => {
           if (key === 0) {
-            console.log(key)
             return (
               <StepItem
                 isLast={data?.length - 1 === key}

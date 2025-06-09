@@ -18,7 +18,8 @@ function SimpleCommentComponent({
     <Stack gap={0.6}>
       <Stack direction="row" justifyContent={"space-between "} spacing={1}>
         <Typography level="body-sm" textColor={"neutral.700"} fontWeight={500}>
-          {name} ({area_code})
+          {name}
+          {/* ({area_code}) */}
         </Typography>
         <Typography level="body-xs">{moment(date).calendar()}</Typography>
       </Stack>

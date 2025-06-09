@@ -1,9 +1,9 @@
 // src/hooks/useNotifications.js
 import { create } from "zustand";
 import useSocketStore from "./Socket/SocketHook";
-import { NOTIFICATIONS } from "../Data/TestData";
 import { useAuth } from "../Store/AuthStore";
 import { useEffect } from "react";
+import { read } from "../Services/RequestMethods";
 
 // Zustand store
 const useNotificationsHook = create((set) => ({
@@ -16,7 +16,15 @@ const useNotificationsHook = create((set) => ({
       notifications: [newNotification, ...state.notifications],
     })),
 
-  getNotifications: () => {
+  getNotifications: (id, callback) => {
+    read({
+      url: `notifications/employee-notifs/${id}`,
+      failed: callback,
+      success: (res) => {
+        // console.log(res.data.data);
+        set(() => ({ notifications: res.data.data }));
+      },
+    });
     // Placeholder for API fetch logic
   },
 }));
@@ -32,9 +40,17 @@ export const useNotificationEvents = () => {
     (state) => state.addNotification
   );
 
+  const fetchNotifications = useNotificationsHook(
+    (state) => state.getNotifications
+  );
+
   const { user } = useAuth();
 
   useEffect(() => {
+    if (user) {
+      fetchNotifications(user.id);
+    }
+
     if (socket && user) {
       socket.on(`erp-notification-${user.id}`, (data) => {
         addNotification(data);

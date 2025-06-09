@@ -22,7 +22,7 @@ import ProcessAOPContent from "./Contents/ProcessAOPContent";
 
 export default function ManageAOP() {
   const { id } = useParams();
-  const { isDivisionHead, isPlanning } = useUserTypes();
+  const { isDivisionHead, isPlanning, isMCC } = useUserTypes();
   const AOPApplication = useAOPApplication();
 
   // AOP HOOK
@@ -43,7 +43,7 @@ export default function ManageAOP() {
     getCommentsByApplication,
     getRemarksByApplication,
   } = useCommentActions();
-  const allComments = useAllComments();
+  const allComments = useAllComments() ?? localStorageGetter("all_comments");
 
   // STATES
   const [isRemarksLoading, setIsRemarksLoading] = useState(true);
@@ -60,9 +60,9 @@ export default function ManageAOP() {
     setIsRemarksLoading(true);
 
     const fetch = () => {
-      if (!isDivisionHead) {
-        getCommentsByApplication(AOP_APPLICATION_ID, () => {});
-      }
+      // if (!isDivisionHead || !isMCC) {
+      getCommentsByApplication(AOP_APPLICATION_ID, () => {});
+      // }
 
       getRemarksByApplication(AOP_APPLICATION_ID, () => {
         setTimeout(() => setIsRemarksLoading(false), 1000);
@@ -77,6 +77,10 @@ export default function ManageAOP() {
         console.error("Error fetching comments or remarks:", error);
         setIsRemarksLoading(false);
       });
+  };
+
+  const isAllowedFeedbackViewing = () => {
+    return !isMCC;
   };
 
   useEffect(() => {
@@ -140,12 +144,14 @@ export default function ManageAOP() {
                 }
                 footer={
                   <Stack direction={"row"} spacing={2}>
-                    <ButtonComponent
-                      variant={"outlined"}
-                      label={`Go to feedback (${allComments?.length})`}
-                      endDecorator={<ExternalLink size={14} />}
-                      onClick={handleViewFeedback}
-                    />
+                    {isAllowedFeedbackViewing() && (
+                      <ButtonComponent
+                        variant={"outlined"}
+                        label={`Go to feedback (${allComments?.length})`}
+                        endDecorator={<ExternalLink size={14} />}
+                        onClick={handleViewFeedback}
+                      />
+                    )}
                     <ProcessAOPContent />
                   </Stack>
                 }
@@ -171,11 +177,13 @@ export default function ManageAOP() {
       </Stack>
 
       {/* PROCESS REQUEST */}
-      <FeedbackContent
-        openFeedbackModal={openFeedbackModal}
-        setOpenFeedbackModal={setOpenFeedbackModal}
-        isLoading={isRemarksLoading}
-      />
+      {openFeedbackModal && (
+        <FeedbackContent
+          openFeedbackModal={openFeedbackModal}
+          setOpenFeedbackModal={setOpenFeedbackModal}
+          isLoading={isRemarksLoading}
+        />
+      )}
     </Fragment>
   );
 }
