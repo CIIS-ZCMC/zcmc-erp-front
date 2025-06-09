@@ -321,7 +321,7 @@ const TableRow = ({
                                                 localIsGadRelated: newValue
                                             }
                                         }))
-                                        handleChange(id, "isGadRelated", newValue)
+                                        updateActivityField(id, "isGadRelated", newValue)
                                     }}
                                 >
                                     <Option value={true}>Yes</Option>
