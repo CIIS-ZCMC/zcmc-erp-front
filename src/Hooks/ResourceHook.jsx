@@ -26,12 +26,37 @@ const useResourceHook = create(
     (set, get) => ({
       resources: [],
       cart: [],
+      totalCost: 0,
 
-      // setResources: () => {
-      //   set((state) => {
-      //     console.log(state.resources)
-      //   })
-      // },
+      setResources: (data) => {
+        set(() => ({
+          resources: data
+        }))
+      },
+
+      setUpdatedResources: (data) => {
+        set(() => ({
+          resources: data,
+        }))
+      },
+
+      clearResources: () => {
+        set(() => ({
+          resources: []
+        }))
+      },
+
+      setCart: () => {
+        set(() => ({
+          cart: data
+        }))
+      },
+
+      setTotalCost: (data) => {
+        set(() => ({
+          totalCost: data,
+        }))
+      },
 
       updateResourceField: (id, field, value) => {
         set((state) => {
@@ -171,7 +196,10 @@ const useResourceHook = create(
       findResourcesByActivityID: (activityId) => {
         return get()
           .resources
-          .filter((item) => item.parentId === activityId)
+          .filter((item) =>
+            // console.log(item.parentId === activityId)
+            item.parentId === activityId
+          )
           .map((item) => ({
             item_id: item.item_id,
             purchase_type_id: item.purchaseTypeId?.id || item.purchaseTypeId, // handles both object and raw id

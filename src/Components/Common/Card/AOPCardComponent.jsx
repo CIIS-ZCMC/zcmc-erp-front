@@ -37,7 +37,7 @@ AOPCardComponent.propTypes = {
 };
 
 function AOPCardComponent({
-  title = "AOP #2023-0031",
+  year = new Date().getFullYear()?.toString(),
   variant = "outlined",
   status = "Pending",
   statusLabel,
@@ -92,12 +92,16 @@ function AOPCardComponent({
             fontWeight={600}
             textColor={"primary.700"}
           >
-            {title} for {area_code}
+            {area_code} [AOP-{year}]
           </Typography>
           <ChipComponent
             status={status}
             variant={"soft"}
-            label={toCapitalize(statusLabel ?? status)}
+            label={
+              toCapitalize(statusLabel) === "Approved"
+                ? "Approved by Planning"
+                : statusLabel
+            }
             color={getStatusColorScheme(status)}
             endDecorator
           />

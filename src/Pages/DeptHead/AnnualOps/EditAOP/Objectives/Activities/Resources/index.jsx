@@ -18,14 +18,18 @@ import useItemsHook from "../../../../../../../Hooks/ItemsHook";
 import usePurchaseTypeHook from "../../../../../../../Hooks/PurchaseTypeHook";
 
 const EditResources = () => {
-    const { resources, addResource } = useResourceHook();
+    const { resources, setUpdatedResources, addResource } = useResourceHook();
     const { items, getItems } = useItemsHook();
     const { purchase_types, getPurchaseType } = usePurchaseTypeHook();
 
     const navigate = useNavigate();
     const location = useLocation();
-    const parentId = location.state?.parentId; // refers to objectiveId as parent
+    const parentId = location.state?.parentId; // refers to activity id as parent
     const objectiveRowId = location.state?.objectiveRowId;
+
+    // useEffect(() => {
+    //     console.log('LOCATION STATES', location.state)
+    // }, [])
 
     useEffect(() => {
         getItems((status, message, data) => {
@@ -46,10 +50,6 @@ const EditResources = () => {
         });
     }, []);
 
-    // useEffect(() => {
-    //     console.log(resources)
-    // }, [resources])
-
     return (
         <Fragment>
             <ContainerComponent
@@ -58,7 +58,7 @@ const EditResources = () => {
                 actions={
                     <Stack>
                         <ButtonComponent
-                            onClick={() => addResource(parentId)}
+                            // onClick={() => addResource(parentId)}
                             label={"Add Resource"}
                             endDecorator={<Plus size={16} />}
                         />

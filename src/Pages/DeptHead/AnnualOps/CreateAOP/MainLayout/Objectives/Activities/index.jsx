@@ -33,11 +33,10 @@ const Activities = () => {
   const currentPath = location.pathname;
   const childPath = currentPath === `/aop-create/activities/${objectiveId}`;
 
-  const { current_parent_id, setCurrentObjective, current_row_id, setCurrentRowId } = useObjectivesHook();
+  const { current_parent_id, setCurrentObjective, current_row_id, setCurrentRowId, clearParentId } = useObjectivesHook();
   const { activities, addActivity, updateActivityField, removeActivity } = useActivitiesHook();
 
   useEffect(() => {
-    //  console.log(activities);
     const hasActivitiesForParent = activities.some(
       (act) => act.parentId === parentId
     );
@@ -57,7 +56,7 @@ const Activities = () => {
 
     if (current_row_id !== null) {
       if (current_parent_id !== objectiveRowId && !!objectiveRowId) {
-        console.log(current_row_id)
+        // console.log('current row id', current_row_id)
         setCurrentRowId(objectiveRowId);
       }
     } else {
@@ -70,6 +69,11 @@ const Activities = () => {
   const handleCollapseClick = () => {
     setIsCollapsed((prev) => !prev);
   };
+
+  const handleNavigateBack = () => {
+    clearParentId()
+    navigate(`/aop-create`)
+  }
 
   return (
     <Fragment>
@@ -122,10 +126,12 @@ const Activities = () => {
             actions={
               <Stack>
                 <ButtonComponent
-                  onClick={() => addActivity(parentId)}
+                  onClick={() => addActivity(current_parent_id ? current_parent_id : parentId)}
                   label={"Add an Activity"}
                   endDecorator={<Plus size={16} />}
                 />
+                {/* {current_parent_id} <br />
+                {parentId ? parentId : <>none</>} */}
               </Stack>
             }
           >
@@ -154,7 +160,7 @@ const Activities = () => {
                 label={"Back"}
                 size={"md"}
                 variant={"outlined"}
-                onClick={() => navigate(`/aop-create`)}
+                onClick={() => handleNavigateBack()}
               />
             </Stack>
           </ContainerComponent>

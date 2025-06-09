@@ -3,11 +3,11 @@ import React from "react";
 import { Box, Stack, Tooltip } from "@mui/joy";
 
 import MenuItemWithChildren from "./MenuItemComponent/MenuItemWithChildren";
-// import { sidebarRoutes } from "../../../Data";
+import { sidebarRoutes } from "../../../Data"; //routes from data.jsx
 
 import SimpleMenuItem from "./MenuItemComponent/SimpleMenuItem";
 import useSidebarHook from "../../../Hooks/SidebarHook";
-import { sidebarRoutes } from "../../../Routes/PageRoutes";
+// import { sidebarRoutes } from "../../../Routes/PageRoutes"; // routes from page routes
 import { useAuth } from "../../../Store/AuthStore";
 
 const Content = () => {

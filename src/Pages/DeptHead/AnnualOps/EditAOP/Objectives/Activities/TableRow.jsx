@@ -1,23 +1,27 @@
-import { Fragment, useState } from 'react';
+import { Fragment, useState, useEffect } from 'react';
 
 import { Stack, Link, Typography, Input, Select, Option } from '@mui/joy';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation, } from 'react-router-dom';
 import { Trash } from 'lucide-react';
+import { v4 as uuid, validate } from 'uuid';
 
-import useResourceHook from '../../../../../../Hooks/ResourceHook';
+import useAOPObjectivesHooks from '../../../../../../Hooks/AOP/AOPObjectivesHook';
 import useActivitiesHook from '../../../../../../Hooks/ActivitiesHook';
+import useResourceHook from '../../../../../../Hooks/ResourceHook';
 
 import IconButtonComponent from '../../../../../../Components/Common/IconButtonComponent';
+import { createJSONStorage } from 'zustand/middleware';
 
 const TableRow = ({
     rows,
-    parentId,
+    aopRowId,
+    parentId, //this will be the parent id for activity
     objectiveRowId,
 }) => {
 
     const navigate = useNavigate();
 
-    const { findResourcesByActivityID } = useResourceHook();
+    const { resources, findResourcesByActivityID } = useResourceHook();
     const { updateActivityField, removeActivity } = useActivitiesHook();
 
     //local state
@@ -67,6 +71,7 @@ const TableRow = ({
                         <td>
                             <Typography>
                                 {index + 1}
+                                {/* {id} */}
                             </Typography>
                         </td>
 
@@ -91,7 +96,9 @@ const TableRow = ({
                                     }}
                                 />
                             ) : (
-                                <Typography>{name || '-'}</Typography>
+                                <Typography>
+                                    {name || '-'}
+                                </Typography>
                             )}
                         </td>
 
@@ -142,7 +149,7 @@ const TableRow = ({
                                                 localEndMonth: newValue
                                             },
                                         }));
-                                        console.log(newValue)
+                                        // console.log(newValue)
 
                                         updateActivityField(id, 'endMonth', newValue);
                                     }}
@@ -304,6 +311,35 @@ const TableRow = ({
                             {isEditing ? (
                                 <Select
                                     size='sm'
+                                    value={localAopActivity[id]?.localIsGadRelated || false}
+                                    onChange={(e, newValue) => {
+                                        // console.log('value selectd:', newValue)
+                                        setLocalAopActivity((prev) => ({
+                                            ...prev,
+                                            [id]: {
+                                                ...prev[id],
+                                                localIsGadRelated: newValue
+                                            }
+                                        }))
+                                        updateActivityField(id, "isGadRelated", newValue)
+                                    }}
+                                >
+                                    <Option value={true}>Yes</Option>
+                                    <Option value={false}>No</Option>
+                                </Select>
+                            ) : (
+                                <Typography>
+                                    {console.info(isGadRelated)}
+                                    {isGadRelated ? 'Yes' : 'No'}
+                                </Typography>
+                            )}
+                        </td>
+
+                        {/* 
+                        <td onClick={() => handleOnRowClick(id)}>
+                            {isEditing ? (
+                                <Select
+                                    size='sm'
                                     value={localAopActivity?.[id]?.isGadRelated || false}
                                     onChange={(e, newValue) => updateActivityField(id, "isGadRelated", newValue)}
                                 >
@@ -316,7 +352,7 @@ const TableRow = ({
                                     {isGadRelated ? 'Yes' : 'No'}
                                 </Typography>
                             )}
-                        </td>
+                        </td> */}
 
                         <td >
 
@@ -331,10 +367,10 @@ const TableRow = ({
                                     component="button"
                                     onClick={() => {
 
-                                        const resources = findResourcesByActivityID(id)
+                                        // const resources = findResourcesByActivityID(id)
                                         // console.log(resources)
 
-                                        navigate(resources.length > 0 ? `resources/${rowId}` : `items/${rowId}`, {
+                                        navigate(resources.length !== 0 ? `resources/${rowId}` : `items/${rowId}`, {
                                             state: {
                                                 parentId: id,
                                                 objectiveRowId: objectiveRowId,
@@ -375,7 +411,7 @@ const TableRow = ({
                     </tr>
                 )
             })}
-        </Fragment>
+        </Fragment >
     )
 }
 

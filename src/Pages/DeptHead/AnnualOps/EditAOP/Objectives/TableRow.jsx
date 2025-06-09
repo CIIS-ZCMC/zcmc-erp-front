@@ -1,4 +1,4 @@
-import { Fragment, useState, useEffect } from 'react'
+import { Fragment, useState, useEffect, useMemo } from 'react'
 
 import { Typography, Stack, Link, Chip } from '@mui/joy';
 import { useNavigate } from 'react-router-dom';
@@ -11,11 +11,11 @@ import AutoCompleteComponent from '../../../../../Components/Form/AutocompleteCo
 import IconButtonComponent from '../../../../../Components/Common/IconButtonComponent';
 
 const TableRow = ({
-    data,
     rows,
+    aopId,
 }) => {
 
-    const { updateObjectiveField, deleteRow } = useObjectivesHook();
+    const { updateObjectiveField, deleteRow, objectives } = useObjectivesHook();
     const { function_types } = useFunctionTypeHook();
 
     const navigate = useNavigate();
@@ -24,15 +24,17 @@ const TableRow = ({
 
     const [editRowId, setEditRowId] = useState(null);
     const [isLoading, setisLoading] = useState(false);
+    const [initialData, setInitialData] = useState(true)
 
-    useEffect(() => {
-        console.log(data)
-    }, [data])
+    // useEffect(() => {
+    //     console.log('objectives rows:', rows)
+    // }, [rows])
 
     return (
         <Fragment>
             {
                 rows?.map(({ id, rowId, functionType, objective, successIndicator }, index) => {
+
                     return (
                         <tr key={id}>
                             <td>
@@ -49,6 +51,7 @@ const TableRow = ({
                                             placeholder="Select function type"
                                             value={functionType}
                                             setValue={(val) => {
+                                                setInitialData(false)
                                                 updateObjectiveField(id, 'functionType', val);
                                                 setEditRowId(null);
                                             }}
@@ -72,6 +75,7 @@ const TableRow = ({
                                                 updateObjectiveField(id, 'objective', val);
                                                 setEditRowId(null);
                                             }}
+                                            //initial set kunese
                                             options={functionType?.objectives ?? []}
                                         />
                                     )
@@ -120,12 +124,11 @@ const TableRow = ({
                                     >
                                         <Link
                                             component="button"
-                                            onClick={() => navigate(`activities/${rowId}`, { state: { parentId: id, rowId: rowId } })}
+                                            onClick={() => navigate(`activities/${rowId}`, { state: { aopId: aopId, rowId: rowId, objectiveId: id, data: objectives } })}
                                             fontSize={14}
                                         >
                                             Manage Activities
                                         </Link>
-
 
                                         <Chip
                                             variant="outlined"

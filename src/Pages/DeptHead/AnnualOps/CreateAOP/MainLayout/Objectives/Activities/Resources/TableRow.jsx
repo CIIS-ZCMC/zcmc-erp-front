@@ -19,6 +19,7 @@ const TableRow = ({
   const navigate = useNavigate();
 
   const {
+    setTotalCost,
     resources: resourceHooks,
     removeItemResource,
     updateResourceField,
@@ -26,6 +27,7 @@ const TableRow = ({
 
   const [localResources, setLocalResources] = useState(rows);
   const [editRowId, setEditRowId] = useState(null);
+  const [localTotalCost, setLocalTotalCost] = useState(0)
 
   const handleOnRowClick = (id) => setEditRowId(id);
 
@@ -60,6 +62,12 @@ const TableRow = ({
     { id: 1, label: 'MOOE', value: 'MOOE' },
     { id: 2, label: 'CO', value: 'CO' }
   ]
+
+  //get the total cost 
+  const totalCostFormat = (quantity, individualPrice) => {
+    const total = (quantity * individualPrice).toFixed(2);
+    setLocalTotalCost(total);
+  };
 
   return (
     <Fragment>
@@ -113,7 +121,8 @@ const TableRow = ({
 
                 <td onClick={() => handleOnRowClick(id)}>
                   <Typography>
-                    {Number(quantity * individualPrice).toFixed(2) || "-"}
+                    {/* {totalCostFormat(quantity, individualPrice)} */}
+                    {(Number(quantity * individualPrice).toFixed(2)) || "-"}
                   </Typography>
                 </td>
 
@@ -129,13 +138,16 @@ const TableRow = ({
                           updateResourceField(id, "purchaseTypeId", val);
                         }}
                         options={purchase_types.map((item) => {
-                          console.log(item)
+                          // console.log(item)
                           return { id: item.id, label: item.code };
                         })}
                       />
                     </>
                   ) : (
-                    <Typography>{purchaseTypeId?.label || "-"}</Typography>
+                    <Typography>
+
+                      {purchaseTypeId?.label || "-"}
+                    </Typography>
                   )}
                 </td>
 

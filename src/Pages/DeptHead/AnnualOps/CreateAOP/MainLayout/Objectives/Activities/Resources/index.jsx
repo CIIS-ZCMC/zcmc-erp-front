@@ -46,9 +46,9 @@ const Resources = () => {
     });
   }, []);
 
-  useEffect(() => {
-    console.log(resources)
-  }, [resources])
+  // useEffect(() => {
+  //   console.log(resources)
+  // }, [resources])
 
   return (
     <Fragment>
@@ -58,7 +58,7 @@ const Resources = () => {
         actions={
           <Stack>
             <ButtonComponent
-              onClick={() => addResource(parentId)}
+              // onClick={() => addResource(parentId)}
               label={"Add Resource"}
               endDecorator={<Plus size={16} />}
             />
@@ -90,7 +90,7 @@ const Resources = () => {
             label={"Back"}
             size={"md"}
             variant={"outlined"}
-            onClick={() => navigate(-1)}
+            onClick={() => navigate(`/aop-create/activities/${objectiveRowId}`)}
           />
         </Stack>
       </ContainerComponent>

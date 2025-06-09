@@ -3,6 +3,7 @@ import { Fragment, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Typography, Input, Select, Option } from "@mui/joy";
 import { Trash } from "lucide-react";
+import { v4 as uuid } from "uuid";
 
 import useResourceHook from "../../../../../../../Hooks/ResourceHook";
 import AutocompleteComponent from "../../../../../../../Components/Form/AutocompleteComponent";
@@ -16,10 +17,10 @@ const TableRow = ({
     const navigate = useNavigate();
 
     const {
-        resources: resourceHooks,
         removeItemResource,
         updateResourceField,
     } = useResourceHook();
+
 
     const [localResources, setLocalResources] = useState(rows);
     const [editRowId, setEditRowId] = useState(null);
@@ -49,20 +50,18 @@ const TableRow = ({
         ]);
     }
 
+    //"id": "7dba8a4d-f9cb-4b3c-8862-ea9b3a123f93",
+    //"rowId": 1,
+    //"totalCost": 0,
+
     // useEffect(() => {
-    //   console.log(localResources)
-    // }, [localResources])
+    //     console.log(localResources)
+    // }, [])
 
     const expenseClassOptions = [
         { id: 1, label: 'MOOE', value: 'MOOE' },
         { id: 2, label: 'CO', value: 'CO' }
     ]
-
-    useEffect(() => (
-        console.log(localResources)
-    ), [])
-
-    //fix the parentId current value returns undefined
 
     return (
         <Fragment>
@@ -132,13 +131,16 @@ const TableRow = ({
                                                     updateResourceField(id, "purchaseTypeId", val);
                                                 }}
                                                 options={purchase_types.map((item) => {
-                                                    console.log(item)
+                                                    // console.log(item)
                                                     return { id: item.id, label: item.code };
                                                 })}
                                             />
                                         </>
                                     ) : (
-                                        <Typography>{purchaseTypeId?.label || "-"}</Typography>
+                                        <Typography>
+                                            {/* {console.info('valye if purchseTypeId', purchaseTypeId)} */}
+                                            {purchaseTypeId?.label || "-"}
+                                        </Typography>
                                     )}
                                 </td>
 

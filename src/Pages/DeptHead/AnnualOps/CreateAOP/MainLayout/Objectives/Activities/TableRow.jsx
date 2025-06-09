@@ -1,11 +1,12 @@
 import { Fragment, useEffect, useState } from 'react'
 
-import { Stack, Link, Typography, Input, Select, Option } from '@mui/joy';
+import { Chip, Stack, Link, Typography, Input, Select, Option } from '@mui/joy';
 import { useNavigate } from 'react-router-dom';
 import { Trash } from 'lucide-react';
 
+import useActivitiesHook from '../../../../../../../Hooks/ActivitiesHook';
 import useResourceHook from '../../../../../../../Hooks/ResourceHook';
-
+import AutocompleteComponent from '../../../../../../../Components/Form/AutocompleteComponent';
 import IconButtonComponent from '../../../../../../../Components/Common/IconButtonComponent';
 
 const TableRow = ({
@@ -18,7 +19,18 @@ const TableRow = ({
 
     const navigate = useNavigate();
 
-    const { findResourcesByActivityID } = useResourceHook();
+    const { activities } = useActivitiesHook();
+    const { resources, findResourcesByActivityID, totalCost } = useResourceHook();
+
+    // const activitiesId = activities.map((activity) => activity.id)
+
+    const resourcesCount = resources.map((resource, index) => (
+        findResourcesByActivityID(resource.parentId)
+    ))
+
+    // useEffect(() => (
+    //     console.log('current parent id on table row', parentId)
+    // ), [parentId])
 
     //local state
     const [localAopActivity, setLocalAopActivity] = useState({});
@@ -54,11 +66,21 @@ const TableRow = ({
 
     };
 
+    // useEffect(() => {
+    //     console.log(rows)
+    // }, [rows])
+
+    const gadRelatedOptions = [
+        { id: 1, label: 'Yes', value: 'yes' },
+        { id: 2, label: 'No', value: 'no' }
+    ]
+
     return (
         <Fragment>
             {rows?.filter(value => value?.parentId === parentId)?.map(({ rowId, id, name, isGadRelated, cost, startMonth, endMonth, target }, index) => {
 
                 const isEditing = editRowId === id;
+                // const [selectedGadRelated, setSelectedGadRelated] = useState(isGadRelated)
 
                 return (
 
@@ -90,7 +112,8 @@ const TableRow = ({
                                     }}
                                 />
                             ) : (
-                                <Typography>{name || '-'}</Typography>
+                                <Typography>
+                                    {name || '-'}</Typography>
                             )}
                         </td>
 
@@ -277,41 +300,36 @@ const TableRow = ({
                             )}
                         </td>
 
-                        <td onClick={() => handleOnRowClick(id)}>
-                            {isEditing ? (
-                                <Input
-                                    value={localAopActivity[id]?.localCost}
-                                    size='sm'
-                                    onChange={(e) =>
-                                        setLocalAopActivity((prev) => ({
-                                            ...prev,
-                                            localCost: e.target.value,
-                                        }))
-                                    }
-                                    onBlur={() => {
-                                        handleChange(id, 'cost', localAopActivity.localCost);
-                                        setEditRowId(null);
-                                    }}
-                                    disabled
-                                />
-                            ) : (
-                                <Typography>{cost}</Typography>
-                            )}
+                        <td >
+                            <Typography>
+                                {/* {totalCost} */}
+                                {0}
+                            </Typography>
                         </td>
 
                         <td onClick={() => handleOnRowClick(id)}>
                             {isEditing ? (
                                 <Select
                                     size='sm'
-                                    value={localAopActivity?.[id]?.isGadRelated || false}
-                                    onChange={(e, newValue) => handleChange(id, "isGadRelated", newValue)}
+                                    value={localAopActivity[id]?.localIsGadRelated || false}
+                                    onChange={(e, newValue) => {
+                                        // console.log('value selectd:', newValue)
+                                        setLocalAopActivity((prev) => ({
+                                            ...prev,
+                                            [id]: {
+                                                ...prev[id],
+                                                localIsGadRelated: newValue
+                                            }
+                                        }))
+                                        handleChange(id, "isGadRelated", newValue)
+                                    }}
                                 >
                                     <Option value={true}>Yes</Option>
                                     <Option value={false}>No</Option>
                                 </Select>
                             ) : (
                                 <Typography>
-                                    {localAopActivity?.[id]?.isGadRelated}
+                                    {/* {console.info(isGadRelated)} */}
                                     {isGadRelated ? 'Yes' : 'No'}
                                 </Typography>
                             )}
@@ -325,27 +343,39 @@ const TableRow = ({
                                 justifyContent={'space-between'}
                                 gap={1}
                             >
-
-                                <Link
-                                    component="button"
-                                    onClick={() => {
-
-                                        const resources = findResourcesByActivityID(id)
-                                        console.log(resources)
-
-                                        navigate(resources.length > 0 ? `resources/${rowId}` : `items/${rowId}`, {
-                                            state: {
-                                                parentId: id,
-                                                objectiveRowId: objectiveRowId,
-                                                activityRowId: rowId,
-                                                cost: cost
-                                            }
-                                        })
-                                    }}
-                                    fontSize={12}
+                                <Stack
+                                    direction={'row'}
+                                    alignItems={'center'}
+                                    gap={1}
                                 >
-                                    Resources
-                                </Link>
+
+                                    <Link
+                                        component="button"
+                                        onClick={() => {
+
+                                            const resources = findResourcesByActivityID(id);
+                                            navigate(resources.length > 0 ? `resources/${rowId}` : `items/${rowId}`, {
+                                                state: {
+                                                    parentId: id,
+                                                    objectiveRowId: objectiveRowId,
+                                                    activityRowId: rowId,
+                                                    cost: cost
+                                                }
+                                            })
+                                        }}
+                                        fontSize={12}
+                                    >
+                                        Resources
+                                    </Link>
+
+                                    <Chip
+                                        variant="outlined"
+                                        color="success"
+                                    >
+                                        {resourcesCount[index]?.length || 0}
+                                    </Chip>
+
+                                </Stack>
 
                                 <Link
                                     component="button"

@@ -23,8 +23,8 @@ export const EPR_API_ENDPOINTS = {
 };
 
 export const AREA_ID = {
-  PLANNING_UNIT: "planning-unit",
-  OMCC: "omcc",
+  PLANNING_UNIT: "OMCC-PLAN-SE-047",
+  OMCC: "OMCC-DI-001",
 };
 
 export const AOP_CONSTANTS = {
@@ -151,9 +151,11 @@ export const approvalActions = [
 export const API = {
   AOP_APPLICATIONS: "aop-applications",
   AOP_APPLICATION_SHOW: "aop-application-show",
+  AOP_APPLICATION_EDIT: "aop-application-edit",
+  AOP_APPLICATION_UPDATE: 'aop-application-update',
   AOP_APPLICATION_STORE: "aop-application-store",
   AOP_APPLICATION_SUMMARY: "aop-application-summary",
-  AOP_APPLICATION_TIMELINE: "aop-application-timeline",
+  AOP_APPLICATION_TIMELINE: "application-timelines",
 
   TYPE_OF_FUNCTIONS: "type-of-functions",
   TYPE_OF_PURCHASE: "purchase-types",

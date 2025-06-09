@@ -1,9 +1,9 @@
 // src/hooks/useNotifications.js
 import { create } from "zustand";
-import { useEffect } from "react";
 import useSocketStore from "./Socket/SocketHook";
 import { NOTIFICATIONS } from "../Data/TestData";
 import { useAuth } from "../Store/AuthStore";
+import { useEffect } from "react";
 
 // Zustand store
 const useNotificationsHook = create((set) => ({
@@ -34,13 +34,16 @@ export const useNotificationEvents = () => {
 
   const { user } = useAuth();
 
-  if (socket && user) {
-    socket.on(`erp-notifications-${user.id}`, (data) => {
-      addNotification(data);
-    });
-  }
+  useEffect(() => {
+    if (socket && user) {
+      socket.on(`erp-notification-${user.id}`, (data) => {
+        addNotification(data);
+        console.log(data);
+      });
+    }
 
-  return () => {
-    socket.off(`erp-notifications-${user.id}`);
-  };
+    return () => {
+      socket.off(`erp-notification-${user.id}`);
+    };
+  }, [socket]);
 };

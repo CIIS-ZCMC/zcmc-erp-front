@@ -1,37 +1,29 @@
 import { Fragment, useEffect, useState } from "react";
 import PageTitle from "../../../Components/Common/PageTitle";
 import { useParams } from "react-router-dom";
-import { approvalActions } from "../../../Data/constants";
-import { Box, Divider, Grid, Stack, Typography } from "@mui/joy";
+import { Box, Grid, Stack, Typography } from "@mui/joy";
 import ContainerComponent from "../../../Components/Common/ContainerComponent";
 import ButtonComponent from "../../../Components/Common/ButtonComponent";
 import { ExternalLink } from "lucide-react";
-import TextareaComponent from "../../../Components/Form/TextareaComponent";
-import ModalComponent from "../../../Components/Common/Dialog/ModalComponent";
-import useModalHook from "../../../Hooks/ModalHook";
-import InputComponent from "../../../Components/Form/InputComponent";
 import {
   useAOPApplication,
   useAOPApplicationObjectives,
 } from "../../../Hooks/AOP/AOPApplicationsHook";
 import { useActivityActions } from "../../../Hooks/AOP/ActivityHook";
 import { localStorageGetter } from "../../../Utils/LocalStorage";
-import RadioButtonComponent from "../../../Components/Common/RadioButtonComponent";
 import ObjectivesList from "./Contents/ObjectivesList";
 import { useAllComments, useCommentActions } from "../../../Hooks/CommentHook";
 import { ActivityDetails } from "./Contents/ActivityDetails";
 import { CommentsDetails } from "./Contents/CommentsDetails";
 
 import { FeedbackContent } from "./Contents/FeedbackContent";
-import { useApprovalActions } from "../../../Hooks/AOP/AOPApprovalHook";
-import { useAuthActions, useUserTypes } from "../../../Store/AuthStore";
+import { useUserTypes } from "../../../Store/AuthStore";
+import ProcessAOPContent from "./Contents/ProcessAOPContent";
 
 export default function ManageAOP() {
   const { id } = useParams();
-  const { isDivisionHead } = useUserTypes();
+  const { isDivisionHead, isPlanning } = useUserTypes();
   const AOPApplication = useAOPApplication();
-
-  const { status: applicationStatus } = AOPApplication || {};
 
   // AOP HOOK
   const AOPApplicationObjectives =
@@ -54,26 +46,14 @@ export default function ManageAOP() {
   const allComments = useAllComments();
 
   // STATES
-  // const [activityLoading, setActivityLoading] = useState(false);
-  const [action, setAction] = useState("approved");
   const [isRemarksLoading, setIsRemarksLoading] = useState(true);
-  const [btnLoading, setBtnLoading] = useState(false);
-  const [remarks, setRemarks] = useState("");
 
   const AREA_CODE = localStorageGetter("aop_application_area_code");
   const FISCAL_YEAR = 2026;
 
   // MODAL
-  const { setAlertDialog } = useModalHook();
-  const [openProcessModal, setOpenProcessModal] = useState(false);
   const [openFeedbackModal, setOpenFeedbackModal] = useState(false);
-  const { getUserArea } = useAuthActions();
 
-  const disabledProcessRequest = () => {
-    return (
-      applicationStatus === "approved" && getUserArea() === "Planning Unit"
-    );
-  };
   // FUNCTIONS
   const handleViewFeedback = () => {
     setOpenFeedbackModal(true);
@@ -88,6 +68,7 @@ export default function ManageAOP() {
         setTimeout(() => setIsRemarksLoading(false), 1000);
       });
     };
+
     Promise.all(fetch())
       .then(() => {
         setIsRemarksLoading(false);
@@ -96,47 +77,6 @@ export default function ManageAOP() {
         console.error("Error fetching comments or remarks:", error);
         setIsRemarksLoading(false);
       });
-  };
-
-  const handleProcessRequest = () => {
-    setOpenProcessModal(true);
-  };
-
-  // PROCESS AOP
-  const { processAOP } = useApprovalActions();
-  const [pin, setPin] = useState("");
-
-  const handleProcessAOP = () => {
-    setBtnLoading(false);
-
-    const form = {
-      aop_application_id: AOP_APPLICATION_ID,
-      status: action,
-      remarks: remarks,
-      auth_pin: pin,
-    };
-
-    processAOP(form, (status) => {
-      let data = {};
-      if (status === 200) {
-        data = {
-          status: 200,
-          title: "AOP request for F.Y. “2026” successfully approved.",
-          description:
-            "Everyone can now see the changes you’ve made. The request is now ready for processing of the next approving body (Division Chief).",
-        };
-        setOpenProcessModal(false);
-      } else {
-        data = {
-          status: "error",
-          title: "Failed to update status",
-          description:
-            "An error occurred while updating the status of the AOP request. Please check your authorization PIN and try again. If the problem persists, contact the system administrator.",
-        };
-      }
-
-      setAlertDialog(data);
-    });
   };
 
   useEffect(() => {
@@ -206,11 +146,7 @@ export default function ManageAOP() {
                       endDecorator={<ExternalLink size={14} />}
                       onClick={handleViewFeedback}
                     />
-                    <ButtonComponent
-                      label={"Process request"}
-                      disabled={disabledProcessRequest}
-                      onClick={handleProcessRequest}
-                    />
+                    <ProcessAOPContent />
                   </Stack>
                 }
                 scrollable
@@ -222,12 +158,12 @@ export default function ManageAOP() {
             </Grid>
 
             {/* ACTIVITY DETAILS  */}
-            <Grid item="true" xs={isDivisionHead ? 8 : 4} mt={3}>
+            <Grid item="true" xs={!isPlanning ? 8 : 4} mt={3}>
               <ActivityDetails />
             </Grid>
 
             {/* COMMENTS  */}
-            <Grid item="true" xs={4} mt={3} display={isDivisionHead && "none"}>
+            <Grid item="true" xs={4} mt={3} display={!isPlanning && "none"}>
               <CommentsDetails />
             </Grid>
           </Grid>
@@ -235,59 +171,6 @@ export default function ManageAOP() {
       </Stack>
 
       {/* PROCESS REQUEST */}
-      <ModalComponent
-        hasActionButtons
-        isOpen={openProcessModal}
-        handleClose={() => setOpenProcessModal(false)}
-        title={`Process request `}
-        description={
-          "Select a request status and reasons (if returned) to continue. You may add remarks if necessary."
-        }
-        leftButtonLabel="Back to request"
-        rightButtonLabel="Confirm and save"
-        rightButtonAction={handleProcessAOP}
-        isLoading={btnLoading}
-        rightButtonDisabled={!pin || !action}
-        maxWidth={500}
-        content={
-          <Stack gap={2}>
-            <Stack py={2}>
-              <Typography level="title-sm" mb={1}>
-                Select the action you would like to take:
-              </Typography>
-              <RadioButtonComponent
-                actions={approvalActions}
-                value={action}
-                setValue={setAction}
-              />
-              {isDivisionHead && (
-                <TextareaComponent
-                  minRows={2}
-                  label={"Remarks"}
-                  setValue={setRemarks}
-                  value={remarks}
-                  maxRows={200}
-                  placeholder={"Enter your remarks here"}
-                />
-              )}
-            </Stack>
-
-            <Divider />
-            <InputComponent
-              type="password"
-              label="Authorization pin"
-              helperText={
-                "Confirm you action by typing-in your authorization PIN."
-              }
-              setValue={setPin}
-              value={pin}
-            />
-          </Stack>
-        }
-      />
-
-      {/* VIEW FEEDBACK */}
-
       <FeedbackContent
         openFeedbackModal={openFeedbackModal}
         setOpenFeedbackModal={setOpenFeedbackModal}

@@ -1,4 +1,4 @@
-import { Fragment } from "react";
+import { Fragment, useEffect } from "react";
 
 import { Stack, Box, Typography, Divider } from "@mui/joy";
 import { LucideDot, Trash } from "lucide-react";
@@ -15,6 +15,7 @@ const ItemCart = ({
   onRemove,
   onQuantityChange,
 }) => {
+
   return (
     <>
       <Box sx={{ p: 2, borderBottom: "1px solid #eee" }}>

@@ -1,11 +1,9 @@
-import React, { Fragment, useEffect, useMemo, useState } from "react";
-import PropTypes from "prop-types";
+import { Fragment, useEffect, useState } from "react";
 import PageTitle from "../../../Components/Common/PageTitle";
 import { AOP_CONSTANTS } from "../../../Data/constants";
 import ContainerComponent from "../../../Components/Common/ContainerComponent";
 import { Box, Grid, Link, Stack } from "@mui/joy";
 import InputComponent from "../../../Components/Form/InputComponent";
-import DatePickerComponent from "../../../Components/Form/DatePickerComponent";
 import { Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -45,7 +43,7 @@ const AOPApproval = () => {
   // STATES
   const [openTimelineModal, setOpenTimelineModal] = useState(false);
   const [index, setIndex] = useState("all");
-  const [year, setYear] = useState(new Date().getFullYear());
+  const [year, setYear] = useState(new Date().getFullYear()?.toString());
   const [pageLoading, setPageLoading] = useState("");
 
   // FUNCTIONS
@@ -139,11 +137,12 @@ const AOPApproval = () => {
 
               {APPLICATIONS?.map(
                 (
-                  { id, created_on, date_approved, area_code, status },
+                  { id, created_on, date_approved, area_code, status, year },
                   index
                 ) => (
                   <Grid key={index} item="true" xs={4}>
                     <AOPCardComponent
+                      year={year}
                       date_requested={created_on}
                       date_approved={date_approved}
                       status={status}
