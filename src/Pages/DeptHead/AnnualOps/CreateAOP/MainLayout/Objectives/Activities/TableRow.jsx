@@ -200,7 +200,6 @@ const TableRow = ({
                             )}
                         </td>
 
-
                         <td onClick={() => handleOnRowClick(id)}>
                             {isEditing ? (
                                 <Input
@@ -275,13 +274,14 @@ const TableRow = ({
 
                                 <AutocompleteComponent
                                     placeholder="is GAD related activity"
-                                    value={isGadRelated}
+                                    value={isGadRelated === true ? 'Yes' : 'No'}
                                     setValue={(val) =>
                                         handleChange(id, "isGadRelated", val.value)}
                                     options={gadRelatedOptions}
                                 />
                             ) : (
                                 <Typography>
+                                    {console.info(isGadRelated)}
                                     {isGadRelated
                                         ? 'Yes'
                                         : 'No'

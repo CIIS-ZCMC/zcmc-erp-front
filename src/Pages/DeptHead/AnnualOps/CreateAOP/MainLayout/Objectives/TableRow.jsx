@@ -1,5 +1,5 @@
 import { useEffect, Fragment } from "react";
-import { Typography, Stack, Link, Chip, Tooltip } from "@mui/joy";
+import { Typography, Stack, Link, Chip, Tooltip, Button } from "@mui/joy";
 import { Trash } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -81,13 +81,21 @@ const TableRow = ({
                     />
                   )
                   :
-                  (
-                    <Tooltip title={objective?.description} variant="solid">
+                  (<>
+
+                    <Tooltip title={objective ? objective?.description : ''} variant="solid">
+                      <Typography >
+                        {objective?.code || "-"}
+                      </Typography>
+                    </Tooltip>
+                    {/* <Tooltip title={objective?.description} variant="solid">
                       <Typography>
                         {objective?.code || "-"}
                         {JSON.stringify(objective?.description)}
                       </Typography>
-                    </Tooltip>
+                    </Tooltip> */}
+                  </>
+
                   )
                 }
               </td>
@@ -107,10 +115,16 @@ const TableRow = ({
                   )
                   :
                   (
-                    <Typography>
-                      {/* {console.info({ objective })} */}
-                      {successIndicator?.code || "-"}
-                    </Typography>
+                    <Tooltip title={objective ? objective?.description : ''} variant="solid">
+                      <Typography >
+                        {objective?.code || "-"}
+                      </Typography>
+                    </Tooltip>
+
+                    // <Typography>
+                    //   {/* {console.info({ objective })} */}
+                    //   {successIndicator?.code || "-"}
+                    // </Typography>
                   )
                 }
               </td>
