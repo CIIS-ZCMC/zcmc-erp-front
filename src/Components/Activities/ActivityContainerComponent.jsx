@@ -2,6 +2,7 @@ import React from "react";
 import { Box, Stack, Typography } from "@mui/joy";
 import ChipComponent from "../Common/ChipComponent";
 import { CircleSmall } from "lucide-react";
+import { useUserTypes } from "../../Store/AuthStore";
 
 export const ActivityContainerComponent = ({
   label,
@@ -11,6 +12,7 @@ export const ActivityContainerComponent = ({
   active,
   onClick,
 }) => {
+  const { isPlanning } = useUserTypes();
   return (
     <Box
       onClick={onClick}
@@ -37,21 +39,25 @@ export const ActivityContainerComponent = ({
             {label}
           </Typography>{" "}
           <Box display={"flex"} gap={0.5}>
-            {withComment && (
-              <ChipComponent
-                label={"With comments"}
-                size="sm"
-                variant={"soft"}
-              />
-            )}
-            {reviewed && (
-              <ChipComponent
-                label={"Reviewed"}
-                size="sm"
-                variant={"soft"}
-                color={"success"}
-                startDecorator={<CircleSmall size={12} />}
-              />
+            {isPlanning && (
+              <>
+                {withComment && (
+                  <ChipComponent
+                    label={"With comments"}
+                    size="sm"
+                    variant={"soft"}
+                  />
+                )}
+                {reviewed && (
+                  <ChipComponent
+                    label={"Reviewed"}
+                    size="sm"
+                    variant={"soft"}
+                    color={"success"}
+                    startDecorator={<CircleSmall size={12} />}
+                  />
+                )}
+              </>
             )}
           </Box>
         </Stack>

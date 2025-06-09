@@ -29,6 +29,7 @@ import {
 import { ThreeDotsLoader } from "../../../Components/Common/Loading/ThreeDotsLoader";
 import PageLoader from "../../../Components/Loading/PageLoader";
 import { ThreeDots } from "react-loader-spinner";
+import debounce from "lodash.debounce";
 
 const AOPApproval = () => {
   const navigate = useNavigate();
@@ -45,6 +46,7 @@ const AOPApproval = () => {
   const [openTimelineModal, setOpenTimelineModal] = useState(false);
   const [index, setIndex] = useState("all");
   const [year, setYear] = useState(new Date().getFullYear()?.toString());
+  const [search, setSearch] = useState(null);
   const [pageLoading, setPageLoading] = useState("");
   const [isFetchLoading, setIsFetchLoading] = useState(false);
 
@@ -52,7 +54,7 @@ const AOPApproval = () => {
   const handleClickCard = (id, area_code) => {
     setPageLoading(true);
 
-    getAOPApprovalTimeline(id, () => { });
+    getAOPApprovalTimeline(id, () => {});
     getAOPApplicationById(id, () => {
       setPageLoading(false);
       navigate(`/aop-approval/objectives/${id}`);
@@ -65,21 +67,30 @@ const AOPApproval = () => {
   const handleViewTimeline = (id) => {
     setOpenTimelineModal(true);
 
-    getAOPApprovalTimeline(id, () => { });
+    getAOPApprovalTimeline(id, () => {});
   };
 
   useEffect(() => {
-    setIsFetchLoading(true);
+    const debouncedFetch = debounce((params) => {
+      setIsFetchLoading(true);
+      getAOPApplications(params, () => {
+        setIsFetchLoading(false);
+      });
+    }, 300);
+
     const params = {
       status: index == "all" ? null : index,
       year: year,
+      search: search,
     };
 
-    getAOPApplications(params, () => {
-      setIsFetchLoading(false);
-    });
-    localStorage.removeItem("all_comments");
-  }, [index, year, getAOPApplications]);
+    debouncedFetch(params);
+
+    return () => {
+      localStorage.removeItem("all_comments");
+      debouncedFetch.cancel();
+    };
+  }, [index, year, search, getAOPApplications]);
 
   const APPLICATIONS = TEST_MODE ? MANAGE_AOP_APPROVAL : AOPApplications;
 
@@ -112,6 +123,8 @@ const AOPApproval = () => {
                 width={400}
                 color="primary"
                 startDecorator={<Search size={14} />}
+                setValue={setSearch}
+                value={search}
               />
               <Stack direction={"row"} gap={2} alignItems={"center"}>
                 <YearSelectorComponent
@@ -143,7 +156,7 @@ const AOPApproval = () => {
                   alignItems={"center"}
                   justifyContent={"center"}
                   width="100%"
-                // minHeight={contentMaxHeight}
+                  // minHeight={contentMaxHeight}
                 >
                   <ThreeDots
                     visible={true}

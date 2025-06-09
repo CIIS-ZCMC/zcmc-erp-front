@@ -49,7 +49,9 @@ function PPMPApproval() {
 
   const handleExportToCSV = (id, area_details) => {
     const { code } = area_details;
-    exportPPMP({ export: true, ppmp_application_id: id }, code, (status) => {
+    const request = { export: true, ppmp_application_id: id };
+
+    exportPPMP(request, code, (status) => {
       if (status === 200) {
         setDlLoader(false);
         setAlertDialog({
@@ -69,25 +71,21 @@ function PPMPApproval() {
   };
 
   useEffect(() => {
-    // Debounced function to trigger the API call
     const debouncedFetch = debounce((params) => {
       setIsFetchLoading(true);
       getPPMPApplications(params, () => {
         setIsFetchLoading(false);
       });
-    }, 500); // 500ms debounce delay when search is present
+    }, 300);
 
-    // Prepare params
     const params = {
       status: index === "all" ? null : index,
       year,
       search,
     };
 
-    // Trigger the debounced fetch
     debouncedFetch(params);
 
-    // Cleanup debounced function on component unmount or dependencies change
     return () => {
       debouncedFetch.cancel();
     };

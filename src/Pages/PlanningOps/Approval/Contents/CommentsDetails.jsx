@@ -17,7 +17,7 @@ export const CommentsDetails = () => {
   return (
     <Fragment>
       <ContainerComponent
-        noBoxShadow
+        noboxshadow
         title={"Comments for the selected activity"}
         description={
           "Write comments below as your feedback or input for this selected activity only."
