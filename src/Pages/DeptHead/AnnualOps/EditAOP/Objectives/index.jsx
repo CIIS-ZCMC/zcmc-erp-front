@@ -9,6 +9,8 @@ import BoxComponent from '../../../../../Components/Common/Card/BoxComponent';
 import ContainerComponent from '../../../../../Components/Common/ContainerComponent';
 import EditableTableComponent from '../../../../../Components/Common/Table/EditableTableComponent';
 import ButtonComponent from '../../../../../Components/Common/ButtonComponent';
+import ModalComponent from '../../../../../Components/Common/Dialog/ModalComponent';
+import TextareaComponent from '../../../../../Components/Form/TextareaComponent';
 import { ThreeDotsLoader } from '../../../../../Components/Common/Loading/ThreeDotsLoader';
 
 import useFunctionTypeHook from '../../../../../Hooks/FunctionTypeHook';
@@ -32,21 +34,23 @@ const index = () => {
     const location = useLocation();
     const aopId = location.state?.aopAppId;
 
-    const { aopObjectives, mission, aop_id, deleteObjective } = useAOPObjectivesHooks();
+    const { aopObjectives, mission: defaultMission, aop_id, deleteObjective } = useAOPObjectivesHooks();
     const { function_types, getFunctionType } = useFunctionTypeHook();
-    const { objectives, addObjective, setObjectives, clearObjectives } = useObjectivesHook();
+    const { objectives, addObjective, setObjectives, clearObjectives, setIsDiscussed } = useObjectivesHook();
     const { findActivitiesByObjectiveID, setActivities, activities, clearActivities } = useActivitiesHook();
     const { findResourcesByActivityID, setResources, clearResources } = useResourceHook();
     const { findResponsiblePeopleByActivityID, clearResponsiblePeople, setResponsiblePeople } = useResponsiblePeopleHook();
-    const { setAlertDialog } = useModalHook();
+    const { setAlertDialog, setConfirmationModal, closeConfirmation } = useModalHook();
 
-    // const [mission, setMission] = useState();
+    const [mission, setMission] = useState();
     const [isDraft, setIsDnraft] = useState(false)
+
     const [authorizationPin, setAuthorizationPin] = useState('123456');
 
     const [isLoading, setIsLoading] = useState(false);
-
+    const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
     const [openSaveMissionModal, setOpenSaveMissionModal] = useState(false);
+    const [openConfirmDiscussedDialog, setOpenConfirmDiscussedDialog] = useState(false);
 
     const activitiesCount = objectives.map((objective) =>
         activities.filter((activity) => activity.parentId === objective.id)
@@ -209,6 +213,39 @@ const index = () => {
 
     };
 
+    const handleConfirmationModal = () => {
+        setOpenConfirmDialog(true);
+        const data = {
+            status: 200,
+            title:
+                "Your AOP request is now ready for submission, would you like to get a preview first?",
+            description:
+                "Document previews will be generated and downloaded in Microsoft Excel Spreadsheet (.xls) file format. The document preview is for viewing purposes only to help you ensure that all fields are filled-up correctly and accurately.",
+        };
+        setConfirmationModal(data);
+    };
+
+    const handleDiscussedConfirmationModal = () => {
+
+        console.log('alert')
+
+        setOpenConfirmDiscussedDialog(true)
+
+        const data = {
+            status: "warning",
+            title: "Have you discussed this AOP request with your Division Chief?",
+            description:
+                "We need to make sure that you already have a previous discussion and official go-signal for creating and submitting this request.",
+        };
+
+        setConfirmationModal(data)
+    }
+
+    const proceed = () => {
+        handleConfirmationModal()
+        // closeConfirmation();
+    };
+
     const handleSubmit = () => {
 
         const aopPayload = buildAOP();
@@ -222,45 +259,62 @@ const index = () => {
         }
 
         console.log('submitting payload', payload)
+        setTimeout(() => {
 
-        updateAOP(payload, aop_id, (status, message) => {
+            updateAOP(payload, aop_id, (status, message) => {
 
-            let data = {}
+                let data = {}
 
-            // if existing
-            // if (
-            //     status === 200 &&
-            //     message === "You already have an AOP application in your area."
-            // ) {
-            //     data = {
-            //         status: 200,
-            //         title: "Existing AOP",
-            //         description: "You already have an AOP application in your area.",
-            //     };
-            //     setAlertDialog(data);
-            //     return;
-            // }
+                // if existing
+                if (
+                    status === 200 &&
+                    message === "You already have an AOP application in your area."
+                ) {
+                    data = {
+                        status: 200,
+                        title: "Existing AOP",
+                        description: "You already have an AOP application in your area.",
+                    };
+                    setAlertDialog(data);
+                    return;
+                }
 
-            //create new
-            if (status === 200) {
+                //create new
+                if (status === 200) {
+                    data = {
+                        status: 200,
+                        title: "Successfully submitted for approval.",
+                        description:
+                            "Your AOP request has been sent to the next approving body and they have been notified.",
+                    };
+
+                    setOpenSubmitModal(false);
+                    clearLocalStorage();
+                    setMission("");
+                    setAlertDialog(data);
+                    window.location.href = '/aop';
+                    // window.location.reload(false);
+                    closeConfirmation()
+                    return;
+                }
+
+                // failed
                 data = {
-                    status: 200,
-                    title: "Successfully submitted for approval.",
-                    description:
-                        "Your AOP request has been sent to the next approving body and they have been notified.",
+                    status: status,
+                    title: "Submission failed",
+                    description: message || "An unexpected error occurred.",
                 };
+                setAlertDialog(data);
 
-                // setOpenSubmitModal(false);
-                // clearLocalStorage();
-                // setMission("");
-                // window.location.reload(false);
-                // setAlertDialog(data);
-                return;
-            }
+            })
 
-        })
-
+        }, 1000);
     }
+
+    const handleCloseDialog = () => {
+        setOpenSaveMissionModal(false);
+        // setMission('')
+    };
 
     const handleCancelRequest = () => {
         {
@@ -343,6 +397,61 @@ const index = () => {
                     />
                 </Stack>
             </ContainerComponent>
+
+            <ModalComponent
+                isOpen={openSaveMissionModal}
+                handleClose={handleCloseDialog}
+                title={'Mission'}
+                description={`Define the core purpose and primary focus of the organization's operational efforts for the upcoming fiscal year. This statement should guide the development and execution of the annual plan.`}
+                content={
+                    <>
+                        <TextareaComponent
+                            label={'Mission'}
+                            placeholder={"Please insert mission content here"}
+                            value={defaultMission}
+                            onChange={(e) => setMission(e.target.value)}
+                        />
+                    </>
+                }
+                hasActionButtons={true}
+                rightButtonLabel={"Save"}
+                rightButtonAction={() => handleSaveMission()}
+            />
+
+            {openConfirmDialog && (
+                <ConfirmationModalComponent
+                    leftButtonlabel={"Back to editor"}
+                    rightButtonAction={() => handleSubmit()}
+                    withAuthPin
+                    rightButtonDisabled={!authorizationPin}
+                    setAuthPin={setAuthorizationPin}
+                />
+            )}
+
+            {/* Confirmation modal to proceed */}
+            {openConfirmDiscussedDialog && (
+                <ConfirmationModalComponent
+                    leftButtonLabel={"Back"}
+                    rightButtonAction={() => proceed(200)}
+                    rightButtonLabel="Proceed"
+                    rightButtonDisabled={!hasDiscussed}
+                    isLoading={isLoading}
+                    content={
+                        <>
+                            <Checkbox
+                                label={
+                                    "Yes, I have discussed these plans with my Division Chief."
+                                }
+                                onChange={(e) => {
+                                    setIsDiscussed(e.target.checked);
+                                }}
+                                checked={hasDiscussed}
+                            />
+                        </>
+                    }
+                />
+            )}
+
         </Fragment>
     )
 }

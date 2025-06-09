@@ -276,7 +276,7 @@ const Objectives = () => {
       application_objectives: aopPayload,
     };
 
-    // 👇 Delay before calling the create() function
+    //Delay before calling the create() function
     setTimeout(() => {
 
       create(payload, (status, message) => {
@@ -322,7 +322,7 @@ const Objectives = () => {
         };
         setAlertDialog(data);
       });
-    }, 1500);
+    }, 1000);
   };
 
 

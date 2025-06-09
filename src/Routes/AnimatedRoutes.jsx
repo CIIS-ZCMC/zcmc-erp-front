@@ -16,9 +16,9 @@ const router = createBrowserRouter([
   {
     path: "/",
     element: (
-      // <ProtectedRoutes>
-      <Layout />
-      // {/* </ProtectedRoutes> */ }
+      <ProtectedRoutes>
+        <Layout />
+      </ProtectedRoutes>
     ), // Parent component that renders common layout
     children: sidebarRoutes, // Custom page routes
   },

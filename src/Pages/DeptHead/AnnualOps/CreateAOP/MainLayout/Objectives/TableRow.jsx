@@ -45,7 +45,8 @@ const TableRow = ({
               </td>
 
               <td onClick={() => setEditRowId(id)}
-                style={tableDataStyles}>
+                style={tableDataStyles}
+              >
                 {editRowId === id ?
                   (
                     <AutoCompleteComponent
@@ -67,7 +68,10 @@ const TableRow = ({
                 }
               </td>
 
-              <td onClick={() => setEditRowId(id)}>
+              <td onClick={() => setEditRowId(id)}
+                style={tableDataStyles}
+              >
+
                 {editRowId === id ?
                   (
                     <AutoCompleteComponent
@@ -100,7 +104,9 @@ const TableRow = ({
                 }
               </td>
 
-              <td onClick={() => setEditRowId(id)}>
+              <td onClick={() => setEditRowId(id)}
+                style={tableDataStyles}
+              >
                 {editRowId === id ?
                   (
                     <AutoCompleteComponent

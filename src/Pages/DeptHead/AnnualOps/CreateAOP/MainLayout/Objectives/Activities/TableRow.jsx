@@ -195,7 +195,7 @@ const TableRow = ({
                                 />
                             ) : (
                                 <Typography>
-                                    {firstQuarter}
+                                    {firstQuarter || '-'}
                                 </Typography>
                             )}
                         </td>
@@ -215,7 +215,7 @@ const TableRow = ({
                                 />
                             ) : (
                                 <Typography>
-                                    {secondQuarter}
+                                    {secondQuarter || '-'}
                                 </Typography>
                             )}
                         </td>
