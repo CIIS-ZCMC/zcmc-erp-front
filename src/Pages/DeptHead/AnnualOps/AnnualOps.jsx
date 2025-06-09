@@ -80,7 +80,7 @@ const AnnualOps = () => {
           </BoxComponent>
           :
           <>
-            {!aop_application_id ?
+            {!aop_application_id ? //to be fixed
               <BoxComponent
                 mt={3}
                 height={'83vh'}
