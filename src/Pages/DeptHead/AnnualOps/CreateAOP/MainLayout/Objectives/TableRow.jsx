@@ -84,7 +84,7 @@ const TableRow = ({
                   (
                     <Tooltip title={objective?.description} variant="solid">
                       <Typography>
-                        {objective?.description || "-"}
+                        {objective?.code || "-"}
                         {JSON.stringify(objective?.description)}
                       </Typography>
                     </Tooltip>

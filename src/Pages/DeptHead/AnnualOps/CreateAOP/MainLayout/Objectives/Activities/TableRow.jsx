@@ -280,23 +280,12 @@ const TableRow = ({
                                         handleChange(id, "isGadRelated", val.value)}
                                     options={gadRelatedOptions}
                                 />
-
-                                // <Select
-                                //     size='sm'
-                                //     value={localAopActivity?.[id]?.isGadRelated || false}
-                                //     onChange={(e, newValue) =>
-                                //         // handleChange(id, "isGadRelated", newValue)
-                                //     }
-                                // >
-                                //     <Option value={true}>Yes</Option>
-                                //     <Option value={false}>No</Option>
-                                // </Select>
                             ) : (
                                 <Typography>
-                                    {/* {isGadRelated
-                                        // ? isGadRelated.charAt(0).toUpperCase() + isGadRelated.slice(1).toLowerCase()
-                                        // : 'No'
-                                        } */}
+                                    {isGadRelated
+                                        ? isGadRelated.charAt(0).toUpperCase() + isGadRelated.slice(1).toLowerCase()
+                                        : 'No'
+                                    }
                                 </Typography>
                             )}
                         </td>
