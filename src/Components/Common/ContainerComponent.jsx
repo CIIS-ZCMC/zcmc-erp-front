@@ -13,15 +13,15 @@ ContainerComponent.propTypes = {
   comingSoon: PropTypes.bool,
   chipLabel: PropTypes.string,
   chipColor: PropTypes.string,
-  noBoxShadow: PropTypes.bool,
+  noboxshadow: PropTypes.bool,
 };
 
-const CustomSheet = styled(Sheet)(({ theme, noBoxShadow }) => ({
+const CustomSheet = styled(Sheet)(({ theme, noboxshadow }) => ({
   backgroundColor: "white",
   borderRadius: 12,
   padding: theme.spacing(2.5),
-  border: noBoxShadow ? `1px solid ${theme.palette.neutral[200]}` : "none",
-  boxShadow: noBoxShadow ? "none" : theme.shadow.md,
+  border: noboxshadow ? `1px solid ${theme.palette.neutral[200]}` : "none",
+  boxShadow: noboxshadow ? "none" : theme.shadow.md,
   position: "static",
 }));
 
@@ -36,11 +36,11 @@ function ContainerComponent({
   noPadding,
   footer,
   isLoading,
-  noBoxShadow = false,
+  noboxshadow = false,
   ...props
 }) {
   return (
-    <CustomSheet {...props} noBoxShadow={noBoxShadow}>
+    <CustomSheet {...props} noboxshadow={noboxshadow}>
       {title && (
         <Stack gap={1.5} mb={2}>
           <Stack

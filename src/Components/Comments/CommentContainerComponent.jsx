@@ -47,16 +47,17 @@ function CommentContainerComponent({
           {moment(date).format("LT")}
         </Typography>
 
-        {isActivity && (
+        {/* {isActivity && (
           <Link
             level={fontSize}
             gap={0.7}
             textColor="success.700"
             color="success"
+            handleClick={handleClick}
           >
             Go to activity <ExternalLink size={14} />
           </Link>
-        )}
+        )} */}
       </Stack>
     </Box>
   );

@@ -105,17 +105,19 @@ export const useAuthActions = () => {
 };
 
 export const useUserTypes = () => {
-  const user = useAuthStore((state) => state.user);
+  // const user = useAuthStore((state) => state.user);
 
   const area = useAuthStore((state) => state.area);
 
+  const { type, is_head } = area || {};
+
   if (area) {
     return {
-      isDivisionHead: false,
+      isDivisionHead: type === "division" && is_head,
       isPlanning:
         area.area_id === AREA_ID.PLANNING_UNIT || area.name === "Planning Unit",
       isDepartmentHead: area.area_id === AREA_ID.OMCC || false,
-      isMCC: area.area_id === AREA_ID.OMCC,
+      isMCC: area.area_id === AREA_ID.OMCC && is_head,
     };
   }
 };

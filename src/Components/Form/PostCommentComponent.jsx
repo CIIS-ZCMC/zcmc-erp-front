@@ -33,7 +33,7 @@ const PostCommentComponent = ({ postCommentModal, setPostCommentModal }) => {
 
       if (status === 201) {
         setComment("");
-        getAOPApplicationById(AOP_APPLICATION_ID, () => { });
+        getAOPApplicationById(AOP_APPLICATION_ID, () => {});
         showSnack(200, "Comment posted successfully");
       } else {
         showSnack(500, "Failed to post comment");

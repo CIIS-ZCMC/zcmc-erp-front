@@ -12,17 +12,22 @@ import {
 import { useActivityActions } from "../../../Hooks/AOP/ActivityHook";
 import { localStorageGetter } from "../../../Utils/LocalStorage";
 import ObjectivesList from "./Contents/ObjectivesList";
-import { useAllComments, useCommentActions } from "../../../Hooks/CommentHook";
+import {
+  useAllComments,
+  useCommentActions,
+  useRemarks,
+} from "../../../Hooks/CommentHook";
 import { ActivityDetails } from "./Contents/ActivityDetails";
 import { CommentsDetails } from "./Contents/CommentsDetails";
 
 import { FeedbackContent } from "./Contents/FeedbackContent";
 import { useUserTypes } from "../../../Store/AuthStore";
 import ProcessAOPContent from "./Contents/ProcessAOPContent";
+import { useApprovalActions } from "../../../Hooks/AOP/AOPApprovalHook";
 
 export default function ManageAOP() {
-  const { id } = useParams();
-  const { isDivisionHead, isPlanning, isMCC } = useUserTypes();
+  const { isPlanning, isMCC } = useUserTypes();
+  const { getAOPApprovalTimeline } = useApprovalActions();
   const AOPApplication = useAOPApplication();
 
   // AOP HOOK
@@ -45,11 +50,13 @@ export default function ManageAOP() {
   } = useCommentActions();
   const allComments = useAllComments() ?? localStorageGetter("all_comments");
 
+  const remarks = useRemarks();
+
   // STATES
   const [isRemarksLoading, setIsRemarksLoading] = useState(true);
 
   const AREA_CODE = localStorageGetter("aop_application_area_code");
-  const FISCAL_YEAR = 2026;
+  const FISCAL_YEAR = new Date().getFullYear() + 1;
 
   // MODAL
   const [openFeedbackModal, setOpenFeedbackModal] = useState(false);
@@ -87,6 +94,7 @@ export default function ManageAOP() {
     if (activityId == defaultActivityId) return;
 
     Promise.all([
+      getAOPApprovalTimeline(AOP_APPLICATION_ID, () => {}),
       getActivityById(defaultActivityId, () => {}),
       getCommentsByActivity(defaultActivityId, () => {}),
       getCommentsByApplication(AOP_APPLICATION_ID, () => {}),
@@ -103,9 +111,10 @@ export default function ManageAOP() {
             <Typography>
               Manage{" "}
               <Typography textColor={"warning.400"}>{AREA_CODE}'s</Typography>{" "}
-              AOP <Typography textColor={"warning.400"}>#{id} </Typography>
-              for Fiscal year{" "}
-              <Typography textColor={"warning.400"}>{FISCAL_YEAR}'s</Typography>
+              AOP{" "}
+              {/* AOP <Typography textColor={"warning.400"}>#{id} </Typography> */}
+              for Fiscal Year{" "}
+              <Typography textColor={"warning.400"}>{FISCAL_YEAR}</Typography>
             </Typography>
           }
           description={
@@ -147,7 +156,9 @@ export default function ManageAOP() {
                     {isAllowedFeedbackViewing() && (
                       <ButtonComponent
                         variant={"outlined"}
-                        label={`Go to feedback (${allComments?.length})`}
+                        label={`Go to feedback (${
+                          isPlanning ? allComments?.length : remarks?.length
+                        })`}
                         endDecorator={<ExternalLink size={14} />}
                         onClick={handleViewFeedback}
                       />
@@ -177,13 +188,12 @@ export default function ManageAOP() {
       </Stack>
 
       {/* PROCESS REQUEST */}
-      {openFeedbackModal && (
-        <FeedbackContent
-          openFeedbackModal={openFeedbackModal}
-          setOpenFeedbackModal={setOpenFeedbackModal}
-          isLoading={isRemarksLoading}
-        />
-      )}
+
+      <FeedbackContent
+        openFeedbackModal={openFeedbackModal}
+        setOpenFeedbackModal={setOpenFeedbackModal}
+        isLoading={isRemarksLoading}
+      />
     </Fragment>
   );
 }
