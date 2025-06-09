@@ -105,13 +105,7 @@ const ItemSubmittedRequestsList = () => {
               justifyContent: "space-between",
               mb: 2,
             }}
-          >
-            <SearchBarComponent
-              size="md"
-              placeholder="Find records by document number, year, items, etc."
-            />
-            {/* <DatePickerComponent /> */}
-          </Box>
+          ></Box>
           <Outlet />
         </ContainerComponent>
       </Box>

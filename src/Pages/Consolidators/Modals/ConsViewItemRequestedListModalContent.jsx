@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import {
   Typography,
   Divider,
@@ -43,48 +43,73 @@ import {
   X,
 } from "lucide-react";
 import useClassificationHooks from "../../../Hooks/Libraries/LibClassificationHooks";
-import useVariantHooks from "../../../Hooks/Libraries/LibVarianHooks";
 import { MdReplay } from "react-icons/md";
+import useTerminologyHooks from "../../../Hooks/Libraries/LibTerminology";
+import useListUserRequestItemHook from "../../../Hooks/ItemRequest/ConsolidatorItemRequestUpdate";
+import useUserRequestItemHook from "../../../Hooks/ItemRequest/EndUserItemRequest";
 
 const ConsViewItemRequestedListModalContent = () => {
+  const [isdonefirstload, setdonefirstload] = useState(false);
   const [step, setStep] = useState(0);
-  const { openModal, setOpenModal } = useModalHook();
-  const ToggleCard = ({ label, inputs, setInputs }) => {
+  const { openModal, setOpenModal, setAlertDialog } = useModalHook();
+
+  const {
+    selected_data: { all: clicked },
+  } = useListUserRequestItemHook();
+
+  const { selected_data } = useListUserRequestItemHook();
+  const EditableAutoCompleteField = ({
+    label,
+    defaultValue,
+    renderInput,
+    resetHook = () => {},
+    isEqual = (a, b) => a === b,
+  }) => {
+    const [value, setValue] = useState(defaultValue);
+    const isEdited = !isEqual(value, defaultValue);
+    const [showInput, setShowInput] = useState(false);
+
+    const handleReset = () => {
+      setValue(defaultValue);
+      resetHook();
+    };
+
     return (
-      <Card
-        variant="outlined"
-        sx={{
-          cursor: "pointer",
-          border:
-            inputs?.variant == label
-              ? "2px solid #129990"
-              : "2px solid #EEEEEE",
-          color: inputs?.variant == label ? "primary.dark" : "neutral.main",
-          userSelect: "none",
-          textAlign: "center",
-          padding: "12px",
-          transition: "all 0.5s ease",
-        }}
-        onClick={() => setInputs("variant", label)}
-      >
-        <Stack direction={"row"} spacing={2}>
-          {inputs?.variant == label && (
-            <IoCheckmarkOutline
-              style={{ fontSize: "20px", padding: "2px 0 0 4px " }}
-            />
+      <>
+        <Typography level="body-md">{label}</Typography>
+        <Box display="flex" alignItems="center" gap={1}>
+          {renderInput(value, setValue)}
+          {isEdited && (
+            <Chip
+              size="sm"
+              color="warning"
+              onClick={handleReset}
+              endDecorator={
+                <IconButton size="sm" variant="plain" sx={{ ml: 0.5, p: 0.5 }}>
+                  <X size={14} />
+                </IconButton>
+              }
+            >
+              Edited
+            </Chip>
           )}
-          <Typography>{label}</Typography>
-        </Stack>
-      </Card>
+        </Box>
+      </>
     );
   };
 
-  const EditableField = ({ label, defaultValue, renderInput }) => {
+  const EditableField = ({
+    label,
+    defaultValue,
+    renderInput,
+    resetHook = () => {},
+  }) => {
     const [value, setValue] = useState(defaultValue);
     const isEdited = value !== defaultValue;
 
     const handleReset = () => {
       setValue(defaultValue);
+      resetHook();
     };
 
     return (
@@ -115,12 +140,92 @@ const ConsViewItemRequestedListModalContent = () => {
   };
 
   const Step1 = ({ setStep }) => {
-    const { inputs, setInputs, updateData } = useLibItemHook();
+    const { getMyItemRequestLists } = useUserRequestItemHook();
+    const getMyRequestData = useUserRequestItemHook(
+      (state) => state.myRequests_dataTable
+    );
+    const { inputs, setInputs } = useLibItemHook();
     const categories = useCategoryHooks((state) => state.categories);
     const classifications = useClassificationHooks(
       (state) => state.classifications
     );
+    const { updateItemRequest } = useListUserRequestItemHook();
+    const [isFormEdited, setIsFormEdited] = useState(false);
+    const formRef = useRef();
+    const handleNext = (step) => {
+      const form = formRef.current;
+
+      if (form.checkValidity()) {
+        setStep(step);
+      } else {
+        form.reportValidity();
+      }
+    };
+    const setSelect = useListUserRequestItemHook(
+      (state) => state.setSelectedData
+    );
+
+    function transformData(data) {
+      return data.map((item) => ({
+        id: item.id,
+        code: item.code,
+        name: item.name,
+        estimated_budget: item.estimated_budget,
+        unit: item.unit,
+        item_unit: item.item_unit,
+        category: item.category,
+        item_category: item.item_category,
+        classification: item.classification,
+        item_classification: item.item_classification,
+        item_specifications: item.item_specifications,
+        item_terminology: item.item_terminology,
+        created_at: item.updated_at.split("T")[0],
+        status: item.status,
+        all: item,
+      }));
+    }
+
+    const reloadSelected = (id) => {
+      const transformed = transformData(getMyRequestData);
+      const foundItem = transformed.find((item) => item.id === id);
+      setSelect(foundItem);
+      handleNext(1);
+    };
+
     const unit = useClassificationHooks((state) => state.unit);
+    useEffect(() => {
+      if (clicked && !isdonefirstload) {
+        setInputs("name", clicked.name || "");
+        setInputs(
+          "item_classification_id",
+          clicked.item_classification?.id || null
+        );
+        setInputs("item_category_id", clicked.item_category?.id || null);
+        setInputs("item_unit_id", clicked.item_unit?.id || null); // assuming this key exists
+        setInputs(
+          "terminology_category_id",
+          clicked.item_terminology?.id || null
+        );
+        setInputs("estimated_budget", clicked.estimated_budget || "");
+        setdonefirstload(true);
+      }
+    }, [clicked]);
+
+    // Detect form edits
+    useEffect(() => {
+      const edited =
+        inputs.name !== (clicked.name || "") ||
+        inputs.item_classification_id !==
+          (clicked.item_classification?.id || null) ||
+        inputs.item_category_id !== (clicked.item_category?.id || null) ||
+        inputs.item_unit_id !== (clicked.item_unit?.id || null) ||
+        inputs.terminology_category_id !==
+          (clicked.item_terminology?.id || null) ||
+        inputs.estimated_budget !== (clicked.estimated_budget || "");
+
+      setIsFormEdited(edited);
+    }, [inputs, clicked]);
+
     const classificationOptions =
       classifications.map((row) => ({
         id: row.id,
@@ -133,34 +238,28 @@ const ConsViewItemRequestedListModalContent = () => {
         id: row.id,
         name: row.name,
       })) || [];
-    const variantOptions =
-      useVariantHooks((state) => state.variants).map((row) => ({
+    const terminologyOptions =
+      useTerminologyHooks((state) => state.terminology).map((row) => ({
         id: row.id,
         name: row.name,
       })) || [];
-    // return (
-    //   <ItemSummary
-    //     data={{
-    //       classification: "Sample classification 01",
-    //       category: "Sample category 01",
-    //       uom: "Sample UOM",
-    //       itemName: "Sample item name 01",
-    //       itemVariant: "High-end",
-    //       estimatedBudget: 14000,
-    //       specifications: ["Specification 1 detail", "Specification 2 detail"],
-    //     }}
-    //   />
-    // );
+
+    const variantOptions = [
+      { id: 1, name: "Cardiology" },
+      { id: 2, name: "Neurology" },
+      { id: 3, name: "Oncology" },
+      { id: 4, name: "Dermatology" },
+      { id: 5, name: "Pediatrics" },
+    ];
 
     return (
       <Fragment>
         <Typography level="body-lg" fontWeight={"bold"}>
-          {updateData ? "Update" : "General information"}
+          Update
         </Typography>
         <Typography level="body-md">
-          {updateData
-            ? "Make changes to the basic identification of the item to keep it up to date."
-            : "Fill-in basic identification of the item you wish to add to the item library."}
+          Make changes to the basic identification of the item to keep it up to
+          date.
         </Typography>
 
         <Divider sx={{ marginTop: "20px" }} />
@@ -173,6 +272,9 @@ const ConsViewItemRequestedListModalContent = () => {
           p={3}
           bgcolor="#fdfdfd"
           borderRadius="12px"
+          component={"form"}
+          ref={formRef}
+          noValidate
         >
           {/* Header */}
           <Typography level="body-sm" fontWeight="lg">
@@ -181,75 +283,158 @@ const ConsViewItemRequestedListModalContent = () => {
           <Typography level="body-sm" fontWeight="lg">
             Value
           </Typography>
-
           {/* Classification */}
-          <EditableField
+          <EditableAutoCompleteField
             label="Classification"
-            defaultValue="Sample classification"
+            defaultValue={classificationOptions.find(
+              (item) => item.id === clicked?.item_classification?.id
+            )}
+            resetHook={() => {
+              setInputs(
+                "item_classification_id",
+                clicked.item_classification?.id || null
+              );
+            }}
+            isEqual={(a, b) => a?.id === b?.id}
             renderInput={(value, setValue) => (
-              <Select value={value} onChange={(e, val) => setValue(val)}>
-                <Option value="Sample classification">
-                  Sample classification
-                </Option>
-                <Option value="Other classification">
-                  Other classification
-                </Option>
-              </Select>
+              <>
+                <Autocomplete
+                  options={classificationOptions}
+                  value={value}
+                  getOptionLabel={(option) => option?.name || ""}
+                  onChange={(e, newValue) => {
+                    setValue(newValue);
+                    setInputs("item_classification_id", newValue?.id || null); // your external form state
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      label="Select classification"
+                      required
+                    />
+                  )}
+                />
+              </>
             )}
           />
 
           {/* Category */}
-          <EditableField
-            label="Category"
-            defaultValue="Sample category 01"
+          <EditableAutoCompleteField
+            label="Category*"
+            defaultValue={categoryOptions.find(
+              (item) => item.id === clicked?.item_category?.id
+            )}
+            resetHook={() => {
+              setInputs("item_category_id", clicked.item_category?.id || null);
+            }}
+            isEqual={(a, b) => a?.id === b?.id}
             renderInput={(value, setValue) => (
-              <Select value={value} onChange={(e, val) => setValue(val)}>
-                <Option value="Sample category 01">Sample category 01</Option>
-                <Option value="Other category">Other category</Option>
-              </Select>
+              <Autocomplete
+                required
+                options={categoryOptions}
+                value={value}
+                getOptionLabel={(option) => option?.name || ""}
+                onChange={(e, newValue) => {
+                  setValue(newValue);
+                  setInputs("item_category_id", newValue?.id || null); // your external form state
+                }}
+                renderInput={(params) => (
+                  <TextField {...params} label="Select Category" required />
+                )}
+              />
             )}
           />
 
           {/* Unit of measurement */}
-          <EditableField
-            label="Unit of measurement"
-            defaultValue="Sample UOM"
+          <EditableAutoCompleteField
+            label="Unit of measurement*"
+            defaultValue={unitOptions.find(
+              (item) => item.id === clicked?.item_unit?.id
+            )}
+            resetHook={() => {
+              setInputs("item_unit_id", clicked.item_unit?.id || null);
+            }}
+            isEqual={(a, b) => a?.id === b?.id}
             renderInput={(value, setValue) => (
-              <Select value={value} onChange={(e, val) => setValue(val)}>
-                <Option value="Sample UOM">Sample UOM</Option>
-                <Option value="Alternative UOM">Alternative UOM</Option>
-              </Select>
+              <Autocomplete
+                required
+                options={unitOptions}
+                value={value}
+                getOptionLabel={(option) => option?.name || ""}
+                onChange={(e, newValue) => {
+                  setValue(newValue);
+                  setInputs("item_unit_id", newValue?.id || null); // your external form state
+                }}
+                renderInput={(params) => (
+                  <TextField {...params} label="Select Unit" required />
+                )}
+              />
             )}
           />
 
           {/* Item name */}
           <EditableField
-            label="Item name"
-            defaultValue="Sample item name 01"
+            label="Item name*"
+            defaultValue={clicked?.name}
+            resetHook={() => {
+              setInputs("name", clicked?.name || null);
+            }}
             renderInput={(value, setValue) => (
-              <Input value={value} onChange={(e) => setValue(e.target.value)} />
+              <Input
+                required
+                value={value}
+                onChange={(e) => {
+                  setInputs("name", e.target.value);
+                  setValue(e.target.value);
+                }}
+              />
             )}
           />
-
-          {/* Item variant */}
-          <EditableField
-            label="Item variant"
-            defaultValue="Mid-range"
+          <EditableAutoCompleteField
+            label="Terminology*"
+            defaultValue={terminologyOptions.find(
+              (item) => item.id === clicked?.item_terminology?.id
+            )}
+            resetHook={() => {
+              setInputs(
+                "terminology_category_id",
+                clicked.item_terminology?.id || null
+              );
+            }}
+            isEqual={(a, b) => a?.id === b?.id}
             renderInput={(value, setValue) => (
-              <Select value={value} onChange={(e, val) => setValue(val)}>
-                <Option value="Low-end">Low-end</Option>
-                <Option value="Mid-range">Mid-range</Option>
-                <Option value="High-end">High-end</Option>
-              </Select>
+              <Autocomplete
+                required
+                options={terminologyOptions}
+                value={value}
+                getOptionLabel={(option) => option?.name || ""}
+                onChange={(e, newValue) => {
+                  setValue(newValue);
+                  setInputs("terminology_category_id", newValue?.id || null); // your external form state
+                }}
+                renderInput={(params) => (
+                  <TextField {...params} label="Select Terminology" required />
+                )}
+              />
             )}
           />
 
           {/* Estimated budget */}
           <EditableField
-            label="Estimated budget"
-            defaultValue="₱ 14,000.00"
+            label="Estimated budget*"
+            defaultValue={clicked?.estimated_budget}
+            resetHook={() => {
+              setInputs("estimated_budget", clicked?.estimated_budget || null);
+            }}
             renderInput={(value, setValue) => (
-              <Input value={value} onChange={(e) => setValue(e.target.value)} />
+              <Input
+                required
+                value={value}
+                onChange={(e) => {
+                  setValue(e.target.value);
+                  setInputs("estimated_budget", e.target.value || null);
+                }}
+              />
             )}
           />
 
@@ -272,12 +457,6 @@ const ConsViewItemRequestedListModalContent = () => {
           </Box>
         </Box>
 
-        {/* Footer buttons */}
-        {/* <Box mt={4} display="flex" justifyContent="flex-end" gap={2}>
-        <Button variant="outlined" color="neutral">Cancel</Button>
-        <Button variant="solid" color="primary">Next step</Button>
-      </Box> */}
-
         <Stack direction="row" spacing={1}>
           <Button
             fullWidth
@@ -291,12 +470,20 @@ const ConsViewItemRequestedListModalContent = () => {
           <Button
             fullWidth
             sx={{ fontWeight: "normal" }}
-            onClick={() => {
-              console.log(updateData);
-              setStep(1);
-            }}
+            onClick={
+              isFormEdited
+                ? () =>
+                    updateItemRequest(
+                      inputs,
+                      () => {},
+                      setAlertDialog,
+                      getMyItemRequestLists,
+                      reloadSelected
+                    )
+                : () => handleNext(1)
+            }
           >
-            Next Step
+            {isFormEdited ? "Update" : "Next Step"}
           </Button>
         </Stack>
       </Fragment>
@@ -304,14 +491,12 @@ const ConsViewItemRequestedListModalContent = () => {
   };
 
   const Step2 = () => {
-    const serverData = [
-      { label: "Spec1", value: "Large" },
-      { label: "Spec2", value: "Blue" },
-      { label: "Spec3", value: "Cotton" },
-    ];
-
     const [specs, setSpecs] = useState(
-      serverData.map((item) => ({ ...item, current: item.value }))
+      clicked.item_specifications?.map((item) => ({
+        ...item,
+        current: item.description,
+        value: item.description,
+      }))
     );
 
     const handleChange = (index, newValue) => {
@@ -332,7 +517,7 @@ const ConsViewItemRequestedListModalContent = () => {
     };
 
     const handleAdd = () => {
-      setSpecs([...specs, { label: "New spec", value: "", current: "" }]);
+      setSpecs([...specs, { value: "", cusrrent: "" }]);
     };
     ///for the specification items inputs
     const { inputs, setInputSpecification, updateData } = useLibItemHook();
@@ -393,14 +578,13 @@ const ConsViewItemRequestedListModalContent = () => {
                   {/* Spec rows */}
                   {specs.map((spec, index) => {
                     const isEdited = spec.current !== spec.value;
-
                     return (
                       <Fragment key={index}>
                         <Typography
                           level="body-sm"
                           sx={{ alignSelf: "center" }}
                         >
-                          {spec.label}
+                          Spec {index + 1}
                         </Typography>
                         <Input
                           value={spec.current}
@@ -525,12 +709,26 @@ const ConsViewItemRequestedListModalContent = () => {
   };
 
   const Step3 = () => {
-    const [status, setStatus] = React.useState("");
+    const [status, setStatus] = React.useState("approve");
     const [remarks, setRemarks] = React.useState("");
     const [pin, setPin] = React.useState("");
+    const { inputs, setInputs } = useLibItemHook();
+    const formRef = useRef();
+    const handleNext = (step) => {
+      const form = formRef.current;
 
+      if (form.checkValidity()) {
+        setStep(step);
+      } else {
+        form.reportValidity();
+      }
+    };
+    useEffect(() => {
+      setInputs("status", status || "approved");
+    }, [status]);
     return (
       <Fragment>
+        {JSON.stringify(inputs)}
         <Typography level="h4" fontWeight="lg" mb={1}>
           Process request{" "}
           <Typography level="h4" component="span" color="warning">
@@ -647,7 +845,7 @@ const ConsViewItemRequestedListModalContent = () => {
             // loading={loader}
             loadingPosition="end"
             onClick={() => {
-              return setStep(2);
+              handleNext(2);
             }}
           >
             "Confirm and Save"
@@ -792,13 +990,13 @@ const ConsViewItemRequestedListModalContent = () => {
     (state) => state.getClassifications
   );
   const getUnit = useClassificationHooks((state) => state.getUnit);
-  const getVariants = useVariantHooks((state) => state.getVariants);
+  const getTerminology = useTerminologyHooks((state) => state.getTerminology);
 
   useEffect(() => {
     getCategories((status, message) => {});
     getClassifications((status, message) => {});
     getUnit((status, message) => {});
-    getVariants((status, message) => {});
+    getTerminology((status, message) => {});
   }, []);
   return (
     <Fragment>

@@ -6,6 +6,8 @@ import {
   Divider,
   Tooltip,
   Box,
+  Chip,
+  Button,
 } from "@mui/joy";
 import { DeleteIcon, DownloadCloud, ExternalLink } from "lucide-react";
 import { BsOpencollective } from "react-icons/bs";
@@ -935,5 +937,198 @@ export const classificationCols = (updateCallBack, delCallback) => [
         </>
       );
     },
+  },
+];
+export const myOwnItemRequestListCols = () => [
+  {
+    field: "code",
+    name: "Code",
+    width: "auto",
+    align: "left",
+  },
+  {
+    field: "name",
+    name: "Name",
+    width: "auto",
+    align: "left",
+  },
+  {
+    field: "category",
+    name: "Category",
+    width: "auto",
+    align: "left",
+  },
+  {
+    field: "classification",
+    name: "Classification",
+    width: "auto",
+    align: "left",
+  },
+  {
+    field: "created_at",
+    name: "Created At",
+    width: "auto",
+    align: "left",
+  },
+  {
+    field: "status",
+    name: "Status",
+    width: "auto",
+    align: "left",
+    render: (row) => {
+      const status = row.status?.toLowerCase();
+
+      const getColor = () => {
+        switch (status) {
+          case "pending":
+            return "warning";
+          case "approved":
+            return "success";
+          case "returned":
+            return "danger";
+          default:
+            return "neutral";
+        }
+      };
+
+      return (
+        <Chip variant="soft" color={getColor()} size="sm">
+          {row.status}
+        </Chip>
+      );
+    },
+  },
+];
+
+export const itemRequestDetailsCols = (onUpdate, openModal) => [
+  {
+    field: "code",
+    name: "Code",
+    width: "auto",
+    align: "left",
+  },
+  {
+    field: "name",
+    name: "Name",
+    width: 200, // or a fixed pixel width
+    align: "left",
+    render: (row) => (
+      <div
+        style={{
+          whiteSpace: "nowrap",
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          maxWidth: "180px",
+        }}
+      >
+        {row.name}
+      </div>
+    ),
+  },
+  {
+    field: "item_terminology",
+    name: "Terminology",
+    width: "auto",
+    align: "left",
+    render: (row) => row.item_terminology?.name || "-",
+  },
+  {
+    field: "estimated_budget",
+    name: "Estimated Budget",
+    width: "auto",
+    align: "left",
+    render: (row) => {
+      const budget = parseFloat(row.estimated_budget);
+      return isNaN(budget)
+        ? "₱0.00"
+        : `₱${budget.toLocaleString(undefined, { minimumFractionDigits: 2 })}`;
+    },
+  },
+  {
+    field: "unit",
+    name: "Unit",
+    width: "auto",
+    align: "left",
+    render: (row) => row.item_unit?.name || row.unit,
+  },
+  {
+    field: "category",
+    name: "Category",
+    width: "auto",
+    align: "left",
+    render: (row) => row.item_category?.name || row.category,
+  },
+  {
+    field: "classification",
+    name: "Classification",
+    width: "auto",
+    align: "left",
+    render: (row) => row.item_classification?.name || row.classification,
+  },
+  {
+    field: "specifications",
+    name: "Specifications",
+    width: "auto",
+    align: "left",
+    render: (row) =>
+      row.item_specifications?.map((spec) => spec.description).join(", "),
+  },
+  {
+    field: "status",
+    name: "Status",
+    width: "auto",
+    align: "left",
+    render: (row) => {
+      const status = row.status?.toLowerCase();
+      const getColor = () => {
+        switch (status) {
+          case "pending":
+            return "warning";
+          case "approved":
+            return "success";
+          case "returned":
+            return "danger";
+          default:
+            return "neutral";
+        }
+      };
+      return (
+        <Chip variant="soft" color={getColor()} size="sm">
+          {row.status}
+        </Chip>
+      );
+    },
+  },
+  {
+    field: "created_at",
+    name: "Created At",
+    width: "auto",
+    align: "left",
+    render: (row) =>
+      new Date(row.created_at).toLocaleString(undefined, {
+        year: "numeric",
+        month: "short",
+        day: "numeric",
+        hour: "2-digit",
+        minute: "2-digit",
+      }),
+  },
+  {
+    field: "actions",
+    name: "Actions",
+    width: "auto",
+    align: "center",
+    render: (row) => (
+      <Button
+        size="sm"
+        variant="soft"
+        onClick={() => {
+          onUpdate(row);
+          openModal();
+        }}
+      >
+        Update
+      </Button>
+    ),
   },
 ];

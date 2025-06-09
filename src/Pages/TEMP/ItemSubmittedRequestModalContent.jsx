@@ -1,4 +1,4 @@
-import React, { useState, useCallback, useEffect } from "react";
+import React, { useState, useCallback, useEffect, useRef } from "react";
 import {
   Typography,
   Divider,
@@ -25,7 +25,8 @@ import useModalHook from "../../Hooks/ModalHook";
 import useCategoryHooks from "../../Hooks/Libraries/LibCategoryHooks";
 import { ChevronsRightLeft } from "lucide-react";
 import useClassificationHooks from "../../Hooks/Libraries/LibClassificationHooks";
-import useVariantHooks from "../../Hooks/Libraries/LibVarianHooks";
+import useTerminologyHooks from "../../Hooks/Libraries/LibTerminology";
+import useUserRequestItemHook from "../../Hooks/ItemRequest/EndUserItemRequest";
 
 const ItemSubmittedRequestModalContent = () => {
   const [step, setStep] = useState(0);
@@ -62,6 +63,7 @@ const ItemSubmittedRequestModalContent = () => {
   const Step1 = ({ setStep }) => {
     const { inputs, setInputs, updateData } = useLibItemHook();
     const categories = useCategoryHooks((state) => state.categories);
+    const formRef = useRef();
     const classifications = useClassificationHooks(
       (state) => state.classifications
     );
@@ -78,11 +80,21 @@ const ItemSubmittedRequestModalContent = () => {
         id: row.id,
         name: row.name,
       })) || [];
-    const variantOptions =
-      useVariantHooks((state) => state.variants).map((row) => ({
+    const terminologyOptions =
+      useTerminologyHooks((state) => state.terminology).map((row) => ({
         id: row.id,
         name: row.name,
       })) || [];
+
+    const handleNext = (step) => {
+      const form = formRef.current;
+
+      if (form.checkValidity()) {
+        setStep(step);
+      } else {
+        form.reportValidity();
+      }
+    };
     return (
       <Fragment>
         <Typography level="body-lg" fontWeight={"bold"}>
@@ -95,98 +107,120 @@ const ItemSubmittedRequestModalContent = () => {
         </Typography>
 
         <Divider sx={{ marginTop: "20px" }} />
-        <Grid container spacing={2} mt={1}>
-          <Grid item xs={12}>
-            <FormControl>
-              <FormLabel>Item name</FormLabel>
-              <Textarea
-                minRows={2}
-                value={inputs?.name || ""}
-                onChange={(e) => setInputs("name", e.target.value)}
-              />
+        <Box component={"form"} ref={formRef} noValidate>
+          <Grid container spacing={2} mt={1}>
+            <Grid item xs={12}>
+              <FormControl>
+                <FormLabel>Item name</FormLabel>
+                <Textarea
+                  required
+                  minRows={2}
+                  value={inputs?.name || ""}
+                  onChange={(e) => setInputs("name", e.target.value)}
+                />
 
-              <FormHelperText>
-                Use a specific and descriptive naming conventions for best
-                results.
-              </FormHelperText>
-            </FormControl>
-          </Grid>
+                <FormHelperText>
+                  Use a specific and descriptive naming conventions for best
+                  results.
+                </FormHelperText>
+              </FormControl>
+            </Grid>
+            <Grid item xs={6}>
+              <FormControl>
+                <FormLabel>Code</FormLabel>
+                <Input
+                  required
+                  minRows={2}
+                  value={inputs?.code || ""}
+                  onChange={(e) => setInputs("code", e.target.value)}
+                />
+              </FormControl>
+            </Grid>
+            <Grid item xs={6}>
+              <FormControl>
+                <FormLabel>Reason</FormLabel>
+                <Textarea
+                  required
+                  minRows={2}
+                  value={inputs?.reason || ""}
+                  onChange={(e) => setInputs("reason", e.target.value)}
+                />
+              </FormControl>
+            </Grid>
 
-          <Grid item xs={6}>
-            <FormControl>
-              <FormLabel>Classification</FormLabel>
-              <Autocomplete
-                required
-                placeholder="Select classification"
-                options={classificationOptions}
-                getOptionLabel={(option) => option.name}
-                value={classificationOptions.find(
-                  (item) => item.id === inputs?.item_classification_id
-                )}
-                onChange={(e, value) => {
-                  setInputs("item_classification_id", value?.id || null);
-                }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    name="item_classification_id"
-                    label="Classification"
-                    required
-                  />
-                )}
-              />
-            </FormControl>
-          </Grid>
-          <Grid item xs={6}>
-            <FormControl>
-              <FormLabel>Category</FormLabel>
-              <Autocomplete
-                required
-                placeholder="Select category"
-                options={categoryOptions}
-                value={categoryOptions.find(
-                  (item) => item.id === inputs?.item_category_id
-                )}
-                getOptionLabel={(option) => option.name}
-                onChange={(e, value) => {
-                  setInputs("item_category_id", value?.id || null);
-                }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    name="item_category_id"
-                    label="item_category_id"
-                    required
-                  />
-                )}
-              />
-            </FormControl>
-          </Grid>
+            <Grid item xs={6}>
+              <FormControl>
+                <FormLabel>Classification</FormLabel>
+                <Autocomplete
+                  placeholder="Select classification"
+                  options={classificationOptions}
+                  getOptionLabel={(option) => option.name}
+                  value={classificationOptions.find(
+                    (item) => item.id === inputs?.item_classification_id
+                  )}
+                  onChange={(e, value) => {
+                    setInputs("item_classification_id", value?.id || null);
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      name="item_classification_id"
+                      label="Classification"
+                    />
+                  )}
+                />
+              </FormControl>
+            </Grid>
+            <Grid item xs={6}>
+              <FormControl>
+                <FormLabel>Category</FormLabel>
+                <Autocomplete
+                  required
+                  placeholder="Select category"
+                  options={categoryOptions}
+                  value={categoryOptions.find(
+                    (item) => item.id === inputs?.item_category_id
+                  )}
+                  getOptionLabel={(option) => option.name}
+                  onChange={(e, value) => {
+                    setInputs("item_category_id", value?.id || null);
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      name="item_category_id"
+                      label="item_category_id"
+                      required
+                    />
+                  )}
+                />
+              </FormControl>
+            </Grid>
 
-          <Grid item xs={12}>
-            <Box>
-              <FormLabel sx={{ mb: 1 }}>Variants</FormLabel>
-              <Autocomplete
-                required
-                placeholder="Select variants"
-                options={variantOptions}
-                value={variantOptions.find(
-                  (item) => item.id === inputs?.variant_id
-                )}
-                getOptionLabel={(option) => option.name}
-                onChange={(e, value) => {
-                  setInputs("variant_id", value?.id || null);
-                }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    name="variant_id"
-                    label="variant_id"
-                    required
-                  />
-                )}
-              />
-              {/* <Grid container spacing={2}>
+            <Grid item xs={12}>
+              <Box>
+                <FormLabel sx={{ mb: 1 }}>Terminology</FormLabel>
+                <Autocomplete
+                  required
+                  placeholder="Select terminology"
+                  options={terminologyOptions}
+                  value={terminologyOptions.find(
+                    (item) => item.id === inputs?.terminology_category_id
+                  )}
+                  getOptionLabel={(option) => option.name}
+                  onChange={(e, value) => {
+                    setInputs("terminology_category_id", value?.id || null);
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      name="term_id"
+                      label="term_id"
+                      required
+                    />
+                  )}
+                />
+                {/* <Grid container spacing={2}>
                 <Grid item xs={4}>
                   <ToggleCard
                     label={"Low-end"}
@@ -209,48 +243,50 @@ const ItemSubmittedRequestModalContent = () => {
                   />
                 </Grid>
               </Grid> */}
-            </Box>
-          </Grid>
+              </Box>
+            </Grid>
 
-          <Grid item xs={6}>
-            <FormControl>
-              <FormLabel>Unit of measurement</FormLabel>
-              <Autocomplete
+            <Grid item xs={6}>
+              <FormControl>
+                <FormLabel>Unit of measurement</FormLabel>
+                <Autocomplete
+                  required
+                  placeholder="Select category"
+                  options={unitOptions}
+                  value={unitOptions.find(
+                    (item) => item.id === inputs?.item_unit_id
+                  )}
+                  getOptionLabel={(option) => option.name}
+                  onChange={(e, value) => {
+                    setInputs("item_unit_id", value?.id || null);
+                  }}
+                  renderInput={(params) => (
+                    <TextField
+                      {...params}
+                      name="item_unit_id"
+                      label="item_unit_id"
+                      required
+                    />
+                  )}
+                />
+              </FormControl>
+            </Grid>
+
+            <Grid item xs={6}>
+              <FormLabel sx={{ mb: 1 }}>Estimated Budget</FormLabel>
+              <Input
                 required
-                placeholder="Select category"
-                options={unitOptions}
-                value={unitOptions.find(
-                  (item) => item.id === inputs?.item_unit_id
-                )}
-                getOptionLabel={(option) => option.name}
-                onChange={(e, value) => {
-                  setInputs("item_unit_id", value?.id || null);
+                type="number"
+                placeholder="PHP 0.00"
+                value={inputs?.estimated_budget}
+                onChange={(e) => {
+                  setInputs("estimated_budget", e.target.value);
                 }}
-                renderInput={(params) => (
-                  <TextField
-                    {...params}
-                    name="item_unit_id"
-                    label="item_unit_id"
-                    required
-                  />
-                )}
               />
-            </FormControl>
+            </Grid>
+            {/* */}
           </Grid>
-
-          <Grid item xs={6}>
-            <FormLabel sx={{ mb: 1 }}>Estimated Budget</FormLabel>
-            <Input
-              type="number"
-              placeholder="PHP 0.00"
-              value={inputs?.estimated_budget}
-              onChange={(e) => {
-                setInputs("estimated_budget", e.target.value);
-              }}
-            />
-          </Grid>
-          {/* */}
-        </Grid>
+        </Box>
 
         <Divider sx={{ marginTop: "20px", marginBottom: "10px" }} />
 
@@ -268,8 +304,7 @@ const ItemSubmittedRequestModalContent = () => {
             fullWidth
             sx={{ fontWeight: "normal" }}
             onClick={() => {
-              console.log(updateData);
-              setStep(1);
+              handleNext(1);
             }}
           >
             Next Step
@@ -281,12 +316,17 @@ const ItemSubmittedRequestModalContent = () => {
 
   const Step2 = () => {
     const { inputs, setInputSpecification, updateData } = useLibItemHook();
+    const { addUserRequestItem } = useUserRequestItemHook();
     const [isAuthorized, setIsAuthorized] = useState(false);
     const [loader, setLoader] = useState(false);
+    const { setOpenModal, setAlertDialog } = useModalHook();
     const updateSpec = (index, value) => {
-      const updated = [...inputs.specification];
+      const updated = [...inputs.specifications];
       updated[index].description = value;
       setInputSpecification(updated);
+    };
+    const handleCloseModal = () => {
+      setOpenModal(false, false, false);
     };
     const SaveItem = useLibItemHook((state) => state.SaveItem);
     return (
@@ -320,11 +360,11 @@ const ItemSubmittedRequestModalContent = () => {
               }}
             >
               {/* MULTI SPECIFICATIONS ITEMS */}
-              {inputs?.specification?.map((row, key) => (
+              {inputs?.specifications?.map((row, key) => (
                 <FormControl sx={{ mb: 2 }}>
                   <FormLabel>Specification {key + 1}</FormLabel>
                   <Textarea
-                    value={inputs?.specification?.[key]?.description || ""}
+                    value={inputs?.specifications?.[key]?.description || ""}
                     minRows={2}
                     onChange={(e) => {
                       updateSpec(key, e.target.value);
@@ -341,13 +381,13 @@ const ItemSubmittedRequestModalContent = () => {
                           fontWeight: "normal",
                           fontSize: "11px",
                           display:
-                            inputs?.specification?.length == 1
+                            inputs?.specifications?.length == 1
                               ? "none"
                               : "block",
                         }}
                         onClick={() => {
                           setInputSpecification(
-                            inputs?.specification?.filter((_, i) => i !== key)
+                            inputs?.specifications?.filter((_, i) => i !== key)
                           );
                         }}
                       >
@@ -367,7 +407,7 @@ const ItemSubmittedRequestModalContent = () => {
               endDecorator={<IoAddCircleOutline style={{ fontSize: "16px" }} />}
               onClick={() => {
                 setInputSpecification([
-                  ...inputs?.specification,
+                  ...inputs?.specifications,
                   { description: "" },
                 ]);
               }}
@@ -396,35 +436,20 @@ const ItemSubmittedRequestModalContent = () => {
           <Button
             fullWidth
             sx={{ fontWeight: "normal" }}
-            disabled={isAuthorized ? false : true}
+            // disabled={isAuthorized ? false : true}
             loading={loader}
             loadingPosition="end"
             onClick={() => {
-              //Saved here
-              // setLoader(true);
-              /////////////////////////////////////
-
-              SaveItem(inputs, (status, message) => {
-                if (!status) {
-                  console.error("Error saving item:", message);
-                  return;
-                }
-
-                console.log("awww");
-                // setLoader(false);
-                // setStep(2);
-
-                return;
-              });
-
-              return;
-              setTimeout(() => {
-                setLoader(false);
-                setStep(2);
-              }, 1000);
+              addUserRequestItem(
+                inputs,
+                () => {},
+                () => {},
+                setAlertDialog,
+                handleCloseModal
+              );
             }}
           >
-            {updateData ? "Update" : "Continue"}
+            {updateData ? "Update" : "Submit"}
           </Button>
         </Stack>
       </Fragment>
@@ -545,13 +570,13 @@ const ItemSubmittedRequestModalContent = () => {
     (state) => state.getClassifications
   );
   const getUnit = useClassificationHooks((state) => state.getUnit);
-  const getVariants = useVariantHooks((state) => state.getVariants);
+  const getTerminology = useTerminologyHooks((state) => state.getTerminology);
 
   useEffect(() => {
     getCategories((status, message) => {});
     getClassifications((status, message) => {});
     getUnit((status, message) => {});
-    getVariants((status, message) => {});
+    getTerminology((status, message) => {});
   }, []);
   return (
     <Fragment>

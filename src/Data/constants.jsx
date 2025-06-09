@@ -169,6 +169,9 @@ export const API = {
   SHOW_OBJECTIVE: "show-objective-activity",
   PROCESS_AOP_REQUEST: "process-aop-request",
 
+  //ITEM REQUESTS
+  REQUEST_ITEM: "item-requests",
+
   // TIMELINE
   APPROVAL_TIMELINE: "application-timelines",
 
@@ -181,6 +184,7 @@ export const API = {
   ITEM_CLASSIFICATIONS: "item-classifications",
   ITEM_UNIT: "item-units",
   ITEM_VARIANT: "variants",
+  ITEM_TERMINOLOGY: "terminologies",
   ITEMS_: "items",
 };
 

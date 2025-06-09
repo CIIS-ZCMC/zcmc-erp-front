@@ -84,10 +84,7 @@ const ItemRequest = () => {
                 label={"Request new item"}
                 variant={"solid"}
                 size={"sm"}
-                onClick={() => {
-                  setAllTypes("create");
-                  setOpenModal(true, false, true);
-                }}
+                onClick={() => {}}
               />
             </Stack>
           }
@@ -106,10 +103,6 @@ const ItemRequest = () => {
               mb: 2,
             }}
           >
-            <SearchBarComponent
-              size="md"
-              placeholder="Find records by document number, year, items, etc."
-            />
             {/* <DatePickerComponent /> */}
           </Box>
           <Outlet />

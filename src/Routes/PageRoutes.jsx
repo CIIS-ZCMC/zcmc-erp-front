@@ -22,7 +22,6 @@ import AnnualOpsPlanning from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/
 
 import Activities from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities";
 import Resources from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities/Resources";
-import ResponsibePerson from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities/ResponsiblePerson";
 
 import Items from "../Pages/Items";
 import Item from "../Pages/Items/Item";
@@ -48,6 +47,8 @@ import { Classification } from "../Pages/Consolidators/Tabs/Classification";
 import { Category } from "../Pages/Consolidators/Tabs/Category";
 import { Variant } from "../Pages/Consolidators/Tabs/Variant";
 import ItemSubmittedRequestsList from "../Pages/TEMP/ItemSubmittedRequestsList";
+import { MyOwnRequestsList } from "../Pages/TEMP/ItemMyOwnRequestsLists";
+import { ItemRequestDatatable } from "../Pages/Consolidators/ItemManagement/ItemRequestDatatable";
 
 export const sidebarRoutes = [
   {
@@ -292,6 +293,20 @@ export const sidebarRoutes = [
     element: <ItemRequest />,
     roles: ["super_admin"],
     abilities: ["M-001:read", "M-001:write", "M-001:edit", "M-001:delete"],
+    children: [
+      {
+        index: true,
+        element: <ItemRequestDatatable />,
+      },
+      {
+        path: "pending",
+        element: <>pending</>,
+      },
+      {
+        path: "added",
+        element: <>added</>,
+      },
+    ],
   },
 
   {
@@ -328,7 +343,7 @@ export const sidebarRoutes = [
     children: [
       {
         index: true,
-        element: <>the index</>,
+        element: <MyOwnRequestsList />,
       },
       {
         path: "pending",

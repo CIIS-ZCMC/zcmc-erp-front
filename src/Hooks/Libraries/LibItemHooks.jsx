@@ -11,11 +11,7 @@ const useLibItemHook = create((set) => ({
     set({ currentPage: page });
   },
   inputs: {
-    specification: [
-      {
-        description: "",
-      },
-    ],
+    specifications: [],
   },
   getItems: async (page = 1, callBack) => {
     read({
@@ -55,7 +51,7 @@ const useLibItemHook = create((set) => ({
   resetInput: () => {
     set({
       inputs: {
-        specification: [
+        specifications: [
           {
             description: "",
           },
@@ -67,7 +63,7 @@ const useLibItemHook = create((set) => ({
     set((state) => ({
       inputs: {
         ...state.inputs,
-        specification: newSpecs,
+        specifications: newSpecs,
       },
     })),
 

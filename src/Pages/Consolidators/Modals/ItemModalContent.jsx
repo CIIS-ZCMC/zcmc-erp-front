@@ -165,23 +165,23 @@ export const ItemModalContent = () => {
 
           <Grid item xs={12}>
             <Box>
-              <FormLabel sx={{ mb: 1 }}>Variants</FormLabel>
+              <FormLabel sx={{ mb: 1 }}>Terminology</FormLabel>
               <Autocomplete
                 required
-                placeholder="Select variants"
+                placeholder="Select Terminology"
                 options={variantOptions}
                 value={variantOptions.find(
-                  (item) => item.id === inputs?.variant_id
+                  (item) => item.id === inputs?.term_id
                 )}
                 getOptionLabel={(option) => option.name}
                 onChange={(e, value) => {
-                  setInputs("variant_id", value?.id || null);
+                  setInputs("term_id", value?.id || null);
                 }}
                 renderInput={(params) => (
                   <TextField
                     {...params}
-                    name="variant_id"
-                    label="variant_id"
+                    name="term_id"
+                    label="term_id"
                     required
                   />
                 )}

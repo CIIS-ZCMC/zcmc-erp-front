@@ -66,7 +66,7 @@ const ItemLibrary = () => {
       case "category":
         return <CategoryModalContent />;
       case "variant":
-        return <VariantModalConttent />;
+        return <VariantModalContent />;
       default:
         return <ItemModalContent />;
     }
