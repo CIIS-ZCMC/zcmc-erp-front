@@ -22,15 +22,24 @@ const TableRow = ({
     const { activities } = useActivitiesHook();
     const { resources, findResourcesByActivityID, totalCost } = useResourceHook();
 
+    const [selectedGadRelated, setSelectedGadRelated] = useState({});
+
     // const activitiesId = activities.map((activity) => activity.id)
 
-    const resourcesCount = resources.map((resource, index) => (
-        findResourcesByActivityID(resource.parentId)
-    ))
+    // const resourcesCount = resources.flatmap((resource, index) => (
+    //     console.log(resource)
+    //     // findResourcesByActivityID(resource.parentId)
+    // ))
 
-    // useEffect(() => (
-    //     console.log('current parent id on table row', parentId)
-    // ), [parentId])
+    const resourceCountPerActivity = resources.reduce((acc, resource) => {
+        const { parentId } = resource;
+
+        if (parentId) {
+            acc[parentId] = (acc[parentId] || 0) + 1;
+        }
+
+        return acc;
+    }, {});
 
     //local state
     const [localAopActivity, setLocalAopActivity] = useState({});
@@ -80,7 +89,6 @@ const TableRow = ({
             {rows?.filter(value => value?.parentId === parentId)?.map(({ rowId, id, name, isGadRelated, cost, startMonth, endMonth, target }, index) => {
 
                 const isEditing = editRowId === id;
-                // const [selectedGadRelated, setSelectedGadRelated] = useState(isGadRelated)
 
                 return (
 
@@ -112,8 +120,7 @@ const TableRow = ({
                                     }}
                                 />
                             ) : (
-                                <Typography>
-                                    {name || '-'}</Typography>
+                                <Typography>{name || '-'}</Typography>
                             )}
                         </td>
 
@@ -309,28 +316,38 @@ const TableRow = ({
 
                         <td onClick={() => handleOnRowClick(id)}>
                             {isEditing ? (
-                                <Select
-                                    size='sm'
-                                    value={localAopActivity[id]?.localIsGadRelated || false}
-                                    onChange={(e, newValue) => {
-                                        // console.log('value selectd:', newValue)
-                                        setLocalAopActivity((prev) => ({
+
+                                <AutocompleteComponent
+                                    placeholder="is GAD related activity"
+                                    value={localAopActivity?.[id]?.isGadRelated || false}
+                                    setValue={(val) => {
+                                        console.log(val)
+                                        setLocalAopActivity(prev => ({
                                             ...prev,
-                                            [id]: {
-                                                ...prev[id],
-                                                localIsGadRelated: newValue
-                                            }
-                                        }))
-                                        handleChange(id, "isGadRelated", newValue)
+                                            [id]: val
+                                        }));
+                                        return handleChange(id, "isGadRelated", val);
                                     }}
-                                >
-                                    <Option value={true}>Yes</Option>
-                                    <Option value={false}>No</Option>
-                                </Select>
+                                    options={gadRelatedOptions}
+                                />
+
+                                // <Select
+                                //     size='sm'
+                                //     value={localAopActivity?.[id]?.isGadRelated || false}
+                                //     onChange={(e, newValue) =>
+                                //         console.log(newValue)
+                                //         // handleChange(id, "isGadRelated", newValue)
+                                //     }
+                                // >
+                                //     <Option value={true}>Yes</Option>
+                                //     <Option value={false}>No</Option>
+                                // </Select>
                             ) : (
                                 <Typography>
-                                    {/* {console.info(isGadRelated)} */}
-                                    {isGadRelated ? 'Yes' : 'No'}
+                                    {/* {isGadRelated
+                                        // ? isGadRelated.charAt(0).toUpperCase() + isGadRelated.slice(1).toLowerCase()
+                                        // : 'No'
+                                        } */}
                                 </Typography>
                             )}
                         </td>
@@ -372,7 +389,7 @@ const TableRow = ({
                                         variant="outlined"
                                         color="success"
                                     >
-                                        {resourcesCount[index]?.length || 0}
+                                        {resourceCountPerActivity[id] || 0}
                                     </Chip>
 
                                 </Stack>

@@ -146,7 +146,7 @@ const TableRow = ({
                   ) : (
                     <Typography>
                       {/* {console.info(selectPurchaseType.label)} */}
-                      {selectPurchaseType.label || "-"}
+                      {selectPurchaseType?.label || "-"}
                     </Typography>
                   )}
                 </td>
@@ -169,7 +169,7 @@ const TableRow = ({
                   ) : (
                     <Typography>
                       {console.info(selectedExpenseClass)}
-                      {selectedExpenseClass.label || "-"}
+                      {selectedExpenseClass?.label || "-"}
                     </Typography>
                   )}
                 </td>
