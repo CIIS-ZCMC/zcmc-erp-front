@@ -6,6 +6,7 @@ import { Trash } from 'lucide-react';
 
 import useActivitiesHook from '../../../../../../../Hooks/ActivitiesHook';
 import useResourceHook from '../../../../../../../Hooks/ResourceHook';
+import useResponsiblePeopleHook from '../../../../../../../Hooks/ResponsiblePeopleHook';
 import AutocompleteComponent from '../../../../../../../Components/Form/AutocompleteComponent';
 import IconButtonComponent from '../../../../../../../Components/Common/IconButtonComponent';
 
@@ -21,6 +22,7 @@ const TableRow = ({
 
     const { activities } = useActivitiesHook();
     const { resources, findResourcesByActivityID, totalCost } = useResourceHook();
+    const { responsible_people } = useResponsiblePeopleHook();
 
     const [selectedGadRelated, setSelectedGadRelated] = useState({});
 
@@ -40,6 +42,26 @@ const TableRow = ({
 
         return acc;
     }, {});
+
+    const responsibleCountPerActivity = responsible_people.reduce((acc, responsible) => {
+
+        const { activityId, areas, designations, users } = responsible
+
+        const count =
+            (areas?.length || 0) +
+            (designations?.length || 0) +
+            (users?.length || 0);
+
+
+
+        acc[activityId] = count;
+        return acc;
+
+    }, {});
+
+    // useEffect(() => {
+    //     console.log(responsibleCountPerActivity)
+    // }, [responsibleCountPerActivity])
 
     //local state
     const [localAopActivity, setLocalAopActivity] = useState({});
@@ -324,9 +346,9 @@ const TableRow = ({
                                         console.log(val)
                                         setLocalAopActivity(prev => ({
                                             ...prev,
-                                            [id]: val
+                                            [id]: val.val
                                         }));
-                                        return handleChange(id, "isGadRelated", val);
+                                        handleChange(id, "isGadRelated", val);
                                     }}
                                     options={gadRelatedOptions}
                                 />
@@ -394,20 +416,38 @@ const TableRow = ({
 
                                 </Stack>
 
-                                <Link
-                                    component="button"
-                                    onClick={() => navigate(`person/${rowId}`, {
-                                        state:
-                                        {
-                                            parentId: id,
-                                            objectiveId: parentId,
-                                            activityrowId: rowId,
-                                        }
-                                    })}
-                                    fontSize={12}
+
+                                <Stack
+                                    direction={'row'}
+                                    alignItems={'center'}
+                                    gap={1}
                                 >
-                                    Responsible Person
-                                </Link>
+                                    <Link
+                                        component="button"
+                                        onClick={() => navigate(`person/${rowId}`, {
+                                            state:
+                                            {
+                                                parentId: id,
+                                                objectiveId: parentId,
+                                                activityrowId: rowId,
+                                            }
+                                        })}
+                                        fontSize={12}
+                                    >
+
+                                        Responsible Person
+                                    </Link>
+
+
+                                    <Chip
+                                        variant="outlined"
+                                        color="success"
+                                    >
+                                        {responsibleCountPerActivity[id] || 0}
+                                        {/* {resourceCountPerActivity[id] || 0} */}
+                                    </Chip>
+                                </Stack>
+
 
                                 <IconButtonComponent
                                     onClick={() => deleteRow(id)}

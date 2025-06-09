@@ -1,5 +1,5 @@
 import { useEffect, Fragment } from "react";
-import { Typography, Stack, Link, Chip } from "@mui/joy";
+import { Typography, Stack, Link, Chip, Tooltip } from "@mui/joy";
 import { Trash } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
@@ -59,10 +59,11 @@ const TableRow = ({
                     />
                   )
                   :
-                  (<Typography>
-                    {functionType?.label || "-"}
-                    {/* {JSON.stringify(functionType)} */}
-                  </Typography>)
+                  (
+
+                    <Typography>
+                      {functionType?.label || "-"}
+                    </Typography>)
                 }
               </td>
 
@@ -81,9 +82,12 @@ const TableRow = ({
                   )
                   :
                   (
-                    <Typography>
-                      {objective?.code || "-"}
-                    </Typography>
+                    <Tooltip title={objective?.description} variant="solid">
+                      <Typography>
+                        {objective?.description || "-"}
+                        {JSON.stringify(objective?.description)}
+                      </Typography>
+                    </Tooltip>
                   )
                 }
               </td>
