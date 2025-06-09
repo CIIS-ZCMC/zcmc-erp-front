@@ -29,7 +29,6 @@ const TableRow = ({
     // const activitiesId = activities.map((activity) => activity.id)
 
     // const resourcesCount = resources.flatmap((resource, index) => (
-    //     console.log(resource)
     //     // findResourcesByActivityID(resource.parentId)
     // ))
 
@@ -70,36 +69,31 @@ const TableRow = ({
     const handleOnRowClick = (id) => {
         setEditRowId(id);
 
-        if (localAopActivity[id]) return;
+        // if (localAopActivity[id]) return;
 
-        // Find the current row by ID
-        const currentRow = rows.find((row) => row.id === id);
-        if (!currentRow) return;
+        // // Find the current row by ID
+        // const currentRow = rows.find((row) => row.id === id);
+        // if (!currentRow) return;
 
-        const { name, startMonth, endMonth, target, cost, isGadRelated } = currentRow;
+        // const { name, startMonth, endMonth, target: { firstQuarter, secondQuarter, thirdQuarter, fourthQuarter }, cost, isGadRelated } = currentRow;
 
-        setLocalAopActivity((prev) => ({
-            ...prev,
-            [id]: {
-                localName: name || '',
-                localStartMonth: startMonth || '',
-                localEndMonth: endMonth || '',
-                localTarget: {
-                    firstQuarter: target?.firstQuarter || '',
-                    secondQuarter: target?.secondQuarter || '',
-                    thirdQuarter: target?.thirdQuarter || '',
-                    fourthQuarter: target?.fourthQuarter || '',
-                },
-                localCost: cost || 0,
-                localIsGadRelated: isGadRelated || false
-            },
-        }));
-
+        // setLocalAopActivity((prev) => ({
+        //     ...prev,
+        //     [id]: {
+        //         localName: name || '',
+        //         localStartMonth: startMonth || '',
+        //         localEndMonth: endMonth || '',
+        //         localTarget: {
+        //             firstQuarter: firstQuarter || '',
+        //             secondQuarter: secondQuarter || '',
+        //             thirdQuarter: thirdQuarter || '',
+        //             fourthQuarter: fourthQuarter || '',
+        //         },
+        //         localCost: cost || 0,
+        //         localIsGadRelated: isGadRelated || false
+        //     },
+        // }));
     };
-
-    // useEffect(() => {
-    //     console.log(rows)
-    // }, [rows])
 
     const gadRelatedOptions = [
         { id: 1, label: 'Yes', value: 'yes' },
@@ -108,7 +102,7 @@ const TableRow = ({
 
     return (
         <Fragment>
-            {rows?.filter(value => value?.parentId === parentId)?.map(({ rowId, id, name, isGadRelated, cost, startMonth, endMonth, target }, index) => {
+            {rows?.filter(value => value?.parentId === parentId)?.map(({ rowId, id, name, isGadRelated, cost, startMonth, endMonth, target: { firstQuarter, secondQuarter, thirdQuarter, fourthQuarter } }, index) => {
 
                 const isEditing = editRowId === id;
 
@@ -124,20 +118,14 @@ const TableRow = ({
                         <td onClick={() => handleOnRowClick(id)}>
                             {isEditing ? (
                                 <Input
-                                    value={localAopActivity[id]?.localName || ''}
+                                    value={name}
                                     size='sm'
                                     placeholder='name'
                                     onChange={(e) =>
-                                        setLocalAopActivity((prev) => ({
-                                            ...prev,
-                                            [id]: {
-                                                ...prev[id],
-                                                localName: e.target.value,
-                                            },
-                                        }))
+                                        handleChange(id, 'name', e.target.value)
                                     }
                                     onBlur={() => {
-                                        handleChange(id, 'name', localAopActivity[id]?.localName);
+                                        handleChange(id, 'name', name);
                                         setEditRowId(null);
                                     }}
                                 />
@@ -152,17 +140,9 @@ const TableRow = ({
                                     <Input
                                         size='sm'
                                         type='month'
-                                        value={localAopActivity?.[id]?.localStartMonth || ''}
+                                        value={startMonth}
                                         onChange={(e) => {
                                             const newValue = e.target.value
-                                            setLocalAopActivity((prev) => ({
-                                                ...prev,
-                                                [id]: {
-                                                    ...prev[id],
-                                                    localStartMonth: newValue
-                                                },
-                                            }));
-                                            // console.log(newValue)
                                             handleChange(id, 'startMonth', newValue);
                                         }}
 
@@ -183,17 +163,9 @@ const TableRow = ({
                                 <Input
                                     size='sm'
                                     type='month'
-                                    value={localAopActivity?.[id]?.localEndMonth || ''}
+                                    value={endMonth}
                                     onChange={(e) => {
                                         const newValue = e.target.value
-                                        setLocalAopActivity((prev) => ({
-                                            ...prev,
-                                            [id]: {
-                                                ...prev[id],
-                                                localEndMonth: newValue
-                                            },
-                                        }));
-                                        console.log(newValue)
 
                                         handleChange(id, 'endMonth', newValue);
                                     }}
@@ -211,29 +183,19 @@ const TableRow = ({
                         <td onClick={() => handleOnRowClick(id)}>
                             {isEditing ? (
                                 <Input
-                                    value={localAopActivity?.[id]?.localTarget?.firstQuarter || ''}
+                                    value={firstQuarter}
                                     size='sm'
-                                    onChange={(e) =>
-                                        setLocalAopActivity(prev => ({
-                                            ...prev,
-                                            [id]: {
-                                                ...prev[id],
-                                                localTarget: {
-                                                    ...prev[id].localTarget,
-                                                    firstQuarter: e.target.value
-                                                }
-                                            }
-                                        }))
+                                    onChange={(e) => handleChange(id, 'target.firstQuarter', e.target.value)
                                     }
                                     onBlur={() => {
-                                        const value = localAopActivity[id]?.localTarget.firstQuarter;
+                                        const value = firstQuarter;
                                         handleChange(id, 'target.firstQuarter', value);
                                         setEditRowId(null);
                                     }}
                                 />
                             ) : (
                                 <Typography>
-                                    {target?.firstQuarter || '-'}
+                                    {firstQuarter}
                                 </Typography>
                             )}
                         </td>
@@ -242,29 +204,19 @@ const TableRow = ({
                         <td onClick={() => handleOnRowClick(id)}>
                             {isEditing ? (
                                 <Input
-                                    value={localAopActivity?.[id]?.localTarget?.secondQuarter || ''}
+                                    value={secondQuarter}
                                     size='sm'
                                     onChange={(e) =>
-                                        setLocalAopActivity(prev => ({
-                                            ...prev,
-                                            [id]: {
-                                                ...prev[id],
-                                                localTarget: {
-                                                    ...prev[id].localTarget,
-                                                    secondQuarter: e.target.value
-                                                }
-                                            }
-                                        }))
-                                    }
+                                        handleChange(id, 'target.secondQuarter', e.target.value)}
                                     onBlur={() => {
-                                        const value = localAopActivity[id]?.localTarget.secondQuarter;
+                                        const value = secondQuarter;
                                         handleChange(id, 'target.secondQuarter', value);
                                         setEditRowId(null);
                                     }}
                                 />
                             ) : (
                                 <Typography>
-                                    {target?.secondQuarter || '-'}
+                                    {secondQuarter}
                                 </Typography>
                             )}
                         </td>
@@ -272,29 +224,20 @@ const TableRow = ({
                         <td onClick={() => handleOnRowClick(id)}>
                             {isEditing ? (
                                 <Input
-                                    value={localAopActivity?.[id]?.localTarget?.thirdQuarter || ''}
+                                    value={thirdQuarter}
                                     size='sm'
                                     onChange={(e) =>
-                                        setLocalAopActivity(prev => ({
-                                            ...prev,
-                                            [id]: {
-                                                ...prev[id],
-                                                localTarget: {
-                                                    ...prev[id].localTarget,
-                                                    thirdQuarter: e.target.value
-                                                }
-                                            }
-                                        }))
+                                        handleChange(id, 'target.thirdQuarter', e.target.value)
                                     }
                                     onBlur={() => {
-                                        const value = localAopActivity[id]?.localTarget.thirdQuarter;
+                                        const value = thirdQuarter;
                                         handleChange(id, 'target.thirdQuarter', value);
                                         setEditRowId(null);
                                     }}
                                 />
                             ) : (
                                 <Typography>
-                                    {target?.thirdQuarter || '-'}
+                                    {thirdQuarter}
                                 </Typography>
                             )}
                         </td>
@@ -302,29 +245,20 @@ const TableRow = ({
                         <td onClick={() => handleOnRowClick(id)}>
                             {isEditing ? (
                                 <Input
-                                    value={localAopActivity?.[id]?.localTarget?.fourthQuarter || ''}
+                                    value={fourthQuarter}
                                     size='sm'
                                     onChange={(e) =>
-                                        setLocalAopActivity(prev => ({
-                                            ...prev,
-                                            [id]: {
-                                                ...prev[id],
-                                                localTarget: {
-                                                    ...prev[id].localTarget,
-                                                    fourthQuarter: e.target.value
-                                                }
-                                            }
-                                        }))
+                                        handleChange(id, 'target.fourthQuarter', e.target.value)
                                     }
                                     onBlur={() => {
-                                        const value = localAopActivity[id]?.localTarget.fourthQuarter;
+                                        const value = fourthQuarter;
                                         handleChange(id, 'target.fourthQuarter', value);
                                         setEditRowId(null);
                                     }}
                                 />
                             ) : (
                                 <Typography>
-                                    {target?.fourthQuarter || '-'}
+                                    {fourthQuarter}
                                 </Typography>
                             )}
                         </td>
@@ -341,15 +275,9 @@ const TableRow = ({
 
                                 <AutocompleteComponent
                                     placeholder="is GAD related activity"
-                                    value={localAopActivity?.[id]?.isGadRelated || false}
-                                    setValue={(val) => {
-                                        console.log(val)
-                                        setLocalAopActivity(prev => ({
-                                            ...prev,
-                                            [id]: val.val
-                                        }));
-                                        handleChange(id, "isGadRelated", val);
-                                    }}
+                                    value={isGadRelated}
+                                    setValue={(val) =>
+                                        handleChange(id, "isGadRelated", val.value)}
                                     options={gadRelatedOptions}
                                 />
 
@@ -357,7 +285,6 @@ const TableRow = ({
                                 //     size='sm'
                                 //     value={localAopActivity?.[id]?.isGadRelated || false}
                                 //     onChange={(e, newValue) =>
-                                //         console.log(newValue)
                                 //         // handleChange(id, "isGadRelated", newValue)
                                 //     }
                                 // >
