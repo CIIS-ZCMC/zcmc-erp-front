@@ -8,9 +8,10 @@ const usePPMPApplicationHook = create((set) => ({
   ppmpApplicationItems: [],
 
   actions: {
-    getPPMPApplications: (callback) => {
+    getPPMPApplications: (params, callback) => {
       read({
         url: API.PPMP_APPLICATION,
+        params: params,
         success: (res) => {
           const { data, message } = res.data;
 

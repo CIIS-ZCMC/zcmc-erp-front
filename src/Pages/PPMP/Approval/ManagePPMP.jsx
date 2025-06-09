@@ -97,6 +97,7 @@ function ManagePPMP() {
                 color="primary"
                 label={"Receive PPMP"}
                 onClick={handleOpenModal}
+                disabled={ppmpApplication?.status === "Received"}
               />
             </Stack>
           }

@@ -637,6 +637,15 @@ export const PPMP_REQUEST_HEADER = (handleOpen, handleExport) => [
     align: "start",
   },
   {
+    field: "requester_area",
+    name: "Requester",
+    width: 300,
+    align: "start",
+    render: (params) => {
+      return params?.requester_area?.name;
+    },
+  },
+  {
     field: "total_items",
     name: "Total items",
     width: 100,

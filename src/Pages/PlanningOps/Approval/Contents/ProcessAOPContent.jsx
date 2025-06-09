@@ -119,7 +119,7 @@ const ProcessAOPContent = () => {
         rightButtonDisabled={confirmButtonDisabled}
         maxWidth={500}
         content={
-          <Stack gap={2}>
+          <Stack gap={0}>
             <Stack py={isPlanning ? 2 : 1}>
               {isPlanning && (
                 <Box mb={2}>
@@ -142,7 +142,7 @@ const ProcessAOPContent = () => {
               )}
 
               {/* IF OMCC, AUTH PIN */}
-              {isPlanning || !isDivisionHead ? (
+              {isDivisionHead ? (
                 <TextareaComponent
                   minRows={3}
                   label={"Remarks"}
@@ -156,7 +156,7 @@ const ProcessAOPContent = () => {
               ) : null}
             </Stack>
 
-            {!isDivisionHead && <Divider />}
+            {isDivisionHead && <Divider />}
             <InputComponent
               type="password"
               label="Authorization pin"

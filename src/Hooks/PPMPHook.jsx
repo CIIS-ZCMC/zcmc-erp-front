@@ -110,12 +110,12 @@ const usePPMPHook = create((set) => ({
     });
   },
 
-  exportPPMP: async (params, area, callBack) => {
+  exportPPMP: async (body, area, callBack) => {
     download({
       url: `${PATH}-item-export`,
       title: "PPMP-Items",
       fileName: area ? `${area}_ppmp_item.xlsx` : "ppmp_item.xlsx",
-      params: params,
+      body: body,
       success: (status, message) => {
         callBack(status, message);
       },

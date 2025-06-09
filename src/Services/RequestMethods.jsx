@@ -74,9 +74,10 @@ export const download = ({
   fileName,
   success,
   failed,
+  body,
 }) => {
   erp_api
-    .get(url, params, { cancelToken: token, responseType: "blob" })
+    .get(url, params, body, { cancelToken: token, responseType: "blob" })
     .then((res) => validateStatusOk(res))
     .then((res) => {
       if (res.status === 200) {

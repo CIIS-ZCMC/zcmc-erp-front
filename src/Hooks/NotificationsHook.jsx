@@ -1,7 +1,6 @@
 // src/hooks/useNotifications.js
 import { create } from "zustand";
 import useSocketStore from "./Socket/SocketHook";
-import { NOTIFICATIONS } from "../Data/TestData";
 import { useAuth } from "../Store/AuthStore";
 import { useEffect } from "react";
 import { read } from "../Services/RequestMethods";
@@ -22,7 +21,7 @@ const useNotificationsHook = create((set) => ({
       url: `notifications/employee-notifs/${id}`,
       failed: callback,
       success: (res) => {
-        console.log(res.data.data);
+        // console.log(res.data.data);
         set(() => ({ notifications: res.data.data }));
       },
     });

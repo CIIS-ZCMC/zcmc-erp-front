@@ -34,7 +34,7 @@ export const FeedbackContent = ({
       dataToDisplay = activeTab === 0 ? allComments : remarks;
     }
 
-    return groupByDate(dataToDisplay);
+    return groupByDate(dataToDisplay ?? []);
   }, [activeTab, allComments, isDivisionHead, remarks]);
 
   const feedbackCount = Array.isArray(allComments) ? allComments?.length : 0;

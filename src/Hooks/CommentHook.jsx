@@ -48,8 +48,9 @@ const useCommentHook = create((set, get) => ({
         },
         success: (response) => {
           const { data } = response.data;
-          set({ allComments: data });
-          localStorageSetter("all_comments", data);
+
+          set({ allComments: data ?? [] });
+          localStorageSetter("all_comments", data ?? []);
           callback(response.status, data);
         },
         failed: () => {
