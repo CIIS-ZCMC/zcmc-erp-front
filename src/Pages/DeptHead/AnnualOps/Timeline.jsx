@@ -26,9 +26,9 @@ const Timeline = ({ aop_id }) => {
         })
     }, [aop_id])
 
-    useEffect(() => {
-        console.log('current timeline', approvalTimeline)
-    }, [approvalTimeline])
+    // useEffect(() => {
+    //     console.log('current timeline', approvalTimeline)
+    // }, [approvalTimeline])
 
     return (
         <Fragment>

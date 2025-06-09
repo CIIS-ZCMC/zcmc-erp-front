@@ -1,7 +1,7 @@
 import { Fragment, useEffect, useState } from "react";
 
 import { useNavigate } from "react-router-dom";
-import { Stack, Link } from "@mui/joy";
+import { Stack, Link, Checkbox } from "@mui/joy";
 import { Plus, ExternalLink } from "lucide-react";
 
 //custom components
@@ -30,7 +30,7 @@ import useResponsiblePeopleHook from "../../../../../../Hooks/ResponsiblePeopleH
 const Objectives = () => {
   const { create } = useAOPActions();
 
-  const { aopObjectives, deleteObjective } = useAOPObjectivesHooks();
+  const { aopObjectives, deleteObjective, } = useAOPObjectivesHooks();
   const { function_types, getFunctionType } = useFunctionTypeHook();
   const {
     objectives,
@@ -38,6 +38,7 @@ const Objectives = () => {
     addObjective,
     updateObjectiveField,
     clearObjectives,
+    setIsDiscussed,
   } = useObjectivesHook();
   const { findActivitiesByObjectiveID, activities, clearActivities } =
     useActivitiesHook();
@@ -48,14 +49,16 @@ const Objectives = () => {
   } = useResponsiblePeopleHook();
   const { resources, findResourcesByActivityID, clearResources } =
     useResourceHook();
-  const { setAlertDialog, setConfirmationModal } = useModalHook();
+  const { setAlertDialog, setConfirmationModal, closeConfirmation } = useModalHook();
 
   const navigate = useNavigate();
 
   // local states
   const [editRowId, setEditRowId] = useState(null);
-  const [isLoading, setisLoading] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+  const [openConfirmDiscussedDialog, setOpenConfirmDiscussedDialog] = useState(false);
+
   const [openSubmitModal, setOpenSubmitModal] = useState(false);
   const [openSaveMissionModal, setOpenSaveMissionModal] = useState(false);
   const [authorizationPin, setAuthorizationPin] = useState(null);
@@ -87,7 +90,7 @@ const Objectives = () => {
         // if status not success
         return; //Toast error
       }
-      setisLoading(false);
+      setIsLoading(false);
     });
   }, [isLoading]);
 
@@ -159,17 +162,6 @@ const Objectives = () => {
     localStorage.removeItem("mission");
   };
 
-  const handleShowAlert = (status) => {
-    const data = {
-      status: status,
-      title: "AOP for F.Y. 2026 successfully submitted for approval.",
-      description:
-        "Your AOP request has been sent to designated to the next approving body and notified them for approvals.",
-    };
-
-    setAlertDialog(data);
-  };
-
   const handleConfirmationModal = () => {
     setOpenConfirmDialog(true);
     const data = {
@@ -179,13 +171,100 @@ const Objectives = () => {
       description:
         "Document previews will be generated and downloaded in Microsoft Excel Spreadsheet (.xls) file format. The document preview is for viewing purposes only to help you ensure that all fields are filled-up correctly and accurately.",
     };
-
     setConfirmationModal(data);
   };
 
+  const handleDiscussedConfirmationModal = () => {
+
+    console.log('alert')
+
+    setOpenConfirmDiscussedDialog(true)
+
+    const data = {
+      status: "warning",
+      title: "Have you discussed this AOP request with your Division Chief?",
+      description:
+        "We need to make sure that you already have a previous discussion and official go-signal for creating and submitting this request.",
+    };
+
+    setConfirmationModal(data)
+  }
+
+  const proceed = () => {
+    handleConfirmationModal()
+    // closeConfirmation();
+  };
+
+  // // handle submit aop objective
+  // const handleSubmit = () => {
+  //   // setOpenConfirmDialog(true);
+
+  //   const aopPayload = buildAOP();
+
+  //   // const payload = {
+  //   //   mission: mission,
+  //   //   has_discussed: hasDiscussed === "on" ? true : false,
+  //   //   status: isDraft ? "draft" : "pending",
+  //   //   authorization_pin: authorizationPin,
+  //   //   application_objectives: aopPayload,
+  //   // };
+
+  //   create(payload, (status, message) => {
+  //     // console.log(message)
+  //     let data = {};
+
+  //     // if existing
+  //     if (
+  //       status === 200 &&
+  //       message === "You already have an AOP application in your area."
+  //     ) {
+  //       data = {
+  //         status: 200,
+  //         title: "Existing AOP",
+  //         description: "You already have an AO6P application in your area.",
+  //       };
+  //       setAlertDialog(data);
+  //       return;
+  //     }
+
+  //     //create new
+  //     if (status === 200) {
+  //       const data = {
+  //         status: 200,
+  //         title: "AOP for F.Y. 2026 successfully submitted for approval.",
+  //         description:
+  //           "Your AOP request has been sent to designated to the next approving body and notified them for approvals.",
+  //       };
+  //       setTimeout(() => {
+  //         closeConfirmation();
+  //         handleConfirmationModal()
+  //       }, 1000);
+
+  //       setOpenSubmitModal(false);
+  //       clearLocalStorage();
+  //       setMission("");
+  //       // window.location.reload(false);
+  //       // navigate('/aop')
+  //       // window.location.href = '/aop';
+  //       setAlertDialog(data);
+  //       return;
+  //     }
+
+  //     //failed
+  //     data = {
+  //       status: status,
+  //       title: "Submission failed",
+  //       description: message || "An unexpected error occurred.",
+  //     };
+  //     setAlertDialog(data);
+  //   });
+  // };
+
+
   // handle submit aop objective
   const handleSubmit = () => {
-    // setOpenConfirmDialog(true);
+
+    setIsLoading(true)
 
     const aopPayload = buildAOP();
 
@@ -197,52 +276,55 @@ const Objectives = () => {
       application_objectives: aopPayload,
     };
 
-    create(payload, (status, message) => {
-      // console.log(message)
-      let data = {};
+    // 👇 Delay before calling the create() function
+    setTimeout(() => {
 
-      // if existing
-      if (
-        status === 200 &&
-        message === "You already have an AOP application in your area."
-      ) {
+      create(payload, (status, message) => {
+        let data = {};
+
+        // if existing
+        if (
+          status === 200 &&
+          message === "You already have an AOP application in your area."
+        ) {
+          data = {
+            status: 200,
+            title: "Existing AOP",
+            description: "You already have an AOP application in your area.",
+          };
+          setAlertDialog(data);
+          return;
+        }
+
+        // create new
+        if (status === 200) {
+          data = {
+            status: 200,
+            title: "AOP for F.Y. 2026 successfully submitted for approval.",
+            description:
+              "Your AOP request has been sent to designated to the next approving body and notified them for approvals.",
+          };
+
+          setOpenSubmitModal(false);
+          clearLocalStorage();
+          setMission("");
+          setAlertDialog(data);
+          window.location.href = '/aop';
+          closeConfirmation()
+          return;
+        }
+
+        // failed
         data = {
-          status: 200,
-          title: "Existing AOP",
-          description: "You already have an AO6P application in your area.",
+          status: status,
+          title: "Submission failed",
+          description: message || "An unexpected error occurred.",
         };
         setAlertDialog(data);
-        return;
-      }
-
-      //create new
-      if (status === 200) {
-        data = {
-          status: 200,
-          title: "Successfully submitted for approval.",
-          description:
-            "Your AOP request has been sent to the next approving body and they have been notified.",
-        };
-
-        setOpenSubmitModal(false);
-        clearLocalStorage();
-        setMission("");
-        // window.location.reload(false);
-        // navigate('/aop')
-        window.location.href = '/aop';
-        setAlertDialog(data);
-        return;
-      }
-
-      //failed
-      data = {
-        status: status,
-        title: "Submission failed",
-        description: message || "An unexpected error occurred.",
-      };
-      setAlertDialog(data);
-    });
+      });
+    }, 1500);
   };
+
 
   // handle save mission
   const handleSaveMission = () => {
@@ -347,7 +429,7 @@ const Objectives = () => {
               resources.length === 0 ||
               responsible_people.length === 0
             }
-            onClick={() => handleConfirmationModal()}
+            onClick={() => handleDiscussedConfirmationModal()}
           />
         </Stack>
       </ContainerComponent>
@@ -381,6 +463,31 @@ const Objectives = () => {
           setAuthPin={setAuthorizationPin}
         />
       )}
+
+      {/* Confirmation modal to proceed */}
+      {openConfirmDiscussedDialog && (
+        <ConfirmationModalComponent
+          leftButtonLabel={"Back"}
+          rightButtonAction={() => proceed(200)}
+          rightButtonLabel="Proceed"
+          rightButtonDisabled={!hasDiscussed}
+          isLoading={isLoading}
+          content={
+            <>
+              <Checkbox
+                label={
+                  "Yes, I have discussed these plans with my Division Chief."
+                }
+                onChange={(e) => {
+                  setIsDiscussed(e.target.checked);
+                }}
+                checked={hasDiscussed}
+              />
+            </>
+          }
+        />
+      )}
+
     </Fragment>
   );
 };

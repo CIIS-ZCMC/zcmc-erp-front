@@ -158,9 +158,9 @@ const TableRow = ({
                         placeholder="Select Expense Class"
                         value={selectedExpenseClass}
                         setValue={(val) => {
-                          // console.log(val)
-                          setSelectedExpenseClass(val);
-                          updateResourceField(id, "expenseClass", val);
+                          console.log(val)
+                          setSelectedExpenseClass(val?.value);
+                          updateResourceField(id, "expenseClass", val?.value);
                         }}
                         options={expenseClassOptions}
                       />
@@ -169,7 +169,7 @@ const TableRow = ({
                   ) : (
                     <Typography>
                       {console.info(selectedExpenseClass)}
-                      {selectedExpenseClass?.label || "-"}
+                      {selectedExpenseClass || "-"}
                     </Typography>
                   )}
                 </td>

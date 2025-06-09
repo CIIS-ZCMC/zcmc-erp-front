@@ -29,7 +29,7 @@ const ResponsiblePerson = () => {
 
   const { responsible_people, resetValues, setAssignmentStatus } =
     useResponsiblePeopleHook();
-  const { hasDiscussed, setIsDiscussed } = useObjectivesHook();
+
   const { setConfirmationModal, closeConfirmation } = useModalHook();
 
   const activity = responsible_people?.find((item) => {
@@ -62,10 +62,11 @@ const ResponsiblePerson = () => {
 
     const data = {
       status: "warning",
-      title: "Have you discussed this AOP request with your Division Chief?",
+      title: "Assigning selected responsible people",
       description:
-        "We need to make sure that you already have a previous discussion and official go-signal for creating and submitting this request.",
+        "This will redirect you back to AOP Objectives",
     };
+
 
     setConfirmationModal(data);
   };
@@ -160,24 +161,10 @@ const ResponsiblePerson = () => {
       {/* Confirmation modal to proceed */}
       {openConfirmDialog && (
         <ConfirmationModalComponent
-          leftButtonLabel={"Back to editor"}
+          leftButtonLabel={"Back"}
           rightButtonAction={() => proceed(200)}
           rightButtonLabel="Proceed"
-          rightButtonDisabled={!hasDiscussed}
           isLoading={isLoading}
-          content={
-            <>
-              <Checkbox
-                label={
-                  "Yes, I have discussed these plans with my Division Chief."
-                }
-                onChange={(e) => {
-                  setIsDiscussed(e.target.checked);
-                }}
-                checked={hasDiscussed}
-              />
-            </>
-          }
         />
       )}
     </Fragment>

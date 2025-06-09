@@ -96,8 +96,8 @@ const TableRow = ({
     };
 
     const gadRelatedOptions = [
-        { id: 1, label: 'Yes', value: 'yes' },
-        { id: 2, label: 'No', value: 'no' }
+        { id: 1, label: 'Yes', value: true },
+        { id: 2, label: 'No', value: false }
     ]
 
     return (
@@ -283,7 +283,7 @@ const TableRow = ({
                             ) : (
                                 <Typography>
                                     {isGadRelated
-                                        ? isGadRelated.charAt(0).toUpperCase() + isGadRelated.slice(1).toLowerCase()
+                                        ? 'Yes'
                                         : 'No'
                                     }
                                 </Typography>
