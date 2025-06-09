@@ -16,12 +16,30 @@ import {
 import no_result from "../../../assets/not-found.png";
 import PageLoader from "../../../Components/Loading/PageLoader";
 import { ThreeDotsLoader } from "../../../Components/Common/Loading/ThreeDotsLoader";
+import { socket } from "../../../Services/Socket";
+import { useAuth } from "../../../Store/AuthStore";
 
 function PPMPDashboard(props) {
   const navigate = useNavigate();
   const { dashboard, getPPMPDashboard } = usePPMPHook();
   const [pageLoader, setPageLoader] = useState(false);
+  const { user } = useAuth();
+  const { name, id, assignedArea } = user ?? {};
+  const status = dashboard?.ppmp_application?.is_draft;
 
+  const sendSignal = () => {
+    socket.emit("register-user", {
+      userId: id,
+      name: name,
+      area: assignedArea?.name,
+    });
+  };
+
+  const handleNavigate = () => {
+    navigate("ppmp-items", {
+      state: { is_draft: { status } },
+    });
+  };
   useEffect(() => {
     setPageLoader(true);
     getPPMPDashboard((status, message) => {
@@ -32,8 +50,19 @@ function PPMPDashboard(props) {
       setPageLoader(false);
     });
   }, []);
+
+  useEffect(() => {
+    if (!assignedArea?.name) return;
+
+    socket.emit("register-user", {
+      userId: id,
+      name: name,
+      area: assignedArea.name,
+    });
+  }, [assignedArea]);
   return (
     <Fragment>
+      {console.log("dashboard", status)}
       {pageLoader ? (
         <ThreeDotsLoader />
       ) : dashboard &&
@@ -164,7 +193,9 @@ function PPMPDashboard(props) {
                             <Typography>
                               With a PPMP total of{" "}
                               <b style={{ color: "#004366" }}>
-                                ({dashboard?.ppmp_application?.ppmp_total})
+                                ( &#8369;{" "}
+                                {dashboard?.ppmp_application?.ppmp_total?.toLocaleString()}
+                                )
                               </b>
                             </Typography>
                           </Stack>
@@ -186,7 +217,7 @@ function PPMPDashboard(props) {
                     </Typography>
                     <ButtonComponent
                       label={"View PPMP"}
-                      onClick={() => navigate("ppmp-items")}
+                      onClick={() => handleNavigate()}
                       width="auto"
                     />
                   </Stack>

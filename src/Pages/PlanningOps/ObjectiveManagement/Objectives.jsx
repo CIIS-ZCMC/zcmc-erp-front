@@ -40,6 +40,8 @@ function Objectives({ props }) {
     removeObj,
     postObjective,
     updateObjective,
+    setSearchQuery,
+    searchQuery,
   } = useManageObjHook();
   const { function_types, getFunctionType } = useFunctionTypeHook();
   const { setAlertDialog, setConfirmationModal, closeConfirmation } =
@@ -412,7 +414,7 @@ function Objectives({ props }) {
 
   useEffect(() => {
     fetchAll();
-  }, [currentPage]);
+  }, [currentPage, searchQuery]);
 
   useEffect(() => {
     if (highlightedRowId) {
@@ -480,6 +482,8 @@ function Objectives({ props }) {
           bordered
           hoverRow
           stickLast
+          search={searchQuery}
+          setSearch={setSearchQuery}
         />
       </ContainerComponent>
 

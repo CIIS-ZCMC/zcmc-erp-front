@@ -1,7 +1,5 @@
 import { Navigate } from "react-router-dom";
 
-import Dashboard from "../Pages/Dashboard";
-
 import AnnualOps from "../Pages/DeptHead/AnnualOps/AnnualOps";
 import CreateAOP from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout";
 import EditAOP from "../Pages/DeptHead/AnnualOps/EditAOP";
