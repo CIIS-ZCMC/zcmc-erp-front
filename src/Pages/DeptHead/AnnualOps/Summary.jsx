@@ -39,8 +39,10 @@ const Summary = (
     const responsiblePersonContent = `Includes (${total_job_positions}) job positions, (${total_areas}) areas (${total_users}) user/s in total`
 
     const handleExport = () => {
-
-        exportAsExcel(aop_application_id)
+        exportAsExcel(aop_application_id, (status, message) => {
+            // Optional: Add notification or feedback to user about export status
+            console.log(`Export status: ${status}, message: ${message}`);
+        });
     }
 
     return (
