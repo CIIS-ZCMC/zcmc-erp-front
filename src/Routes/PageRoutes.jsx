@@ -46,6 +46,7 @@ import ItemSubmittedRequestsList from "../Pages/TEMP/ItemSubmittedRequestsList";
 import { MyOwnRequestsList } from "../Pages/TEMP/ItemMyOwnRequestsLists";
 import { ItemRequestDatatable } from "../Pages/Consolidators/ItemManagement/ItemRequestDatatable";
 import ResponsiblePerson from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities/ResponsiblePerson";
+import DeadlineManagement from "../Pages/DeadlineManagement";
 
 export const sidebarRoutes = [
   // DASHBOARD ROUTE
@@ -215,7 +216,7 @@ export const sidebarRoutes = [
       {
         path: "/dealine-management",
         name: "Deadline Management",
-        children: [{ index: true, element: <>Deadline Management</> }],
+        children: [{ index: true, element: <DeadlineManagement /> }],
         childPermissions: ["ERP-DEAD-MAN:write"],
       },
     ],
