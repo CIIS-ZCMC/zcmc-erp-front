@@ -43,7 +43,7 @@ const useListUserRequestItemHook = create((set, get) => ({
                 </Typography>
 
                 <Typography level="body-md" sx={{ color: "custom.darkgreen" }}>
-                  Item name: {data?.data?.name} (Status : {data?.data?.status})
+                  Status : {data?.data?.status?.toUpperCase()}
                 </Typography>
 
                 <Typography level="body-sm">
@@ -95,17 +95,23 @@ const useListUserRequestItemHook = create((set, get) => ({
           status: "success",
           title: (
             <>
-              <Stack spacing={1}>
-                <Typography level="h5" fontWeight="xl">
+              <Stack spacing={2}>
+                <Typography level="h4" fontWeight="xl">
                   Request Updated
                 </Typography>
 
-                <Typography level="body-md" sx={{ color: "custom.darkgreen" }}>
-                  {data?.data?.name} (ID #{data?.data?.id})
+                <Typography
+                  level="body-md"
+                  sx={{ color: "custom.darkgreen", fontWeight: "lg" }}
+                >
+                  Item Name: {data?.data?.name}{" "}
+                  <Typography component="span" sx={{ color: "text.secondary" }}>
+                    (ID #{data?.data?.code})
+                  </Typography>
                 </Typography>
 
-                <Typography level="body-sm">
-                  You may now proceed to the approval page.
+                <Typography level="body-sm" sx={{ mt: 1 }}>
+                  You may now proceed to the <strong>approval step</strong>.
                 </Typography>
               </Stack>
             </>
