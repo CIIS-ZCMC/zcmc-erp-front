@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 import {
   Sheet,
@@ -20,8 +20,10 @@ import ConfirmationModalComponent from "../../../Components/Common/Dialog/Confir
 const Footer = () => {
   const { isCollapsed } = useSidebarHook();
   const { setConfirmationModal, closeConfirmation } = useModalHook();
+  const [logOut, setLogOut] = useState(false);
 
   const handleOpen = () => {
+    setLogOut(true);
     const data = {
       status: "warning",
       title: "Please confirm, are you sure you want to logout?",
@@ -126,11 +128,13 @@ const Footer = () => {
           </IconButton>
         </Stack>
       )}
-      <ConfirmationModalComponent
-        leftButtonLabel="No, go back"
-        rightButtonAction={() => handleLogOut()}
-        rightButtonLabel="Yes, continue"
-      />
+      {logOut && (
+        <ConfirmationModalComponent
+          leftButtonLabel="No, go back"
+          rightButtonAction={() => handleLogOut()}
+          rightButtonLabel="Yes, continue"
+        />
+      )}
     </div>
   );
 };
