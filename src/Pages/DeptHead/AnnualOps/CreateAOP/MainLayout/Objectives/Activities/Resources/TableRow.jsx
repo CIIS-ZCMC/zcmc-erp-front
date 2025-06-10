@@ -40,7 +40,18 @@ const TableRow = ({
     )
   }
 
+  console.log(rows)
+
   function onChangeFieldValue(id, key, value) {
+    if(key === 'quantity') {
+      const totalCost = localResources.reduce((acc, item) => {
+        const quantity = item.id === id ? value : item.quantity;
+        return acc + (quantity * item.individualPrice);
+      }, 0);
+
+      updateCost(parentId, totalCost)
+    }
+
     setLocalResources((prev) => [
       ...prev.map((item) => {
         if (item.id !== id) return item;
@@ -53,8 +64,6 @@ const TableRow = ({
         if (key === "quantity") {
           updatedItem.totalCost = value * item.individualPrice;
           updateResourceField(id, key, value)
-          updateCost(parentId, updatedItem.totalCost)
-          console.log("Test");
         };
 
         return {

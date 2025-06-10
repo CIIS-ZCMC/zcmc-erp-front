@@ -49,10 +49,6 @@ const Resources = () => {
     });
   }, []);
 
-  // useEffect(() => {
-  //   console.log(resources.filter((item) => item.parentId === parentId));
-  // }, [resources]);
-
   return (
     <Fragment>
       <ContainerComponent

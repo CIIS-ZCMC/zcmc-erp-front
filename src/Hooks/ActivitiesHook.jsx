@@ -76,7 +76,6 @@ const useActivitiesHook = create(
             },
             
             updateCost: (parentId, cost) => {
-                console.log(parentId);
                 set((state) => ({
                     activities: state.activities.map((activity) => {
                         if (activity.id === parentId) {
