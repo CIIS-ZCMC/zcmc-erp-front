@@ -449,7 +449,7 @@ const index = () => {
           />
 
           <ButtonComponent
-            label={"Update AOP"}
+            label={"Resubmit"}
             size={"md"}
             variant={"solid"}
             onClick={proceed}
