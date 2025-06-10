@@ -96,7 +96,7 @@ const Items = () => {
 
   useEffect(() => {
     if(resources.length > 0){
-      resources.map((resource) => {
+      resources.filter((item) => item.parentId === location.state.parentId).map((resource) => {
         const exist = cart.find((item) => item.id === resource.item_id);
         if(!exist){
           const item = items.find((item) => item.id === resource.item_id)
