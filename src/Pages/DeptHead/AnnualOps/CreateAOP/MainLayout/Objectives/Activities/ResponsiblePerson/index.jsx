@@ -90,8 +90,6 @@ const ResponsiblePerson = () => {
     // navigate(`/aop-create/activities/${rowId}`);
   };
 
-  console.log(responsible_people)
-
   return (
     <Fragment>
       <ContainerComponent
