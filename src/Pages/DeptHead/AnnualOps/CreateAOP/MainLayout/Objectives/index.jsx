@@ -102,8 +102,8 @@ const Objectives = () => {
   }, [objectives, addObjective]);
 
   useEffect(() => {
-    console.log(isDraft);
-  }, [isDraft]);
+    console.log(hasDiscussed);
+  }, [hasDiscussed]);
 
   function buildAOP() {
     const objectiveData = objectives?.map((item) => {
@@ -270,7 +270,7 @@ const Objectives = () => {
 
     const payload = {
       mission: mission,
-      has_discussed: hasDiscussed === "on" ? true : false,
+      has_discussed: hasDiscussed === true ? true : false,
       status: isDraft ? "draft" : "pending",
       authorization_pin: authorizationPin,
       application_objectives: aopPayload,
@@ -479,6 +479,7 @@ const Objectives = () => {
                   "Yes, I have discussed these plans with my Division Chief."
                 }
                 onChange={(e) => {
+                  console.log(e.target.checked)
                   setIsDiscussed(e.target.checked);
                 }}
                 checked={hasDiscussed}
