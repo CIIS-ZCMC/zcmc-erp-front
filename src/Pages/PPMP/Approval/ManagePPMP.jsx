@@ -83,9 +83,11 @@ function ManagePPMP() {
         <PageTitle
           title={
             <Typography>
-              Viewing PPMP{" "}
-              <Typography textColor={"warning.400"}>#2023-0031</Typography> from{" "}
-              <Typography textColor={"warning.400"}>{"HRMO"}</Typography>
+              Viewing{" "}
+              <Typography textColor={"warning.400"}>
+                {ppmpApplication?.requester_area}'s{" "}
+              </Typography>
+              PPMP for year {ppmpApplication?.year}
             </Typography>
           }
           description={"Based on actual live data from the end-user’s request."}

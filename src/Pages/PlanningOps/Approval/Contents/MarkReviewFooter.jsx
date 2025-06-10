@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import useModalHook from "../../../../Hooks/ModalHook";
 import {
   useActivity,
@@ -17,23 +17,32 @@ import {
 } from "@mui/joy";
 import ConfirmationModalComponent from "../../../../Components/Common/Dialog/ConfirmationModalComponent";
 import { useAOPApplicationsActions } from "../../../../Hooks/AOP/AOPApplicationsHook";
+import { useApprovalTimeline } from "../../../../Hooks/AOP/AOPApprovalHook";
+import { useAuth } from "../../../../Store/AuthStore";
 
-export const MarkReviewFooter = ({ openMarkModal, setOpenMarkModal }) => {
-  // STATE
-  const [btnLoading, setBtnLoading] = useState(false);
-  const titleStyles = { level: "body-xs", fontWeight: 400 };
-  const { activeActivity } = useActivityUIStates();
-  const activity = useActivity();
-
-  const { is_reviewed } = activity ?? {};
-  const AOP_APPLICATION_ID = localStorageGetter("aop_application_id");
-
+export const MarkReviewFooter = ({
+  openMarkModal,
+  setOpenMarkModal,
+  // isApproved,
+}) => {
   // HOOKS
   const { setConfirmationModal, closeConfirmation } = useModalHook();
   const { markAsReviewed, getActivityById, markAsUnreviewed } =
     useActivityActions();
   const { showSnack } = useSnackbarHook();
   const { getAOPApplicationById } = useAOPApplicationsActions();
+  const { user } = useAuth();
+  const approvalTimeline = useApprovalTimeline();
+  const { activeActivity } = useActivityUIStates();
+  const activity = useActivity();
+  const { is_reviewed } = activity ?? {};
+
+  // STATE
+  const [btnLoading, setBtnLoading] = useState(false);
+  const titleStyles = { level: "body-xs", fontWeight: 400 };
+  const AOP_APPLICATION_ID = localStorageGetter("aop_application_id");
+  const [isReviewed, setIsReviewed] = useState(true);
+  const [disabledCheckbox, setDisabledCheckbox] = useState(false);
 
   // FUNCTIONS
   const handleClickMarkCheckbox = () => {
@@ -52,6 +61,7 @@ export const MarkReviewFooter = ({ openMarkModal, setOpenMarkModal }) => {
   };
 
   const handleMarkAsReviewed = () => {
+    setIsReviewed(true);
     setBtnLoading(true);
 
     if (is_reviewed) {
@@ -73,6 +83,21 @@ export const MarkReviewFooter = ({ openMarkModal, setOpenMarkModal }) => {
     }
   };
 
+  useEffect(() => {
+    setIsReviewed(is_reviewed);
+  }, [activity, is_reviewed]);
+
+  useEffect(() => {
+    if (!Array.isArray(approvalTimeline) || !user?.id) return;
+
+    const isApproved = approvalTimeline.some(
+      (item) => item.approver_user_id === user.id && item.status === "approved"
+    );
+
+    // console.log("isApproved", approvalTimeline);
+
+    setDisabledCheckbox(isApproved);
+  }, [approvalTimeline, user?.id]);
   return (
     <Fragment>
       {/* {JSON.stringify(is_reviewed)} */}
@@ -91,7 +116,8 @@ export const MarkReviewFooter = ({ openMarkModal, setOpenMarkModal }) => {
               size="sm"
               sx={{ fontSize: 12, color: "neutral.800" }}
               color="primary"
-              checked={is_reviewed}
+              checked={isReviewed} // ✅ controlled
+              disabled={disabledCheckbox}
               onChange={handleClickMarkCheckbox}
             />
 

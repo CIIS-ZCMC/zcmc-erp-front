@@ -184,8 +184,8 @@ function AddItems(props) {
   const filteredItems = useMemo(() => {
     return searchTerm.trim()
       ? items.filter((item) =>
-          item.name.toLowerCase().includes(searchTerm.toLowerCase())
-        )
+        item.name.toLowerCase().includes(searchTerm.toLowerCase())
+      )
       : items;
   }, [items, searchTerm]);
   const fetchMoreItems = useCallback(() => {
