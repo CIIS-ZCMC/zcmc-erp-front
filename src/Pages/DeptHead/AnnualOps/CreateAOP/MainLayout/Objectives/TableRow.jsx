@@ -86,7 +86,7 @@ const TableRow = ({
                   )
                   :
                   (<>
-                    {/* {console.info(objective)} */}
+                    {console.info(objective)}
                     <Tooltip title={objective ? objective?.description : ''} variant="solid">
                       <Typography >
                         {objective?.code || "-"}
