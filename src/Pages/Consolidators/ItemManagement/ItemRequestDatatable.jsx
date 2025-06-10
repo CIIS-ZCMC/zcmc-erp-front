@@ -10,6 +10,7 @@ import useClassificationDataTable from "../../../Hooks/Libraries/dataTable/dataC
 import ServerTableComponent from "../../../Components/Common/Table/ServerTableComponent";
 import useUserRequestItemHook from "../../../Hooks/ItemRequest/EndUserItemRequest";
 import useListUserRequestItemHook from "../../../Hooks/ItemRequest/ConsolidatorItemRequestUpdate";
+import useLibItemHook from "../../../Hooks/Libraries/LibItemHooks";
 export const ItemRequestDatatable = () => {
   const { setOpenModal } = useModalHook();
   const {
@@ -26,7 +27,7 @@ export const ItemRequestDatatable = () => {
   const getMyRequestData = useUserRequestItemHook(
     (state) => state.myRequests_dataTable
   );
-
+  const { inputs, setInputs } = useLibItemHook();
   const { selected_data } = useListUserRequestItemHook();
 
   const setSelect = useListUserRequestItemHook(
@@ -74,6 +75,7 @@ export const ItemRequestDatatable = () => {
 
   return (
     <Fragment>
+      {JSON.stringify(inputs)}
       <ServerTableComponent
         data={transformData(getMyRequestData)}
         columns={itemRequestDetailsCols(setSelect, () => {

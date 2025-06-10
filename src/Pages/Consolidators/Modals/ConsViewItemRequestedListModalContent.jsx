@@ -261,7 +261,7 @@ const ConsViewItemRequestedListModalContent = () => {
           Make changes to the basic identification of the item to keep it up to
           date.
         </Typography>
-
+        {JSON.stringify(inputs)}
         <Divider sx={{ marginTop: "20px" }} />
 
         <Box
@@ -725,9 +725,7 @@ const ConsViewItemRequestedListModalContent = () => {
         form.reportValidity();
       }
     };
-    useEffect(() => {
-      setInputs("status", status || "approved");
-    }, [status]);
+
     return (
       <Fragment>
         <Typography level="h4" fontWeight="lg" mb={1}>
