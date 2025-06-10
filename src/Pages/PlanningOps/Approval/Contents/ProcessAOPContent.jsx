@@ -128,7 +128,7 @@ const ProcessAOPContent = () => {
         hasActionButtons
         isOpen={openProcessModal}
         handleClose={() => setOpenProcessModal(false)}
-        title={`Process request`}
+        title={`Approve request`}
         description={
           "Select a request status and reasons (if returned) to continue. You may add remarks if necessary." //  Change if user is not planning officer
         }

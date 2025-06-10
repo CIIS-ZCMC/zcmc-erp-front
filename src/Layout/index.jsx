@@ -17,10 +17,8 @@ function Layout() {
 
   const { alertDialogState } = useModalHook();
   const { isOpen: snackbarIsOpen } = useSnackbarHook();
-  const {
-    user,
-    user: { profile_url },
-  } = useAuth();
+  const { user } = useAuth();
+  const profile_url = user?.profile_url || null;
 
   const { isCollapsed, toggleSidebar, setCollapsed } = useSidebarHook();
   const isSmallScreen = useMediaQuery("(max-width:1500px)");
