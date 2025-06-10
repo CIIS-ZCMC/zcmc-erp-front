@@ -36,9 +36,7 @@ function PPMPDashboard(props) {
   };
 
   const handleNavigate = () => {
-    navigate("ppmp-items", {
-      state: { is_draft: { status } },
-    });
+    navigate("ppmp-items");
   };
   useEffect(() => {
     setPageLoader(true);
@@ -77,7 +75,7 @@ function PPMPDashboard(props) {
             mt={3}
             gap={2}
           >
-            <img src={no_result} alt="not-found-img" width={150} />
+            <img src={no_result} alt="not-found-img" width={300} />
 
             <Box>
               <Typography fontSize={24} textAlign="center">
