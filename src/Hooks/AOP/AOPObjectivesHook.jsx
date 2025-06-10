@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { read, post, update } from "../../Services/RequestMethods";
+import { read, post, update, download } from "../../Services/RequestMethods";
 import { API } from "../../Data/constants";
 
 const useAOPObjectivesHooks = create((set, get) => ({
@@ -89,13 +89,16 @@ const useAOPObjectivesHooks = create((set, get) => ({
       })
     },
 
-    exportAsExcel: (id, callBack) => {
-      post({
+    exportAsExcel: (id, callBack = () => {}) => {
+      download({
         url: `${API.AOP_EXPORT_EXCEL}/${id}`,
-        failed: callBack,
-        success: (res) => {
-          console.log(res)
-          callBack(200, "Success");
+        title: "AOP Excel Export",
+        fileName: `aop-export-${id}.xlsx`,
+        failed: (status, message) => {
+          if (callBack) callBack(status, message);
+        },
+        success: (status, message) => {
+          if (callBack) callBack(status, message);
         }
       })
     }
