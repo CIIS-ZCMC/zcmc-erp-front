@@ -61,7 +61,7 @@ const ItemSubmittedRequestModalContent = () => {
     );
   };
   const Step1 = ({ setStep }) => {
-    const { inputs, setInputs, updateData } = useLibItemHook();
+    const { inputs, setInputs, updateData, resetInput } = useLibItemHook();
     const categories = useCategoryHooks((state) => state.categories);
     const formRef = useRef();
     const classifications = useClassificationHooks(
@@ -315,7 +315,8 @@ const ItemSubmittedRequestModalContent = () => {
   };
 
   const Step2 = () => {
-    const { inputs, setInputSpecification, updateData } = useLibItemHook();
+    const { inputs, setInputSpecification, updateData, resetInput } =
+      useLibItemHook();
     const { addUserRequestItem } = useUserRequestItemHook();
     const [isAuthorized, setIsAuthorized] = useState(false);
     const [loader, setLoader] = useState(false);
@@ -443,7 +444,7 @@ const ItemSubmittedRequestModalContent = () => {
               addUserRequestItem(
                 inputs,
                 () => {},
-                () => {},
+                resetInput,
                 setAlertDialog,
                 handleCloseModal
               );
