@@ -75,7 +75,6 @@ export const ItemRequestDatatable = () => {
 
   return (
     <Fragment>
-      {JSON.stringify(inputs)}
       <ServerTableComponent
         data={transformData(getMyRequestData)}
         columns={itemRequestDetailsCols(setSelect, () => {

@@ -261,7 +261,6 @@ const ConsViewItemRequestedListModalContent = () => {
           Make changes to the basic identification of the item to keep it up to
           date.
         </Typography>
-        {JSON.stringify(inputs)}
         <Divider sx={{ marginTop: "20px" }} />
 
         <Box
