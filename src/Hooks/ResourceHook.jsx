@@ -147,8 +147,8 @@ const useResourceHook = create(
           if(exist){
             return {
               ...exist,
-              quantity: exist.quantity + item.aop_quantity,
-              totalCost: exist.totalCost + item.aop_quantity * item.estimated_budget,
+              quantity: item.aop_quantity,
+              totalCost: item.aop_quantity * item.estimated_budget,
             }
           }
 
