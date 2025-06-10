@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { post, read, update } from "../../Services/RequestMethods";
 import { API } from "../../Data/constants";
-import { Typography } from "@mui/joy";
+import { Stack, Typography } from "@mui/joy";
 
 const useListUserRequestItemHook = create((set, get) => ({
   selected_data: null,
@@ -24,6 +24,58 @@ const useListUserRequestItemHook = create((set, get) => ({
     }
   },
 
+  approveItemRequest: (form, setAlertDialog, closeModal, reloadtable) => {
+    const id = get().selected_data?.id;
+    update({
+      url: `${API.REQUEST_ITEM}/${id}`,
+      form: form,
+      success: (res) => {
+        const { data } = res;
+        console.log("Item Succes update added successfully:", data);
+        setAlertDialog({
+          isOpen: true,
+          status: "success",
+          title: (
+            <>
+              <Stack spacing={1}>
+                <Typography level="h5" fontWeight="xl">
+                  Request Updated
+                </Typography>
+
+                <Typography level="body-md" sx={{ color: "custom.darkgreen" }}>
+                  Item name: {data?.data?.name} (Status : {data?.data?.status})
+                </Typography>
+
+                <Typography level="body-sm">
+                  You may now proceed to the approval page.
+                </Typography>
+              </Stack>
+            </>
+          ),
+        });
+        closeModal();
+        reloadtable();
+      },
+      failed: (err) => {
+        setAlertDialog({
+          isOpen: true,
+          status: "error",
+          title: (
+            <>
+              <Stack spacing={1}>
+                <Typography level="h5" fontWeight="xl">
+                  Something went wrong
+                </Typography>
+
+                <Typography level="body-sm">Status update failed</Typography>
+              </Stack>
+            </>
+          ),
+        });
+      },
+    });
+  },
+
   updateItemRequest: (
     form,
     setError,
@@ -43,35 +95,25 @@ const useListUserRequestItemHook = create((set, get) => ({
           status: "success",
           title: (
             <>
-              <Typography level="title-md" fontWeight="lg">
-                New item with ID #{" "}
-                <Typography
-                  level="title-md"
-                  sx={{ color: "custom.darkgreen" }}
-                  fontWeight={"lg"}
-                >
-                  "{data?.data?.id}" - {data?.data?.name}{" "}
+              <Stack spacing={1}>
+                <Typography level="h5" fontWeight="xl">
+                  Request Updated
                 </Typography>
-                successfully submitted.
-                {/* {data?.data?.name}{" "} */}
-                <Typography
-                  sx={{ color: "custom.darkgreen" }}
-                  component="span"
-                  color="primary"
-                >
-                  #{data?.data?.id}
-                </Typography>{" "}
-                You can use it for requesting AOP and PPMP documents. Everyone
-                can see and use the new item
-              </Typography>
+
+                <Typography level="body-md" sx={{ color: "custom.darkgreen" }}>
+                  {data?.data?.name} (ID #{data?.data?.id})
+                </Typography>
+
+                <Typography level="body-sm">
+                  You may now proceed to the approval page.
+                </Typography>
+              </Stack>
             </>
           ),
-          description:
-            "You can now use it for requesting AOP and PPMP documents. Everyone can see and use the new item.",
         });
 
         reloadSelected(id);
-        reload(() => {});
+        reload();
       },
       failed: (err) => {
         setAlertDialog({
@@ -79,23 +121,17 @@ const useListUserRequestItemHook = create((set, get) => ({
           status: "error",
           title: (
             <>
-              <Typography level="title-md" fontWeight="lg">
-                New item "#2023-0031" successfully saved to the library
-                {/* {data?.data?.name}{" "} */}
-                <Typography
-                  sx={{ color: "custom.darkgreen" }}
-                  component="span"
-                  color="primary"
-                  fontWeight="lg"
-                >
-                  {/* #{data?.data?.id} */}
-                </Typography>{" "}
-                ERORRds
-              </Typography>
+              <Stack spacing={1}>
+                <Typography level="h5" fontWeight="xl">
+                  Request Updated Failed
+                </Typography>
+
+                <Typography level="body-sm">
+                  Please check all required inputs
+                </Typography>
+              </Stack>
             </>
           ),
-          description:
-            "You can now use it for requesting AOP and PPMP documents. Everyone can see and use the new item.",
         });
       },
     });

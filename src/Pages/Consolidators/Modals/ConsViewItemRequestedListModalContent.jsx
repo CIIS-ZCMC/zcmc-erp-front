@@ -709,10 +709,12 @@ const ConsViewItemRequestedListModalContent = () => {
   };
 
   const Step3 = () => {
+    const { getMyItemRequestLists } = useUserRequestItemHook();
     const [status, setStatus] = React.useState("approve");
     const [remarks, setRemarks] = React.useState("");
     const [pin, setPin] = React.useState("");
     const { inputs, setInputs } = useLibItemHook();
+    const { approveItemRequest } = useListUserRequestItemHook();
     const formRef = useRef();
     const handleNext = (step) => {
       const form = formRef.current;
@@ -728,7 +730,6 @@ const ConsViewItemRequestedListModalContent = () => {
     }, [status]);
     return (
       <Fragment>
-        {JSON.stringify(inputs)}
         <Typography level="h4" fontWeight="lg" mb={1}>
           Process request{" "}
           <Typography level="h4" component="span" color="warning">
@@ -845,10 +846,19 @@ const ConsViewItemRequestedListModalContent = () => {
             // loading={loader}
             loadingPosition="end"
             onClick={() => {
-              handleNext(2);
+              approveItemRequest(
+                {
+                  status: status == "approve" ? "approved" : "returned",
+                },
+                setAlertDialog,
+                () => {
+                  setOpenModal(false, false, false);
+                },
+                getMyItemRequestLists
+              );
             }}
           >
-            "Confirm and Save"
+            Confirm and Save
           </Button>
         </Stack>
       </Fragment>
