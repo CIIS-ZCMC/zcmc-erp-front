@@ -31,6 +31,7 @@ export const ActivityDetails = () => {
     end_month,
     target: { q1, q2, q3, q4 } = {},
     resources = [],
+    is_reviewed,
     responsible_people = [],
   } = activity || {};
 
@@ -44,7 +45,7 @@ export const ActivityDetails = () => {
   return (
     <Fragment>
       <ContainerComponent
-        noBoxShadow
+        noboxshadow
         // title={`Objective #${objectiveNumber}’s activity #${activityNumber}`}
         title={"Activity details"}
         description={
@@ -52,11 +53,12 @@ export const ActivityDetails = () => {
         }
         isLoading={isLoading}
         scrollable
-        contentMaxHeight={!isPlanning ? "52vh" : "47vh"}
-        contentMinHeight={!isPlanning ? "52vh" : "47vh"}
+        contentMaxHeight={!isPlanning ? "52vh" : "50vh"}
+        contentMinHeight={!isPlanning ? "52vh" : "50vh"}
         footer={
           isPlanning && (
             <MarkReviewFooter
+              is_reviewed={is_reviewed}
               openMarkModal={openMarkModal}
               setOpenMarkModal={setOpenMarkModal}
             />
@@ -140,7 +142,12 @@ export const ActivityDetails = () => {
                 fontWeight={titleStyles.fontWeight}
               >
                 Resources for this activity
-                <Link gap={0.5} fontSize={12} onClick={setOpenResourcesModal}>
+                <Link
+                  gap={0.5}
+                  fontSize={12}
+                  onClick={setOpenResourcesModal}
+                  fontWeight={600}
+                >
                   View resources <ExternalLink size={14} />
                 </Link>
               </Typography>
@@ -203,22 +210,6 @@ export const ActivityDetails = () => {
           </Grid>
         </Grid>
       </ContainerComponent>
-
-      {/* VIEW RESOURCES */}
-      {/* <ModalComponent
-        isOpen={openResourcesModal}
-        handleClose={() => setOpenResourcesModal(false)}
-        title={`Resources for activity`}
-        description={
-          "This is a subheading. It should add more context to the interaction."
-        }
-        content={
-          <ScrollableTableComponent
-            columns={RESOURCES_HEADER}
-            data={resources}
-          />
-        }
-      /> */}
 
       <DrawerComponent
         open={openResourcesModal}

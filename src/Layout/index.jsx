@@ -17,7 +17,10 @@ function Layout() {
 
   const { alertDialogState } = useModalHook();
   const { isOpen: snackbarIsOpen } = useSnackbarHook();
-  const { user } = useAuth();
+  const {
+    user,
+    user: { profile_url },
+  } = useAuth();
 
   const { isCollapsed, toggleSidebar, setCollapsed } = useSidebarHook();
   const isSmallScreen = useMediaQuery("(max-width:1500px)");
@@ -33,11 +36,21 @@ function Layout() {
           <Stack direction={"row"} spacing={1} alignItems={"center"}>
             <Typography fontWeight={"bold"}> {user?.name}</Typography>
             <NotificationMain />
-            <Avatar
-              size="lg"
-              src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSphOILfuKHyTdMirb7TWHIfW_bB9-TKYLqEw&s"
-              sx={{ border: 3, borderColor: "primary.500" }}
-            />
+            {profile_url ? (
+              <Avatar
+                size="lg"
+                src={profile_url}
+                sx={{ border: 3, borderColor: "primary.500", bgColor: "white" }}
+              />
+            ) : (
+              <Avatar
+                sx={{ border: 5, borderColor: "primary.200", bgColor: "white" }}
+                variant="solid"
+                color="primary"
+              >
+                {user?.name[0]}
+              </Avatar>
+            )}
           </Stack>
         </Box>
         {/* Sidebar */}

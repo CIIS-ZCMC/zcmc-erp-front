@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { useAuth, useUserTypes } from "../../../../Store/AuthStore";
 import { approvalActions } from "../../../../Data/constants";
 import { handleChangeInput } from "../../../../Utils/HandleInput";
@@ -10,7 +10,7 @@ import {
   useApprovalActions,
   useApprovalTimeline,
 } from "../../../../Hooks/AOP/AOPApprovalHook";
-import { useAOPApplication } from "../../../../Hooks/AOP/AOPApplicationsHook";
+// import { useAOPApplication } from "../../../../Hooks/AOP/AOPApplicationsHook";
 import { localStorageGetter } from "../../../../Utils/LocalStorage";
 import useModalHook from "../../../../Hooks/ModalHook";
 import ButtonComponent from "../../../../Components/Common/ButtonComponent";
@@ -21,23 +21,23 @@ import { APPROVAL_TIMELINE } from "../../../../Data/TestData";
 
 const ProcessAOPContent = () => {
   // HOOKS
-  const { isDivisionHead, isPlanning } = useUserTypes();
-  const aopApplication = useAOPApplication();
-  const { status: applicationStatus } = aopApplication || {};
+  const { isDivisionHead, isPlanning, isMCC } = useUserTypes();
+  // const aopApplication = useAOPApplication();
+  // const { status: applicationStatus } = aopApplication || {};
   const { processAOP } = useApprovalActions();
   const { setAlertDialog, closeAlertDialog } = useModalHook();
   const approvalTimeline = useApprovalTimeline();
   const { user } = useAuth();
 
-  const timeline = TEST_MODE ? APPROVAL_TIMELINE : approvalTimeline;
+  const timeline = approvalTimeline?.some(
+    (item) => item.approver_user_id === user?.id && item.status === "approved"
+  );
+
+  console.log(timeline);
 
   // STATE
   const [processData, setProcessData] = useState({ action: "approved" });
-  const [disabledProcessRequest, setDisabledProcessRequest] = useState(
-    timeline?.some(
-      (item) => item.approver_user_id === user?.id && item.status === "approved"
-    )
-  );
+  const [disabledProcessRequest, setDisabledProcessRequest] = useState(true);
 
   const AOP_APPLICATION_ID = localStorageGetter("aop_application_id");
   const [openProcessModal, setOpenProcessModal] = useState(false);
@@ -49,7 +49,19 @@ const ProcessAOPContent = () => {
   };
 
   const confirmButtonDisabled =
-    !processData?.pin || !processData?.action || processData?.pin?.length !== 6;
+    !processData?.pin ||
+    !processData?.action ||
+    processData?.pin?.length !== 6 ||
+    processData?.remarks === "" ||
+    processData?.remarks === null;
+
+  const getNextOffice = () => {
+    if (isPlanning) {
+      return "Division Head";
+    } else if (isDivisionHead) {
+      return "MCC";
+    }
+  };
 
   // PROCESS AOP
   const handleProcessAOP = () => {
@@ -57,7 +69,7 @@ const ProcessAOPContent = () => {
     const form = {
       aop_application_id: AOP_APPLICATION_ID,
       status: processData?.action,
-      remarks: processData?.remarks,
+      remarks: processData?.remarks ?? null,
       authorization_pin: processData?.pin,
     };
 
@@ -70,9 +82,15 @@ const ProcessAOPContent = () => {
         data = {
           status: 200,
           isGlobal: false,
-          title: "AOP request for F.Y. “2026” successfully approved.",
-          description:
-            "Everyone can now see the changes you’ve made. The request is now ready for processing of the next approving body (Division Chief).",
+          title:
+            processData.action === "returned"
+              ? "The AOP request has been returned for revision"
+              : "The AOP request successfully approved",
+          description: isMCC
+            ? `The AOP request has been successfully ${processData.action}. All parties involved will be notified of this update.`
+            : processData.action === "returned"
+            ? `The request has been returned to the requesting party for necessary revisions. They will be notified of your remarks and required changes.`
+            : `Everyone can now see the changes you’ve made. The request is now ready for processing of the next approving body (${getNextOffice()}).`,
         };
       } else {
         data = {
@@ -95,20 +113,22 @@ const ProcessAOPContent = () => {
     closeAlertDialog();
   };
 
+  useEffect(() => {
+    setDisabledProcessRequest(timeline);
+  }, [timeline]);
   return (
     <Fragment>
       <ButtonComponent
         label={"Process request"}
-        disabled={disabledProcessRequest}
+        disabled={disabledProcessRequest ?? true}
         onClick={handleProcessRequest}
-      />
-
+      />{" "}
       {/* MODAL */}
       <ModalComponent
         hasActionButtons
         isOpen={openProcessModal}
         handleClose={() => setOpenProcessModal(false)}
-        title={`Process request `}
+        title={`Process request`}
         description={
           "Select a request status and reasons (if returned) to continue. You may add remarks if necessary." //  Change if user is not planning officer
         }
@@ -119,7 +139,7 @@ const ProcessAOPContent = () => {
         rightButtonDisabled={confirmButtonDisabled}
         maxWidth={500}
         content={
-          <Stack gap={0}>
+          <Stack gap={isDivisionHead && !isMCC && 1}>
             <Stack py={isPlanning ? 2 : 1}>
               {isPlanning && (
                 <Box mb={2}>
@@ -142,10 +162,11 @@ const ProcessAOPContent = () => {
               )}
 
               {/* IF OMCC, AUTH PIN */}
-              {isDivisionHead ? (
+              {isDivisionHead && !isMCC ? (
                 <TextareaComponent
                   minRows={3}
                   label={"Remarks"}
+                  isRequired
                   setValue={(e) =>
                     handleChangeInput("remarks", setProcessData, e.target.value)
                   }
@@ -156,7 +177,7 @@ const ProcessAOPContent = () => {
               ) : null}
             </Stack>
 
-            {isDivisionHead && <Divider />}
+            {isDivisionHead && !isMCC && <Divider />}
             <InputComponent
               type="password"
               label="Authorization pin"
@@ -171,7 +192,6 @@ const ProcessAOPContent = () => {
           </Stack>
         }
       />
-
       <AlertDialogComponent leftButtonAction={handleCloseConfirmation} />
     </Fragment>
   );

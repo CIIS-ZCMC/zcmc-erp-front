@@ -4,11 +4,13 @@ import useSocketStore from "./Socket/SocketHook";
 import { useAuth } from "../Store/AuthStore";
 import { useEffect } from "react";
 import { read } from "../Services/RequestMethods";
+import { NOTIFICATIONS } from "../Data/TestData";
 
 // Zustand store
 const useNotificationsHook = create((set) => ({
-  // notifications: NOTIFICATIONS ?? [],
-  notifications: [],
+  notifications: NOTIFICATIONS ?? [],
+
+  // notifications: [],
 
   // Store actions
   addNotification: (newNotification) =>
@@ -27,11 +29,52 @@ const useNotificationsHook = create((set) => ({
     });
     // Placeholder for API fetch logic
   },
+
+  actions: {
+    seen: (id, callback) => {
+      read({
+        url: `notifications/seen/${id}`,
+        failed: callback,
+        success: (res) => {
+          callback(200, res.data.data);
+
+          set((state) => ({
+            notifications: state.notifications.map((notif) =>
+              notif.id === id ? { ...notif, seen: 1 } : notif
+            ),
+          }));
+        },
+      });
+      // Placeholder for API fetch logic
+    },
+
+    markAllAsRead: (employeeProfileId, callback) => {
+      read({
+        url: `notifications/all-seen/${employeeProfileId}`,
+        failed: callback,
+        success: (res) => {
+          callback(200, res.data.data);
+
+          set((state) => ({
+            notifications: state.notifications.map((notif) => ({
+              ...notif,
+              seen: 1,
+            })),
+          }));
+        },
+      });
+      // Placeholder for API fetch logic
+    },
+  },
 }));
 
 // Hook to read notifications
 export const useNotifications = () =>
   useNotificationsHook((state) => state.notifications);
+
+// Hook to read notifications with a callback
+export const useNotificationActions = () =>
+  useNotificationsHook((state) => state.actions);
 
 // Hook to register for socket events
 export const useNotificationEvents = () => {
@@ -62,4 +105,12 @@ export const useNotificationEvents = () => {
       socket.off(`erp-notification-${user.id}`);
     };
   }, [socket]);
+};
+
+export const useUnseenCount = () => {
+  const notifications = useNotificationsHook((state) => state.notifications);
+
+  const unseenCount = notifications.filter((notif) => notif.seen === 0).length;
+
+  return unseenCount;
 };

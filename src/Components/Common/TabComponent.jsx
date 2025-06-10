@@ -6,6 +6,7 @@ import TabList from "@mui/joy/TabList";
 import Tab, { tabClasses } from "@mui/joy/Tab";
 import TabPanel from "@mui/joy/TabPanel";
 import { Badge } from "@mui/joy";
+import { useNotifications } from "../../Hooks/NotificationsHook";
 // import useNotificationHook from "../../Hooks/NotificationHook";
 
 export default function TabComponent({
@@ -15,7 +16,11 @@ export default function TabComponent({
   setIndex,
   notificationView = false,
 }) {
-  const unreadCount = 12;
+  const notifications = useNotifications();
+
+  const unreadCount = notifications?.filter(
+    (element) => element.seen === 0
+  )?.length;
 
   return (
     <Box
@@ -57,15 +62,19 @@ export default function TabComponent({
               <Tab value={0}>View all</Tab>
               <Tab value={1}>Read </Tab>
               <Tab value={2}>
-                Unread{" "}
-                <Chip
-                  size="sm"
-                  color="primary"
-                  variant="solid"
-                  sx={{ fontSize: 10 }}
-                >
-                  {unreadCount}
-                </Chip>
+                Unread
+                {unreadCount?.length > 0 ? (
+                  <Chip
+                    size="sm"
+                    color="primary"
+                    variant="solid"
+                    sx={{ fontSize: 10 }}
+                  >
+                    {unreadCount}
+                  </Chip>
+                ) : (
+                  ""
+                )}
               </Tab>
             </>
           ) : (

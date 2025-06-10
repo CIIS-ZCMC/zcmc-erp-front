@@ -168,21 +168,18 @@ export const sidebarRoutes = [
     name: "Planning and Operations",
     icon: <MdLibraryBooks {...iconStyles} />,
     permissions: [
-      "ERP-AOP-MAN:approve",
-      "ERP-AOP-MAN:view-all",
-      "ERP-PPMP-MAN:approve",
-      "ERP-PPMP-MAN:view-all",
-      "ERP-PPMP-MAN:delete",
-      "ERP-OBJ-MAN:write",
-      "ERP-OBJ-MAN:view",
-      "ERP-OBJ-MAN:update",
-      "ERP-OBJ-MAN:view-all",
+      // "ERP-AOP-MAN:approve",
+      // "ERP-PPMP-MAN:approve",
+      // "ERP-OBJ-MAN:write",
+      // "ERP-OBJ-MAN:view",
+      // "ERP-OBJ-MAN:update",
+      // "ERP-OBJ-MAN:view-all",
     ],
     children: [
       {
         path: "/aop-approval",
         name: "AOP Management",
-        childPermissions: ["ERP-AOP-MAN:approve", "ERP-AOP-MAN:view-all"],
+        childPermissions: ["ERP-AOP-MAN:approve"],
         children: [
           { index: true, element: <AOPApproval /> },
           {
@@ -194,7 +191,7 @@ export const sidebarRoutes = [
       {
         path: "/ppmp-approval",
         name: "PPMP Management",
-        childPermissions: ["ERP-PPMP-MAN:approve", "ERP-PPMP-MAN:view-all"],
+        childPermissions: ["ERP-PPMP-MAN:approve"],
         children: [
           { index: true, element: <PPMPApproval /> },
           {

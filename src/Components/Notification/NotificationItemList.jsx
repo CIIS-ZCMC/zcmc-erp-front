@@ -1,5 +1,4 @@
 import { Avatar, Badge, Box, Chip, Link, Stack, Typography } from "@mui/joy";
-import { getModeColorScheme } from "../../Utils/ColorScheme";
 import PropTypes from "prop-types";
 import moment from "moment";
 import { ExternalLink } from "lucide-react";
@@ -10,9 +9,9 @@ function NotificationItemList({
   unread = true,
   title,
   description,
-  profile_url,
   date,
   onClick,
+  module_path,
 }) {
   return (
     <Stack
@@ -31,7 +30,7 @@ function NotificationItemList({
       onClick={onClick}
     >
       <Box>
-        <Avatar src={profile_url} />
+        <Avatar />
       </Box>
       <Stack gap={1} width="100%">
         <Stack gap={0.1}>
@@ -56,13 +55,14 @@ function NotificationItemList({
         </Stack>
         <Stack direction={"row"} justifyContent={"space-between"}>
           <Typography fontWeight={400} textColor={"neutral.500"} fontSize={11}>
-            {moment(date).fromNow()} &#9679; {moment(date).format("H:mm a")}
+            {moment(date).fromNow()} • {moment(date).format("h:mm a")}
           </Typography>
           <Link
             fontSize={12}
             gap={0.67}
             textColor={"primary.500"}
             fontWeight={500}
+            // href={module_path}
           >
             Go to request <ExternalLink size={12} />
           </Link>

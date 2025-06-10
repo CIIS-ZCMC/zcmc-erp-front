@@ -1,4 +1,4 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { PPMP_CONSTANTS } from "../../../Data/constants";
 import ScrollableTableComponent from "../../../Components/Common/Table/ScrollableTableComponent";
 import { PPMP_VIEW_HEADER, ppmpHeaders } from "../../../Data/Columns";
@@ -19,14 +19,19 @@ function ManagePPMP() {
   // HOOKS
   const { setAlertDialog } = useModalHook();
   const { ppmpApplicationItems, ppmpApplication } = usePPMP();
-  const { receivePPMP } = usePPMPApplicationActions();
+  const { receivePPMP, getPPMPApplicationByID } = usePPMPApplicationActions();
   const location = useLocation();
   const PPMP_ID = location?.pathname?.split("/")[3];
 
   // STATES
   const [receiveModalOpen, setReceiveModalOpen] = useState(false);
-  const [index, setIndex] = React.useState("all");
   const [authPin, setAuthPin] = useState(null);
+  const [isBtnLoading, setIsBtnLoading] = useState(false);
+  const [disabledReceivePPMP, setDisabledReceivePPMP] = useState(true);
+
+  useEffect(() => {
+    setDisabledReceivePPMP(ppmpApplication?.status === "Received" || false);
+  }, [ppmpApplication?.status]);
 
   // MODAL
   const handleOpenModal = () => setReceiveModalOpen(true);
@@ -34,16 +39,18 @@ function ManagePPMP() {
 
   //  FUNCTIONS
   const handleReceive = () => {
+    setIsBtnLoading(true);
     let data = {};
     receivePPMP(
       { authorization_pin: authPin, ppmp_application_id: PPMP_ID },
       (status, message) => {
+        setIsBtnLoading(false);
         if (status == 200) {
           data = {
             status: status,
             title: message ? message : "PPMP successfully received.",
             description:
-              "This request is now completed and closed for further pr`ocessing. We’ve also notified the requester (HRMO) about this change.",
+              "This request is now completed and closed for further processing. We’ve also notified the requester about this change.",
           };
           setReceiveModalOpen(false);
         } else {
@@ -64,6 +71,11 @@ function ManagePPMP() {
     // Navigate back to the previous page
     window.history.back();
   };
+
+  useEffect(() => {
+    // Fetch the PPMP application items if not already loaded
+    getPPMPApplicationByID(PPMP_ID, () => {});
+  }, []);
 
   return (
     <Fragment>
@@ -97,7 +109,7 @@ function ManagePPMP() {
                 color="primary"
                 label={"Receive PPMP"}
                 onClick={handleOpenModal}
-                disabled={ppmpApplication?.status === "Received"}
+                disabled={disabledReceivePPMP}
               />
             </Stack>
           }
@@ -116,6 +128,8 @@ function ManagePPMP() {
         hasActionButtons
         leftButtonAction={handleCloseModal}
         rightButtonAction={handleReceive}
+        isLoading={isBtnLoading}
+        rightButtonDisabled={!authPin || authPin.length < 6 || authPin === ""}
         title={
           <Typography>
             Receive the request{" "}
@@ -135,7 +149,7 @@ function ManagePPMP() {
               type="password"
               label="Authorization pin"
               helperText={
-                "Confirm you action by typing-in your authorization PIN."
+                "Confirm you action by entering your 6-digit authorization PIN."
               }
               setValue={setAuthPin}
               value={authPin}
