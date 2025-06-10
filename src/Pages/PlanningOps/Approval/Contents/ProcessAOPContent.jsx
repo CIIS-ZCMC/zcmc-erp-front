@@ -22,18 +22,18 @@ import { APPROVAL_TIMELINE } from "../../../../Data/TestData";
 const ProcessAOPContent = () => {
   // HOOKS
   const { isDivisionHead, isPlanning, isMCC } = useUserTypes();
-  // const aopApplication = useAOPApplication();
-  // const { status: applicationStatus } = aopApplication || {};
   const { processAOP } = useApprovalActions();
-  const { setAlertDialog, closeAlertDialog } = useModalHook();
+  const {
+    setAlertDialog,
+    closeAlertDialog,
+    alertDialogState: { status },
+  } = useModalHook();
   const approvalTimeline = useApprovalTimeline();
   const { user } = useAuth();
 
   const timeline = approvalTimeline?.some(
     (item) => item.approver_user_id === user?.id && item.status === "approved"
   );
-
-  console.log(timeline);
 
   // STATE
   const [processData, setProcessData] = useState({ action: "approved" });
@@ -128,7 +128,7 @@ const ProcessAOPContent = () => {
         hasActionButtons
         isOpen={openProcessModal}
         handleClose={() => setOpenProcessModal(false)}
-        title={`Process request`}
+        title={`Approve request`}
         description={
           "Select a request status and reasons (if returned) to continue. You may add remarks if necessary." //  Change if user is not planning officer
         }
@@ -192,7 +192,11 @@ const ProcessAOPContent = () => {
           </Stack>
         }
       />
-      <AlertDialogComponent leftButtonAction={handleCloseConfirmation} />
+      <AlertDialogComponent
+        leftButtonAction={
+          status === 200 ? handleCloseConfirmation : closeAlertDialog
+        }
+      />
     </Fragment>
   );
 };

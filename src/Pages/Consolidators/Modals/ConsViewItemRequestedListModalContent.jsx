@@ -261,7 +261,6 @@ const ConsViewItemRequestedListModalContent = () => {
           Make changes to the basic identification of the item to keep it up to
           date.
         </Typography>
-
         <Divider sx={{ marginTop: "20px" }} />
 
         <Box
@@ -709,10 +708,12 @@ const ConsViewItemRequestedListModalContent = () => {
   };
 
   const Step3 = () => {
+    const { getMyItemRequestLists } = useUserRequestItemHook();
     const [status, setStatus] = React.useState("approve");
     const [remarks, setRemarks] = React.useState("");
     const [pin, setPin] = React.useState("");
     const { inputs, setInputs } = useLibItemHook();
+    const { approveItemRequest } = useListUserRequestItemHook();
     const formRef = useRef();
     const handleNext = (step) => {
       const form = formRef.current;
@@ -723,12 +724,9 @@ const ConsViewItemRequestedListModalContent = () => {
         form.reportValidity();
       }
     };
-    useEffect(() => {
-      setInputs("status", status || "approved");
-    }, [status]);
+
     return (
       <Fragment>
-        {JSON.stringify(inputs)}
         <Typography level="h4" fontWeight="lg" mb={1}>
           Process request{" "}
           <Typography level="h4" component="span" color="warning">
@@ -845,10 +843,19 @@ const ConsViewItemRequestedListModalContent = () => {
             // loading={loader}
             loadingPosition="end"
             onClick={() => {
-              handleNext(2);
+              approveItemRequest(
+                {
+                  status: status == "approve" ? "approved" : "returned",
+                },
+                setAlertDialog,
+                () => {
+                  setOpenModal(false, false, false);
+                },
+                getMyItemRequestLists
+              );
             }}
           >
-            "Confirm and Save"
+            Confirm and Save
           </Button>
         </Stack>
       </Fragment>

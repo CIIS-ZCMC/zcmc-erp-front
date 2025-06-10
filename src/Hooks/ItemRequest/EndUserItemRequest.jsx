@@ -84,15 +84,6 @@ const useUserRequestItemHook = create((set, get) => ({
                 </Typography>
                 successfully submitted.
                 {/* {data?.data?.name}{" "} */}
-                <Typography
-                  sx={{ color: "custom.darkgreen" }}
-                  component="span"
-                  color="primary"
-                >
-                  #{data?.data?.id}
-                </Typography>{" "}
-                You can use it for requesting AOP and PPMP documents. Everyone
-                can see and use the new item
               </Typography>
             </>
           ),
