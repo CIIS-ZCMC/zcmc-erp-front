@@ -7,7 +7,6 @@ import ButtonComponent from "../../Components/Common/ButtonComponent";
 import ContainerComponent from "../../Components/Common/ContainerComponent";
 import ModalComponent from "../../Components/Common/Dialog/ModalComponent";
 
-
 //layouts
 import ItemSummaryHeader from "../../Layout/Resources/ItemSummaryHeader";
 import ItemList from "../../Layout/Resources/ItemList";
@@ -53,6 +52,7 @@ const Items = () => {
   const objectiveRowId = location.state.objectiveRowId;
   const cost = location.state?.cost;
   const activityId = location.state?.parentId;
+
   // const objectiveId = location.state.objectiveId;
 
   // useEffect(() => {
@@ -64,8 +64,7 @@ const Items = () => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [itemTotal, setItemTotal] = useState(null);
   const [quantity, setQuantity] = useState(1);
-
-
+  const [isLoading, setIsLoading] = useState(false)
 
   const filteredCart =
     cart?.filter((item) => item.parentId === activityId) || [];
@@ -85,18 +84,20 @@ const Items = () => {
   }, [totalPrice])
 
   useEffect(() => {
+    setIsLoading(true)
     getItems((status, message, data) => {
+      setIsLoading(false)
       if (status !== 200) {
         console.error("Failed to fetch items:", message);
       }
     });
   }, []);
 
-  useEffect(() => {
-    if (items.length) {
-      setDisplayedItems(items);
-    }
-  }, [items]);
+  // useEffect(() => {
+  //   if (items.length) {
+  //     setDisplayedItems(items);
+  //   }
+  // }, [items]);
 
   // useEffect(() => {
   //   console.log(items)
@@ -191,9 +192,11 @@ const Items = () => {
           {/* Left: Scrollable Item Cards */}
           <Grid item={"true"} xs={12} sm={2} md={8.1}>
             <ItemList
+              isLoading={isLoading}
               quantity={quantity}
               activityId={activityId}
               displayedItems={displayedItems}
+              setDisplayedItems={setDisplayedItems}
               handleOpenItemDialog={handleOpenItemDialog}
             />
           </Grid>
@@ -201,6 +204,7 @@ const Items = () => {
           {/* Right: Cart */}
           <Grid item={"true"} xs={12} sm={4} md={3.7} sx={{ ...cartStyles }}>
             <ItemCart
+              isLoading={isLoading}
               totalQty={totalQty}
               totalPrice={totalPrice}
               filteredCart={filteredCart}
