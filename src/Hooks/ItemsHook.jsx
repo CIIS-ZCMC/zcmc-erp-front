@@ -66,7 +66,7 @@ const useItemsHook = create((set) => ({
 
   getVariants: async (callBack) => {
     read({
-      url: `variant`,
+      url: `terminologies`,
       params: { mode: "selection" },
       failed: callBack,
       success: (res) => {
