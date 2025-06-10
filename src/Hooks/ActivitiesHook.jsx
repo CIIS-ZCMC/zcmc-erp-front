@@ -73,6 +73,22 @@ const useActivitiesHook = create(
                     initialRender: false,
                 }));
             },
+            
+            updateCost: (parentId, cost) => {
+                console.log(parentId);
+                set((state) => ({
+                    activities: state.activities.map((activity) => {
+                        if (activity.id === parentId) {
+                            return {
+                                ...activity,
+                                cost: cost,
+                            };
+                        }
+                        return activity;
+                    }),
+                    initialRender: false,
+                }));
+            },
 
             setInitialRender: (value) => set({ initialRender: value }),
 
