@@ -170,7 +170,6 @@ function AddItems(props) {
     // 3. Save to hook and localStorage
 
     localStorage.setItem(localKey, JSON.stringify(mergedItemsArray));
-    setTableData(mergedItemsArray);
 
     setCartMeta({ selectedActivity: null, expense_class_id: null });
     clearCart();

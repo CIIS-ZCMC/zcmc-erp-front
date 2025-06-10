@@ -240,9 +240,12 @@ function PPMPItems(props) {
         status === 201
           ? {
               status: "success",
-              title: "PPMP for F.Y. 2026 successfully submitted for approval.",
-              description:
-                "Your PPMP request has been sent to the next approving body and they have been notified for approvals.",
+              title: is_draft
+                ? "Saved as draft"
+                : "PPMP for F.Y. 2026 successfully submitted for approval.",
+              description: is_draft
+                ? "Your PPMP request has been save as draft. You can continue editing it later or submit it for approval."
+                : "Your PPMP request has been sent to the next approving body and they have been notified for approvals.",
             }
           : {
               status: "error",
@@ -503,6 +506,7 @@ function PPMPItems(props) {
 
   return (
     <Fragment>
+      {console.log("editor", is_draft)}
       <ContainerComponent
         title={"List of items"}
         description={

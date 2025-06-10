@@ -70,7 +70,7 @@ const ItemCardComponent = ({
 
         <CardContent sx={{ justifyContent: "flex-end", padding: 1 }}>
           <ChipComponent
-            label={item?.variant?.name}
+            label={item?.terminology?.name}
             size="sm"
             color={"primary"}
             startDecorator={<CircleSmall size={12} />}

@@ -45,9 +45,9 @@ const ItemsCart = ({
             display={"flex"}
             alignItems={"center"}
           >
-            {item?.variant ? (
+            {item?.terminology ? (
               <>
-                {item?.variant?.name} <LucideDot />
+                {item?.terminology} <LucideDot />
               </>
             ) : (
               ""
@@ -57,7 +57,6 @@ const ItemsCart = ({
           <Typography fontSize={12} fontWeight={600} textColor={"primary.500"}>
             &#8369; {item?.estimated_budget.toLocaleString()}
           </Typography>
-
           <Box
             display={"flex"}
             sx={{
