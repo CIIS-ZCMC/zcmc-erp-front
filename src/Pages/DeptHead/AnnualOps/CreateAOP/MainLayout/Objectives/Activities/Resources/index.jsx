@@ -36,6 +36,8 @@ const Resources = () => {
     });
   }, []);
 
+  console.log(location)
+
   useEffect(() => {
     getPurchaseType((status, message) => {
       // console.log(status)
@@ -48,8 +50,8 @@ const Resources = () => {
   }, []);
 
   // useEffect(() => {
-  //   console.log(resources)
-  // }, [resources])
+  //   console.log(resources.filter((item) => item.parentId === parentId));
+  // }, [resources]);
 
   return (
     <Fragment>
@@ -59,7 +61,7 @@ const Resources = () => {
         actions={
           <Stack>
             <ButtonComponent
-              // onClick={() => addResource(parentId)}
+              onClick={() => navigate(`/aop-create/activities/${location.state.objectiveRowId}/items/${location.state.activityRowId}`, {state: {...location.state}})}
               label={"Add Resource"}
               endDecorator={<Plus size={16} />}
             />
@@ -72,7 +74,7 @@ const Resources = () => {
           haverRow
           tableRow={
             <TableRow
-              rows={resources}
+              rows={resources.filter((item) => item.parentId === parentId)}
               parentId={parentId}
               resources={items}
               purchase_types={purchase_types}

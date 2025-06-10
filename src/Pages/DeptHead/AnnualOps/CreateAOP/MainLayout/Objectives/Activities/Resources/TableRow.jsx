@@ -25,6 +25,7 @@ const TableRow = ({
     updateResourceField,
   } = useResourceHook();
 
+  console.log(rows)
   const { updateCost } = useActivitiesHook();
 
   const [localResources, setLocalResources] = useState(rows);
@@ -32,6 +33,12 @@ const TableRow = ({
   const [localTotalCost, setLocalTotalCost] = useState(0)
 
   const handleOnRowClick = (id) => setEditRowId(id);
+
+  function onRemove(id) {
+    setLocalResources(
+      localResources.filter((item) => item.id !== id)
+    )
+  }
 
   function onChangeFieldValue(id, key, value) {
     setLocalResources((prev) => [
@@ -58,10 +65,6 @@ const TableRow = ({
     ]);
   }
 
-  // useEffect(() => {
-  //   console.log(localResources)
-  // }, [localResources])
-
   const expenseClassOptions = [
     { id: 1, label: 'MOOE', value: 'MOOE' },
     { id: 2, label: 'CO', value: 'CO' }
@@ -75,7 +78,7 @@ const TableRow = ({
 
   return (
     <Fragment>
-      {localResources
+      {rows
         ?.filter((value) => value.parentId === parentId)
         .map(
           (
@@ -89,10 +92,6 @@ const TableRow = ({
             },
             index
           ) => {
-            const isEditing = editRowId === id;
-            const [selectPurchaseType, setSelectPurchaseType] = useState(purchaseTypeId ?? null);
-            const [selectedExpenseClass, setSelectedExpenseClass] = useState(expenseClass ?? "")
-
             return (
               <tr key={id}>
                 <td>
@@ -104,7 +103,7 @@ const TableRow = ({
                 </td>
 
                 <td onClick={() => handleOnRowClick(id)}>
-                  {isEditing ? (
+                  {editRowId === id ? (
                     <Input
                       value={quantity ?? 0}
                       size="sm"
@@ -131,15 +130,15 @@ const TableRow = ({
                 </td>
 
                 <td onClick={() => handleOnRowClick(id)}>
-                  {isEditing ? (
+                  {editRowId === id ? (
                     <>
                       <AutocompleteComponent
                         placeholder="Select Purchase"
-                        value={selectPurchaseType}
+                        value={purchaseTypeId}
                         setValue={(val) => {
                           // console.log(val)
-                          setSelectPurchaseType(val);
-                          updateResourceField(id, "purchaseTypeId", val);
+                          // setSelectPurchaseType(val);
+                          updateResourceField(id, "purchaseTypeId", val?.id);
                         }}
                         options={purchase_types.map((item) => {
                           // console.log(item)
@@ -149,21 +148,20 @@ const TableRow = ({
                     </>
                   ) : (
                     <Typography>
-                      {/* {console.info(selectPurchaseType.label)} */}
-                      {selectPurchaseType?.label || "-"}
+                      {purchase_types[purchaseTypeId]?.code || "-"}
                     </Typography>
                   )}
                 </td>
 
                 <td onClick={() => handleOnRowClick(id)}>
-                  {isEditing ? (
+                  {editRowId === id ? (
                     <>
                       <AutocompleteComponent
                         placeholder="Select Expense Class"
-                        value={selectedExpenseClass}
+                        value={expenseClass}
                         setValue={(val) => {
                           console.log(val)
-                          setSelectedExpenseClass(val?.value);
+                          // setSelectedExpenseClass(val?.value);
                           updateResourceField(id, "expenseClass", val?.value);
                         }}
                         options={expenseClassOptions}
@@ -172,15 +170,17 @@ const TableRow = ({
 
                   ) : (
                     <Typography>
-                      {console.info(selectedExpenseClass)}
-                      {selectedExpenseClass || "-"}
+                      {expenseClass || "-"}
                     </Typography>
                   )}
                 </td>
 
                 <td>
                   <IconButtonComponent
-                    onClick={() => removeItemResource(id)}
+                    onClick={() => {
+                      removeItemResource(id); 
+                      onRemove(id)
+                    }}
                     icon={<Trash size={14} />}
                     size={"sm"}
                     // color={'danger'}
@@ -190,7 +190,7 @@ const TableRow = ({
               </tr>
             );
           }
-        )}
+        ) ?? []}
     </Fragment>
   );
 };

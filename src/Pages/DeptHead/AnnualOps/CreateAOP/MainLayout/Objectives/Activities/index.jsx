@@ -32,6 +32,7 @@ const Activities = () => {
   const { objectiveId } = params; //objective Id lang for url path pero yung value is from row
   const currentPath = location.pathname;
   const childPath = currentPath === `/aop-create/activities/${objectiveId}`;
+  const [loading, setLoading] = useState(true);
 
   const { current_parent_id, setCurrentObjective, current_row_id, setCurrentRowId, clearParentId } = useObjectivesHook();
   const { activities, addActivity, updateActivityField, removeActivity } = useActivitiesHook();
@@ -40,8 +41,9 @@ const Activities = () => {
     const hasActivitiesForParent = activities.some(
       (act) => act.parentId === parentId
     );
-    if (!hasActivitiesForParent && parentId) {
+    if (!hasActivitiesForParent && parentId && loading) {
       addActivity(parentId ?? current_parent_id);
+      setLoading(false);
     }
   }, [activities, parentId]);
 
@@ -72,7 +74,7 @@ const Activities = () => {
 
   const handleNavigateBack = () => {
     clearParentId()
-    navigate(`/aop-create`)
+    navigate(`/aop-create`, {state: {...location.state}})
   }
 
   return (

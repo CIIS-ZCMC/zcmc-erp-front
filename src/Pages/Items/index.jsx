@@ -17,6 +17,7 @@ import useItemsHook from "../../Hooks/ItemsHook";
 import useResourceHook from "../../Hooks/ResourceHook";
 
 import { AOP_CONSTANTS } from "../../Data/constants";
+import useActivitiesHook from "../../Hooks/ActivitiesHook";
 
 const cartStyles = {
   width: 350,
@@ -45,7 +46,7 @@ const Items = () => {
   } = useResourceHook();
 
   const { setTotalCost } = useResourceHook();
-
+  const { updateCost } = useActivitiesHook();
   const [displayedItems, setDisplayedItems] = useState([]);
 
   const rowNumber = location.state?.activityRowId;
@@ -124,6 +125,7 @@ const Items = () => {
   };
 
   const handleSaveResources = () => {
+    updateCost(activityId, totalPrice);
     saveItems(activityId, totalPrice, itemTotal);
 
     //make a condition here if id of aop is exisitng change the route to /aop-edit/id/activities/id/resources/rowNumber

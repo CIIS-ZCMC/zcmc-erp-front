@@ -1,7 +1,7 @@
 import { useEffect, Fragment } from "react";
 import { Typography, Stack, Link, Chip, Tooltip, Button } from "@mui/joy";
 import { Trash } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 import AutoCompleteComponent from '../../../../../../Components/Form/AutocompleteComponent'
 import IconButtonComponent from "../../../../../../Components/Common/IconButtonComponent";
@@ -17,9 +17,11 @@ const TableRow = ({
   setEditRowId,
   activitiesCount,
 }) => {
+  const location = useLocation();
   const navigate = useNavigate();
 
   const tableDataStyles = { cursor: 'pointer' }
+
 
   const { deleteObjective } = useObjectivesHook();
 
@@ -86,7 +88,6 @@ const TableRow = ({
                   )
                   :
                   (<>
-                    {console.info(objective)}
                     <Tooltip title={objective ? objective?.description : ''} variant="solid">
                       <Typography >
                         {objective?.code || "-"}
@@ -141,7 +142,7 @@ const TableRow = ({
                   >
                     <Link
                       component="button"
-                      onClick={() => navigate(`activities/${rowId}`, { state: { parentId: id, rowId: rowId } })}
+                      onClick={() => navigate(`activities/${rowId}`, { state: { parentId: id, rowId: rowId, objectId: id } })}
                       fontSize={14}
                     >
                       Manage Activities
