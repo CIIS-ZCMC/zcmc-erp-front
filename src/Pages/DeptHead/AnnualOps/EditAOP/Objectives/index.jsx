@@ -26,6 +26,7 @@ import TableRow from "./TableRow";
 
 import { AOP_CONSTANTS } from "../../../../../Data/constants";
 import { AOP_HEADER } from "../../../../../Data/Columns";
+import ConfirmationModalComponent from "../../../../../Components/Common/Dialog/ConfirmationModalComponent";
 
 const index = () => {
   const { getSingleAOP, updateAOP } = useAOPActions();
@@ -64,7 +65,7 @@ const index = () => {
   const { setAlertDialog, setConfirmationModal, closeConfirmation } =
     useModalHook();
 
-  const [mission, setMission] = useState();
+  const [mission, setMission] = useState("Mission sample");
   const [isDraft, setIsDnraft] = useState(false);
 
   const [authorizationPin, setAuthorizationPin] = useState("123456");
@@ -106,19 +107,27 @@ const index = () => {
 
   // formatted objectives
   const formattedObjectives = aopObjectives.application_objectives?.map(
-    ({ function_type, objective, success_indicator }, index) => ({
+    (
+      { function_type, objective, success_indicator, objective_uuid },
+      index
+    ) => ({
       id: uuid(),
       rowId: index + 1,
       functionType: function_type,
       objective: objective,
       successIndicator: success_indicator,
+      objectiveUuid: objective_uuid,
     })
   );
 
   // get flat activities
   const flatActivities =
-    aopObjectives.application_objectives?.flatMap((data) => data.activity) ||
-    [];
+    aopObjectives.application_objectives?.flatMap((data) =>
+      data.activity.map((activity) => ({
+        ...activity,
+        objectiveUuid: data.objective_uuid,
+      }))
+    ) || [];
 
   // formatted activities
   const formattedActivities = flatActivities.map(
@@ -131,11 +140,12 @@ const index = () => {
         start_month,
         end_month,
         target,
+        objectiveUuid,
       },
       index
     ) => ({
       id: activity_uuid ? activity_uuid : uuid(),
-      // parentId: objectiveId,
+      parentId: objectiveUuid,
       rowId: index + 1,
       name: name,
       isGadRelated: is_gad_related,
@@ -143,10 +153,10 @@ const index = () => {
       startMonth: start_month,
       endMonth: end_month,
       target: {
-        firstQuarter: target.first_quarter,
-        secondQuarter: target.second_quarter,
-        thirdQuarter: target.third_quarter,
-        fourthQuarter: target.fourth_quarter,
+        firstQuarter: target?.first_quarter,
+        secondQuarter: target?.second_quarter,
+        thirdQuarter: target?.third_quarter,
+        fourthQuarter: target?.fourth_quarter,
       },
     })
   );
@@ -187,7 +197,6 @@ const index = () => {
   }));
 
   useEffect(() => {
-    console.log("AOP OBJECTIVES FETCH FROM SERVER:", aopObjectives);
     setObjectives(formattedObjectives ? formattedObjectives : []);
     setActivities(formattedActivities ? formattedActivities : []);
     //add set cart
@@ -203,8 +212,9 @@ const index = () => {
 
   function buildAOP() {
     const objectivesData = objectives.map((item) => {
-      const activities = findActivitiesByObjectiveID(item.id);
-      const activitiesWithResourceAndResponsiblePeople = activities.map(
+      const activities_obj = findActivitiesByObjectiveID(item.objectiveUuid);
+
+      const activitiesWithResourceAndResponsiblePeople = activities_obj.map(
         (act) => {
           const {
             parentId,
@@ -256,7 +266,7 @@ const index = () => {
   const handleConfirmationModal = () => {
     setOpenConfirmDialog(true);
     const data = {
-      status: 200,
+      status: "warning",
       title:
         "Your AOP request is now ready for submission, would you like to get a preview first?",
       description:
@@ -265,38 +275,37 @@ const index = () => {
     setConfirmationModal(data);
   };
 
-  const handleDiscussedConfirmationModal = () => {
-    console.log("alert");
+  //   const handleDiscussedConfirmationModal = () => {
+  //     setOpenConfirmDiscussedDialog(true);
 
-    setOpenConfirmDiscussedDialog(true);
+  //     const data = {
+  //       status: "warning",
+  //       title: "Are you sure you want to resubmit this AOP request?",
+  //       //   description:
+  //       //     "We need to make sure that you already have a previous discussion and official go-signal for creating and submitting this request.",
+  //     };
 
-    const data = {
-      status: "warning",
-      title: "Have you discussed this AOP request with your Division Chief?",
-      description:
-        "We need to make sure that you already have a previous discussion and official go-signal for creating and submitting this request.",
-    };
-
-    setConfirmationModal(data);
-  };
+  //     setConfirmationModal(data);
+  //   };
 
   const proceed = () => {
     handleConfirmationModal();
     // closeConfirmation();
   };
 
-  const handleSubmit = (isDraft) => {
+  const handleSubmit = () => {
     const aopPayload = buildAOP();
 
     const payload = {
       mission: mission,
       has_discussed: true,
-      status: isDraft,
+      status: isDraft ? isDraft : "pending",
       authorization_pin: authorizationPin,
       application_objectives: aopPayload,
     };
 
-    console.log("submitting payload", payload);
+    // console.log("payload", payload);
+
     setTimeout(() => {
       updateAOP(payload, aop_id, (status, message) => {
         let data = {};
@@ -324,13 +333,13 @@ const index = () => {
               "Your AOP request has been sent to the next approving body and they have been notified.",
           };
 
-          // setOpenSubmitModal(false);
-          clearLocalStorage();
-          setMission("");
-          setAlertDialog(data);
+          //   setOpenSubmitModal(false);
+          //   clearLocalStorage();
+          //   setMission("");
+          //   setAlertDialog(data);
           window.location.href = "/aop";
           // window.location.reload(false);
-          closeConfirmation();
+          //   closeConfirmation();
           return;
         }
 
@@ -357,22 +366,33 @@ const index = () => {
     }
   };
 
+  const handleSaveMission = () => {
+    let data = {};
+
+    // alert("saving...");
+    data = {
+      status: 200,
+      title: "Mission created successfully!",
+      description: "",
+    };
+    setOpenSaveMissionModal(false);
+    setAlertDialog(data);
+
+    // Save to local storage
+    localStorage.setItem("mission", JSON.stringify(mission));
+  };
+
   return (
     <Fragment>
       <ContainerComponent
         title={AOP_CONSTANTS.MANAGE_OBJECTIVES_HEADER}
         description={AOP_CONSTANTS.MANAGE_OBJECTIVES_SUBHEADER}
         actions={
-          <Stack direction={"row"} gap={1} alignItems={"center"}>
+          <Stack>
             <ButtonComponent
               onClick={addObjective}
               label={"Add an Objective"}
               endDecorator={<Plus size={16} />}
-            />
-            <ButtonComponent
-              onClick={() => handleSubmit("draft")}
-              label={"Save as draft"}
-              variant={"outlined"}
             />
           </Stack>
         }
@@ -429,10 +449,10 @@ const index = () => {
           />
 
           <ButtonComponent
-            label={"Submit AOP"}
+            label={"Update AOP"}
             size={"md"}
             variant={"solid"}
-            onClick={() => handleSubmit("pending")}
+            onClick={proceed}
           />
         </Stack>
       </ContainerComponent>
@@ -447,14 +467,15 @@ const index = () => {
             <TextareaComponent
               label={"Mission"}
               placeholder={"Please insert mission content here"}
-              value={defaultMission}
-              onChange={(e) => setMission(e.target.value)}
+              value={mission}
+              setValue={setMission}
+              //   onChange={(e) => setMission(e.target.value)}
             />
           </>
         }
         hasActionButtons={true}
         rightButtonLabel={"Save"}
-        rightButtonAction={() => handleSaveMission()}
+        rightButtonAction={handleSaveMission}
       />
 
       {openConfirmDialog && (
@@ -471,23 +492,12 @@ const index = () => {
       {openConfirmDiscussedDialog && (
         <ConfirmationModalComponent
           leftButtonLabel={"Back"}
-          rightButtonAction={() => proceed(200)}
+          rightButtonAction={handleSubmit}
           rightButtonLabel="Proceed"
-          rightButtonDisabled={!hasDiscussed}
+          //   rightButtonDisabled={!hasDiscussed}
           isLoading={isLoading}
-          content={
-            <>
-              <Checkbox
-                label={
-                  "Yes, I have discussed these plans with my Division Chief."
-                }
-                onChange={(e) => {
-                  setIsDiscussed(e.target.checked);
-                }}
-                checked={hasDiscussed}
-              />
-            </>
-          }
+          withAuthPin
+          setAuthPin={setAuthorizationPin}
         />
       )}
     </Fragment>
