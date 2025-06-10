@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { read, post, update } from "../../Services/RequestMethods";
+import { read, post, update, download } from "../../Services/RequestMethods";
 import { API } from "../../Data/constants";
 
 const useAOPObjectivesHooks = create((set, get) => ({
@@ -7,16 +7,15 @@ const useAOPObjectivesHooks = create((set, get) => ({
   aopObjective: {},
   aop_summary: {},
   aop_timeline: [],
-  mission: '',
+  mission: "",
   aop_id: null,
-  isLoading: (false),
+  isLoading: false,
 
   actions: {
-
     setAopObjectives: (data) => {
       set(() => ({
-        aopObjectives: data
-      }))
+        aopObjectives: data,
+      }));
     },
 
     getSummary: (callBack) => {
@@ -25,15 +24,11 @@ const useAOPObjectivesHooks = create((set, get) => ({
         failed: callBack,
         success: (res) => {
           // console.log(res)
-          const {
-            status,
-            message,
-            data,
-          } = res;
+          const { status, message, data } = res;
           set({ aop_summary: data });
-          callBack(status, message)
-        }
-      })
+          callBack(status, message);
+        },
+      });
     },
 
     getTimeline: (callBack) => {
@@ -48,9 +43,9 @@ const useAOPObjectivesHooks = create((set, get) => ({
             data: { data },
           } = res;
           set({ aop_timeline: data });
-          callBack(status, message)
-        }
-      })
+          callBack(status, message);
+        },
+      });
     },
 
     getSingleAOP: (id, callBack) => {
@@ -59,10 +54,11 @@ const useAOPObjectivesHooks = create((set, get) => ({
         failed: callBack,
 
         success: (res) => {
-          set({ aopObjectives: res.data.data });
+          const { data } = res.data;
+          set({ aopObjectives: data, aop_id: data.aop_application_id });
           callBack(200, "Success");
-        }
-      })
+        },
+      });
     },
 
     create: (form, callBack) => {
@@ -85,26 +81,27 @@ const useAOPObjectivesHooks = create((set, get) => ({
         success: (res) => {
           set({ aopObjectives: res.data });
           callBack(200, "Success");
-        }
-      })
+        },
+      });
     },
 
-    exportAsExcel: (id, callBack) => {
-      post({
+    exportAsExcel: (id, callBack = () => {}) => {
+      download({
         url: `${API.AOP_EXPORT_EXCEL}/${id}`,
-        failed: callBack,
-        success: (res) => {
-          console.log(res)
-          callBack(200, "Success");
-        }
-      })
-    }
-
+        title: "AOP Excel Export",
+        fileName: `aop-export-${id}.xlsx`,
+        failed: (status, message) => {
+          if (callBack) callBack(status, message);
+        },
+        success: (status, message) => {
+          if (callBack) callBack(status, message);
+        },
+      });
+    },
   },
-
 }));
 
-export default useAOPObjectivesHooks
+export default useAOPObjectivesHooks;
 
 export const useAOPActions = () =>
   useAOPObjectivesHooks((state) => state.actions);

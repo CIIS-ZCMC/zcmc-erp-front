@@ -62,6 +62,7 @@ const useActivitiesHook = create(
             addActivity: (parentId) => {
                 // console.log(parentId)
                 const current = get().activities;
+                console.log("Adding activity");
                 set((state) => ({
                     activities: [
                         ...state.activities,
@@ -75,7 +76,6 @@ const useActivitiesHook = create(
             },
             
             updateCost: (parentId, cost) => {
-                console.log(parentId);
                 set((state) => ({
                     activities: state.activities.map((activity) => {
                         if (activity.id === parentId) {

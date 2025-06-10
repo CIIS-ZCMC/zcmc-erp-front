@@ -134,19 +134,39 @@ const useResourceHook = create(
       saveItems: (parentId = null, totalPrice) => {
         const { resources, cart } = get();
 
-        const updatedResources = cart.map((item, index) => ({
-          ...initialResource(resources.length + index + 1, parentId, null),
-          name: item.name,
-          quantity: item.aop_quantity,
-          individualPrice: item.estimated_budget,
-          item_id: item.id,
-          totalCost: totalPrice,
-        }));
+        /**
+         * Check which items exist in the resource that is already in the cart
+         * if exist update the quantity and total cost
+         * if not add the item to the resource
+         */
 
-        console.log("Updated Resources:", updatedResources);
+        const updatedResources = cart.map((item, index) => {
+          const exist = resources.find((resource) => resource.item_id === item.id);
+
+          // If exist update the quantity and total cost
+          if(exist){
+            return {
+              ...exist,
+              quantity: item.aop_quantity,
+              totalCost: item.aop_quantity * item.estimated_budget,
+            }
+          }
+
+          return {
+            ...initialResource(resources.length + index + 1, parentId, null),
+            name: item.name,
+            quantity: item.aop_quantity,
+            individualPrice: item.estimated_budget,
+            item_id: item.id,
+            totalCost: totalPrice,
+          }
+        });
 
         set((state) => ({
-          resources: [...state.resources, ...updatedResources],
+          resources: [
+            ...state.resources.filter((item) => item.parentId !== parentId),
+            ...updatedResources,
+          ],
           cart: [],
         }));
       },

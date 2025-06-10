@@ -38,7 +38,6 @@ const Resources = () => {
 
   useEffect(() => {
     getPurchaseType((status, message) => {
-      // console.log(status)
       if (!(status >= 200 && status < 300)) {
         // if status not success
         return; //Toast error
@@ -46,10 +45,6 @@ const Resources = () => {
       // setisLoading(false);
     });
   }, []);
-
-  // useEffect(() => {
-  //   console.log(resources)
-  // }, [resources])
 
   return (
     <Fragment>
@@ -59,7 +54,7 @@ const Resources = () => {
         actions={
           <Stack>
             <ButtonComponent
-              // onClick={() => addResource(parentId)}
+              onClick={() => navigate(`/aop-create/activities/${location.state.objectiveRowId}/items/${location.state.activityRowId}`, {state: {...location.state}})}
               label={"Add Resource"}
               endDecorator={<Plus size={16} />}
             />
@@ -72,7 +67,7 @@ const Resources = () => {
           haverRow
           tableRow={
             <TableRow
-              rows={resources}
+              rows={resources.filter((item) => item.parentId === parentId)}
               parentId={parentId}
               resources={items}
               purchase_types={purchase_types}

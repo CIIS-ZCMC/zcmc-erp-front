@@ -1,5 +1,5 @@
 import { Outlet } from "react-router-dom";
-import { Avatar, Box, Grid, Stack, Typography, useTheme } from "@mui/joy";
+import { Avatar, Box, Divider, Grid, Stack, Typography, useTheme } from "@mui/joy";
 import Sidebar from "./Sidebar";
 import useModalHook from "../Hooks/ModalHook";
 import { Fragment, useEffect, useState } from "react";
@@ -32,7 +32,6 @@ function Layout() {
         {/* Notification */}
         <Box position={"absolute"} right={10} p={4}>
           <Stack direction={"row"} spacing={1} alignItems={"center"}>
-            <Typography fontWeight={"bold"}> {user?.name}</Typography>
             <NotificationMain />
             {profile_url ? (
               <Avatar
@@ -41,13 +40,19 @@ function Layout() {
                 sx={{ border: 3, borderColor: "primary.500", bgColor: "white" }}
               />
             ) : (
-              <Avatar
-                sx={{ border: 5, borderColor: "primary.200", bgColor: "white" }}
-                variant="solid"
-                color="primary"
-              >
-                {user?.name[0]}
-              </Avatar>
+              <Stack direction={"row"} spacing={1} alignItems={"center"}>
+                <Avatar
+                  sx={{ border: 5, borderColor: "primary.200", bgColor: "white" }}
+                  variant="solid"
+                  color="primary"
+                >
+                  {user?.name[0]}
+                </Avatar>
+                <Stack>
+                  <Typography fontWeight={'bold'}> {user?.name}</Typography>
+                  <Typography level="body-xs"> {user?.email}</Typography>
+                </Stack>
+              </Stack>
             )}
           </Stack>
         </Box>
