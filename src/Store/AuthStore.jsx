@@ -1,11 +1,16 @@
 import { create } from "zustand";
 import erp_api from "../Services/ERP_API";
+import { read } from "../Services/RequestMethods";
+import { localStorageGetter, localStorageSetter } from "../Utils/LocalStorage";
+import { AREA_ID } from "../Data/constants";
 
-const useAuthStore = create((set, get) => ({
-  user: null,
+const useAuthStore = create((set) => ({
+  user: localStorageGetter("user") ?? null,
   loading: false,
   error: null,
   meta: null,
+  permissions: [],
+  area: localStorageGetter("user")?.assignedArea ?? null,
   //Actions
   actions: {
     // Session ID must be pass in call
@@ -21,9 +26,16 @@ const useAuthStore = create((set, get) => ({
             throw new Error("Bad response", { cause: res });
           }
 
-          set({ user: data.data, meta: data.meta, loading: false });
+          set({
+            user: data.data,
+            area: data.data.assignedArea,
+            meta: data.meta,
+            permissions: data.data.meta.permissions,
+            loading: false,
+          });
 
-          console.log(data.meta);
+          localStorageSetter("user", data.data);
+
           return data.meta.redirect_to;
         })
         .catch((err) => {
@@ -31,6 +43,7 @@ const useAuthStore = create((set, get) => ({
           return;
         });
     },
+
     logout: async () => {
       return await erp_api
         .delete("/logout")
@@ -48,8 +61,28 @@ const useAuthStore = create((set, get) => ({
         .catch((err) => set({ error: err.cause }));
     },
 
-    getUserArea: () => {
-      return get().user.assignedArea.name;
+    sessionValidation: (token, callBack) => {
+      read({
+        url: "/user",
+        token: token,
+        success: (res) => {
+          const { data, status } = res;
+
+          if (!(status >= 200 && status < 300)) {
+            throw new Error("Bad response", { cause: res });
+          }
+
+          set({
+            user: data.data,
+            area: data.data.assignedArea,
+            meta: data.meta,
+            permissions: data.data.meta.permissions,
+            loading: false,
+          });
+          localStorageSetter("user", data.data);
+        },
+        failed: callBack,
+      });
     },
   },
 }));
@@ -57,14 +90,32 @@ const useAuthStore = create((set, get) => ({
 export const useAuth = () => {
   const user = useAuthStore((state) => state.user);
   const meta = useAuthStore((state) => state.meta);
+  const permissions = useAuthStore((state) => state.permissions);
+  const area = useAuthStore((state) => state.area);
   const loading = useAuthStore((state) => state.login);
   const error = useAuthStore((state) => state.error);
 
-  return { user, meta, loading, error };
+  return { user, meta, area, permissions, loading, error };
 };
 
 export const useAuthActions = () => {
   const actions = useAuthStore((state) => state.actions);
 
   return { ...actions };
+};
+
+export const useUserTypes = () => {
+  const user = useAuthStore((state) => state.user);
+
+  const area = useAuthStore((state) => state.area);
+
+  if (area) {
+    return {
+      isDivisionHead: false,
+      isPlanning:
+        area.area_id === AREA_ID.PLANNING_UNIT || area.name === "Planning Unit",
+      isDepartmentHead: area.area_id === AREA_ID.OMCC || false,
+      isMCC: area.area_id === AREA_ID.OMCC,
+    };
+  }
 };

@@ -1,34 +1,17 @@
-import {
-  Box,
-  Button,
-  CircularProgress,
-  IconButton,
-  Sheet,
-  Table,
-  Typography,
-} from "@mui/joy";
+import { Box, CircularProgress, Sheet, Table } from "@mui/joy";
 import { useMemo, useState } from "react";
 import NoResultComponent from "./NoResultComponent";
 import PaginationComponent from "./PaginationComponent";
+import { isObject } from "@mui/x-data-grid/internals";
 
 function ScrollableTableComponent({
   stickLast = false,
   data,
   columns,
   pageSize = 5,
-  actions = {},
-  withSearch,
-  setSearch,
   search = "",
   fieldsToSearch = [],
-  textWrap,
   stripe,
-  bordered = false,
-  footer,
-  maxHeight,
-  withCount,
-  border = "none",
-  hoverRow,
   isLoading,
 }) {
   // PAGINATION SETUP
@@ -158,7 +141,7 @@ function ScrollableTableComponent({
                         <th
                           key={`${column.id}-${childIndex}`}
                           style={{
-                            width: child.width || 200,
+                            width: child.width,
                             fontSize: 13,
                             textAlign: child.align || "center",
                             backgroundColor: "rgba(240, 240, 240, 1)",
@@ -195,13 +178,50 @@ function ScrollableTableComponent({
             ) : paginatedData?.length > 0 ? (
               paginatedData?.map((row, rowIndex) => (
                 <tr key={rowIndex}>
-                  {columns.map(({ field, render, align }, colIndex) => {
-                    return (
-                      <td key={colIndex} style={{ textAlign: align }}>
-                        {render ? render(row) : row[field] ?? "-"}
-                      </td>
-                    );
-                  })}
+                  {columns.flatMap(
+                    ({ field, render, align, children }, colIndex) => {
+                      const cellData = row[field];
+
+                      // Handle the "id_count" column
+                      if (field === "id_count") {
+                        return (
+                          <td key={colIndex} style={{ textAlign: align }}>
+                            {rowIndex + 1}
+                          </td>
+                        );
+                      }
+
+                      // Handle nested objects (children columns under "resource_requirements")
+                      if (children) {
+                        return children.map((child, nestedIndex) => {
+                          const childData = cellData[child.field];
+                          const childRender = child.render;
+                          const childWidth = cellData[child.width];
+
+                          return (
+                            <td
+                              key={`${colIndex}-${nestedIndex}`}
+                              style={{
+                                textAlign: child.align ?? "center",
+                                width: childWidth,
+                              }}
+                            >
+                              {childRender
+                                ? childRender(childData ?? "-")
+                                : childData}
+                            </td>
+                          );
+                        });
+                      }
+
+                      // Handle regular fields
+                      return (
+                        <td key={colIndex} style={{ textAlign: align }}>
+                          {render ? render(row) : cellData ?? "-"}
+                        </td>
+                      );
+                    }
+                  )}
                 </tr>
               ))
             ) : (

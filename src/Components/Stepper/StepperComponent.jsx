@@ -8,7 +8,8 @@ const StepperComponent = ({ data = [] }) => {
       {data?.map(
         (
           {
-            user = "Krizelle Mae Falcasantos",
+            approver_user = "Krizelle Mae Falcasantos",
+            approver_user_position = null,
             user_position = "Department Head",
             area_code = "IISU",
             area = "Innovations",
@@ -23,12 +24,12 @@ const StepperComponent = ({ data = [] }) => {
           key
         ) => {
           if (key === 0) {
-            console.log(key)
             return (
               <StepItem
+                isLast={data?.length - 1 === key}
                 key={key}
                 position={user_position}
-                name={user}
+                name={approver_user}
                 area_code={area_code}
                 area={area}
                 status={status}
@@ -43,9 +44,10 @@ const StepperComponent = ({ data = [] }) => {
           } else {
             return (
               <StepItem
+                isLast={data?.length - 1 === key}
                 key={key}
-                position={user_position}
-                name={user}
+                position={approver_user_position}
+                name={approver_user}
                 area_code={area_code}
                 area={area}
                 status={status}
@@ -53,6 +55,7 @@ const StepperComponent = ({ data = [] }) => {
                 date_submitted={created_at}
                 approved_at={date_approved}
                 remarks={remarks}
+                date_approved={date_approved}
                 activities_with_comments={activities_with_comments} // e.g 4 comments in 2 activities
                 number_of_comments={number_of_comments} // e.g 4 comments in 2 activities
               />

@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 
 import { Grid, Stack } from "@mui/joy";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -26,7 +26,7 @@ const EditResponsiblePerson = () => {
     const rowId = location.state.activityrowId; //refers to activity row id
 
     const { responsible_people, resetValues, setAssignmentStatus } = useResponsiblePeopleHook();
-    const { setConfirmationModal } = useModalHook();
+    const { setConfirmationModal, closeConfirmation } = useModalHook();
 
     const activity = responsible_people?.find((item) => {
         return item.activityId === activityId;
@@ -35,7 +35,6 @@ const EditResponsiblePerson = () => {
     const [isLoading, setIsLoading] = useState(false);
     // const [isEnabledSave, setIsEnabledSave] = useState(false);
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
-
 
     const hasData =
         activity?.users?.length > 0 ||
@@ -75,7 +74,8 @@ const EditResponsiblePerson = () => {
         //add id of aop here
         setTimeout(() => {
             navigate(`/aop-edit/`);
-        }, 3000);
+            closeConfirmation();
+        }, 1000);
     }
 
     const handleCancel = (activityId) => {
@@ -122,7 +122,14 @@ const EditResponsiblePerson = () => {
                 >
                     {/* {isAssigned ? */}
 
-                    {hasData ? <ButtonComponent
+                    <ButtonComponent
+                        onClick={() => navigate(-1)}
+                        label={"Back to activities"}
+                        size={"md"}
+                        variant={"outlined"}
+                    />
+
+                    {/* {hasData ? <ButtonComponent
                         onClick={() => handleCancel(activityId)}
                         label={"Cancel Selection"}
                         size={"md"}
@@ -135,7 +142,9 @@ const EditResponsiblePerson = () => {
                             size={"md"}
                             variant={"outlined"}
                         />
-                    }
+                    } */}
+
+
                     <ButtonComponent
                         label={"Save Assignment"}
                         size={"md"}

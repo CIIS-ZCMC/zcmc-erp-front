@@ -9,14 +9,24 @@ import ContainerComponent from "../../../Components/Common/ContainerComponent";
 import ModalComponent from "../../../Components/Common/Dialog/ModalComponent";
 import InputComponent from "../../../Components/Form/InputComponent";
 import useModalHook from "../../../Hooks/ModalHook";
+import {
+  usePPMP,
+  usePPMPApplicationActions,
+} from "../../../Hooks/PPMP/PPMPApplicationHook";
+import { useLocation } from "react-router-dom";
 
 function ManagePPMP() {
   // HOOKS
   const { setAlertDialog } = useModalHook();
+  const { ppmpApplicationItems, ppmpApplication } = usePPMP();
+  const { receivePPMP } = usePPMPApplicationActions();
+  const location = useLocation();
+  const PPMP_ID = location?.pathname?.split("/")[3];
 
   // STATES
   const [receiveModalOpen, setReceiveModalOpen] = useState(false);
   const [index, setIndex] = React.useState("all");
+  const [authPin, setAuthPin] = useState(null);
 
   // MODAL
   const handleOpenModal = () => setReceiveModalOpen(true);
@@ -24,14 +34,30 @@ function ManagePPMP() {
 
   //  FUNCTIONS
   const handleReceive = () => {
-    const data = {
-      status: 200,
-      title: "PPMP #2023-0031 from HRMO for F.Y. 2026 successfully received.",
-      description:
-        "This request is now completed and closed for further processing. We’ve also notified the requester (HRMO) about this change.",
-    };
-    setReceiveModalOpen(false);
-    setAlertDialog(data);
+    let data = {};
+    receivePPMP(
+      { authorization_pin: authPin, ppmp_application_id: PPMP_ID },
+      (status, message) => {
+        if (status == 200) {
+          data = {
+            status: status,
+            title: message ? message : "PPMP successfully received.",
+            description:
+              "This request is now completed and closed for further pr`ocessing. We’ve also notified the requester (HRMO) about this change.",
+          };
+          setReceiveModalOpen(false);
+        } else {
+          data = {
+            status: "error",
+            title: message ? message : "Something went wrong.",
+            description:
+              "We encountered an error while processing your request. Please try again or contact support if the issue persists.",
+          };
+        }
+
+        setAlertDialog(data);
+      }
+    );
   };
 
   const handleBack = () => {
@@ -69,13 +95,17 @@ function ManagePPMP() {
               <ButtonComponent
                 variant="solid"
                 color="primary"
-                label={"Receive request"}
+                label={"Receive PPMP"}
                 onClick={handleOpenModal}
+                disabled={ppmpApplication?.status === "Received"}
               />
             </Stack>
           }
         >
-          <ScrollableTableComponent columns={PPMP_VIEW_HEADER} />
+          <ScrollableTableComponent
+            columns={PPMP_VIEW_HEADER}
+            data={ppmpApplicationItems}
+          />
         </ContainerComponent>
       </Stack>
 
@@ -107,8 +137,8 @@ function ManagePPMP() {
               helperText={
                 "Confirm you action by typing-in your authorization PIN."
               }
-              // setValue={setAuthPin}
-              // value={authPin}
+              setValue={setAuthPin}
+              value={authPin}
             />
           </Box>
         }

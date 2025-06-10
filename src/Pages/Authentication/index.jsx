@@ -42,7 +42,8 @@ const Authentication = () => {
 
     const redirect_to = await authenticate(params);
 
-    if (!redirect_to) {
+    console.log(redirect_to);
+    if (!!redirect_to) {
       navigate(redirect_to);
     }
   }

@@ -3,17 +3,23 @@ import { createBrowserRouter, RouterProvider } from "react-router-dom";
 import { CircularProgress } from "@mui/joy";
 
 import { sidebarRoutes } from "./PageRoutes";
+// import { sidebarRoutes } from "../Data";
 import Layout from "../Layout";
 import ComponentTestPage from "../Pages/ComponentTestPage";
 import useModalHook from "../Hooks/ModalHook";
 import AlertDialogComponent from "../Components/Common/Dialog/AlertDialogComponent";
 import { TestPage } from "../Pages/TestPage";
 import Authentication from "../Pages/Authentication";
+import ProtectedRoutes from "./ProtectedRoutes";
 
 const router = createBrowserRouter([
   {
     path: "/",
-    element: <Layout />, // Parent component that renders common layout
+    element: (
+      <ProtectedRoutes>
+        <Layout />
+      </ProtectedRoutes>
+    ), // Parent component that renders common layout
     children: sidebarRoutes, // Custom page routes
   },
   // {

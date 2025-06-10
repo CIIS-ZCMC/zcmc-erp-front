@@ -1,34 +1,19 @@
-import { Navigate, Outlet } from "react-router-dom";
-
-import Dashboard from "../Pages/Dashboard";
+import { Navigate } from "react-router-dom";
 
 import AnnualOps from "../Pages/DeptHead/AnnualOps/AnnualOps";
-
-// table views routes
-import All from "../Pages/DeptHead/AnnualOps/TableViews/All";
-import Approved from "../Pages/DeptHead/AnnualOps/TableViews/Approved";
-import Pending from "../Pages/DeptHead/AnnualOps/TableViews/Pending";
-import Returned from "../Pages/DeptHead/AnnualOps/TableViews/Returned";
+import Dashboard from "../Pages/Dashboard";
 
 import CreateAOP from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout";
-
 import EditAOP from "../Pages/DeptHead/AnnualOps/EditAOP";
 import EditObjectives from "../Pages/DeptHead/AnnualOps/EditAOP/Objectives/";
 import EditActivities from "../Pages/DeptHead/AnnualOps/EditAOP/Objectives/Activities";
 import EditResources from "../Pages/DeptHead/AnnualOps/EditAOP/Objectives/Activities/Resources";
 import EditResponsiblePerson from "../Pages/DeptHead/AnnualOps/EditAOP/Objectives/Activities/Responsible";
-
 import AnnualOpsPlanning from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives";
-
 import Activities from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities";
 import Resources from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities/Resources";
 
 import Items from "../Pages/Items";
-import Item from "../Pages/Items/Item";
-
-import Deadlines from "../Pages/PlanningOps/Deadlines/Deadlines";
-import AOP from "../Pages/PlanningOps/Deadlines/Tabs/AOP";
-import PPMP from "../Pages/PlanningOps/Deadlines/Tabs/PPMP";
 
 import ItemRequest from "../Pages/Consolidators/ItemManagement/ItemRequest";
 import ItemLibrary from "../Pages/Consolidators/ItemManagement/ItemLibrary";
@@ -46,242 +31,194 @@ import { Items as ConsolidatorItems } from "../Pages/Consolidators/Tabs/Items";
 import { Classification } from "../Pages/Consolidators/Tabs/Classification";
 import { Category } from "../Pages/Consolidators/Tabs/Category";
 import { Variant } from "../Pages/Consolidators/Tabs/Variant";
+import { LayoutDashboard, Lock, PersonStanding } from "lucide-react";
+import {
+  MdDashboard,
+  MdLibraryBooks,
+  MdSettings,
+  MdSupervisorAccount,
+} from "react-icons/md";
+
+const iconStyles = {
+  size: 24,
+};
 import ItemSubmittedRequestsList from "../Pages/TEMP/ItemSubmittedRequestsList";
 import { MyOwnRequestsList } from "../Pages/TEMP/ItemMyOwnRequestsLists";
 import { ItemRequestDatatable } from "../Pages/Consolidators/ItemManagement/ItemRequestDatatable";
 
 export const sidebarRoutes = [
+  // DASHBOARD ROUTE
   {
     path: "/dashboard",
     name: "Dashboard",
     element: <Dashboard />,
-    roles: ["super_admin"],
-    abilities: ["M-001:read"],
+    icon: <MdDashboard {...iconStyles} />,
+    permissions: ["*"],
   },
 
-  //Planning and Operations routes
+  // SUPERVISOR ROUTES
   {
-    path: "/aop",
-    name: "AOP Management",
-    element: <AnnualOps />,
-    roles: ["super_admin"],
-    abilities: [
-      "M-001:read",
-      "M-001:write",
-      "M-001:edit",
-      "M-001:delete",
-      "M-001:approve",
-    ],
+    parentPath: "/supervisor",
+    name: "Supervisor",
+    icon: <MdSupervisorAccount {...iconStyles} />,
+    permissions: ["ERP-AOP-MAN:write", "ERP-PPMP-MAN:write"],
     children: [
       {
-        index: true,
-        element: <Navigate to="all" replace />,
-        roles: ["super_admin"],
-        abilities: ["M-001:read"],
+        path: "/aop",
+        name: "AOP",
+        element: <AnnualOps />,
+        childPermissions: ["ERP-AOP-MAN:write"],
       },
       {
-        path: "all",
-        element: <All />,
+        path: "/aop-create",
+        name: "Create AOP ",
+        // hidden: true,
+        element: <CreateAOP />,
         roles: ["super_admin"],
-        abilities: ["M-001:read"],
-      },
-      {
-        path: "approved",
-        element: <Approved />,
-        roles: ["super_admin"],
-        abilities: ["M-001:approve"],
-      },
-      {
-        path: "pending",
-        element: <Pending />,
-        roles: ["super_admin"],
-        abilities: ["M-001:read", "M-001:approve"],
-      },
-      {
-        path: "returned",
-        element: <Returned />,
-        roles: ["super_admin"],
-        abilities: ["M-001:read", "M-001:edit", "M-001:approve"],
-      },
-    ],
-  },
+        childPermissions: ["ERP-AOP-MAN:write"],
+        children: [
+          { index: true, element: <AnnualOpsPlanning /> }, //objective index
+          {
+            path: "activities/:objectiveId",
+            element: <Activities />,
+            children: [
+              {
+                path: "items/:activityId",
+                element: <Items />,
+              },
+              {
+                path: "resources/:activityId",
+                element: <Resources />,
+                roles: ["super_admin"],
+              },
 
-  {
-    path: "/aop-create",
-    element: <CreateAOP />,
-    roles: ["super_admin"],
-    abilities: ["M-001:read", "M-001:write", "M-001:edit", "M-001:delete"],
-    children: [
-      { index: true, element: <AnnualOpsPlanning /> }, //ENTRY POINT
+              {
+                path: "person/:activityId",
+                element: <ResponsibePerson />,
+                roles: ["super_admin"],
+              },
+            ],
+          },
+        ],
+      },
+
       {
-        path: "activities/:objectiveId",
-        element: <Activities />,
+        path: "/aop-edit",
+        element: <EditAOP />,
+        name: "Edit AOP",
+        roles: ["super_admin"],
+        childPermissions: ["ERP-AOP-MAN:write"],
+        children: [
+          { index: true, element: <EditObjectives /> }, //ENTRY POINT
+          {
+            path: "activities/:objectiveId",
+            element: <EditActivities />,
+            children: [
+              {
+                path: "items/:activityId",
+                element: <Items />,
+              },
+              {
+                path: "resources/:activityId",
+                element: <EditResources />,
+                roles: ["super_admin"],
+              },
+
+              {
+                path: "person/:activityId",
+                element: <EditResponsiblePerson />,
+                roles: ["super_admin"],
+              },
+            ],
+          },
+        ],
+      },
+      {
+        path: "/edit-ppmp",
+        name: "Edit PPMP",
+        element: <EditPPMP />,
+        childPermissions: ["ERP-PPMP-MAN:write"],
         children: [
           {
-            path: "items/:activityId",
-            element: <Items />,
+            index: true,
+            element: <PPMPDashboard />,
           },
           {
-            path: "resources/:activityId",
-            element: <Resources />,
-            roles: ["super_admin"],
-            abilities: [
-              "M-001:read",
-              "M-001:write",
-              "M-001:edit",
-              "M-001:delete",
-            ],
+            path: "ppmp-items",
+            element: <PPMPItems />,
           },
-
           {
-            path: "person/:activityId",
-            element: <EditResponsiblePerson />,
-            roles: ["super_admin"],
-            abilities: [
-              "M-001:read",
-              "M-001:write",
-              "M-001:edit",
-              "M-001:delete",
-            ],
+            path: "add-item/:expenseId",
+            element: <AddItems />,
           },
         ],
       },
     ],
   },
 
-  {
-    path: "/aop-edit/:id",
-    element: <EditAOP />,
-    roles: ["super_admin"],
-    abilities: ["M-001:read", "M-001:write", "M-001:edit", "M-001:delete"],
-    children: [
-      { index: true, element: <EditObjectives /> }, //ENTRY POINT
-      {
-        path: "activities/:objectiveId",
-        element: <EditActivities />,
-        children: [
-          {
-            path: "items/:activityId",
-            element: <Items />,
-          },
-          {
-            path: "resources/:activityId",
-            element: <EditResources />,
-            roles: ["super_admin"],
-            abilities: [
-              "M-001:read",
-              "M-001:write",
-              "M-001:edit",
-              "M-001:delete",
-            ],
-          },
-
-          {
-            path: "person/:activityId",
-            element: <EditResponsiblePerson />,
-            roles: ["super_admin"],
-            abilities: [
-              "M-001:read",
-              "M-001:write",
-              "M-001:edit",
-              "M-001:delete",
-            ],
-          },
-        ],
-      },
-    ],
-  },
+  // AOP AND PPPMP
 
   // {
   //   path: "/items/:activityId",
   //   children: [{ index: true, element: <Items /> }],
   // },
-
   {
-    path: "/aop-approval",
-    children: [
-      { index: true, element: <AOPApproval /> },
-      {
-        path: "objectives/:id",
-        element: <ManageAOP />,
-        roles: ["super_admin"],
-        abilities: ["M-001:read", "M-001:write", "M-001:edit", "M-001:delete"],
-      },
+    parentPath: "/planning-ops",
+    name: "Planning and Operations",
+    icon: <MdLibraryBooks {...iconStyles} />,
+    permissions: [
+      "ERP-AOP-MAN:approve",
+      "ERP-AOP-MAN:view-all",
+      "ERP-PPMP-MAN:approve",
+      "ERP-PPMP-MAN:view-all",
+      "ERP-PPMP-MAN:delete",
+      "ERP-OBJ-MAN:write",
+      "ERP-OBJ-MAN:view",
+      "ERP-OBJ-MAN:update",
+      "ERP-OBJ-MAN:view-all",
     ],
-  },
-
-  // SAMPLE PATH
-  // {
-  //   path: "aop-create",
-  //   element: <Main />,
-  //   children: [
-  //     { index: true, element: <Contact /> },
-  //     {
-  //       path: "activities/1",
-  //       element: <About />,
-  //     },
-  //   ],
-  // },
-
-  {
-    path: "/edit-ppmp",
-    name: "Edit PPMP",
-    element: <EditPPMP />,
     children: [
       {
-        index: true,
-        element: <PPMPDashboard />,
+        path: "/aop-approval",
+        name: "AOP Management",
+        childPermissions: ["ERP-AOP-MAN:approve", "ERP-AOP-MAN:view-all"],
+        children: [
+          { index: true, element: <AOPApproval /> },
+          {
+            path: "objectives/:id",
+            element: <ManageAOP />,
+          },
+        ],
       },
       {
-        path: "ppmp-items",
-        element: <PPMPItems />,
-        roles: ["super_admin"],
-        abilities: ["M-001:read", "M-001:write", "M-001:edit", "M-001:delete"],
+        path: "/ppmp-approval",
+        name: "PPMP Management",
+        childPermissions: ["ERP-PPMP-MAN:approve", "ERP-PPMP-MAN:view-all"],
+        children: [
+          { index: true, element: <PPMPApproval /> },
+          {
+            path: "view/:id",
+            element: <ManagePPMP />,
+          },
+        ],
       },
-      {
-        path: "add-item/:expenseId",
-        element: <AddItems />,
-        roles: ["super_admin"],
-        abilities: ["M-001:read", "M-001:write", "M-001:edit", "M-001:delete"],
-      },
-    ],
-  },
-  {
-    path: "/ppmp-approval",
-    children: [
-      { index: true, element: <PPMPApproval /> },
-      {
-        path: "view/:id",
-        element: <ManagePPMP />,
-        roles: ["super_admin"],
-        abilities: ["M-001:read", "M-001:write", "M-001:edit", "M-001:delete"],
-      },
-    ],
-  },
 
-  {
-    path: "/objectives",
-    name: "Objectives and KPIs",
-    element: <Objectives />,
-    roles: ["super_admin"],
-    abilities: ["M-001:read", "M-001:write", "M-001:edit", "M-001:delete"],
-  },
-
-  //Manage Deadline routes
-  {
-    path: "/manage-deadlines",
-    name: "Deadline",
-    element: <Deadlines />,
-    roles: ["super_admin"],
-    abilities: ["M-001:read", "M-001:write", "M-001:edit", "M-001:delete"],
-    children: [
       {
-        index: true,
-        element: <AOP />,
+        path: "/objectives",
+        name: "Objectives and KPIs",
+        element: <Objectives />,
+        childPermissions: [
+          "ERP-OBJ-MAN:write",
+          "ERP-OBJ-MAN:view",
+          "ERP-OBJ-MAN:update",
+          "ERP-OBJ-MAN:view-all",
+        ],
       },
       {
-        path: "ppmp",
-        element: <PPMP />,
+        path: "/dealine-management",
+        name: "Deadline Management",
+        children: [{ index: true, element: <>Deadline Management</> }],
+        childPermissions: ["ERP-DEAD-MAN:write"],
       },
     ],
   },
@@ -308,29 +245,61 @@ export const sidebarRoutes = [
       },
     ],
   },
-
+  // CONSOLIDATOR ROUTES
   {
-    path: "/item-library",
-    name: "Library",
-    element: <ItemLibrary />,
-    roles: ["super_admin"],
-    abilities: ["M-001:read", "M-001:write", "M-001:edit", "M-001:delete"],
+    parentPath: "/consolidator",
+    name: "Item Management",
+    icon: <MdSettings {...iconStyles} />,
+    permissions: [
+      "IM-001:write",
+      "IM-001:view",
+      "IM-001:view-all",
+      "IM-001:update",
+      "IM-001:approve",
+      "IM-001:request",
+      "IM-001:delete",
+    ],
     children: [
       {
-        index: true,
-        element: <ConsolidatorItems />,
+        path: "/item-requests",
+        name: "Item Requests",
+        element: <ItemRequest />,
+        childPermissions: [
+          "IM-001:read",
+          "IM-001:write",
+          "IM-001:edit",
+          "IM-001:delete",
+        ],
       },
+
       {
-        path: "classification",
-        element: <Classification />,
-      },
-      {
-        path: "category",
-        element: <Category />,
-      },
-      {
-        path: "variant",
-        element: <Variant />,
+        path: "/item-library",
+        name: "Libraries",
+        element: <ItemLibrary />,
+        childPermissions: [
+          "IM-001:read",
+          "IM-001:write",
+          "IM-001:edit",
+          "IM-001:delete",
+        ],
+        children: [
+          {
+            index: true,
+            element: <ConsolidatorItems />,
+          },
+          {
+            path: "classification",
+            element: <Classification />,
+          },
+          {
+            path: "category",
+            element: <Category />,
+          },
+          {
+            path: "variant",
+            element: <Variant />,
+          },
+        ],
       },
     ],
   },
@@ -339,7 +308,49 @@ export const sidebarRoutes = [
     name: "Submitted Items",
     element: <ItemSubmittedRequestsList />,
     roles: ["super_admin"],
-    abilities: ["M-001:read", "M-001:write", "M-001:edit", "M-001:delete"],
+    permissions: ["M-001:read", "M-001:write", "M-001:edit", "M-001:delete"],
+    children: [
+      {
+        index: true,
+        element: <>the index</>,
+      },
+      {
+        path: "pending",
+        element: <>pending</>,
+      },
+      {
+        path: "added",
+        element: <>added</>,
+      },
+    ],
+  },
+  {
+    path: "/submitted-items",
+    name: "Submitted Items",
+    element: <ItemSubmittedRequestsList />,
+    roles: ["super_admin"],
+    permissions: ["M-001:read", "M-001:write", "M-001:edit", "M-001:delete"],
+    children: [
+      {
+        index: true,
+        element: <MyOwnRequestsList />,
+      },
+      {
+        path: "pending",
+        element: <>pending</>,
+      },
+      {
+        path: "added",
+        element: <>added</>,
+      },
+    ],
+  },
+  {
+    path: "/submitted-items",
+    name: "Submitted Items",
+    element: <ItemSubmittedRequestsList />,
+    roles: ["super_admin"],
+    permissions: ["M-001:read", "M-001:write", "M-001:edit", "M-001:delete"],
     children: [
       {
         index: true,

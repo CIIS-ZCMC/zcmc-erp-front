@@ -1,11 +1,9 @@
-import React, { Fragment, useEffect, useMemo, useState } from "react";
-import PropTypes from "prop-types";
+import { Fragment, useEffect, useState } from "react";
 import PageTitle from "../../../Components/Common/PageTitle";
 import { AOP_CONSTANTS } from "../../../Data/constants";
 import ContainerComponent from "../../../Components/Common/ContainerComponent";
 import { Box, Grid, Link, Stack } from "@mui/joy";
 import InputComponent from "../../../Components/Form/InputComponent";
-import DatePickerComponent from "../../../Components/Form/DatePickerComponent";
 import { Search } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import {
@@ -29,6 +27,8 @@ import {
   useApprovalTimeline,
 } from "../../../Hooks/AOP/AOPApprovalHook";
 import { ThreeDotsLoader } from "../../../Components/Common/Loading/ThreeDotsLoader";
+import PageLoader from "../../../Components/Loading/PageLoader";
+import { ThreeDots } from "react-loader-spinner";
 
 const AOPApproval = () => {
   const navigate = useNavigate();
@@ -44,12 +44,19 @@ const AOPApproval = () => {
   // STATES
   const [openTimelineModal, setOpenTimelineModal] = useState(false);
   const [index, setIndex] = useState("all");
-  const [year, setYear] = useState(new Date().getFullYear());
-  // const [search, setSearch] = useState("");
+  const [year, setYear] = useState(new Date().getFullYear()?.toString());
+  const [pageLoading, setPageLoading] = useState("");
+  const [isFetchLoading, setIsFetchLoading] = useState(false);
 
   // FUNCTIONS
   const handleClickCard = (id, area_code) => {
-    getAOPApplicationById(id, () => navigate(`/aop-approval/objectives/${id}`));
+    setPageLoading(true);
+
+    getAOPApprovalTimeline(id, () => { });
+    getAOPApplicationById(id, () => {
+      setPageLoading(false);
+      navigate(`/aop-approval/objectives/${id}`);
+    });
 
     localStorageSetter("aop_application_id", id);
     localStorageSetter("aop_application_area_code", area_code);
@@ -62,12 +69,16 @@ const AOPApproval = () => {
   };
 
   useEffect(() => {
+    setIsFetchLoading(true);
     const params = {
       status: index == "all" ? null : index,
       year: year,
     };
 
-    getAOPApplications(params, () => { });
+    getAOPApplications(params, () => {
+      setIsFetchLoading(false);
+    });
+    localStorage.removeItem("all_comments");
   }, [index, year, getAOPApplications]);
 
   const APPLICATIONS = TEST_MODE ? MANAGE_AOP_APPROVAL : AOPApplications;
@@ -126,28 +137,48 @@ const AOPApproval = () => {
                 overflow: "auto",
               }}
             >
-              {APPLICATIONS?.length === 0 && (
+              {isFetchLoading ? (
+                <Box
+                  display="flex"
+                  alignItems={"center"}
+                  justifyContent={"center"}
+                  width="100%"
+                // minHeight={contentMaxHeight}
+                >
+                  <ThreeDots
+                    visible={true}
+                    // height={contentMinHeight}
+                    width="80"
+                    color="#003049"
+                    radius="9"
+                    ariaLabel="three-dots-loading"
+                    wrapperStyle={{}}
+                    wrapperClass=""
+                  />
+                </Box>
+              ) : APPLICATIONS?.length === 0 ? (
                 <Box width="100%">
                   <NoResultComponent />
                 </Box>
-              )}
-
-              {APPLICATIONS?.map(
-                (
-                  { id, created_on, date_approved, area_code, status },
-                  index
-                ) => (
-                  <Grid key={index} item="true" xs={4}>
-                    <AOPCardComponent
-                      date_requested={created_on}
-                      date_approved={date_approved}
-                      status={status}
-                      area_code={area_code ?? "-"}
-                      statusLabel={toCapitalize(status)}
-                      leftClick={() => handleClickCard(id, area_code)}
-                      rightClick={() => handleViewTimeline(id)}
-                    />
-                  </Grid>
+              ) : (
+                APPLICATIONS?.map(
+                  (
+                    { id, created_on, date_approved, area_code, status, year },
+                    index
+                  ) => (
+                    <Grid key={index} item="true" xs={4}>
+                      <AOPCardComponent
+                        year={year}
+                        date_requested={created_on}
+                        date_approved={date_approved}
+                        status={status}
+                        area_code={area_code ?? "-"}
+                        statusLabel={toCapitalize(status)}
+                        leftClick={() => handleClickCard(id, area_code)}
+                        rightClick={() => handleViewTimeline(id)}
+                      />
+                    </Grid>
+                  )
                 )
               )}
             </Grid>
@@ -171,6 +202,9 @@ const AOPApproval = () => {
           </Stack>
         }
       />
+
+      {/* LOADER */}
+      <PageLoader isLoading={pageLoading} />
     </Fragment>
   );
 };

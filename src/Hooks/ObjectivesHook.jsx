@@ -10,11 +10,41 @@ const initialObjective = (rowId = 1) => ({
   rowId,
 });
 const useObjectivesHook = create(
+
   persist(
     (set, get) => ({
       objectives: [],
+      hasDiscussed: false,
       current_parent_id: null,
       current_row_id: null,
+
+
+      setObjectives: (data) => {
+        // console.log(data)
+        set((state) => ({
+          objectives: data
+        }))
+      },
+
+      clearParentId: () => {
+        // console.log(data)
+        set(() => ({
+          current_parent_id: null,
+        }))
+      },
+
+      setIsDiscussed: (data) => {
+        set(() => ({
+          hasDiscussed: data
+        }))
+      },
+
+      clearObjectives: () => {
+        set(() => ({
+          objectives: [],
+          hasDiscussed: false
+        }))
+      },
 
       //update field
       updateObjectiveField: (id, field, value) => {
@@ -42,6 +72,12 @@ const useObjectivesHook = create(
             initialObjective(current.length + 1),
           ],
         }));
+      },
+
+      deleteObjective: (id) => {
+        const objectives = get().objectives;
+        const filtered = objectives.filter((item) => item.id !== id)
+        set({ objectives: filtered })
       },
 
       setCurrentObjective: (objectiveuuid) => {

@@ -5,41 +5,41 @@ import { GrDocument } from "react-icons/gr";
 
 import { Settings } from "lucide-react";
 
+import {
+  MdDashboard,
+  MdLibraryBooks,
+  MdSettings,
+  MdSupervisorAccount,
+} from "react-icons/md";
+
+const iconStyles = {
+  size: 24,
+};
+
 export const sidebarRoutes = [
   {
-    name: "Dashboard",
-    icon: <BiCategory />,
     path: "/dashboard",
+    name: "Dashboard",
+    icon: <MdDashboard {...iconStyles} />,
+    permissions: ["*"],
   },
 
   {
-    name: "Planning and Operations",
-    icon: <GrDocument />,
+    parentPath: "/supervisor",
+    name: "Supervisor",
+    icon: <MdSupervisorAccount {...iconStyles} />,
+    permissions: ["ERP-AOP-MAN:write", "ERP-PPMP-MAN:write"],
     children: [
       {
-        path: "/aop/all",
-        name: "AOP Management",
+        path: "/aop",
+        name: "AOP",
+        childPermissions: ["ERP-AOP-MAN:write"],
       },
 
       {
-        path: "/aop-approval",
-        name: "AOP Management Approval",
-      },
-      {
-        path: "/ppmp",
-        name: "PPMP Management",
-      },
-      {
-        path: "/ppmp-approval",
-        name: "PPMP Management Approval",
-      },
-      {
         path: "/edit-ppmp",
         name: "Edit PPMP",
-      },
-      {
-        path: "/objectives",
-        name: "Objectives",
+        childPermissions: ["ERP-PPMP-MAN:write"],
       },
       {
         path: "/Submitted-items",
@@ -53,21 +53,111 @@ export const sidebarRoutes = [
   },
 
   {
-    name: "Item Information Management",
-    icon: <Settings />,
+    parentPath: "/planning-ops",
+    name: "Planning and Operations",
+    icon: <MdLibraryBooks {...iconStyles} />,
+    permissions: [
+      "ERP-AOP-MAN:approve",
+      "ERP-AOP-MAN:view-all",
+      "ERP-PPMP-MAN:approve",
+      "ERP-PPMP-MAN:view-all",
+      "ERP-PPMP-MAN:delete",
+      "ERP-OBJ-MAN:write",
+      "ERP-OBJ-MAN:view",
+      "ERP-OBJ-MAN:update",
+      "ERP-OBJ-MAN:view-all",
+    ],
+    children: [
+      {
+        path: "/aop-approval",
+        name: "AOP Management",
+        childPermissions: ["ERP-AOP-MAN:approve", "ERP-AOP-MAN:view-all"],
+        children: [
+          {
+            path: "objectives/:id",
+          },
+        ],
+      },
+
+      {
+        path: "/ppmp-approval",
+        name: "PPMP Management",
+        childPermissions: ["ERP-PPMP-MAN:approve", "ERP-PPMP-MAN:view-all"],
+        children: [
+          {
+            path: "view/:id",
+          },
+        ],
+      },
+
+      {
+        path: "/objectives",
+        name: "Objectives and KPIs",
+        childPermissions: [
+          "ERP-OBJ-MAN:write",
+          "ERP-OBJ-MAN:view",
+          "ERP-OBJ-MAN:update",
+          "ERP-OBJ-MAN:view-all",
+        ],
+      },
+
+      {
+        path: "/dealine-management",
+        name: "Deadline Management",
+        childPermissions: ["ERP-DEAD-MAN:write"],
+      },
+    ]
+  },
+
+  {
+    parentPath: "/consolidator",
+    name: "Item Management",
+    icon: <MdSettings {...iconStyles} />,
+    permissions: [
+      "IM-001:write",
+      "IM-001:view",
+      "IM-001:view-all",
+      "IM-001:update",
+      "IM-001:approve",
+      "IM-001:request",
+      "IM-001:delete",
+    ],
     children: [
       {
         path: "/item-requests",
-        name: " Item requests",
+        name: "Item Requests",
+        childPermissions: [
+          "IM-001:read",
+          "IM-001:write",
+          "IM-001:edit",
+          "IM-001:delete",
+        ],
       },
 
       {
         path: "/item-library",
-        name: " Item library",
+        name: "Libraries",
+        childPermissions: [
+          "IM-001:read",
+          "IM-001:write",
+          "IM-001:edit",
+          "IM-001:delete",
+        ],
+        children: [
+          {
+            path: "classification",
+          },
+          {
+            path: "category",
+          },
+          {
+            path: "variant",
+          },
+        ],
       },
     ],
   },
-];
+]
 
 export const AOPPathMap = {
   0: "all",

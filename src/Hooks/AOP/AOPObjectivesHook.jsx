@@ -1,21 +1,30 @@
 import { create } from "zustand";
-import { read, post } from "../../Services/RequestMethods";
+import { read, post, update } from "../../Services/RequestMethods";
 import { API } from "../../Data/constants";
-
 
 const useAOPObjectivesHooks = create((set, get) => ({
   aopObjectives: [],
   aopObjective: {},
   aop_summary: {},
   aop_timeline: [],
+  mission: '',
+  aop_id: null,
+  isLoading: (false),
 
   actions: {
+
+    setAopObjectives: (data) => {
+      set(() => ({
+        aopObjectives: data
+      }))
+    },
+
     getSummary: (callBack) => {
       read({
         url: API.AOP_APPLICATION_SUMMARY,
         failed: callBack,
         success: (res) => {
-          console.log(res);
+          // console.log(res)
           const {
             status,
             message,
@@ -44,6 +53,17 @@ const useAOPObjectivesHooks = create((set, get) => ({
       })
     },
 
+    getSingleAOP: (id, callBack) => {
+      read({
+        url: `${API.AOP_APPLICATION_EDIT}/${id}`,
+        failed: callBack,
+
+        success: (res) => {
+          set({ aopObjectives: res.data.data });
+          callBack(200, "Success");
+        }
+      })
+    },
 
     create: (form, callBack) => {
       post({
@@ -53,31 +73,34 @@ const useAOPObjectivesHooks = create((set, get) => ({
         success: (res) => {
           set({ aopObjectives: res.data });
           callBack(200, "Success");
-          aopObjectives
         },
       });
     },
 
-    getSingleAOP: (id, callBack) => {
-      read({
-        url: `${API.AOP_APPLICATION_SHOW}/${id}`,
+    updateAOP: (form, params, callBack) => {
+      update({
+        url: `${API.AOP_APPLICATION_UPDATE}/${params}`,
+        form: form,
+        failed: callBack,
+        success: (res) => {
+          set({ aopObjectives: res.data });
+          callBack(200, "Success");
+        }
+      })
+    },
+
+    exportAsExcel: (id, callBack) => {
+      post({
+        url: `${API.AOP_EXPORT_EXCEL}/${id}`,
         failed: callBack,
         success: (res) => {
           console.log(res)
-          set({ aopObjective: res.data.data });
           callBack(200, "Success");
-          aopObjective
         }
       })
     }
-  }
 
-  // Delete an entire objective
-  // deleteObjective: (id, objectives) => {
-  //   set((state) => ({
-  //     objectives: state.objectives.filter((row) => console.log(row)),
-  //   }));
-  // },
+  },
 
 }));
 

@@ -21,7 +21,7 @@ function CommentContainerComponent({
       onClick={handleClick}
       p={1.7}
       sx={{
-        maxHeight: "10vh",
+        maxHeight: "auto",
         border: 1,
         borderRadius: 8,
         borderColor: "neutral.200",
@@ -37,7 +37,7 @@ function CommentContainerComponent({
 
       <EllipsisComponent text={comment} />
       <Stack
-        mt={1}
+        mt={comment?.length > 100 ? 4 : 1}
         direction={"row"}
         alignItems={"center"}
         justifyContent={"space-between"}

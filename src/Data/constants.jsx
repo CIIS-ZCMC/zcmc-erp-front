@@ -22,6 +22,11 @@ export const EPR_API_ENDPOINTS = {
   //ERP END POINTS RELATED HERE
 };
 
+export const AREA_ID = {
+  PLANNING_UNIT: "OMCC-PLAN-SE-047",
+  OMCC: "OMCC-DI-001",
+};
+
 export const AOP_CONSTANTS = {
   AOP_TITLE: "Annual Operations Planning",
   AOP_SUBHEADING:
@@ -146,9 +151,12 @@ export const approvalActions = [
 export const API = {
   AOP_APPLICATIONS: "aop-applications",
   AOP_APPLICATION_SHOW: "aop-application-show",
+  AOP_APPLICATION_EDIT: "aop-application-edit",
+  AOP_APPLICATION_UPDATE: 'aop-application-update',
   AOP_APPLICATION_STORE: "aop-application-store",
   AOP_APPLICATION_SUMMARY: "aop-application-summary",
-  AOP_APPLICATION_TIMELINE: "aop-application-timeline",
+  AOP_APPLICATION_TIMELINE: "application-timelines",
+  AOP_EXPORT_EXCEL: 'export-aop',
 
   TYPE_OF_FUNCTIONS: "type-of-functions",
   TYPE_OF_PURCHASE: "purchase-types",
@@ -186,6 +194,8 @@ export const API = {
   ITEM_VARIANT: "variants",
   ITEM_TERMINOLOGY: "terminologies",
   ITEMS_: "items",
+  // PPMP
+  PPMP_APPLICATION: "ppmp-receiving-list",
 };
 
 export const expenseClassData = [

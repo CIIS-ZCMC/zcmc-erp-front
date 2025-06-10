@@ -363,3 +363,30 @@ export const mockUserData = {
     redcap_forms: [],
   },
 };
+
+export const AOP_RESOURCES = [
+  {
+    id: 79,
+    resource_requirements: {
+      item_name: "Item name 1",
+      quantity: 1,
+      unit_cost: 2000,
+      total_cost: 2000,
+    },
+    expense_class: "CO",
+    is_gad: true,
+    type_of_resource: "Other Fees, Subscription, Processing",
+  },
+  {
+    id: 80,
+    resource_requirements: {
+      item_name: "Item name 2",
+      quantity: 2,
+      unit_cost: 15000,
+      total_cost: 30000,
+    },
+    expense_class: "MOOE",
+    is_gad: true,
+    type_of_resource: "Book, Journal, Publication",
+  },
+];

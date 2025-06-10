@@ -1,10 +1,12 @@
 import { useEffect, Fragment } from "react";
-import { Typography, Stack, Link, Chip } from "@mui/joy";
+import { Typography, Stack, Link, Chip, Tooltip, Button } from "@mui/joy";
 import { Trash } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
 import AutoCompleteComponent from '../../../../../../Components/Form/AutocompleteComponent'
 import IconButtonComponent from "../../../../../../Components/Common/IconButtonComponent";
+
+import useObjectivesHook from "../../../../../../Hooks/ObjectivesHook";
 
 const TableRow = ({
   rows,
@@ -18,6 +20,13 @@ const TableRow = ({
   const navigate = useNavigate();
 
   const tableDataStyles = { cursor: 'pointer' }
+
+  const { deleteObjective } = useObjectivesHook();
+
+  const handleRemoveObjective = (id) => {
+    localStorage.removeItem('activities-storage');
+    deleteObjective(id)
+  }
 
   return (
     <Fragment>
@@ -36,7 +45,8 @@ const TableRow = ({
               </td>
 
               <td onClick={() => setEditRowId(id)}
-                style={tableDataStyles}>
+                style={tableDataStyles}
+              >
                 {editRowId === id ?
                   (
                     <AutoCompleteComponent
@@ -50,13 +60,18 @@ const TableRow = ({
                     />
                   )
                   :
-                  (<Typography>
-                    {functionType?.label || "-"}
-                  </Typography>)
+                  (
+
+                    <Typography>
+                      {functionType?.label || "-"}
+                    </Typography>)
                 }
               </td>
 
-              <td onClick={() => setEditRowId(id)}>
+              <td onClick={() => setEditRowId(id)}
+                style={tableDataStyles}
+              >
+
                 {editRowId === id ?
                   (
                     <AutoCompleteComponent
@@ -70,15 +85,22 @@ const TableRow = ({
                     />
                   )
                   :
-                  (
-                    <Typography>
-                      {objective?.code || "-"}
-                    </Typography>
+                  (<>
+                    {console.info(objective)}
+                    <Tooltip title={objective ? objective?.description : ''} variant="solid">
+                      <Typography >
+                        {objective?.code || "-"}
+                      </Typography>
+                    </Tooltip>
+                  </>
+
                   )
                 }
               </td>
 
-              <td onClick={() => setEditRowId(id)}>
+              <td onClick={() => setEditRowId(id)}
+                style={tableDataStyles}
+              >
                 {editRowId === id ?
                   (
                     <AutoCompleteComponent
@@ -93,9 +115,13 @@ const TableRow = ({
                   )
                   :
                   (
-                    <Typography>
-                      {successIndicator?.code || "-"}
-                    </Typography>
+                    <>
+                      <Tooltip title={successIndicator ? successIndicator?.description : ''} variant="solid">
+                        <Typography >
+                          {successIndicator?.code || "-"}
+                        </Typography>
+                      </Tooltip>
+                    </>
                   )
                 }
               </td>
@@ -130,7 +156,7 @@ const TableRow = ({
                   </Stack>
 
                   <IconButtonComponent
-                    onClick={() => deleteRow(id)}
+                    onClick={() => handleRemoveObjective(id)}
                     icon={<Trash size={14} />}
                     // color={'danger'}
                     size={'sm'}

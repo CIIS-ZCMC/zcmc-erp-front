@@ -25,6 +25,7 @@ import React from "react";
 import moment from "moment";
 import { BiTrash } from "react-icons/bi";
 import { getStatusColorScheme } from "../Utils/ColorScheme";
+import { toCapitalize } from "../Utils/Typography";
 
 export const objHeaders = ({ onUpdate, onDelete, onViewIndicators }) => [
   { field: "id", name: "Row #", align: "center", width: "50px" },
@@ -276,7 +277,7 @@ export const AOP_ACTIVITIES_HEADER = [
 
 export const AOP_RESOURCE_HEADER = [
   {
-    field: "id",
+    field: "id_count",
     name: "Row #",
     width: "5%",
     align: "center",
@@ -333,7 +334,7 @@ export const AOP_RESOURCE_HEADER = [
   },
 ];
 
-export const ppmpHeaders = (handleOpenDel, items, modes) => [
+export const ppmpHeaders = (handleOpenDel, items, modes, isEditing) => [
   {
     field: "id",
     name: "Row #",
@@ -548,6 +549,7 @@ export const ppmpHeaders = (handleOpenDel, items, modes) => [
             }}
             color="danger"
             size="lg"
+            disabled={!isEditing}
           >
             <MdDeleteOutline />
           </IconButton>
@@ -559,84 +561,76 @@ export const ppmpHeaders = (handleOpenDel, items, modes) => [
 
 export const RESOURCES_HEADER = [
   {
-    field: "id",
+    field: "id_count",
     name: "Row #",
-    width: "70px",
+    width: "50px",
     align: "center",
   },
   {
-    field: "item",
+    field: "resource_requirements",
     name: "Resource Requirements",
     children: [
       {
-        field: "item",
+        field: "item_name",
         name: "Item name",
-        width: 400,
-        align: "center",
+        width: 500,
       },
-
       {
         field: "quantity",
         name: "Quantity of item",
         width: 50,
-        align: "center",
       },
       {
-        field: "price",
+        field: "unit_cost",
         name: "Individual price",
         width: 50,
-        align: "center",
+        render: (params) => {
+          return (
+            <Typography textAlign={"end"}>
+              &#8369; {params.toLocaleString()}
+            </Typography>
+          );
+        },
       },
       {
-        field: "total_amount",
+        field: "total_cost",
         name: "Total cost",
         width: 50,
-        align: "center",
+        render: (params) => {
+          return (
+            <Typography textAlign={"end"}>
+              &#8369; {params.toLocaleString()}
+            </Typography>
+          );
+        },
       },
     ],
-    width: 1000,
+    width: 1100,
     align: "center",
   },
   {
-    field: "expense",
+    field: "expense_class",
     name: "Expense class of unit",
-    width: 150,
+    width: 120,
     align: "center",
+    render: (params) => {
+      return params.expense_class;
+    },
   },
   {
-    field: "gad",
-    name: "Is GAD-related activity",
-    width: 150,
-    align: "center",
-  },
-  {
-    field: "remarks",
-    name: "Remarks",
+    field: "type_of_resource",
+    name: "Type of resource",
     width: 200,
-    inputType: "input",
     align: "center",
   },
 ];
 
-export const PPMP_REQUEST_HEADER = (handleOpen, handleDelete) => [
+export const PPMP_REQUEST_HEADER = (handleOpen, handleExport) => [
   {
-    field: "id",
+    field: "id_count",
     name: "Row #",
     width: "40px",
     align: "center",
-  },
-  {
-    field: "request_number",
-    name: "Request number",
-    width: 150,
-    align: "start",
-    render: (params) => {
-      return (
-        <Link sx={{ textDecoration: "underline" }}>
-          {params.request_number}
-        </Link>
-      );
-    },
   },
   {
     field: "requester",
@@ -645,21 +639,34 @@ export const PPMP_REQUEST_HEADER = (handleOpen, handleDelete) => [
     align: "start",
   },
   {
-    field: "total",
-    name: "Total number of items",
-    width: 150,
+    field: "requester_area",
+    name: "Requester",
+    width: 300,
     align: "start",
     render: (params) => {
-      return params.total.toLocaleString();
+      return params?.requester_area?.name;
     },
   },
   {
-    field: "amount",
+    field: "total_items",
+    name: "Total items",
+    width: 100,
+    align: "start",
+    render: (params) => {
+      return params.total_items.toLocaleString();
+    },
+  },
+  {
+    field: "total_budget",
     name: "Amount",
     width: 200,
     align: "start",
     render: (params) => {
-      return <Typography>&#8369; {params.amount.toLocaleString()}</Typography>;
+      return (
+        <Typography textAlign={"end"}>
+          &#8369; {params.total_budget.toLocaleString()}
+        </Typography>
+      );
     },
   },
   {
@@ -670,7 +677,7 @@ export const PPMP_REQUEST_HEADER = (handleOpen, handleDelete) => [
     render: (params) => {
       return (
         <ChipComponent
-          label={params.status}
+          label={toCapitalize(params.status)}
           endDecorator
           status={params.status?.toLowerCase()}
           color={getStatusColorScheme(params.status?.toLowerCase())}
@@ -698,7 +705,7 @@ export const PPMP_REQUEST_HEADER = (handleOpen, handleDelete) => [
             Open request
           </Link>
           <Link
-            onClick={() => alert(`Action clicked for ID: ${params.id}`)}
+            onClick={() => handleExport(params.id, params.requester_area)}
             level="body-xs"
             textColor={"neutral.700"}
             underline="hover"
@@ -715,50 +722,57 @@ export const PPMP_REQUEST_HEADER = (handleOpen, handleDelete) => [
 
 export const PPMP_VIEW_HEADER = [
   {
-    field: "id",
+    field: "id_count",
     name: "Row #",
-    width: "70px",
+    width: "50px",
     align: "center",
   },
   {
-    field: "description",
+    field: "general_description",
     name: "General description",
     inputType: "dropdown",
-    width: 200,
-    align: "center",
+    width: 300,
+    // align: "start",
   },
   {
     field: "classification",
     name: "Item Classification",
     width: 150,
-    align: "center",
+    // align: "center",
   },
   {
-    field: "category",
+    field: "item_category",
     name: "Item Category",
     width: 150,
-    align: "center",
+    // align: "center",
   },
   {
     field: "quantity",
     name: "Quantity",
-    width: 100,
+    width: 70,
     align: "center",
   },
   {
     field: "unit",
     name: "Unit",
     width: 100,
-    align: "center",
+    // align: "center",
   },
   {
     field: "total_amount",
     name: "Total amount",
     width: 100,
-    align: "center",
+    align: "end",
+    render: (params) => {
+      return (
+        <Typography textAlign={"end"}>
+          &#8369; {params.total_amount.toLocaleString() ?? 0}
+        </Typography>
+      );
+    },
   },
   {
-    field: "target_by_quarter",
+    field: "monthly_distribution",
     name: "Target (by quarter)",
     children: [
       { field: "jan", name: "Jan", width: 100, inputType: "input" },
@@ -777,19 +791,19 @@ export const PPMP_VIEW_HEADER = [
     width: 1000,
     align: "center",
   },
-  {
-    field: "fund_source",
-    name: "Mode of procurement",
-    width: 150,
-    align: "center",
-  },
-  {
-    field: "remarks",
-    name: "Remarks",
-    width: 200,
-    inputType: "input",
-    align: "center",
-  },
+  // {
+  //   field: "fund_source",
+  //   name: "Mode of procurement",
+  //   width: 150,
+  //   align: "center",
+  // },
+  // {
+  //   field: "remarks",
+  //   name: "Remarks",
+  //   width: 200,
+  //   inputType: "input",
+  //   align: "center",
+  // },
 ];
 
 export const variantCols = (updateCallBack, delCallback) => [

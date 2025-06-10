@@ -1,21 +1,24 @@
-import React, { Fragment, useState } from "react";
+import { Fragment, useState } from "react";
 import {
   useActivity,
   useActivityLoadingState,
 } from "../../../../Hooks/AOP/ActivityHook";
 import moment from "moment";
 import ModalComponent from "../../../../Components/Common/Dialog/ModalComponent";
-import { Box, Divider, Grid, Link, Stack, Typography } from "@mui/joy";
+import { Box, Divider, Grid, Link, Sheet, Stack, Typography } from "@mui/joy";
 import { CornerDownRight, ExternalLink } from "lucide-react";
 import BoxComponent from "../../../../Components/Common/Card/BoxComponent";
 import ContainerComponent from "../../../../Components/Common/ContainerComponent";
 import { MarkReviewFooter } from "./MarkReviewFooter";
 import ScrollableTableComponent from "../../../../Components/Common/Table/ScrollableTableComponent";
 import { RESOURCES_HEADER } from "../../../../Data/Columns";
-import { useUserTypes } from "../../../../Hooks/UserHook";
+import { useUserTypes } from "../../../../Store/AuthStore";
+import { AOP_RESOURCES } from "../../../../Data/TestData";
+import DrawerComponent from "../../../../Components/Common/DrawerComponent";
+import ButtonComponent from "../../../../Components/Common/ButtonComponent";
 
 export const ActivityDetails = () => {
-  const { isDivisionHead } = useUserTypes();
+  const { isPlanning } = useUserTypes();
 
   const [openResourcesModal, setOpenResourcesModal] = useState(false);
   const [openMarkModal, setOpenMarkModal] = useState(false);
@@ -26,12 +29,7 @@ export const ActivityDetails = () => {
     activity_name,
     start_month,
     end_month,
-    target: {
-      first_quarter,
-      second_quarter,
-      third_quarter,
-      fourth_quarter,
-    } = {},
+    target: { q1, q2, q3, q4 } = {},
     resources = [],
     responsible_people = [],
   } = activity || {};
@@ -54,12 +52,10 @@ export const ActivityDetails = () => {
         }
         isLoading={isLoading}
         scrollable
-        contentMaxHeight={isDivisionHead ? "52vh" : "47vh"}
-        contentMinHeight={isDivisionHead ? "52vh" : "47vh"}
+        contentMaxHeight={!isPlanning ? "52vh" : "47vh"}
+        contentMinHeight={!isPlanning ? "52vh" : "47vh"}
         footer={
-          isDivisionHead ? (
-            false
-          ) : (
+          isPlanning && (
             <MarkReviewFooter
               openMarkModal={openMarkModal}
               setOpenMarkModal={setOpenMarkModal}
@@ -70,12 +66,12 @@ export const ActivityDetails = () => {
         <Grid
           container
           columns={{ md: 4, lg: 12 }}
-          sx={{ width: isDivisionHead ? "100%" : "auto" }}
-          columnSpacing={isDivisionHead ? 2 : 0}
+          sx={{ width: !isPlanning ? "100%" : "auto" }}
+          columnSpacing={!isPlanning ? 4 : 0}
           overflow={"hidden"}
         >
-          <Grid item={"true"} xs={isDivisionHead ? 6 : 12}>
-            <Stack spacing={isDivisionHead ? 2 : 1.5}>
+          <Grid item={"true"} xs={!isPlanning ? 6 : 12}>
+            <Stack spacing={!isPlanning ? 2 : 1.5}>
               {/* ACTIVITY NAME */}
               <Typography
                 level={titleStyles.level}
@@ -99,12 +95,7 @@ export const ActivityDetails = () => {
                 Target (by quarter)
               </Typography>
               <Grid container columns={{ xs: 2, sm: 4 }} spacing={1}>
-                {[
-                  first_quarter,
-                  second_quarter,
-                  third_quarter,
-                  fourth_quarter,
-                ]?.map((element, index) => (
+                {[q1, q2, q3, q4]?.map((element, index) => (
                   <Grid xs={1} key={index}>
                     <BoxComponent>
                       <Stack gap={1}>
@@ -157,8 +148,8 @@ export const ActivityDetails = () => {
             </Stack>
           </Grid>
 
-          <Grid item="true" xs={isDivisionHead ? 6 : 12}>
-            <Stack spacing={isDivisionHead ? 2 : 1.5}>
+          <Grid item="true" xs={!isPlanning ? 6 : 12} mt={isPlanning && 2}>
+            <Stack spacing={!isPlanning ? 2 : 1.5}>
               {/* PERSON */}
               <Typography
                 level={titleStyles.level}
@@ -167,15 +158,7 @@ export const ActivityDetails = () => {
                 Responsible person
               </Typography>
               {responsible_people?.map(
-                (
-                  {
-                    user: {
-                      name: person_name,
-                      assignedArea: { name },
-                    },
-                  },
-                  index
-                ) => (
+                ({ name: person_name, designation = null }, index) => (
                   <Box
                     key={index}
                     display={"flex"}
@@ -194,18 +177,20 @@ export const ActivityDetails = () => {
                       >
                         {person_name}
                       </Typography>
-                      <Typography
-                        level={titleStyles.level}
-                        fontWeight={titleStyles.fontWeight}
-                      >
-                        {name}
-                      </Typography>
+                      {designation && (
+                        <Typography
+                          level={titleStyles.level}
+                          fontWeight={titleStyles.fontWeight}
+                        >
+                          {designation}
+                        </Typography>
+                      )}
                     </Box>
                   </Box>
                 )
               )}
 
-              {isDivisionHead && (
+              {/* {!isPlanning && (
                 <>
                   <Divider />
                   <MarkReviewFooter
@@ -213,14 +198,14 @@ export const ActivityDetails = () => {
                     setOpenMarkModal={setOpenMarkModal}
                   />
                 </>
-              )}
+              )} */}
             </Stack>
           </Grid>
         </Grid>
       </ContainerComponent>
 
       {/* VIEW RESOURCES */}
-      <ModalComponent
+      {/* <ModalComponent
         isOpen={openResourcesModal}
         handleClose={() => setOpenResourcesModal(false)}
         title={`Resources for activity`}
@@ -228,13 +213,28 @@ export const ActivityDetails = () => {
           "This is a subheading. It should add more context to the interaction."
         }
         content={
-          <Stack>
-            <ScrollableTableComponent
-              columns={RESOURCES_HEADER}
-              data={resources}
-            />
-          </Stack>
+          <ScrollableTableComponent
+            columns={RESOURCES_HEADER}
+            data={resources}
+          />
         }
+      /> */}
+
+      <DrawerComponent
+        open={openResourcesModal}
+        setOpen={setOpenResourcesModal}
+        title={`Resources for this activity`}
+        description={
+          "The list below shows the list of all resources selected for this activity."
+        }
+        size="full"
+        content={
+          <ScrollableTableComponent
+            columns={RESOURCES_HEADER}
+            data={resources}
+          />
+        }
+        // footer={<ButtonComponent label={"Close"} width={"auto"} />}
       />
     </Fragment>
   );

@@ -4,34 +4,31 @@ import { Stack, Typography, } from '@mui/joy';
 
 import useAOPObjectivesHooks from '../../../Hooks/AOP/AOPObjectivesHook';
 import { useApprovalActions, useApprovalLoading, useApprovalTimeline } from '../../../Hooks/AOP/AOPApprovalHook';
+import { useAOPActions } from '../../../Hooks/AOP/AOPObjectivesHook';
+
 
 import BoxComponent from '../../../Components/Common/Card/BoxComponent';
 import StepperComponent from '../../../Components/Stepper/StepperComponent';
+import { ThreeDotsLoader } from '../../../Components/Common/Loading/ThreeDotsLoader';
 
-import { APPROVAL_TIMELINE } from '../../../Data/TestData';
-
-
-const Timeline = () => {
+const Timeline = ({ aop_id }) => {
 
     const { getAOPApprovalTimeline } = useApprovalActions();
-
-    // const { aop_timeline, getTimeline } = useAOPObjectivesHooks();
-    const [isLoading, setIsLoading] = useState();
+    const approvalTimeline = useApprovalTimeline();
+    const isLoading = useApprovalLoading();
 
     useEffect(() => {
-        // setIsLoading(true)
-        // getTimeline((status, message) => {
-        //     // console.log(status)
-        //     if (!(status >= 200 && status < 300)) {
-        //         return; //Toast error
-        //     }
-        //     setIsLoading(false)
-        // })
-    }, [])
+        getAOPApprovalTimeline(aop_id, (status, message) => {
+            // console.log(status)
+            if (!(status >= 200 && status < 300)) {
+                return; //Toast error
+            }
+        })
+    }, [aop_id])
 
     // useEffect(() => {
-    //     console.log(aop_timeline)
-    // }, [aop_timeline])
+    //     console.log('current timeline', approvalTimeline)
+    // }, [approvalTimeline])
 
     return (
         <Fragment>
@@ -40,14 +37,20 @@ const Timeline = () => {
             >
                 <Stack mb={2}>
                     <Typography sx={{ fontSize: 32, fontWeight: 600 }}>
-                        Approval Timeline
+                        Approval timeline for this AOP
                     </Typography>
                     <Typography sx={{ fontSize: 14 }}>
                         The list below shows the current status of the request.
                     </Typography>
                 </Stack>
 
-                <StepperComponent data={APPROVAL_TIMELINE} />
+                {isLoading ?
+                    <ThreeDotsLoader />
+                    :
+                    <Fragment>
+                        <StepperComponent data={approvalTimeline} />
+                    </Fragment>
+                }
             </BoxComponent >
         </Fragment>
 

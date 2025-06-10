@@ -1,8 +1,9 @@
 import React, { Fragment, useState, useEffect, act } from "react";
-import { Stack, Grid } from "@mui/joy";
+import { Stack, Grid, Checkbox } from "@mui/joy";
 import { useNavigate, useLocation } from "react-router-dom";
 
 import useResponsiblePeopleHook from "../../../../../../../../Hooks/ResponsiblePeopleHook";
+import useObjectivesHook from "../../../../../../../../Hooks/ObjectivesHook";
 import useModalHook from "../../../../../../../../Hooks/ModalHook";
 
 //Custom Components
@@ -26,17 +27,18 @@ const ResponsiblePerson = () => {
   const activityId = location.state.parentId; //refers to parent id/activity id
   const rowId = location.state.activityrowId; //refers to activity row id
 
-  const { responsible_people, resetValues, setAssignmentStatus } = useResponsiblePeopleHook();
-  const { setConfirmationModal } = useModalHook();
+  const { responsible_people, resetValues, setAssignmentStatus } =
+    useResponsiblePeopleHook();
+
+  const { setConfirmationModal, closeConfirmation } = useModalHook();
 
   const activity = responsible_people?.find((item) => {
     return item.activityId === activityId;
   });
 
   const [isLoading, setIsLoading] = useState(false);
-  // const [isEnabledSave, setIsEnabledSave] = useState(false);
+  // const [isEnabledSave, setIsEnabledSave] = useState(false);s
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
-
 
   const hasData =
     activity?.users?.length > 0 ||
@@ -44,7 +46,6 @@ const ResponsiblePerson = () => {
     activity?.areas?.length > 0;
 
   const handleSaveAssignment = () => {
-
     if (!activity) {
       console.warn("No responsible person data found for this activity.");
       return;
@@ -57,36 +58,34 @@ const ResponsiblePerson = () => {
 
     // setAssignmentStatus(activityId, true);
     // alert('saving responsible person');
-    setOpenConfirmDialog(true)
+    setOpenConfirmDialog(true);
 
     const data = {
       status: "warning",
-      title: "Confirm Comment Submission",
+      title: "Assigning selected responsible people",
       description:
-        "Please confirm your action before proceeding. Once submitted, this comment will be permanently recorded and cannot be modified or deleted.",
+        "This will redirect you back to AOP Objectives",
     };
+
 
     setConfirmationModal(data);
   };
 
   //proceed to objectives page/step 1
   const proceed = () => {
-    setIsLoading(true)
+    setIsLoading(true);
 
     setTimeout(() => {
       navigate(`/aop-create/`);
-    }, 3000);
-  }
+      closeConfirmation();
+    }, 1000);
+  };
 
   const handleCancel = (activityId) => {
     resetValues(activityId);
-    navigate(-1)
+    navigate(-1);
     // navigate(`/aop-create/activities/${rowId}`);
   };
-
-  // useEffect(() => {
-  //   setIsEnabledSave(true)
-  // }, [activity])
 
   return (
     <Fragment>
@@ -104,15 +103,15 @@ const ResponsiblePerson = () => {
             p: 1,
           }}
         >
-          <Grid item={'true'} xs={12} sm={2} md={4}>
+          <Grid item={"true"} xs={12} sm={2} md={4}>
             <PersonSection />
           </Grid>
 
-          <Grid item={'true'} xs={12} sm={2} md={4}>
+          <Grid item={"true"} xs={12} sm={2} md={4}>
             <JobPositionsSection />
           </Grid>
 
-          <Grid item={'true'} xs={12} sm={2} md={4}>
+          <Grid item={"true"} xs={12} sm={2} md={4}>
             <AreasSection />
           </Grid>
         </Grid>
@@ -126,20 +125,29 @@ const ResponsiblePerson = () => {
         >
           {/* {isAssigned ? */}
 
-          {hasData ? <ButtonComponent
-            onClick={() => handleCancel(activityId)}
-            label={"Cancel Selection"}
+          {/* <ButtonComponent
+            onClick={() => navigate(-1)}
+            label={"Back to activities"}
             size={"md"}
             variant={"outlined"}
-          />
-            :
+          /> */}
+
+          {hasData ? (
+            <ButtonComponent
+              onClick={() => handleCancel(activityId)}
+              label={"Cancel Selection"}
+              size={"md"}
+              variant={"outlined"}
+            />
+          ) : (
             <ButtonComponent
               onClick={() => navigate(-1)}
               label={"Back to activities"}
               size={"md"}
               variant={"outlined"}
             />
-          }
+          )}
+
           <ButtonComponent
             label={"Save Assignment"}
             size={"md"}
@@ -153,8 +161,8 @@ const ResponsiblePerson = () => {
       {/* Confirmation modal to proceed */}
       {openConfirmDialog && (
         <ConfirmationModalComponent
-          leftButtonLabel={"Cancel"}
-          rightButtonAction={proceed}
+          leftButtonLabel={"Back"}
+          rightButtonAction={() => proceed(200)}
           rightButtonLabel="Proceed"
           isLoading={isLoading}
         />

@@ -1,4 +1,4 @@
-import React, { Fragment, useMemo, useState } from "react";
+import React, { Fragment, useEffect, useMemo, useState } from "react";
 import PropTypes from "prop-types";
 import {
   Badge,
@@ -14,10 +14,17 @@ import TabComponent from "../Common/TabComponent";
 import NotificationItemList from "./NotificationItemList";
 import NoNotification from "./NoNotification";
 import ContainerComponent from "../Common/ContainerComponent";
-import { useNotifications } from "../../Hooks/NotificationsHook";
+import {
+  useNotificationEvents,
+  useNotifications,
+} from "../../Hooks/NotificationsHook";
 import { groupByDate } from "../../Utils/GroupData";
 import moment from "moment";
 import ButtonComponent from "../Common/ButtonComponent";
+import { socket } from "../../Services/Socket";
+import { playNotificationSound } from "../../Utils/NotificationSound";
+import { toast } from "sonner";
+import notif from "../../assets/notif.mp3";
 
 const NotificationMain = ({ unread = 2 }) => {
   const [isOpen, setIsOpen] = useState(false);
@@ -47,6 +54,73 @@ const NotificationMain = ({ unread = 2 }) => {
   const handleClickNotif = () => {
     setIsOpen((prev) => !prev);
   };
+
+  // NOTIFICATION TOAST
+  const notify = (title, description, module_path) => {
+    playNotificationSound(notif);
+
+    // Pass the toast ID to the custom toast component
+    const toastId = toast.info(() => (
+      <div>
+        <Stack>
+          <Typography fontSize={13} fontWeight={600} color="primary">
+            {title}
+          </Typography>
+          <Typography fontSize={11} fontWeight={400}>
+            {description}
+          </Typography>
+          <Stack direction="row" alignItems="center" spacing={2} mt={2}>
+            <ButtonComponent
+              label="Click to view"
+              // onClick={() => handleClickView(toastId, module_path)}
+              size="sm"
+              variant="outlined"
+              color={"neutral"}
+              endDecorator={<IoOpenOutline />}
+            />
+            <Link
+              fontSize={12}
+              // onClick={() => handleMaybeLater(toastId)}
+              sx={{ color: "primary.700", textDecoration: "underline" }}
+            >
+              Maybe later
+            </Link>
+          </Stack>
+        </Stack>
+      </div>
+    ));
+  };
+
+  const handleOpenNotif = (id, module_path) => {
+    // seen(id, () => {
+    //   localStorageSetter("path", module_path);
+    //   window.location.href = module_path;
+    // });
+  };
+
+  const handleMarkAllAsRead = () => {
+    // if (employee_profile_id)
+    //   markAllAsRead(employee_profile_id, (status, message) => {
+    //     if (status === 200) {
+    //       closeAlert();
+    //       openDrawer();
+    //       handleClickDrawer();
+    //       toast.success(message);
+    //     }
+    //   });
+  };
+
+  const openAlert = () => {
+    // return handleAlert(
+    //   422,
+    //   "Mark all as read",
+    //   "Are you sure you want to mark all the items as read?"
+    // );
+  };
+
+  // Start listening for new notifications via socket
+  useNotificationEvents();
+
   return (
     <Fragment>
       <Box
@@ -66,9 +140,9 @@ const NotificationMain = ({ unread = 2 }) => {
           width: "auto",
         }}
       >
-        {unread > 0 ? (
+        {notifications?.length > 0 ? (
           <Badge
-            badgeContent={unread ?? ""}
+            badgeContent={notifications?.length}
             size="sm"
             color="primary"
             anchorOrigin={{
@@ -95,7 +169,7 @@ const NotificationMain = ({ unread = 2 }) => {
             borderRadius: 10,
             boxShadow: "xl",
             bgcolor: "white",
-            width: "29vw",
+            width: { sm: "80vw", md: "50vw", lg: "30vw" },
             position: "absolute",
             right: 87,
             top: 85,
