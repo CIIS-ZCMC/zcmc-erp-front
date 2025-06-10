@@ -36,11 +36,8 @@ const Resources = () => {
     });
   }, []);
 
-  console.log(location)
-
   useEffect(() => {
     getPurchaseType((status, message) => {
-      // console.log(status)
       if (!(status >= 200 && status < 300)) {
         // if status not success
         return; //Toast error

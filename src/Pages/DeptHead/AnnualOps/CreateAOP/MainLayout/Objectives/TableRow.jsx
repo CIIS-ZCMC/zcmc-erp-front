@@ -36,7 +36,6 @@ const TableRow = ({
         rows?.map(({ id, rowId, functionType, objective, successIndicator }, index) => {
 
           // const activitiesCount = getActivitiesCount(id)
-          // console.log(activitiesCount)
 
           return (
             <tr key={id}>

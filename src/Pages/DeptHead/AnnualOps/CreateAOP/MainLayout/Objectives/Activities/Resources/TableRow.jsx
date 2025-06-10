@@ -25,7 +25,6 @@ const TableRow = ({
     updateResourceField,
   } = useResourceHook();
 
-  console.log(rows)
   const { updateCost } = useActivitiesHook();
 
   const [localResources, setLocalResources] = useState(rows);
@@ -39,8 +38,6 @@ const TableRow = ({
       localResources.filter((item) => item.id !== id)
     )
   }
-
-  console.log(rows)
 
   function onChangeFieldValue(id, key, value) {
     if(key === 'quantity') {
@@ -145,12 +142,9 @@ const TableRow = ({
                         placeholder="Select Purchase"
                         value={purchaseTypeId}
                         setValue={(val) => {
-                          // console.log(val)
-                          // setSelectPurchaseType(val);
                           updateResourceField(id, "purchaseTypeId", val?.id);
                         }}
                         options={purchase_types.map((item) => {
-                          // console.log(item)
                           return { id: item.id, label: item.code };
                         })}
                       />
@@ -169,8 +163,6 @@ const TableRow = ({
                         placeholder="Select Expense Class"
                         value={expenseClass}
                         setValue={(val) => {
-                          console.log(val)
-                          // setSelectedExpenseClass(val?.value);
                           updateResourceField(id, "expenseClass", val?.value);
                         }}
                         options={expenseClassOptions}

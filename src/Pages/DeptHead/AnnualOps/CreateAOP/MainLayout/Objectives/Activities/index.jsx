@@ -58,7 +58,6 @@ const Activities = () => {
 
     if (current_row_id !== null) {
       if (current_parent_id !== objectiveRowId && !!objectiveRowId) {
-        // console.log('current row id', current_row_id)
         setCurrentRowId(objectiveRowId);
       }
     } else {

@@ -17,11 +17,7 @@ const AOPDashboard = () => {
     const navigate = useNavigate();
 
     const [aopObjectives, setAopObjectives] = useState([]);
-
-    useEffect(() => {
-        console.log(aopObjectives)
-    }, [])
-
+    
     return (
         <Fragment>
             {
