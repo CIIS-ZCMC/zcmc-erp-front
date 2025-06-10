@@ -80,12 +80,6 @@ const ItemRequest = () => {
                 endDecorator={<ExternalLink />}
                 size={"sm"}
               />
-              <ButtonComponent
-                label={"Request new item"}
-                variant={"solid"}
-                size={"sm"}
-                onClick={() => {}}
-              />
             </Stack>
           }
         >
