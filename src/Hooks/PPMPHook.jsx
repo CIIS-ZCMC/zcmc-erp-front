@@ -7,6 +7,7 @@ const PATH = "ppmp";
 const usePPMPHook = create((set) => ({
   modes: [],
   activities: [],
+  is_draft: 0,
   dashboard: {},
 
   getPPMPItems: (callBack) => {
@@ -19,6 +20,8 @@ const usePPMPHook = create((set) => ({
           "ppmp-items",
           JSON.stringify(data.data.ppmp_items)
         );
+        localStorage.setItem("is_draft", JSON.stringify(data.data.is_draft));
+        set({ is_draft: data.data.is_draft });
         callBack(status, message, data);
       },
     });
@@ -66,6 +69,7 @@ const usePPMPHook = create((set) => ({
       form: body,
       success: (response) => {
         const { message, data } = response.data;
+        set({ is_draft: data.is_draft });
         callback(response.status, message, data);
       },
       failed: callback,

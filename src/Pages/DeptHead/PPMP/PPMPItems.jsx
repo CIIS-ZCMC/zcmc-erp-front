@@ -44,6 +44,7 @@ function PPMPItems(props) {
   const navigate = useNavigate();
   const {
     modes,
+    is_draft,
     activities,
     getPPMPItems,
     getProcModes,
@@ -98,6 +99,7 @@ function PPMPItems(props) {
       { id: Date.now() + 2, value: "" },
     ],
   });
+
   const location = useLocation();
   const { user } = useAuth();
   const { name, id, assignedArea } = user ?? {};
@@ -252,6 +254,7 @@ function PPMPItems(props) {
 
       if (status === 201) {
         localStorage.setItem("ppmp-items", JSON.stringify(data.ppmp_items));
+        localStorage.setItem("is_draft", JSON.stringify(data.is_draft));
         closeConfirmation();
         setOpenSave(false);
         disconnectSignal();
@@ -525,15 +528,17 @@ function PPMPItems(props) {
               isLoading={dlLoader}
               loadingLabel={"Exporting..."}
               variant="outlined"
-              // disabled={is_draft?.status === 1}
+              disabled={is_draft === 1}
             />
-            <ButtonComponent
-              label={show ? "Exit Edit Mode" : "Edit PPMP"}
-              onClick={() => (show ? disconnectSignal() : handleEditClick())}
-              isLoading={editLoad}
-              color={show ? "danger" : "primary"}
-              disabled={disabled}
-            />
+            {is_draft === 1 && (
+              <ButtonComponent
+                label={show ? "Exit Edit Mode" : "Edit PPMP"}
+                onClick={() => (show ? disconnectSignal() : handleEditClick())}
+                isLoading={editLoad}
+                color={show ? "danger" : "primary"}
+                disabled={disabled}
+              />
+            )}
 
             {/* {show && (
               <ButtonComponent
@@ -545,41 +550,46 @@ function PPMPItems(props) {
           </Stack>
         }
       >
-        <Stack mb={2} direction="row" justifyContent="space-between">
-          <Stack direction="row" alignItems="center" gap={1}>
-            <InfoIcon size={20} style={{ color: "primary" }} />
-            <Typography fontSize={14} color="primary">
-              This is for viewing only. Click the <b>"Edit PPMP"</b> button to
-              update your PPMP.
-            </Typography>
-          </Stack>
-          <Stack direction="row" gap={1}>
-            <ButtonComponent
-              label="Add Item"
-              variant="outlined"
-              disabled={!show}
-              endDecorator={<BiPlus />}
-              onClick={() => {
-                setActivity({});
-                setExpenseClass({});
-                setOpenAdd(true);
-              }}
-            />
-            <ButtonComponent
-              label="Save as draft"
-              onClick={() => handleSubmit(1)}
-              disabled={!show}
-              isLoading={buttonLoader}
-              loadingLabel={"Saving..."}
-            />
-            <ButtonComponent
-              label="Submit PPMP"
-              // disabled={!show || is_draft?.status === 0}
-              onClick={() => handleConfirmationModal()}
-            />
-          </Stack>
-        </Stack>
-        <Divider sx={{ mb: 2 }} />
+        {is_draft === 1 && (
+          <>
+            <Stack mb={2} direction="row" justifyContent="space-between">
+              <Stack direction="row" alignItems="center" gap={1}>
+                <InfoIcon size={20} style={{ color: "primary" }} />
+                <Typography fontSize={14} color="primary">
+                  This is for viewing only. Click the <b>"Edit PPMP"</b> button
+                  to update your PPMP.
+                </Typography>
+              </Stack>
+              <Stack direction="row" gap={1}>
+                <ButtonComponent
+                  label="Add Item"
+                  variant="outlined"
+                  disabled={!show}
+                  endDecorator={<BiPlus />}
+                  onClick={() => {
+                    setActivity({});
+                    setExpenseClass({});
+                    setOpenAdd(true);
+                  }}
+                />
+                <ButtonComponent
+                  label="Save as draft"
+                  onClick={() => handleSubmit(1)}
+                  disabled={!show}
+                  isLoading={buttonLoader}
+                  loadingLabel={"Saving..."}
+                />
+                <ButtonComponent
+                  label="Submit PPMP"
+                  disabled={!show || is_draft === 0}
+                  onClick={() => handleConfirmationModal()}
+                />
+              </Stack>
+            </Stack>
+            <Divider sx={{ mb: 2 }} />
+          </>
+        )}
+
         <PPMPTable
           ppmpTable={tableData}
           items={items}
