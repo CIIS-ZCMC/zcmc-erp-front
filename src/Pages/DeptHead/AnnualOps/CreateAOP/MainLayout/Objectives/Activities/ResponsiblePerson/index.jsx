@@ -37,6 +37,7 @@ const ResponsiblePerson = () => {
   });
 
   const [isLoading, setIsLoading] = useState(false);
+  const [hasExistingResponsiblePersonnel, setHasExistingResponsiblePersonnel] = useState(responsible_people.length > 0);
   // const [isEnabledSave, setIsEnabledSave] = useState(false);s
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
 
@@ -82,10 +83,14 @@ const ResponsiblePerson = () => {
   };
 
   const handleCancel = (activityId) => {
-    resetValues(activityId);
+    if(!hasExistingResponsiblePersonnel){
+      resetValues(activityId);
+    }
     navigate(-1);
     // navigate(`/aop-create/activities/${rowId}`);
   };
+
+  console.log(responsible_people)
 
   return (
     <Fragment>
@@ -125,17 +130,10 @@ const ResponsiblePerson = () => {
         >
           {/* {isAssigned ? */}
 
-          {/* <ButtonComponent
-            onClick={() => navigate(-1)}
-            label={"Back to activities"}
-            size={"md"}
-            variant={"outlined"}
-          /> */}
-
           {hasData ? (
             <ButtonComponent
               onClick={() => handleCancel(activityId)}
-              label={"Cancel Selection"}
+              label={hasExistingResponsiblePersonnel ? "Back to activities": "Cancel Selection" }
               size={"md"}
               variant={"outlined"}
             />

@@ -60,7 +60,6 @@ function PPMPDashboard(props) {
   }, [assignedArea]);
   return (
     <Fragment>
-      {console.log("dashboard", status)}
       {pageLoader ? (
         <ThreeDotsLoader />
       ) : dashboard &&

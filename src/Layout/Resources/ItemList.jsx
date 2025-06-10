@@ -29,11 +29,6 @@ const ItemList = ({
     const [hasMore, setHasMore] = useState(true);
     const [isFetchingMore, setIsFetchingMore] = useState(false);
 
-    useEffect(() => {
-        console.log('items', items)
-        console.log('displayed Items', displayedItems)
-    }, [items, displayedItems])
-
     const filteredItems = useMemo(() => {
         return searchTerm.trim()
             ? items.filter((item) =>

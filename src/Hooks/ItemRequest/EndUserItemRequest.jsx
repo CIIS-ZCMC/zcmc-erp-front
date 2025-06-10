@@ -15,7 +15,6 @@ const useUserRequestItemHook = create((set, get) => ({
     set({ currentPage: page });
   },
   setSearchQuery: (query) => {
-    console.log("Setting search query:", query);
     set({ search_Query: query });
   },
   getMyItemRequestLists: (failedCallback) => {
@@ -36,7 +35,6 @@ const useUserRequestItemHook = create((set, get) => ({
       params,
       failed: failedCallback,
       success: (res) => {
-        console.log(res);
         const {
           data: { data, meta, links },
         } = res;
@@ -65,7 +63,6 @@ const useUserRequestItemHook = create((set, get) => ({
       form: form,
       success: (res) => {
         const { data } = res;
-        console.log("UserRequestItem added successfully:", data);
         clearInputs();
         setAlertDialog({
           isOpen: true,
@@ -102,7 +99,6 @@ const useUserRequestItemHook = create((set, get) => ({
         closemodal();
       },
       failed: (err) => {
-        console.log(err);
         setAlertDialog({
           isOpen: true,
           status: "error",

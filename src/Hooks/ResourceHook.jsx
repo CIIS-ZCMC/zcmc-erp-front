@@ -66,7 +66,6 @@ const useResourceHook = create(
                 ...resource,
                 [field]: value,
               };
-              // console.log(`Updating resource ${id}:`, updated);
               return updated;
             }
             return resource;
@@ -97,7 +96,6 @@ const useResourceHook = create(
               : cartItem
           );
           set({ cart: updatedCart });
-          console.log(updatedCart);
         } else {
           const newItem = {
             ...item,
@@ -108,13 +106,11 @@ const useResourceHook = create(
 
           const updatedCart = [...cart, newItem];
           set({ cart: updatedCart });
-          console.log(updatedCart);
         }
       },
 
       // Remove  resourse item from cart
       removeFromCart: (id) => {
-        // console.log(id)
         set((state) => ({
           cart: state.cart.filter((item) => item.id !== id),
         }));
@@ -217,7 +213,6 @@ const useResourceHook = create(
         return get()
           .resources
           .filter((item) =>
-            // console.log(item.parentId === activityId)
             item.parentId === activityId
           )
           .map((item) => ({

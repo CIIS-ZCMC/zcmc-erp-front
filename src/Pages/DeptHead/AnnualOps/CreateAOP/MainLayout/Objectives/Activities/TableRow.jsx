@@ -275,7 +275,6 @@ const TableRow = ({
                                 />
                             ) : (
                                 <Typography>
-                                    {console.info(isGadRelated)}
                                     {isGadRelated
                                         ? 'Yes'
                                         : 'No'

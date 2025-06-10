@@ -44,15 +44,15 @@ export const MyOwnRequestsList = () => {
 
   useEffect(() => {
     getMyItemRequestLists((message) => {
-      console.log("Error fetching classification data:", message);
+      // console.log("Error fetching classification data:", message);
     });
   }, [currentPage]);
 
   useEffect(() => {
     const handler = setTimeout(() => {
-      console.log("Search query changed:", search_Query);
+      // console.log("Search query changed:", search_Query);
       getMyItemRequestLists((message) => {
-        console.log("Error fetching classification data:", message);
+        // console.log("Error fetching classification data:", message);
       });
     }, 500); // Debounce the search query
 
