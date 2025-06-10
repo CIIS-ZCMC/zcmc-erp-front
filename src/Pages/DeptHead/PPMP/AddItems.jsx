@@ -1,8 +1,9 @@
-import { Box, Grid, Stack, Typography } from "@mui/joy";
+import { Box, Grid, Skeleton, Stack, Typography } from "@mui/joy";
 import React, {
   Fragment,
   useCallback,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from "react";
@@ -53,9 +54,12 @@ function AddItems(props) {
   const [hasMore, setHasMore] = useState(true);
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [displayLoading, setDisplayLoading] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
+  const [isFetchingMore, setIsFetchingMore] = useState(false);
   const [quantity, setQuantity] = useState(1);
   const [selectedItem, setSelectedItem] = useState(null);
+  const [searchTerm, setSearchTerm] = useState("");
 
   const totalQty = cart.reduce((sum, item) => sum + item.aop_quantity, 0);
   const totalPrice = cart.reduce(
@@ -177,39 +181,52 @@ function AddItems(props) {
     }, 500);
   };
 
+  const filteredItems = useMemo(() => {
+    return searchTerm.trim()
+      ? items.filter((item) =>
+          item.name.toLowerCase().includes(searchTerm.toLowerCase())
+        )
+      : items;
+  }, [items, searchTerm]);
   const fetchMoreItems = useCallback(() => {
-    if (!items.length) return;
+    if (!filteredItems.length) return;
 
-    setDisplayedItems((prev) => {
-      const nextItems = items.slice(prev.length, prev.length + ITEMS_PER_BATCH);
-      if (nextItems.length === 0) {
-        setHasMore(false);
-      }
-      return [...prev, ...nextItems];
-    });
-  }, [items]);
+    setIsFetchingMore(true); // Start loading
+
+    setTimeout(() => {
+      setDisplayedItems((prev) => {
+        const nextItems = filteredItems.slice(
+          prev.length,
+          prev.length + ITEMS_PER_BATCH
+        );
+        if (nextItems.length === 0) {
+          setHasMore(false);
+        }
+        return [...prev, ...nextItems];
+      });
+      setIsFetchingMore(false); // End loading
+    }, 500);
+  }, [filteredItems]);
 
   // Observe loadMoreRef
   useEffect(() => {
+    const target = loadMoreRef.current; // ✅ Capture current value
+    if (!target) return;
     const observer = new IntersectionObserver(
       (entries) => {
-        if (entries[0].isIntersecting && hasMore) {
+        if (entries[0].isIntersecting && hasMore && !isFetchingMore) {
           fetchMoreItems();
         }
       },
       { threshold: 1.0 }
     );
 
-    if (loadMoreRef.current) {
-      observer.observe(loadMoreRef.current);
-    }
+    observer.observe(target);
 
     return () => {
-      if (loadMoreRef.current) {
-        observer.disconnect();
-      }
+      observer.disconnect(); // ✅ Safely disconnect
     };
-  }, [fetchMoreItems, hasMore]);
+  }, [fetchMoreItems, hasMore, isFetchingMore]);
 
   useEffect(() => {
     setCartMeta({
@@ -217,18 +234,19 @@ function AddItems(props) {
       expense_class_id: expenseId,
     });
 
+    setDisplayLoading(true);
     getItems((status, message, data) => {
       if (status !== 200) {
         console.error("Failed to fetch items:", message);
       }
+      setDisplayLoading(false);
     });
   }, []);
 
   useEffect(() => {
-    if (items.length) {
-      setDisplayedItems(items.slice(0, ITEMS_PER_BATCH));
-    }
-  }, [items]);
+    setDisplayedItems(filteredItems.slice(0, ITEMS_PER_BATCH));
+    setHasMore(filteredItems.length > ITEMS_PER_BATCH);
+  }, [filteredItems]);
 
   return (
     <Fragment>
@@ -345,7 +363,7 @@ function AddItems(props) {
             md={8.1}
           >
             <BoxComponent sx={{ position: "sticky", top: 0 }}>
-              <SearchBarComponent />
+              <SearchBarComponent onSearch={(term) => setSearchTerm(term)} />
             </BoxComponent>
             <Grid
               container
@@ -362,30 +380,66 @@ function AddItems(props) {
                 overflowY: "auto",
               }}
             >
-              {displayedItems.map((item, index) => (
-                <Grid
-                  key={index}
-                  item="true"
-                  xs={12}
-                  sm={2}
-                  md={6}
-                  lg={4}
-                  xl={3.6}
-                  sx={{
-                    cursor: "pointer",
-                  }}
-                >
-                  <ItemCardComponent
-                    key={index}
-                    item={item}
-                    btnAction={() => addToCart(item)}
-                    itemInfoAction={() => {
-                      handleOpenItemDialog(item);
-                    }}
-                  />
-                </Grid>
-              ))}
-              <div ref={loadMoreRef}>Loading more items...</div>
+              {displayLoading ? (
+                [...Array(6)].map((_, index) => (
+                  <Grid key={index} item xs={12} sm={2} md={6} lg={4} xl={3.6}>
+                    <Skeleton
+                      variant="rectangular"
+                      animation="wave"
+                      height={180}
+                      sx={{ borderRadius: 10 }}
+                    />
+                  </Grid>
+                ))
+              ) : (
+                <>
+                  {displayedItems.map((item, index) => (
+                    <Grid
+                      key={index}
+                      item
+                      xs={12}
+                      sm={2}
+                      md={6}
+                      lg={4}
+                      xl={3.6}
+                      sx={{ cursor: "pointer" }}
+                    >
+                      <ItemCardComponent
+                        key={index}
+                        item={item}
+                        btnAction={() => addToCart(item)}
+                        itemInfoAction={() => handleOpenItemDialog(item)}
+                      />
+                    </Grid>
+                  ))}
+                  <Grid item xs={12}>
+                    <div ref={loadMoreRef}>
+                      {hasMore && isFetchingMore && (
+                        <Grid container spacing={2}>
+                          {[...Array(3)].map((_, idx) => (
+                            <Grid
+                              item
+                              xs={12}
+                              sm={2}
+                              md={6}
+                              lg={4}
+                              xl={3.6}
+                              key={idx}
+                            >
+                              <Skeleton
+                                variant="rectangular"
+                                animation="wave"
+                                height={180}
+                                sx={{ borderRadius: 10 }}
+                              />
+                            </Grid>
+                          ))}
+                        </Grid>
+                      )}
+                    </div>
+                  </Grid>
+                </>
+              )}
             </Grid>
           </Grid>
 

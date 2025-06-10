@@ -102,7 +102,7 @@ function PPMPItems(props) {
   const { user } = useAuth();
   const { name, id, assignedArea } = user ?? {};
 
-  const { is_draft } = location.state || {};
+  // const { is_draft } = location.state || {};
 
   //SNACKBAR
   const notify = () => setOpenNotify(true);
@@ -525,7 +525,7 @@ function PPMPItems(props) {
               isLoading={dlLoader}
               loadingLabel={"Exporting..."}
               variant="outlined"
-              disabled={is_draft?.status === 1}
+              // disabled={is_draft?.status === 1}
             />
             <ButtonComponent
               label={show ? "Exit Edit Mode" : "Edit PPMP"}
@@ -574,7 +574,7 @@ function PPMPItems(props) {
             />
             <ButtonComponent
               label="Submit PPMP"
-              disabled={!show || is_draft?.status === 0}
+              // disabled={!show || is_draft?.status === 0}
               onClick={() => handleConfirmationModal()}
             />
           </Stack>
