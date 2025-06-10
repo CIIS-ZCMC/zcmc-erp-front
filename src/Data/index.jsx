@@ -11,6 +11,8 @@ import {
   MdSettings,
   MdSupervisorAccount,
 } from "react-icons/md";
+import ItemSubmittedRequestsList from "../Pages/TEMP/ItemSubmittedRequestsList";
+import { MyOwnRequestsList } from "../Pages/TEMP/ItemMyOwnRequestsLists";
 
 const iconStyles = {
   size: 24,
@@ -48,6 +50,33 @@ export const sidebarRoutes = [
       {
         path: "/manage-deadlines",
         name: "Manage Deadlines",
+      },
+      {
+        path: "/submitted-items",
+        name: "Submitted Items",
+        element: <ItemSubmittedRequestsList />,
+        roles: ["super_admin"],
+        childPermissions: [
+          "ERP-AOP-MAN:write",
+          "M-001:read",
+          "M-001:write",
+          "M-001:edit",
+          "M-001:delete",
+        ],
+        children: [
+          {
+            index: true,
+            element: <MyOwnRequestsList />,
+          },
+          {
+            path: "pending",
+            element: <>pending</>,
+          },
+          {
+            path: "added",
+            element: <>added</>,
+          },
+        ],
       },
     ],
   },
@@ -104,9 +133,9 @@ export const sidebarRoutes = [
       {
         path: "/dealine-management",
         name: "Deadline Management",
-        childPermissions: ["ERP-DEAD-MAN:write"],
+        childPermissions: ["ERP-PPMP-MAN:approve"], // For testing
       },
-    ]
+    ],
   },
 
   {
@@ -157,7 +186,7 @@ export const sidebarRoutes = [
       },
     ],
   },
-]
+];
 
 export const AOPPathMap = {
   0: "all",

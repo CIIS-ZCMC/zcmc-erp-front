@@ -45,6 +45,7 @@ const iconStyles = {
 import ItemSubmittedRequestsList from "../Pages/TEMP/ItemSubmittedRequestsList";
 import { MyOwnRequestsList } from "../Pages/TEMP/ItemMyOwnRequestsLists";
 import { ItemRequestDatatable } from "../Pages/Consolidators/ItemManagement/ItemRequestDatatable";
+import ResponsiblePerson from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities/ResponsiblePerson";
 
 export const sidebarRoutes = [
   // DASHBOARD ROUTE
@@ -94,7 +95,7 @@ export const sidebarRoutes = [
 
               {
                 path: "person/:activityId",
-                element: <ResponsibePerson />,
+                element: <ResponsiblePerson />,
                 roles: ["super_admin"],
               },
             ],
@@ -312,7 +313,7 @@ export const sidebarRoutes = [
     children: [
       {
         index: true,
-        element: <>the index</>,
+        element: <MyOwnRequestsList />,
       },
       {
         path: "pending",
