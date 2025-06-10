@@ -110,6 +110,7 @@ export const FeedbackContent = ({
                                 area_code={area_code}
                                 date={created_at}
                                 isActivity
+                                // handleClick={}
                               />
                             )
                           )

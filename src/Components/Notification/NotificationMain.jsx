@@ -15,21 +15,37 @@ import NotificationItemList from "./NotificationItemList";
 import NoNotification from "./NoNotification";
 import ContainerComponent from "../Common/ContainerComponent";
 import {
+  useNotificationActions,
   useNotificationEvents,
   useNotifications,
+  useUnseenCount,
 } from "../../Hooks/NotificationsHook";
 import { groupByDate } from "../../Utils/GroupData";
 import moment from "moment";
 import ButtonComponent from "../Common/ButtonComponent";
-import { socket } from "../../Services/Socket";
 import { playNotificationSound } from "../../Utils/NotificationSound";
 import { toast } from "sonner";
 import notif from "../../assets/notif.mp3";
+import { useNavigate } from "react-router-dom";
+import { useAuth } from "../../Store/AuthStore";
+import useModalHook from "../../Hooks/ModalHook";
+import ConfirmationModal from "../Common/Dialog/ConfirmationModal";
+import ConfirmationModalComponent from "../Common/Dialog/ConfirmationModalComponent";
+import useSnackbarHook from "../Common/SnackbarHook";
 
-const NotificationMain = ({ unread = 2 }) => {
+const NotificationMain = () => {
   const [isOpen, setIsOpen] = useState(false);
   const [index, setIndex] = useState(0);
   const notifications = useNotifications();
+  const { seen, markAllAsRead } = useNotificationActions();
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const { setConfirmationModal, closeConfirmation } = useModalHook();
+  const [markAllModal, setMarkAllModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const { showSnack } = useSnackbarHook();
+
+  const unreadNotifications = useUnseenCount();
 
   const notificationsDisplay = useMemo(() => {
     let dataToDisplay = [];
@@ -53,6 +69,46 @@ const NotificationMain = ({ unread = 2 }) => {
 
   const handleClickNotif = () => {
     setIsOpen((prev) => !prev);
+  };
+
+  const handleOpenNotif = (id, module_path) => {
+    seen(id, () => {
+      navigate(module_path);
+      setIsOpen(false);
+      // localStorageSetter("path", module_path);
+      // window.location.href = module_path;
+    });
+  };
+
+  const handleMarkAllAsRead = () => {
+    setIsLoading(true);
+    if (user?.id)
+      markAllAsRead(user?.id, (status, message) => {
+        setIsLoading(false);
+        closeConfirmation();
+        showSnack(status, message);
+      });
+  };
+
+  const handleShowConfirmation = () => {
+    const data = {
+      title: "Mark all as read",
+      description:
+        "Are you sure you want to mark all the notifications as read?",
+      onConfirm: handleMarkAllAsRead,
+      status: "warning",
+    };
+
+    setConfirmationModal(data);
+    setMarkAllModal(true);
+  };
+
+  const openAlert = () => {
+    // return handleAlert(
+    //   422,
+    //   "Mark all as read",
+    //   "Are you sure you want to mark all the items as read?"
+    // );
   };
 
   // NOTIFICATION TOAST
@@ -91,33 +147,6 @@ const NotificationMain = ({ unread = 2 }) => {
     ));
   };
 
-  const handleOpenNotif = (id, module_path) => {
-    // seen(id, () => {
-    //   localStorageSetter("path", module_path);
-    //   window.location.href = module_path;
-    // });
-  };
-
-  const handleMarkAllAsRead = () => {
-    // if (employee_profile_id)
-    //   markAllAsRead(employee_profile_id, (status, message) => {
-    //     if (status === 200) {
-    //       closeAlert();
-    //       openDrawer();
-    //       handleClickDrawer();
-    //       toast.success(message);
-    //     }
-    //   });
-  };
-
-  const openAlert = () => {
-    // return handleAlert(
-    //   422,
-    //   "Mark all as read",
-    //   "Are you sure you want to mark all the items as read?"
-    // );
-  };
-
   // Start listening for new notifications via socket
   useNotificationEvents();
 
@@ -140,9 +169,9 @@ const NotificationMain = ({ unread = 2 }) => {
           width: "auto",
         }}
       >
-        {notifications?.length > 0 ? (
+        {unreadNotifications > 0 ? (
           <Badge
-            badgeContent={notifications?.length}
+            badgeContent={unreadNotifications}
             size="sm"
             color="primary"
             anchorOrigin={{
@@ -221,7 +250,7 @@ const NotificationMain = ({ unread = 2 }) => {
                             <NotificationItemList
                               key={key}
                               profile_url={profile_url}
-                              //   onClick={() => handleOpenNotif(id, module_path)}
+                              onClick={() => handleOpenNotif(id, module_path)}
                               title={title}
                               description={description}
                               date={created_at}
@@ -239,16 +268,25 @@ const NotificationMain = ({ unread = 2 }) => {
               <Divider />
 
               <Box>
-                {" "}
                 <ButtonComponent
                   color="primary"
                   label={"Mark all as read"}
                   variant={"outlined"}
+                  onClick={handleShowConfirmation}
+                  disabled={unreadNotifications === 0}
                 />
               </Box>
             </Stack>
           </ContainerComponent>
         </Sheet>
+      )}
+
+      {markAllModal && (
+        <ConfirmationModalComponent
+          rightButtonLabel={"Proceed"}
+          rightButtonAction={handleMarkAllAsRead}
+          isLoading={isLoading}
+        />
       )}
     </Fragment>
   );

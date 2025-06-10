@@ -1,6 +1,5 @@
 import React, { Fragment, useState } from "react";
 import useModalHook from "../../../../Hooks/ModalHook";
-import moment from "moment";
 import {
   useActivity,
   useActivityActions,
@@ -26,7 +25,7 @@ export const MarkReviewFooter = ({ openMarkModal, setOpenMarkModal }) => {
   const { activeActivity } = useActivityUIStates();
   const activity = useActivity();
 
-  const { is_reviewed, is_reviewed_date } = activity ?? {};
+  const { is_reviewed } = activity ?? {};
   const AOP_APPLICATION_ID = localStorageGetter("aop_application_id");
 
   // HOOKS
@@ -61,6 +60,7 @@ export const MarkReviewFooter = ({ openMarkModal, setOpenMarkModal }) => {
         closeConfirmation();
         setOpenMarkModal(false);
         getActivityById(activeActivity, () => {}), showSnack(status, message);
+        getAOPApplicationById(AOP_APPLICATION_ID, () => {});
       });
     } else {
       markAsReviewed(activeActivity, (status, message) => {
@@ -75,6 +75,7 @@ export const MarkReviewFooter = ({ openMarkModal, setOpenMarkModal }) => {
 
   return (
     <Fragment>
+      {/* {JSON.stringify(is_reviewed)} */}
       <Stack gap={2}>
         {/* REVIEW */}
         <Typography
@@ -84,20 +85,22 @@ export const MarkReviewFooter = ({ openMarkModal, setOpenMarkModal }) => {
           Double-checking support
         </Typography>
         <Box sx={{ gap: 1 }}>
-          <Checkbox
-            label="Mark activity as “Reviewed”"
-            size="sm"
-            sx={{ fontSize: 12, color: "neutral.800" }}
-            color="primary"
-            defaultChecked={is_reviewed}
-            onChange={handleClickMarkCheckbox}
-          />
+          <FormControl>
+            <Checkbox
+              label="Mark activity as “Reviewed”"
+              size="sm"
+              sx={{ fontSize: 12, color: "neutral.800" }}
+              color="primary"
+              checked={is_reviewed}
+              onChange={handleClickMarkCheckbox}
+            />
 
-          <FormHelperText sx={{ fontSize: 11, color: "neutral.400" }}>
-            Showing marks helps you determine which among all activities has
-            successfully passed your double-checking so that you don't have to
-            double-check again.
-          </FormHelperText>
+            <FormHelperText sx={{ fontSize: 11, color: "neutral.400" }}>
+              Showing marks helps you determine which among all activities has
+              successfully passed your double-checking so that you don't have to
+              double-check again.
+            </FormHelperText>
+          </FormControl>
 
           {/* {is_reviewed && (
             <FormHelperText sx={{ fontSize: 12, color: "neutral.600" }}>
