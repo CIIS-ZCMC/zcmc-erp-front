@@ -45,7 +45,7 @@ const Items = () => {
     cancelResources,
   } = useResourceHook();
 
-  const { setTotalCost } = useResourceHook();
+  const { resources, setTotalCost } = useResourceHook();
   const { updateCost } = useActivitiesHook();
   const [displayedItems, setDisplayedItems] = useState([]);
 
@@ -94,15 +94,17 @@ const Items = () => {
     });
   }, []);
 
-  // useEffect(() => {
-  //   if (items.length) {
-  //     setDisplayedItems(items);
-  //   }
-  // }, [items]);
-
-  // useEffect(() => {
-  //   console.log(items)
-  // }, [items])
+  useEffect(() => {
+    if(resources.length > 0){
+      resources.map((resource) => {
+        const exist = cart.find((item) => item.id === resource.item_id);
+        if(!exist){
+          const item = items.find((item) => item.id === resource.item_id)
+          addResourceToCart(item, activityId, resource.quantity);
+        }
+      })
+    }
+  }, [])
 
   const handleOpenItemDialog = (item) => {
     setSelectedItem(item);
