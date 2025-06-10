@@ -1,14 +1,21 @@
 import React from "react";
-import { useAuth } from "../Store/AuthStore";
-import { Typography } from "@mui/joy";
+import { Stack, Typography } from "@mui/joy";
+import PageTitle from "../Components/Common/PageTitle";
 
-function Dashboard(props) {
-  const { user } = useAuth();
+function Dashboard() {
 
-  const { name, id } = user ?? {};
   return (
     <div>
-      <Typography>USER: {name}</Typography>
+      <Stack gap={3}>
+        <PageTitle
+          title={
+            <Typography>
+              Dashboard
+            </Typography>
+          }
+          description={"Welcome to the dashboard."}
+        />
+      </Stack>
     </div>
   );
 }

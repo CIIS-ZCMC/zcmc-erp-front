@@ -33,7 +33,22 @@ const TableRow = ({
 
   const handleOnRowClick = (id) => setEditRowId(id);
 
+  function onRemove(id) {
+    setLocalResources(
+      localResources.filter((item) => item.id !== id)
+    )
+  }
+
   function onChangeFieldValue(id, key, value) {
+    if(key === 'quantity') {
+      const totalCost = localResources.reduce((acc, item) => {
+        const quantity = item.id === id ? value : item.quantity;
+        return acc + (quantity * item.individualPrice);
+      }, 0);
+
+      updateCost(parentId, totalCost)
+    }
+
     setLocalResources((prev) => [
       ...prev.map((item) => {
         if (item.id !== id) return item;
@@ -46,8 +61,6 @@ const TableRow = ({
         if (key === "quantity") {
           updatedItem.totalCost = value * item.individualPrice;
           updateResourceField(id, key, value)
-          updateCost(parentId, updatedItem.totalCost)
-          console.log("Test");
         };
 
         return {
@@ -57,10 +70,6 @@ const TableRow = ({
       }),
     ]);
   }
-
-  // useEffect(() => {
-  //   console.log(localResources)
-  // }, [localResources])
 
   const expenseClassOptions = [
     { id: 1, label: 'MOOE', value: 'MOOE' },
@@ -75,7 +84,7 @@ const TableRow = ({
 
   return (
     <Fragment>
-      {localResources
+      {rows
         ?.filter((value) => value.parentId === parentId)
         .map(
           (
@@ -89,10 +98,6 @@ const TableRow = ({
             },
             index
           ) => {
-            const isEditing = editRowId === id;
-            const [selectPurchaseType, setSelectPurchaseType] = useState(purchaseTypeId ?? null);
-            const [selectedExpenseClass, setSelectedExpenseClass] = useState(expenseClass ?? "")
-
             return (
               <tr key={id}>
                 <td>
@@ -104,7 +109,7 @@ const TableRow = ({
                 </td>
 
                 <td onClick={() => handleOnRowClick(id)}>
-                  {isEditing ? (
+                  {editRowId === id ? (
                     <Input
                       value={quantity ?? 0}
                       size="sm"
@@ -131,39 +136,33 @@ const TableRow = ({
                 </td>
 
                 <td onClick={() => handleOnRowClick(id)}>
-                  {isEditing ? (
+                  {editRowId === id ? (
                     <>
                       <AutocompleteComponent
                         placeholder="Select Purchase"
-                        value={selectPurchaseType}
+                        value={purchaseTypeId}
                         setValue={(val) => {
-                          // console.log(val)
-                          setSelectPurchaseType(val);
-                          updateResourceField(id, "purchaseTypeId", val);
+                          updateResourceField(id, "purchaseTypeId", val?.id);
                         }}
                         options={purchase_types.map((item) => {
-                          // console.log(item)
                           return { id: item.id, label: item.code };
                         })}
                       />
                     </>
                   ) : (
                     <Typography>
-                      {/* {console.info(selectPurchaseType.label)} */}
-                      {selectPurchaseType?.label || "-"}
+                      {purchase_types[purchaseTypeId]?.code || "-"}
                     </Typography>
                   )}
                 </td>
 
                 <td onClick={() => handleOnRowClick(id)}>
-                  {isEditing ? (
+                  {editRowId === id ? (
                     <>
                       <AutocompleteComponent
                         placeholder="Select Expense Class"
-                        value={selectedExpenseClass}
+                        value={expenseClass}
                         setValue={(val) => {
-                          console.log(val)
-                          setSelectedExpenseClass(val?.value);
                           updateResourceField(id, "expenseClass", val?.value);
                         }}
                         options={expenseClassOptions}
@@ -172,15 +171,17 @@ const TableRow = ({
 
                   ) : (
                     <Typography>
-                      {console.info(selectedExpenseClass)}
-                      {selectedExpenseClass || "-"}
+                      {expenseClass || "-"}
                     </Typography>
                   )}
                 </td>
 
                 <td>
                   <IconButtonComponent
-                    onClick={() => removeItemResource(id)}
+                    onClick={() => {
+                      removeItemResource(id); 
+                      onRemove(id)
+                    }}
                     icon={<Trash size={14} />}
                     size={"sm"}
                     // color={'danger'}
@@ -190,7 +191,7 @@ const TableRow = ({
               </tr>
             );
           }
-        )}
+        ) ?? []}
     </Fragment>
   );
 };

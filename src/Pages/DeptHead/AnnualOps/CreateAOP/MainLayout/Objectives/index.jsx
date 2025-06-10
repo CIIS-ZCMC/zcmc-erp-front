@@ -78,14 +78,9 @@ const Objectives = () => {
     }
   }, []);
 
-  // useEffect(() => {
-  //   console.log(activitiesCount)
-  // }, [activitiesCount])
-
   useEffect(() => {
     const params = { with_sub_data: 1 };
     getFunctionType(params, (status, message) => {
-      // console.log(status)
       if (!(status >= 200 && status < 300)) {
         // if status not success
         return; //Toast error
@@ -100,10 +95,6 @@ const Objectives = () => {
       addObjective();
     }
   }, [objectives, addObjective]);
-
-  useEffect(() => {
-    console.log(hasDiscussed);
-  }, [hasDiscussed]);
 
   function buildAOP() {
     const objectiveData = objectives?.map((item) => {
@@ -176,8 +167,6 @@ const Objectives = () => {
 
   const handleDiscussedConfirmationModal = () => {
 
-    console.log('alert')
-
     setOpenConfirmDiscussedDialog(true)
 
     const data = {
@@ -210,7 +199,6 @@ const Objectives = () => {
   //   // };
 
   //   create(payload, (status, message) => {
-  //     // console.log(message)
   //     let data = {};
 
   //     // if existing
@@ -479,7 +467,6 @@ const Objectives = () => {
                   "Yes, I have discussed these plans with my Division Chief."
                 }
                 onChange={(e) => {
-                  console.log(e.target.checked)
                   setIsDiscussed(e.target.checked);
                 }}
                 checked={hasDiscussed}

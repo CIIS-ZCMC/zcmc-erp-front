@@ -17,6 +17,7 @@ import useItemsHook from "../../Hooks/ItemsHook";
 import useResourceHook from "../../Hooks/ResourceHook";
 
 import { AOP_CONSTANTS } from "../../Data/constants";
+import useActivitiesHook from "../../Hooks/ActivitiesHook";
 
 const cartStyles = {
   width: 350,
@@ -44,8 +45,8 @@ const Items = () => {
     cancelResources,
   } = useResourceHook();
 
-  const { setTotalCost } = useResourceHook();
-
+  const { resources, setTotalCost } = useResourceHook();
+  const { updateCost } = useActivitiesHook();
   const [displayedItems, setDisplayedItems] = useState([]);
 
   const rowNumber = location.state?.activityRowId;
@@ -93,15 +94,17 @@ const Items = () => {
     });
   }, []);
 
-  // useEffect(() => {
-  //   if (items.length) {
-  //     setDisplayedItems(items);
-  //   }
-  // }, [items]);
-
-  // useEffect(() => {
-  //   console.log(items)
-  // }, [items])
+  useEffect(() => {
+    if(resources.length > 0){
+      resources.map((resource) => {
+        const exist = cart.find((item) => item.id === resource.item_id);
+        if(!exist){
+          const item = items.find((item) => item.id === resource.item_id)
+          addResourceToCart(item, activityId, resource.quantity);
+        }
+      })
+    }
+  }, [])
 
   const handleOpenItemDialog = (item) => {
     setSelectedItem(item);
@@ -124,6 +127,7 @@ const Items = () => {
   };
 
   const handleSaveResources = () => {
+    updateCost(activityId, totalPrice);
     saveItems(activityId, totalPrice, itemTotal);
 
     //make a condition here if id of aop is exisitng change the route to /aop-edit/id/activities/id/resources/rowNumber

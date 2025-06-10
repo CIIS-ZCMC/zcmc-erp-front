@@ -17,8 +17,6 @@ const TableRow = ({
     parentId,
     objectiveRowId,
 }) => {
-
-    console.log(rows)
     const navigate = useNavigate();
 
     const { activities } = useActivitiesHook();
@@ -58,10 +56,6 @@ const TableRow = ({
         return acc;
 
     }, {});
-
-    // useEffect(() => {
-    //     console.log(responsibleCountPerActivity)
-    // }, [responsibleCountPerActivity])
 
     //local state
     const [localAopActivity, setLocalAopActivity] = useState({});
