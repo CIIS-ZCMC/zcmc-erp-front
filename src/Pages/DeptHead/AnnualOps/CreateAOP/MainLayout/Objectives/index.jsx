@@ -30,7 +30,7 @@ import useResponsiblePeopleHook from "../../../../../../Hooks/ResponsiblePeopleH
 const Objectives = () => {
   const { create } = useAOPActions();
 
-  const { aopObjectives, deleteObjective, } = useAOPObjectivesHooks();
+  const { aopObjectives, deleteObjective } = useAOPObjectivesHooks();
   const { function_types, getFunctionType } = useFunctionTypeHook();
   const {
     objectives,
@@ -49,7 +49,8 @@ const Objectives = () => {
   } = useResponsiblePeopleHook();
   const { resources, findResourcesByActivityID, clearResources } =
     useResourceHook();
-  const { setAlertDialog, setConfirmationModal, closeConfirmation } = useModalHook();
+  const { setAlertDialog, setConfirmationModal, closeConfirmation } =
+    useModalHook();
 
   const navigate = useNavigate();
 
@@ -57,7 +58,8 @@ const Objectives = () => {
   const [editRowId, setEditRowId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
-  const [openConfirmDiscussedDialog, setOpenConfirmDiscussedDialog] = useState(false);
+  const [openConfirmDiscussedDialog, setOpenConfirmDiscussedDialog] =
+    useState(false);
 
   const [openSubmitModal, setOpenSubmitModal] = useState(false);
   const [openSaveMissionModal, setOpenSaveMissionModal] = useState(false);
@@ -166,8 +168,7 @@ const Objectives = () => {
   };
 
   const handleDiscussedConfirmationModal = () => {
-
-    setOpenConfirmDiscussedDialog(true)
+    setOpenConfirmDiscussedDialog(true);
 
     const data = {
       status: "warning",
@@ -176,11 +177,11 @@ const Objectives = () => {
         "We need to make sure that you already have a previous discussion and official go-signal for creating and submitting this request.",
     };
 
-    setConfirmationModal(data)
-  }
+    setConfirmationModal(data);
+  };
 
   const proceed = () => {
-    handleConfirmationModal()
+    handleConfirmationModal();
     // closeConfirmation();
   };
 
@@ -248,25 +249,22 @@ const Objectives = () => {
   //   });
   // };
 
-
   // handle submit aop objective
-  const handleSubmit = () => {
-
-    setIsLoading(true)
+  const handleSubmit = (isDraft) => {
+    setIsLoading(true);
 
     const aopPayload = buildAOP();
 
     const payload = {
       mission: mission,
       has_discussed: hasDiscussed === true ? true : false,
-      status: isDraft ? "draft" : "pending",
+      status: isDraft,
       authorization_pin: authorizationPin,
       application_objectives: aopPayload,
     };
 
     //Delay before calling the create() function
     setTimeout(() => {
-
       create(payload, (status, message) => {
         let data = {};
 
@@ -297,8 +295,8 @@ const Objectives = () => {
           clearLocalStorage();
           setMission("");
           setAlertDialog(data);
-          window.location.href = '/aop';
-          closeConfirmation()
+          window.location.href = "/aop";
+          closeConfirmation();
           return;
         }
 
@@ -312,7 +310,6 @@ const Objectives = () => {
       });
     }, 1000);
   };
-
 
   // handle save mission
   const handleSaveMission = () => {
@@ -343,7 +340,7 @@ const Objectives = () => {
   const handleCancelRequest = () => {
     {
       clearLocalStorage();
-      setMission('');
+      setMission("");
       navigate("/aop");
     }
   };
@@ -362,7 +359,10 @@ const Objectives = () => {
             />
 
             <ButtonComponent
-              onClick={() => setIsDraft(true)}
+              onClick={() => {
+                setIsDraft(true);
+                handleSubmit("draft");
+              }}
               label={"Save as Draft"}
               variant={"outlined"}
               disabled={isDraft}
@@ -445,7 +445,7 @@ const Objectives = () => {
       {openConfirmDialog && (
         <ConfirmationModalComponent
           leftButtonlabel={"Back to editor"}
-          rightButtonAction={() => handleSubmit()}
+          rightButtonAction={() => handleSubmit("pending")}
           withAuthPin
           rightButtonDisabled={!authorizationPin}
           setAuthPin={setAuthorizationPin}
@@ -475,7 +475,6 @@ const Objectives = () => {
           }
         />
       )}
-
     </Fragment>
   );
 };
