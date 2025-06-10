@@ -16,6 +16,7 @@ import { AOP_RESOURCE_HEADER } from "../../../../../../../../Data/Columns";
 import useResourceHook from "../../../../../../../../Hooks/ResourceHook";
 import useItemsHook from "../../../../../../../../Hooks/ItemsHook";
 import usePurchaseTypeHook from "../../../../../../../../Hooks/PurchaseTypeHook";
+import useActivitiesHook from "../../../../../../../../Hooks/ActivitiesHook";
 
 const Resources = () => {
   const { resources, addResource } = useResourceHook();

@@ -7,6 +7,7 @@ import { Trash } from "lucide-react";
 import useResourceHook from "../../../../../../../../Hooks/ResourceHook";
 import AutocompleteComponent from "../../../../../../../../Components/Form/AutocompleteComponent";
 import IconButtonComponent from "../../../../../../../../Components/Common/IconButtonComponent";
+import useActivitiesHook from "../../../../../../../../Hooks/ActivitiesHook";
 
 const TableRow = ({
   rows,
@@ -16,7 +17,6 @@ const TableRow = ({
   handleBlur,
   purchase_types,
 }) => {
-  const navigate = useNavigate();
 
   const {
     setTotalCost,
@@ -24,6 +24,8 @@ const TableRow = ({
     removeItemResource,
     updateResourceField,
   } = useResourceHook();
+
+  const { updateCost } = useActivitiesHook();
 
   const [localResources, setLocalResources] = useState(rows);
   const [editRowId, setEditRowId] = useState(null);
@@ -44,6 +46,8 @@ const TableRow = ({
         if (key === "quantity") {
           updatedItem.totalCost = value * item.individualPrice;
           updateResourceField(id, key, value)
+          updateCost(parentId, updatedItem.totalCost)
+          console.log("Test");
         };
 
         return {

@@ -18,6 +18,7 @@ const TableRow = ({
     objectiveRowId,
 }) => {
 
+    console.log(rows)
     const navigate = useNavigate();
 
     const { activities } = useActivitiesHook();
@@ -264,8 +265,7 @@ const TableRow = ({
 
                         <td >
                             <Typography>
-                                {/* {totalCost} */}
-                                {0}
+                                {cost}
                             </Typography>
                         </td>
 
