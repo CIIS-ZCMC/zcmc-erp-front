@@ -1,6 +1,6 @@
 import { Fragment, useState, useEffect, useMemo } from 'react'
 
-import { Typography, Stack, Link, Chip } from '@mui/joy';
+import { Typography, Stack, Link, Chip, Tooltip } from '@mui/joy';
 import { useNavigate } from 'react-router-dom';
 import { Trash } from 'lucide-react';
 
@@ -81,9 +81,12 @@ const TableRow = ({
                                     )
                                     :
                                     (
-                                        <Typography>
-                                            {objective?.code || "-"}
-                                        </Typography>
+
+                                        <Tooltip title={objective ? objective?.description : ''} variant="solid">
+                                            <Typography >
+                                                {objective?.code || "-"}
+                                            </Typography>
+                                        </Tooltip>
                                     )
                                 }
                             </td>
@@ -103,9 +106,12 @@ const TableRow = ({
                                     )
                                     :
                                     (
-                                        <Typography>
-                                            {successIndicator?.code || "-"}
-                                        </Typography>
+
+                                        <Tooltip title={successIndicator ? successIndicator?.description : ''} variant="solid">
+                                            <Typography >
+                                                {successIndicator?.code || "-"}
+                                            </Typography>
+                                        </Tooltip>
                                     )
                                 }
                             </td>

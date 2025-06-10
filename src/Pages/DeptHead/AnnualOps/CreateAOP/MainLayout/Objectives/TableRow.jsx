@@ -86,18 +86,12 @@ const TableRow = ({
                   )
                   :
                   (<>
-
+                    {/* {console.info(objective)} */}
                     <Tooltip title={objective ? objective?.description : ''} variant="solid">
                       <Typography >
                         {objective?.code || "-"}
                       </Typography>
                     </Tooltip>
-                    {/* <Tooltip title={objective?.description} variant="solid">
-                      <Typography>
-                        {objective?.code || "-"}
-                        {JSON.stringify(objective?.description)}
-                      </Typography>
-                    </Tooltip> */}
                   </>
 
                   )
@@ -121,16 +115,13 @@ const TableRow = ({
                   )
                   :
                   (
-                    <Tooltip title={objective ? objective?.description : ''} variant="solid">
-                      <Typography >
-                        {objective?.code || "-"}
-                      </Typography>
-                    </Tooltip>
-
-                    // <Typography>
-                    //   {/* {console.info({ objective })} */}
-                    //   {successIndicator?.code || "-"}
-                    // </Typography>
+                    <>
+                      <Tooltip title={successIndicator ? successIndicator?.description : ''} variant="solid">
+                        <Typography >
+                          {successIndicator?.code || "-"}
+                        </Typography>
+                      </Tooltip>
+                    </>
                   )
                 }
               </td>
