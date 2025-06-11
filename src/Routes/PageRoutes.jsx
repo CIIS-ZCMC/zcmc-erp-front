@@ -3,6 +3,10 @@ import { Navigate } from "react-router-dom";
 import AnnualOps from "../Pages/DeptHead/AnnualOps/AnnualOps";
 import Dashboard from "../Pages/Dashboard";
 
+//updated routing for AOP
+import AOP from "../Pages/DeptHead/AnnualOps/AOPManagement/AOP";
+import AOPObjectives from "../Pages/DeptHead/AnnualOps/AOPManagement/Objectives/Objectives";
+
 import CreateAOP from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout";
 import EditAOP from "../Pages/DeptHead/AnnualOps/EditAOP";
 import EditObjectives from "../Pages/DeptHead/AnnualOps/EditAOP/Objectives/";
@@ -70,6 +74,17 @@ export const sidebarRoutes = [
         element: <AnnualOps />,
         childPermissions: ["ERP-AOP-MAN:write"],
       },
+
+      {
+        path: '/aop-management',
+        element: <AOP />,
+        roles: ['super_admin'],
+        childPermissions: ["ERP-AOP-MAN:write"],
+        children: [
+          { index: true, element: <AOPObjectives /> }
+        ]
+      },
+
       {
         path: "/aop-create",
         name: "Create AOP ",

@@ -9,13 +9,17 @@ const useAOPObjectivesHooks = create((set, get) => ({
   aop_timeline: [],
   mission: "",
   aop_id: null,
-  isLoading: false,
 
   actions: {
     setAopObjectives: (data) => {
       set(() => ({
         aopObjectives: data,
       }));
+    },
+
+    setAopId: (id) => {
+      localStorage.setItem("aop application id", id);
+      set({ aop_id: id });
     },
 
     getSummary: (callBack) => {
@@ -85,7 +89,7 @@ const useAOPObjectivesHooks = create((set, get) => ({
       });
     },
 
-    exportAsExcel: (id, callBack = () => {}) => {
+    exportAsExcel: (id, callBack = () => { }) => {
       download({
         url: `${API.AOP_EXPORT_EXCEL}/${id}`,
         title: "AOP Excel Export",
@@ -105,3 +109,7 @@ export default useAOPObjectivesHooks;
 
 export const useAOPActions = () =>
   useAOPObjectivesHooks((state) => state.actions);
+
+export const useSetAOPID = () =>
+  useAOPObjectivesHooks((state) => state.actions);
+

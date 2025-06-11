@@ -469,7 +469,7 @@ const index = () => {
               placeholder={"Please insert mission content here"}
               value={mission}
               setValue={setMission}
-              //   onChange={(e) => setMission(e.target.value)}
+            //   onChange={(e) => setMission(e.target.value)}
             />
           </>
         }

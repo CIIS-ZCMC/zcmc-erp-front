@@ -4,7 +4,8 @@ import { Stack, Typography, Grid } from "@mui/joy";
 import { useNavigate } from "react-router-dom";
 
 import useAOPObjectivesHooks from "../../../Hooks/AOP/AOPObjectivesHook";
-import { useAOPActions } from "../../../Hooks/AOP/AOPObjectivesHook";
+
+import { useAOPActions, } from "../../../Hooks/AOP/AOPObjectivesHook";
 
 import Header from "./Header";
 import Summary from "./Summary";
@@ -26,8 +27,8 @@ const AnnualOps = () => {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const { aopObjectives, aop_summary } = useAOPObjectivesHooks();
-  const { getSummary } = useAOPActions();
+  const { aop_id, aopObjectives, aop_summary } = useAOPObjectivesHooks();
+  const { getSummary, setAopId } = useAOPActions();
 
   const {
     aop_application_id,
@@ -47,6 +48,12 @@ const AnnualOps = () => {
   } = aop_summary;
 
   useEffect(() => {
+    // console.log('id from store', aop_application_id)
+    // console.log('id from aop summary', aop_id)
+    setAopId(aop_application_id)
+  }, [aop_application_id])
+
+  useEffect(() => {
     setIsLoading(true);
 
     getSummary((status, message) => {
@@ -61,7 +68,7 @@ const AnnualOps = () => {
   return (
     <Fragment>
       <PageTitle
-        title={AOP_CONSTANTS.CREATE_AOP_TITLE}
+        title={aop_id ? AOP_CONSTANTS.EDIT_AOP_TITLE : AOP_CONSTANTS.CREATE_AOP_TITLE}
         description={AOP_CONSTANTS.CREATE_AOP_SUBHEADING}
       />
       {isLoading ? (
@@ -77,7 +84,7 @@ const AnnualOps = () => {
         </BoxComponent>
       ) : (
         <>
-          {!aop_application_id ? ( //to be fixed
+          {!aop_id ? ( //to be fixed
             <BoxComponent
               mt={3}
               height={"83vh"}
@@ -117,7 +124,7 @@ const AnnualOps = () => {
                 <ButtonComponent
                   label={"Request new items"}
                   variant={"outlined"}
-                  // onClick={() => navigate('create')}
+                // onClick={() => navigate('create')}
                 />
 
                 <ButtonComponent

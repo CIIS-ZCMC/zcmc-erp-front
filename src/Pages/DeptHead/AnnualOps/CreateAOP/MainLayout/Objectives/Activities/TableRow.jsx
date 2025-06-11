@@ -354,7 +354,6 @@ const TableRow = ({
                                         color="success"
                                     >
                                         {responsibleCountPerActivity[id] || 0}
-                                        {/* {resourceCountPerActivity[id] || 0} */}
                                     </Chip>
                                 </Stack>
 
@@ -363,7 +362,6 @@ const TableRow = ({
                                     onClick={() => deleteRow(id)}
                                     icon={<Trash size={14} />}
                                     size={'sm'}
-                                    // color={'danger'}
                                     variant={'text'}
                                 />
                             </Stack>
