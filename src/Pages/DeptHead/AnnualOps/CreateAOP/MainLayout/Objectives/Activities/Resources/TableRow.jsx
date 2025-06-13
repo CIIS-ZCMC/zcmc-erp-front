@@ -17,7 +17,6 @@ const TableRow = ({
   handleBlur,
   purchase_types,
 }) => {
-
   const {
     setTotalCost,
     resources: resourceHooks,
@@ -29,24 +28,22 @@ const TableRow = ({
 
   const [localResources, setLocalResources] = useState(rows);
   const [editRowId, setEditRowId] = useState(null);
-  const [localTotalCost, setLocalTotalCost] = useState(0)
+  const [localTotalCost, setLocalTotalCost] = useState(0);
 
   const handleOnRowClick = (id) => setEditRowId(id);
 
   function onRemove(id) {
-    setLocalResources(
-      localResources.filter((item) => item.id !== id)
-    )
+    setLocalResources(localResources.filter((item) => item.id !== id));
   }
 
   function onChangeFieldValue(id, key, value) {
-    if(key === 'quantity') {
+    if (key === "quantity") {
       const totalCost = localResources.reduce((acc, item) => {
         const quantity = item.id === id ? value : item.quantity;
-        return acc + (quantity * item.individualPrice);
+        return acc + quantity * item.individualPrice;
       }, 0);
 
-      updateCost(parentId, totalCost)
+      updateCost(parentId, totalCost);
     }
 
     setLocalResources((prev) => [
@@ -60,8 +57,8 @@ const TableRow = ({
 
         if (key === "quantity") {
           updatedItem.totalCost = value * item.individualPrice;
-          updateResourceField(id, key, value)
-        };
+          updateResourceField(id, key, value);
+        }
 
         return {
           ...item,
@@ -72,11 +69,11 @@ const TableRow = ({
   }
 
   const expenseClassOptions = [
-    { id: 1, label: 'MOOE', value: 'MOOE' },
-    { id: 2, label: 'CO', value: 'CO' }
-  ]
+    { id: 1, label: "MOOE", value: "MOOE" },
+    { id: 2, label: "CO", value: "CO" },
+  ];
 
-  //get the total cost 
+  //get the total cost
   const totalCostFormat = (quantity, individualPrice) => {
     const total = (quantity * individualPrice).toFixed(2);
     setLocalTotalCost(total);
@@ -116,7 +113,7 @@ const TableRow = ({
                       placeholder="Quantity"
                       onChange={(e) => {
                         const intValue = parseInt(e.target.value, 10) || 0;
-                        onChangeFieldValue(id, "quantity", intValue)
+                        onChangeFieldValue(id, "quantity", intValue);
                       }}
                     />
                   ) : (
@@ -131,7 +128,7 @@ const TableRow = ({
                 <td onClick={() => handleOnRowClick(id)}>
                   <Typography>
                     {/* {totalCostFormat(quantity, individualPrice)} */}
-                    {(Number(quantity * individualPrice).toFixed(2)) || "-"}
+                    {Number(quantity * individualPrice).toFixed(2) || "-"}
                   </Typography>
                 </td>
 
@@ -140,7 +137,11 @@ const TableRow = ({
                     <>
                       <AutocompleteComponent
                         placeholder="Select Purchase"
-                        value={purchaseTypeId}
+                        value={
+                          purchase_types?.find(
+                            (el) => el.id === purchaseTypeId
+                          ) || null
+                        }
                         setValue={(val) => {
                           updateResourceField(id, "purchaseTypeId", val?.id);
                         }}
@@ -168,19 +169,16 @@ const TableRow = ({
                         options={expenseClassOptions}
                       />
                     </>
-
                   ) : (
-                    <Typography>
-                      {expenseClass || "-"}
-                    </Typography>
+                    <Typography>{expenseClass || "-"}</Typography>
                   )}
                 </td>
 
                 <td>
                   <IconButtonComponent
                     onClick={() => {
-                      removeItemResource(id); 
-                      onRemove(id)
+                      removeItemResource(id);
+                      onRemove(id);
                     }}
                     icon={<Trash size={14} />}
                     size={"sm"}

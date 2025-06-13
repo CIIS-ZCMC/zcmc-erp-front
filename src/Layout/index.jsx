@@ -1,5 +1,13 @@
 import { Outlet } from "react-router-dom";
-import { Avatar, Box, Divider, Grid, Stack, Typography, useTheme } from "@mui/joy";
+import {
+  Avatar,
+  Box,
+  Divider,
+  Grid,
+  Stack,
+  Typography,
+  useTheme,
+} from "@mui/joy";
 import Sidebar from "./Sidebar";
 import useModalHook from "../Hooks/ModalHook";
 import { Fragment, useEffect, useState } from "react";
@@ -42,14 +50,18 @@ function Layout() {
             ) : (
               <Stack direction={"row"} spacing={1} alignItems={"center"}>
                 <Avatar
-                  sx={{ border: 5, borderColor: "primary.200", bgColor: "white" }}
+                  sx={{
+                    border: 5,
+                    borderColor: "primary.200",
+                    bgColor: "white",
+                  }}
                   variant="solid"
                   color="primary"
                 >
                   {user?.name[0]}
                 </Avatar>
                 <Stack>
-                  <Typography fontWeight={'bold'}> {user?.name}</Typography>
+                  <Typography fontWeight={"bold"}> {user?.name}</Typography>
                   <Typography level="body-xs"> {user?.email}</Typography>
                 </Stack>
               </Stack>
