@@ -5,6 +5,7 @@ import { Stack, Link, Checkbox } from "@mui/joy";
 import { Plus, ExternalLink } from "lucide-react";
 
 //custom components
+import AlertDialogComponent from "../../../../../Components/Common/Dialog/AlertDialogComponent";
 import ButtonComponent from "../../../../../Components/Common/ButtonComponent";
 import ContainerComponent from "../../../../../Components/Common/ContainerComponent";
 import EditableTableComponent from "../../../../../Components/Common/Table/EditableTableComponent";
@@ -34,6 +35,8 @@ const Objectives = () => {
     const { function_types, getFunctionType } = useFunctionTypeHook();
     const {
         objectives,
+        otherObjective,
+        otherSuccessIndicator,
         hasDiscussed,
         addObjective,
         updateObjectiveField,
@@ -49,7 +52,7 @@ const Objectives = () => {
     } = useResponsiblePeopleHook();
     const { resources, findResourcesByActivityID, clearResources } =
         useResourceHook();
-    const { setAlertDialog, setConfirmationModal, closeConfirmation } =
+    const { setAlertDialog, setConfirmationModal, closeConfirmation, closeAlertDialog } =
         useModalHook();
 
     const navigate = useNavigate();
@@ -133,6 +136,8 @@ const Objectives = () => {
             return {
                 objective_id: item.objective.id,
                 success_indicator_id: item.successIndicator.id,
+                others_objective: otherObjective,
+                other_success_indicator: otherSuccessIndicator,
                 activities: activitiesWithResourceAndResponsiblePeople,
             };
         });
@@ -405,6 +410,11 @@ const Objectives = () => {
                     }
                 />
             )}
+
+            <AlertDialogComponent
+                leftButtonLabel="'confirm"
+                leftButtonAction={() => { alert('navigating....'); closeAlertDialog() }}
+            />
         </Fragment>
     );
 };

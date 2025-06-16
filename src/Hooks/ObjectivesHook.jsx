@@ -7,6 +7,8 @@ const initialObjective = (rowId = 1) => ({
   functionType: null,
   objective: null,
   successIndicator: null,
+  othersObjective: '',
+  othersSuccessIndicator: '',
   rowId,
 });
 const useObjectivesHook = create(
@@ -14,10 +16,12 @@ const useObjectivesHook = create(
   persist(
     (set, get) => ({
       objectives: [],
+      currentEditedObjective: null,
       hasDiscussed: false,
       current_parent_id: null,
       current_row_id: null,
 
+      setCurrentEditedObjective: (objective) => set({ currentEditedObjective: objective }),
 
       setObjectives: (data) => {
         // console.log(data)
@@ -99,3 +103,9 @@ const useObjectivesHook = create(
   )
 );
 export default useObjectivesHook;
+
+export const useObjectivesActions = () =>
+  useObjectivesHook(state => state.actions);
+
+export const useObjectives = () =>
+  useObjectivesHook(state => state.objectives)

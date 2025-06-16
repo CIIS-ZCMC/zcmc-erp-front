@@ -74,7 +74,7 @@ const useActivitiesHook = create(
                     initialRender: false,
                 }));
             },
-            
+
             updateCost: (parentId, cost) => {
                 set((state) => ({
                     activities: state.activities.map((activity) => {

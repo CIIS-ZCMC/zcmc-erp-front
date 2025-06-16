@@ -6,6 +6,7 @@ import {
   FormControl,
   FormHelperText,
   FormLabel,
+  Tooltip,
 } from "@mui/joy";
 import { getFontSize } from "../../Utils/Typography";
 import userErrorInputHook from "../../Hooks/ErrorInputHook";
@@ -68,13 +69,9 @@ function AutocompleteComponent({
             >
               <Box display="flex" flexDirection="column">
                 <Typography variant="body1" fontWeight="500">
-                  {option?.label}
+                  {/* {console.info(option)} */}
+                  {option.description}
                 </Typography>
-                {option.designation && (
-                  <Typography variant="caption" color="text.secondary">
-                    {option.designation}
-                  </Typography>
-                )}
               </Box>
             </li>
           ))
@@ -84,6 +81,9 @@ function AutocompleteComponent({
         onClose={onClose}
         name={name}
         getOptionLabel={getOptionLabel}
+        isOptionEqualToValue={(option, value) =>
+          option.id === value.id
+        }
         sx={{
           fontSize: getFontSize(size),
           background: darkMode ? "none" : "inherit",
