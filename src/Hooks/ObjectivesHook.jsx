@@ -24,14 +24,12 @@ const useObjectivesHook = create(
       setCurrentEditedObjective: (objective) => set({ currentEditedObjective: objective }),
 
       setObjectives: (data) => {
-        // console.log(data)
         set((state) => ({
           objectives: data
         }))
       },
 
       clearParentId: () => {
-        // console.log(data)
         set(() => ({
           current_parent_id: null,
         }))

@@ -1,5 +1,5 @@
 import { useEffect, useState, Fragment } from "react";
-import { Typography, Stack, Link, Chip, Input, Tooltip, } from "@mui/joy";
+import { Typography, Stack, Link, Chip, Input, Tooltip, Textarea } from "@mui/joy";
 import { Trash, PencilLine } from "lucide-react";
 import { useLocation, useNavigate } from "react-router-dom";
 
@@ -42,6 +42,17 @@ const ObjectivesTable = ({
     const handleCloseOthersModal = () => {
         setOpenOthersModal(false)
     }
+
+    // local handler for onChange text area
+    const handleOnTextAreaChange = (id, field, value) => {
+        handleChange(id, field, value);
+        if (currentEditedObjective?.id === id) {
+            setCurrentEditedObjective({
+                ...currentEditedObjective,
+                [field]: value
+            });
+        }
+    };
 
     return (
         <Fragment>
@@ -89,41 +100,47 @@ const ObjectivesTable = ({
 
                                     {editRowId === id ?
                                         (
-                                            <Stack
-                                                direction={'row'}
-                                                alignItems={'center'}
-                                                gap={1}
-                                            >
-                                                <AutocompleteComponent
-                                                    placeholder="Select objective"
-                                                    value={objective}
-                                                    setValue={(val) => {
-                                                        handleChange(id, 'objective', val);
-                                                        setEditRowId(null);
-                                                    }}
-                                                    options={functionType?.objectives ?? []}
-                                                    isRenderOption
-                                                />
-
-                                                {objective?.code === 'OBJ-O-4904' &&
-                                                    <IconButtonComponent
-                                                        onClick={() => handleOpenOthersModal(id)}
-                                                        icon={<PencilLine size={14} />}
-                                                        // color={'danger'}
-                                                        disabled={isEnableRemove}
-                                                        size={'sm'}
-                                                        variant={'text'}
+                                            <Fragment>
+                                                <Stack
+                                                    direction={'row'}
+                                                    alignItems={'center'}
+                                                    gap={1}
+                                                >
+                                                    <AutocompleteComponent
+                                                        placeholder="Select objective"
+                                                        value={objective}
+                                                        setValue={(val) => {
+                                                            handleChange(id, 'objective', val);
+                                                            setEditRowId(null);
+                                                        }}
+                                                        options={functionType?.objectives ?? []}
+                                                        isRenderOption
                                                     />
-                                                }
-                                            </Stack>
+
+                                                    {objective?.code === 'OBJ-O-4904' &&
+                                                        <IconButtonComponent
+                                                            onClick={() => handleOpenOthersModal(id)}
+                                                            icon={<PencilLine size={14} />}
+                                                            // color={'danger'}
+                                                            disabled={isEnableRemove}
+                                                            size={'sm'}
+                                                            variant={'text'}
+                                                        />
+                                                    }
+                                                </Stack>
+
+                                                <Typography mt={1}>
+                                                    {objective?.code === 'OBJ-O-4904' ? othersObjective : objective?.description || '-'}
+                                                </Typography>
+                                            </Fragment>
                                         )
                                         :
                                         (
-                                            <Tooltip title={objective ? objective?.description : ''} variant="solid">
-                                                <Typography >
-                                                    {objective?.code === 'OBJ-O-4904' ? othersObjective : objective?.code || '-'}
-                                                </Typography>
-                                            </Tooltip>
+                                            // <Tooltip title={objective ? objective?.description : ''} variant="solid">
+                                            <Typography >
+                                                {objective?.code === 'OBJ-O-4904' ? othersObjective : objective?.description || '-'}
+                                            </Typography>
+                                            // </Tooltip>
                                         )
                                     }
                                 </td>
@@ -133,24 +150,32 @@ const ObjectivesTable = ({
                                 >
                                     {editRowId === id ?
                                         (
-                                            <AutocompleteComponent
-                                                placeholder="Select success indicator"
-                                                value={successIndicator}
-                                                setValue={(val) => {
-                                                    handleChange(id, 'successIndicator', val);
-                                                    setEditRowId(null);
-                                                }}
-                                                options={objective?.success_indicators ?? []}
-                                                isRenderOption
-                                            />
+                                            <Fragment>
+                                                <AutocompleteComponent
+                                                    placeholder="Select success indicator"
+                                                    value={successIndicator}
+                                                    setValue={(val) => {
+                                                        handleChange(id, 'successIndicator', val);
+                                                        setEditRowId(null);
+                                                    }}
+                                                    options={objective?.success_indicators ?? []}
+                                                    isRenderOption
+                                                />
+                                                <Typography mt={1} >
+                                                    {objective?.code === 'OBJ-O-4904' ? othersSuccessIndicator : successIndicator?.description || '-'}
+                                                </Typography>
+                                            </Fragment>
+
+
+
                                         )
                                         :
                                         (
-                                            <Tooltip title={successIndicator ? successIndicator?.description : ''} variant="solid">
-                                                <Typography >
-                                                    {objective?.code === 'OBJ-O-4904' ? othersSuccessIndicator : successIndicator?.code || '-'}
-                                                </Typography>
-                                            </Tooltip>
+                                            // <Tooltip title={successIndicator ? successIndicator?.description : ''} variant="solid">
+                                            <Typography >
+                                                {objective?.code === 'OBJ-O-4904' ? othersSuccessIndicator : successIndicator?.description || '-'}
+                                            </Typography>
+                                            // </Tooltip>
                                         )
                                     }
                                 </td>
@@ -215,22 +240,28 @@ const ObjectivesTable = ({
                                                 label={'Objective'}
                                                 placeholder="Other objective, please specify"
                                                 value={currentEditedObjective?.othersObjective || ''}
-                                                onChange={(e) => handleChange(
+                                                onChange={(e) => handleOnTextAreaChange(
                                                     currentEditedObjective?.id,
                                                     'othersObjective',
                                                     e.target.value
                                                 )}
+                                                onBlur={() => {
+                                                    setEditRowId(null);
+                                                }}
                                             />
 
                                             <TextareaComponent
                                                 label={'Success Indicator'}
                                                 placeholder="Other success indicator, please specify"
                                                 value={currentEditedObjective?.othersSuccessIndicator || ''}
-                                                onChange={(e) => handleChange(
+                                                onChange={(e) => handleOnTextAreaChange(
                                                     currentEditedObjective?.id,
                                                     'othersSuccessIndicator',
                                                     e.target.value
                                                 )}
+                                                onBlur={() => {
+                                                    setEditRowId(null);
+                                                }}
                                             />
                                         </Stack>
 
