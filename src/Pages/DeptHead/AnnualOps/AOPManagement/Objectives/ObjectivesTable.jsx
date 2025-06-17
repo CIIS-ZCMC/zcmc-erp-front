@@ -89,7 +89,9 @@ const ObjectivesTable = ({
                                         (
                                             <Typography>
                                                 {functionType?.label || "-"}
+                                                {functionType?.description}
                                             </Typography>
+
                                         )
                                     }
                                 </td>
