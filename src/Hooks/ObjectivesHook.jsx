@@ -29,6 +29,30 @@ const useObjectivesHook = create(
         }))
       },
 
+      //clear others and successindicator fields
+      clearOthersFields: (id) => {
+        set(state => ({
+          objectives: state.objectives.map(obj =>
+            obj.id === id
+              ? {
+                ...obj,
+                othersObjective: '',
+                othersSuccessIndicator: ''
+              }
+              : obj
+          ),
+          //clear current edited objective 
+          currentEditedObjective:
+            state.currentEditedObjective?.id === id
+              ? {
+                ...state.currentEditedObjective,
+                othersObjective: '',
+                othersSuccessIndicator: ''
+              }
+              : state.currentEditedObjective
+        }));
+      },
+
       clearParentId: () => {
         set(() => ({
           current_parent_id: null,

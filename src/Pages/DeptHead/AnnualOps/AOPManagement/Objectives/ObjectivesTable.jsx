@@ -22,7 +22,7 @@ const ObjectivesTable = ({
     const navigate = useNavigate();
 
     const tableDataStyles = { cursor: 'pointer' }
-    const { objectives, deleteObjective, currentEditedObjective, setCurrentEditedObjective } = useObjectivesHook();
+    const { objectives, deleteObjective, currentEditedObjective, setCurrentEditedObjective, clearOthersFields } = useObjectivesHook();
 
     const [openOthersModal, setOpenOthersModal] = useState(false);
     const [editRowId, setEditRowId] = useState(null);
@@ -113,6 +113,9 @@ const ObjectivesTable = ({
                                                         value={objective}
                                                         setValue={(val) => {
                                                             handleChange(id, 'objective', val);
+                                                            if (val?.code !== 'OBJ-O-4904') {
+                                                                clearOthersFields(id); // Clear if not "Other" type
+                                                            }
                                                             setEditRowId(null);
                                                         }}
                                                         options={functionType?.objectives ?? []}
@@ -168,16 +171,12 @@ const ObjectivesTable = ({
                                                 </Typography>
                                             </Fragment>
 
-
-
                                         )
                                         :
                                         (
-                                            // <Tooltip title={successIndicator ? successIndicator?.description : ''} variant="solid">
                                             <Typography >
                                                 {objective?.code === 'OBJ-O-4904' ? othersSuccessIndicator : successIndicator?.description || '-'}
                                             </Typography>
-                                            // </Tooltip>
                                         )
                                     }
                                 </td>
