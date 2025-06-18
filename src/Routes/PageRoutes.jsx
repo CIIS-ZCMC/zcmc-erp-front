@@ -10,15 +10,11 @@ import Activities from "../Pages/DeptHead/AnnualOps/AOPManagement/Objectives/Act
 import Resources from "../Pages/DeptHead/AnnualOps/AOPManagement/Objectives/Activities/Resourses/Resources";
 import Responsible from "../Pages/DeptHead/AnnualOps/AOPManagement/Objectives/Activities/Responsible Person/Responsible";
 
-import CreateAOP from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout";
 import EditAOP from "../Pages/DeptHead/AnnualOps/EditAOP";
 import EditObjectives from "../Pages/DeptHead/AnnualOps/EditAOP/Objectives/";
 import EditActivities from "../Pages/DeptHead/AnnualOps/EditAOP/Objectives/Activities";
 import EditResources from "../Pages/DeptHead/AnnualOps/EditAOP/Objectives/Activities/Resources";
 import EditResponsiblePerson from "../Pages/DeptHead/AnnualOps/EditAOP/Objectives/Activities/Responsible";
-import AnnualOpsPlanning from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives";
-// import Activities from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities";
-// import Resources from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities/Resources";
 
 import Items from "../Pages/Items";
 
@@ -112,70 +108,6 @@ export const sidebarRoutes = [
         ]
       },
 
-      {
-        path: "/aop-create",
-        name: "Create AOP ",
-        // hidden: true,
-        element: <CreateAOP />,
-        roles: ["super_admin"],
-        childPermissions: ["ERP-AOP-MAN:write"],
-        children: [
-          { index: true, element: <AnnualOpsPlanning /> }, //objective index
-          {
-            path: "activities/:objectiveId",
-            element: <Activities />,
-            children: [
-              {
-                path: "items/:activityId",
-                element: <Items />,
-              },
-              {
-                path: "resources/:activityId",
-                element: <Resources />,
-                roles: ["super_admin"],
-              },
-
-              {
-                path: "person/:activityId",
-                element: <Responsible />,
-                roles: ["super_admin"],
-              },
-            ],
-          },
-        ],
-      },
-
-      {
-        path: "/aop-edit",
-        element: <EditAOP />,
-        name: "Edit AOP",
-        roles: ["super_admin"],
-        childPermissions: ["ERP-AOP-MAN:write"],
-        children: [
-          { index: true, element: <EditObjectives /> }, //ENTRY POINT
-          {
-            path: "activities/:objectiveId",
-            element: <EditActivities />,
-            children: [
-              {
-                path: "items/:activityId",
-                element: <Items />,
-              },
-              {
-                path: "resources/:activityId",
-                element: <EditResources />,
-                roles: ["super_admin"],
-              },
-
-              {
-                path: "person/:activityId",
-                element: <EditResponsiblePerson />,
-                roles: ["super_admin"],
-              },
-            ],
-          },
-        ],
-      },
       {
         path: "/edit-ppmp",
         name: "Edit PPMP",

@@ -54,10 +54,14 @@ const ObjectivesTable = ({
         }
     };
 
+    useEffect(() => {
+        console.log(rows)
+    }, [rows])
+
     return (
         <Fragment>
             {
-                rows?.map(({ id, rowId, functionType, objective, successIndicator, othersObjective, othersSuccessIndicator }, index) => {
+                rows?.map(({ id, rowId, functionType, objective, successIndicator, othersObjective, othersSuccessIndicator, objectiveUuid }, index) => {
 
                     const isEnableRemove = !functionType && !objective && !successIndicator
 
@@ -196,7 +200,7 @@ const ObjectivesTable = ({
                                         >
                                             <Link
                                                 component="button"
-                                                onClick={() => navigate(`activities/${rowId}`, { state: { parentId: id, rowId: rowId, objectId: id } })}
+                                                onClick={() => navigate(`activities/${rowId}`, { state: { objectiveParentId: objectiveUuid, rowId: rowId } })}
                                                 fontSize={14}
                                             >
                                                 Manage Activities

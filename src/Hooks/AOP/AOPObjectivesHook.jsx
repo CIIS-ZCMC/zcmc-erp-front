@@ -18,7 +18,7 @@ const useAOPObjectivesHooks = create((set, get) => ({
     },
 
     setAopId: (id) => {
-      localStorage.setItem("aop application id", id);
+      localStorage.setItem("aop-application-id", id);
       set({ aop_id: id });
     },
 

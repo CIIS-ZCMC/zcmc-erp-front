@@ -25,6 +25,10 @@ const ActivitiesTable = ({
 }) => {
     const navigate = useNavigate();
 
+    useEffect(() => {
+        console.log(rows)
+    }, [rows])
+
     const { resources, findResourcesByActivityID, totalCost } = useResourceHook();
     const { responsible_people } = useResponsiblePeopleHook();
 
@@ -267,7 +271,6 @@ const ActivitiesTable = ({
                                     <Link
                                         component="button"
                                         onClick={() => {
-
                                             const resources = findResourcesByActivityID(id);
                                             navigate(resources.length > 0 ? `resources/${rowId}` : `items/${rowId}`, {
                                                 state: {

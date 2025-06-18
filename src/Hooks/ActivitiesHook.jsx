@@ -62,7 +62,7 @@ const useActivitiesHook = create(
             addActivity: (parentId) => {
                 // console.log(parentId)
                 const current = get().activities;
-                console.log("Adding activity");
+                // console.log("Adding activity");
                 set((state) => ({
                     activities: [
                         ...state.activities,

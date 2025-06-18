@@ -41,6 +41,7 @@ const index = () => {
     aop_id,
     deleteObjective,
   } = useAOPObjectivesHooks();
+
   const { function_types, getFunctionType } = useFunctionTypeHook();
   const {
     objectives,

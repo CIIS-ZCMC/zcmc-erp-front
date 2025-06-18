@@ -7,6 +7,7 @@ import { ThreeDotsLoader } from "../../../Components/Common/Loading/ThreeDotsLoa
 import QuantityControlComponent from "../../../Components/Cart/QuantityControlComponent";
 import ButtonComponent from "../../../Components/Common/ButtonComponent";
 
+
 import empty_cart from "../../../assets/empty-cart.png";
 
 const ItemCart = ({
@@ -92,7 +93,7 @@ const ItemCart = ({
                                                         fontWeight={600}
                                                         textColor={"success.500"}
                                                     >
-                                                        &#8369; {item.estimated_budget.toLocaleString()}
+                                                        &#8369; {item.estimated_budget?.toLocaleString()}
                                                     </Typography>
 
                                                     <Box

@@ -19,6 +19,9 @@ import DesignationSection from "./DesignationSection";
 import { AOP_CONSTANTS } from "../../../../../../../Data/constants";
 
 const Responsible = () => {
+
+    const aopApplicationId = localStorage.getItem('aop-application-id');
+
     const navigate = useNavigate();
     const location = useLocation();
 
@@ -131,7 +134,7 @@ const Responsible = () => {
             variant={"outlined"}
           /> */}
 
-                    {hasData ? (
+                    {!aopApplicationId ? (
                         <ButtonComponent
                             onClick={() => handleCancel(activityId)}
                             label={"Cancel Selection"}

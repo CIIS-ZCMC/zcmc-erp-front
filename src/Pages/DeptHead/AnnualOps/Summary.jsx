@@ -36,7 +36,7 @@ const Summary = (
     const objectivesContent = `Contains (${total_success_indicators}) success indicators in total on this request `
     const activitiesContent = ` Where (${total_gad_related}) are GAD-related and (${total_not_gad_related}) are not GAD-related on this reques`
     const resourcesContent = ` With (${total_cost}) total allocated budget`
-    const responsiblePersonContent = `Includes (${total_job_positions}) job positions, (${total_areas}) areas (${total_users}) user/s in total`
+    const responsiblePersonContent = `Includes (${total_job_positions}) job positions, (${total_users}) user/s in total`
 
     const handleExport = () => {
         exportAsExcel(aop_application_id, (status, message) => {
@@ -44,6 +44,11 @@ const Summary = (
             console.log(`Export status: ${status}, message: ${message}`);
         });
     }
+
+    const ResponsiblePeopleLabel = ({ count = 0 }) => {
+        if (count === 0) return 'No Responsible People';
+        return `${count} Responsible ${count === 1 ? 'Person' : 'People'}`;
+    };
 
     return (
         <Fragment>
@@ -63,28 +68,28 @@ const Summary = (
                 >
                     <Grid item={'true'} sm={5} md={5.8}>
                         <SummaryCard
-                            title={`${total_objectives} Objectives`}
+                            title={`${total_objectives} Objective(s)`}
                             content={objectivesContent}
                         />
                     </Grid>
 
                     <Grid item={'true'} sm={5} md={5.8}>
                         <SummaryCard
-                            title={`${total_activities} Activities`}
+                            title={`${total_activities} Activitie(s)`}
                             content={activitiesContent}
                         />
                     </Grid>
 
                     <Grid item={'true'} sm={5} md={5.8}>
                         <SummaryCard
-                            title={`${total_resources} Resources`}
+                            title={`${total_resources} Resource(s)`}
                             content={resourcesContent}
                         />
                     </Grid>
 
                     <Grid item={'true'} sm={5} md={5.8}>
                         <SummaryCard
-                            title={`${total_responsible_people} Responsible people`}
+                            title={<ResponsiblePeopleLabel count={total_responsible_people} />}
                             content={responsiblePersonContent}
                         />
                     </Grid>

@@ -26,8 +26,13 @@ const Activities = () => {
     const navigate = useNavigate();
     const params = useParams();
 
-    const parentId = location.state?.parentId;
+    //parent id (objective) of activity
+    const parentId = location.state?.objectiveParentId;
     const objectiveRowId = location.state?.rowId;
+
+    // useEffect(() => (
+    //     console.log(objectiveRowId)
+    // ), [objectiveRowId])
 
     const { objectiveId } = params; //objective Id lang for url path pero yung value is from row
     const currentPath = location.pathname;
@@ -35,13 +40,22 @@ const Activities = () => {
     const [loading, setLoading] = useState(true);
 
     const { current_parent_id, setCurrentObjective, current_row_id, setCurrentRowId, clearParentId } = useObjectivesHook();
-    const { activities, addActivity, updateActivityField, removeActivity } = useActivitiesHook();
+    const { activities, addActivity, updateActivityField, removeActivity, } = useActivitiesHook();
+
+    const { aopObjectives } = useAOPObjectivesHooks();
+
+    const aopApplicationId = localStorage.getItem('aop-application-id');
+
+    useEffect(() => {
+        console.log(aopApplicationId)
+        // console.log(aop_id)
+    }, [aopApplicationId])
 
     useEffect(() => {
         const hasActivitiesForParent = activities.some(
             (act) => act.parentId === parentId
         );
-        if (!hasActivitiesForParent && parentId && loading) {
+        if (!aopApplicationId && !hasActivitiesForParent && parentId && loading) {
             addActivity(parentId ?? current_parent_id);
             setLoading(false);
         }
@@ -131,8 +145,6 @@ const Activities = () => {
                                     label={"Add an Activity"}
                                     endDecorator={<Plus size={16} />}
                                 />
-                                {/* {current_parent_id} <br />
-                {parentId ? parentId : <>none</>} */}
                             </Stack>
                         }
                     >

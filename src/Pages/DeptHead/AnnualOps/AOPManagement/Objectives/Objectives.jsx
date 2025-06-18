@@ -3,8 +3,11 @@ import { Fragment, useEffect, useState } from "react";
 import { useNavigate, Outlet } from "react-router-dom";
 import { Stack, Link, Checkbox } from "@mui/joy";
 import { Plus, ExternalLink } from "lucide-react";
+import { v4 as uuid } from "uuid";
 
 //custom components
+import { ThreeDotsLoader } from "../../../../../Components/Common/Loading/ThreeDotsLoader";
+import BoxComponent from "../../../../../Components/Common/Card/BoxComponent";
 import AlertDialogComponent from "../../../../../Components/Common/Dialog/AlertDialogComponent";
 import ButtonComponent from "../../../../../Components/Common/ButtonComponent";
 import ContainerComponent from "../../../../../Components/Common/ContainerComponent";
@@ -29,10 +32,14 @@ import { AOP_CONSTANTS, CONFIRMATION_CONSTANTS } from "../../../../../Data/const
 import { AOP_HEADER } from "../../../../../Data/Columns";
 
 const Objectives = () => {
-    const { create } = useAOPActions();
+
+    const aopApplicationId = localStorage.getItem('aop-application-id');
+
+    const { create, updateAOP, getSingleAOP } = useAOPActions();
 
     const { aopObjectives, deleteObjective } = useAOPObjectivesHooks();
     const { function_types, getFunctionType } = useFunctionTypeHook();
+
     const {
         objectives,
         otherObjective,
@@ -42,15 +49,17 @@ const Objectives = () => {
         updateObjectiveField,
         clearObjectives,
         setIsDiscussed,
+        setObjectives,
     } = useObjectivesHook();
-    const { findActivitiesByObjectiveID, activities, clearActivities } =
+    const { findActivitiesByObjectiveID, activities, clearActivities, setActivities } =
         useActivitiesHook();
     const {
         responsible_people,
         findResponsiblePeopleByActivityID,
         clearResponsiblePeople,
+        setResponsiblePeople
     } = useResponsiblePeopleHook();
-    const { resources, findResourcesByActivityID, clearResources } =
+    const { resources, findResourcesByActivityID, clearResources, setResources } =
         useResourceHook();
     const { setAlertDialog, setConfirmationModal, closeConfirmation, closeAlertDialog } =
         useModalHook();
@@ -82,6 +91,18 @@ const Objectives = () => {
     }, []);
 
     useEffect(() => {
+        if (aopApplicationId) {
+            setIsLoading(true);
+            getSingleAOP(aopApplicationId, (status, message) => {
+                setIsLoading(false)
+                if (!(status >= 200 && status < 300)) {
+                    return
+                }
+            })
+        }
+    }, []);
+
+    useEffect(() => {
         const params = { with_sub_data: 1 };
         getFunctionType(params, (status, message) => {
             if (!(status >= 200 && status < 300)) {
@@ -98,6 +119,103 @@ const Objectives = () => {
             addObjective();
         }
     }, [objectives, addObjective]);
+
+    // formatted objectives
+    const formattedObjectives = aopObjectives.application_objectives?.map((
+        { function_type, objective, success_indicator, objective_uuid }, index) => ({
+            id: uuid(),
+            rowId: index + 1,
+            functionType: function_type,
+            objective: objective,
+            successIndicator: success_indicator,
+            objectiveUuid: objective_uuid,
+        })
+    );
+
+    // get flat activities
+    const flatActivities =
+        aopObjectives.application_objectives?.flatMap((data) =>
+            data.activity.map((activity) => ({
+                ...activity,
+                objectiveUuid: data.objective_uuid,
+            }))
+        ) || [];
+
+    // formatted activities
+    const formattedActivities = flatActivities.map(
+        (
+            {
+                activity_uuid,
+                name,
+                is_gad_related,
+                cost,
+                start_month,
+                end_month,
+                target,
+                objectiveUuid,
+            },
+            index
+        ) => ({
+            id: activity_uuid ? activity_uuid : uuid(),
+            parentId: objectiveUuid,
+            rowId: index + 1,
+            name: name,
+            isGadRelated: is_gad_related,
+            cost: cost,
+            startMonth: start_month,
+            endMonth: end_month,
+            target: {
+                firstQuarter: target?.first_quarter,
+                secondQuarter: target?.second_quarter,
+                thirdQuarter: target?.third_quarter,
+                fourthQuarter: target?.fourth_quarter,
+            },
+        })
+    );
+
+    //get item resourcese
+    const flatResources =
+        aopObjectives.application_objectives?.flatMap((data) =>
+            data.activity.flatMap((item) => item.resources)
+        ) || [];
+
+    // formatted resources
+    const formattedResources = flatResources?.map((resource, index) => ({
+        id: uuid(),
+        item_id: resource.item?.id,
+        parentId: resource.item.parentId,
+        rowId: index + 1,
+        name: resource.item?.name,
+        quantity: resource.quantity,
+        individualPrice: resource.item?.estimated_budget,
+        totalCost: Number(
+            (resource.item?.estimated_budget * resource.quantity).toFixed(2)
+        ),
+        expenseClass: resource.expense_class,
+        purchaseTypeId: resource.purchase_type,
+    }));
+
+    const flatResponsiblePeople = aopObjectives.application_objectives?.flatMap(
+        (data) => data.activity.flatMap((item) => item.responsible_people)
+    );
+
+    const formattedResponsiblePeople = flatResponsiblePeople?.map(
+        (responsible) => ({
+            activityId: responsible.activity_uuid,
+            users: responsible.users,
+            designations: responsible.designations,
+            areas: responsible.areas,
+        })
+    );
+
+    useEffect(() => {
+        setObjectives(formattedObjectives ? formattedObjectives : []);
+        setActivities(formattedActivities ? formattedActivities : []);
+        setResources(formattedResources ? formattedResources : []);
+        setResponsiblePeople(
+            formattedResponsiblePeople ? formattedResponsiblePeople : []
+        );
+    }, [aopObjectives])
 
     function buildAOP() {
         const objectiveData = objectives?.map((item) => {
@@ -251,7 +369,7 @@ const Objectives = () => {
 
         data = {
             status: 200,
-            title: "Mission created successfully!",
+            title: aopApplicationId ? "Mission updated successfully" : "Mission created successfully!",
             description: "",
         };
         setOpenSaveMissionModal(false);
@@ -303,54 +421,70 @@ const Objectives = () => {
                     </Stack>
                 }
             >
-                <EditableTableComponent
-                    columns={AOP_HEADER}
-                    secondaryHeader={
-                        <Link component="button" onClick={() => handleOpenDialog()} pb={1}>
-                            <Stack direction={"row"} gap={1} alignItems={"center"}>
-                                Create Mission
-                                <ExternalLink size={16} />
-                            </Stack>
-                        </Link>
-                    }
-                    tableRow={
-                        <ObjectivesTable
-                            rows={objectives}
-                            deleteRow={deleteObjective}
-                            handleChange={updateObjectiveField}
-                            function_types={function_types}
-                            activitiesCount={activitiesCount}
+                {isLoading
+                    ?
+                    <BoxComponent
+                        mt={3}
+                        height={"65vh"}
+                        display={"flex"}
+                        flexDirection={"column"}
+                        justifyContent={"center"}
+                        alignContent={"center"}
+                    >
+                        <ThreeDotsLoader />
+                    </BoxComponent>
+                    :
+                    <Fragment>
+                        <EditableTableComponent
+                            columns={AOP_HEADER}
+                            secondaryHeader={
+                                <Link component="button" onClick={() => handleOpenDialog()} pb={1}>
+                                    <Stack direction={"row"} gap={1} alignItems={"center"}>
+                                        Create Mission
+                                        <ExternalLink size={16} />
+                                    </Stack>
+                                </Link>
+                            }
+                            tableRow={
+                                <ObjectivesTable
+                                    rows={objectives}
+                                    deleteRow={deleteObjective}
+                                    handleChange={updateObjectiveField}
+                                    function_types={function_types}
+                                    activitiesCount={activitiesCount}
+                                />
+                            }
+                            stickLast
                         />
-                    }
-                    stickLast
-                />
 
-                <Stack
-                    mt={2}
-                    direction={"flex"}
-                    alignItems={"center"}
-                    justifyContent={"start"}
-                    gap={1}
-                >
-                    <ButtonComponent
-                        label={"Cancel Request"}
-                        size={"md"}
-                        variant={"outlined"}
-                        onClick={() => handleCancelRequest()}
-                    />
+                        <Stack
+                            mt={2}
+                            direction={"flex"}
+                            alignItems={"center"}
+                            justifyContent={"start"}
+                            gap={1}
+                        >
+                            <ButtonComponent
+                                label={"Cancel Request"}
+                                size={"md"}
+                                variant={"outlined"}
+                                onClick={() => handleCancelRequest()}
+                            />
 
-                    <ButtonComponent
-                        label={"Submit AOP"}
-                        size={"md"}
-                        variant={"solid"}
-                        disabled={
-                            !mission ||
-                            resources.length === 0 ||
-                            responsible_people.length === 0
-                        }
-                        onClick={() => handleDiscussedConfirmationModal()}
-                    />
-                </Stack>
+                            <ButtonComponent
+                                label={"Submit AOP"}
+                                size={"md"}
+                                variant={"solid"}
+                                disabled={
+                                    !mission ||
+                                    resources.length === 0 ||
+                                    responsible_people.length === 0
+                                }
+                                onClick={() => handleDiscussedConfirmationModal()}
+                            />
+                        </Stack>
+                    </Fragment>
+                }
             </ContainerComponent>
 
             {/* Create Mission Modal */}
@@ -413,6 +547,7 @@ const Objectives = () => {
                 leftButtonLabel="'confirm"
                 leftButtonAction={() => handleSubmitAlertSuccess()}
             />
+
             <Outlet />
         </Fragment>
 
