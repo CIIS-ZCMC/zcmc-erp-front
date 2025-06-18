@@ -6,6 +6,9 @@ import Dashboard from "../Pages/Dashboard";
 //updated routing for AOP
 import AOP from "../Pages/DeptHead/AnnualOps/AOPManagement/AOP";
 import AOPObjectives from "../Pages/DeptHead/AnnualOps/AOPManagement/Objectives/Objectives";
+import Activities from "../Pages/DeptHead/AnnualOps/AOPManagement/Objectives/Activities/Activities";
+import Resources from "../Pages/DeptHead/AnnualOps/AOPManagement/Objectives/Activities/Resourses/Resources";
+import Responsible from "../Pages/DeptHead/AnnualOps/AOPManagement/Objectives/Activities/Responsible Person/Responsible";
 
 import CreateAOP from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout";
 import EditAOP from "../Pages/DeptHead/AnnualOps/EditAOP";
@@ -14,8 +17,8 @@ import EditActivities from "../Pages/DeptHead/AnnualOps/EditAOP/Objectives/Activ
 import EditResources from "../Pages/DeptHead/AnnualOps/EditAOP/Objectives/Activities/Resources";
 import EditResponsiblePerson from "../Pages/DeptHead/AnnualOps/EditAOP/Objectives/Activities/Responsible";
 import AnnualOpsPlanning from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives";
-import Activities from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities";
-import Resources from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities/Resources";
+// import Activities from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities";
+// import Resources from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities/Resources";
 
 import Items from "../Pages/Items";
 
@@ -49,7 +52,7 @@ const iconStyles = {
 import ItemSubmittedRequestsList from "../Pages/TEMP/ItemSubmittedRequestsList";
 import { MyOwnRequestsList } from "../Pages/TEMP/ItemMyOwnRequestsLists";
 import { ItemRequestDatatable } from "../Pages/Consolidators/ItemManagement/ItemRequestDatatable";
-import ResponsiblePerson from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities/ResponsiblePerson";
+// import ResponsiblePerson from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities/ResponsiblePerson";
 
 export const sidebarRoutes = [
   // DASHBOARD ROUTE
@@ -81,7 +84,31 @@ export const sidebarRoutes = [
         roles: ['super_admin'],
         childPermissions: ["ERP-AOP-MAN:write"],
         children: [
-          { index: true, element: <AOPObjectives /> }
+          {
+            index: true,
+            element: <AOPObjectives />,
+          },
+          {
+            path: "activities/:objectiveId",
+            element: <Activities />,
+            children: [
+              {
+                path: "items/:activityId",
+                element: <Items />,
+              },
+              {
+                path: "resources/:activityId",
+                element: <Resources />,
+                roles: ["super_admin"],
+              },
+
+              {
+                path: "person/:activityId",
+                element: <Responsible />,
+                roles: ["super_admin"],
+              },
+            ],
+          }
         ]
       },
 
@@ -110,7 +137,7 @@ export const sidebarRoutes = [
 
               {
                 path: "person/:activityId",
-                element: <ResponsiblePerson />,
+                element: <Responsible />,
                 roles: ["super_admin"],
               },
             ],

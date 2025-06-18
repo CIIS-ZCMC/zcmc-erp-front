@@ -3,8 +3,8 @@ import React from 'react'
 import { Box, Card, CardContent, CardCover, Stack, Typography } from '@mui/joy'
 import { CircleSmall } from 'lucide-react'
 
-import ButtonComponent from '../../Components/Common/ButtonComponent'
-import ChipComponent from '../../Components/Common/ChipComponent'
+import ButtonComponent from '../../../Components/Common/ButtonComponent'
+import ChipComponent from '../../../Components/Common/ChipComponent'
 
 const Item = ({
     item,

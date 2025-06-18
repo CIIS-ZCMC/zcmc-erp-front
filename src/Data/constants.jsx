@@ -119,6 +119,14 @@ export const ITEM_SUBMITTED_LIST_CONSTANTS = {
     "You can request new items here if you wish to. Requested items cannot be canceled and are subject to processing by the assigned consolidators.",
 };
 
+export const CONFIRMATION_CONSTANTS = {
+  ALERT_SUBMITTION_TITLE: "Your AOP request is now ready for submission, would you like to get a preview first?",
+  ALERT_SUBMITTION_DESCRIPTION: 'Document previews will be generated and downloaded in Microsoft Excel Spreadsheet (.xls) file format. The document preview is for viewing purposes only to help you ensure that all fields are filled-up correctly and accurately.',
+
+  ALERT_HASDISCUSSED_TITLE: 'Have you discussed this AOP request with your Division Chief?',
+  ALERT_HASDISCUSSED_DESCRIPTION: 'We need to make sure that you already have a previous discussion and official go-signal for creating and submitting this request.',
+}
+
 export const MONTHS = [
   { label: "January", value: "01" },
   { label: "February", value: "02" },

@@ -129,7 +129,7 @@ const AnnualOps = () => {
 
                 <ButtonComponent
                   label={"Create new AOP"}
-                  onClick={() => navigate("/aop-create")}
+                  onClick={() => navigate("/aop-management")}
                 />
               </Stack>
             </BoxComponent>

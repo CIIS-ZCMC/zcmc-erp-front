@@ -7,11 +7,10 @@ import ButtonComponent from "../../Components/Common/ButtonComponent";
 import ContainerComponent from "../../Components/Common/ContainerComponent";
 import ModalComponent from "../../Components/Common/Dialog/ModalComponent";
 
-//layouts
-import ItemSummaryHeader from "../../Layout/Resources/ItemSummaryHeader";
-import ItemList from "../../Layout/Resources/ItemList";
-import ItemCart from "../../Layout/Resources/ItemCart";
-import ItemModalContent from "../../Layout/Resources/ItemModalContent";
+import ItemSummaryHeader from "./Item/ItemSummaryHeader";
+import ItemList from './Item/ItemList';
+import ItemCart from "./Item/ItemCart";
+import ItemModalContent from "./Item/ItemModalContent";
 
 import useItemsHook from "../../Hooks/ItemsHook";
 import useResourceHook from "../../Hooks/ResourceHook";
@@ -95,10 +94,10 @@ const Items = () => {
   }, []);
 
   useEffect(() => {
-    if(resources.length > 0){
+    if (resources.length > 0) {
       resources.map((resource) => {
         const exist = cart.find((item) => item.id === resource.item_id);
-        if(!exist){
+        if (!exist) {
           const item = items.find((item) => item.id === resource.item_id)
           addResourceToCart(item, activityId, resource.quantity);
         }
@@ -132,7 +131,7 @@ const Items = () => {
 
     //make a condition here if id of aop is exisitng change the route to /aop-edit/id/activities/id/resources/rowNumber
     navigate(
-      `/aop-create/activities/${objectiveRowId}/resources/${rowNumber}`,
+      `/aop-management/activities/${objectiveRowId}/resources/${rowNumber}`,
       {
         state: {
           parentId: activityId,
@@ -146,7 +145,7 @@ const Items = () => {
   const handleOnCancel = () => {
     // removeFromCart(activityId);
     cancelResources();
-    navigate(`/aop-create/activities/${objectiveRowId}`);
+    navigate(`/aop-management/activities/${objectiveRowId}`);
   };
 
   return (

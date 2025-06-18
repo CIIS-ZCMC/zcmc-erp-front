@@ -1,6 +1,6 @@
 import { Fragment, useEffect, useState } from "react";
 
-import { useNavigate } from "react-router-dom";
+import { useNavigate, Outlet } from "react-router-dom";
 import { Stack, Link, Checkbox } from "@mui/joy";
 import { Plus, ExternalLink } from "lucide-react";
 
@@ -25,7 +25,7 @@ import useResourceHook from "../../../../../Hooks/ResourceHook";
 import useResponsiblePeopleHook from "../../../../../Hooks/ResponsiblePeopleHook";
 
 //data related
-import { AOP_CONSTANTS } from "../../../../../Data/constants";
+import { AOP_CONSTANTS, CONFIRMATION_CONSTANTS } from "../../../../../Data/constants";
 import { AOP_HEADER } from "../../../../../Data/Columns";
 
 const Objectives = () => {
@@ -145,16 +145,18 @@ const Objectives = () => {
         return objectiveData;
     }
 
+    const handleSubmitAlertSuccess = () => {
+        alert('navigating....');
+        window.location.href = "/aop";
+        closeAlertDialog()
+    }
+
     const clearLocalStorage = () => {
         //set objectives, activities, resources into empty state then clear localStorrage
         clearObjectives();
         clearActivities();
         clearResponsiblePeople();
         clearResources();
-
-        localStorage.removeItem("objectives-storage");
-        localStorage.removeItem("activities-storage");
-        localStorage.removeItem("resources-storage");
         localStorage.removeItem("mission");
     };
 
@@ -162,10 +164,8 @@ const Objectives = () => {
         setOpenConfirmDialog(true);
         const data = {
             status: 200,
-            title:
-                "Your AOP request is now ready for submission, would you like to get a preview first?",
-            description:
-                "Document previews will be generated and downloaded in Microsoft Excel Spreadsheet (.xls) file format. The document preview is for viewing purposes only to help you ensure that all fields are filled-up correctly and accurately.",
+            title: CONFIRMATION_CONSTANTS.ALERT_SUBMITTION_TITLE,
+            description: CONFIRMATION_CONSTANTS.ALERT_SUBMITTION_DESCRIPTION,
         };
         setConfirmationModal(data);
     };
@@ -175,9 +175,8 @@ const Objectives = () => {
 
         const data = {
             status: "warning",
-            title: "Have you discussed this AOP request with your Division Chief?",
-            description:
-                "We need to make sure that you already have a previous discussion and official go-signal for creating and submitting this request.",
+            title: CONFIRMATION_CONSTANTS.ALERT_HASDISCUSSED_TITLE,
+            description: CONFIRMATION_CONSTANTS.ALERT_HASDISCUSSED_DESCRIPTION,
         };
 
         setConfirmationModal(data);
@@ -232,7 +231,6 @@ const Objectives = () => {
                 clearLocalStorage();
                 setMission("");
                 setAlertDialog(data);
-                // window.location.href = "/aop";
                 // closeConfirmation();
                 return;
             }
@@ -413,9 +411,11 @@ const Objectives = () => {
 
             <AlertDialogComponent
                 leftButtonLabel="'confirm"
-                leftButtonAction={() => { alert('navigating....'); closeAlertDialog() }}
+                leftButtonAction={() => handleSubmitAlertSuccess()}
             />
+            <Outlet />
         </Fragment>
+
     );
 };
 

@@ -102,37 +102,37 @@ export const FeedbackContent = ({
                       {/* COMMENTS */}
                       {activeTab === 0
                         ? messages?.map(
-                            ({ name, area_code, created_at, comment }, key) => (
-                              <CommentContainerComponent
-                                key={key}
-                                name={name}
-                                comment={comment}
-                                area_code={area_code}
-                                date={created_at}
-                                isActivity
-                                // handleClick={}
-                              />
-                            )
+                          ({ name, area_code, created_at, comment }, key) => (
+                            <CommentContainerComponent
+                              key={key}
+                              name={name}
+                              comment={comment}
+                              area_code={area_code}
+                              date={created_at}
+                              isActivity
+                            // handleClick={}
+                            />
                           )
+                        )
                         : messages?.map(
-                            (
-                              {
-                                division_chief_name,
-                                division_chief_area_code,
-                                created_at,
-                                remarks,
-                              },
-                              key
-                            ) => (
-                              <CommentContainerComponent
-                                key={key}
-                                name={division_chief_name}
-                                comment={remarks}
-                                area_code={division_chief_area_code}
-                                date={created_at}
-                              />
-                            )
-                          )}
+                          (
+                            {
+                              division_chief_name,
+                              division_chief_area_code,
+                              created_at,
+                              remarks,
+                            },
+                            key
+                          ) => (
+                            <CommentContainerComponent
+                              key={key}
+                              name={division_chief_name}
+                              comment={remarks}
+                              area_code={division_chief_area_code}
+                              date={created_at}
+                            />
+                          )
+                        )}
                       {/* REMARKS */}
                     </Fragment>
                   )

@@ -1,8 +1,8 @@
 import { Grid, List, Stack, Box, Typography, Divider, ListItem } from "@mui/joy";
 
-import BoxComponent from "../../Components/Common/Card/BoxComponent";
-import ButtonComponent from "../../Components/Common/ButtonComponent";
-import QuantityControlComponent from "../../Components/Cart/QuantityControlComponent";
+import BoxComponent from "../../../Components/Common/Card/BoxComponent";
+import ButtonComponent from "../../../Components/Common/ButtonComponent";
+import QuantityControlComponent from "../../../Components/Cart/QuantityControlComponent";
 
 import { MdOutlineShoppingCart } from "react-icons/md";
 

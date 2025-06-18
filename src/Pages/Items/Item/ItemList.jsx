@@ -1,13 +1,13 @@
 import { useState, useMemo, useEffect, useCallback, useRef, Fragment, } from 'react';
 import { Grid, Skeleton } from '@mui/joy';
 
-import useResourceHook from '../../Hooks/ResourceHook';
-import useItemsHook from '../../Hooks/ItemsHook';
+import useResourceHook from '../../../Hooks/ResourceHook';
+import useItemsHook from '../../../Hooks/ItemsHook';
 
 //custom components
-import { ThreeDotsLoader } from '../../Components/Common/Loading/ThreeDotsLoader';
-import BoxComponent from '../../Components/Common/Card/BoxComponent';
-import SearchBarComponent from '../../Components/SearchBarComponent';
+import { ThreeDotsLoader } from '../../../Components/Common/Loading/ThreeDotsLoader';
+import BoxComponent from '../../../Components/Common/Card/BoxComponent';
+import SearchBarComponent from '../../../Components/SearchBarComponent';
 import Item from './Item';
 
 const ITEMS_PER_BATCH = 12;

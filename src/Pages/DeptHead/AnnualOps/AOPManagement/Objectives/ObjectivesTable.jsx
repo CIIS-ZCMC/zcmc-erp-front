@@ -88,7 +88,7 @@ const ObjectivesTable = ({
                                         :
                                         (
                                             <Typography>
-                                                {functionType?.label || "-"}
+                                                {functionType?.label || ""}
                                                 {functionType?.description}
                                             </Typography>
 
@@ -135,7 +135,7 @@ const ObjectivesTable = ({
                                                 </Stack>
 
                                                 <Typography mt={1}>
-                                                    {objective?.code === 'OBJ-O-4904' ? othersObjective : objective?.description || '-'}
+                                                    {objective?.code === 'OBJ-O-4904' ? othersObjective : objective?.description || ''}
                                                 </Typography>
                                             </Fragment>
                                         )
@@ -167,7 +167,7 @@ const ObjectivesTable = ({
                                                     isRenderOption
                                                 />
                                                 <Typography mt={1} >
-                                                    {objective?.code === 'OBJ-O-4904' ? othersSuccessIndicator : successIndicator?.description || '-'}
+                                                    {objective?.code === 'OBJ-O-4904' ? othersSuccessIndicator : successIndicator?.description || ''}
                                                 </Typography>
                                             </Fragment>
 

@@ -1,14 +1,12 @@
-import React from 'react'
-
 import { Stack, Box, Typography } from '@mui/joy';
 import { ChevronDown, ChevronUp } from 'lucide-react';
 
 // custom components
-import ContainerComponent from '../../Components/Common/ContainerComponent';
-import IconButtonComponent from '../../Components/Common/IconButtonComponent';
-import BoxComponent from '../../Components/Common/Card/BoxComponent';
+import ContainerComponent from '../../../Components/Common/ContainerComponent';
+import IconButtonComponent from '../../../Components/Common/IconButtonComponent';
+import BoxComponent from '../../../Components/Common/Card/BoxComponent';
 
-import { AOP_CONSTANTS } from '../../Data/constants';
+import { AOP_CONSTANTS } from '../../../Data/constants';
 
 const ItemSummaryHeader = ({
     isCollapsed,
