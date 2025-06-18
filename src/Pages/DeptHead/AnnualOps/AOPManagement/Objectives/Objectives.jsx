@@ -440,7 +440,7 @@ const Objectives = () => {
                             secondaryHeader={
                                 <Link component="button" onClick={() => handleOpenDialog()} pb={1}>
                                     <Stack direction={"row"} gap={1} alignItems={"center"}>
-                                        Create Mission
+                                        {aopApplicationId ? 'Update Mission' : ' Create Mission'}
                                         <ExternalLink size={16} />
                                     </Stack>
                                 </Link>
@@ -491,7 +491,7 @@ const Objectives = () => {
             <ModalComponent
                 isOpen={openSaveMissionModal}
                 handleClose={handleCloseDialog}
-                title={"Mission"}
+                title={aopApplicationId ? 'Update mission' : 'Create mission'}
                 description={`Define the core purpose and primary focus of the organization's operational efforts for the upcoming fiscal year. This statement should guide the development and execution of the annual plan.`}
                 content={
                     <>
@@ -504,7 +504,7 @@ const Objectives = () => {
                     </>
                 }
                 hasActionButtons={true}
-                rightButtonLabel={"Save"}
+                rightButtonLabel={aopApplicationId ? 'Update' : "Save"}
                 rightButtonAction={() => handleSaveMission()}
             />
 
