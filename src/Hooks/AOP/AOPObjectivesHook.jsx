@@ -2,6 +2,8 @@ import { create } from "zustand";
 import { read, post, update, download } from "../../Services/RequestMethods";
 import { API } from "../../Data/constants";
 
+import { localStorageSetter } from "../../Utils/LocalStorage";
+
 const useAOPObjectivesHooks = create((set, get) => ({
   aopObjectives: [],
   aopObjective: {},
@@ -18,8 +20,13 @@ const useAOPObjectivesHooks = create((set, get) => ({
     },
 
     setAopId: (id) => {
-      localStorage.setItem("aop-application-id", id);
+      localStorageSetter("aop-app-id", id);
       set({ aop_id: id });
+    },
+
+    setMission: (mission) => {
+      localStorageSetter("mission", mission);
+      set({ mission: mission })
     },
 
     getSummary: (callBack) => {

@@ -34,7 +34,6 @@ const ObjectivesTable = ({
 
     const handleOpenOthersModal = (id) => {
         const objective = objectives.find(obj => obj.id === id)
-        console.log(objective)
         setCurrentEditedObjective(objective)
         setOpenOthersModal(true)
     }

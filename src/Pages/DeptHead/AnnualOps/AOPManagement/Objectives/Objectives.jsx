@@ -16,6 +16,7 @@ import ModalComponent from "../../../../../Components/Common/Dialog/ModalCompone
 import ConfirmationModalComponent from "../../../../../Components/Common/Dialog/ConfirmationModalComponent";
 import TextareaComponent from "../../../../../Components/Form/TextareaComponent";
 import ObjectivesTable from "./ObjectivesTable";
+import { FeedbackContent } from "../../../../PlanningOps/Approval/Contents/FeedbackContent";
 
 // hooks
 import useFunctionTypeHook from "../../../../../Hooks/FunctionTypeHook";
@@ -26,14 +27,23 @@ import useModalHook from "../../../../../Hooks/ModalHook";
 import { useAOPActions } from "../../../../../Hooks/AOP/AOPObjectivesHook";
 import useResourceHook from "../../../../../Hooks/ResourceHook";
 import useResponsiblePeopleHook from "../../../../../Hooks/ResponsiblePeopleHook";
+import { useCommentActions } from "../../../../../Hooks/CommentHook";
 
 //data related
 import { AOP_CONSTANTS, CONFIRMATION_CONSTANTS } from "../../../../../Data/constants";
 import { AOP_HEADER } from "../../../../../Data/Columns";
 
+// utils
+import { localStorageSetter, localStorageGetter } from "../../../../../Utils/LocalStorage";
+
 const Objectives = () => {
 
-    const aopApplicationId = localStorage.getItem('aop-application-id');
+    const AOP_APPLICATION_ID = localStorageGetter('aop-app-id');
+    const savedMission = localStorageGetter("mission");
+
+    useEffect(() => {
+        console.log(savedMission)
+    }, [savedMission])
 
     const { create, updateAOP, getSingleAOP } = useAOPActions();
 
@@ -64,7 +74,15 @@ const Objectives = () => {
     const { setAlertDialog, setConfirmationModal, closeConfirmation, closeAlertDialog } =
         useModalHook();
 
+    // COMMENTS HOOK
+    const {
+        getCommentsByActivity,
+        getCommentsByApplication,
+        getRemarksByApplication,
+    } = useCommentActions();
+
     const navigate = useNavigate();
+
 
     // local states
     const [isLoading, setIsLoading] = useState(false);
@@ -76,24 +94,19 @@ const Objectives = () => {
     const [authorizationPin, setAuthorizationPin] = useState(null);
     const [isDraft, setIsDraft] = useState(false);
 
-    const [mission, setMission] = useState("");
+    const [mission, setMission] = useState(savedMission ? savedMission : "");
+
+    const [openFeedbackModal, setOpenFeedbackModal] = useState(false)
+    const [isRemarksLoading, setIsRemarksLoading] = useState(true);
 
     const activitiesCount = objectives.map((objective) =>
         activities.filter((activity) => activity.parentId === objective.id)
     );
 
-    const savedMission = localStorage.getItem("mission");
-
     useEffect(() => {
-        if (savedMission) {
-            setMission(JSON.parse(savedMission));
-        }
-    }, []);
-
-    useEffect(() => {
-        if (aopApplicationId) {
+        if (AOP_APPLICATION_ID) {
             setIsLoading(true);
-            getSingleAOP(aopApplicationId, (status, message) => {
+            getSingleAOP(AOP_APPLICATION_ID, (status, message) => {
                 setIsLoading(false)
                 if (!(status >= 200 && status < 300)) {
                     return
@@ -115,6 +128,8 @@ const Objectives = () => {
 
     // check pag walang objectives then add default objective
     useEffect(() => {
+        console.log(objectives)
+
         if (objectives?.length === 0) {
             addObjective();
         }
@@ -275,7 +290,6 @@ const Objectives = () => {
         clearActivities();
         clearResponsiblePeople();
         clearResources();
-        localStorage.removeItem("mission");
     };
 
     const handleConfirmationModal = () => {
@@ -304,62 +318,61 @@ const Objectives = () => {
         handleConfirmationModal();
     };
 
-    // handle submit aop objective
     const handleSubmit = (isDraft) => {
         setIsLoading(true);
 
-        const aopPayload = buildAOP();
-
         const payload = {
             mission: mission,
-            has_discussed: hasDiscussed === true ? true : false,
+            has_discussed: !!hasDiscussed, // boolean explicitly
             status: isDraft,
             authorization_pin: authorizationPin,
-            application_objectives: aopPayload,
+            application_objectives: buildAOP(),
         };
 
-        create(payload, (status, message) => {
-            setIsLoading(false)
-            let data = {};
+        // Determine which action to take (update or create)
+        const submissionAction = AOP_APPLICATION_ID ? updateAOP : create;
 
-            // if existing
-            if (
-                status === 200 &&
-                message === "You already have an AOP application in your area."
-            ) {
-                data = {
+        submissionAction(payload, AOP_APPLICATION_ID, (status, message) => {
+            setIsLoading(false);
+
+            // Common response handler for both create and update
+            const responseMessages = {
+                existing: {
                     status: 200,
                     title: "Existing AOP",
-                    description: "You already have an AOP application in your area.",
-                };
-                setAlertDialog(data);
+                    description: "You already have an AOP application in your area."
+                },
+                success: {
+                    status: 200,
+                    title: `AOP for F.Y. 2026 successfully ${AOP_APPLICATION_ID ? 'updated' : 'submitted for approval'}.`,
+                    description: AOP_APPLICATION_ID
+                        ? "Your AOP has been successfully updated."
+                        : "Your AOP request has been sent to the next approving body."
+                },
+                error: {
+                    status: status,
+                    title: "Submission failed",
+                    description: message || "An unexpected error occurred."
+                }
+            };
+
+            // Handle existing AOP case
+            if (status === 200 && message === responseMessages.existing.description) {
+                setAlertDialog(responseMessages.existing);
                 return;
             }
 
-            // create new
+            // Handle success case
             if (status === 200) {
-                data = {
-                    status: 200,
-                    title: "AOP for F.Y. 2026 successfully submitted for approval.",
-                    description:
-                        "Your AOP request has been sent to designated to the next approving body and notified them for approvals.",
-                };
-
                 setOpenSubmitModal(false);
                 clearLocalStorage();
                 setMission("");
-                setAlertDialog(data);
-                // closeConfirmation();
+                setAlertDialog(responseMessages.success);
                 return;
             }
 
-            // failed
-            data = {
-                status: status,
-                title: "Submission failed",
-                description: message || "An unexpected error occurred.",
-            };
-            setAlertDialog(data);
+            // Handle failure case
+            setAlertDialog(responseMessages.error);
         });
     };
 
@@ -369,7 +382,7 @@ const Objectives = () => {
 
         data = {
             status: 200,
-            title: aopApplicationId ? "Mission updated successfully" : "Mission created successfully!",
+            title: AOP_APPLICATION_ID ? "Mission updated successfully" : "Mission created successfully!",
             description: "",
         };
         setOpenSaveMissionModal(false);
@@ -396,6 +409,31 @@ const Objectives = () => {
         }
     };
 
+    const handleViewFeedback = () => {
+        setOpenFeedbackModal(true);
+        setIsRemarksLoading(true);
+
+        const fetch = () => {
+            // if (!isDivisionHead || !isMCC) {
+            getCommentsByApplication(AOP_APPLICATION_ID, () => { });
+            // }
+
+            getRemarksByApplication(AOP_APPLICATION_ID, () => {
+                setTimeout(() => setIsRemarksLoading(false), 1000);
+            });
+        };
+
+        Promise.all(fetch())
+            .then(() => {
+                setIsRemarksLoading(false);
+            })
+            .catch((error) => {
+                console.error("Error fetching comments or remarks:", error);
+                setIsRemarksLoading(false);
+            });
+
+    }
+
     return (
         <Fragment>
             <ContainerComponent
@@ -403,21 +441,33 @@ const Objectives = () => {
                 description={AOP_CONSTANTS.MANAGE_OBJECTIVES_SUBHEADER}
                 actions={
                     <Stack direction={"row"} gap={1}>
+
+                        {
+                            AOP_APPLICATION_ID &&
+                            <ButtonComponent
+                                label={'Read Feedback'}
+                                variant={"outlined"}
+                                onClick={() => handleViewFeedback()}
+                            />
+                        }
+
                         <ButtonComponent
                             onClick={addObjective}
                             label={"Add an Objective"}
                             endDecorator={<Plus size={16} />}
                         />
-
-                        <ButtonComponent
-                            onClick={() => {
-                                setIsDraft(true);
-                                handleSubmit("draft");
-                            }}
-                            label={"Save as Draft"}
-                            variant={"outlined"}
-                            disabled={isDraft}
-                        />
+                        {
+                            !AOP_APPLICATION_ID &&
+                            <ButtonComponent
+                                onClick={() => {
+                                    setIsDraft(true);
+                                    handleSubmit("draft");
+                                }}
+                                label={"Save as Draft"}
+                                variant={"outlined"}
+                                disabled={isDraft}
+                            />
+                        }
                     </Stack>
                 }
             >
@@ -440,7 +490,7 @@ const Objectives = () => {
                             secondaryHeader={
                                 <Link component="button" onClick={() => handleOpenDialog()} pb={1}>
                                     <Stack direction={"row"} gap={1} alignItems={"center"}>
-                                        {aopApplicationId ? 'Update Mission' : ' Create Mission'}
+                                        {AOP_APPLICATION_ID ? 'Update Mission' : ' Create Mission'}
                                         <ExternalLink size={16} />
                                     </Stack>
                                 </Link>
@@ -491,7 +541,7 @@ const Objectives = () => {
             <ModalComponent
                 isOpen={openSaveMissionModal}
                 handleClose={handleCloseDialog}
-                title={aopApplicationId ? 'Update mission' : 'Create mission'}
+                title={AOP_APPLICATION_ID ? 'Update mission' : 'Create mission'}
                 description={`Define the core purpose and primary focus of the organization's operational efforts for the upcoming fiscal year. This statement should guide the development and execution of the annual plan.`}
                 content={
                     <>
@@ -504,7 +554,7 @@ const Objectives = () => {
                     </>
                 }
                 hasActionButtons={true}
-                rightButtonLabel={aopApplicationId ? 'Update' : "Save"}
+                rightButtonLabel={AOP_APPLICATION_ID ? 'Update' : "Save"}
                 rightButtonAction={() => handleSaveMission()}
             />
 
@@ -546,6 +596,12 @@ const Objectives = () => {
             <AlertDialogComponent
                 leftButtonLabel="'confirm"
                 leftButtonAction={() => handleSubmitAlertSuccess()}
+            />
+
+            <FeedbackContent
+                openFeedbackModal={openFeedbackModal}
+                setOpenFeedbackModal={setOpenFeedbackModal}
+                isLoading={isRemarksLoading}
             />
 
             <Outlet />

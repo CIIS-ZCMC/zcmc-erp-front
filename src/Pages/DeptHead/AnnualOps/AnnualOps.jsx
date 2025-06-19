@@ -28,7 +28,7 @@ const AnnualOps = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   const { aop_id, aopObjectives, aop_summary } = useAOPObjectivesHooks();
-  const { getSummary, setAopId } = useAOPActions();
+  const { getSummary, setAopId, setMission } = useAOPActions();
 
   const {
     aop_application_id,
@@ -51,6 +51,7 @@ const AnnualOps = () => {
     // console.log('id from store', aop_application_id)
     // console.log('id from aop summary', aop_id)
     setAopId(aop_application_id)
+    setMission(mission);
   }, [aop_application_id])
 
   useEffect(() => {

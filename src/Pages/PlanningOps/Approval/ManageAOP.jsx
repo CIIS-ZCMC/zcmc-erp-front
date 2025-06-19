@@ -48,6 +48,7 @@ export default function ManageAOP() {
     getCommentsByApplication,
     getRemarksByApplication,
   } = useCommentActions();
+
   const allComments = useAllComments() ?? localStorageGetter("all_comments");
 
   const remarks = useRemarks();
