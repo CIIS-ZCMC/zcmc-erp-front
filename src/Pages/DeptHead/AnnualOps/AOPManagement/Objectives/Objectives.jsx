@@ -18,6 +18,9 @@ import TextareaComponent from "../../../../../Components/Form/TextareaComponent"
 import ObjectivesTable from "./ObjectivesTable";
 import { FeedbackContent } from "../../../../PlanningOps/Approval/Contents/FeedbackContent";
 
+import MissionModal from "./MissionModal";
+import FeedbackSection from "./FeedbackSection";
+
 // hooks
 import useFunctionTypeHook from "../../../../../Hooks/FunctionTypeHook";
 import useAOPObjectivesHooks from "../../../../../Hooks/AOP/AOPObjectivesHook";
@@ -28,6 +31,7 @@ import { useAOPActions } from "../../../../../Hooks/AOP/AOPObjectivesHook";
 import useResourceHook from "../../../../../Hooks/ResourceHook";
 import useResponsiblePeopleHook from "../../../../../Hooks/ResponsiblePeopleHook";
 import { useCommentActions } from "../../../../../Hooks/CommentHook";
+import useAopDataFormatter from "../../../../../Hooks/AOP/AOPDataFormatter";
 
 //data related
 import { AOP_CONSTANTS, CONFIRMATION_CONSTANTS } from "../../../../../Data/constants";
@@ -39,11 +43,8 @@ import { localStorageSetter, localStorageGetter } from "../../../../../Utils/Loc
 const Objectives = () => {
 
     const AOP_APPLICATION_ID = localStorageGetter('aop-app-id');
+    const OBJECTIVES = localStorageGetter('objectives-storage');
     const savedMission = localStorageGetter("mission");
-
-    useEffect(() => {
-        console.log(savedMission)
-    }, [savedMission])
 
     const { create, updateAOP, getSingleAOP } = useAOPActions();
 
@@ -69,10 +70,11 @@ const Objectives = () => {
         clearResponsiblePeople,
         setResponsiblePeople
     } = useResponsiblePeopleHook();
-    const { resources, findResourcesByActivityID, clearResources, setResources } =
+    const { resources, findResourcesByActivityID, clearResources, clearCart, setResources } =
         useResourceHook();
     const { setAlertDialog, setConfirmationModal, closeConfirmation, closeAlertDialog } =
         useModalHook();
+    const { formattedObjectives, formattedActivities, formattedResources, formattedResponsiblePeople } = useAopDataFormatter();
 
     // COMMENTS HOOK
     const {
@@ -82,7 +84,6 @@ const Objectives = () => {
     } = useCommentActions();
 
     const navigate = useNavigate();
-
 
     // local states
     const [isLoading, setIsLoading] = useState(false);
@@ -104,18 +105,6 @@ const Objectives = () => {
     );
 
     useEffect(() => {
-        if (AOP_APPLICATION_ID) {
-            setIsLoading(true);
-            getSingleAOP(AOP_APPLICATION_ID, (status, message) => {
-                setIsLoading(false)
-                if (!(status >= 200 && status < 300)) {
-                    return
-                }
-            })
-        }
-    }, []);
-
-    useEffect(() => {
         const params = { with_sub_data: 1 };
         getFunctionType(params, (status, message) => {
             if (!(status >= 200 && status < 300)) {
@@ -129,100 +118,13 @@ const Objectives = () => {
     // check pag walang objectives then add default objective
     useEffect(() => {
         console.log(objectives)
-
         if (objectives?.length === 0) {
             addObjective();
         }
     }, [objectives, addObjective]);
 
-    // formatted objectives
-    const formattedObjectives = aopObjectives.application_objectives?.map((
-        { function_type, objective, success_indicator, objective_uuid }, index) => ({
-            id: uuid(),
-            rowId: index + 1,
-            functionType: function_type,
-            objective: objective,
-            successIndicator: success_indicator,
-            objectiveUuid: objective_uuid,
-        })
-    );
 
-    // get flat activities
-    const flatActivities =
-        aopObjectives.application_objectives?.flatMap((data) =>
-            data.activity.map((activity) => ({
-                ...activity,
-                objectiveUuid: data.objective_uuid,
-            }))
-        ) || [];
-
-    // formatted activities
-    const formattedActivities = flatActivities.map(
-        (
-            {
-                activity_uuid,
-                name,
-                is_gad_related,
-                cost,
-                start_month,
-                end_month,
-                target,
-                objectiveUuid,
-            },
-            index
-        ) => ({
-            id: activity_uuid ? activity_uuid : uuid(),
-            parentId: objectiveUuid,
-            rowId: index + 1,
-            name: name,
-            isGadRelated: is_gad_related,
-            cost: cost,
-            startMonth: start_month,
-            endMonth: end_month,
-            target: {
-                firstQuarter: target?.first_quarter,
-                secondQuarter: target?.second_quarter,
-                thirdQuarter: target?.third_quarter,
-                fourthQuarter: target?.fourth_quarter,
-            },
-        })
-    );
-
-    //get item resourcese
-    const flatResources =
-        aopObjectives.application_objectives?.flatMap((data) =>
-            data.activity.flatMap((item) => item.resources)
-        ) || [];
-
-    // formatted resources
-    const formattedResources = flatResources?.map((resource, index) => ({
-        id: uuid(),
-        item_id: resource.item?.id,
-        parentId: resource.item.parentId,
-        rowId: index + 1,
-        name: resource.item?.name,
-        quantity: resource.quantity,
-        individualPrice: resource.item?.estimated_budget,
-        totalCost: Number(
-            (resource.item?.estimated_budget * resource.quantity).toFixed(2)
-        ),
-        expenseClass: resource.expense_class,
-        purchaseTypeId: resource.purchase_type,
-    }));
-
-    const flatResponsiblePeople = aopObjectives.application_objectives?.flatMap(
-        (data) => data.activity.flatMap((item) => item.responsible_people)
-    );
-
-    const formattedResponsiblePeople = flatResponsiblePeople?.map(
-        (responsible) => ({
-            activityId: responsible.activity_uuid,
-            users: responsible.users,
-            designations: responsible.designations,
-            areas: responsible.areas,
-        })
-    );
-
+    //set objectives, activities, resources and responsible people
     useEffect(() => {
         setObjectives(formattedObjectives ? formattedObjectives : []);
         setActivities(formattedActivities ? formattedActivities : []);
@@ -231,6 +133,19 @@ const Objectives = () => {
             formattedResponsiblePeople ? formattedResponsiblePeople : []
         );
     }, [aopObjectives])
+
+    useEffect(() => {
+        if (AOP_APPLICATION_ID && !formattedObjectives?.length) {
+            setIsLoading(true);
+            getSingleAOP(AOP_APPLICATION_ID, (status, message) => {
+                setIsLoading(false)
+                if (!(status >= 200 && status < 300)) {
+                    return
+                }
+            })
+
+        }
+    }, [AOP_APPLICATION_ID, formattedObjectives]);
 
     function buildAOP() {
         const objectiveData = objectives?.map((item) => {
@@ -290,6 +205,7 @@ const Objectives = () => {
         clearActivities();
         clearResponsiblePeople();
         clearResources();
+        clearCart();
     };
 
     const handleConfirmationModal = () => {
@@ -401,6 +317,7 @@ const Objectives = () => {
         // setMission('')
     };
 
+    //cancel aop request
     const handleCancelRequest = () => {
         {
             clearLocalStorage();
@@ -409,6 +326,7 @@ const Objectives = () => {
         }
     };
 
+    // handle view feedback/comments
     const handleViewFeedback = () => {
         setOpenFeedbackModal(true);
         setIsRemarksLoading(true);
@@ -537,25 +455,13 @@ const Objectives = () => {
                 }
             </ContainerComponent>
 
-            {/* Create Mission Modal */}
-            <ModalComponent
-                isOpen={openSaveMissionModal}
-                handleClose={handleCloseDialog}
-                title={AOP_APPLICATION_ID ? 'Update mission' : 'Create mission'}
-                description={`Define the core purpose and primary focus of the organization's operational efforts for the upcoming fiscal year. This statement should guide the development and execution of the annual plan.`}
-                content={
-                    <>
-                        <TextareaComponent
-                            // label={'Mission'}
-                            placeholder={"Please insert mission content here"}
-                            value={mission}
-                            onChange={(e) => setMission(e.target.value)}
-                        />
-                    </>
-                }
-                hasActionButtons={true}
-                rightButtonLabel={AOP_APPLICATION_ID ? 'Update' : "Save"}
-                rightButtonAction={() => handleSaveMission()}
+            <MissionModal
+                AOP_APPLICATION_ID={AOP_APPLICATION_ID}
+                openSaveMissionModal={openSaveMissionModal}
+                handleCloseDialog={handleCloseDialog}
+                mission={mission}
+                setMission={setMission}
+                handleSaveMission={handleSaveMission}
             />
 
             {openConfirmDialog && (
@@ -598,7 +504,7 @@ const Objectives = () => {
                 leftButtonAction={() => handleSubmitAlertSuccess()}
             />
 
-            <FeedbackContent
+            <FeedbackSection
                 openFeedbackModal={openFeedbackModal}
                 setOpenFeedbackModal={setOpenFeedbackModal}
                 isLoading={isRemarksLoading}

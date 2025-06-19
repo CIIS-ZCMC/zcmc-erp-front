@@ -44,12 +44,12 @@ const Activities = () => {
 
     const { aopObjectives } = useAOPObjectivesHooks();
 
-    // const aopApplicationId = localStorage.getItem('aop-application-id');
+    const aopApplicationId = localStorage.getItem('aop-application-id');
 
-    // useEffect(() => {
-    //     console.log(aopApplicationId)
-    //     // console.log(aop_id)
-    // }, [aopApplicationId])
+    useEffect(() => {
+        console.log(aopApplicationId)
+        // console.log(aop_id)
+    }, [aopApplicationId])
 
     useEffect(() => {
         const hasActivitiesForParent = activities.some(

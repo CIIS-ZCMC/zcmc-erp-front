@@ -30,7 +30,7 @@ const ItemList = ({
     const [isFetchingMore, setIsFetchingMore] = useState(false);
 
     useEffect(() => {
-        console.log('items', items)
+        // console.log('items', items)
         console.log('displayed Items', displayedItems)
     }, [items, displayedItems])
 

@@ -53,7 +53,7 @@ const Resources = () => {
                 actions={
                     <Stack>
                         <ButtonComponent
-                            onClick={() => navigate(`/aop-create/activities/${location.state.objectiveRowId}/items/${location.state.activityRowId}`, { state: { ...location.state } })}
+                            onClick={() => navigate(`/aop-management/activities/${location.state.objectiveRowId}/items/${location.state.activityRowId}`, { state: { ...location.state } })}
                             label={"Add Resource"}
                             endDecorator={<Plus size={16} />}
                         />

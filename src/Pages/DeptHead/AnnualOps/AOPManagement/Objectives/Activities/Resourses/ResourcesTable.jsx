@@ -139,7 +139,7 @@ const Resources = ({
                                                 placeholder="Select Purchase"
                                                 value={purchaseTypeId}
                                                 setValue={(val) => {
-                                                    updateResourceField(id, "purchaseTypeId", val?.id);
+                                                    updateResourceField(id, "purchaseTypeId", val);
                                                 }}
                                                 options={purchase_types.map((item) => {
                                                     return { id: item.id, label: item.code };
@@ -148,7 +148,9 @@ const Resources = ({
                                         </>
                                     ) : (
                                         <Typography>
-                                            {purchase_types[purchaseTypeId]?.code || "-"}
+                                            {/* {console.info(purchaseTypeId.label)} */}
+                                            {purchaseTypeId?.label || "-"}
+                                            {/* {purchase_types[purchaseTypeId]?.code || "-"} */}
                                         </Typography>
                                     )}
                                 </td>

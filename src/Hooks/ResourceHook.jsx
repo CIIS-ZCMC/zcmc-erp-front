@@ -46,6 +46,12 @@ const useResourceHook = create(
         }))
       },
 
+      clearCart: () => {
+        set(() => ({
+          cart: []
+        }))
+      },
+
       setCart: () => {
         set(() => ({
           cart: data
@@ -144,7 +150,7 @@ const useResourceHook = create(
           const exist = resources.find((resource) => resource.item_id === item.id);
 
           // If exist update the quantity and total cost
-          if(exist){
+          if (exist) {
             return {
               ...exist,
               quantity: item.aop_quantity,

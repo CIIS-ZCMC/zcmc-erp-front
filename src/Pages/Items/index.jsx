@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from "react";
+import { act, Fragment, useEffect, useState } from "react";
 
 import { Box, Stack, Grid } from "@mui/joy";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -55,9 +55,6 @@ const Items = () => {
 
   // const objectiveId = location.state.objectiveId;
 
-  // useEffect(() => {
-  //     console.log(location.state)
-  // }, [])
 
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -68,6 +65,11 @@ const Items = () => {
 
   const filteredCart =
     cart?.filter((item) => item.parentId === activityId) || [];
+
+  useEffect(() => {
+    console.log('filtered cart', cart)
+    // console.log('activity parent id', activityId)
+  }, [filteredCart])
 
   const totalQty = filteredCart.reduce(
     (sum, item) => sum + item.aop_quantity,

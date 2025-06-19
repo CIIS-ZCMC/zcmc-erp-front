@@ -19,6 +19,10 @@ const ItemCart = ({
     onQuantityChange,
 }) => {
 
+    // useEffect(() => {
+    //     console.log(filteredCart)
+    // }, [filteredCart])
+
     return (
         <Fragment>
             {
@@ -85,7 +89,8 @@ const ItemCart = ({
                                                         ) : (
                                                             ""
                                                         )}{" "}
-                                                        {item?.category}
+                                                        {/* {item?.category} */}
+                                                        {item?.label || item?.name}
                                                     </Typography>
 
                                                     <Typography
