@@ -1,9 +1,8 @@
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useState, useCallback } from "react";
 
 import { useNavigate, Outlet } from "react-router-dom";
 import { Stack, Link, Checkbox } from "@mui/joy";
 import { Plus, ExternalLink } from "lucide-react";
-import { v4 as uuid } from "uuid";
 
 //custom components
 import { ThreeDotsLoader } from "../../../../../Components/Common/Loading/ThreeDotsLoader";
@@ -12,11 +11,8 @@ import AlertDialogComponent from "../../../../../Components/Common/Dialog/AlertD
 import ButtonComponent from "../../../../../Components/Common/ButtonComponent";
 import ContainerComponent from "../../../../../Components/Common/ContainerComponent";
 import EditableTableComponent from "../../../../../Components/Common/Table/EditableTableComponent";
-import ModalComponent from "../../../../../Components/Common/Dialog/ModalComponent";
 import ConfirmationModalComponent from "../../../../../Components/Common/Dialog/ConfirmationModalComponent";
-import TextareaComponent from "../../../../../Components/Form/TextareaComponent";
 import ObjectivesTable from "./ObjectivesTable";
-import { FeedbackContent } from "../../../../PlanningOps/Approval/Contents/FeedbackContent";
 
 import MissionModal from "./MissionModal";
 import FeedbackSection from "./FeedbackSection";
@@ -39,6 +35,7 @@ import { AOP_HEADER } from "../../../../../Data/Columns";
 
 // utils
 import { localStorageSetter, localStorageGetter } from "../../../../../Utils/LocalStorage";
+import { buildAOP } from "../../../../../Utils/aopBuilder";
 
 const Objectives = () => {
 
@@ -87,18 +84,17 @@ const Objectives = () => {
 
     // local states
     const [isLoading, setIsLoading] = useState(false);
+    const [isRemarksLoading, setIsRemarksLoading] = useState(true);
+
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
-    const [openConfirmDiscussedDialog, setOpenConfirmDiscussedDialog] =
-        useState(false);
+    const [openConfirmDiscussedDialog, setOpenConfirmDiscussedDialog] = useState(false);
     const [openSubmitModal, setOpenSubmitModal] = useState(false);
     const [openSaveMissionModal, setOpenSaveMissionModal] = useState(false);
+    const [openFeedbackModal, setOpenFeedbackModal] = useState(false)
+
     const [authorizationPin, setAuthorizationPin] = useState(null);
     const [isDraft, setIsDraft] = useState(false);
-
     const [mission, setMission] = useState(savedMission ? savedMission : "");
-
-    const [openFeedbackModal, setOpenFeedbackModal] = useState(false)
-    const [isRemarksLoading, setIsRemarksLoading] = useState(true);
 
     const activitiesCount = objectives.map((objective) =>
         activities.filter((activity) => activity.parentId === objective.id)
@@ -113,28 +109,7 @@ const Objectives = () => {
             }
             setIsLoading(false);
         });
-    }, [isLoading]);
 
-    // check pag walang objectives then add default objective
-    useEffect(() => {
-        console.log(objectives)
-        if (objectives?.length === 0) {
-            addObjective();
-        }
-    }, [objectives, addObjective]);
-
-
-    //set objectives, activities, resources and responsible people
-    useEffect(() => {
-        setObjectives(formattedObjectives ? formattedObjectives : []);
-        setActivities(formattedActivities ? formattedActivities : []);
-        setResources(formattedResources ? formattedResources : []);
-        setResponsiblePeople(
-            formattedResponsiblePeople ? formattedResponsiblePeople : []
-        );
-    }, [aopObjectives])
-
-    useEffect(() => {
         if (AOP_APPLICATION_ID && !formattedObjectives?.length) {
             setIsLoading(true);
             getSingleAOP(AOP_APPLICATION_ID, (status, message) => {
@@ -145,53 +120,25 @@ const Objectives = () => {
             })
 
         }
-    }, [AOP_APPLICATION_ID, formattedObjectives]);
+    }, [AOP_APPLICATION_ID, formattedObjectives, isLoading]);
 
-    function buildAOP() {
-        const objectiveData = objectives?.map((item) => {
-            const activities = findActivitiesByObjectiveID(item.id);
-            const activitiesWithResourceAndResponsiblePeople = activities.map(
-                (act) => {
-                    const {
-                        parentId,
-                        id,
-                        startMonth,
-                        endMonth,
-                        target,
-                        isGadRelated,
-                        ...actData
-                    } = act;
-                    const resources = findResourcesByActivityID(act.id);
-                    const responsible_people = findResponsiblePeopleByActivityID(act.id);
+    // check pag walang objectives then add default objective
+    useEffect(() => {
+        // console.log(objectives)
+        if (objectives?.length === 0) {
+            addObjective();
+        }
+    }, [objectives, addObjective]);
 
-                    return {
-                        ...actData,
-                        start_month: startMonth,
-                        end_month: endMonth,
-                        is_gad_related: isGadRelated,
-                        target: {
-                            first_quarter: target.firstQuarter,
-                            second_quarter: target.secondQuarter,
-                            third_quarter: target.thirdQuarter,
-                            fourth_quarter: target.fourthQuarter,
-                        },
-                        resources: resources,
-                        responsible_people: responsible_people,
-                    };
-                }
-            );
-
-            return {
-                objective_id: item.objective.id,
-                success_indicator_id: item.successIndicator.id,
-                others_objective: otherObjective,
-                other_success_indicator: otherSuccessIndicator,
-                activities: activitiesWithResourceAndResponsiblePeople,
-            };
-        });
-
-        return objectiveData;
-    }
+    //set objectives, activities, resources and responsible people
+    useEffect(() => {
+        setObjectives(formattedObjectives ? formattedObjectives : []);
+        setActivities(formattedActivities ? formattedActivities : []);
+        setResources(formattedResources ? formattedResources : []);
+        setResponsiblePeople(
+            formattedResponsiblePeople ? formattedResponsiblePeople : []
+        );
+    }, [aopObjectives])
 
     const handleSubmitAlertSuccess = () => {
         alert('navigating....');
@@ -234,6 +181,25 @@ const Objectives = () => {
         handleConfirmationModal();
     };
 
+    //build aop payload
+    const buildAopPayload = useCallback(() => {
+        return buildAOP({
+            objectives,
+            otherObjective,
+            otherSuccessIndicator,
+            findActivitiesByObjectiveID,
+            findResourcesByActivityID,
+            findResponsiblePeopleByActivityID
+        });
+    }, [
+        objectives,
+        otherObjective,
+        otherSuccessIndicator,
+        findActivitiesByObjectiveID,
+        findResourcesByActivityID,
+        findResponsiblePeopleByActivityID
+    ]);
+
     const handleSubmit = (isDraft) => {
         setIsLoading(true);
 
@@ -242,7 +208,7 @@ const Objectives = () => {
             has_discussed: !!hasDiscussed, // boolean explicitly
             status: isDraft,
             authorization_pin: authorizationPin,
-            application_objectives: buildAOP(),
+            application_objectives: buildAopPayload(),
         };
 
         // Determine which action to take (update or create)
@@ -301,7 +267,7 @@ const Objectives = () => {
             title: AOP_APPLICATION_ID ? "Mission updated successfully" : "Mission created successfully!",
             description: "",
         };
-        setOpenSaveMissionModal(false);
+        handleCloseDialog();
         setAlertDialog(data);
 
         // Save to local storage
@@ -314,7 +280,6 @@ const Objectives = () => {
 
     const handleCloseDialog = () => {
         setOpenSaveMissionModal(false);
-        // setMission('')
     };
 
     //cancel aop request

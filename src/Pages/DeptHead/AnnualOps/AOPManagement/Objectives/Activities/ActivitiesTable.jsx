@@ -245,7 +245,7 @@ const ActivitiesTable = ({
                                 />
                             ) : (
                                 <Typography>
-                                    {console.info(isGadRelated)}
+                                    {/* {console.info(isGadRelated)} */}
                                     {isGadRelated
                                         ? 'Yes'
                                         : 'No'
