@@ -40,7 +40,7 @@ import { buildAOP } from "../../../../../Utils/aopBuilder";
 const Objectives = () => {
 
     const AOP_APPLICATION_ID = localStorageGetter('aop-app-id');
-    const OBJECTIVES = localStorage.getItem('objectives-storage');
+    const OBJECTIVES = localStorageGetter('objectives-storage');
     const savedMission = localStorageGetter("mission");
 
     const { create, updateAOP, getSingleAOP } = useAOPActions();
@@ -110,7 +110,7 @@ const Objectives = () => {
             setIsLoading(false);
         });
 
-        if (!formattedObjectives?.length) {
+        if (AOP_APPLICATION_ID && !formattedObjectives?.length) {
             setIsLoading(true);
             getSingleAOP(AOP_APPLICATION_ID, (status, message) => {
                 setIsLoading(false)
