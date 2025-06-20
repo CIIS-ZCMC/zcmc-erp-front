@@ -100,9 +100,16 @@ const Objectives = () => {
         activities.filter((activity) => activity.parentId === objective.id)
     );
 
-    // useEffect(() => {
-    //     console.log(OBJECTIVES.state)
-    // }, [OBJECTIVES])
+    useEffect(() => {
+        if(aopObjectives !== null){
+            setObjectives(formattedObjectives || []);
+            setActivities(formattedActivities ? formattedActivities : []);
+            setResources(formattedResources ? formattedResources : []);
+            setResponsiblePeople(
+                formattedResponsiblePeople ? formattedResponsiblePeople : []
+            );
+        }
+    }, [aopObjectives])
 
     useEffect(() => {
         const params = { with_sub_data: 1 };
@@ -133,16 +140,6 @@ const Objectives = () => {
             addObjective();
         }
     }, [objectives, addObjective]);
-
-    //set objectives, activities, resources and responsible people
-    useEffect(() => {
-        setObjectives(formattedObjectives || []);
-        setActivities(formattedActivities ? formattedActivities : []);
-        setResources(formattedResources ? formattedResources : []);
-        setResponsiblePeople(
-            formattedResponsiblePeople ? formattedResponsiblePeople : []
-        );
-    }, [])
 
     const handleSubmitAlertSuccess = () => {
         alert('navigating....');
