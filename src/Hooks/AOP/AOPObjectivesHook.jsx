@@ -37,12 +37,12 @@ const useAOPObjectivesHooks = create((set, get) => ({
           // console.log(res)
           const { status, message, data: { data } } = res;
 
-          set({ 
-            aop_summary: data.summary, 
-            aopObjectives: data.aop, 
-            aop_id: data.summary.aop_application_id 
+          set({
+            aop_summary: data.summary,
+            aopObjectives: data.aop,
+            aop_id: data.summary.aop_application_id
           });
-          
+
           callBack(status, message);
         },
       });

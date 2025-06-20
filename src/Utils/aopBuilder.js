@@ -31,8 +31,8 @@ export const buildAOP = ({
         return {
             objective_id: item.objective?.id,
             success_indicator_id: item.successIndicator?.id,
-            others_objective: otherObjective,
-            other_success_indicator: otherSuccessIndicator,
+            others_objective: 'Ricah mae',
+            other_success_indicator: 'maemae',
             activities: activitiesWithExtras,
         };
     }) || []; // Return empty array if no objectives

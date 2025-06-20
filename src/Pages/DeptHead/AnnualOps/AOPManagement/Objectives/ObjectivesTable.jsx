@@ -118,7 +118,7 @@ const ObjectivesTable = ({
                                                         value={objective}
                                                         setValue={(val) => {
                                                             handleChange(id, 'objective', val);
-                                                            if (val?.code !== 'OBJ-O-4904') {
+                                                            if (val?.code !== 'OBJ-O-6480') {
                                                                 clearOthersFields(id); // Clear if not "Other" type
                                                             }
                                                             setEditRowId(null);
@@ -127,7 +127,7 @@ const ObjectivesTable = ({
                                                         isRenderOption
                                                     />
 
-                                                    {objective?.code === 'OBJ-O-4904' &&
+                                                    {objective?.code === 'OBJ-O-6480' &&
                                                         <IconButtonComponent
                                                             onClick={() => handleOpenOthersModal(id)}
                                                             icon={<PencilLine size={14} />}
@@ -137,10 +137,11 @@ const ObjectivesTable = ({
                                                             variant={'text'}
                                                         />
                                                     }
+
                                                 </Stack>
 
                                                 <Typography mt={1}>
-                                                    {objective?.code === 'OBJ-O-4904' ? othersObjective : objective?.description || ''}
+                                                    {objective?.code === 'OBJ-O-6480' ? othersObjective : objective?.description || ''}
                                                 </Typography>
                                             </Fragment>
                                         )
@@ -148,7 +149,7 @@ const ObjectivesTable = ({
                                         (
                                             // <Tooltip title={objective ? objective?.description : ''} variant="solid">
                                             <Typography >
-                                                {objective?.code === 'OBJ-O-4904' ? othersObjective : objective?.description || '-'}
+                                                {objective?.code === 'OBJ-O-6480' ? othersObjective : objective?.description || '-'}
                                             </Typography>
                                             // </Tooltip>
                                         )
@@ -172,7 +173,7 @@ const ObjectivesTable = ({
                                                     isRenderOption
                                                 />
                                                 <Typography mt={1} >
-                                                    {objective?.code === 'OBJ-O-4904' ? othersSuccessIndicator : successIndicator?.description || ''}
+                                                    {objective?.code === 'OBJ-O-6480' ? othersSuccessIndicator : successIndicator?.description || ''}
                                                 </Typography>
                                             </Fragment>
 
@@ -180,7 +181,7 @@ const ObjectivesTable = ({
                                         :
                                         (
                                             <Typography >
-                                                {objective?.code === 'OBJ-O-4904' ? othersSuccessIndicator : successIndicator?.description || '-'}
+                                                {objective?.code === 'OBJ-O-6480' ? othersSuccessIndicator : successIndicator?.description || '-'}
                                             </Typography>
                                         )
                                     }

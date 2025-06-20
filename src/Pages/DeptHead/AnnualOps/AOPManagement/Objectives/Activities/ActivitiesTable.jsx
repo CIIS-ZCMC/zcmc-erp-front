@@ -113,6 +113,8 @@ const ActivitiesTable = ({
                                         onBlur={() => setEditRowId(null)}
                                     />
 
+                                    {/* {nextYearDefault} */}
+
                                 </>
                             ) : (
                                 <Typography>
