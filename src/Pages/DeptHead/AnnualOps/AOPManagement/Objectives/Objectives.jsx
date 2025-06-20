@@ -101,6 +101,17 @@ const Objectives = () => {
     );
 
     useEffect(() => {
+        if (aopObjectives !== null) {
+            setObjectives(formattedObjectives || []);
+            setActivities(formattedActivities ? formattedActivities : []);
+            setResources(formattedResources ? formattedResources : []);
+            setResponsiblePeople(
+                formattedResponsiblePeople ? formattedResponsiblePeople : []
+            );
+        }
+    }, [aopObjectives])
+
+    useEffect(() => {
         const params = { with_sub_data: 1 };
         getFunctionType(params, (status, message) => {
             if (!(status >= 200 && status < 300)) {
@@ -129,19 +140,6 @@ const Objectives = () => {
             addObjective();
         }
     }, [objectives, addObjective]);
-
-    //set objectives, activities, resources and responsible people
-    useEffect(() => {
-
-        setObjectives(formattedObjectives ? formattedObjectives : []);
-
-
-        setActivities(formattedActivities ? formattedActivities : []);
-        setResources(formattedResources ? formattedResources : []);
-        setResponsiblePeople(
-            formattedResponsiblePeople ? formattedResponsiblePeople : []
-        );
-    }, [aopObjectives])
 
     const handleSubmitAlertSuccess = () => {
         alert('navigating....');
