@@ -10,12 +10,6 @@ import Activities from "../Pages/DeptHead/AnnualOps/AOPManagement/Objectives/Act
 import Resources from "../Pages/DeptHead/AnnualOps/AOPManagement/Objectives/Activities/Resourses/Resources";
 import Responsible from "../Pages/DeptHead/AnnualOps/AOPManagement/Objectives/Activities/Responsible Person/Responsible";
 
-import EditAOP from "../Pages/DeptHead/AnnualOps/EditAOP";
-import EditObjectives from "../Pages/DeptHead/AnnualOps/EditAOP/Objectives/";
-import EditActivities from "../Pages/DeptHead/AnnualOps/EditAOP/Objectives/Activities";
-import EditResources from "../Pages/DeptHead/AnnualOps/EditAOP/Objectives/Activities/Resources";
-import EditResponsiblePerson from "../Pages/DeptHead/AnnualOps/EditAOP/Objectives/Activities/Responsible";
-
 import Items from "../Pages/Items";
 
 import ItemRequest from "../Pages/Consolidators/ItemManagement/ItemRequest";

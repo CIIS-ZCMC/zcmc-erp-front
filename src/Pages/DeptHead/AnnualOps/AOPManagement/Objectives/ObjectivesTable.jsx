@@ -53,9 +53,9 @@ const ObjectivesTable = ({
         }
     };
 
-    useEffect(() => {
-        console.log(rows)
-    }, [rows])
+    // useEffect(() => {
+    //     console.log('objectives rows', rows)
+    // }, [rows])
 
     return (
         <Fragment>
@@ -69,6 +69,8 @@ const ObjectivesTable = ({
                             <tr key={id}>
                                 <td>
                                     <Typography>
+                                        {/* {id} */}
+                                        {/* {objectiveUuid} */}
                                         {index + 1}
                                     </Typography>
                                 </td>
@@ -199,7 +201,7 @@ const ObjectivesTable = ({
                                         >
                                             <Link
                                                 component="button"
-                                                onClick={() => navigate(`activities/${rowId}`, { state: { objectiveParentId: objectiveUuid, rowId: rowId } })}
+                                                onClick={() => navigate(`activities/${rowId}`, { state: { objectiveParentId: objectiveUuid ? objectiveUuid : id, rowId: rowId } })}
                                                 fontSize={14}
                                             >
                                                 Manage Activities

@@ -25,9 +25,12 @@ const ActivitiesTable = ({
 }) => {
     const navigate = useNavigate();
 
+    const filteredActivities = rows?.filter(value => value?.parentId === parentId)
+
     useEffect(() => {
-        console.log(rows)
+        console.log(filteredActivities)
     }, [rows])
+
 
     const { resources, findResourcesByActivityID, totalCost } = useResourceHook();
     const { responsible_people } = useResponsiblePeopleHook();
@@ -67,7 +70,7 @@ const ActivitiesTable = ({
 
     return (
         <Fragment>
-            {rows?.filter(value => value?.parentId === parentId)?.map(({ rowId, id, name, isGadRelated, cost, startMonth, endMonth, target: { firstQuarter, secondQuarter, thirdQuarter, fourthQuarter } }, index) => {
+            {filteredActivities?.map(({ rowId, id, name, isGadRelated, cost, startMonth, endMonth, target: { firstQuarter, secondQuarter, thirdQuarter, fourthQuarter } }, index) => {
 
                 const isEditing = editRowId === id;
 

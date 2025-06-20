@@ -17,13 +17,15 @@ const useAopDataFormatter = () => {
 
         // Format objectives
         const formattedObjectives = aopObjectives.application_objectives.map(
-            ({ function_type, objective, success_indicator, objective_uuid }, index) => ({
+            ({ function_type, objective, success_indicator, objective_uuid, other_objective, other_success_indicator }, index) => ({
                 id: uuid(),
                 rowId: index + 1,
                 functionType: function_type,
                 objective: objective,
                 successIndicator: success_indicator,
                 objectiveUuid: objective_uuid,
+                othersObjective: other_objective,
+                othersSuccessIndicator: other_success_indicator,
             })
         );
 

@@ -40,7 +40,7 @@ import { buildAOP } from "../../../../../Utils/aopBuilder";
 const Objectives = () => {
 
     const AOP_APPLICATION_ID = localStorageGetter('aop-app-id');
-    const OBJECTIVES = localStorageGetter('objectives-storage');
+    const OBJECTIVES = localStorage.getItem('objectives-storage');
     const savedMission = localStorageGetter("mission");
 
     const { create, updateAOP, getSingleAOP } = useAOPActions();
@@ -100,6 +100,10 @@ const Objectives = () => {
         activities.filter((activity) => activity.parentId === objective.id)
     );
 
+    // useEffect(() => {
+    //     console.log(OBJECTIVES.state)
+    // }, [OBJECTIVES])
+
     useEffect(() => {
         const params = { with_sub_data: 1 };
         getFunctionType(params, (status, message) => {
@@ -110,7 +114,7 @@ const Objectives = () => {
             setIsLoading(false);
         });
 
-        if (AOP_APPLICATION_ID && !formattedObjectives?.length) {
+        if (!formattedObjectives?.length) {
             setIsLoading(true);
             getSingleAOP(AOP_APPLICATION_ID, (status, message) => {
                 setIsLoading(false)
@@ -132,13 +136,13 @@ const Objectives = () => {
 
     //set objectives, activities, resources and responsible people
     useEffect(() => {
-        setObjectives(formattedObjectives ? formattedObjectives : []);
+        setObjectives(formattedObjectives || []);
         setActivities(formattedActivities ? formattedActivities : []);
         setResources(formattedResources ? formattedResources : []);
         setResponsiblePeople(
             formattedResponsiblePeople ? formattedResponsiblePeople : []
         );
-    }, [aopObjectives])
+    }, [])
 
     const handleSubmitAlertSuccess = () => {
         alert('navigating....');
@@ -199,6 +203,10 @@ const Objectives = () => {
         findResourcesByActivityID,
         findResponsiblePeopleByActivityID
     ]);
+
+    useEffect(() => {
+        console.log('formatted Objectives', formattedObjectives)
+    }, [aopObjectives])
 
     const handleSubmit = (isDraft) => {
         setIsLoading(true);

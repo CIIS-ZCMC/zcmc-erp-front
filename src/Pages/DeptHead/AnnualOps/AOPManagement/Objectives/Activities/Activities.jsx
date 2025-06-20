@@ -26,35 +26,30 @@ const Activities = () => {
     const navigate = useNavigate();
     const params = useParams();
 
-    //parent id (objective) of activity
-    const parentId = location.state?.objectiveParentId;
-    const objectiveRowId = location.state?.rowId;
+    const { current_parent_id, setCurrentObjective, current_row_id, setCurrentRowId, clearParentId } = useObjectivesHook();
+    const { activities, addActivity, updateActivityField, removeActivity, } = useActivitiesHook();
+    const { aopObjectives } = useAOPObjectivesHooks();
 
-    // useEffect(() => (
-    //     console.log(objectiveRowId)
-    // ), [objectiveRowId])
+    //check for objective id from location state if null then it will set the current_parent_id
+    const parentId = location.state?.objectiveParentId || current_parent_id;
+    const objectiveRowId = location.state?.rowId;
 
     const { objectiveId } = params; //objective Id lang for url path pero yung value is from row
     const currentPath = location.pathname;
     const childPath = currentPath === `/aop-management/activities/${objectiveId}`;
     const [loading, setLoading] = useState(true);
 
-    const { current_parent_id, setCurrentObjective, current_row_id, setCurrentRowId, clearParentId } = useObjectivesHook();
-    const { activities, addActivity, updateActivityField, removeActivity, } = useActivitiesHook();
-
-    const { aopObjectives } = useAOPObjectivesHooks();
-
-    const aopApplicationId = localStorage.getItem('aop-application-id');
+    const hasActivitiesForParent = activities.some((act) => act.parentId === parentId);
 
     useEffect(() => {
-        console.log(aopApplicationId)
+        // console.log('current id', current_parent_id)
+        // console.log('parent id', parentId);
+        // console.log('has activities for parent', hasActivitiesForParent)
+        // console.log(aopApplicationId)
         // console.log(aop_id)
-    }, [aopApplicationId])
+    }, [])
 
     useEffect(() => {
-        const hasActivitiesForParent = activities.some(
-            (act) => act.parentId === parentId
-        );
         if (!hasActivitiesForParent && parentId && loading) {
             addActivity(parentId ?? current_parent_id);
             setLoading(false);
