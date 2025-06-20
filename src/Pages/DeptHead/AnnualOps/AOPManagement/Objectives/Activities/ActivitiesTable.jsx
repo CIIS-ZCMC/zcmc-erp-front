@@ -275,6 +275,7 @@ const ActivitiesTable = ({
                                         component="button"
                                         onClick={() => {
                                             const resources = findResourcesByActivityID(id);
+                                            console.log(id)
                                             navigate(resources.length > 0 ? `resources/${rowId}` : `items/${rowId}`, {
                                                 state: {
                                                     parentId: id,
