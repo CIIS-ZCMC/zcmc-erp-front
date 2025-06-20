@@ -19,6 +19,11 @@ import no_result from "../../../assets/empty-state-icon-base.png";
 import { AOP_CONSTANTS } from "../../../Data/constants";
 
 import { ThreeDotsLoader } from "../../../Components/Common/Loading/ThreeDotsLoader";
+import useAopDataFormatter from "../../../Hooks/AOP/AOPDataFormatter";
+import useResponsiblePeopleHook from "../../../Hooks/ResponsiblePeopleHook";
+import useObjectivesHook from "../../../Hooks/ObjectivesHook";
+import useActivitiesHook from "../../../Hooks/ActivitiesHook";
+import useResourceHook from "../../../Hooks/ResourceHook";
 
 const AnnualOps = () => {
   const navigate = useNavigate();
@@ -29,6 +34,11 @@ const AnnualOps = () => {
 
   const { aop_id, aopObjectives, aop_summary } = useAOPObjectivesHooks();
   const { getSummary, setAopId, setMission } = useAOPActions();
+  const { formattedObjectives, formattedActivities, formattedResources, formattedResponsiblePeople } = useAopDataFormatter();
+  const { setResponsiblePeople } = useResponsiblePeopleHook();
+  const { setObjectives } = useObjectivesHook();
+  const { setActivities } = useActivitiesHook();
+  const { setResources } = useResourceHook();
 
   const {
     aop_application_id,
@@ -47,9 +57,22 @@ const AnnualOps = () => {
     mission,
   } = aop_summary;
 
+  function setStates(){
+    setObjectives(formattedObjectives || []);
+    setActivities(formattedActivities ? formattedActivities : []);
+    setResources(formattedResources ? formattedResources : []);
+    setResponsiblePeople(
+        formattedResponsiblePeople ? formattedResponsiblePeople : []
+    );
+  }
+
   useEffect(() => {
-    // console.log('id from store', aop_application_id)
-    // console.log('id from aop summary', aop_id)
+    if(aopObjectives !== null && !aop_application_id){
+      setStates();
+    }
+  }, [aopObjectives])
+
+  useEffect(() => {
     setAopId(aop_application_id)
     setMission(mission);
   }, [aop_application_id])

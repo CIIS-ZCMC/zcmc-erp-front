@@ -5,7 +5,7 @@ import { API } from "../../Data/constants";
 import { localStorageSetter } from "../../Utils/LocalStorage";
 
 const useAOPObjectivesHooks = create((set, get) => ({
-  aopObjectives: [],
+  aopObjectives: null,
   aopObjective: {},
   aop_summary: {},
   aop_timeline: [],
@@ -35,8 +35,14 @@ const useAOPObjectivesHooks = create((set, get) => ({
         failed: callBack,
         success: (res) => {
           // console.log(res)
-          const { status, message, data } = res;
-          set({ aop_summary: data });
+          const { status, message, data: { data } } = res;
+
+          set({ 
+            aop_summary: data.summary, 
+            aopObjectives: data.aop, 
+            aop_id: data.summary.aop_application_id 
+          });
+          
           callBack(status, message);
         },
       });
@@ -67,6 +73,7 @@ const useAOPObjectivesHooks = create((set, get) => ({
         success: (res) => {
           const { data } = res.data;
           set({ aopObjectives: data, aop_id: data.aop_application_id });
+          localStorage.setItem("aop-backup", JSON.stringify(data));
           callBack(200, "Success");
         },
       });

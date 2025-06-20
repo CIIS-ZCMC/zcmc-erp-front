@@ -101,17 +101,6 @@ const Objectives = () => {
     );
 
     useEffect(() => {
-        if(aopObjectives !== null){
-            setObjectives(formattedObjectives || []);
-            setActivities(formattedActivities ? formattedActivities : []);
-            setResources(formattedResources ? formattedResources : []);
-            setResponsiblePeople(
-                formattedResponsiblePeople ? formattedResponsiblePeople : []
-            );
-        }
-    }, [aopObjectives])
-
-    useEffect(() => {
         const params = { with_sub_data: 1 };
         getFunctionType(params, (status, message) => {
             if (!(status >= 200 && status < 300)) {
@@ -135,7 +124,6 @@ const Objectives = () => {
 
     // check pag walang objectives then add default objective
     useEffect(() => {
-        // console.log(objectives)
         if (objectives?.length === 0) {
             addObjective();
         }
@@ -200,10 +188,6 @@ const Objectives = () => {
         findResourcesByActivityID,
         findResponsiblePeopleByActivityID
     ]);
-
-    useEffect(() => {
-        console.log('formatted Objectives', formattedObjectives)
-    }, [aopObjectives])
 
     const handleSubmit = (isDraft) => {
         setIsLoading(true);
@@ -316,7 +300,7 @@ const Objectives = () => {
                 setIsRemarksLoading(false);
             })
             .catch((error) => {
-                console.error("Error fetching comments or remarks:", error);
+                // console.error("Error fetching comments or remarks:", error);
                 setIsRemarksLoading(false);
             });
 
