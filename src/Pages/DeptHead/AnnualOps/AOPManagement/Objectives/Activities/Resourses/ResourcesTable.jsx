@@ -9,12 +9,12 @@ import useActivitiesHook from "../../../../../../../Hooks/ActivitiesHook";
 import AutocompleteComponent from "../../../../../../../Components/Form/AutocompleteComponent";
 import IconButtonComponent from "../../../../../../../Components/Common/IconButtonComponent";
 
+import { formattedPrice } from "../../../../../../../Utils/formattedPrice";
 
 const Resources = ({
     rows,
     parentId,
     purchase_types,
-    isLoading
 }) => {
 
     const {
@@ -118,12 +118,14 @@ const Resources = ({
                                 </td>
 
                                 <td>
-                                    <Typography>{individualPrice || "-"}</Typography>
+                                    <Typography>
+                                        {formattedPrice(individualPrice) || "-"}
+                                    </Typography>
                                 </td>
 
                                 <td onClick={() => handleOnRowClick(id)}>
                                     <Typography>
-                                        {(Number(quantity * individualPrice).toFixed(2)) || "-"}
+                                        {formattedPrice(quantity * individualPrice) || "-"}
                                     </Typography>
                                 </td>
 

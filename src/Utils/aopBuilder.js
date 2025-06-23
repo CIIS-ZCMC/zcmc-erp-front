@@ -8,7 +8,7 @@ export const buildAOP = ({
     findResponsiblePeopleByActivityID
 }) => {
     return objectives?.map((item) => {
-        console.log('objectives', item)
+        // console.log('objectives', item)
         const activities = findActivitiesByObjectiveID(item.id);
         const activitiesWithExtras = activities.map((act) => {
             const { parentId, id, startMonth, endMonth, target, isGadRelated, ...actData } = act;

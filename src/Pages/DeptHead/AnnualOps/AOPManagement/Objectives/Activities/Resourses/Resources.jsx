@@ -65,35 +65,34 @@ const Resources = () => {
                     </Stack>
                 }
             >
-                {/* {isLoading ?
-                    // <BoxComponent
-                    //     mt={3}
-                    //     height={"65vh"}
-                    //     display={"flex"}
-                    //     flexDirection={"column"}
-                    //     justifyContent={"center"}
-                    //     alignContent={"center"}
-                    // >
-                    //     <ThreeDotsLoader />
-                    // </BoxComponent>
+                {isLoading ?
+                    <BoxComponent
+                        mt={3}
+                        height={"65vh"}
+                        display={"flex"}
+                        flexDirection={"column"}
+                        justifyContent={"center"}
+                        alignContent={"center"}
+                    >
+                        <ThreeDotsLoader />
+                    </BoxComponent>
                     :
+                    <EditableTableComponent
+                        columns={AOP_RESOURCE_HEADER}
+                        stripe={"odd"}
+                        haverRow
+                        tableRow={
+                            <ResourcesTable
+                                rows={resources.filter((item) => item.parentId === parentId)}
+                                parentId={parentId}
+                                resources={items}
+                                purchase_types={purchase_types}
+                            />
+                        }
+                    />
+                }
 
-                } */}
 
-                <EditableTableComponent
-                    columns={AOP_RESOURCE_HEADER}
-                    stripe={"odd"}
-                    haverRow
-                    tableRow={
-                        <ResourcesTable
-                            rows={resources.filter((item) => item.parentId === parentId)}
-                            parentId={parentId}
-                            resources={items}
-                            isLoading={isLoading}
-                            purchase_types={purchase_types}
-                        />
-                    }
-                />
 
                 <Stack
                     mt={2}

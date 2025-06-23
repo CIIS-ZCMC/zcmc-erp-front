@@ -43,6 +43,10 @@ const Objectives = () => {
     const OBJECTIVES = localStorageGetter('objectives-storage');
     const savedMission = localStorageGetter("mission");
 
+    useEffect(() => {
+        console.log(savedMission)
+    }, [savedMission])
+
     const { create, updateAOP, getSingleAOP } = useAOPActions();
 
     const { aopObjectives, deleteObjective } = useAOPObjectivesHooks();
@@ -143,14 +147,7 @@ const Objectives = () => {
         clearCart();
     };
 
-    const handleSubmitAlertSuccess = () => {
-        alert('navigating....');
-        window.location.href = "/aop";
-        closeAlertDialog()
-    }
-
-
-    const handleConfirmationModal = (status) => {
+    const handleHasDiscussed = (status) => {
         setOpenConfirmDialog(true);
         const data = {
             status: status,
@@ -158,6 +155,7 @@ const Objectives = () => {
             description: CONFIRMATION_CONSTANTS.ALERT_SUBMITTION_DESCRIPTION,
         };
         setConfirmationModal(data);
+        setOpenConfirmDiscussedDialog(false) //close is discussed modal
     };
 
     //alert for has discussed 
@@ -168,7 +166,6 @@ const Objectives = () => {
             title: CONFIRMATION_CONSTANTS.ALERT_HASDISCUSSED_TITLE,
             description: CONFIRMATION_CONSTANTS.ALERT_HASDISCUSSED_DESCRIPTION,
         };
-
         setConfirmationModal(data);
     };
 
@@ -192,65 +189,69 @@ const Objectives = () => {
         findResponsiblePeopleByActivityID
     ]);
 
-    const handleSubmit = (isDraft) => {
+    const handleSubmit = () => {
         setIsLoading(true);
 
         const payload = {
             mission: mission,
-            has_discussed: !!hasDiscussed, // boolean explicitly
-            status: isDraft,
+            has_discussed: !!hasDiscussed,
+            status: isDraft ? 'draft' : 'pending',
             authorization_pin: authorizationPin,
             application_objectives: buildAopPayload(),
         };
 
-        console.log('payload', payload)
-        setAlertDialog(responseMessages.success);
+        // console.log('payload', payload)
 
         // Determine which action to take (update or create)
-        // const submissionAction = AOP_APPLICATION_ID ? updateAOP : create;
+        const submissionAction = AOP_APPLICATION_ID ? updateAOP : create;
 
-        // submissionAction(payload, AOP_APPLICATION_ID, (status, message) => {
-        //     setIsLoading(false);
+        submissionAction(payload, AOP_APPLICATION_ID, (status, message) => {
+            setIsLoading(false);
 
-        //     // Common response handler for both create and update
-        //     const responseMessages = {
-        //         existing: {
-        //             status: 200,
-        //             title: "Existing AOP",
-        //             description: "You already have an AOP application in your area."
-        //         },
-        //         success: {
-        //             status: 200,
-        //             title: `AOP for F.Y. 2026 successfully ${AOP_APPLICATION_ID ? 'updated' : 'submitted for approval'}.`,
-        //             description: AOP_APPLICATION_ID
-        //                 ? "Your AOP has been successfully updated."
-        //                 : "Your AOP request has been sent to the next approving body."
-        //         },
-        //         error: {
-        //             status: status,
-        //             title: "Submission failed",
-        //             description: message || "An unexpected error occurred."
-        //         }
-        //     };
+            // Common response handler for both create and update
+            const responseMessages = {
+                existing: {
+                    status: 200,
+                    title: "Existing AOP",
+                    description: "You already have an AOP application in your area."
+                },
+                success: {
+                    status: 200,
+                    title: `AOP for F.Y. 2026 successfully ${AOP_APPLICATION_ID ? 'updated' : 'submitted for approval'}.`,
+                    description: AOP_APPLICATION_ID
+                        ? "Your AOP has been successfully updated."
+                        : "Your AOP request has been sent to the next approving body."
+                },
+                error: {
+                    status: status,
+                    title: "Submission failed",
+                    description: message || "An unexpected error occurred."
+                }
+            };
 
-        //     // Handle existing AOP case
-        //     if (status === 200 && message === responseMessages.existing.description) {
-        //         setAlertDialog(responseMessages.existing);
-        //         return;
-        //     }
+            // Handle existing AOP case
+            if (status === 200 && message === responseMessages.existing.description) {
+                setAlertDialog(responseMessages.existing);
+                return;
+            }
 
-        //     // Handle success case
-        //     if (status === 200) {
-        //         setOpenSubmitModal(false);
-        //         clearLocalStorage();
-        //         setMission("");
-        //         setAlertDialog(responseMessages.success);
-        //         return;
-        //     }
+            // Handle success case
+            if (status === 200) {
+                // setOpenSubmitModal(false);
+                clearLocalStorage();
+                setMission("");
+                setAlertDialog(responseMessages.success);
+                return;
+            }
 
-        //     // Handle failure case
-        //     setAlertDialog(responseMessages.error);
-        // });
+            // Handle failure case
+            setAlertDialog(responseMessages.error);
+        });
+
+        setTimeout(() => {
+            window.location.href = "/aop";
+            closeConfirmation()
+        }, 1000)
     };
 
     // handle save mission
@@ -339,7 +340,7 @@ const Objectives = () => {
                             <ButtonComponent
                                 onClick={() => {
                                     setIsDraft(true);
-                                    handleSubmit("draft");
+                                    // handleSubmit("draft");
                                 }}
                                 label={"Save as Draft"}
                                 variant={"outlined"}
@@ -423,7 +424,7 @@ const Objectives = () => {
             {openConfirmDialog && (
                 <ConfirmationModalComponent
                     leftButtonlabel={"Back to editor"}
-                    rightButtonAction={() => handleSubmit("pending")}
+                    rightButtonAction={() => handleSubmit()}
                     withAuthPin
                     rightButtonDisabled={!authorizationPin}
                     setAuthPin={setAuthorizationPin}
@@ -435,7 +436,7 @@ const Objectives = () => {
             {openConfirmDiscussedDialog && (
                 <ConfirmationModalComponent
                     leftButtonLabel={"Back"}
-                    rightButtonAction={() => handleConfirmationModal(200)}
+                    rightButtonAction={() => handleHasDiscussed(200)}
                     rightButtonLabel="Proceed"
                     rightButtonDisabled={!hasDiscussed}
                     isLoading={isLoading}
@@ -454,11 +455,6 @@ const Objectives = () => {
                     }
                 />
             )}
-
-            <AlertDialogComponent
-                leftButtonLabel="'confirm"
-                leftButtonAction={() => handleSubmitAlertSuccess()}
-            />
 
             <FeedbackSection
                 openFeedbackModal={openFeedbackModal}

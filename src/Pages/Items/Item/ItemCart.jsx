@@ -7,6 +7,7 @@ import { ThreeDotsLoader } from "../../../Components/Common/Loading/ThreeDotsLoa
 import QuantityControlComponent from "../../../Components/Cart/QuantityControlComponent";
 import ButtonComponent from "../../../Components/Common/ButtonComponent";
 
+import { formattedPrice } from "../../../Utils/formattedPrice";
 
 import empty_cart from "../../../assets/empty-cart.png";
 
@@ -171,7 +172,7 @@ const ItemCart = ({
                                 Total cost:
                             </Typography>
                             <Typography fontSize={20} fontWeight="lg" textAlign={"right"}>
-                                &#8369; {totalPrice.toLocaleString()}
+                                {formattedPrice(totalPrice)}
                             </Typography>
                         </Box>
 

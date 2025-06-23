@@ -57,17 +57,21 @@ const AnnualOps = () => {
     mission,
   } = aop_summary;
 
-  function setStates(){
+  function setStates() {
     setObjectives(formattedObjectives || []);
+    console.log(formattedActivities)
     setActivities(formattedActivities ? formattedActivities : []);
     setResources(formattedResources ? formattedResources : []);
     setResponsiblePeople(
-        formattedResponsiblePeople ? formattedResponsiblePeople : []
+      formattedResponsiblePeople ? formattedResponsiblePeople : []
     );
   }
 
   useEffect(() => {
-    if(aopObjectives !== null && !aop_application_id){
+
+    console.log(formattedObjectives)
+
+    if (aopObjectives !== null && !aop_application_id) {
       setStates();
     }
   }, [aopObjectives])

@@ -9,7 +9,8 @@ import useResponsiblePeopleHook from '../../../../../../Hooks/ResponsiblePeopleH
 import AutocompleteComponent from '../../../../../../Components/Form/AutocompleteComponent';
 import IconButtonComponent from '../../../../../../Components/Common/IconButtonComponent';
 
-import { FormattedLongDate } from '../../../../../../Utils/FormattedLongDate';
+import { formattedLongDate } from '../../../../../../Utils/formattedLongDate';
+import { formattedPrice } from '../../../../../../Utils/formattedPrice';
 
 const gadRelatedOptions = [
     { id: 1, label: 'Yes', value: true },
@@ -26,11 +27,6 @@ const ActivitiesTable = ({
     const navigate = useNavigate();
 
     const filteredActivities = rows?.filter(value => value?.parentId === parentId)
-
-    useEffect(() => {
-        console.log(filteredActivities)
-    }, [rows])
-
 
     const { resources, findResourcesByActivityID, totalCost } = useResourceHook();
     const { responsible_people } = useResponsiblePeopleHook();
@@ -61,8 +57,6 @@ const ActivitiesTable = ({
 
     //local state
     const [editRowId, setEditRowId] = useState(null);
-
-    const nextYearDefault = `${new Date().getFullYear() + 1}-01`;
 
     const handleOnRowClick = (id) => {
         setEditRowId(id);
@@ -108,7 +102,7 @@ const ActivitiesTable = ({
                                     <Input
                                         size='sm'
                                         type='month'
-                                        value={startMonth || nextYearDefault}
+                                        value={startMonth}
                                         onChange={(e) => handleChange(id, 'startMonth', e.target.value)}
                                         onBlur={() => setEditRowId(null)}
                                     />
@@ -118,12 +112,7 @@ const ActivitiesTable = ({
                                 </>
                             ) : (
                                 <Typography>
-                                    {startMonth
-                                        ?
-                                        FormattedLongDate(startMonth + '-01')
-                                        :
-                                        FormattedLongDate(nextYearDefault)
-                                    }
+                                    {formattedLongDate(startMonth)}
                                 </Typography>
                             )}
                         </td>
@@ -133,19 +122,14 @@ const ActivitiesTable = ({
                                 <Input
                                     size='sm'
                                     type='month'
-                                    value={endMonth || nextYearDefault}
+                                    value={endMonth}
                                     onChange={(e) => handleChange(id, 'endMonth', e.target.value)}
                                     onBlur={() => setEditRowId(null)}
                                 />
 
                             ) : (
                                 <Typography>
-                                    {endMonth
-                                        ?
-                                        FormattedLongDate(endMonth + '-01')
-                                        :
-                                        FormattedLongDate(nextYearDefault)
-                                    }
+                                    {formattedLongDate(endMonth + '-01')}
                                 </Typography>
                             )}
                         </td>
@@ -234,7 +218,7 @@ const ActivitiesTable = ({
 
                         <td >
                             <Typography>
-                                {cost}
+                                {formattedPrice(cost)}
                             </Typography>
                         </td>
 

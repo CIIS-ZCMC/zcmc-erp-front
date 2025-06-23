@@ -4,6 +4,9 @@ import { v4 as uuid } from "uuid";
 
 import { setNestedValue } from "../Utils/SetNestedValue";
 
+const NEXT_YEAR = new Date().getFullYear() + 1;
+const DEFAULT_START_MONTH = `${NEXT_YEAR}-01`;
+
 const initialActivity = (rowId = 1, parentId = null) => ({
     id: uuid(),
     parentId: parentId,
@@ -11,8 +14,8 @@ const initialActivity = (rowId = 1, parentId = null) => ({
     name: "",
     isGadRelated: false,
     cost: 0,
-    startMonth: "",
-    endMonth: "",
+    startMonth: DEFAULT_START_MONTH,
+    endMonth: DEFAULT_START_MONTH,
     target: {
         firstQuarter: "",
         secondQuarter: "",

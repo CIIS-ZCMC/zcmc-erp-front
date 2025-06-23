@@ -22,7 +22,9 @@ const ObjectivesTable = ({
     const navigate = useNavigate();
 
     const tableDataStyles = { cursor: 'pointer' }
+
     const { objectives, deleteObjective, currentEditedObjective, setCurrentEditedObjective, clearOthersFields } = useObjectivesHook();
+    const { setAlertDialog } = useModalHook();
 
     const [openOthersModal, setOpenOthersModal] = useState(false);
     const [editRowId, setEditRowId] = useState(null);
@@ -52,6 +54,18 @@ const ObjectivesTable = ({
             });
         }
     };
+
+    const handleSaveOthers = () => {
+        let data = {};
+
+        data = {
+            status: 200,
+            title: "Objectives and Success Indicator created successfully!",
+            description: "",
+        };
+        setAlertDialog(data)
+        handleCloseOthersModal()
+    }
 
     // useEffect(() => {
     //     console.log('objectives rows', rows)
@@ -127,7 +141,7 @@ const ObjectivesTable = ({
                                                         isRenderOption
                                                     />
 
-                                                    {objective?.code === 'OBJ-O-6480' &&
+                                                    {objective?.description === 'Others, please insert note/remarks' &&
                                                         <IconButtonComponent
                                                             onClick={() => handleOpenOthersModal(id)}
                                                             icon={<PencilLine size={14} />}
@@ -141,7 +155,7 @@ const ObjectivesTable = ({
                                                 </Stack>
 
                                                 <Typography mt={1}>
-                                                    {objective?.code === 'OBJ-O-6480' ? othersObjective : objective?.description || ''}
+                                                    {objective?.description === 'Others, please insert note/remarks' ? othersObjective?.description : objective?.description || ''}
                                                 </Typography>
                                             </Fragment>
                                         )
@@ -149,7 +163,7 @@ const ObjectivesTable = ({
                                         (
                                             // <Tooltip title={objective ? objective?.description : ''} variant="solid">
                                             <Typography >
-                                                {objective?.code === 'OBJ-O-6480' ? othersObjective : objective?.description || '-'}
+                                                {objective?.description === 'Others, please insert note/remarks' ? othersObjective?.description : objective?.description || '-'}
                                             </Typography>
                                             // </Tooltip>
                                         )
@@ -173,7 +187,7 @@ const ObjectivesTable = ({
                                                     isRenderOption
                                                 />
                                                 <Typography mt={1} >
-                                                    {objective?.code === 'OBJ-O-6480' ? othersSuccessIndicator : successIndicator?.description || ''}
+                                                    {objective?.description === 'Others, please insert note/remarks' ? othersSuccessIndicator?.description : successIndicator?.description || ''}
                                                 </Typography>
                                             </Fragment>
 
@@ -181,7 +195,7 @@ const ObjectivesTable = ({
                                         :
                                         (
                                             <Typography >
-                                                {objective?.code === 'OBJ-O-6480' ? othersSuccessIndicator : successIndicator?.description || '-'}
+                                                {objective?.description === 'Others, please insert note/remarks' ? othersSuccessIndicator?.description : successIndicator?.description || '-'}
                                             </Typography>
                                         )
                                     }
@@ -283,9 +297,6 @@ const ObjectivesTable = ({
                     )
                 })
             }
-
-
-
         </Fragment >
     );
 };

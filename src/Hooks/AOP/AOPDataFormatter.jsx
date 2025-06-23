@@ -1,9 +1,11 @@
 // hooks/useAopDataFormatter.js
-import { useMemo } from 'react';
+import { useEffect, useMemo } from 'react';
 import { v4 as uuid } from 'uuid';
 import useAOPObjectivesHooks from './AOPObjectivesHook';
 const useAopDataFormatter = () => {
     const { aopObjectives } = useAOPObjectivesHooks();
+
+
 
     return useMemo(() => {
         if (!aopObjectives?.application_objectives) {
@@ -33,7 +35,7 @@ const useAopDataFormatter = () => {
         const flatActivities = aopObjectives.application_objectives.flatMap(data =>
             data.activity.map(activity => ({
                 ...activity,
-                objectiveUuid: data.objective_uuid
+                objectiveUuid: data.objective_uuid,
             }))
         );
 
