@@ -100,6 +100,10 @@ const Objectives = () => {
         activities.filter((activity) => activity.parentId === objective.id)
     );
 
+    const isSubmitEnabled = !mission ||
+        resources.length === 0 ||
+        responsible_people.length === 0
+
     useEffect(() => {
         const params = { with_sub_data: 1 };
         getFunctionType(params, (status, message) => {
@@ -129,12 +133,7 @@ const Objectives = () => {
         }
     }, [objectives, addObjective]);
 
-    const handleSubmitAlertSuccess = () => {
-        alert('navigating....');
-        window.location.href = "/aop";
-        closeAlertDialog()
-    }
-
+    // clear local storage
     const clearLocalStorage = () => {
         //set objectives, activities, resources into empty state then clear localStorrage
         clearObjectives();
@@ -144,19 +143,26 @@ const Objectives = () => {
         clearCart();
     };
 
-    const handleConfirmationModal = () => {
+    const handleSubmitAlertSuccess = () => {
+        alert('navigating....');
+        window.location.href = "/aop";
+        closeAlertDialog()
+    }
+
+
+    const handleConfirmationModal = (status) => {
         setOpenConfirmDialog(true);
         const data = {
-            status: 200,
+            status: status,
             title: CONFIRMATION_CONSTANTS.ALERT_SUBMITTION_TITLE,
             description: CONFIRMATION_CONSTANTS.ALERT_SUBMITTION_DESCRIPTION,
         };
         setConfirmationModal(data);
     };
 
+    //alert for has discussed 
     const handleDiscussedConfirmationModal = () => {
         setOpenConfirmDiscussedDialog(true);
-
         const data = {
             status: "warning",
             title: CONFIRMATION_CONSTANTS.ALERT_HASDISCUSSED_TITLE,
@@ -166,9 +172,6 @@ const Objectives = () => {
         setConfirmationModal(data);
     };
 
-    const proceed = () => {
-        handleConfirmationModal();
-    };
 
     //build aop payload
     const buildAopPayload = useCallback(() => {
@@ -200,51 +203,54 @@ const Objectives = () => {
             application_objectives: buildAopPayload(),
         };
 
+        console.log('payload', payload)
+        setAlertDialog(responseMessages.success);
+
         // Determine which action to take (update or create)
-        const submissionAction = AOP_APPLICATION_ID ? updateAOP : create;
+        // const submissionAction = AOP_APPLICATION_ID ? updateAOP : create;
 
-        submissionAction(payload, AOP_APPLICATION_ID, (status, message) => {
-            setIsLoading(false);
+        // submissionAction(payload, AOP_APPLICATION_ID, (status, message) => {
+        //     setIsLoading(false);
 
-            // Common response handler for both create and update
-            const responseMessages = {
-                existing: {
-                    status: 200,
-                    title: "Existing AOP",
-                    description: "You already have an AOP application in your area."
-                },
-                success: {
-                    status: 200,
-                    title: `AOP for F.Y. 2026 successfully ${AOP_APPLICATION_ID ? 'updated' : 'submitted for approval'}.`,
-                    description: AOP_APPLICATION_ID
-                        ? "Your AOP has been successfully updated."
-                        : "Your AOP request has been sent to the next approving body."
-                },
-                error: {
-                    status: status,
-                    title: "Submission failed",
-                    description: message || "An unexpected error occurred."
-                }
-            };
+        //     // Common response handler for both create and update
+        //     const responseMessages = {
+        //         existing: {
+        //             status: 200,
+        //             title: "Existing AOP",
+        //             description: "You already have an AOP application in your area."
+        //         },
+        //         success: {
+        //             status: 200,
+        //             title: `AOP for F.Y. 2026 successfully ${AOP_APPLICATION_ID ? 'updated' : 'submitted for approval'}.`,
+        //             description: AOP_APPLICATION_ID
+        //                 ? "Your AOP has been successfully updated."
+        //                 : "Your AOP request has been sent to the next approving body."
+        //         },
+        //         error: {
+        //             status: status,
+        //             title: "Submission failed",
+        //             description: message || "An unexpected error occurred."
+        //         }
+        //     };
 
-            // Handle existing AOP case
-            if (status === 200 && message === responseMessages.existing.description) {
-                setAlertDialog(responseMessages.existing);
-                return;
-            }
+        //     // Handle existing AOP case
+        //     if (status === 200 && message === responseMessages.existing.description) {
+        //         setAlertDialog(responseMessages.existing);
+        //         return;
+        //     }
 
-            // Handle success case
-            if (status === 200) {
-                setOpenSubmitModal(false);
-                clearLocalStorage();
-                setMission("");
-                setAlertDialog(responseMessages.success);
-                return;
-            }
+        //     // Handle success case
+        //     if (status === 200) {
+        //         setOpenSubmitModal(false);
+        //         clearLocalStorage();
+        //         setMission("");
+        //         setAlertDialog(responseMessages.success);
+        //         return;
+        //     }
 
-            // Handle failure case
-            setAlertDialog(responseMessages.error);
-        });
+        //     // Handle failure case
+        //     setAlertDialog(responseMessages.error);
+        // });
     };
 
     // handle save mission
@@ -397,11 +403,7 @@ const Objectives = () => {
                                 label={"Submit AOP"}
                                 size={"md"}
                                 variant={"solid"}
-                                disabled={
-                                    !mission ||
-                                    resources.length === 0 ||
-                                    responsible_people.length === 0
-                                }
+                                disabled={isSubmitEnabled}
                                 onClick={() => handleDiscussedConfirmationModal()}
                             />
                         </Stack>
@@ -433,7 +435,7 @@ const Objectives = () => {
             {openConfirmDiscussedDialog && (
                 <ConfirmationModalComponent
                     leftButtonLabel={"Back"}
-                    rightButtonAction={() => proceed(200)}
+                    rightButtonAction={() => handleConfirmationModal(200)}
                     rightButtonLabel="Proceed"
                     rightButtonDisabled={!hasDiscussed}
                     isLoading={isLoading}

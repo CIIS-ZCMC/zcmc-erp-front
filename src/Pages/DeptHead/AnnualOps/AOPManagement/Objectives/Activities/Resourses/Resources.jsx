@@ -7,6 +7,8 @@ import { Plus } from "lucide-react";
 import EditableTableComponent from "../../../../../../../Components/Common/Table/EditableTableComponent";
 import ContainerComponent from "../../../../../../../Components/Common/ContainerComponent";
 import ButtonComponent from "../../../../../../../Components/Common/ButtonComponent";
+import BoxComponent from "../../../../../../../Components/Common/Card/BoxComponent";
+import { ThreeDotsLoader } from "../../../../../../../Components/Common/Loading/ThreeDotsLoader";
 
 import ResourcesTable from './ResourcesTable';
 
@@ -27,6 +29,8 @@ const Resources = () => {
     const parentId = location.state?.parentId; // refers to objectiveId as parent
     const objectiveRowId = location.state?.objectiveRowId;
 
+    const [isLoading, setIsLoading] = useState(false)
+
     useEffect(() => {
         getItems((status, message, data) => {
             if (status !== 200) {
@@ -36,12 +40,13 @@ const Resources = () => {
     }, []);
 
     useEffect(() => {
+        setIsLoading(true)
         getPurchaseType((status, message) => {
+            setIsLoading(false);
             if (!(status >= 200 && status < 300)) {
                 // if status not success
                 return; //Toast error
             }
-            // setisLoading(false);
         });
     }, []);
 
@@ -60,6 +65,21 @@ const Resources = () => {
                     </Stack>
                 }
             >
+                {/* {isLoading ?
+                    // <BoxComponent
+                    //     mt={3}
+                    //     height={"65vh"}
+                    //     display={"flex"}
+                    //     flexDirection={"column"}
+                    //     justifyContent={"center"}
+                    //     alignContent={"center"}
+                    // >
+                    //     <ThreeDotsLoader />
+                    // </BoxComponent>
+                    :
+
+                } */}
+
                 <EditableTableComponent
                     columns={AOP_RESOURCE_HEADER}
                     stripe={"odd"}
@@ -69,6 +89,7 @@ const Resources = () => {
                             rows={resources.filter((item) => item.parentId === parentId)}
                             parentId={parentId}
                             resources={items}
+                            isLoading={isLoading}
                             purchase_types={purchase_types}
                         />
                     }
@@ -91,7 +112,7 @@ const Resources = () => {
             </ContainerComponent>
 
             <Outlet />
-        </Fragment>
+        </Fragment >
     );
 };
 

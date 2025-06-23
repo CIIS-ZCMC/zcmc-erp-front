@@ -9,10 +9,12 @@ import useActivitiesHook from "../../../../../../../Hooks/ActivitiesHook";
 import AutocompleteComponent from "../../../../../../../Components/Form/AutocompleteComponent";
 import IconButtonComponent from "../../../../../../../Components/Common/IconButtonComponent";
 
+
 const Resources = ({
     rows,
     parentId,
     purchase_types,
+    isLoading
 }) => {
 
     const {
@@ -26,7 +28,6 @@ const Resources = ({
 
     const [localResources, setLocalResources] = useState(rows);
     const [editRowId, setEditRowId] = useState(null);
-    const [localTotalCost, setLocalTotalCost] = useState(0)
 
     const handleOnRowClick = (id) => setEditRowId(id);
 
@@ -73,11 +74,6 @@ const Resources = ({
         { id: 2, label: 'CO', value: 'CO' }
     ]
 
-    //get the total cost 
-    const totalCostFormat = (quantity, individualPrice) => {
-        const total = (quantity * individualPrice).toFixed(2);
-        setLocalTotalCost(total);
-    };
 
     return (
         <Fragment>
@@ -127,7 +123,6 @@ const Resources = ({
 
                                 <td onClick={() => handleOnRowClick(id)}>
                                     <Typography>
-                                        {/* {totalCostFormat(quantity, individualPrice)} */}
                                         {(Number(quantity * individualPrice).toFixed(2)) || "-"}
                                     </Typography>
                                 </td>

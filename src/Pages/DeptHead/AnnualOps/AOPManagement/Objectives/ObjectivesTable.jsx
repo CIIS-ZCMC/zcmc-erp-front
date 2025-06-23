@@ -242,7 +242,6 @@ const ObjectivesTable = ({
                                             direction={'column'}
                                             gap={3}
                                         >
-
                                             <TextareaComponent
                                                 label={'Objective'}
                                                 placeholder="Other objective, please specify"
