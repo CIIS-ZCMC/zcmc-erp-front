@@ -27,7 +27,6 @@ import { useAOPActions } from "../../../../../Hooks/AOP/AOPObjectivesHook";
 import useResourceHook from "../../../../../Hooks/ResourceHook";
 import useResponsiblePeopleHook from "../../../../../Hooks/ResponsiblePeopleHook";
 import { useCommentActions } from "../../../../../Hooks/CommentHook";
-import useAopDataFormatter from "../../../../../Hooks/AOP/AOPDataFormatter";
 
 //data related
 import { AOP_CONSTANTS, CONFIRMATION_CONSTANTS } from "../../../../../Data/constants";
@@ -39,7 +38,7 @@ import { buildAOP } from "../../../../../Utils/aopBuilder";
 
 const Objectives = () => {
 
-    const AOP_APPLICATION_ID = localStorageGetter('aop-app-id');
+    const APPLICATION_OBJECTIVE_ID = localStorageGetter('application-objective-id');
     const OBJECTIVES = localStorageGetter('objectives-storage');
     const savedMission = localStorageGetter("mission");
 
@@ -49,19 +48,16 @@ const Objectives = () => {
 
     const { create, updateAOP, getSingleAOP } = useAOPActions();
 
-    const { aopObjectives, deleteObjective } = useAOPObjectivesHooks();
+    const { formattedObjectives, deleteObjective } = useAOPObjectivesHooks();
     const { function_types, getFunctionType } = useFunctionTypeHook();
 
     const {
         objectives,
-        otherObjective,
-        otherSuccessIndicator,
         hasDiscussed,
         addObjective,
         updateObjectiveField,
         clearObjectives,
         setIsDiscussed,
-        setObjectives,
     } = useObjectivesHook();
     const { findActivitiesByObjectiveID, activities, clearActivities, setActivities } =
         useActivitiesHook();
@@ -75,7 +71,7 @@ const Objectives = () => {
         useResourceHook();
     const { setAlertDialog, setConfirmationModal, closeConfirmation, closeAlertDialog } =
         useModalHook();
-    const { formattedObjectives, formattedActivities, formattedResources, formattedResponsiblePeople } = useAopDataFormatter();
+
 
     // COMMENTS HOOK
     const {
@@ -100,9 +96,12 @@ const Objectives = () => {
     const [isDraft, setIsDraft] = useState(false);
     const [mission, setMission] = useState(savedMission ? savedMission : "");
 
-    const activitiesCount = objectives.map((objective) =>
-        activities.filter((activity) => activity.parentId === objective.id)
-    );
+    const activitiesCount = objectives.map((objective) => {
+        return activities.filter((activity) => {
+            return activity.parentId === objective.id || activity.parentId === objective.objectiveUuid
+        }
+        )
+    });
 
     const isSubmitEnabled = !mission ||
         resources.length === 0 ||
@@ -118,9 +117,9 @@ const Objectives = () => {
             setIsLoading(false);
         });
 
-        if (AOP_APPLICATION_ID && !formattedObjectives?.length) {
+        if (APPLICATION_OBJECTIVE_ID && !formattedObjectives?.length) {
             setIsLoading(true);
-            getSingleAOP(AOP_APPLICATION_ID, (status, message) => {
+            getSingleAOP(APPLICATION_OBJECTIVE_ID, (status, message) => {
                 setIsLoading(false)
                 if (!(status >= 200 && status < 300)) {
                     return
@@ -128,10 +127,13 @@ const Objectives = () => {
             })
 
         }
-    }, [AOP_APPLICATION_ID, formattedObjectives, isLoading]);
+    }, [APPLICATION_OBJECTIVE_ID, formattedObjectives, isLoading]);
 
     // check pag walang objectives then add default objective
     useEffect(() => {
+
+        // console.log(objectives)
+
         if (objectives?.length === 0) {
             addObjective();
         }
@@ -169,25 +171,25 @@ const Objectives = () => {
         setConfirmationModal(data);
     };
 
-
-    //build aop payload
+    // build aop payload
     const buildAopPayload = useCallback(() => {
         return buildAOP({
             objectives,
-            otherObjective,
-            otherSuccessIndicator,
             findActivitiesByObjectiveID,
             findResourcesByActivityID,
             findResponsiblePeopleByActivityID
         });
     }, [
         objectives,
-        otherObjective,
-        otherSuccessIndicator,
         findActivitiesByObjectiveID,
         findResourcesByActivityID,
         findResponsiblePeopleByActivityID
     ]);
+
+    useEffect(() => {
+        console.log(APPLICATION_OBJECTIVE_ID)
+    }, [APPLICATION_OBJECTIVE_ID])
+
 
     const handleSubmit = () => {
         setIsLoading(true);
@@ -200,12 +202,13 @@ const Objectives = () => {
             application_objectives: buildAopPayload(),
         };
 
-        // console.log('payload', payload)
+        console.log('payload', payload)
 
         // Determine which action to take (update or create)
-        const submissionAction = AOP_APPLICATION_ID ? updateAOP : create;
+        const submissionAction = APPLICATION_OBJECTIVE_ID ? updateAOP : create;
 
-        submissionAction(payload, AOP_APPLICATION_ID, (status, message) => {
+
+        submissionAction(payload, APPLICATION_OBJECTIVE_ID, (status, message) => {
             setIsLoading(false);
 
             // Common response handler for both create and update
@@ -217,8 +220,8 @@ const Objectives = () => {
                 },
                 success: {
                     status: 200,
-                    title: `AOP for F.Y. 2026 successfully ${AOP_APPLICATION_ID ? 'updated' : 'submitted for approval'}.`,
-                    description: AOP_APPLICATION_ID
+                    title: `AOP for F.Y. 2026 successfully ${APPLICATION_OBJECTIVE_ID ? 'updated' : 'submitted for approval'}.`,
+                    description: APPLICATION_OBJECTIVE_ID
                         ? "Your AOP has been successfully updated."
                         : "Your AOP request has been sent to the next approving body."
                 },
@@ -249,8 +252,8 @@ const Objectives = () => {
         });
 
         setTimeout(() => {
-            window.location.href = "/aop";
-            closeConfirmation()
+            // window.location.href = "/aop";
+            // closeConfirmation()
         }, 1000)
     };
 
@@ -260,7 +263,7 @@ const Objectives = () => {
 
         data = {
             status: 200,
-            title: AOP_APPLICATION_ID ? "Mission updated successfully" : "Mission created successfully!",
+            title: APPLICATION_OBJECTIVE_ID ? "Mission updated successfully" : "Mission created successfully!",
             description: "",
         };
         handleCloseDialog();
@@ -294,10 +297,10 @@ const Objectives = () => {
 
         const fetch = () => {
             // if (!isDivisionHead || !isMCC) {
-            getCommentsByApplication(AOP_APPLICATION_ID, () => { });
+            getCommentsByApplication(APPLICATION_OBJECTIVE_ID, () => { });
             // }
 
-            getRemarksByApplication(AOP_APPLICATION_ID, () => {
+            getRemarksByApplication(APPLICATION_OBJECTIVE_ID, () => {
                 setTimeout(() => setIsRemarksLoading(false), 1000);
             });
         };
@@ -322,7 +325,7 @@ const Objectives = () => {
                     <Stack direction={"row"} gap={1}>
 
                         {
-                            AOP_APPLICATION_ID &&
+                            APPLICATION_OBJECTIVE_ID &&
                             <ButtonComponent
                                 label={'Read Feedback'}
                                 variant={"outlined"}
@@ -336,7 +339,7 @@ const Objectives = () => {
                             endDecorator={<Plus size={16} />}
                         />
                         {
-                            !AOP_APPLICATION_ID &&
+                            !APPLICATION_OBJECTIVE_ID &&
                             <ButtonComponent
                                 onClick={() => {
                                     setIsDraft(true);
@@ -369,7 +372,7 @@ const Objectives = () => {
                             secondaryHeader={
                                 <Link component="button" onClick={() => handleOpenDialog()} pb={1}>
                                     <Stack direction={"row"} gap={1} alignItems={"center"}>
-                                        {AOP_APPLICATION_ID ? 'Update Mission' : ' Create Mission'}
+                                        {APPLICATION_OBJECTIVE_ID ? 'Update Mission' : ' Create Mission'}
                                         <ExternalLink size={16} />
                                     </Stack>
                                 </Link>
@@ -413,7 +416,7 @@ const Objectives = () => {
             </ContainerComponent>
 
             <MissionModal
-                AOP_APPLICATION_ID={AOP_APPLICATION_ID}
+                APPLICATION_OBJECTIVE_ID={APPLICATION_OBJECTIVE_ID}
                 openSaveMissionModal={openSaveMissionModal}
                 handleCloseDialog={handleCloseDialog}
                 mission={mission}

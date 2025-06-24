@@ -123,9 +123,10 @@ const useActivitiesHook = create(
                 set({ activities: newActivities });
             },
 
-
             findActivitiesByObjectiveID: (objID) => {
-                return get().activities.filter((item) => item.parentId == objID);
+                return get().activities.filter((item) =>
+                    item.parentId === objID
+                );
             },
         }),
         {

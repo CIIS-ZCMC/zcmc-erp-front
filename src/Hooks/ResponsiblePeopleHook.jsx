@@ -66,7 +66,7 @@ const useResponsiblePeopleHook = create(
             const newItem = {
               activityId,
               users: key === "users" ? [value] : [],
-              areas: key === "areas" ? [value] : [],
+              // areas: key === "areas" ? [value] : [],
               designations: key === "designations" ? [value] : [],
               isAssigned: false,
             };

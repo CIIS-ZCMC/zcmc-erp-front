@@ -18,9 +18,11 @@ import DesignationSection from "./DesignationSection";
 //data related
 import { AOP_CONSTANTS } from "../../../../../../../Data/constants";
 
+import { localStorageGetter } from "../../../../../../../Utils/LocalStorage";
+
 const Responsible = () => {
 
-    const aopApplicationId = localStorage.getItem('aop-application-id');
+    const aopApplicationId = localStorageGetter('aop-app-id');
 
     const navigate = useNavigate();
     const location = useLocation();

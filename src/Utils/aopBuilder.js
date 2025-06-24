@@ -1,23 +1,25 @@
 // utils/aopBuilder.js
 export const buildAOP = ({
     objectives,
-    otherObjective,
-    otherSuccessIndicator,
     findActivitiesByObjectiveID,
     findResourcesByActivityID,
     findResponsiblePeopleByActivityID
 }) => {
     return objectives?.map((item) => {
-        // console.log('objectives', item)
+
         const activities = findActivitiesByObjectiveID(item.id);
+        // const activities = findActivitiesByObjectiveID(item.objectiveUuid);
+
         const activitiesWithExtras = activities.map((act) => {
             const { parentId, id, startMonth, endMonth, target, isGadRelated, ...actData } = act;
 
             return {
                 ...actData,
+                id: id,
                 start_month: startMonth,
                 end_month: endMonth,
                 is_gad_related: isGadRelated,
+                parentId: id,
                 target: {
                     first_quarter: target.firstQuarter,
                     second_quarter: target.secondQuarter,
@@ -30,6 +32,7 @@ export const buildAOP = ({
         });
 
         return {
+            id: item.id,
             objective_id: item.objective?.id,
             success_indicator_id: item.successIndicator?.id,
             others_objective: item.othersObjective,

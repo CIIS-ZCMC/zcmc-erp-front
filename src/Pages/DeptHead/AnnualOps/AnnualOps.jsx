@@ -19,7 +19,6 @@ import no_result from "../../../assets/empty-state-icon-base.png";
 import { AOP_CONSTANTS } from "../../../Data/constants";
 
 import { ThreeDotsLoader } from "../../../Components/Common/Loading/ThreeDotsLoader";
-import useAopDataFormatter from "../../../Hooks/AOP/AOPDataFormatter";
 import useResponsiblePeopleHook from "../../../Hooks/ResponsiblePeopleHook";
 import useObjectivesHook from "../../../Hooks/ObjectivesHook";
 import useActivitiesHook from "../../../Hooks/ActivitiesHook";
@@ -32,9 +31,17 @@ const AnnualOps = () => {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const { aop_id, aopObjectives, aop_summary } = useAOPObjectivesHooks();
+  const {
+    aop_id,
+    aopObjectives,
+    aop_summary,
+    formattedObjectives,
+    formattedActivities,
+    formattedResources,
+    formattedResponsible
+
+  } = useAOPObjectivesHooks();
   const { getSummary, setAopId, setMission } = useAOPActions();
-  const { formattedObjectives, formattedActivities, formattedResources, formattedResponsiblePeople } = useAopDataFormatter();
   const { setResponsiblePeople } = useResponsiblePeopleHook();
   const { setObjectives } = useObjectivesHook();
   const { setActivities } = useActivitiesHook();
@@ -58,23 +65,23 @@ const AnnualOps = () => {
   } = aop_summary;
 
   function setStates() {
-    setObjectives(formattedObjectives || []);
-    console.log(formattedActivities)
+
+    console.log('formatted objectives', formattedObjectives);
+    console.log('formatted activities', formattedActivities)
+
+    setObjectives(formattedObjectives ? formattedObjectives : []);
     setActivities(formattedActivities ? formattedActivities : []);
     setResources(formattedResources ? formattedResources : []);
     setResponsiblePeople(
-      formattedResponsiblePeople ? formattedResponsiblePeople : []
+      formattedResponsible ? formattedResponsible : []
     );
   }
 
   useEffect(() => {
-
-    console.log(formattedObjectives)
-
-    if (aopObjectives !== null && !aop_application_id) {
+    if (aopObjectives !== null || !aop_application_id) {
       setStates();
     }
-  }, [aopObjectives])
+  }, [aopObjectives, formattedObjectives])
 
   useEffect(() => {
     setAopId(aop_application_id)

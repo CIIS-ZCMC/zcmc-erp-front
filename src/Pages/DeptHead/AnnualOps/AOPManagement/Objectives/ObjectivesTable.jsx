@@ -68,8 +68,8 @@ const ObjectivesTable = ({
     }
 
     // useEffect(() => {
-    //     console.log('objectives rows', rows)
-    // }, [rows])
+    //     console.log('objectives rows table', objectives)
+    // }, [objectives])
 
     return (
         <Fragment>
@@ -79,8 +79,8 @@ const ObjectivesTable = ({
                     const isEnableRemove = !functionType && !objective && !successIndicator
 
                     return (
-                        <>
-                            <tr key={id}>
+                        <Fragment key={id}>
+                            <tr>
                                 <td>
                                     <Typography>
                                         {/* {id} */}
@@ -155,7 +155,7 @@ const ObjectivesTable = ({
                                                 </Stack>
 
                                                 <Typography mt={1}>
-                                                    {objective?.description === 'Others, please insert note/remarks' ? othersObjective?.description : objective?.description || ''}
+                                                    {objective?.description === 'Others, please insert note/remarks' ? othersObjective : objective?.description || ''}
                                                 </Typography>
                                             </Fragment>
                                         )
@@ -163,7 +163,7 @@ const ObjectivesTable = ({
                                         (
                                             // <Tooltip title={objective ? objective?.description : ''} variant="solid">
                                             <Typography >
-                                                {objective?.description === 'Others, please insert note/remarks' ? othersObjective?.description : objective?.description || '-'}
+                                                {objective?.description === 'Others, please insert note/remarks' ? othersObjective : objective?.description || '-'}
                                             </Typography>
                                             // </Tooltip>
                                         )
@@ -187,7 +187,7 @@ const ObjectivesTable = ({
                                                     isRenderOption
                                                 />
                                                 <Typography mt={1} >
-                                                    {objective?.description === 'Others, please insert note/remarks' ? othersSuccessIndicator?.description : successIndicator?.description || ''}
+                                                    {objective?.description === 'Others, please insert note/remarks' ? othersSuccessIndicator : successIndicator?.description || ''}
                                                 </Typography>
                                             </Fragment>
 
@@ -195,7 +195,7 @@ const ObjectivesTable = ({
                                         :
                                         (
                                             <Typography >
-                                                {objective?.description === 'Others, please insert note/remarks' ? othersSuccessIndicator?.description : successIndicator?.description || '-'}
+                                                {objective?.description === 'Others, please insert note/remarks' ? othersSuccessIndicator : successIndicator?.description || '-'}
                                             </Typography>
                                         )
                                     }
@@ -292,7 +292,7 @@ const ObjectivesTable = ({
                                 rightButtonAction={() => handleSaveOthers()}
                             />
 
-                        </>
+                        </Fragment>
 
                     )
                 })
