@@ -40,6 +40,7 @@ const Resources = () => {
     }, []);
 
     useEffect(() => {
+        // console.log(resources)
         setIsLoading(true)
         getPurchaseType((status, message) => {
             setIsLoading(false);
@@ -48,7 +49,7 @@ const Resources = () => {
                 return; //Toast error
             }
         });
-    }, []);
+    }, [resources]);
 
     return (
         <Fragment>

@@ -26,9 +26,11 @@ import AlertDialogComponent from "../Components/Common/Dialog/AlertDialogCompone
 
 export default function ComponentTestPage() {
   const [open, setOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const { AOP_TITLE, AOP_SUBHEADING } = AOP_CONSTANTS;
   const { setAlertDialog, setConfirmationModal, closeAlertDialog } = useModalHook();
+
 
   const handleConfirmationModal = () => {
     const data = {
@@ -61,6 +63,15 @@ export default function ComponentTestPage() {
   const handleClickActivity = (index) => {
     setActive(index);
   };
+
+  const handleConfirm = () => {
+    setIsLoading(true);
+    setTimeout(() => {
+      window.location.href = "/aop";
+      closeAlertDialog()
+      setIsLoading(false);
+    }, 2000)
+  }
 
   const [action, setAction] = useState(null);
   const [newComment, setNewComment] = useState("");
@@ -117,8 +128,9 @@ export default function ComponentTestPage() {
       />
 
       <AlertDialogComponent
-        leftButtonLabel="'confirm"
-        leftButtonAction={() => { alert('navigating....'); closeAlertDialog() }}
+        rightButtonAction={() => handleConfirm()}
+        isLoading={isLoading}
+        noRightButton={false}
       />
     </Stack>
   );

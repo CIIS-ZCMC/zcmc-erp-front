@@ -74,6 +74,9 @@ const Resources = ({
         { id: 2, label: 'CO', value: 'CO' }
     ]
 
+    useEffect(() => {
+        console.log('resources', rows)
+    }, [rows])
 
     return (
         <Fragment>

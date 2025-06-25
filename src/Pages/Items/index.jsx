@@ -55,7 +55,6 @@ const Items = () => {
 
   // const objectiveId = location.state.objectiveId;
 
-
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
@@ -67,7 +66,7 @@ const Items = () => {
     cart?.filter((item) => item.parentId === activityId) || [];
 
   useEffect(() => {
-    console.log('filtered cart', cart)
+    console.log('filtered cart', filteredCart)
     // console.log('activity parent id', activityId)
   }, [filteredCart])
 
@@ -95,9 +94,11 @@ const Items = () => {
     });
   }, []);
 
+  const filteredResources = resources.filter((item) => item.parentId === activityId)
+
   useEffect(() => {
     if (resources.length > 0) {
-      resources.filter((item) => item.parent_id === activityId).map((resource) => {
+      filteredResources.map((resource) => {
         const exist = cart.find((item) => item.id === resource.item_id);
         if (!exist) {
           const item = items.find((item) => item.id === resource.item_id)
@@ -105,7 +106,7 @@ const Items = () => {
         }
       })
     }
-  }, [])
+  }, [resources])
 
   const handleOpenItemDialog = (item) => {
     setSelectedItem(item);
@@ -131,7 +132,6 @@ const Items = () => {
     updateCost(activityId, totalPrice);
     saveItems(activityId, totalPrice, itemTotal);
 
-    //make a condition here if id of aop is exisitng change the route to /aop-edit/id/activities/id/resources/rowNumber
     navigate(
       `/aop-management/activities/${objectiveRowId}/resources/${rowNumber}`,
       {

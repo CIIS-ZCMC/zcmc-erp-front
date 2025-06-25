@@ -49,6 +49,7 @@ const Responsible = () => {
         activity?.designations?.length > 0 ||
         activity?.areas?.length > 0;
 
+    // alert for saving assignment
     const handleSaveAssignment = () => {
         if (!activity) {
             console.warn("No responsible person data found for this activity.");
@@ -70,7 +71,6 @@ const Responsible = () => {
             description:
                 "This will redirect you back to AOP Objectives",
         };
-
 
         setConfirmationModal(data);
     };

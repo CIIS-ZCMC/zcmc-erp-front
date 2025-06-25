@@ -85,9 +85,9 @@ const Objectives = () => {
     // local states
     const [isLoading, setIsLoading] = useState(false);
     const [isRemarksLoading, setIsRemarksLoading] = useState(true);
-
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
     const [openConfirmDiscussedDialog, setOpenConfirmDiscussedDialog] = useState(false);
+    const [openAlertSuccess, setOpenAlertSuccess] = useState(false)
     const [openSubmitModal, setOpenSubmitModal] = useState(false);
     const [openSaveMissionModal, setOpenSaveMissionModal] = useState(false);
     const [openFeedbackModal, setOpenFeedbackModal] = useState(false)
@@ -149,7 +149,8 @@ const Objectives = () => {
         clearCart();
     };
 
-    const handleHasDiscussed = (status) => {
+    //with auth pin data
+    const handleProceedAuthModal = (status) => {
         setOpenConfirmDialog(true);
         const data = {
             status: status,
@@ -158,9 +159,10 @@ const Objectives = () => {
         };
         setConfirmationModal(data);
         setOpenConfirmDiscussedDialog(false) //close is discussed modal
+
     };
 
-    //alert for has discussed 
+    //has discussed data
     const handleDiscussedConfirmationModal = () => {
         setOpenConfirmDiscussedDialog(true);
         const data = {
@@ -170,6 +172,17 @@ const Objectives = () => {
         };
         setConfirmationModal(data);
     };
+
+    // handle close alert and navigate to aop
+    const handleNavigateToAOP = () => {
+        setOpenAlertSuccess(true)
+        setIsLoading(true);
+        setTimeout(() => {
+            window.location.href = "/aop";
+            closeAlertDialog()
+            setIsLoading(false);
+        }, 2000)
+    }
 
     // build aop payload
     const buildAopPayload = useCallback(() => {
@@ -240,10 +253,12 @@ const Objectives = () => {
 
             // Handle success case
             if (status === 200) {
-                // setOpenSubmitModal(false);
+                setOpenSubmitModal(false);
                 clearLocalStorage();
                 setMission("");
                 setAlertDialog(responseMessages.success);
+                // handle alert that will navigate to aop
+                handleNavigateToAOP()
                 return;
             }
 
@@ -251,10 +266,6 @@ const Objectives = () => {
             setAlertDialog(responseMessages.error);
         });
 
-        setTimeout(() => {
-            // window.location.href = "/aop";
-            // closeConfirmation()
-        }, 1000)
     };
 
     // handle save mission
@@ -408,7 +419,7 @@ const Objectives = () => {
                                 size={"md"}
                                 variant={"solid"}
                                 disabled={isSubmitEnabled}
-                                onClick={() => handleDiscussedConfirmationModal()}
+                                onClick={() => handleDiscussedConfirmationModal()} //open the has discussed modal
                             />
                         </Stack>
                     </Fragment>
@@ -435,11 +446,11 @@ const Objectives = () => {
                 />
             )}
 
-            {/* Confirmation modal to proceed */}
+            {/* Confirmation for handle discussed */}
             {openConfirmDiscussedDialog && (
                 <ConfirmationModalComponent
                     leftButtonLabel={"Back"}
-                    rightButtonAction={() => handleHasDiscussed(200)}
+                    rightButtonAction={() => handleProceedAuthModal(200)}
                     rightButtonLabel="Proceed"
                     rightButtonDisabled={!hasDiscussed}
                     isLoading={isLoading}
@@ -464,6 +475,16 @@ const Objectives = () => {
                 setOpenFeedbackModal={setOpenFeedbackModal}
                 isLoading={isRemarksLoading}
             />
+            {
+                openAlertSuccess && (
+                    <AlertDialogComponent
+                        rightButtonAction={() => handleNavigateToAOP()}
+                        isLoading={isLoading}
+                        noRightButton={false}
+                    />
+                )
+            }
+
 
             <Outlet />
         </Fragment>

@@ -31,7 +31,7 @@ const ItemList = ({
 
     useEffect(() => {
         // console.log('items', items)
-        console.log('displayed Items', displayedItems)
+        // console.log('displayed Items', displayedItems)
     }, [items, displayedItems])
 
     const filteredItems = useMemo(() => {

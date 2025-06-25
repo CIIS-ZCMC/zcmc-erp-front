@@ -19,7 +19,7 @@ export const buildAOP = ({
                 start_month: startMonth,
                 end_month: endMonth,
                 is_gad_related: isGadRelated,
-                parentId: id,
+                parentId: parentId,
                 target: {
                     first_quarter: target.firstQuarter,
                     second_quarter: target.secondQuarter,
@@ -32,7 +32,7 @@ export const buildAOP = ({
         });
 
         return {
-            id: item.id,
+            id: item.parentId,
             objective_id: item.objective?.id,
             success_indicator_id: item.successIndicator?.id,
             others_objective: item.othersObjective,
