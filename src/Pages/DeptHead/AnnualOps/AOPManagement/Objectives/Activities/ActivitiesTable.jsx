@@ -64,7 +64,7 @@ const ActivitiesTable = ({
 
     return (
         <Fragment>
-            {filteredActivities?.map(({ rowId, id, name, isGadRelated, cost, startMonth, endMonth, target: { firstQuarter, secondQuarter, thirdQuarter, fourthQuarter } }, index) => {
+            {filteredActivities?.map(({ rowId, id, parentId, name, isGadRelated, cost, startMonth, endMonth, target: { firstQuarter, secondQuarter, thirdQuarter, fourthQuarter } }, index) => {
 
                 const isEditing = editRowId === id;
 
@@ -318,7 +318,7 @@ const ActivitiesTable = ({
 
 
                                 <IconButtonComponent
-                                    onClick={() => deleteRow(id)}
+                                    onClick={() => deleteRow(parentId)}
                                     icon={<Trash size={14} />}
                                     size={'sm'}
                                     variant={'text'}

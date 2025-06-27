@@ -40,7 +40,7 @@ const SelectPersonComponent = ({ parentId }) => {
 
 const ResponsiblePersonList = ({ parentId }) => {
 
-    const { responsible_people, removeData } = useResponsiblePeopleHook()
+    const { responsible_people, removeResponsiblePersonnel } = useResponsiblePeopleHook()
 
     const filteredData = responsible_people?.filter((element) => element.activityId === parentId)[0] ?? []
     const users = filteredData?.users;
@@ -74,7 +74,7 @@ const ResponsiblePersonList = ({ parentId }) => {
                             component="button"
                             color="danger"
                             fontSize={14}
-                            onClick={() => removeData(id, "users", parentId)}
+                            onClick={() => removeResponsiblePersonnel(id, "users", parentId)}
                         >
                             Remove
                         </Link>

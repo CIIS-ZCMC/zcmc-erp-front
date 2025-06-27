@@ -48,7 +48,7 @@ const Objectives = () => {
 
     const { create, updateAOP, getSingleAOP } = useAOPActions();
 
-    const { formattedObjectives, deleteObjective } = useAOPObjectivesHooks();
+    const { formattedObjectives } = useAOPObjectivesHooks();
     const { function_types, getFunctionType } = useFunctionTypeHook();
 
     const {
@@ -58,16 +58,19 @@ const Objectives = () => {
         updateObjectiveField,
         clearObjectives,
         setIsDiscussed,
+        setObjectives,
+        deleteObjective,
     } = useObjectivesHook();
-    const { findActivitiesByObjectiveID, activities, clearActivities, setActivities } =
+    const { findActivitiesByObjectiveID, activities, clearActivities, setActivities, removeActivity } =
         useActivitiesHook();
     const {
         responsible_people,
         findResponsiblePeopleByActivityID,
         clearResponsiblePeople,
-        setResponsiblePeople
+        setResponsiblePeople,
+        removeMultipleResponsiblePersonnel,
     } = useResponsiblePeopleHook();
-    const { resources, findResourcesByActivityID, clearResources, clearCart, setResources } =
+    const { resources, findResourcesByActivityID, clearResources, clearCart, setResources, removeItemResource } =
         useResourceHook();
     const { setAlertDialog, setConfirmationModal, closeConfirmation, closeAlertDialog } =
         useModalHook();
@@ -327,6 +330,32 @@ const Objectives = () => {
 
     }
 
+    const removeObjective = (objectiveId) => {
+        const relatedActivities = findActivitiesByObjectiveID(objectiveId);
+        const activityIds = relatedActivities.map((act) => act.id);
+
+        // Remove resources by parentId
+        const resourceIdsToDelete = resources
+            .filter((res) => activityIds.includes(res.parentId))
+            .map((res) => res.id);
+
+        if (resourceIdsToDelete.length > 0) {
+            removeItemResource(resourceIdsToDelete);
+        }
+
+        // Remove responsible people in batch by parentId
+        if (activityIds.length > 0) {
+            removeMultipleResponsiblePersonnel(activityIds); // NEW batch delete!
+        }
+
+        // Remove activities
+        activityIds.forEach((id) => removeActivity(id));
+
+        // Remove the objective
+        deleteObjective(objectiveId)
+    };
+
+
     return (
         <Fragment>
             <ContainerComponent
@@ -391,7 +420,7 @@ const Objectives = () => {
                             tableRow={
                                 <ObjectivesTable
                                     rows={objectives}
-                                    deleteRow={deleteObjective}
+                                    deleteRow={removeObjective}
                                     handleChange={updateObjectiveField}
                                     function_types={function_types}
                                     activitiesCount={activitiesCount}

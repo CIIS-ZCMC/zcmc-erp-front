@@ -95,9 +95,10 @@ const useResponsiblePeopleHook = create(
         });
       },
 
-      removeData: (id, key, activityId) =>
+      //remove single responsible personnel
+      removeResponsiblePersonnel: (id, key, activityId) =>
         set((state) => {
-          const updatedResponsiblePeople = state.responsible_people.map(
+          const updatedResponsiblePersonnel = state.responsible_people.map(
             (activity) => {
               if (activity.activityId !== activityId) return activity;
 
@@ -113,9 +114,18 @@ const useResponsiblePeopleHook = create(
           );
 
           return {
-            responsible_people: updatedResponsiblePeople,
+            responsible_people: updatedResponsiblePersonnel,
           };
         }),
+
+      //remove batch/muiltiple responsible personnel
+      removeMultipleResponsiblePersonnel: (activityIdsToRemove) => {
+        const { responsible_people } = get();
+        const filtered = responsible_people.filter(
+          (entry) => !activityIdsToRemove.includes(entry.activityId)
+        );
+        set({ responsible_people: filtered });
+      },
 
       // reset value of responsible person selected values
       resetValues: (activityIndex) => {

@@ -19,6 +19,8 @@ import { AOP_ACTIVITIES_HEADER } from "../../../../../../Data/Columns";
 import useAOPObjectivesHooks from "../../../../../../Hooks/AOP/AOPObjectivesHook";
 import useActivitiesHook from "../../../../../../Hooks/ActivitiesHook";
 import useObjectivesHook from "../../../../../../Hooks/ObjectivesHook";
+import useResourceHook from "../../../../../../Hooks/ResourceHook";
+import useResponsiblePeopleHook from "../../../../../../Hooks/ResponsiblePeopleHook";
 
 const Activities = () => {
 
@@ -27,7 +29,9 @@ const Activities = () => {
     const params = useParams();
 
     const { current_parent_id, setCurrentObjective, current_row_id, setCurrentRowId, clearParentId } = useObjectivesHook();
-    const { activities, addActivity, updateActivityField, removeActivity, } = useActivitiesHook();
+    const { activities, addActivity, updateActivityField, removeActivity, findActivitiesByObjectiveID } = useActivitiesHook();
+    const { resources, removeItemResource } = useResourceHook();
+    const { removeMultipleResponsiblePersonnel } = useResponsiblePeopleHook();
     const { aopObjectives } = useAOPObjectivesHooks();
 
     //check for objective id from location state if null then it will set the current_parent_id
@@ -40,14 +44,6 @@ const Activities = () => {
     const [loading, setLoading] = useState(true);
 
     const hasActivitiesForParent = activities.some((act) => act.parentId === parentId);
-
-    useEffect(() => {
-        // console.log('current id', current_parent_id)
-        // console.log('parent id', parentId);
-        // console.log('has activities for parent', hasActivitiesForParent)
-        // console.log(aopApplicationId)
-        // console.log(aop_id)
-    }, [])
 
     useEffect(() => {
         if (!hasActivitiesForParent && parentId && loading) {
@@ -83,6 +79,33 @@ const Activities = () => {
     const handleNavigateBack = () => {
         clearParentId()
         navigate(`/aop-management`, { state: { ...location.state } })
+    }
+
+    const deleteActivities = (objectiveId) => {
+
+        const relatedActivities = findActivitiesByObjectiveID(objectiveId);
+
+        console.log(relatedActivities)
+        console.log(objectiveId)
+
+        const activityIds = relatedActivities.map((act) => act.id);
+
+        // Remove resources by parentId
+        const resourceIdsToDelete = resources
+            .filter((res) => activityIds.includes(res.parentId))
+            .map((res) => res.id);
+
+        if (resourceIdsToDelete.length > 0) {
+            removeItemResource(resourceIdsToDelete);
+        }
+
+        // Remove responsible people in batch by parentId
+        if (activityIds.length > 0) {
+            removeMultipleResponsiblePersonnel(activityIds); // NEW batch delete!
+        }
+
+        // Remove activities
+        activityIds.forEach((id) => removeActivity(id));
     }
 
     return (
@@ -151,7 +174,7 @@ const Activities = () => {
                                     parentId={parentId ?? current_parent_id}
                                     objectiveRowId={objectiveRowId ?? current_row_id}
                                     rows={activities}
-                                    deleteRow={removeActivity}
+                                    deleteRow={deleteActivities}
                                 />
                             }
                             stickLast

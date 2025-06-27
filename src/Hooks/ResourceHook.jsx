@@ -195,10 +195,14 @@ const useResourceHook = create(
         }));
       },
 
-      removeItemResource: (id) => {
+      removeItemResource: (idsToRemove) => {
+        // console.log(idsToRemove)
         const resources = get().resources;
 
-        const filtered = resources.filter((item) => item.id !== id);
+        // const filtered = resources.filter((item) => item.id !== id);
+
+        // Filter out all resources with matching IDs
+        const filtered = resources.filter((item) => !idsToRemove.includes(item.id));
 
         const groupedByParent = {};
 

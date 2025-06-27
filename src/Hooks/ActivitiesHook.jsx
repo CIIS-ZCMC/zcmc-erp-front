@@ -96,9 +96,7 @@ const useActivitiesHook = create(
             setInitialRender: (value) => set({ initialRender: value }),
 
             removeActivity: (id) => {
-
-                // console.log(id)
-
+                console.log(id)
                 const activities = get().activities;
 
                 const filtered = activities.filter((item) => item.id !== id);

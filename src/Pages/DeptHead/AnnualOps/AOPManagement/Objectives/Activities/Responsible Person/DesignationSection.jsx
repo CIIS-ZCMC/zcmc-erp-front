@@ -36,7 +36,7 @@ const SelectJobPositionComponent = ({ parentId }) => {
 
 const JobPositionList = ({ parentId }) => {
 
-    const { responsible_people, removeData } = useResponsiblePeopleHook();
+    const { responsible_people, removeResponsiblePersonnel } = useResponsiblePeopleHook();
 
     const filteredData = responsible_people?.filter((element) => element.activityId === parentId)[0] ?? []
     const designations = filteredData?.designations
@@ -94,7 +94,7 @@ const JobPositionList = ({ parentId }) => {
                             component="button"
                             color='danger'
                             fontSize={14}
-                            onClick={() => removeData(id, 'designations', parentId)}
+                            onClick={() => removeResponsiblePersonnel(id, 'designations', parentId)}
                         >
                             Remove
                         </Link>

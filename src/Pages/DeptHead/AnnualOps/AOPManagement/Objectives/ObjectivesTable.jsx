@@ -232,7 +232,8 @@ const ObjectivesTable = ({
 
                                         <Stack>
                                             <IconButtonComponent
-                                                onClick={() => handleRemoveObjective(id)}
+                                                onClick={() => deleteRow(id)}
+                                                // onClick={() => handleRemoveObjective(id)}
                                                 icon={<Trash size={14} />}
                                                 // color={'danger'}
                                                 disabled={isEnableRemove}
