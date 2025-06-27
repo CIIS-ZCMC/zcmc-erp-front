@@ -223,7 +223,7 @@ const useResourceHook = create(
         set({ resources: newResources });
       },
 
-      findResourcesByActivityID: (activityId) => {
+      findResourcesByActivityID: (activityId, mode = 'create') => {
         return get()
           .resources
           .filter((item) =>
@@ -231,6 +231,9 @@ const useResourceHook = create(
             item.parentId === activityId
           )
           .map((item) => ({
+            // ...(mode === 'edit' && { id: item.parentId }),
+            // ...(item.parentId !== undefined && { id: item.parentId }),
+            ...(typeof (item.parentId) === 'string' || typeof (item.parentId) !== undefined && { id: item.parentId }),
             item_id: item.item_id,
             purchase_type_id: item.purchaseTypeId?.id || item.purchaseTypeId, // handles both object and raw id
             quantity: item.quantity,

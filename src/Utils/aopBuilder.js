@@ -10,12 +10,13 @@ export const buildAOP = ({
         const activities = findActivitiesByObjectiveID(item.id);
         // const activities = findActivitiesByObjectiveID(item.objectiveUuid);
 
-        const activitiesWithExtras = activities.map((act) => {
+        const activitiesWithExtras = activities.map((act, mode = 'create') => {
             const { parentId, id, startMonth, endMonth, target, isGadRelated, ...actData } = act;
 
             return {
                 ...actData,
-                id: id,
+                // ...(mode === 'edit' && { id: id }),
+                ...(typeof (id) !== undefined && { id }),
                 start_month: startMonth,
                 end_month: endMonth,
                 is_gad_related: isGadRelated,
@@ -32,7 +33,7 @@ export const buildAOP = ({
         });
 
         return {
-            id: item.parentId,
+            ...(typeof (id) !== undefined && { id: item.parentId, }),
             objective_id: item.objective?.id,
             success_indicator_id: item.successIndicator?.id,
             others_objective: item.othersObjective,

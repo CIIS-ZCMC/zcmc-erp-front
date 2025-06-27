@@ -223,51 +223,50 @@ const Objectives = () => {
         // Determine which action to take (update or create)
         const submissionAction = APPLICATION_OBJECTIVE_ID ? updateAOP : create;
 
+        // submissionAction(payload, APPLICATION_OBJECTIVE_ID, (status, message) => {
+        //     setIsLoading(false);
 
-        submissionAction(payload, APPLICATION_OBJECTIVE_ID, (status, message) => {
-            setIsLoading(false);
+        //     // Common response handler for both create and update
+        //     const responseMessages = {
+        //         existing: {
+        //             status: 200,
+        //             title: "Existing AOP",
+        //             description: "You already have an AOP application in your area."
+        //         },
+        //         success: {
+        //             status: 200,
+        //             title: `AOP for F.Y. 2026 successfully ${APPLICATION_OBJECTIVE_ID ? 'updated' : 'submitted for approval'}.`,
+        //             description: APPLICATION_OBJECTIVE_ID
+        //                 ? "Your AOP has been successfully updated."
+        //                 : "Your AOP request has been sent to the next approving body."
+        //         },
+        //         error: {
+        //             status: status,
+        //             title: "Submission failed",
+        //             description: message || "An unexpected error occurred."
+        //         }
+        //     };
 
-            // Common response handler for both create and update
-            const responseMessages = {
-                existing: {
-                    status: 200,
-                    title: "Existing AOP",
-                    description: "You already have an AOP application in your area."
-                },
-                success: {
-                    status: 200,
-                    title: `AOP for F.Y. 2026 successfully ${APPLICATION_OBJECTIVE_ID ? 'updated' : 'submitted for approval'}.`,
-                    description: APPLICATION_OBJECTIVE_ID
-                        ? "Your AOP has been successfully updated."
-                        : "Your AOP request has been sent to the next approving body."
-                },
-                error: {
-                    status: status,
-                    title: "Submission failed",
-                    description: message || "An unexpected error occurred."
-                }
-            };
+        //     // Handle existing AOP case
+        //     if (status === 200 && message === responseMessages.existing.description) {
+        //         setAlertDialog(responseMessages.existing);
+        //         return;
+        //     }
 
-            // Handle existing AOP case
-            if (status === 200 && message === responseMessages.existing.description) {
-                setAlertDialog(responseMessages.existing);
-                return;
-            }
+        //     // Handle success case
+        //     if (status === 200) {
+        //         setOpenSubmitModal(false);
+        //         clearLocalStorage();
+        //         setMission("");
+        //         setAlertDialog(responseMessages.success);
+        //         // handle alert that will navigate to aop
+        //         handleNavigateToAOP()
+        //         return;
+        //     }
 
-            // Handle success case
-            if (status === 200) {
-                setOpenSubmitModal(false);
-                clearLocalStorage();
-                setMission("");
-                setAlertDialog(responseMessages.success);
-                // handle alert that will navigate to aop
-                handleNavigateToAOP()
-                return;
-            }
-
-            // Handle failure case
-            setAlertDialog(responseMessages.error);
-        });
+        //     // Handle failure case
+        //     setAlertDialog(responseMessages.error);
+        // });
 
     };
 
