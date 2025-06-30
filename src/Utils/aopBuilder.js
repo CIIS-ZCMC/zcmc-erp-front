@@ -1,10 +1,16 @@
+import { useEffect } from "react";
+
 // utils/aopBuilder.js
 export const buildAOP = ({
     objectives,
     findActivitiesByObjectiveID,
     findResourcesByActivityID,
-    findResponsiblePeopleByActivityID
+    findResponsiblePeopleByActivityID,
+    APPLICATION_OBJECTIVE_ID
 }) => {
+
+    console.log('aop builder ', APPLICATION_OBJECTIVE_ID)
+
     return objectives?.map((item) => {
 
         const activities = findActivitiesByObjectiveID(item.id);
@@ -15,8 +21,8 @@ export const buildAOP = ({
 
             return {
                 ...actData,
-                // ...(mode === 'edit' && { id: id }),
-                ...(typeof (id) !== undefined && { id }),
+                // ...(APPLICATION_OBJECTIVE_ID != null && { id }),
+                // id: id,
                 start_month: startMonth,
                 end_month: endMonth,
                 is_gad_related: isGadRelated,
@@ -27,13 +33,24 @@ export const buildAOP = ({
                     third_quarter: target.thirdQuarter,
                     fourth_quarter: target.fourthQuarter,
                 },
-                resources: findResourcesByActivityID(act.id),
-                responsible_people: findResponsiblePeopleByActivityID(act.id),
+                resources: findResourcesByActivityID(act.id).map((resource) => (
+                    {
+                        ...resource,
+                        ...(APPLICATION_OBJECTIVE_ID != null && { id: resource.id }),
+                    }
+                )),
+                responsible_people: findResponsiblePeopleByActivityID(act.id).map((responsible) => (
+                    {
+                        ...responsible,
+                        ...(APPLICATION_OBJECTIVE_ID != null && { id: responsible.id }),
+                    }
+                )),
             };
         });
 
         return {
-            ...(typeof (id) !== undefined && { id: item.parentId, }),
+            ...(APPLICATION_OBJECTIVE_ID != null && { id: item.id }),
+            // ...(typeof (id) !== undefined && { id: item.parentId, }),
             objective_id: item.objective?.id,
             success_indicator_id: item.successIndicator?.id,
             others_objective: item.othersObjective,

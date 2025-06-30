@@ -106,9 +106,6 @@ const ActivitiesTable = ({
                                         onChange={(e) => handleChange(id, 'startMonth', e.target.value)}
                                         onBlur={() => setEditRowId(null)}
                                     />
-
-                                    {/* {nextYearDefault} */}
-
                                 </>
                             ) : (
                                 <Typography>
@@ -129,7 +126,7 @@ const ActivitiesTable = ({
 
                             ) : (
                                 <Typography>
-                                    {formattedLongDate(endMonth + '-01')}
+                                    {formattedLongDate(endMonth)}
                                 </Typography>
                             )}
                         </td>

@@ -148,14 +148,13 @@ const useResponsiblePeopleHook = create(
         set({ responsible_people: updated });
       },
 
-      findResponsiblePeopleByActivityID: (actID, mode = 'create') => {
+      findResponsiblePeopleByActivityID: (actID) => {
         return get()
           .responsible_people
           .filter((item) => item.activityId === actID)
           .map(item => [
             ...(item.users || []).map((user) => ({
-              // ...(item.activityId !== undefined && { id: item.activityId }),
-              ...((item.activityId) === 'string' || typeof (item.activityId) !== undefined && { id: item.activityId, }),
+              id: item.activityId,
               user_id: user.id,
               designation_id: null,
               division_id: null,
@@ -164,7 +163,7 @@ const useResponsiblePeopleHook = create(
               unit_id: null,
             })),
             ...(item.designations || []).map((designation) => ({
-              ...((typeof (item.activityId) === 'string' || item.activityId) !== undefined && { id: item.activityId }),
+              id: item.activityId,
               user_id: null,
               designation_id: designation.id,
               division_id: null,

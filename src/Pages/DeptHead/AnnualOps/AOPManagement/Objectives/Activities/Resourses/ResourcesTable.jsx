@@ -113,6 +113,7 @@ const Resources = ({
                                             onChange={(e) => {
                                                 const intValue = parseInt(e.target.value, 10) || 0;
                                                 onChangeFieldValue(id, "quantity", intValue)
+                                                onblur()
                                             }}
                                         />
                                     ) : (
@@ -148,9 +149,7 @@ const Resources = ({
                                         </>
                                     ) : (
                                         <Typography>
-                                            {/* {console.info(purchaseTypeId.label)} */}
                                             {purchaseTypeId?.label || "-"}
-                                            {/* {purchase_types[purchaseTypeId]?.code || "-"} */}
                                         </Typography>
                                     )}
                                 </td>

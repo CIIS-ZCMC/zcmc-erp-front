@@ -38,7 +38,7 @@ import { buildAOP } from "../../../../../Utils/aopBuilder";
 
 const Objectives = () => {
 
-    const APPLICATION_OBJECTIVE_ID = localStorageGetter('application-objective-id');
+    const APPLICATION_OBJECTIVE_ID = localStorageGetter('aop-app-id');
     const OBJECTIVES = localStorageGetter('objectives-storage');
     const savedMission = localStorageGetter("mission");
 
@@ -46,7 +46,7 @@ const Objectives = () => {
         console.log(savedMission)
     }, [savedMission])
 
-    const { create, updateAOP, getSingleAOP } = useAOPActions();
+    const { create, getSingleAOP } = useAOPActions();
 
     const { formattedObjectives } = useAOPObjectivesHooks();
     const { function_types, getFunctionType } = useFunctionTypeHook();
@@ -58,19 +58,17 @@ const Objectives = () => {
         updateObjectiveField,
         clearObjectives,
         setIsDiscussed,
-        setObjectives,
         deleteObjective,
     } = useObjectivesHook();
-    const { findActivitiesByObjectiveID, activities, clearActivities, setActivities, removeActivity } =
+    const { findActivitiesByObjectiveID, activities, clearActivities, removeActivity } =
         useActivitiesHook();
     const {
         responsible_people,
         findResponsiblePeopleByActivityID,
         clearResponsiblePeople,
-        setResponsiblePeople,
         removeMultipleResponsiblePersonnel,
     } = useResponsiblePeopleHook();
-    const { resources, findResourcesByActivityID, clearResources, clearCart, setResources, removeItemResource } =
+    const { resources, findResourcesByActivityID, clearResources, clearCart, removeItemResource } =
         useResourceHook();
     const { setAlertDialog, setConfirmationModal, closeConfirmation, closeAlertDialog } =
         useModalHook();
@@ -130,13 +128,10 @@ const Objectives = () => {
             })
 
         }
-    }, [APPLICATION_OBJECTIVE_ID, formattedObjectives, isLoading]);
+    }, [APPLICATION_OBJECTIVE_ID, formattedObjectives]);
 
     // check pag walang objectives then add default objective
     useEffect(() => {
-
-        // console.log(objectives)
-
         if (objectives?.length === 0) {
             addObjective();
         }
@@ -162,7 +157,6 @@ const Objectives = () => {
         };
         setConfirmationModal(data);
         setOpenConfirmDiscussedDialog(false) //close is discussed modal
-
     };
 
     //has discussed data
@@ -181,7 +175,7 @@ const Objectives = () => {
         setOpenAlertSuccess(true)
         setIsLoading(true);
         setTimeout(() => {
-            window.location.href = "/aop";
+            // window.location.href = "/aop";
             closeAlertDialog()
             setIsLoading(false);
         }, 2000)
@@ -193,7 +187,8 @@ const Objectives = () => {
             objectives,
             findActivitiesByObjectiveID,
             findResourcesByActivityID,
-            findResponsiblePeopleByActivityID
+            findResponsiblePeopleByActivityID,
+            APPLICATION_OBJECTIVE_ID,
         });
     }, [
         objectives,
@@ -202,10 +197,9 @@ const Objectives = () => {
         findResponsiblePeopleByActivityID
     ]);
 
-    useEffect(() => {
-        console.log(APPLICATION_OBJECTIVE_ID)
-    }, [APPLICATION_OBJECTIVE_ID])
-
+    // useEffect(() => {
+    //     console.log(APPLICATION_OBJECTIVE_ID)
+    // }, [APPLICATION_OBJECTIVE_ID])
 
     const handleSubmit = () => {
         setIsLoading(true);
@@ -221,52 +215,52 @@ const Objectives = () => {
         console.log('payload', payload)
 
         // Determine which action to take (update or create)
-        const submissionAction = APPLICATION_OBJECTIVE_ID ? updateAOP : create;
+        // const submissionAction = APPLICATION_OBJECTIVE_ID ? updateAOP : create;
 
-        // submissionAction(payload, APPLICATION_OBJECTIVE_ID, (status, message) => {
-        //     setIsLoading(false);
+        create(payload, APPLICATION_OBJECTIVE_ID, (status, message) => {
+            setIsLoading(false);
 
-        //     // Common response handler for both create and update
-        //     const responseMessages = {
-        //         existing: {
-        //             status: 200,
-        //             title: "Existing AOP",
-        //             description: "You already have an AOP application in your area."
-        //         },
-        //         success: {
-        //             status: 200,
-        //             title: `AOP for F.Y. 2026 successfully ${APPLICATION_OBJECTIVE_ID ? 'updated' : 'submitted for approval'}.`,
-        //             description: APPLICATION_OBJECTIVE_ID
-        //                 ? "Your AOP has been successfully updated."
-        //                 : "Your AOP request has been sent to the next approving body."
-        //         },
-        //         error: {
-        //             status: status,
-        //             title: "Submission failed",
-        //             description: message || "An unexpected error occurred."
-        //         }
-        //     };
+            // esponse handler for both create and update
+            const responseMessages = {
+                existing: {
+                    status: 200,
+                    title: "Existing AOP",
+                    description: "You already have an AOP application in your area."
+                },
+                success: {
+                    status: 200,
+                    title: `AOP for F.Y. 2026 successfully ${APPLICATION_OBJECTIVE_ID ? 'updated' : 'submitted for approval'}.`,
+                    description: APPLICATION_OBJECTIVE_ID
+                        ? "Your AOP has been successfully updated."
+                        : "Your AOP request has been sent to the next approving body."
+                },
+                error: {
+                    status: status,
+                    title: "Submission failed",
+                    description: message || "An unexpected error occurred."
+                }
+            };
 
-        //     // Handle existing AOP case
-        //     if (status === 200 && message === responseMessages.existing.description) {
-        //         setAlertDialog(responseMessages.existing);
-        //         return;
-        //     }
+            // Handle existing AOP case
+            if (status === 200 && message === responseMessages.existing.description) {
+                setAlertDialog(responseMessages.existing);
+                return;
+            }
 
-        //     // Handle success case
-        //     if (status === 200) {
-        //         setOpenSubmitModal(false);
-        //         clearLocalStorage();
-        //         setMission("");
-        //         setAlertDialog(responseMessages.success);
-        //         // handle alert that will navigate to aop
-        //         handleNavigateToAOP()
-        //         return;
-        //     }
+            // Handle success case
+            if (status === 200) {
+                // setOpenSubmitModal(false);
+                clearLocalStorage();
+                setMission("");
+                setAlertDialog(responseMessages.success);
+                // handle alert that will navigate to aop
+                handleNavigateToAOP()
+                return;
+            }
 
-        //     // Handle failure case
-        //     setAlertDialog(responseMessages.error);
-        // });
+            // Handle failure case
+            setAlertDialog(responseMessages.error);
+        });
 
     };
 
@@ -326,7 +320,6 @@ const Objectives = () => {
                 // console.error("Error fetching comments or remarks:", error);
                 setIsRemarksLoading(false);
             });
-
     }
 
     const removeObjective = (objectiveId) => {

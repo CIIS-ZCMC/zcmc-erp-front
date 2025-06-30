@@ -66,7 +66,7 @@ const Resources = () => {
                     </Stack>
                 }
             >
-                {isLoading ?
+                {/* {isLoading ?
                     <BoxComponent
                         mt={3}
                         height={"65vh"}
@@ -91,9 +91,21 @@ const Resources = () => {
                             />
                         }
                     />
-                }
+                } */}
 
-
+                <EditableTableComponent
+                    columns={AOP_RESOURCE_HEADER}
+                    stripe={"odd"}
+                    haverRow
+                    tableRow={
+                        <ResourcesTable
+                            rows={resources.filter((item) => item.parentId === parentId)}
+                            parentId={parentId}
+                            resources={items}
+                            purchase_types={purchase_types}
+                        />
+                    }
+                />
 
                 <Stack
                     mt={2}

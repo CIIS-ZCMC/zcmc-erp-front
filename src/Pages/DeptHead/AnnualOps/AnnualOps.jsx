@@ -67,7 +67,9 @@ const AnnualOps = () => {
   function setStates() {
 
     console.log('formatted objectives', formattedObjectives);
-    console.log('formatted activities', formattedActivities)
+    console.log('formatted activities', formattedActivities);
+    console.log('formatted resources', formattedResources);
+    console.log('formatted responsible people', formattedResponsible);
 
     setObjectives(formattedObjectives ? formattedObjectives : []);
     setActivities(formattedActivities ? formattedActivities : []);
@@ -78,10 +80,11 @@ const AnnualOps = () => {
   }
 
   useEffect(() => {
+    console.log('call this')
     if (aopObjectives !== null || !aop_application_id) {
       setStates();
     }
-  }, [aopObjectives, formattedObjectives])
+  }, [aopObjectives])
 
   useEffect(() => {
     setAopId(aop_application_id)
