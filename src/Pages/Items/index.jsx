@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from "react";
+import { act, Fragment, useEffect, useState } from "react";
 
 import { Box, Stack, Grid } from "@mui/joy";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -7,11 +7,10 @@ import ButtonComponent from "../../Components/Common/ButtonComponent";
 import ContainerComponent from "../../Components/Common/ContainerComponent";
 import ModalComponent from "../../Components/Common/Dialog/ModalComponent";
 
-//layouts
-import ItemSummaryHeader from "../../Layout/Resources/ItemSummaryHeader";
-import ItemList from "../../Layout/Resources/ItemList";
-import ItemCart from "../../Layout/Resources/ItemCart";
-import ItemModalContent from "../../Layout/Resources/ItemModalContent";
+import ItemSummaryHeader from "./Item/ItemSummaryHeader";
+import ItemList from './Item/ItemList';
+import ItemCart from "./Item/ItemCart";
+import ItemModalContent from "./Item/ItemModalContent";
 
 import useItemsHook from "../../Hooks/ItemsHook";
 import useResourceHook from "../../Hooks/ResourceHook";
@@ -45,7 +44,7 @@ const Items = () => {
     cancelResources,
   } = useResourceHook();
 
-  const { resources, setTotalCost } = useResourceHook();
+  const { resources, setTotalCost, isItemSelectedInOtherActivity } = useResourceHook();
   const { updateCost } = useActivitiesHook();
   const [displayedItems, setDisplayedItems] = useState([]);
 
@@ -56,10 +55,6 @@ const Items = () => {
 
   // const objectiveId = location.state.objectiveId;
 
-  // useEffect(() => {
-  //     console.log(location.state)
-  // }, [])
-
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
   const [selectedItem, setSelectedItem] = useState(null);
@@ -69,6 +64,11 @@ const Items = () => {
 
   const filteredCart =
     cart?.filter((item) => item.parentId === activityId) || [];
+
+  useEffect(() => {
+    console.log('filtered cart', filteredCart)
+    // console.log('activity parent id', activityId)
+  }, [filteredCart])
 
   const totalQty = filteredCart.reduce(
     (sum, item) => sum + item.aop_quantity,
@@ -94,17 +94,19 @@ const Items = () => {
     });
   }, []);
 
+  const filteredResources = resources.filter((item) => item.parentId === activityId)
+
   useEffect(() => {
-    if(resources.length > 0){
-      resources.map((resource) => {
+    if (resources.length > 0) {
+      filteredResources.map((resource) => {
         const exist = cart.find((item) => item.id === resource.item_id);
-        if(!exist){
+        if (!exist) {
           const item = items.find((item) => item.id === resource.item_id)
           addResourceToCart(item, activityId, resource.quantity);
         }
       })
     }
-  }, [])
+  }, [resources])
 
   const handleOpenItemDialog = (item) => {
     setSelectedItem(item);
@@ -130,9 +132,8 @@ const Items = () => {
     updateCost(activityId, totalPrice);
     saveItems(activityId, totalPrice, itemTotal);
 
-    //make a condition here if id of aop is exisitng change the route to /aop-edit/id/activities/id/resources/rowNumber
     navigate(
-      `/aop-create/activities/${objectiveRowId}/resources/${rowNumber}`,
+      `/aop-management/activities/${objectiveRowId}/resources/${rowNumber}`,
       {
         state: {
           parentId: activityId,
@@ -146,7 +147,7 @@ const Items = () => {
   const handleOnCancel = () => {
     // removeFromCart(activityId);
     cancelResources();
-    navigate(`/aop-create/activities/${objectiveRowId}`);
+    navigate(`/aop-management/activities/${objectiveRowId}`);
   };
 
   return (

@@ -4,7 +4,8 @@ import { Stack, Typography, Grid } from "@mui/joy";
 import { useNavigate } from "react-router-dom";
 
 import useAOPObjectivesHooks from "../../../Hooks/AOP/AOPObjectivesHook";
-import { useAOPActions } from "../../../Hooks/AOP/AOPObjectivesHook";
+
+import { useAOPActions, } from "../../../Hooks/AOP/AOPObjectivesHook";
 
 import Header from "./Header";
 import Summary from "./Summary";
@@ -18,6 +19,10 @@ import no_result from "../../../assets/empty-state-icon-base.png";
 import { AOP_CONSTANTS } from "../../../Data/constants";
 
 import { ThreeDotsLoader } from "../../../Components/Common/Loading/ThreeDotsLoader";
+import useResponsiblePeopleHook from "../../../Hooks/ResponsiblePeopleHook";
+import useObjectivesHook from "../../../Hooks/ObjectivesHook";
+import useActivitiesHook from "../../../Hooks/ActivitiesHook";
+import useResourceHook from "../../../Hooks/ResourceHook";
 
 const AnnualOps = () => {
   const navigate = useNavigate();
@@ -26,8 +31,21 @@ const AnnualOps = () => {
 
   const [isLoading, setIsLoading] = useState(false);
 
-  const { aopObjectives, aop_summary } = useAOPObjectivesHooks();
-  const { getSummary } = useAOPActions();
+  const {
+    aop_id,
+    aopObjectives,
+    aop_summary,
+    formattedObjectives,
+    formattedActivities,
+    formattedResources,
+    formattedResponsible
+
+  } = useAOPObjectivesHooks();
+  const { getSummary, setAopId, setMission } = useAOPActions();
+  const { setResponsiblePeople } = useResponsiblePeopleHook();
+  const { setObjectives } = useObjectivesHook();
+  const { setActivities } = useActivitiesHook();
+  const { setResources } = useResourceHook();
 
   const {
     aop_application_id,
@@ -46,6 +64,33 @@ const AnnualOps = () => {
     mission,
   } = aop_summary;
 
+  function setStates() {
+
+    console.log('formatted objectives', formattedObjectives);
+    console.log('formatted activities', formattedActivities);
+    console.log('formatted resources', formattedResources);
+    console.log('formatted responsible people', formattedResponsible);
+
+    setObjectives(formattedObjectives ? formattedObjectives : []);
+    setActivities(formattedActivities ? formattedActivities : []);
+    setResources(formattedResources ? formattedResources : []);
+    setResponsiblePeople(
+      formattedResponsible ? formattedResponsible : []
+    );
+  }
+
+  useEffect(() => {
+    console.log('call this')
+    if (aopObjectives !== null || !aop_application_id) {
+      setStates();
+    }
+  }, [aopObjectives])
+
+  useEffect(() => {
+    setAopId(aop_application_id)
+    setMission(mission);
+  }, [aop_application_id])
+
   useEffect(() => {
     setIsLoading(true);
 
@@ -61,7 +106,7 @@ const AnnualOps = () => {
   return (
     <Fragment>
       <PageTitle
-        title={AOP_CONSTANTS.CREATE_AOP_TITLE}
+        title={aop_id ? AOP_CONSTANTS.EDIT_AOP_TITLE : AOP_CONSTANTS.CREATE_AOP_TITLE}
         description={AOP_CONSTANTS.CREATE_AOP_SUBHEADING}
       />
       {isLoading ? (
@@ -77,7 +122,7 @@ const AnnualOps = () => {
         </BoxComponent>
       ) : (
         <>
-          {!aop_application_id ? ( //to be fixed
+          {!aop_id ? ( //to be fixed
             <BoxComponent
               mt={3}
               height={"83vh"}
@@ -117,12 +162,12 @@ const AnnualOps = () => {
                 <ButtonComponent
                   label={"Request new items"}
                   variant={"outlined"}
-                  // onClick={() => navigate('create')}
+                // onClick={() => navigate('create')}
                 />
 
                 <ButtonComponent
                   label={"Create new AOP"}
-                  onClick={() => navigate("/aop-create")}
+                  onClick={() => navigate("/aop-management")}
                 />
               </Stack>
             </BoxComponent>

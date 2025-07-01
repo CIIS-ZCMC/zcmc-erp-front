@@ -32,6 +32,7 @@ function Layout() {
         {/* Notification */}
         <Box position={"absolute"} right={10} p={4}>
           <Stack direction={"row"} spacing={1} alignItems={"center"}>
+
             <NotificationMain />
             {profile_url ? (
               <Avatar

@@ -3,15 +3,12 @@ import { Navigate } from "react-router-dom";
 import AnnualOps from "../Pages/DeptHead/AnnualOps/AnnualOps";
 import Dashboard from "../Pages/Dashboard";
 
-import CreateAOP from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout";
-import EditAOP from "../Pages/DeptHead/AnnualOps/EditAOP";
-import EditObjectives from "../Pages/DeptHead/AnnualOps/EditAOP/Objectives/";
-import EditActivities from "../Pages/DeptHead/AnnualOps/EditAOP/Objectives/Activities";
-import EditResources from "../Pages/DeptHead/AnnualOps/EditAOP/Objectives/Activities/Resources";
-import EditResponsiblePerson from "../Pages/DeptHead/AnnualOps/EditAOP/Objectives/Activities/Responsible";
-import AnnualOpsPlanning from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives";
-import Activities from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities";
-import Resources from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities/Resources";
+//updated routing for AOP
+import AOP from "../Pages/DeptHead/AnnualOps/AOPManagement/AOP";
+import AOPObjectives from "../Pages/DeptHead/AnnualOps/AOPManagement/Objectives/Objectives";
+import Activities from "../Pages/DeptHead/AnnualOps/AOPManagement/Objectives/Activities/Activities";
+import Resources from "../Pages/DeptHead/AnnualOps/AOPManagement/Objectives/Activities/Resourses/Resources";
+import Responsible from "../Pages/DeptHead/AnnualOps/AOPManagement/Objectives/Activities/Responsible Person/Responsible";
 
 import Items from "../Pages/Items";
 
@@ -45,7 +42,7 @@ const iconStyles = {
 import ItemSubmittedRequestsList from "../Pages/TEMP/ItemSubmittedRequestsList";
 import { MyOwnRequestsList } from "../Pages/TEMP/ItemMyOwnRequestsLists";
 import { ItemRequestDatatable } from "../Pages/Consolidators/ItemManagement/ItemRequestDatatable";
-import ResponsiblePerson from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities/ResponsiblePerson";
+// import ResponsiblePerson from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities/ResponsiblePerson";
 
 export const sidebarRoutes = [
   // DASHBOARD ROUTE
@@ -70,15 +67,17 @@ export const sidebarRoutes = [
         element: <AnnualOps />,
         childPermissions: ["ERP-AOP-MAN:write"],
       },
+
       {
-        path: "/aop-create",
-        name: "Create AOP ",
-        // hidden: true,
-        element: <CreateAOP />,
-        roles: ["super_admin"],
+        path: '/aop-management',
+        element: <AOP />,
+        roles: ['super_admin'],
         childPermissions: ["ERP-AOP-MAN:write"],
         children: [
-          { index: true, element: <AnnualOpsPlanning /> }, //objective index
+          {
+            index: true,
+            element: <AOPObjectives />,
+          },
           {
             path: "activities/:objectiveId",
             element: <Activities />,
@@ -95,45 +94,14 @@ export const sidebarRoutes = [
 
               {
                 path: "person/:activityId",
-                element: <ResponsiblePerson />,
+                element: <Responsible />,
                 roles: ["super_admin"],
               },
             ],
-          },
-        ],
+          }
+        ]
       },
 
-      {
-        path: "/aop-edit",
-        element: <EditAOP />,
-        name: "Edit AOP",
-        roles: ["super_admin"],
-        childPermissions: ["ERP-AOP-MAN:write"],
-        children: [
-          { index: true, element: <EditObjectives /> }, //ENTRY POINT
-          {
-            path: "activities/:objectiveId",
-            element: <EditActivities />,
-            children: [
-              {
-                path: "items/:activityId",
-                element: <Items />,
-              },
-              {
-                path: "resources/:activityId",
-                element: <EditResources />,
-                roles: ["super_admin"],
-              },
-
-              {
-                path: "person/:activityId",
-                element: <EditResponsiblePerson />,
-                roles: ["super_admin"],
-              },
-            ],
-          },
-        ],
-      },
       {
         path: "/edit-ppmp",
         name: "Edit PPMP",

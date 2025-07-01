@@ -25,7 +25,7 @@ export const localStorageGetter = (label) => {
     const decryptedData = JSON.parse(bytes.toString(CryptoJS.enc.Utf8));
     return decryptedData;
   } catch (err) {
-    console.log("Error decrypting data:", err);
+    // console.log("Error decrypting data:", err);
     return null;
   }
 };

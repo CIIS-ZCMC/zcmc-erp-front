@@ -4,6 +4,9 @@ import { v4 as uuid } from "uuid";
 
 import { setNestedValue } from "../Utils/SetNestedValue";
 
+const NEXT_YEAR = new Date().getFullYear() + 1;
+const DEFAULT_START_MONTH = `${NEXT_YEAR}-01`;
+
 const initialActivity = (rowId = 1, parentId = null) => ({
     id: uuid(),
     parentId: parentId,
@@ -11,8 +14,8 @@ const initialActivity = (rowId = 1, parentId = null) => ({
     name: "",
     isGadRelated: false,
     cost: 0,
-    startMonth: "",
-    endMonth: "",
+    startMonth: DEFAULT_START_MONTH,
+    endMonth: DEFAULT_START_MONTH,
     target: {
         firstQuarter: "",
         secondQuarter: "",
@@ -62,7 +65,7 @@ const useActivitiesHook = create(
             addActivity: (parentId) => {
                 // console.log(parentId)
                 const current = get().activities;
-                console.log("Adding activity");
+                // console.log("Adding activity");
                 set((state) => ({
                     activities: [
                         ...state.activities,
@@ -74,7 +77,7 @@ const useActivitiesHook = create(
                     initialRender: false,
                 }));
             },
-            
+
             updateCost: (parentId, cost) => {
                 set((state) => ({
                     activities: state.activities.map((activity) => {
@@ -93,9 +96,7 @@ const useActivitiesHook = create(
             setInitialRender: (value) => set({ initialRender: value }),
 
             removeActivity: (id) => {
-
-                // console.log(id)
-
+                console.log(id)
                 const activities = get().activities;
 
                 const filtered = activities.filter((item) => item.id !== id);
@@ -120,9 +121,10 @@ const useActivitiesHook = create(
                 set({ activities: newActivities });
             },
 
-
             findActivitiesByObjectiveID: (objID) => {
-                return get().activities.filter((item) => item.parentId == objID);
+                return get().activities.filter((item) =>
+                    item.parentId === objID
+                );
             },
         }),
         {

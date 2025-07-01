@@ -7,6 +7,7 @@ const initialResource = (
   rowId = 1,
   parentId = null,
   purchaseTypeId = null
+
 ) => ({
   id: uuid(),
   item_id: null,
@@ -46,6 +47,12 @@ const useResourceHook = create(
         }))
       },
 
+      clearCart: () => {
+        set(() => ({
+          cart: []
+        }))
+      },
+
       setCart: () => {
         set(() => ({
           cart: data
@@ -81,7 +88,8 @@ const useResourceHook = create(
 
         // Try to find the existing item by ID
         const existingItem = cart?.find(
-          (cartItem) => cartItem?.id === item?.id
+          // (cartItem) => cartItem?.id === item?.id
+          (cartItem) => cartItem?.id === item?.item_id && cartItem?.parentId === parentId
         );
 
         if (existingItem) {
@@ -97,7 +105,7 @@ const useResourceHook = create(
               : cartItem
           );
           set({ cart: updatedCart });
-          console.log(updatedCart);
+          // console.log(updatedCart);
         } else {
           const newItem = {
             ...item,
@@ -108,7 +116,7 @@ const useResourceHook = create(
 
           const updatedCart = [...cart, newItem];
           set({ cart: updatedCart });
-          console.log(updatedCart);
+          // console.log(updatedCart);
         }
       },
 
@@ -141,10 +149,15 @@ const useResourceHook = create(
          */
 
         const updatedResources = cart.map((item, index) => {
-          const exist = resources.find((resource) => resource.item_id === item.id);
+          // const exist = resources.find((resource) => resource.item_id === item.id);
+
+          const exist = resources.find(
+            (resource) =>
+              resource.item_id === item.item_id && resource.parentId === parentId
+          );
 
           // If exist update the quantity and total cost
-          if(exist){
+          if (exist) {
             return {
               ...exist,
               quantity: item.aop_quantity,
@@ -159,12 +172,18 @@ const useResourceHook = create(
             individualPrice: item.estimated_budget,
             item_id: item.id,
             totalCost: totalPrice,
+            parentId: parentId,
           }
         });
 
+        // Remove resources for this parentId that are being replaced, but keep others
+        const filteredResources = resources.filter(
+          (resource) => resource.parentId !== parentId
+        );
+
         set((state) => ({
           resources: [
-            ...state.resources.filter((item) => item.parentId !== parentId),
+            ...filteredResources,
             ...updatedResources,
           ],
           cart: [],
@@ -189,10 +208,14 @@ const useResourceHook = create(
         }));
       },
 
-      removeItemResource: (id) => {
+      removeItemResource: (idsToRemove) => {
+        // console.log(idsToRemove)
         const resources = get().resources;
 
-        const filtered = resources.filter((item) => item.id !== id);
+        // const filtered = resources.filter((item) => item.id !== id);
+
+        // Filter out all resources with matching IDs
+        const filtered = resources.filter((item) => !idsToRemove.includes(item.id));
 
         const groupedByParent = {};
 
@@ -213,7 +236,7 @@ const useResourceHook = create(
         set({ resources: newResources });
       },
 
-      findResourcesByActivityID: (activityId) => {
+      findResourcesByActivityID: (activityId, mode = 'create') => {
         return get()
           .resources
           .filter((item) =>
@@ -221,12 +244,21 @@ const useResourceHook = create(
             item.parentId === activityId
           )
           .map((item) => ({
+            id: item.id,
             item_id: item.item_id,
             purchase_type_id: item.purchaseTypeId?.id || item.purchaseTypeId, // handles both object and raw id
             quantity: item.quantity,
             expense_class: item.expenseClass,
           }));
-      }
+      },
+
+      isItemSelectedInOtherActivity: (itemId, currentActivityId) => {
+        const resources = get().resources;
+        return resources.find(
+          (res) => res.item_id === itemId && res.parentId !== currentActivityId
+        );
+      },
+
     }),
 
     {

@@ -127,8 +127,6 @@ function Objectives({ props }) {
       }));
     }
   };
-
-  //STORE INDICATOR INPUT
   const handleChangeIndicator = (index, value, mode = "create") => {
     if (mode === "create") {
       setNewObj((prev) => {
