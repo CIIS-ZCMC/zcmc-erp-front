@@ -25,7 +25,7 @@ const Footer = () => {
   const handleOpen = () => {
     setLogOut(true);
     const data = {
-      status: "warning",
+      status: "logout",
       title: "Please confirm, are you sure you want to logout?",
       description: "You will be logged out of the ERP system.",
     };
@@ -133,6 +133,7 @@ const Footer = () => {
           leftButtonLabel="No, go back"
           rightButtonAction={() => handleLogOut()}
           rightButtonLabel="Yes, continue"
+          btnColor="danger"
         />
       )}
     </div>

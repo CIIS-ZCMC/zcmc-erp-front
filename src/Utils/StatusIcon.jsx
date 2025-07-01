@@ -6,6 +6,7 @@ import {
   CornerDownLeft,
   Hourglass,
   InfoIcon,
+  LogOut,
   MessagesSquare,
   TriangleAlert,
 } from "lucide-react";
@@ -26,6 +27,7 @@ export const getStatusIcon = (status, iconOnly) => {
     warning: <MessagesSquare />,
     400: <CircleX />,
     error: <CircleX />,
+    logout: <LogOut />,
   };
 
   const icon = iconMap[status] || null;

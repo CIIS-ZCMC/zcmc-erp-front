@@ -440,12 +440,12 @@ export const ppmpHeaders = (handleOpenDel, items, modes, isEditing) => [
     width: 150,
     align: "center",
   },
-  {
-    field: "aop_quantity",
-    name: "Quantity",
-    width: 85,
-    align: "center",
-  },
+  // {
+  //   field: "aop_quantity",
+  //   name: "Quantity",
+  //   width: 85,
+  //   align: "center",
+  // },
   {
     field: "quantity",
     name: "Quantity Inputted",

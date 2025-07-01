@@ -62,7 +62,9 @@ function PPMPDashboard(props) {
     <Fragment>
       {console.log("dashboard", status)}
       {pageLoader ? (
-        <ThreeDotsLoader />
+        <Stack height="85vh" alignItems="center" justifyContent="center">
+          <ThreeDotsLoader />
+        </Stack>
       ) : dashboard &&
         Object.keys(dashboard).length === 0 &&
         dashboard.constructor === Object ? (

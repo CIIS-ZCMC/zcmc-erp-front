@@ -214,15 +214,15 @@ const PPMPTable = memo(
 
           const newQuantity = calculateQuantity(updatedTargets);
 
-          if (row.aop_quantity && newQuantity > row.aop_quantity) {
-            const data = {
-              status: "error",
-              title: "Exceeded quantity",
-              description: `Total quantity (${newQuantity}) exceeds AOP quantity (${row.aop_quantity}).`,
-            };
-            setAlertDialog(data);
-            return; // Stop further updates if invalid
-          }
+          // if (row.aop_quantity && newQuantity > row.aop_quantity) {
+          //   const data = {
+          //     status: "error",
+          //     title: "Exceeded quantity",
+          //     description: `Total quantity (${newQuantity}) exceeds AOP quantity (${row.aop_quantity}).`,
+          //   };
+          //   setAlertDialog(data);
+          //   return; // Stop further updates if invalid
+          // }
 
           updatedRow.target_by_quarter = updatedTargets;
           updatedRow.quantity = newQuantity;

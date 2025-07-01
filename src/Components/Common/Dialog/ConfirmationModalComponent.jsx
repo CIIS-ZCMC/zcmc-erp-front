@@ -49,6 +49,7 @@ function ConfirmationModalComponent({
   withFooterDivider,
   pinHelperText = "Confirm you action by typing-in your authorization PIN.",
   errors = {},
+  btnColor,
 }) {
   const {
     confirmationModalState: { isOpen = false, title, description, status },
@@ -137,6 +138,7 @@ function ConfirmationModalComponent({
                 onClick={leftButtonAction ?? closeConfirmation}
                 disabled={isLoading}
                 fullWidth={!rightButtonAction}
+                color={btnColor}
               />
 
               <ButtonComponent
@@ -145,6 +147,7 @@ function ConfirmationModalComponent({
                 onClick={rightButtonAction}
                 loadingLabel={rightButtonLoadingLabel}
                 disabled={rightButtonDisabled || isLoading}
+                color={btnColor}
               />
             </Box>
           </DialogActions>

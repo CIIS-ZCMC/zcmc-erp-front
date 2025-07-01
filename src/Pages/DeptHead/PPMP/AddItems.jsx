@@ -33,7 +33,6 @@ function AddItems(props) {
   const navigate = useNavigate();
   const location = useLocation();
   const { activity } = location.state || {};
-  const { expenseId } = useParams();
 
   const { items, getItems } = useItemsHook();
   const { setTableData, tableData, setLoading } = usePPMPItemsHook();
@@ -98,7 +97,7 @@ function AddItems(props) {
 
   const handleCancel = () => {
     setIsLoading(true);
-    setCartMeta({ activity_id: null, expense_class_id: null });
+    setCartMeta({ activity_id: null });
     clearCart();
 
     setTimeout(() => {
@@ -171,7 +170,7 @@ function AddItems(props) {
 
     localStorage.setItem(localKey, JSON.stringify(mergedItemsArray));
 
-    setCartMeta({ selectedActivity: null, expense_class_id: null });
+    setCartMeta({ selectedActivity: null });
     clearCart();
 
     setTimeout(() => {
@@ -183,8 +182,8 @@ function AddItems(props) {
   const filteredItems = useMemo(() => {
     return searchTerm.trim()
       ? items.filter((item) =>
-        item.name.toLowerCase().includes(searchTerm.toLowerCase())
-      )
+          item.name.toLowerCase().includes(searchTerm.toLowerCase())
+        )
       : items;
   }, [items, searchTerm]);
   const fetchMoreItems = useCallback(() => {
@@ -230,7 +229,6 @@ function AddItems(props) {
   useEffect(() => {
     setCartMeta({
       selectedActivity: activity,
-      expense_class_id: expenseId,
     });
 
     setDisplayLoading(true);
@@ -307,15 +305,6 @@ function AddItems(props) {
                       printer took a galley of type and scrambled it to make a
                       type specimen book.
                     </Typography>
-                  </Box>
-                </BoxComponent>
-
-                <BoxComponent variant={"outlined"}>
-                  <Typography fontSize={14} fontWeight={600}>
-                    Expense Class:
-                  </Typography>
-                  <Box width={"200px"} mt={1}>
-                    <Typography fontSize={12}>{expenseId}</Typography>
                   </Box>
                 </BoxComponent>
               </Stack>

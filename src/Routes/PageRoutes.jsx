@@ -149,7 +149,7 @@ export const sidebarRoutes = [
             element: <PPMPItems />,
           },
           {
-            path: "add-item/:expenseId",
+            path: "add-item",
             element: <AddItems />,
           },
         ],
