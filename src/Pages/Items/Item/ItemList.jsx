@@ -22,7 +22,7 @@ const ItemList = ({
 }) => {
 
     const { items, getItems } = useItemsHook();
-    const { addResourceToCart } = useResourceHook();
+    const { addResourceToCart, isItemSelectedInOtherActivity } = useResourceHook();
 
     const loadMoreRef = useRef(null);
     const [searchTerm, setSearchTerm] = useState("");
@@ -87,6 +87,23 @@ const ItemList = ({
         setHasMore(filteredItems.length > ITEMS_PER_BATCH);
     }, [filteredItems])
 
+
+    const handleAddToCart = (item, parentId, quantity = 1) => {
+        const ducplicate = isItemSelectedInOtherActivity(item.id, parentId);
+        if (ducplicate) {
+            window.confirm(
+                `The item "${item.name}" is already selected in activity (${ducplicate.parentId}). Would you like to proceed and add this item to this activity?`
+            )
+            {
+                addResourceToCart(item, parentId, quantity);
+                // handleCloseItemDialog();
+            }
+        } else {
+            addResourceToCart(item, parentId, quantity);
+            // handleCloseItemDialog();
+        }
+    }
+
     return (
         <Fragment>
 
@@ -128,7 +145,7 @@ const ItemList = ({
                                 <Item
                                     key={index}
                                     item={item}
-                                    btnAction={() => addResourceToCart(item, activityId, quantity)}
+                                    btnAction={() => handleAddToCart(item, activityId, quantity)}
                                     itemInfoAction={() => {
                                         handleOpenItemDialog(item);
                                     }}

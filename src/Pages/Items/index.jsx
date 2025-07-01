@@ -44,7 +44,7 @@ const Items = () => {
     cancelResources,
   } = useResourceHook();
 
-  const { resources, setTotalCost } = useResourceHook();
+  const { resources, setTotalCost, isItemSelectedInOtherActivity } = useResourceHook();
   const { updateCost } = useActivitiesHook();
   const [displayedItems, setDisplayedItems] = useState([]);
 
