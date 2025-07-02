@@ -14,7 +14,6 @@ const initialResource = (
   parentId: parentId,
   rowId: rowId,
   name: "",
-  typeOfResources: "",
   quantity: 0,
   individualPrice: 0,
   totalCost: 0,
@@ -86,10 +85,12 @@ const useResourceHook = create(
       addResourceToCart: (item, parentId, quantity = 1) => {
         const { cart } = get();
 
+        console.log(item)
+
         // Try to find the existing item by ID
         const existingItem = cart?.find(
           // (cartItem) => cartItem?.id === item?.id
-          (cartItem) => cartItem?.id === item?.item_id && cartItem?.parentId === parentId
+          (cartItem) => cartItem?.id === item?.id && cartItem?.parentId === parentId
         );
 
         if (existingItem) {
@@ -153,7 +154,7 @@ const useResourceHook = create(
 
           const exist = resources.find(
             (resource) =>
-              resource.item_id === item.item_id && resource.parentId === parentId
+              resource.item_id === item.id && resource.parentId === parentId
           );
 
           // If exist update the quantity and total cost

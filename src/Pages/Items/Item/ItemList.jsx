@@ -89,19 +89,7 @@ const ItemList = ({
 
 
     const handleAddToCart = (item, parentId, quantity = 1) => {
-        const ducplicate = isItemSelectedInOtherActivity(item.id, parentId);
-        if (ducplicate) {
-            window.confirm(
-                `The item "${item.name}" is already selected in activity (${ducplicate.parentId}). Would you like to proceed and add this item to this activity?`
-            )
-            {
-                addResourceToCart(item, parentId, quantity);
-                // handleCloseItemDialog();
-            }
-        } else {
-            addResourceToCart(item, parentId, quantity);
-            // handleCloseItemDialog();
-        }
+        addResourceToCart(item, parentId, quantity);
     }
 
     return (
@@ -179,7 +167,6 @@ const ItemList = ({
                                 )}
                             </div>
                         </Grid>
-
                         {/* <div ref={loadMoreRef}>Loading more items...</div> */}
                     </Grid>
                 </Fragment>

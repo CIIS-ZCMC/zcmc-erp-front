@@ -5,8 +5,10 @@ import { useLocation } from 'react-router-dom';
 
 import useUserHook from '../../../../../../../Hooks/UserHook';
 import useResponsiblePeopleHook from '../../../../../../../Hooks/ResponsiblePeopleHook';
+import useModalHook from '../../../../../../../Hooks/ModalHook';
 
 import AutocompleteComponent from '../../../../../../../Components/Form/AutocompleteComponent';
+import ConfirmationModalComponent from '../../../../../../../Components/Common/Dialog/ConfirmationModalComponent';
 import BoxComponent from '../../../../../../../Components/Common/Card/BoxComponent';
 
 const SelectPersonComponent = ({ parentId }) => {
@@ -41,6 +43,14 @@ const SelectPersonComponent = ({ parentId }) => {
 const ResponsiblePersonList = ({ parentId }) => {
 
     const { responsible_people, removeResponsiblePersonnel } = useResponsiblePeopleHook()
+    const { setAlertDialog, setConfirmationModal, closeConfirmation } = useModalHook()
+
+    const [openDeleteModal, setOpenDeleteModal] = useState(false);
+    const [selectedId, setSelectedId] = useState(null);
+    const [field, setField] = useState(null);
+    const [localParentId, setLocalParentId] = useState(null);
+    const [isLoading, setIsLoading] = useState(false)
+
 
     const filteredData = responsible_people?.filter((element) => element.activityId === parentId)[0] ?? []
     const users = filteredData?.users;
@@ -51,6 +61,39 @@ const ResponsiblePersonList = ({ parentId }) => {
                 <Typography level="body-xs">Please select responsible person/people</Typography>
             </Stack>
         );
+    }
+
+    const handleOpenDeleteModal = (id, field, parentId) => {
+        setSelectedId(id)
+        setField(field)
+        setLocalParentId(parentId)
+        setOpenDeleteModal(true)
+        const data = {
+            status: "error",
+            title: ` Are you sure you want to delete this responsible person?`,
+            description:
+                "The selected responsible person will be removed from the table. Please input authorization pin to proceed.",
+        };
+        setConfirmationModal(data);
+    }
+
+    const handleDeletePersonnel = () => {
+        setIsLoading(true)
+        try {
+            setTimeout(() => {
+                removeResponsiblePersonnel(selectedId, field, localParentId)
+                setOpenDeleteModal(false)
+                closeConfirmation()
+                setIsLoading(false)
+            }, 1000);
+        } catch (error) {
+            setIsLoading(false)
+            setAlertDialog({
+                status: "error",
+                title: "Unexpected error",
+                description: "Something went wrong. Please try again.",
+            });
+        }
     }
 
     return (
@@ -74,7 +117,7 @@ const ResponsiblePersonList = ({ parentId }) => {
                             component="button"
                             color="danger"
                             fontSize={14}
-                            onClick={() => removeResponsiblePersonnel(id, "users", parentId)}
+                            onClick={() => handleOpenDeleteModal(id, "users", parentId)}
                         >
                             Remove
                         </Link>
@@ -83,6 +126,23 @@ const ResponsiblePersonList = ({ parentId }) => {
                     <Divider />
                 </Box>
             ))}
+
+            {
+                openDeleteModal && (
+                    <ConfirmationModalComponent
+                        withAuthPin={true}
+                        leftButtonLabel="Cancel"
+                        leftButtonAction={() => {
+                            setOpenDeleteModal(false)
+                            closeConfirmation()
+                        }}
+                        rightButtonLabel="Delete"
+                        rightButtonAction={() => handleDeletePersonnel()}
+                        // setAuthPin={setPin}
+                        isLoading={isLoading}
+                    />
+                )
+            }
         </>
     );
 };
@@ -112,6 +172,9 @@ const PeronSection = () => {
                 <SelectPersonComponent parentId={activityId} />
                 <ResponsiblePersonList parentId={activityId} />
             </BoxComponent>
+
+
+
         </div >
     )
 }

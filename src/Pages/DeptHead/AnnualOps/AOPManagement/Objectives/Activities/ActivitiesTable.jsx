@@ -6,11 +6,16 @@ import { Trash } from 'lucide-react';
 
 import useResourceHook from '../../../../../../Hooks/ResourceHook';
 import useResponsiblePeopleHook from '../../../../../../Hooks/ResponsiblePeopleHook';
+import useModalHook from '../../../../../../Hooks/ModalHook';
+import useActivitiesHook from '../../../../../../Hooks/ActivitiesHook';
+
 import AutocompleteComponent from '../../../../../../Components/Form/AutocompleteComponent';
 import IconButtonComponent from '../../../../../../Components/Common/IconButtonComponent';
+import ConfirmationModalComponent from '../../../../../../Components/Common/Dialog/ConfirmationModalComponent';
 
 import { formattedLongDate } from '../../../../../../Utils/formattedLongDate';
 import { formattedPrice } from '../../../../../../Utils/formattedPrice';
+
 
 const gadRelatedOptions = [
     { id: 1, label: 'Yes', value: true },
@@ -28,8 +33,15 @@ const ActivitiesTable = ({
 
     const filteredActivities = rows?.filter(value => value?.parentId === parentId)
 
-    const { resources, findResourcesByActivityID, totalCost } = useResourceHook();
-    const { responsible_people } = useResponsiblePeopleHook();
+    const { resources, findResourcesByActivityID, totalCost, removeItemResource } = useResourceHook();
+    const { responsible_people, removeMultipleResponsiblePersonnel } = useResponsiblePeopleHook();
+    const { setAlertDialog, closeConfirmation, setConfirmationModal } = useModalHook();
+    const { removeActivity } = useActivitiesHook();
+
+    const [isLoading, setIsLoading] = useState(false);
+    const [openDeleteModal, setOpenDeleteModal] = useState(false);
+    const [activityId, setActivityId] = useState(null);
+    const [pin, setPin] = useState('');
 
     const resourceCountPerActivity = resources.reduce((acc, resource) => {
         const { parentId } = resource;
@@ -62,11 +74,66 @@ const ActivitiesTable = ({
         setEditRowId(id);
     };
 
+    const handleOpenDeleteModal = (params) => {
+        setActivityId(params)
+        setOpenDeleteModal(true)
+        const data = {
+            status: "error",
+            title: ` Are you sure you want to delete this activity?`,
+            description:
+                "The selected activity will be removed from the table. Please input authorization pin to proceed.",
+        };
+        setConfirmationModal(data);
+    }
+
+    const handleDeleteActivity = () => {
+        setIsLoading(true)
+        try {
+            setTimeout(() => {
+                // deleteRow(activityId)
+                deleteActivityAndRelated(activityId)
+                setOpenDeleteModal(false);
+                closeConfirmation();
+                setIsLoading(false)
+            }, 1000);
+        } catch (error) {
+            setIsLoading(false)
+            setAlertDialog({
+                status: "error",
+                title: "Unexpected error",
+                description: "Something went wrong. Please try again.",
+            });
+        }
+    }
+
+    const deleteActivityAndRelated = (activityId) => {
+        // Find the activity (if you need to check existence)
+        // const activity = activities.find(act => act.id === activityId);
+
+        // Remove resources related to this activity
+        const resourceIdsToDelete = resources
+            .filter(res => res.parentId === activityId)
+            .map(res => res.id);
+
+        if (resourceIdsToDelete.length > 0) {
+            removeItemResource(resourceIdsToDelete);
+        }
+
+        // Remove responsible people for this activity
+        removeMultipleResponsiblePersonnel([activityId]);
+
+        // Remove the activity itself
+        removeActivity(activityId);
+
+        // console.log(activityId)
+    };
+
     return (
         <Fragment>
             {filteredActivities?.map(({ rowId, id, parentId, name, isGadRelated, cost, startMonth, endMonth, target: { firstQuarter, secondQuarter, thirdQuarter, fourthQuarter } }, index) => {
 
                 const isEditing = editRowId === id;
+                const isEnableRemove = !name && !isGadRelated;
 
                 return (
 
@@ -315,7 +382,8 @@ const ActivitiesTable = ({
 
 
                                 <IconButtonComponent
-                                    onClick={() => deleteRow(parentId)}
+                                    onClick={() => handleOpenDeleteModal(id)}
+                                    disabled={isEnableRemove}
                                     icon={<Trash size={14} />}
                                     size={'sm'}
                                     variant={'text'}
@@ -325,6 +393,24 @@ const ActivitiesTable = ({
                     </tr>
                 )
             })}
+
+            {
+                openDeleteModal && (
+                    <ConfirmationModalComponent
+                        withAuthPin={true}
+                        leftButtonLabel="Cancel"
+                        leftButtonAction={() => {
+                            setOpenDeleteModal(false)
+                            closeConfirmation()
+                        }}
+                        rightButtonLabel="Delete"
+                        rightButtonAction={() => handleDeleteActivity()}
+                        // setAuthPin={setPin}
+                        isLoading={isLoading}
+                    />
+                )
+            }
+
         </Fragment >
     )
 }

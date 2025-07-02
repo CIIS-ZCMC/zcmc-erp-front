@@ -5,9 +5,11 @@ import { Trash } from "lucide-react";
 
 import useResourceHook from "../../../../../../../Hooks/ResourceHook";
 import useActivitiesHook from "../../../../../../../Hooks/ActivitiesHook";
+import useModalHook from "../../../../../../../Hooks/ModalHook";
 
 import AutocompleteComponent from "../../../../../../../Components/Form/AutocompleteComponent";
 import IconButtonComponent from "../../../../../../../Components/Common/IconButtonComponent";
+import ConfirmationModalComponent from "../../../../../../../Components/Common/Dialog/ConfirmationModalComponent";
 
 import { formattedPrice } from "../../../../../../../Utils/formattedPrice";
 
@@ -25,9 +27,13 @@ const Resources = ({
     } = useResourceHook();
 
     const { updateCost } = useActivitiesHook();
+    const { setAlertDialog, closeConfirmation, setConfirmationModal } = useModalHook();
 
     const [localResources, setLocalResources] = useState(rows);
     const [editRowId, setEditRowId] = useState(null);
+    const [openDeleteModal, setOpenDeleteModal] = useState(false);
+    const [resourceId, setResourceId] = useState(null);
+    const [isLoading, setIsLoading] = useState(false);
 
     const handleOnRowClick = (id) => setEditRowId(id);
 
@@ -74,9 +80,42 @@ const Resources = ({
         { id: 2, label: 'CO', value: 'CO' }
     ]
 
-    useEffect(() => {
-        console.log('resources', rows)
-    }, [rows])
+    // useEffect(() => {
+    //     console.log('resources', rows)
+    // }, [rows])
+
+    const handleOpenDeleteModal = (params) => {
+        setResourceId(params);
+        setOpenDeleteModal(true)
+        const data = {
+            status: "error",
+            title: ` Are you sure you want to delete this resource?`,
+            description:
+                "The selected resource will be removed from the table. Please input authorization pin to proceed.",
+        };
+        setConfirmationModal(data);
+    }
+
+
+    const handleDeleteResource = () => {
+        setIsLoading(true)
+        try {
+            setTimeout(() => {
+                onRemove(resourceId);
+                removeItemResource(resourceId)
+                setOpenDeleteModal(false);
+                closeConfirmation();
+                setIsLoading(false)
+            }, 1000);
+        } catch (error) {
+            setIsLoading(false)
+            setAlertDialog({
+                status: "error",
+                title: "Unexpected error",
+                description: "Something went wrong. Please try again.",
+            });
+        }
+    }
 
     return (
         <Fragment>
@@ -176,10 +215,7 @@ const Resources = ({
 
                                 <td>
                                     <IconButtonComponent
-                                        onClick={() => {
-                                            removeItemResource(id);
-                                            onRemove(id)
-                                        }}
+                                        onClick={() => handleOpenDeleteModal(id)}
                                         icon={<Trash size={14} />}
                                         size={"sm"}
                                         // color={'danger'}
@@ -190,6 +226,24 @@ const Resources = ({
                         );
                     }
                 ) ?? []}
+
+            {
+                openDeleteModal && (
+                    <ConfirmationModalComponent
+                        withAuthPin={true}
+                        leftButtonLabel="Cancel"
+                        leftButtonAction={() => {
+                            setOpenDeleteModal(false)
+                            closeConfirmation()
+                        }}
+                        rightButtonLabel="Delete"
+                        rightButtonAction={() => handleDeleteResource()}
+                        // setAuthPin={setPin}
+                        isLoading={isLoading}
+                    />
+                )
+            }
+
         </Fragment>
     );
 };

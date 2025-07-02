@@ -8,6 +8,8 @@ import IconButtonComponent from "../../../../../Components/Common/IconButtonComp
 import InputComponent from "../../../../../Components/Form/InputComponent";
 import ModalComponent from "../../../../../Components/Common/Dialog/ModalComponent";
 import TextareaComponent from "../../../../../Components/Form/TextareaComponent";
+import ConfirmationModalComponent from "../../../../../Components/Common/Dialog/ConfirmationModalComponent";
+import AlertDialogComponent from "../../../../../Components/Common/Dialog/AlertDialogComponent";
 
 import useObjectivesHook from "../../../../../Hooks/ObjectivesHook";
 import useModalHook from "../../../../../Hooks/ModalHook";
@@ -24,9 +26,12 @@ const ObjectivesTable = ({
     const tableDataStyles = { cursor: 'pointer' }
 
     const { objectives, deleteObjective, currentEditedObjective, setCurrentEditedObjective, clearOthersFields } = useObjectivesHook();
-    const { setAlertDialog } = useModalHook();
+    const { setAlertDialog, closeConfirmation, setConfirmationModal } = useModalHook();
 
+    const [objectiveId, setObjectiveId] = useState(null);
     const [openOthersModal, setOpenOthersModal] = useState(false);
+    const [openDeleteModal, setOpenDeleteModal] = useState(false);
+    const [isLoading, setIsLoading] = useState(false);
     const [editRowId, setEditRowId] = useState(null);
 
     const handleRemoveObjective = (id) => {
@@ -70,6 +75,50 @@ const ObjectivesTable = ({
     // useEffect(() => {
     //     console.log('objectives rows table', objectives)
     // }, [objectives])
+
+
+    const handleOpenDeleteModal = (params) => {
+        setObjectiveId(params)
+        setOpenDeleteModal(true)
+        const data = {
+            status: "error",
+            title: ` Are you sure you want to delete item?`,
+            description:
+                "The selected item will be removed from the table. Please input authorization pin to proceed.",
+        };
+        setConfirmationModal(data);
+    }
+
+    const handleDeleteObjective = () => {
+        setIsLoading(true)
+        try {
+            setTimeout(() => {
+                deleteRow(objectiveId)
+                setOpenDeleteModal(false);
+                closeConfirmation();
+                setIsLoading(false)
+            }, 1000);
+
+            // const result = await new Promise((resolve) => {
+            //     deleteRow((status, message) =>
+            //         resolve({ status, message })
+            //     );
+            // });
+
+            // console.log(result)
+
+        } catch (error) {
+            setIsLoading(false)
+            setAlertDialog({
+                status: "error",
+                title: "Unexpected error",
+                description: "Something went wrong. Please try again.",
+            });
+        }
+        // finally {
+        //     setIsLoading(false)
+        // }
+    }
 
     return (
         <Fragment>
@@ -232,7 +281,7 @@ const ObjectivesTable = ({
 
                                         <Stack>
                                             <IconButtonComponent
-                                                onClick={() => deleteRow(id)}
+                                                onClick={() => handleOpenDeleteModal(id)}
                                                 // onClick={() => handleRemoveObjective(id)}
                                                 icon={<Trash size={14} />}
                                                 // color={'danger'}
@@ -293,6 +342,24 @@ const ObjectivesTable = ({
                                 rightButtonAction={() => handleSaveOthers()}
                             />
 
+                            {
+                                openDeleteModal && (
+                                    <ConfirmationModalComponent
+                                        withAuthPin={true}
+                                        leftButtonLabel="Cancel"
+                                        leftButtonAction={() => {
+                                            setOpenDeleteModal(false)
+                                            closeConfirmation()
+                                        }}
+                                        rightButtonLabel="Delete"
+                                        rightButtonAction={() => handleDeleteObjective()}
+                                        // setAuthPin={setPin}
+                                        isLoading={isLoading}
+                                    // title="Delete Objective"
+                                    // description="Are you sure you want to delete this objective?"
+                                    />
+                                )
+                            }
                         </Fragment>
 
                     )
