@@ -92,6 +92,7 @@ const Objectives = () => {
     const [openSubmitModal, setOpenSubmitModal] = useState(false);
     const [openSaveMissionModal, setOpenSaveMissionModal] = useState(false);
     const [openFeedbackModal, setOpenFeedbackModal] = useState(false)
+    const [openCancelRequestModal, setOpenCancelRequestModal] = useState(false)
 
     const [authorizationPin, setAuthorizationPin] = useState(null);
     const [isDraft, setIsDraft] = useState(false);
@@ -288,12 +289,37 @@ const Objectives = () => {
         setOpenSaveMissionModal(false);
     };
 
+    const handleOpenCancelRequestModal = () => {
+        setOpenCancelRequestModal(true)
+        const data = {
+            status: "warning",
+            title: ` Are you sure you want to cancel this request?`,
+            description: "If you confirm, you will be redirected back to the AOP page.",
+        };
+        setConfirmationModal(data);
+    }
+
     //cancel aop request
     const handleCancelRequest = () => {
-        {
-            clearLocalStorage();
-            setMission("");
-            navigate("/aop");
+        setIsLoading(true)
+        try {
+            setTimeout(() => {
+                clearLocalStorage();
+                setMission("");
+                navigate("/aop");
+                // window.location.href = "/aop";
+                setOpenCancelRequestModal(false);
+                closeConfirmation();
+                setIsLoading(false)
+            }, 1000);
+
+        } catch (error) {
+            setIsLoading(false)
+            setAlertDialog({
+                status: "error",
+                title: "Unexpected error",
+                description: "Something went wrong. Please try again.",
+            });
         }
     };
 
@@ -432,7 +458,7 @@ const Objectives = () => {
                                 label={"Cancel Request"}
                                 size={"md"}
                                 variant={"outlined"}
-                                onClick={() => handleCancelRequest()}
+                                onClick={() => handleOpenCancelRequestModal()}
                             />
 
                             <ButtonComponent
@@ -491,6 +517,15 @@ const Objectives = () => {
                 />
             )}
 
+            {/* Confirmation for cancel */}
+            {openCancelRequestModal && (
+                <ConfirmationModalComponent
+                    rightButtonAction={() => handleCancelRequest()}
+                    rightButtonLabel="Proceed"
+                    isLoading={isLoading}
+                />
+            )}
+
             <FeedbackSection
                 openFeedbackModal={openFeedbackModal}
                 setOpenFeedbackModal={setOpenFeedbackModal}
@@ -505,7 +540,6 @@ const Objectives = () => {
                     />
                 )
             }
-
 
             <Outlet />
         </Fragment>
