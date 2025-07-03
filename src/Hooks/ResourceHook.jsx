@@ -2,6 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { v4 as uuid } from "uuid";
 import { setNestedValue } from "../Utils/SetNestedValue";
+import { remove } from "../Services/RequestMethods";
 
 const initialResource = (
   rowId = 1,
@@ -209,12 +210,25 @@ const useResourceHook = create(
         }));
       },
 
-      removeItemResource: (idsToRemove) => {
-        // console.log(idsToRemove)
+      //remove item with auth pin
+      removeItem: async (body, callback) => {
+        console.log('request body', body)
+        remove({
+          url: `check-pin`,
+          // param: body,
+          // form: body,
+          param: { authorization_pin: body },
+          success: (response) => {
+            const { message, data } = response.data;
+            callback(response.status, message, data);
+          },
+          failed: callback,
+        });
+      },
+
+      //remove item resource for ui only
+      removeItemResource: (idsToRemove, body, callback) => {
         const resources = get().resources;
-
-        // const filtered = resources.filter((item) => item.id !== id);
-
         // Filter out all resources with matching IDs
         const filtered = resources.filter((item) => !idsToRemove.includes(item.id));
 

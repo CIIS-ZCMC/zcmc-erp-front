@@ -23,6 +23,7 @@ const Resources = ({
         setTotalCost,
         resources: resourceHooks,
         removeItemResource,
+        removeItem,
         updateResourceField,
     } = useResourceHook();
 
@@ -33,6 +34,7 @@ const Resources = ({
     const [editRowId, setEditRowId] = useState(null);
     const [openDeleteModal, setOpenDeleteModal] = useState(false);
     const [resourceId, setResourceId] = useState(null);
+    const [pin, setPin] = useState('')
     const [isLoading, setIsLoading] = useState(false);
 
     const handleOnRowClick = (id) => setEditRowId(id);
@@ -88,7 +90,7 @@ const Resources = ({
         setResourceId(params);
         setOpenDeleteModal(true)
         const data = {
-            status: "error",
+            status: "warning",
             title: ` Are you sure you want to delete this resource?`,
             description:
                 "The selected resource will be removed from the table. Please input authorization pin to proceed.",
@@ -96,17 +98,43 @@ const Resources = ({
         setConfirmationModal(data);
     }
 
-
-    const handleDeleteResource = () => {
-        setIsLoading(true)
+    //delete resources
+    const handleDeleteResource = async () => {
         try {
-            setTimeout(() => {
+            setIsLoading(true)
+
+            // const formData = new FormData();
+            // formData.append("authorization_pin", pin);
+
+            console.log('pin', typeof (pin));
+            console.log('formdata', formData)
+
+            const result = await new Promise((resolve) => {
+                removeItem(pin, (status, message,) =>
+                    resolve({ status, message, })
+                );
+            });
+
+            const { status, message } = result;
+
+            if (status === 200) {
+                setAlertDialog({
+                    status: "success",
+                    title: message,
+                    description: message,
+                });
                 onRemove(resourceId);
+                setResourceId(null)
                 removeItemResource(resourceId)
                 setOpenDeleteModal(false);
                 closeConfirmation();
-                setIsLoading(false)
-            }, 1000);
+            } else {
+                setAlertDialog({
+                    status: "error",
+                    title: message,
+                    description: message,
+                });
+            }
         } catch (error) {
             setIsLoading(false)
             setAlertDialog({
@@ -114,6 +142,8 @@ const Resources = ({
                 title: "Unexpected error",
                 description: "Something went wrong. Please try again.",
             });
+        } finally {
+            setIsLoading(false)
         }
     }
 
@@ -238,7 +268,7 @@ const Resources = ({
                         }}
                         rightButtonLabel="Delete"
                         rightButtonAction={() => handleDeleteResource()}
-                        // setAuthPin={setPin}
+                        setAuthPin={setPin}
                         isLoading={isLoading}
                     />
                 )
