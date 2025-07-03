@@ -258,6 +258,7 @@ function PPMPItems(props) {
 
       if (status === 201) {
         localStorage.setItem("ppmp-items", JSON.stringify(data.ppmp_items));
+        setIsDraft(data.is_draft);
         localStorage.setItem("is_draft", JSON.stringify(data.is_draft));
         closeConfirmation();
         setOpenSave(false);

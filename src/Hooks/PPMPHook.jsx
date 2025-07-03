@@ -89,9 +89,11 @@ const usePPMPHook = create((set) => ({
   },
 
   removeItem: async (body, callback) => {
-    remove({
-      url: `${PATH}-items/`,
+    console.log(body);
+    post({
+      url: `check-pin`,
       // param: { id: params },
+
       form: body,
       success: (response) => {
         const { message, data } = response.data;
