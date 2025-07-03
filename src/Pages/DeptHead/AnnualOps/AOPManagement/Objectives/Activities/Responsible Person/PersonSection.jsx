@@ -42,7 +42,7 @@ const SelectPersonComponent = ({ parentId }) => {
 
 const ResponsiblePersonList = ({ parentId }) => {
 
-    const { responsible_people, removeResponsiblePersonnel } = useResponsiblePeopleHook()
+    const { responsible_people, removeResponsiblePersonnel, removeItem } = useResponsiblePeopleHook()
     const { setAlertDialog, setConfirmationModal, closeConfirmation } = useModalHook()
 
     const [openDeleteModal, setOpenDeleteModal] = useState(false);
@@ -50,10 +50,10 @@ const ResponsiblePersonList = ({ parentId }) => {
     const [field, setField] = useState(null);
     const [localParentId, setLocalParentId] = useState(null);
     const [isLoading, setIsLoading] = useState(false)
-
+    const [pin, setPin] = useState('')
 
     const filteredData = responsible_people?.filter((element) => element.activityId === parentId)[0] ?? []
-    const users = filteredData?.users;
+    const users = filteredData?.users ?? [];
 
     if (users?.length === 0) {
         return (
@@ -69,7 +69,7 @@ const ResponsiblePersonList = ({ parentId }) => {
         setLocalParentId(parentId)
         setOpenDeleteModal(true)
         const data = {
-            status: "error",
+            status: "warning",
             title: ` Are you sure you want to delete this responsible person?`,
             description:
                 "The selected responsible person will be removed from the table. Please input authorization pin to proceed.",
@@ -77,22 +77,53 @@ const ResponsiblePersonList = ({ parentId }) => {
         setConfirmationModal(data);
     }
 
-    const handleDeletePersonnel = () => {
-        setIsLoading(true)
+    const handleDeletePersonnel = async () => {
         try {
-            setTimeout(() => {
+
+            setIsLoading(true)
+
+            const formData = new FormData();
+            formData.append("pin", pin);
+
+            const result = await new Promise((resolve) => {
+                removeItem(formData, (status, message,) =>
+                    resolve({ status, message, })
+                );
+            });
+
+            const { status, message } = result;
+
+            if (status === 200) {
+                setAlertDialog({
+                    status: "success",
+                    title: message,
+                    description: message,
+                })
+                setSelectedId(null)
+                setLocalParentId(null)
+                setField(null)
                 removeResponsiblePersonnel(selectedId, field, localParentId)
-                setOpenDeleteModal(false)
-                closeConfirmation()
-                setIsLoading(false)
-            }, 1000);
-        } catch (error) {
+                setOpenDeleteModal(false);
+                closeConfirmation();
+
+            } else {
+                setAlertDialog({
+                    status: "error",
+                    title: message,
+                    description: message,
+                });
+            }
+        }
+        catch (error) {
             setIsLoading(false)
             setAlertDialog({
                 status: "error",
                 title: "Unexpected error",
                 description: "Something went wrong. Please try again.",
             });
+        }
+        finally {
+            setIsLoading(false)
         }
     }
 
@@ -138,7 +169,7 @@ const ResponsiblePersonList = ({ parentId }) => {
                         }}
                         rightButtonLabel="Delete"
                         rightButtonAction={() => handleDeletePersonnel()}
-                        // setAuthPin={setPin}
+                        setAuthPin={setPin}
                         isLoading={isLoading}
                     />
                 )

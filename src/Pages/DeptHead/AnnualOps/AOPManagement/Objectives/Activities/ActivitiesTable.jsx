@@ -33,7 +33,7 @@ const ActivitiesTable = ({
 
     const filteredActivities = rows?.filter(value => value?.parentId === parentId)
 
-    const { resources, findResourcesByActivityID, totalCost, removeItemResource } = useResourceHook();
+    const { resources, findResourcesByActivityID, totalCost, removeItemResource, removeItem } = useResourceHook();
     const { responsible_people, removeMultipleResponsiblePersonnel } = useResponsiblePeopleHook();
     const { setAlertDialog, closeConfirmation, setConfirmationModal } = useModalHook();
     const { removeActivity } = useActivitiesHook();
@@ -78,7 +78,7 @@ const ActivitiesTable = ({
         setActivityId(params)
         setOpenDeleteModal(true)
         const data = {
-            status: "error",
+            status: "warning",
             title: ` Are you sure you want to delete this activity?`,
             description:
                 "The selected activity will be removed from the table. Please input authorization pin to proceed.",
@@ -86,23 +86,52 @@ const ActivitiesTable = ({
         setConfirmationModal(data);
     }
 
-    const handleDeleteActivity = () => {
-        setIsLoading(true)
+    const handleDeleteActivity = async () => {
+
         try {
-            setTimeout(() => {
-                // deleteRow(activityId)
+            setIsLoading(true)
+
+            const formData = new FormData();
+            formData.append("pin", pin);
+
+            const result = await new Promise((resolve) => {
+                removeItem(formData, (status, message,) =>
+                    resolve({ status, message, })
+                );
+            });
+
+            const { status, message } = result;
+
+            if (status === 200) {
+                setAlertDialog({
+                    status: "success",
+                    title: message,
+                    description: message,
+                });
+
                 deleteActivityAndRelated(activityId)
+                setActivityId(null)
                 setOpenDeleteModal(false);
                 closeConfirmation();
-                setIsLoading(false)
-            }, 1000);
-        } catch (error) {
+            } else {
+                setAlertDialog({
+                    status: "error",
+                    title: message,
+                    description: message,
+                });
+            }
+
+        }
+        catch (error) {
             setIsLoading(false)
             setAlertDialog({
                 status: "error",
                 title: "Unexpected error",
                 description: "Something went wrong. Please try again.",
             });
+        }
+        finally {
+            setIsLoading(false)
         }
     }
 
@@ -405,7 +434,7 @@ const ActivitiesTable = ({
                         }}
                         rightButtonLabel="Delete"
                         rightButtonAction={() => handleDeleteActivity()}
-                        // setAuthPin={setPin}
+                        setAuthPin={setPin}
                         isLoading={isLoading}
                     />
                 )

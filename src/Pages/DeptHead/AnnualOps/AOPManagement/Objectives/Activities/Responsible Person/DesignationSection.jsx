@@ -38,16 +38,17 @@ const SelectJobPositionComponent = ({ parentId }) => {
 
 const JobPositionList = ({ parentId }) => {
 
-    const { responsible_people, removeResponsiblePersonnel } = useResponsiblePeopleHook();
+    const { responsible_people, removeResponsiblePersonnel, removeItem } = useResponsiblePeopleHook();
     const { setAlertDialog, setConfirmationModal, closeConfirmation } = useModalHook()
 
     const filteredData = responsible_people?.filter((element) => element.activityId === parentId)[0] ?? []
-    const designations = filteredData?.designations
+    const designations = filteredData?.designations ?? [];
     const [openDeleteModal, setOpenDeleteModal] = useState(false);
     const [selectedId, setSelectedId] = useState(null);
     const [field, setField] = useState(null);
     const [localParentId, setLocalParentId] = useState(null);
     const [isLoading, setIsLoading] = useState(false)
+    const [pin, setPin] = useState('')
 
     const handleOpenDeleteModal = (id, field, parentId) => {
         setSelectedId(id)
@@ -55,7 +56,7 @@ const JobPositionList = ({ parentId }) => {
         setLocalParentId(parentId)
         setOpenDeleteModal(true)
         const data = {
-            status: "error",
+            status: "warning",
             title: ` Are you sure you want to delete this responsible person?`,
             description:
                 "The selected responsible person will be removed from the table. Please input authorization pin to proceed.",
@@ -63,22 +64,50 @@ const JobPositionList = ({ parentId }) => {
         setConfirmationModal(data);
     }
 
-    const handleDeleteDesignation = () => {
-        setIsLoading(true)
+    const handleDeleteDesignation = async () => {
         try {
-            setTimeout(() => {
+            setIsLoading(true)
+
+            const formData = new FormData();
+            formData.append("pin", pin);
+
+            const result = await new Promise((resolve) => {
+                removeItem(formData, (status, message,) =>
+                    resolve({ status, message, })
+                );
+            });
+
+            const { status, message } = result;
+
+            if (status === 200) {
+                setAlertDialog({
+                    status: "success",
+                    title: message,
+                    description: message,
+                })
+                setSelectedId(null)
+                setLocalParentId(null)
+                setField(null)
                 removeResponsiblePersonnel(selectedId, field, localParentId)
-                setOpenDeleteModal(false)
-                closeConfirmation()
-                setIsLoading(false)
-            }, 1000);
-        } catch (error) {
+                setOpenDeleteModal(false);
+                closeConfirmation();
+
+            } else {
+                setAlertDialog({
+                    status: "error",
+                    title: message,
+                    description: message,
+                });
+            }
+        } catch (err) {
             setIsLoading(false)
             setAlertDialog({
                 status: "error",
                 title: "Unexpected error",
                 description: "Something went wrong. Please try again.",
             });
+        } finally {
+            setIsLoading(false)
         }
     }
 
@@ -158,7 +187,7 @@ const JobPositionList = ({ parentId }) => {
                     }}
                     rightButtonLabel="Delete"
                     rightButtonAction={() => handleDeleteDesignation()}
-                    // setAuthPin={setPin}
+                    setAuthPin={setPin}
                     isLoading={isLoading}
                 />
             )

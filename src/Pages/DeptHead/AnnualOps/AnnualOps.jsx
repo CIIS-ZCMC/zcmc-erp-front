@@ -66,10 +66,10 @@ const AnnualOps = () => {
 
   function setStates() {
 
-    console.log(formattedObjectives);
-    console.log(formattedActivities);
-    console.log(formattedResources);
-    console.log(formattedResponsible);
+    // console.log(formattedObjectives);
+    // console.log(formattedActivities);
+    // console.log(formattedResources);
+    // console.log(formattedResponsible);
 
     setObjectives(formattedObjectives ? formattedObjectives : []);
     setActivities(formattedActivities ? formattedActivities : []);

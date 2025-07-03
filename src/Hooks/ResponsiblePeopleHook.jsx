@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { post } from "../Services/RequestMethods";
 
 const useResponsiblePeopleHook = create(
   persist(
@@ -92,6 +93,19 @@ const useResponsiblePeopleHook = create(
           return {
             responsible_people: currentList,
           };
+        });
+      },
+
+      removeItem: async (body, callback) => {
+        post({
+          url: `check-pin`,
+          // param: { id: params },
+          form: body,
+          success: (response) => {
+            const { message, data } = response.data;
+            callback(response.status, message, data);
+          },
+          failed: callback,
         });
       },
 

@@ -1,7 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { v4 as uuid } from "uuid";
-
+import { post } from "../Services/RequestMethods";
 import { setNestedValue } from "../Utils/SetNestedValue";
 
 const NEXT_YEAR = new Date().getFullYear() + 1;
@@ -94,6 +94,19 @@ const useActivitiesHook = create(
             },
 
             setInitialRender: (value) => set({ initialRender: value }),
+
+            removeItem: async (body, callback) => {
+                post({
+                    url: `check-pin`,
+                    // param: { id: params },
+                    form: body,
+                    success: (response) => {
+                        const { message, data } = response.data;
+                        callback(response.status, message, data);
+                    },
+                    failed: callback,
+                });
+            },
 
             removeActivity: (id) => {
                 console.log(id)

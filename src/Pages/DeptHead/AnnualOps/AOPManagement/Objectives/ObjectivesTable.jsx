@@ -25,7 +25,7 @@ const ObjectivesTable = ({
 
     const tableDataStyles = { cursor: 'pointer' }
 
-    const { objectives, deleteObjective, currentEditedObjective, setCurrentEditedObjective, clearOthersFields } = useObjectivesHook();
+    const { objectives, deleteObjective, currentEditedObjective, setCurrentEditedObjective, clearOthersFields, removeItem } = useObjectivesHook();
     const { setAlertDialog, closeConfirmation, setConfirmationModal } = useModalHook();
 
     const [objectiveId, setObjectiveId] = useState(null);
@@ -33,6 +33,7 @@ const ObjectivesTable = ({
     const [openDeleteModal, setOpenDeleteModal] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
     const [editRowId, setEditRowId] = useState(null);
+    const [pin, setPin] = useState(null)
 
     const handleRemoveObjective = (id) => {
         localStorage.removeItem('activities-storage');
@@ -81,7 +82,7 @@ const ObjectivesTable = ({
         setObjectiveId(params)
         setOpenDeleteModal(true)
         const data = {
-            status: "error",
+            status: "warning",
             title: ` Are you sure you want to delete item?`,
             description:
                 "The selected item will be removed from the table. Please input authorization pin to proceed.",
@@ -89,25 +90,40 @@ const ObjectivesTable = ({
         setConfirmationModal(data);
     }
 
-    const handleDeleteObjective = () => {
+    const handleDeleteObjective = async () => {
         setIsLoading(true)
         try {
-            setTimeout(() => {
+            const formData = new FormData();
+            formData.append("pin", pin);
+
+            const result = await new Promise((resolve) => {
+                removeItem(formData, (status, message,) =>
+                    resolve({ status, message, })
+                );
+            });
+
+            const { status, message } = result;
+
+            if (status === 200) {
+                setAlertDialog({
+                    status: "success",
+                    title: message,
+                    description: message,
+                });
                 deleteRow(objectiveId)
+                setObjectiveId(null)
                 setOpenDeleteModal(false);
                 closeConfirmation();
-                setIsLoading(false)
-            }, 1000);
+            } else {
+                setAlertDialog({
+                    status: "error",
+                    title: message,
+                    description: message,
+                });
+            }
 
-            // const result = await new Promise((resolve) => {
-            //     deleteRow((status, message) =>
-            //         resolve({ status, message })
-            //     );
-            // });
-
-            // console.log(result)
-
-        } catch (error) {
+        }
+        catch (error) {
             setIsLoading(false)
             setAlertDialog({
                 status: "error",
@@ -115,9 +131,9 @@ const ObjectivesTable = ({
                 description: "Something went wrong. Please try again.",
             });
         }
-        // finally {
-        //     setIsLoading(false)
-        // }
+        finally {
+            setIsLoading(false)
+        }
     }
 
     return (
@@ -353,10 +369,8 @@ const ObjectivesTable = ({
                                         }}
                                         rightButtonLabel="Delete"
                                         rightButtonAction={() => handleDeleteObjective()}
-                                        // setAuthPin={setPin}
+                                        setAuthPin={setPin}
                                         isLoading={isLoading}
-                                    // title="Delete Objective"
-                                    // description="Are you sure you want to delete this objective?"
                                     />
                                 )
                             }

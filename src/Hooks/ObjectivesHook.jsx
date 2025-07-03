@@ -1,6 +1,7 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { v4 as uuid } from "uuid";
+import { post } from "../Services/RequestMethods";
 
 const initialObjective = (rowId = 1) => ({
   id: uuid(),
@@ -98,6 +99,20 @@ const useObjectivesHook = create(
             initialObjective(current.length + 1),
           ],
         }));
+      },
+
+      // delete objective with auth pin
+      removeItem: async (body, callback) => {
+        post({
+          url: `check-pin`,
+          // param: { id: params },
+          form: body,
+          success: (response) => {
+            const { message, data } = response.data;
+            callback(response.status, message, data);
+          },
+          failed: callback,
+        });
       },
 
       deleteObjective: (id) => {

@@ -23,8 +23,8 @@ const Resources = ({
         setTotalCost,
         resources: resourceHooks,
         removeItemResource,
-        removeItem,
         updateResourceField,
+        removeItem,
     } = useResourceHook();
 
     const { updateCost } = useActivitiesHook();
@@ -98,25 +98,20 @@ const Resources = ({
         setConfirmationModal(data);
     }
 
-    //delete resources
     const handleDeleteResource = async () => {
         try {
             setIsLoading(true)
 
-            // const formData = new FormData();
-            // formData.append("authorization_pin", pin);
-
-            console.log('pin', typeof (pin));
-            console.log('formdata', formData)
+            const formData = new FormData();
+            formData.append("pin", pin);
 
             const result = await new Promise((resolve) => {
-                removeItem(pin, (status, message,) =>
+                removeItem(formData, (status, message,) =>
                     resolve({ status, message, })
                 );
             });
 
             const { status, message } = result;
-
             if (status === 200) {
                 setAlertDialog({
                     status: "success",
@@ -135,14 +130,16 @@ const Resources = ({
                     description: message,
                 });
             }
-        } catch (error) {
+        }
+        catch (err) {
             setIsLoading(false)
             setAlertDialog({
                 status: "error",
                 title: "Unexpected error",
                 description: "Something went wrong. Please try again.",
             });
-        } finally {
+        }
+        finally {
             setIsLoading(false)
         }
     }
@@ -170,7 +167,7 @@ const Resources = ({
                                 </td>
 
                                 <td onClick={() => handleOnRowClick(id)}>
-                                    <Typography>{name || "-"}</Typography>
+                                    <Typography>{name || "-"}{pin}</Typography>
                                 </td>
 
                                 <td onClick={() => handleOnRowClick(id)}>

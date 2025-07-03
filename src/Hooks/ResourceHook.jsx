@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { v4 as uuid } from "uuid";
 import { setNestedValue } from "../Utils/SetNestedValue";
-import { remove } from "../Services/RequestMethods";
+import { post } from "../Services/RequestMethods";
 
 const initialResource = (
   rowId = 1,
@@ -210,14 +210,11 @@ const useResourceHook = create(
         }));
       },
 
-      //remove item with auth pin
       removeItem: async (body, callback) => {
-        console.log('request body', body)
-        remove({
+        post({
           url: `check-pin`,
-          // param: body,
-          // form: body,
-          param: { authorization_pin: body },
+          // param: { id: params },
+          form: body,
           success: (response) => {
             const { message, data } = response.data;
             callback(response.status, message, data);
@@ -226,11 +223,14 @@ const useResourceHook = create(
         });
       },
 
-      //remove item resource for ui only
-      removeItemResource: (idsToRemove, body, callback) => {
+      removeItemResource: (idsToRemove) => {
         const resources = get().resources;
+
+        // const filtered = resources.filter((item) => item.id !== id);
+
         // Filter out all resources with matching IDs
-        const filtered = resources.filter((item) => !idsToRemove.includes(item.id));
+        const idsArray = Array.isArray(idsToRemove) ? idsToRemove : [idsToRemove];
+        const filtered = resources.filter((item) => !idsArray.includes(item.id));
 
         const groupedByParent = {};
 
