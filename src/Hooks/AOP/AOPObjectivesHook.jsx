@@ -90,17 +90,31 @@ const useAOPObjectivesHooks = create((set, get) => ({
       });
     },
 
-    create: (form, callBack) => {
+    create: async (form, callBack) => {
       post({
         url: API.AOP_APPLICATION_STORE,
         form: form,
         failed: callBack,
-        success: (res) => {
-          set({ aopObjectives: res.data });
-          callBack(200, "Success");
+        success: ({ status, data }) => {
+          const { message } = data;
+          set({ aopObjectives: data });
+          callBack(status, message);
         },
       });
     },
+
+    // removeItem: async (body, callback) => {
+    //   post({
+    //     url: `check-pin`,
+    //     // param: { id: params },
+    //     form: body,
+    //     success: (response) => {
+    //       const { message, data } = response.data;
+    //       callback(response.status, message, data);
+    //     },
+    //     failed: callback,
+    //   });
+    // },
 
     updateAOP: (form, params, callBack) => {
       update({

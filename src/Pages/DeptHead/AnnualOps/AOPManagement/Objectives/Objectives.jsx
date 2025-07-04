@@ -83,6 +83,7 @@ const Objectives = () => {
 
     const navigate = useNavigate();
 
+
     // local states
     const [isLoading, setIsLoading] = useState(false);
     const [isRemarksLoading, setIsRemarksLoading] = useState(true);
@@ -104,6 +105,17 @@ const Objectives = () => {
         }
         )
     });
+
+    // check for open modals
+    useEffect(() => {
+        console.log('open confirm dialog', openConfirmDialog);
+        console.log('open confirm discussed dialog', openConfirmDiscussedDialog);
+        console.log('open alert success', openAlertSuccess);
+        console.log('open submit modal', openSubmitModal);
+        console.log('open save mission modal', openSaveMissionModal);
+        console.log('open feedback modal', openFeedbackModal);
+        console.log('open cancel request modal', openCancelRequestModal);
+    })
 
     const isSubmitEnabled = !mission ||
         resources.length === 0 ||
@@ -171,16 +183,6 @@ const Objectives = () => {
         setConfirmationModal(data);
     };
 
-    // handle close alert and navigate to aop
-    const handleNavigateToAOP = () => {
-        setOpenAlertSuccess(true)
-        setIsLoading(true);
-        setTimeout(() => {
-            // window.location.href = "/aop";
-            closeAlertDialog()
-            setIsLoading(false);
-        }, 2000)
-    }
 
     // build aop payload
     const buildAopPayload = useCallback(() => {
@@ -202,8 +204,21 @@ const Objectives = () => {
     //     console.log(APPLICATION_OBJECTIVE_ID)
     // }, [APPLICATION_OBJECTIVE_ID])
 
-    const handleSubmit = () => {
+    // handle close alert and navigate to aop
+    const handleNavigateToAOP = () => {
         setIsLoading(true);
+        setTimeout(() => {
+            setConfirmationModal(false)
+            setAlertDialog(false)
+            closeAlertDialog()
+            window.location.href = "/aop";
+        }, 2000)
+    }
+
+    const handleSubmit = async () => {
+        setIsLoading(true);
+        setOpenConfirmDialog(false)
+
 
         const payload = {
             mission: mission,
@@ -213,56 +228,58 @@ const Objectives = () => {
             application_objectives: buildAopPayload(),
         };
 
-        console.log('payload', payload)
+        // console.log('payload', payload)
 
-        // Determine which action to take (update or create)
-        // const submissionAction = APPLICATION_OBJECTIVE_ID ? updateAOP : create;
+        const responseMessages = {
+            existing: {
+                status: 200,
+                title: "Existing AOP",
+                description: "You already have an AOP application in your area."
+            },
+            success: {
+                status: 200,
+                title: `AOP for F.Y. 2026 successfully ${APPLICATION_OBJECTIVE_ID ? 'updated' : 'submitted for approval'}.`,
+                isGlobal: false,
+                description: APPLICATION_OBJECTIVE_ID
+                    ? "Your AOP has been successfully updated."
+                    : "Your AOP request has been sent to the next approving body."
+            },
+            error: (status, message) => ({
+                status: status,
+                title: "Submission failed",
+                description: message || "An unexpected error occurred."
+            })
+        };
 
-        create(payload, APPLICATION_OBJECTIVE_ID, (status, message) => {
-            setIsLoading(false);
+        try {
 
-            // esponse handler for both create and update
-            const responseMessages = {
-                existing: {
-                    status: 200,
-                    title: "Existing AOP",
-                    description: "You already have an AOP application in your area."
-                },
-                success: {
-                    status: 200,
-                    title: `AOP for F.Y. 2026 successfully ${APPLICATION_OBJECTIVE_ID ? 'updated' : 'submitted for approval'}.`,
-                    description: APPLICATION_OBJECTIVE_ID
-                        ? "Your AOP has been successfully updated."
-                        : "Your AOP request has been sent to the next approving body."
-                },
-                error: {
-                    status: status,
-                    title: "Submission failed",
-                    description: message || "An unexpected error occurred."
-                }
-            };
+            // Await the API call and destructure the result
+            const result = await new Promise((resolve) => {
+                create(payload, (status, message) => {
+                    resolve({ status, message, });
+                });
+            });
 
-            // Handle existing AOP case
+            const { status, message } = result;
+
             if (status === 200 && message === responseMessages.existing.description) {
                 setAlertDialog(responseMessages.existing);
-                return;
             }
 
-            // Handle success case
             if (status === 200) {
-                // setOpenSubmitModal(false);
                 clearLocalStorage();
                 setMission("");
                 setAlertDialog(responseMessages.success);
-                // handle alert that will navigate to aop
-                handleNavigateToAOP()
-                return;
+                closeConfirmation()
+                setOpenAlertSuccess(true)
             }
 
-            // Handle failure case
-            setAlertDialog(responseMessages.error);
-        });
-
+        } catch (err) {
+            console.log(err)
+            setAlertDialog(responseMessages.error(err.status, err.message));
+        } finally {
+            setIsLoading(false);
+        }
     };
 
     // handle save mission
@@ -291,6 +308,7 @@ const Objectives = () => {
 
     const handleOpenCancelRequestModal = () => {
         setOpenCancelRequestModal(true)
+        setConfirmationModal
         const data = {
             status: "warning",
             title: ` Are you sure you want to cancel this request?`,
@@ -496,7 +514,8 @@ const Objectives = () => {
             {/* Confirmation for handle discussed */}
             {openConfirmDiscussedDialog && (
                 <ConfirmationModalComponent
-                    leftButtonLabel={"Back"}
+                    leftButtonLabel={"Cancel"}
+                    leftButtonAction={() => setOpenConfirmDiscussedDialog(false)}
                     rightButtonAction={() => handleProceedAuthModal(200)}
                     rightButtonLabel="Proceed"
                     rightButtonDisabled={!hasDiscussed}
@@ -520,6 +539,8 @@ const Objectives = () => {
             {/* Confirmation for cancel */}
             {openCancelRequestModal && (
                 <ConfirmationModalComponent
+                    leftButtonLabel={"Cancel"}
+                    leftButtonAction={() => setOpenCancelRequestModal(false)}
                     rightButtonAction={() => handleCancelRequest()}
                     rightButtonLabel="Proceed"
                     isLoading={isLoading}
@@ -531,9 +552,12 @@ const Objectives = () => {
                 setOpenFeedbackModal={setOpenFeedbackModal}
                 isLoading={isRemarksLoading}
             />
+
             {
                 openAlertSuccess && (
                     <AlertDialogComponent
+                        leftButtonLabel={"Cancel"}
+                        leftButtonAction={() => setOpenAlertSuccess(false)}
                         rightButtonAction={() => handleNavigateToAOP()}
                         isLoading={isLoading}
                         noRightButton={false}
