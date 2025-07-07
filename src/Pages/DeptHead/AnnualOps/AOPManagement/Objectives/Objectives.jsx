@@ -44,7 +44,8 @@ const Objectives = () => {
 
     useEffect(() => {
         console.log(savedMission)
-    }, [savedMission])
+        console.log(APPLICATION_OBJECTIVE_ID)
+    }, [savedMission, APPLICATION_OBJECTIVE_ID])
 
     const { create, getSingleAOP } = useAOPActions();
 
@@ -108,14 +109,15 @@ const Objectives = () => {
 
     // check for open modals
     useEffect(() => {
-        console.log('open confirm dialog', openConfirmDialog);
-        console.log('open confirm discussed dialog', openConfirmDiscussedDialog);
-        console.log('open alert success', openAlertSuccess);
-        console.log('open submit modal', openSubmitModal);
-        console.log('open save mission modal', openSaveMissionModal);
-        console.log('open feedback modal', openFeedbackModal);
-        console.log('open cancel request modal', openCancelRequestModal);
-    })
+        // console.log('global isLoading', isLoading)
+        // console.log('open confirm dialog', openConfirmDialog);
+        // console.log('open confirm discussed dialog', openConfirmDiscussedDialog);
+        // console.log('open alert success', openAlertSuccess);
+        // console.log('open submit modal', openSubmitModal);
+        // console.log('open save mission modal', openSaveMissionModal);
+        // console.log('open feedback modal', openFeedbackModal);
+        // console.log('open cancel request modal', openCancelRequestModal);
+    }, [isLoading])
 
     const isSubmitEnabled = !mission ||
         resources.length === 0 ||
@@ -212,13 +214,15 @@ const Objectives = () => {
             setAlertDialog(false)
             closeAlertDialog()
             window.location.href = "/aop";
+            setIsLoading(false)
+            setOpenAlertSuccess(false)
+            clearLocalStorage();
         }, 2000)
     }
 
     const handleSubmit = async () => {
-        setIsLoading(true);
-        setOpenConfirmDialog(false)
-
+        setOpenConfirmDialog(false);
+        setIsLoading(true); // ✅ Set loading immediately at the start
 
         const payload = {
             mission: mission,
@@ -227,8 +231,6 @@ const Objectives = () => {
             authorization_pin: authorizationPin,
             application_objectives: buildAopPayload(),
         };
-
-        // console.log('payload', payload)
 
         const responseMessages = {
             existing: {
@@ -252,37 +254,34 @@ const Objectives = () => {
         };
 
         try {
-
-            // Await the API call and destructure the result
-            const result = await new Promise((resolve) => {
+            const { status, message } = await new Promise((resolve) => {
                 create(payload, (status, message) => {
-                    resolve({ status, message, });
+                    resolve({ status, message });
                 });
             });
 
-            const { status, message } = result;
-
             if (status === 200 && message === responseMessages.existing.description) {
                 setAlertDialog(responseMessages.existing);
+                return;
             }
 
             if (status === 200) {
-                clearLocalStorage();
                 setMission("");
                 setAlertDialog(responseMessages.success);
-                closeConfirmation()
-                setOpenAlertSuccess(true)
+                closeConfirmation();
+                setOpenAlertSuccess(true);
             } else {
                 setAlertDialog(responseMessages.error(status, message));
             }
 
         } catch (err) {
-            console.log(err)
-            setAlertDialog(responseMessages.error(err.status, err.message));
+            console.error('Submission error:', err);
+            setAlertDialog(responseMessages.error(err?.status || 500, err?.message));
         } finally {
             setIsLoading(false);
         }
     };
+
 
     // handle save mission
     const handleSaveMission = () => {
@@ -558,8 +557,9 @@ const Objectives = () => {
             {
                 openAlertSuccess && (
                     <AlertDialogComponent
-                        leftButtonLabel={"Cancel"}
-                        leftButtonAction={() => setOpenAlertSuccess(false)}
+                        leftButtonLabel={"Close"}
+                        leftButtonAction={() => handleNavigateToAOP()}
+                        rightButtonLabel="Proceed"
                         rightButtonAction={() => handleNavigateToAOP()}
                         isLoading={isLoading}
                         noRightButton={false}

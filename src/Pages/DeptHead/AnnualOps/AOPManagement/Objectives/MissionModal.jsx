@@ -1,10 +1,10 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 
 import ModalComponent from '../../../../../Components/Common/Dialog/ModalComponent'
 import TextareaComponent from '../../../../../Components/Form/TextareaComponent'
 
 const MissionModal = ({
-    AOP_APPLICATION_ID,
+    APPLICATION_OBJECTIVE_ID,
     openSaveMissionModal,
     handleCloseDialog,
     mission,
@@ -17,7 +17,7 @@ const MissionModal = ({
             <ModalComponent
                 isOpen={openSaveMissionModal}
                 handleClose={handleCloseDialog}
-                title={AOP_APPLICATION_ID ? 'Update mission' : 'Create mission'}
+                title={APPLICATION_OBJECTIVE_ID ? 'Update mission' : 'Create mission'}
                 description={`Define the core purpose and primary focus of the organization's operational efforts for the upcoming fiscal year. This statement should guide the development and execution of the annual plan.`}
                 content={
                     <>
@@ -30,7 +30,7 @@ const MissionModal = ({
                     </>
                 }
                 hasActionButtons={true}
-                rightButtonLabel={AOP_APPLICATION_ID ? 'Update' : "Save"}
+                rightButtonLabel={APPLICATION_OBJECTIVE_ID ? 'Update' : "Save"}
                 rightButtonAction={() => handleSaveMission()}
             />
         </div>
