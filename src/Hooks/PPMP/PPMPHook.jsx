@@ -1,6 +1,6 @@
 import { create } from "zustand";
-import erp_api from "../Services/ERP_API";
-import { download, post, read, remove } from "../Services/RequestMethods";
+import erp_api from "../../Services/ERP_API";
+import { download, post, read, remove } from "../../Services/RequestMethods";
 
 const PATH = "ppmp";
 
@@ -89,9 +89,10 @@ const usePPMPHook = create((set) => ({
   },
 
   removeItem: async (body, callback) => {
-    remove({
-      url: `${PATH}-items/`,
+    post({
+      url: `check-pin`,
       // param: { id: params },
+
       form: body,
       success: (response) => {
         const { message, data } = response.data;

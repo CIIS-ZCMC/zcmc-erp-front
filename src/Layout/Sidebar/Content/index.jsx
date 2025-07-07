@@ -10,7 +10,7 @@ import useSidebarHook from "../../../Hooks/SidebarHook";
 // import { sidebarRoutes } from "../../../Routes/PageRoutes"; // routes from page routes
 import { useAuth } from "../../../Store/AuthStore";
 
-const Content = () => {
+const Content = ({ sidebarWidth }) => {
   const { isCollapsed } = useSidebarHook();
   const { permissions } = useAuth();
 
@@ -33,6 +33,7 @@ const Content = () => {
             key={index}
             {...item}
             isCollapsed={isCollapsed}
+            sidebarWidth={sidebarWidth}
           />
         ) : (
           <SimpleMenuItem key={index} {...item} isCollapsed={isCollapsed} />
