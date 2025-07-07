@@ -337,8 +337,8 @@ export const AOP_RESOURCE_HEADER = [
 export const ppmpHeaders = (handleOpenDel, items, modes, isEditing) => [
   {
     field: "id",
-    name: "Row #",
-    width: "50px",
+    name: "#",
+    width: "30px",
     align: "center",
     display: "none",
   },
@@ -360,7 +360,7 @@ export const ppmpHeaders = (handleOpenDel, items, modes, isEditing) => [
     render: (params) => {
       return (
         <>
-          <Typography>
+          <Typography fontSize={12} textAlign="left">
             {params?.item?.name ? params?.item?.name : "-"}
           </Typography>
         </>
@@ -370,7 +370,7 @@ export const ppmpHeaders = (handleOpenDel, items, modes, isEditing) => [
   {
     field: "activity_code",
     name: "Activity Code",
-    width: 155,
+    width: 120,
     align: "center",
     display: "none",
     render: (params) => {
@@ -386,7 +386,7 @@ export const ppmpHeaders = (handleOpenDel, items, modes, isEditing) => [
               <Link
                 underline="always"
                 href="#"
-                sx={{ fontSize: 12, color: "black" }}
+                sx={{ fontSize: 11, color: "black" }}
                 color="neutral.700"
               >
                 {act.activity_code}
@@ -416,7 +416,7 @@ export const ppmpHeaders = (handleOpenDel, items, modes, isEditing) => [
                 variant="soft"
                 color="primary"
                 sx={{
-                  fontSize: 12,
+                  fontSize: 11,
                 }}
                 onClick={(e) => e.preventDefault()}
               >
@@ -430,32 +430,34 @@ export const ppmpHeaders = (handleOpenDel, items, modes, isEditing) => [
   },
   {
     field: "classification",
-    name: "Item Classification",
-    width: 150,
+    name: "Classification",
+    width: 110,
     align: "center",
   },
   {
     field: "category",
     name: "Item Category",
-    width: 150,
+    width: 110,
     align: "center",
   },
-  {
-    field: "aop_quantity",
-    name: "Quantity",
-    width: 85,
-    align: "center",
-  },
+  // {
+  //   field: "aop_quantity",
+  //   name: "Quantity",
+  //   width: 85,
+  //   align: "center",
+  // },
   {
     field: "quantity",
-    name: "Quantity Inputted",
-    width: 85,
+    name: "Qty",
+    width: 50,
     align: "center",
     render: (params) => {
       return (
         <>
           {params?.quantity ? (
-            <Typography>{params?.quantity?.toLocaleString()}</Typography>
+            <Typography fontSize={12}>
+              {params?.quantity?.toLocaleString()}
+            </Typography>
           ) : (
             "-"
           )}
@@ -466,19 +468,38 @@ export const ppmpHeaders = (handleOpenDel, items, modes, isEditing) => [
   {
     field: "unit",
     name: "Unit",
-    width: 90,
+    width: 50,
     align: "center",
   },
   {
+    field: "estimated_budget",
+    name: "Estimated Budget",
+    width: 80,
+    align: "center",
+    render: (params) => {
+      return (
+        <>
+          {params?.estimated_budget ? (
+            <Typography fontSize={12}>
+              &#8369; {params?.estimated_budget?.toLocaleString()}
+            </Typography>
+          ) : (
+            "-"
+          )}
+        </>
+      );
+    },
+  },
+  {
     field: "total_amount",
-    name: "Total amount",
-    width: 100,
+    name: "Total Amount",
+    width: 80,
     align: "center",
     render: (params) => {
       return (
         <>
           {params?.total_amount ? (
-            <Typography>
+            <Typography fontSize={12}>
               &#8369; {params?.total_amount?.toLocaleString()}
             </Typography>
           ) : (
@@ -490,22 +511,94 @@ export const ppmpHeaders = (handleOpenDel, items, modes, isEditing) => [
   },
   {
     field: "target_by_quarter",
-    name: "Target (by quarter)",
+    name: "Schedule/Milestone",
     children: [
-      { field: "jan", name: "Jan", width: 100, inputType: "input" },
-      { field: "feb", name: "Feb", width: 100, inputType: "input" },
-      { field: "mar", name: "Mar", width: 100, inputType: "input" },
-      { field: "apr", name: "Apr", width: 100, inputType: "input" },
-      { field: "may", name: "May", width: 100, inputType: "input" },
-      { field: "jun", name: "Jun", width: 100, inputType: "input" },
-      { field: "jul", name: "Jul", width: 100, inputType: "input" },
-      { field: "aug", name: "Aug", width: 100, inputType: "input" },
-      { field: "sep", name: "Sep", width: 100, inputType: "input" },
-      { field: "oct", name: "Oct", width: 100, inputType: "input" },
-      { field: "nov", name: "Nov", width: 100, inputType: "input" },
-      { field: "dec", name: "Dec", width: 100, inputType: "input" },
+      {
+        field: "jan",
+        name: "Jan",
+        width: 80,
+        align: "center",
+        inputType: "input",
+      },
+      {
+        field: "feb",
+        name: "Feb",
+        width: 80,
+        align: "center",
+        inputType: "input",
+      },
+      {
+        field: "mar",
+        name: "Mar",
+        width: 80,
+        align: "center",
+        inputType: "input",
+      },
+      {
+        field: "apr",
+        name: "Apr",
+        width: 80,
+        align: "center",
+        inputType: "input",
+      },
+      {
+        field: "may",
+        name: "May",
+        width: 80,
+        align: "center",
+        inputType: "input",
+      },
+      {
+        field: "jun",
+        name: "Jun",
+        width: 80,
+        align: "center",
+        inputType: "input",
+      },
+      {
+        field: "jul",
+        name: "Jul",
+        width: 80,
+        align: "center",
+        inputType: "input",
+      },
+      {
+        field: "aug",
+        name: "Aug",
+        width: 80,
+        align: "center",
+        inputType: "input",
+      },
+      {
+        field: "sep",
+        name: "Sep",
+        width: 80,
+        align: "center",
+        inputType: "input",
+      },
+      {
+        field: "oct",
+        name: "Oct",
+        width: 80,
+        align: "center",
+        inputType: "input",
+      },
+      {
+        field: "nov",
+        name: "Nov",
+        width: 80,
+        align: "center",
+        inputType: "input",
+      },
+      {
+        field: "dec",
+        name: "Dec",
+        width: 80,
+        align: "center",
+        inputType: "input",
+      },
     ],
-    width: 1000,
+    width: 700,
     align: "center",
   },
   {
@@ -518,7 +611,7 @@ export const ppmpHeaders = (handleOpenDel, items, modes, isEditing) => [
     render: (params) => {
       return (
         <>
-          <Typography>
+          <Typography fontSize={12}>
             {params?.procurement_mode?.name
               ? params?.procurement_mode?.name
               : "-"}

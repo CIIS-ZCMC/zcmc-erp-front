@@ -22,12 +22,15 @@ import EllipsisComponent from "../Components/Common/Typography/EllipsisComponent
 import { ActivityContainerComponent } from "../Components/Activities/ActivityContainerComponent";
 import RadioButtonComponent from "../Components/Common/RadioButtonComponent";
 import TextareaComponent from "../Components/Form/TextareaComponent";
+import AlertDialogComponent from "../Components/Common/Dialog/AlertDialogComponent";
 
 export default function ComponentTestPage() {
   const [open, setOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const { AOP_TITLE, AOP_SUBHEADING } = AOP_CONSTANTS;
-  const { setAlertDialog, setConfirmationModal } = useModalHook();
+  const { setAlertDialog, setConfirmationModal, closeAlertDialog } = useModalHook();
+
 
   const handleConfirmationModal = () => {
     const data = {
@@ -45,10 +48,10 @@ export default function ComponentTestPage() {
     const data = {
       status: status,
       title: "AOP for F.Y. 2026 successfully submitted for approval.",
+      isGlobal: false,
       description:
         "Your AOP request has been sent to designated to the next approving body and notified them for approvals.",
     };
-
     setAlertDialog(data);
   };
 
@@ -60,6 +63,15 @@ export default function ComponentTestPage() {
   const handleClickActivity = (index) => {
     setActive(index);
   };
+
+  const handleConfirm = () => {
+    setIsLoading(true);
+    setTimeout(() => {
+      window.location.href = "/aop";
+      closeAlertDialog()
+      setIsLoading(false);
+    }, 2000)
+  }
 
   const [action, setAction] = useState(null);
   const [newComment, setNewComment] = useState("");
@@ -113,6 +125,12 @@ export default function ComponentTestPage() {
         withAuthPin
         withDivider
         content={"This is a content"}
+      />
+
+      <AlertDialogComponent
+        rightButtonAction={() => handleConfirm()}
+        isLoading={isLoading}
+        noRightButton={false}
       />
     </Stack>
   );

@@ -18,7 +18,7 @@ import {
   usePPMP,
   usePPMPApplicationActions,
 } from "../../../Hooks/PPMP/PPMPApplicationHook";
-import usePPMPHook from "../../../Hooks/PPMPHook";
+import usePPMPHook from "../../../Hooks/PPMP/PPMPHook";
 import useModalHook from "../../../Hooks/ModalHook";
 import debounce from "lodash.debounce";
 

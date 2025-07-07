@@ -1,5 +1,6 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
+import { post } from "../Services/RequestMethods";
 
 const useResponsiblePeopleHook = create(
   persist(
@@ -66,7 +67,7 @@ const useResponsiblePeopleHook = create(
             const newItem = {
               activityId,
               users: key === "users" ? [value] : [],
-              areas: key === "areas" ? [value] : [],
+              // areas: key === "areas" ? [value] : [],
               designations: key === "designations" ? [value] : [],
               isAssigned: false,
             };
@@ -95,9 +96,23 @@ const useResponsiblePeopleHook = create(
         });
       },
 
-      removeData: (id, key, activityId) =>
+      removeItem: async (body, callback) => {
+        post({
+          url: `check-pin`,
+          // param: { id: params },
+          form: body,
+          success: (response) => {
+            const { message, data } = response.data;
+            callback(response.status, message, data);
+          },
+          failed: callback,
+        });
+      },
+
+      //remove single responsible personnel
+      removeResponsiblePersonnel: (id, key, activityId) =>
         set((state) => {
-          const updatedResponsiblePeople = state.responsible_people.map(
+          const updatedResponsiblePersonnel = state.responsible_people.map(
             (activity) => {
               if (activity.activityId !== activityId) return activity;
 
@@ -113,9 +128,18 @@ const useResponsiblePeopleHook = create(
           );
 
           return {
-            responsible_people: updatedResponsiblePeople,
+            responsible_people: updatedResponsiblePersonnel,
           };
         }),
+
+      //remove batch/muiltiple responsible personnel
+      removeMultipleResponsiblePersonnel: (activityIdsToRemove) => {
+        const { responsible_people } = get();
+        const filtered = responsible_people.filter(
+          (entry) => !activityIdsToRemove.includes(entry.activityId)
+        );
+        set({ responsible_people: filtered });
+      },
 
       // reset value of responsible person selected values
       resetValues: (activityIndex) => {
@@ -144,6 +168,7 @@ const useResponsiblePeopleHook = create(
           .filter((item) => item.activityId === actID)
           .map(item => [
             ...(item.users || []).map((user) => ({
+              id: item.activityId,
               user_id: user.id,
               designation_id: null,
               division_id: null,
@@ -152,20 +177,13 @@ const useResponsiblePeopleHook = create(
               unit_id: null,
             })),
             ...(item.designations || []).map((designation) => ({
+              id: item.activityId,
               user_id: null,
               designation_id: designation.id,
               division_id: null,
               department_id: null,
               section_id: null,
               unit_id: null,
-            })),
-            ...(item.areas || []).map((area) => ({
-              user_id: null,
-              designation_id: null,
-              division_id: area.type === "division" ? area.id : null,
-              department_id: area.type === "department" ? area.id : null,
-              section_id: area.type === "section" ? area.id : null,
-              unit_id: area.type === "unit" ? area.id : null,
             })),
           ])
           .flat();

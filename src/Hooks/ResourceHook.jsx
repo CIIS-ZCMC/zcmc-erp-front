@@ -2,18 +2,19 @@ import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { v4 as uuid } from "uuid";
 import { setNestedValue } from "../Utils/SetNestedValue";
+import { post } from "../Services/RequestMethods";
 
 const initialResource = (
   rowId = 1,
   parentId = null,
   purchaseTypeId = null
+
 ) => ({
   id: uuid(),
   item_id: null,
   parentId: parentId,
   rowId: rowId,
   name: "",
-  typeOfResources: "",
   quantity: 0,
   individualPrice: 0,
   totalCost: 0,
@@ -43,6 +44,12 @@ const useResourceHook = create(
       clearResources: () => {
         set(() => ({
           resources: []
+        }))
+      },
+
+      clearCart: () => {
+        set(() => ({
+          cart: []
         }))
       },
 
@@ -79,9 +86,12 @@ const useResourceHook = create(
       addResourceToCart: (item, parentId, quantity = 1) => {
         const { cart } = get();
 
+        console.log(item)
+
         // Try to find the existing item by ID
         const existingItem = cart?.find(
-          (cartItem) => cartItem?.id === item?.id
+          // (cartItem) => cartItem?.id === item?.id
+          (cartItem) => cartItem?.id === item?.id && cartItem?.parentId === parentId
         );
 
         if (existingItem) {
@@ -97,7 +107,7 @@ const useResourceHook = create(
               : cartItem
           );
           set({ cart: updatedCart });
-          console.log(updatedCart);
+          // console.log(updatedCart);
         } else {
           const newItem = {
             ...item,
@@ -108,7 +118,7 @@ const useResourceHook = create(
 
           const updatedCart = [...cart, newItem];
           set({ cart: updatedCart });
-          console.log(updatedCart);
+          // console.log(updatedCart);
         }
       },
 
@@ -141,10 +151,15 @@ const useResourceHook = create(
          */
 
         const updatedResources = cart.map((item, index) => {
-          const exist = resources.find((resource) => resource.item_id === item.id);
+          // const exist = resources.find((resource) => resource.item_id === item.id);
+
+          const exist = resources.find(
+            (resource) =>
+              resource.item_id === item.id && resource.parentId === parentId
+          );
 
           // If exist update the quantity and total cost
-          if(exist){
+          if (exist) {
             return {
               ...exist,
               quantity: item.aop_quantity,
@@ -159,12 +174,18 @@ const useResourceHook = create(
             individualPrice: item.estimated_budget,
             item_id: item.id,
             totalCost: totalPrice,
+            parentId: parentId,
           }
         });
 
+        // Remove resources for this parentId that are being replaced, but keep others
+        const filteredResources = resources.filter(
+          (resource) => resource.parentId !== parentId
+        );
+
         set((state) => ({
           resources: [
-            ...state.resources.filter((item) => item.parentId !== parentId),
+            ...filteredResources,
             ...updatedResources,
           ],
           cart: [],
@@ -189,10 +210,27 @@ const useResourceHook = create(
         }));
       },
 
-      removeItemResource: (id) => {
+      removeItem: async (body, callback) => {
+        post({
+          url: `check-pin`,
+          // param: { id: params },
+          form: body,
+          success: (response) => {
+            const { message, data } = response.data;
+            callback(response.status, message, data);
+          },
+          failed: callback,
+        });
+      },
+
+      removeItemResource: (idsToRemove) => {
         const resources = get().resources;
 
-        const filtered = resources.filter((item) => item.id !== id);
+        // const filtered = resources.filter((item) => item.id !== id);
+
+        // Filter out all resources with matching IDs
+        const idsArray = Array.isArray(idsToRemove) ? idsToRemove : [idsToRemove];
+        const filtered = resources.filter((item) => !idsArray.includes(item.id));
 
         const groupedByParent = {};
 
@@ -213,7 +251,7 @@ const useResourceHook = create(
         set({ resources: newResources });
       },
 
-      findResourcesByActivityID: (activityId) => {
+      findResourcesByActivityID: (activityId, mode = 'create') => {
         return get()
           .resources
           .filter((item) =>
@@ -221,12 +259,21 @@ const useResourceHook = create(
             item.parentId === activityId
           )
           .map((item) => ({
+            id: item.id,
             item_id: item.item_id,
             purchase_type_id: item.purchaseTypeId?.id || item.purchaseTypeId, // handles both object and raw id
             quantity: item.quantity,
             expense_class: item.expenseClass,
           }));
-      }
+      },
+
+      isItemSelectedInOtherActivity: (itemId, currentActivityId) => {
+        const resources = get().resources;
+        return resources.find(
+          (res) => res.item_id === itemId && res.parentId !== currentActivityId
+        );
+      },
+
     }),
 
     {

@@ -7,7 +7,14 @@ import ChildMenuItem from "./ChildMenuItem";
 import ReactDOM from "react-dom";
 import { useAuth } from "../../../../Store/AuthStore";
 
-const MenuItemWithChildren = ({ name, children, icon, path, isCollapsed }) => {
+const MenuItemWithChildren = ({
+  name,
+  children,
+  icon,
+  path,
+  isCollapsed,
+  sidebarWidth,
+}) => {
   const [isExpanded, setIsExpanded] = useState(false);
   const [isHoveringParent, setIsHoveringParent] = useState(false);
   const [isHoveringPopout, setIsHoveringPopout] = useState(false);
@@ -127,32 +134,52 @@ const MenuItemWithChildren = ({ name, children, icon, path, isCollapsed }) => {
       {isCollapsed &&
         showPopout &&
         ReactDOM.createPortal(
-          <Sheet
-            variant="outlined"
-            sx={{
-              position: "fixed",
-              top: `${popoutPosition.top}px`,
-              left: `${popoutPosition.left}px`,
-              p: 1.5,
-              minWidth: 200,
-              bgcolor: "background.body",
-              boxShadow: "lg",
-              borderRadius: "md",
-              zIndex: 9999,
-              opacity: showPopout ? 1 : 0,
-              transform: showPopout ? "translateX(0)" : "translateX(-10px)",
-              transition: "opacity 100ms ease, transform 100ms ease",
-              pointerEvents: showPopout ? "auto" : "none", // prevent flickers when invisible
-            }}
-            onMouseEnter={handlePopoutMouseEnter}
-            onMouseLeave={handlePopoutMouseLeave}
-          >
-            <Stack spacing={1}>
-              {filteredChildren.map((child, index) => (
-                <ChildMenuItem key={index} path={path} {...child} isInPopout />
-              ))}
-            </Stack>
-          </Sheet>,
+          <>
+            <Box
+              sx={{
+                position: "fixed",
+                top: 0,
+                left: `${sidebarWidth}px`, // start after the sidebar
+                width: `calc(100vw - ${sidebarWidth}px)`,
+                height: "100vh",
+                backdropFilter: "blur(4px)",
+                backgroundColor: "rgba(0, 0, 0, 0.3)",
+                zIndex: 200,
+                pointerEvents: "none", // so user can interact with the page behind
+              }}
+            />
+            <Sheet
+              variant="outlined"
+              sx={{
+                position: "fixed",
+                top: `${popoutPosition.top}px`,
+                left: `${popoutPosition.left}px`,
+                p: 1.5,
+                minWidth: 200,
+                bgcolor: "background.body",
+                boxShadow: "lg",
+                borderRadius: "md",
+                zIndex: 9999,
+                opacity: showPopout ? 1 : 0,
+                transform: showPopout ? "translateX(0)" : "translateX(-10px)",
+                transition: "opacity 100ms ease, transform 100ms ease",
+                pointerEvents: showPopout ? "auto" : "none", // prevent flickers when invisible
+              }}
+              onMouseEnter={handlePopoutMouseEnter}
+              onMouseLeave={handlePopoutMouseLeave}
+            >
+              <Stack spacing={1}>
+                {filteredChildren.map((child, index) => (
+                  <ChildMenuItem
+                    key={index}
+                    path={path}
+                    {...child}
+                    isInPopout
+                  />
+                ))}
+              </Stack>
+            </Sheet>
+          </>,
           document.body
         )}{" "}
     </Box>

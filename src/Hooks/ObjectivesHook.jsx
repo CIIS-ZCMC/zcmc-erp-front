@@ -1,12 +1,15 @@
 import { create } from "zustand";
 import { persist } from "zustand/middleware";
 import { v4 as uuid } from "uuid";
+import { post } from "../Services/RequestMethods";
 
 const initialObjective = (rowId = 1) => ({
   id: uuid(),
   functionType: null,
   objective: null,
   successIndicator: null,
+  othersObjective: '',
+  othersSuccessIndicator: '',
   rowId,
 });
 const useObjectivesHook = create(
@@ -14,20 +17,44 @@ const useObjectivesHook = create(
   persist(
     (set, get) => ({
       objectives: [],
+      currentEditedObjective: null,
       hasDiscussed: false,
       current_parent_id: null,
       current_row_id: null,
 
+      setCurrentEditedObjective: (objective) => set({ currentEditedObjective: objective }),
 
       setObjectives: (data) => {
-        // console.log(data)
         set((state) => ({
           objectives: data
         }))
       },
 
+      //clear others and successindicator fields
+      clearOthersFields: (id) => {
+        set(state => ({
+          objectives: state.objectives.map(obj =>
+            obj.id === id
+              ? {
+                ...obj,
+                othersObjective: '',
+                othersSuccessIndicator: ''
+              }
+              : obj
+          ),
+          //clear current edited objective 
+          currentEditedObjective:
+            state.currentEditedObjective?.id === id
+              ? {
+                ...state.currentEditedObjective,
+                othersObjective: '',
+                othersSuccessIndicator: ''
+              }
+              : state.currentEditedObjective
+        }));
+      },
+
       clearParentId: () => {
-        // console.log(data)
         set(() => ({
           current_parent_id: null,
         }))
@@ -74,6 +101,20 @@ const useObjectivesHook = create(
         }));
       },
 
+      // delete objective with auth pin
+      removeItem: async (body, callback) => {
+        post({
+          url: `check-pin`,
+          // param: { id: params },
+          form: body,
+          success: (response) => {
+            const { message, data } = response.data;
+            callback(response.status, message, data);
+          },
+          failed: callback,
+        });
+      },
+
       deleteObjective: (id) => {
         const objectives = get().objectives;
         const filtered = objectives.filter((item) => item.id !== id)
@@ -99,3 +140,9 @@ const useObjectivesHook = create(
   )
 );
 export default useObjectivesHook;
+
+export const useObjectivesActions = () =>
+  useObjectivesHook(state => state.actions);
+
+export const useObjectives = () =>
+  useObjectivesHook(state => state.objectives)

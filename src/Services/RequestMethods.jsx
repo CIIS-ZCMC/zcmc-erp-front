@@ -172,7 +172,7 @@ export const updateUpload = ({ url, form, param, success, failed }) => {
  */
 export const remove = ({ url, form, param, success, failed }) => {
   erp_api
-    .delete(url, { params: param }, form)
+    .delete(url, form, { params: param })
     .then((res) => validateStatusOk(res))
     .then((res) => success(res))
     .catch((err) => failed(...handleFailedStatus(err)));

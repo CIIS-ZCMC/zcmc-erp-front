@@ -92,6 +92,7 @@ function AlertDialogComponent({
                     onClick={leftButtonAction ?? closeAlertDialog}
                     isDisabled={isLoading}
                     fullWidth={!rightButtonAction}
+                    variant={'outlined'}
                   />
 
                   {!noRightButton && (

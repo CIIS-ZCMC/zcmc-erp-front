@@ -2,14 +2,18 @@ import { create } from "zustand";
 import { read, post, update, download } from "../../Services/RequestMethods";
 import { API } from "../../Data/constants";
 
+import { localStorageSetter } from "../../Utils/LocalStorage";
+
 const useAOPObjectivesHooks = create((set, get) => ({
-  aopObjectives: [],
-  aopObjective: {},
+  aopObjectives: null,
+  formattedObjectives: null,
+  formattedActivities: null,
+  formattedResources: null,
+  formattedResponsible: null,
   aop_summary: {},
   aop_timeline: [],
   mission: "",
   aop_id: null,
-  isLoading: false,
 
   actions: {
     setAopObjectives: (data) => {
@@ -18,14 +22,34 @@ const useAOPObjectivesHooks = create((set, get) => ({
       }));
     },
 
+    setAopId: (id) => {
+      localStorageSetter("aop-app-id", id);
+      set({ aop_id: id });
+    },
+
+    setMission: (mission) => {
+      localStorageSetter("mission", mission);
+      set({ mission: mission })
+    },
+
     getSummary: (callBack) => {
       read({
         url: API.AOP_APPLICATION_SUMMARY,
         failed: callBack,
         success: (res) => {
           // console.log(res)
-          const { status, message, data } = res;
-          set({ aop_summary: data });
+          const { status, message, data: { data } } = res;
+
+          set({
+            aop_summary: data.summary,
+            aopObjectives: data.aop,
+            formattedObjectives: data.formattedObjectives,
+            formattedActivities: data.formattedActivities,
+            formattedResources: data.formattedResources,
+            formattedResponsible: data.formattedResponsiblePersons,
+            aop_id: data.summary.aop_application_id
+          });
+
           callBack(status, message);
         },
       });
@@ -55,23 +79,42 @@ const useAOPObjectivesHooks = create((set, get) => ({
 
         success: (res) => {
           const { data } = res.data;
-          set({ aopObjectives: data, aop_id: data.aop_application_id });
+          // console.log('response', data)
+          set({
+            aopObjectives: data,
+            aop_id: data.aop_application_id
+          });
+          localStorage.setItem("aop-backup", JSON.stringify(data));
           callBack(200, "Success");
         },
       });
     },
 
-    create: (form, callBack) => {
+    create: async (form, callBack) => {
       post({
         url: API.AOP_APPLICATION_STORE,
         form: form,
         failed: callBack,
-        success: (res) => {
-          set({ aopObjectives: res.data });
-          callBack(200, "Success");
+        success: ({ status, data }) => {
+          const { message } = data;
+          set({ aopObjectives: data });
+          callBack(status, message);
         },
       });
     },
+
+    // removeItem: async (body, callback) => {
+    //   post({
+    //     url: `check-pin`,
+    //     // param: { id: params },
+    //     form: body,
+    //     success: (response) => {
+    //       const { message, data } = response.data;
+    //       callback(response.status, message, data);
+    //     },
+    //     failed: callback,
+    //   });
+    // },
 
     updateAOP: (form, params, callBack) => {
       update({
@@ -85,7 +128,7 @@ const useAOPObjectivesHooks = create((set, get) => ({
       });
     },
 
-    exportAsExcel: (id, callBack = () => {}) => {
+    exportAsExcel: (id, callBack = () => { }) => {
       download({
         url: `${API.AOP_EXPORT_EXCEL}/${id}`,
         title: "AOP Excel Export",
@@ -105,3 +148,7 @@ export default useAOPObjectivesHooks;
 
 export const useAOPActions = () =>
   useAOPObjectivesHooks((state) => state.actions);
+
+export const useSetAOPID = () =>
+  useAOPObjectivesHooks((state) => state.actions);
+
