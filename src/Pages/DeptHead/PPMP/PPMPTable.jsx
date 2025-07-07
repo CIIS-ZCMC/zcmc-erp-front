@@ -12,7 +12,7 @@ import NoResultComponent from "../../../Components/Common/Table/NoResultComponen
 import InputComponent from "../../../Components/Form/InputComponent";
 import { ThreeDots } from "react-loader-spinner";
 import { flattenColumns } from "../../../Utils/FlattenColumns";
-import usePPMPHook from "../../../Hooks/PPMPHook";
+import usePPMPHook from "../../../Hooks/PPMP/PPMPHook";
 import useItemsHook from "../../../Hooks/ItemsHook";
 import { ppmpHeaders } from "../../../Data/Columns";
 import ButtonComponent from "../../../Components/Common/ButtonComponent";
@@ -214,15 +214,15 @@ const PPMPTable = memo(
 
           const newQuantity = calculateQuantity(updatedTargets);
 
-          if (row.aop_quantity && newQuantity > row.aop_quantity) {
-            const data = {
-              status: "error",
-              title: "Exceeded quantity",
-              description: `Total quantity (${newQuantity}) exceeds AOP quantity (${row.aop_quantity}).`,
-            };
-            setAlertDialog(data);
-            return; // Stop further updates if invalid
-          }
+          // if (row.aop_quantity && newQuantity > row.aop_quantity) {
+          //   const data = {
+          //     status: "error",
+          //     title: "Exceeded quantity",
+          //     description: `Total quantity (${newQuantity}) exceeds AOP quantity (${row.aop_quantity}).`,
+          //   };
+          //   setAlertDialog(data);
+          //   return; // Stop further updates if invalid
+          // }
 
           updatedRow.target_by_quarter = updatedTargets;
           updatedRow.quantity = newQuantity;
@@ -309,8 +309,8 @@ const PPMPTable = memo(
                     key={column.field}
                     colSpan={column.children.length}
                     style={{
-                      width: column.width || 200,
-                      fontSize: 13,
+                      width: column.width || 100,
+                      fontSize: 12,
                       textAlign: column.align || "left",
                       backgroundColor: "rgba(240, 240, 240, 1)",
                       whiteSpace: "normal", // use whiteSpace instead of textWrap
@@ -330,9 +330,9 @@ const PPMPTable = memo(
                     width: isFirstColumn
                       ? "var(--Table-firstColumnWidth)"
                       : isLastColumn && stickLast
-                      ? "var(--Table-lastColumnWidth)"
-                      : column.width || 200,
-                    fontSize: 13,
+                        ? "var(--Table-lastColumnWidth)"
+                        : column.width || 200,
+                    fontSize: 12,
                     textAlign: column.align || "left",
                     backgroundColor: "rgba(240, 240, 240, 1)",
                     whiteSpace: "normal",
@@ -345,6 +345,7 @@ const PPMPTable = memo(
           </tr>
 
           {/* Second header row (only children) */}
+
           <tr>
             {columns
               .filter((h) => h.children)
@@ -354,8 +355,9 @@ const PPMPTable = memo(
                   key={child.field}
                   align="center"
                   style={{
-                    fontSize: 13,
-                    textAlign: child.align || "center",
+                    width: child.width,
+                    fontSize: 12,
+                    textAlign: child.align,
                     backgroundColor: "rgba(240, 240, 240, 1)",
                     zIndex: 1,
                     textWrap: "wrap",
@@ -430,7 +432,7 @@ const PPMPTable = memo(
       return header.render ? (
         header.render(row)
       ) : (
-        <Typography>{value ?? "-"}</Typography>
+        <Typography fontSize={12}>{value ?? "-"}</Typography>
       );
     };
 
@@ -537,7 +539,7 @@ const PPMPTable = memo(
               ...(stickSecond && {
                 "& tr > *:nth-child(2)": {
                   position: "sticky",
-                  zIndex: 9,
+                  zIndex: 10,
                   left: columns[0]?.width, // Adjust to match the width of first column
                   boxShadow: "1px 0 var(--TableCell-borderColor)",
                   bgcolor: "background.surface",
@@ -570,7 +572,7 @@ const PPMPTable = memo(
                       return (
                         <td
                           key={header.field}
-                          align="center"
+                          align={header.align}
                           onClick={() =>
                             setEditedCell({
                               rowId: row.id,

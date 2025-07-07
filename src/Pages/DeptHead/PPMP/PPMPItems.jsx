@@ -19,10 +19,8 @@ import {
 import ModalComponent from "../../../Components/Common/Dialog/ModalComponent";
 import AutocompleteComponent from "../../../Components/Form/AutocompleteComponent";
 import { useLocation, useNavigate } from "react-router-dom";
-import { usePPMPItemsHook } from "../../../Hooks/PPMPItemsHook";
-import usePPMPHook from "../../../Hooks/PPMPHook";
+import usePPMPHook from "../../../Hooks/PPMP/PPMPHook";
 import useItemsHook from "../../../Hooks/ItemsHook";
-import { expenseClassData } from "../../../Data/constants";
 import { MdAdd, MdKeyboardArrowDown, MdOpenInNew } from "react-icons/md";
 import ConfirmationModalComponent from "../../../Components/Common/Dialog/ConfirmationModalComponent";
 import useModalHook from "../../../Hooks/ModalHook";
@@ -33,9 +31,7 @@ import TextareaComponent from "../../../Components/Form/TextareaComponent";
 import InputComponent from "../../../Components/Form/InputComponent";
 import handleSingleChangeAutcomplete from "../../../Utils/HandleAutocomplete";
 import { handleInputValidation } from "../../../Utils/HandleInput";
-import PageLoader from "../../../Components/Loading/PageLoader";
 import PPMPTable from "./PPMPTable";
-import ConfirmationModal from "../../../Components/Common/Dialog/ConfirmationModal";
 import { InfoIcon } from "lucide-react";
 import { useAuth } from "../../../Store/AuthStore";
 import { socket } from "../../../Services/Socket";
@@ -44,7 +40,7 @@ function PPMPItems(props) {
   const navigate = useNavigate();
   const {
     modes,
-    is_draft,
+    // is_draft,
     activities,
     getPPMPItems,
     getProcModes,
@@ -92,6 +88,7 @@ function PPMPItems(props) {
   const [pin, setPin] = useState("");
   const [editor, setEditor] = useState(null);
   const [tableData, setTableData] = useState([]);
+  const [is_draft, setIsDraft] = useState(1);
   const [itemReq, setItemReq] = useState({
     specs: [
       { id: Date.now(), value: "" },
@@ -239,24 +236,25 @@ function PPMPItems(props) {
       const alertData =
         status === 201
           ? {
-              status: "success",
-              title: is_draft
-                ? "Saved as draft"
-                : "PPMP for F.Y. 2026 successfully submitted for approval.",
-              description: is_draft
-                ? "Your PPMP request has been save as draft. You can continue editing it later or submit it for approval."
-                : "Your PPMP request has been sent to the next approving body and they have been notified for approvals.",
-            }
+            status: "success",
+            title: is_draft
+              ? "Saved as draft"
+              : "PPMP for F.Y. 2026 successfully submitted for approval.",
+            description: is_draft
+              ? "Your PPMP request has been save as draft. You can continue editing it later or submit it for approval."
+              : "Your PPMP request has been sent to the next approving body and they have been notified for approvals.",
+          }
           : {
-              status: "error",
-              title: message,
-              description: message,
-            };
+            status: "error",
+            title: message,
+            description: message,
+          };
 
       setAlertDialog(alertData);
 
       if (status === 201) {
         localStorage.setItem("ppmp-items", JSON.stringify(data.ppmp_items));
+        setIsDraft(data.is_draft);
         localStorage.setItem("is_draft", JSON.stringify(data.is_draft));
         closeConfirmation();
         setOpenSave(false);
@@ -345,13 +343,9 @@ function PPMPItems(props) {
       setError("activity", true, "Please select an option");
       hasError = true;
     }
-    if (isEmptyObject(expenseClass)) {
-      setError("expenseClass", true, "Please select an option");
-      hasError = true;
-    }
     if (hasError) return;
 
-    navigate(`/edit-ppmp/add-item/${expenseClass}`, {
+    navigate("/edit-ppmp/add-item", {
       state: { activity },
     });
   };
@@ -365,10 +359,6 @@ function PPMPItems(props) {
     if (step === 1) {
       if (isEmptyObject(activity)) {
         setError("activity", true, "Please select an option");
-        hasError = true;
-      }
-      if (isEmptyObject(expenseClass)) {
-        setError("expenseClass", true, "Please select an option");
         hasError = true;
       }
 
@@ -455,6 +445,10 @@ function PPMPItems(props) {
           setReloadFlag((prev) => !prev);
         }
 
+        // Fetch is_draft after localStorage is updated
+        const updatedIsDraft =
+          JSON.parse(localStorage.getItem("is_draft")) || 0;
+        setIsDraft(updatedIsDraft);
         // Step 3: Fetch all other needed data
         await Promise.all([
           wrap(getActivities),
@@ -628,7 +622,7 @@ function PPMPItems(props) {
           <Fragment>
             <Stack spacing={2}>
               <AutocompleteComponent
-                label={"Select one activity"}
+                label={"Select an activity"}
                 name={"activity"}
                 options={activities}
                 getOptionLabel={(option) => option.activity_code || ""}
@@ -645,11 +639,10 @@ function PPMPItems(props) {
                   <Typography sx={{ fontSize: 14 }}>
                     {activity?.name}
                   </Typography>
-                  <Divider />
                 </>
               )}
 
-              <AutocompleteComponent
+              {/* <AutocompleteComponent
                 label={"Select expense class"}
                 helperText={
                   "Expense class determine the type of budget to be used for the items that are to be selected."
@@ -659,7 +652,7 @@ function PPMPItems(props) {
                 getOptionLabel={(option) => option?.label || ""}
                 value={expenseClass}
                 setValue={setExpenseClass}
-              />
+              /> */}
             </Stack>
           </Fragment>
         }
@@ -679,19 +672,19 @@ function PPMPItems(props) {
           step === 1
             ? "On what activity shall we assign the resources you’ll add?"
             : step === 2
-            ? "General information"
-            : step === 3
-            ? "Specifications"
-            : ""
+              ? "General information"
+              : step === 3
+                ? "Specifications"
+                : ""
         }
         description={
           step === 1
             ? "Select a request status and reasons (if returned) to continue. You may add remarks if necessary."
             : step === 2
-            ? "Fill in the item information to create it."
-            : step === 3
-            ? "List down details for the item you want to cretae to specify it."
-            : ""
+              ? "Fill in the item information to create it."
+              : step === 3
+                ? "List down details for the item you want to cretae to specify it."
+                : ""
         }
         minWidth={"400px"}
         maxWidth={"480px"}
@@ -719,21 +712,8 @@ function PPMPItems(props) {
                       <Typography sx={{ fontSize: 14 }}>
                         {activity?.name}
                       </Typography>
-                      <Divider />
                     </>
                   )}
-
-                  <AutocompleteComponent
-                    label={"Select expense class"}
-                    name="expenseClass"
-                    helperText={
-                      "Expense class determine the type of budget to be used for the items that are to be selected."
-                    }
-                    getOptionLabel={(option) => option?.label || ""}
-                    options={expenseClassData}
-                    value={expenseClass}
-                    setValue={setExpenseClass}
-                  />
                 </Stack>
               )}
               {step === 2 && (
