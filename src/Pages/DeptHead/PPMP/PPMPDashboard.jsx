@@ -6,7 +6,7 @@ import { TargetIcon } from "lucide-react";
 import { TbTargetArrow } from "react-icons/tb";
 import ButtonComponent from "../../../Components/Common/ButtonComponent";
 import { useNavigate } from "react-router-dom";
-import usePPMPHook from "../../../Hooks/PPMPHook";
+import usePPMPHook from "../../../Hooks/PPMP/PPMPHook";
 import {
   MdFindInPage,
   MdOutlineFindInPage,

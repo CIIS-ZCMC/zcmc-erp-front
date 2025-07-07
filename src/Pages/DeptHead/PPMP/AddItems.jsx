@@ -25,8 +25,7 @@ import useModalHook from "../../../Hooks/ModalHook";
 import PageLoader from "../../../Components/Loading/PageLoader";
 import Item from "../../Items/Item";
 import ModalComponent from "../../../Components/Common/Dialog/ModalComponent";
-import { usePPMPItemsHook } from "../../../Hooks/PPMPItemsHook";
-
+import { usePPMPItemsHook } from "../../../Hooks/PPMP/PPMPItemsHook";
 const ITEMS_PER_BATCH = 12;
 
 function AddItems(props) {
