@@ -272,6 +272,8 @@ const Objectives = () => {
                 setAlertDialog(responseMessages.success);
                 closeConfirmation()
                 setOpenAlertSuccess(true)
+            } else {
+                setAlertDialog(responseMessages.error(status, message));
             }
 
         } catch (err) {
@@ -480,7 +482,7 @@ const Objectives = () => {
                             />
 
                             <ButtonComponent
-                                label={"Submit AOP"}
+                                label={APPLICATION_OBJECTIVE_ID ? "Resubmit AOP" : "Submit AOP"}
                                 size={"md"}
                                 variant={"solid"}
                                 disabled={isSubmitEnabled}
