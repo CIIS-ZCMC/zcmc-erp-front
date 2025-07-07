@@ -29,27 +29,22 @@ import useResponsiblePeopleHook from "../../../../../Hooks/ResponsiblePeopleHook
 import { useCommentActions } from "../../../../../Hooks/CommentHook";
 
 //data related
-import {
-    AOP_CONSTANTS,
-    CONFIRMATION_CONSTANTS,
-} from "../../../../../Data/constants";
+import { AOP_CONSTANTS, CONFIRMATION_CONSTANTS } from "../../../../../Data/constants";
 import { AOP_HEADER } from "../../../../../Data/Columns";
 
 // utils
-import {
-    localStorageSetter,
-    localStorageGetter,
-} from "../../../../../Utils/LocalStorage";
+import { localStorageSetter, localStorageGetter } from "../../../../../Utils/LocalStorage";
 import { buildAOP } from "../../../../../Utils/aopBuilder";
 
 const Objectives = () => {
-    const APPLICATION_OBJECTIVE_ID = localStorageGetter("aop-app-id");
-    const OBJECTIVES = localStorageGetter("objectives-storage");
+
+    const APPLICATION_OBJECTIVE_ID = localStorageGetter('aop-app-id');
+    const OBJECTIVES = localStorageGetter('objectives-storage');
     const savedMission = localStorageGetter("mission");
 
     useEffect(() => {
-        console.log(savedMission);
-    }, [savedMission]);
+        console.log(savedMission)
+    }, [savedMission])
 
     const { create, getSingleAOP } = useAOPActions();
 
@@ -65,31 +60,19 @@ const Objectives = () => {
         setIsDiscussed,
         deleteObjective,
     } = useObjectivesHook();
-    const {
-        findActivitiesByObjectiveID,
-        activities,
-        clearActivities,
-        removeActivity,
-    } = useActivitiesHook();
+    const { findActivitiesByObjectiveID, activities, clearActivities, removeActivity } =
+        useActivitiesHook();
     const {
         responsible_people,
         findResponsiblePeopleByActivityID,
         clearResponsiblePeople,
         removeMultipleResponsiblePersonnel,
     } = useResponsiblePeopleHook();
-    const {
-        resources,
-        findResourcesByActivityID,
-        clearResources,
-        clearCart,
-        removeItemResource,
-    } = useResourceHook();
-    const {
-        setAlertDialog,
-        setConfirmationModal,
-        closeConfirmation,
-        closeAlertDialog,
-    } = useModalHook();
+    const { resources, findResourcesByActivityID, clearResources, clearCart, removeItemResource } =
+        useResourceHook();
+    const { setAlertDialog, setConfirmationModal, closeConfirmation, closeAlertDialog } =
+        useModalHook();
+
 
     // COMMENTS HOOK
     const {
@@ -118,478 +101,476 @@ const Objectives = () => {
 
     const activitiesCount = objectives.map((objective) => {
         return activities.filter((activity) => {
-            return (
-                activity.parentId === objective.id ||
-                activity.parentId === objective.objectiveUuid
-            );
+            return activity.parentId === objective.id || activity.parentId === objective.objectiveUuid
+        }
+        )
+    });
+
+    // check for open modals
+    useEffect(() => {
+        console.log('open confirm dialog', openConfirmDialog);
+        console.log('open confirm discussed dialog', openConfirmDiscussedDialog);
+        console.log('open alert success', openAlertSuccess);
+        console.log('open submit modal', openSubmitModal);
+        console.log('open save mission modal', openSaveMissionModal);
+        console.log('open feedback modal', openFeedbackModal);
+        console.log('open cancel request modal', openCancelRequestModal);
+    })
+
+    const isSubmitEnabled = !mission ||
+        resources.length === 0 ||
+        responsible_people.length === 0
+
+    useEffect(() => {
+        const params = { with_sub_data: 1 };
+        getFunctionType(params, (status, message) => {
+            if (!(status >= 200 && status < 300)) {
+                // if status not success
+                return; //Toast error
+            }
+            setIsLoading(false);
         });
 
-        // check for open modals
-        useEffect(() => {
-            console.log('open confirm dialog', openConfirmDialog);
-            console.log('open confirm discussed dialog', openConfirmDiscussedDialog);
-            console.log('open alert success', openAlertSuccess);
-            console.log('open submit modal', openSubmitModal);
-            console.log('open save mission modal', openSaveMissionModal);
-            console.log('open feedback modal', openFeedbackModal);
-            console.log('open cancel request modal', openCancelRequestModal);
-        })
-
-        const isSubmitEnabled = !mission ||
-            resources.length === 0 ||
-            responsible_people.length === 0
-
-        useEffect(() => {
-            const params = { with_sub_data: 1 };
-            getFunctionType(params, (status, message) => {
+        if (APPLICATION_OBJECTIVE_ID && !formattedObjectives?.length) {
+            setIsLoading(true);
+            getSingleAOP(APPLICATION_OBJECTIVE_ID, (status, message) => {
+                setIsLoading(false)
                 if (!(status >= 200 && status < 300)) {
-                    // if status not success
-                    return; //Toast error
+                    return
                 }
-                setIsLoading(false);
-            });
+            })
 
-            if (APPLICATION_OBJECTIVE_ID && !formattedObjectives?.length) {
-                setIsLoading(true);
-                getSingleAOP(APPLICATION_OBJECTIVE_ID, (status, message) => {
-                    setIsLoading(false);
-                    if (!(status >= 200 && status < 300)) {
-                        return;
-                    }
-                });
-            }
-        }, [APPLICATION_OBJECTIVE_ID, formattedObjectives]);
+        }
+    }, [APPLICATION_OBJECTIVE_ID, formattedObjectives]);
 
-        // check pag walang objectives then add default objective
-        useEffect(() => {
-            if (objectives?.length === 0) {
-                addObjective();
-            }
-        }, [objectives, addObjective]);
+    // check pag walang objectives then add default objective
+    useEffect(() => {
+        if (objectives?.length === 0) {
+            addObjective();
+        }
+    }, [objectives, addObjective]);
 
-        // clear local storage
-        const clearLocalStorage = () => {
-            //set objectives, activities, resources into empty state then clear localStorrage
-            clearObjectives();
-            clearActivities();
-            clearResponsiblePeople();
-            clearResources();
-            clearCart();
+    // clear local storage
+    const clearLocalStorage = () => {
+        //set objectives, activities, resources into empty state then clear localStorrage
+        clearObjectives();
+        clearActivities();
+        clearResponsiblePeople();
+        clearResources();
+        clearCart();
+    };
+
+    //with auth pin data
+    const handleProceedAuthModal = (status) => {
+        setOpenConfirmDialog(true);
+        const data = {
+            status: status,
+            title: CONFIRMATION_CONSTANTS.ALERT_SUBMITTION_TITLE,
+            description: CONFIRMATION_CONSTANTS.ALERT_SUBMITTION_DESCRIPTION,
         };
+        setConfirmationModal(data);
+        setOpenConfirmDiscussedDialog(false) //close is discussed modal
+    };
 
-        //with auth pin data
-        const handleProceedAuthModal = (status) => {
-            setOpenConfirmDialog(true);
-            const data = {
-                status: status,
-                title: CONFIRMATION_CONSTANTS.ALERT_SUBMITTION_TITLE,
-                description: CONFIRMATION_CONSTANTS.ALERT_SUBMITTION_DESCRIPTION,
-            };
-            setConfirmationModal(data);
-            setOpenConfirmDiscussedDialog(false); //close is discussed modal
+    //has discussed data
+    const handleDiscussedConfirmationModal = () => {
+        setOpenConfirmDiscussedDialog(true);
+        const data = {
+            status: "warning",
+            title: CONFIRMATION_CONSTANTS.ALERT_HASDISCUSSED_TITLE,
+            description: CONFIRMATION_CONSTANTS.ALERT_HASDISCUSSED_DESCRIPTION,
         };
-
-        //has discussed data
-        const handleDiscussedConfirmationModal = () => {
-            setOpenConfirmDiscussedDialog(true);
-            const data = {
-                status: "warning",
-                title: CONFIRMATION_CONSTANTS.ALERT_HASDISCUSSED_TITLE,
-                description: CONFIRMATION_CONSTANTS.ALERT_HASDISCUSSED_DESCRIPTION,
-            };
-            setConfirmationModal(data);
-        };
+        setConfirmationModal(data);
+    };
 
 
-        // build aop payload
-        const buildAopPayload = useCallback(() => {
-            return buildAOP({
-                objectives,
-                findActivitiesByObjectiveID,
-                findResourcesByActivityID,
-                findResponsiblePeopleByActivityID,
-                APPLICATION_OBJECTIVE_ID,
-            });
-        }, [
+    // build aop payload
+    const buildAopPayload = useCallback(() => {
+        return buildAOP({
             objectives,
             findActivitiesByObjectiveID,
             findResourcesByActivityID,
             findResponsiblePeopleByActivityID,
-        ]);
+            APPLICATION_OBJECTIVE_ID,
+        });
+    }, [
+        objectives,
+        findActivitiesByObjectiveID,
+        findResourcesByActivityID,
+        findResponsiblePeopleByActivityID
+    ]);
 
-        // useEffect(() => {
-        //     console.log(APPLICATION_OBJECTIVE_ID)
-        // }, [APPLICATION_OBJECTIVE_ID])
+    // useEffect(() => {
+    //     console.log(APPLICATION_OBJECTIVE_ID)
+    // }, [APPLICATION_OBJECTIVE_ID])
 
-        // handle close alert and navigate to aop
-        const handleNavigateToAOP = () => {
-            setIsLoading(true);
-            setTimeout(() => {
-                setConfirmationModal(false)
-                setAlertDialog(false)
-                closeAlertDialog()
-                window.location.href = "/aop";
-            }, 2000)
-        }
+    // handle close alert and navigate to aop
+    const handleNavigateToAOP = () => {
+        setIsLoading(true);
+        setTimeout(() => {
+            setConfirmationModal(false)
+            setAlertDialog(false)
+            closeAlertDialog()
+            window.location.href = "/aop";
+        }, 2000)
+    }
 
-        const handleSubmit = async () => {
-            setIsLoading(true);
-            setOpenConfirmDialog(false)
+    const handleSubmit = async () => {
+        setIsLoading(true);
+        setOpenConfirmDialog(false)
 
 
-            const payload = {
-                mission: mission,
-                has_discussed: !!hasDiscussed,
-                status: isDraft ? "draft" : "pending",
-                authorization_pin: authorizationPin,
-                application_objectives: buildAopPayload(),
-            };
-
-            // console.log('payload', payload)
-
-            const responseMessages = {
-                existing: {
-                    status: 200,
-                    title: "Existing AOP",
-                    description: "You already have an AOP application in your area."
-                },
-                success: {
-                    status: 200,
-                    title: `AOP for F.Y. 2026 successfully ${APPLICATION_OBJECTIVE_ID ? 'updated' : 'submitted for approval'}.`,
-                    isGlobal: false,
-                    description: APPLICATION_OBJECTIVE_ID
-                        ? "Your AOP has been successfully updated."
-                        : "Your AOP request has been sent to the next approving body."
-                },
-                error: (status, message) => ({
-                    status: status,
-                    title: "Submission failed",
-                    description: message || "An unexpected error occurred."
-                })
-            };
-
-            try {
-
-                // Await the API call and destructure the result
-                const result = await new Promise((resolve) => {
-                    create(payload, (status, message) => {
-                        resolve({ status, message, });
-                    });
-                });
-
-                const { status, message } = result;
-
-                if (status === 200 && message === responseMessages.existing.description) {
-                    setAlertDialog(responseMessages.existing);
-                }
-
-                if (status === 200) {
-                    clearLocalStorage();
-                    setMission("");
-                    setAlertDialog(responseMessages.success);
-                    closeConfirmation()
-                    setOpenAlertSuccess(true)
-                } else {
-                    setAlertDialog(responseMessages.error(status, message));
-                }
-
-            } catch (err) {
-                console.log(err)
-                setAlertDialog(responseMessages.error(err.status, err.message));
-            } finally {
-                setIsLoading(false);
-            }
+        const payload = {
+            mission: mission,
+            has_discussed: !!hasDiscussed,
+            status: isDraft ? 'draft' : 'pending',
+            authorization_pin: authorizationPin,
+            application_objectives: buildAopPayload(),
         };
 
-        // handle save mission
-        const handleSaveMission = () => {
-            let data = {};
+        // console.log('payload', payload)
 
-            data = {
+        const responseMessages = {
+            existing: {
                 status: 200,
-                title: APPLICATION_OBJECTIVE_ID
-                    ? "Mission updated successfully"
-                    : "Mission created successfully!",
-                description: "",
-            };
-            handleCloseDialog();
-            setAlertDialog(data);
-
-            // Save to local storage
-            localStorage.setItem("mission", JSON.stringify(mission));
+                title: "Existing AOP",
+                description: "You already have an AOP application in your area."
+            },
+            success: {
+                status: 200,
+                title: `AOP for F.Y. 2026 successfully ${APPLICATION_OBJECTIVE_ID ? 'updated' : 'submitted for approval'}.`,
+                isGlobal: false,
+                description: APPLICATION_OBJECTIVE_ID
+                    ? "Your AOP has been successfully updated."
+                    : "Your AOP request has been sent to the next approving body."
+            },
+            error: (status, message) => ({
+                status: status,
+                title: "Submission failed",
+                description: message || "An unexpected error occurred."
+            })
         };
 
-        const handleOpenDialog = () => {
-            setOpenSaveMissionModal(true);
-        };
+        try {
 
-        const handleCloseDialog = () => {
-            setOpenSaveMissionModal(false);
-        };
+            // Await the API call and destructure the result
+            const result = await new Promise((resolve) => {
+                create(payload, (status, message) => {
+                    resolve({ status, message, });
+                });
+            });
 
-        const handleOpenCancelRequestModal = () => {
-            setOpenCancelRequestModal(true)
-            setConfirmationModal
-            const data = {
-                status: "warning",
-                title: ` Are you sure you want to cancel this request?`,
-                description: "If you confirm, you will be redirected back to the AOP page.",
-            };
-            setConfirmationModal(data);
+            const { status, message } = result;
+
+            if (status === 200 && message === responseMessages.existing.description) {
+                setAlertDialog(responseMessages.existing);
+            }
+
+            if (status === 200) {
+                clearLocalStorage();
+                setMission("");
+                setAlertDialog(responseMessages.success);
+                closeConfirmation()
+                setOpenAlertSuccess(true)
+            } else {
+                setAlertDialog(responseMessages.error(status, message));
+            }
+
+        } catch (err) {
+            console.log(err)
+            setAlertDialog(responseMessages.error(err.status, err.message));
+        } finally {
+            setIsLoading(false);
         }
-
-        //cancel aop request
-        const handleCancelRequest = () => {
-            setIsLoading(true)
-            try {
-                setTimeout(() => {
-                    clearLocalStorage();
-                    setMission("");
-                    navigate("/aop");
-                    // window.location.href = "/aop";
-                    setOpenCancelRequestModal(false);
-                    closeConfirmation();
-                    setIsLoading(false)
-                }, 1000);
-
-            } catch (error) {
-                setIsLoading(false)
-                setAlertDialog({
-                    status: "error",
-                    title: "Unexpected error",
-                    description: "Something went wrong. Please try again.",
-                });
-            }
-        };
-
-        // handle view feedback/comments
-        const handleViewFeedback = () => {
-            setOpenFeedbackModal(true);
-            setIsRemarksLoading(true);
-
-            const fetch = () => {
-                // if (!isDivisionHead || !isMCC) {
-                getCommentsByApplication(APPLICATION_OBJECTIVE_ID, () => { });
-                // }
-
-                getRemarksByApplication(APPLICATION_OBJECTIVE_ID, () => {
-                    setTimeout(() => setIsRemarksLoading(false), 1000);
-                });
-            };
-
-            Promise.all(fetch())
-                .then(() => {
-                    setIsRemarksLoading(false);
-                })
-                .catch((error) => {
-                    // console.error("Error fetching comments or remarks:", error);
-                    setIsRemarksLoading(false);
-                });
-        };
-
-        const removeObjective = (objectiveId) => {
-            const relatedActivities = findActivitiesByObjectiveID(objectiveId);
-            const activityIds = relatedActivities.map((act) => act.id);
-
-            // Remove resources by parentId
-            const resourceIdsToDelete = resources
-                .filter((res) => activityIds.includes(res.parentId))
-                .map((res) => res.id);
-
-            if (resourceIdsToDelete.length > 0) {
-                removeItemResource(resourceIdsToDelete);
-            }
-
-            // Remove responsible people in batch by parentId
-            if (activityIds.length > 0) {
-                removeMultipleResponsiblePersonnel(activityIds); // NEW batch delete!
-            }
-
-            // Remove activities
-            activityIds.forEach((id) => removeActivity(id));
-
-            // Remove the objective
-            deleteObjective(objectiveId);
-        };
-
-        return (
-            <Fragment>
-                <ContainerComponent
-                    title={AOP_CONSTANTS.MANAGE_OBJECTIVES_HEADER}
-                    description={AOP_CONSTANTS.MANAGE_OBJECTIVES_SUBHEADER}
-                    actions={
-                        <Stack direction={"row"} gap={1}>
-                            {APPLICATION_OBJECTIVE_ID && (
-                                <ButtonComponent
-                                    label={"Read Feedback"}
-                                    variant={"outlined"}
-                                    onClick={() => handleViewFeedback()}
-                                />
-                            )}
-
-                            <ButtonComponent
-                                onClick={addObjective}
-                                label={"Add an Objective"}
-                                endDecorator={<Plus size={16} />}
-                            />
-                            {!APPLICATION_OBJECTIVE_ID && (
-                                <ButtonComponent
-                                    onClick={() => {
-                                        setIsDraft(true);
-                                        // handleSubmit("draft");
-                                    }}
-                                    label={"Save as Draft"}
-                                    variant={"outlined"}
-                                    disabled={isDraft}
-                                />
-                            )}
-                        </Stack>
-                    }
-                >
-                    {isLoading ? (
-                        <BoxComponent
-                            mt={3}
-                            height={"65vh"}
-                            display={"flex"}
-                            flexDirection={"column"}
-                            justifyContent={"center"}
-                            alignContent={"center"}
-                        >
-                            <ThreeDotsLoader />
-                        </BoxComponent>
-                    ) : (
-                        <Fragment>
-                            <EditableTableComponent
-                                columns={AOP_HEADER}
-                                secondaryHeader={
-                                    <Link
-                                        component="button"
-                                        onClick={() => handleOpenDialog()}
-                                        pb={1}
-                                    >
-                                        <Stack direction={"row"} gap={1} alignItems={"center"}>
-                                            {APPLICATION_OBJECTIVE_ID
-                                                ? "Update Mission"
-                                                : " Create Mission"}
-                                            <ExternalLink size={16} />
-                                        </Stack>
-                                    </Link>
-                                }
-                                tableRow={
-                                    <ObjectivesTable
-                                        rows={objectives}
-                                        deleteRow={removeObjective}
-                                        handleChange={updateObjectiveField}
-                                        function_types={function_types}
-                                        activitiesCount={activitiesCount}
-                                    />
-                                }
-                                stickLast
-                            />
-
-                            <Stack
-                                mt={2}
-                                direction={"flex"}
-                                alignItems={"center"}
-                                justifyContent={"start"}
-                                gap={1}
-                            >
-                                <ButtonComponent
-                                    label={"Cancel Request"}
-                                    size={"md"}
-                                    variant={"outlined"}
-                                    onClick={() => handleOpenCancelRequestModal()}
-                                />
-
-                                <ButtonComponent
-                                    label={APPLICATION_OBJECTIVE_ID ? "Resubmit AOP" : "Submit AOP"}
-                                    size={"md"}
-                                    variant={"solid"}
-                                    disabled={isSubmitEnabled}
-                                    onClick={() => handleDiscussedConfirmationModal()} //open the has discussed modal
-                                />
-                            </Stack>
-                        </Fragment>
-                }
-                </ContainerComponent>
-
-                <MissionModal
-                    APPLICATION_OBJECTIVE_ID={APPLICATION_OBJECTIVE_ID}
-                    openSaveMissionModal={openSaveMissionModal}
-                    handleCloseDialog={handleCloseDialog}
-                    mission={mission}
-                    setMission={setMission}
-                    handleSaveMission={handleSaveMission}
-                />
-
-                {openConfirmDialog && (
-                    <ConfirmationModalComponent
-                        leftButtonlabel={"Back to editor"}
-                        rightButtonAction={() => handleSubmit()}
-                        withAuthPin
-                        rightButtonDisabled={!authorizationPin}
-                        setAuthPin={setAuthorizationPin}
-                        isLoading={isLoading}
-                    />
-                )}
-
-                {/* Confirmation for handle discussed */}
-                {openConfirmDiscussedDialog && (
-                    <ConfirmationModalComponent
-                        leftButtonLabel={"Cancel"}
-                        leftButtonAction={() => setOpenConfirmDiscussedDialog(false)}
-                        rightButtonAction={() => handleProceedAuthModal(200)}
-                        rightButtonLabel="Proceed"
-                        rightButtonDisabled={!hasDiscussed}
-                        isLoading={isLoading}
-                        content={
-                            <>
-                                <Checkbox
-                                    label={
-                                        "Yes, I have discussed these plans with my Division Chief."
-                                    }
-                                    onChange={(e) => {
-                                        setIsDiscussed(e.target.checked);
-                                    }}
-                                    checked={hasDiscussed}
-                                />
-                            </>
-                        }
-                    />
-                )}
-
-                {/* Confirmation for cancel */}
-                {openCancelRequestModal && (
-                    <ConfirmationModalComponent
-                        leftButtonLabel={"Cancel"}
-                        leftButtonAction={() => setOpenCancelRequestModal(false)}
-                        rightButtonAction={() => handleCancelRequest()}
-                        rightButtonLabel="Proceed"
-                        isLoading={isLoading}
-                    />
-                )}
-
-                <FeedbackSection
-                    openFeedbackModal={openFeedbackModal}
-                    setOpenFeedbackModal={setOpenFeedbackModal}
-                    isLoading={isRemarksLoading}
-                />
-
-                {
-                    openAlertSuccess && (
-                        <AlertDialogComponent
-                            leftButtonLabel={"Cancel"}
-                            leftButtonAction={() => setOpenAlertSuccess(false)}
-                            rightButtonAction={() => handleNavigateToAOP()}
-                            isLoading={isLoading}
-                            noRightButton={false}
-                        />
-                    )
-                }
-
-                <Outlet />
-            </Fragment>
-        );
     };
 
-    export default Objectives;
+    // handle save mission
+    const handleSaveMission = () => {
+        let data = {};
+
+        data = {
+            status: 200,
+            title: APPLICATION_OBJECTIVE_ID ? "Mission updated successfully" : "Mission created successfully!",
+            description: "",
+        };
+        handleCloseDialog();
+        setAlertDialog(data);
+
+        // Save to local storage
+        localStorage.setItem("mission", JSON.stringify(mission));
+    };
+
+    const handleOpenDialog = () => {
+        setOpenSaveMissionModal(true);
+    };
+
+    const handleCloseDialog = () => {
+        setOpenSaveMissionModal(false);
+    };
+
+    const handleOpenCancelRequestModal = () => {
+        setOpenCancelRequestModal(true)
+        setConfirmationModal
+        const data = {
+            status: "warning",
+            title: ` Are you sure you want to cancel this request?`,
+            description: "If you confirm, you will be redirected back to the AOP page.",
+        };
+        setConfirmationModal(data);
+    }
+
+    //cancel aop request
+    const handleCancelRequest = () => {
+        setIsLoading(true)
+        try {
+            setTimeout(() => {
+                clearLocalStorage();
+                setMission("");
+                navigate("/aop");
+                // window.location.href = "/aop";
+                setOpenCancelRequestModal(false);
+                closeConfirmation();
+                setIsLoading(false)
+            }, 1000);
+
+        } catch (error) {
+            setIsLoading(false)
+            setAlertDialog({
+                status: "error",
+                title: "Unexpected error",
+                description: "Something went wrong. Please try again.",
+            });
+        }
+    };
+
+    // handle view feedback/comments
+    const handleViewFeedback = () => {
+        setOpenFeedbackModal(true);
+        setIsRemarksLoading(true);
+
+        const fetch = () => {
+            // if (!isDivisionHead || !isMCC) {
+            getCommentsByApplication(APPLICATION_OBJECTIVE_ID, () => { });
+            // }
+
+            getRemarksByApplication(APPLICATION_OBJECTIVE_ID, () => {
+                setTimeout(() => setIsRemarksLoading(false), 1000);
+            });
+        };
+
+        Promise.all(fetch())
+            .then(() => {
+                setIsRemarksLoading(false);
+            })
+            .catch((error) => {
+                // console.error("Error fetching comments or remarks:", error);
+                setIsRemarksLoading(false);
+            });
+    }
+
+    const removeObjective = (objectiveId) => {
+        const relatedActivities = findActivitiesByObjectiveID(objectiveId);
+        const activityIds = relatedActivities.map((act) => act.id);
+
+        // Remove resources by parentId
+        const resourceIdsToDelete = resources
+            .filter((res) => activityIds.includes(res.parentId))
+            .map((res) => res.id);
+
+        if (resourceIdsToDelete.length > 0) {
+            removeItemResource(resourceIdsToDelete);
+        }
+
+        // Remove responsible people in batch by parentId
+        if (activityIds.length > 0) {
+            removeMultipleResponsiblePersonnel(activityIds); // NEW batch delete!
+        }
+
+        // Remove activities
+        activityIds.forEach((id) => removeActivity(id));
+
+        // Remove the objective
+        deleteObjective(objectiveId)
+    };
+
+
+    return (
+        <Fragment>
+            <ContainerComponent
+                title={AOP_CONSTANTS.MANAGE_OBJECTIVES_HEADER}
+                description={AOP_CONSTANTS.MANAGE_OBJECTIVES_SUBHEADER}
+                actions={
+                    <Stack direction={"row"} gap={1}>
+
+                        {
+                            APPLICATION_OBJECTIVE_ID &&
+                            <ButtonComponent
+                                label={'Read Feedback'}
+                                variant={"outlined"}
+                                onClick={() => handleViewFeedback()}
+                            />
+                        }
+
+                        <ButtonComponent
+                            onClick={addObjective}
+                            label={"Add an Objective"}
+                            endDecorator={<Plus size={16} />}
+                        />
+                        {
+                            !APPLICATION_OBJECTIVE_ID &&
+                            <ButtonComponent
+                                onClick={() => {
+                                    setIsDraft(true);
+                                    // handleSubmit("draft");
+                                }}
+                                label={"Save as Draft"}
+                                variant={"outlined"}
+                                disabled={isDraft}
+                            />
+                        }
+                    </Stack>
+                }
+            >
+                {isLoading
+                    ?
+                    <BoxComponent
+                        mt={3}
+                        height={"65vh"}
+                        display={"flex"}
+                        flexDirection={"column"}
+                        justifyContent={"center"}
+                        alignContent={"center"}
+                    >
+                        <ThreeDotsLoader />
+                    </BoxComponent>
+                    :
+                    <Fragment>
+                        <EditableTableComponent
+                            columns={AOP_HEADER}
+                            secondaryHeader={
+                                <Link component="button" onClick={() => handleOpenDialog()} pb={1}>
+                                    <Stack direction={"row"} gap={1} alignItems={"center"}>
+                                        {APPLICATION_OBJECTIVE_ID ? 'Update Mission' : ' Create Mission'}
+                                        <ExternalLink size={16} />
+                                    </Stack>
+                                </Link>
+                            }
+                            tableRow={
+                                <ObjectivesTable
+                                    rows={objectives}
+                                    deleteRow={removeObjective}
+                                    handleChange={updateObjectiveField}
+                                    function_types={function_types}
+                                    activitiesCount={activitiesCount}
+                                />
+                            }
+                            stickLast
+                        />
+
+                        <Stack
+                            mt={2}
+                            direction={"flex"}
+                            alignItems={"center"}
+                            justifyContent={"start"}
+                            gap={1}
+                        >
+                            <ButtonComponent
+                                label={"Cancel Request"}
+                                size={"md"}
+                                variant={"outlined"}
+                                onClick={() => handleOpenCancelRequestModal()}
+                            />
+
+                            <ButtonComponent
+                                label={APPLICATION_OBJECTIVE_ID ? "Resubmit AOP" : "Submit AOP"}
+                                size={"md"}
+                                variant={"solid"}
+                                disabled={isSubmitEnabled}
+                                onClick={() => handleDiscussedConfirmationModal()} //open the has discussed modal
+                            />
+                        </Stack>
+                    </Fragment>
+                }
+            </ContainerComponent>
+
+            <MissionModal
+                APPLICATION_OBJECTIVE_ID={APPLICATION_OBJECTIVE_ID}
+                openSaveMissionModal={openSaveMissionModal}
+                handleCloseDialog={handleCloseDialog}
+                mission={mission}
+                setMission={setMission}
+                handleSaveMission={handleSaveMission}
+            />
+
+            {openConfirmDialog && (
+                <ConfirmationModalComponent
+                    leftButtonlabel={"Back to editor"}
+                    rightButtonAction={() => handleSubmit()}
+                    withAuthPin
+                    rightButtonDisabled={!authorizationPin}
+                    setAuthPin={setAuthorizationPin}
+                    isLoading={isLoading}
+                />
+            )}
+
+            {/* Confirmation for handle discussed */}
+            {openConfirmDiscussedDialog && (
+                <ConfirmationModalComponent
+                    leftButtonLabel={"Cancel"}
+                    leftButtonAction={() => setOpenConfirmDiscussedDialog(false)}
+                    rightButtonAction={() => handleProceedAuthModal(200)}
+                    rightButtonLabel="Proceed"
+                    rightButtonDisabled={!hasDiscussed}
+                    isLoading={isLoading}
+                    content={
+                        <>
+                            <Checkbox
+                                label={
+                                    "Yes, I have discussed these plans with my Division Chief."
+                                }
+                                onChange={(e) => {
+                                    setIsDiscussed(e.target.checked);
+                                }}
+                                checked={hasDiscussed}
+                            />
+                        </>
+                    }
+                />
+            )}
+
+            {/* Confirmation for cancel */}
+            {openCancelRequestModal && (
+                <ConfirmationModalComponent
+                    leftButtonLabel={"Cancel"}
+                    leftButtonAction={() => setOpenCancelRequestModal(false)}
+                    rightButtonAction={() => handleCancelRequest()}
+                    rightButtonLabel="Proceed"
+                    isLoading={isLoading}
+                />
+            )}
+
+            <FeedbackSection
+                openFeedbackModal={openFeedbackModal}
+                setOpenFeedbackModal={setOpenFeedbackModal}
+                isLoading={isRemarksLoading}
+            />
+
+            {
+                openAlertSuccess && (
+                    <AlertDialogComponent
+                        leftButtonLabel={"Cancel"}
+                        leftButtonAction={() => setOpenAlertSuccess(false)}
+                        rightButtonAction={() => handleNavigateToAOP()}
+                        isLoading={isLoading}
+                        noRightButton={false}
+                    />
+                )
+            }
+
+            <Outlet />
+        </Fragment>
+
+    );
+};
+
+export default Objectives;
