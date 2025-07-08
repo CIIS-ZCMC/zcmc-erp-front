@@ -10,8 +10,8 @@ const theme = extendTheme({
     light: {
       palette: {
         custom: {
-          main: "#061323",
-          light: "#0A223E",
+          main: "#003049",
+          light: "#004366",
           lighter: "#E5FBF5",
           lightBg: "#F2F8F6",
           buttonBg: "#1D70BC",

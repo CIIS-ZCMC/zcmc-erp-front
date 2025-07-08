@@ -7,7 +7,7 @@ const MenuItemComponent = styled(RouterLink)(({ theme, color = {} }) => ({
   display: "flex",
   alignItems: "center",
   justifyContent: "flex-start",
-  padding: `${theme.spacing(1.5)} ${theme.spacing(2)}`,
+  padding: `${theme.spacing(1.5)} ${theme.spacing(1)}`,
   textDecoration: "none",
   color: "white",
   borderRadius: 10,
