@@ -7,17 +7,19 @@ import IconButtonComponent from '../../../Components/Common/IconButtonComponent'
 import BoxComponent from '../../../Components/Common/Card/BoxComponent';
 
 import { AOP_CONSTANTS } from '../../../Data/constants';
+import formattedPrice from '../../../Utils/formattedPrice';
 
 const ItemSummaryHeader = ({
     isCollapsed,
     rowNumber,
     cost,
     handleCollapseClick,
+    activityName,
 }) => {
     return (
         <>
             <ContainerComponent
-                title={`${AOP_CONSTANTS.MANAGE_HEADER} ACTIVITY : Sample activity..."`}
+                title={`${AOP_CONSTANTS.MANAGE_HEADER} ACTIVITY : ${activityName}`}
                 description={`${AOP_CONSTANTS.MANAGE_SUBHEADER} activity`}
                 sx={{ mt: 2 }}
                 actions={
@@ -65,12 +67,8 @@ const ItemSummaryHeader = ({
                                         Activity:
                                     </Typography>
                                     <Box width={"80%"} mt={1}>
-                                        <Typography fontSize={12}>
-                                            Lorem Ipsum is simply dummy text of the printing and
-                                            typesetting industry. Lorem Ipsum has been the industry's
-                                            standard dummy text ever since the 1500s, when an unknown
-                                            printer took a galley of type and scrambled it to make a
-                                            type specimen book.
+                                        <Typography fontSize={12} color="primary">
+                                            {activityName}
                                         </Typography>
                                     </Box>
                                 </BoxComponent>
@@ -80,8 +78,8 @@ const ItemSummaryHeader = ({
                                         Cost:
                                     </Typography>
                                     <Box width={"200px"} mt={1}>
-                                        <Typography fontSize={12}>
-                                            {cost}
+                                        <Typography fontSize={12} color="primary">
+                                            {formattedPrice(cost)}
                                         </Typography>
                                     </Box>
                                 </BoxComponent>

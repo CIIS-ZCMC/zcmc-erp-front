@@ -281,7 +281,12 @@ const ObjectivesTable = ({
                                         >
                                             <Link
                                                 component="button"
-                                                onClick={() => navigate(`activities/${rowId}`, { state: { objectiveParentId: objectiveUuid ? objectiveUuid : id, rowId: rowId } })}
+                                                onClick={() => navigate(`activities/${rowId}`, {
+                                                    state: {
+                                                        objectiveParentId: objectiveUuid ? objectiveUuid : id,
+                                                        rowId: rowId,
+                                                    }
+                                                })}
                                                 fontSize={14}
                                             >
                                                 Manage Activities

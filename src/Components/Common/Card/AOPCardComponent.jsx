@@ -74,7 +74,7 @@ function AOPCardComponent({
         // },
       }}
       orientation="horizontal"
-      // onClick={onClick}
+    // onClick={onClick}
     >
       <CardContent>
         {/* TITLE */}
@@ -184,3 +184,4 @@ function AOPCardComponent({
 }
 
 export default AOPCardComponent;
+

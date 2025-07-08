@@ -12,6 +12,7 @@ import useActivitiesHook from '../../../../../../Hooks/ActivitiesHook';
 import AutocompleteComponent from '../../../../../../Components/Form/AutocompleteComponent';
 import IconButtonComponent from '../../../../../../Components/Common/IconButtonComponent';
 import ConfirmationModalComponent from '../../../../../../Components/Common/Dialog/ConfirmationModalComponent';
+import TextareaComponent from '../../../../../../Components/Form/TextareaComponent';
 
 import { formattedLongDate } from '../../../../../../Utils/formattedLongDate';
 import { formattedPrice } from '../../../../../../Utils/formattedPrice';
@@ -175,21 +176,34 @@ const ActivitiesTable = ({
 
                         <td onClick={() => handleOnRowClick(id)}>
                             {isEditing ? (
-                                <Input
+                                // <Input
+                                //     value={name}
+                                //     size='sm'
+                                //     placeholder='name'
+                                //     onChange={(e) =>
+                                //         handleChange(id, 'name', e.target.value)
+                                //     }
+                                //     onBlur={() => {
+                                //         handleChange(id, 'name', name);
+                                //         setEditRowId(null);
+                                //     }}
+                                // />
+
+                                <TextareaComponent
+                                    // label={'Objective'}
+                                    placeholder="Activity name"
                                     value={name}
-                                    size='sm'
-                                    placeholder='name'
-                                    onChange={(e) =>
-                                        handleChange(id, 'name', e.target.value)
-                                    }
+                                    onChange={(e) => handleChange(id, 'name', e.target.value)}
                                     onBlur={() => {
                                         handleChange(id, 'name', name);
                                         setEditRowId(null);
                                     }}
                                 />
+
                             ) : (
                                 <Typography>{name || '-'}</Typography>
                             )}
+
                         </td>
 
                         <td onClick={() => handleOnRowClick(id)}>
@@ -283,7 +297,7 @@ const ActivitiesTable = ({
                                 />
                             ) : (
                                 <Typography>
-                                    {thirdQuarter}
+                                    {thirdQuarter || '-'}
                                 </Typography>
                             )}
                         </td>
@@ -304,7 +318,7 @@ const ActivitiesTable = ({
                                 />
                             ) : (
                                 <Typography>
-                                    {fourthQuarter}
+                                    {fourthQuarter || '-'}
                                 </Typography>
                             )}
                         </td>
@@ -360,7 +374,8 @@ const ActivitiesTable = ({
                                                     parentId: id,
                                                     objectiveRowId: objectiveRowId,
                                                     activityRowId: rowId,
-                                                    cost: cost
+                                                    cost,
+                                                    name, //activity name
                                                 }
                                             })
                                         }}

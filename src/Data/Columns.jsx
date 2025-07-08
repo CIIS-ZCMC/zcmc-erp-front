@@ -182,7 +182,7 @@ export const AOP_HEADER = [
   {
     field: "id",
     name: "Row #",
-    width: "70px",
+    width: 20,
     align: "center",
   },
   {
@@ -204,12 +204,13 @@ export const AOP_HEADER = [
     width: 200,
     align: "center",
   },
+
   {
-    // field: "action",
-    // name: "Actions",
-    // isDropdown: false,
-    // position: "sticky",
-    width: 150,
+    field: "action",
+    name: "Actions",
+    isDropdown: false,
+    position: "sticky",
+    width: 100,
     align: "center",
   },
 ];
@@ -218,13 +219,13 @@ export const AOP_ACTIVITIES_HEADER = [
   {
     field: "id",
     name: "Row #",
-    width: "4%",
+    width: 20,
     align: "center",
   },
   {
     field: "name",
     name: "Activities",
-    width: 50,
+    width: 100,
     align: "center",
   },
 
@@ -242,9 +243,9 @@ export const AOP_ACTIVITIES_HEADER = [
     field: "target",
     name: "Target (by quarter)",
     align: "center",
-    width: 200,
+    width: 100,
     children: [
-      { field: "quarter", name: "Q1", width: 20 },
+      { field: "quarter", name: "Q1", width: 10 },
       { field: "quarter2", name: "Q2", width: 20 },
       { field: "quarter3", name: "Q3", width: 20 },
       { field: "quarter4", name: "Q4", width: 20 },
@@ -270,7 +271,7 @@ export const AOP_ACTIVITIES_HEADER = [
     name: "Actions",
     isDropdown: false,
     position: "sticky",
-    width: 150,
+    width: 100,
     align: "center",
   },
 ];
@@ -279,48 +280,48 @@ export const AOP_RESOURCE_HEADER = [
   {
     field: "id_count",
     name: "Row #",
-    width: "5%",
+    width: 20,
     align: "center",
   },
   {
     field: "item_name",
     name: "Item Name",
-    width: "20%",
+    width: 200,
     align: "left",
   },
 
   {
     field: "quantity",
     name: " Quantity",
-    width: "10%",
+    width: 25,
     align: "center",
   },
 
   {
     field: "individual_price",
     name: "individual Price",
-    width: "20%",
+    width: 70,
     align: "center",
   },
 
   {
     field: "total_cost",
     name: "Total Cost",
-    width: "20%",
+    width: 70,
     align: "center",
   },
 
   {
     field: "purchase_type",
     name: "Purchase Type",
-    width: "20%",
+    width: 120,
     align: "center",
   },
 
   {
     field: "expense_class",
     name: "Expense class of unit",
-    width: "20%",
+    width: 120,
     align: "center",
   },
 
@@ -328,7 +329,7 @@ export const AOP_RESOURCE_HEADER = [
     field: "action",
     name: "Actions",
     position: "sticky",
-    width: "150px",
+    width: 60,
     right: 0,
     align: "center",
   },

@@ -1,4 +1,4 @@
-import { act, Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 
 import { Box, Stack, Grid } from "@mui/joy";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -53,6 +53,7 @@ const Items = () => {
   const rowNumber = location.state?.activityRowId;
   const objectiveRowId = location.state.objectiveRowId;
   const cost = location.state?.cost;
+  const activityName = location.state?.name;
   const activityId = location.state?.parentId;
 
   // const objectiveId = location.state.objectiveId;
@@ -158,6 +159,7 @@ const Items = () => {
         isCollapsed={isCollapsed}
         rowNumber={rowNumber}
         cost={cost}
+        activityName={activityName}
         handleCollapseClick={handleCollapseClick}
       />
 
