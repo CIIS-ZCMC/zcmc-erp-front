@@ -35,8 +35,6 @@ const Activities = () => {
     const objectiveData = objectives.find(obj => obj.id === parentId);
     const { functionType, objective, successIndicator, othersObjective, othersSuccessIndicator, rowId } = objectiveData || {}
 
-    console.log(objectiveData)
-
     const { objectiveId } = params; //objective Id lang for url path pero yung value is from row
     const currentPath = location.pathname;
     const childPath = currentPath === `/aop-management/activities/${objectiveId}`;

@@ -54,9 +54,9 @@ const Item = ({
 
                     <CardContent sx={{ justifyContent: "flex-end", padding: 1 }}>
                         <ChipComponent
-                            label={item?.variant?.name}
+                            label={item?.terminology?.name}
                             size="sm"
-                            color={"success"}
+                            color={"primary"}
                             startDecorator={<CircleSmall size={12} />}
                         />
                     </CardContent>
