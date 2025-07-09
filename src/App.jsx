@@ -20,6 +20,20 @@ const theme = extendTheme({
           active: "rgba(55, 150, 245, 0.12)",
           darkgreen: "#0E5844",
         },
+        primary: {
+          solidColor: "#ffffff",
+          solidBg: "#004366", // Your custom primary button background
+          solidHoverBg: "#004366", // On hover
+          solidActiveBg: "#004366",
+
+          plainColor: "#004366",
+
+          outlinedBorder: "#004366",
+          outlinedColor: "#004366",
+
+          softColor: "#004366",
+          softBg: "#004366", // <-- this sets the text color for plain buttons
+        },
       },
     },
   },

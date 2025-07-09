@@ -45,46 +45,31 @@ const Footer = () => {
   };
 
   return (
-    <div>
+    <div style={{ width: "100%" }}>
       <Sheet
         sx={{
           p: 1.5,
           borderRadius: "10px",
           backgroundColor: color.light,
-          mt: 2,
         }}
       >
         {!isCollapsed ? (
           <>
-            <Typography
-              level="title-sm"
-              sx={{
-                color: "#E6E6E6",
-                mb: 1,
-              }}
+            <Stack
+              direction={"row"}
+              alignItems={"center"}
+              justifyContent={"space-between"}
             >
-              Help and Support
-            </Typography>
-            <Typography
-              level="body-sm"
-              fontSize={11}
-              sx={{
-                color: "#E6E6E6",
-              }}
-            >
-              Let us know about your experience. Your feedback is invaluable in
-              ensuring the stability of the new AOP and PPMP Management System.
-            </Typography>
-
-            <Stack mt={2} direction={"row"} alignItems={"center"}>
-              <Link>
-                <Stack direction={"row"} alignItems={"center"}>
-                  <Typography mr={1} fontSize={12} sx={{ color: "#E6E6E6" }}>
-                    Chat with support
-                  </Typography>
-                  <ExternalLink color="#E6E6E6" size={16} />
-                </Stack>
+              <Link
+                href="#"
+                level="title-sm"
+                sx={{
+                  color: "#E6E6E6",
+                }}
+              >
+                Help and Support
               </Link>
+              <ExternalLink color="#E6E6E6" size={16} />
             </Stack>
           </>
         ) : (
@@ -123,14 +108,12 @@ const Footer = () => {
             <Avatar
               src={profile_url && profile_url}
               sx={{
-                bgColor: "white",
                 boxShadow: "0 0 0 2px rgba(255,255,255,0.3)",
               }}
               variant="soft"
-              color="primary"
               size="md"
             >
-              {profile_url ? "" : user?.name[0]}
+              {!profile_url && user?.name[0]}
             </Avatar>
             <Stack>
               <Typography
@@ -170,14 +153,7 @@ const Footer = () => {
           <Stack spacing={2} alignItems="center">
             <Avatar
               src={profile_url && profile_url}
-              sx={{
-                border: 5,
-                borderColor: "primary.200",
-                bgColor: "white",
-                boxShadow: "0 0 0 2px white",
-              }}
-              variant="solid"
-              color="primary"
+              sx={{ boxShadow: "0 0 0 2px rgba(255,255,255,0.3)" }}
             >
               {profile_url ? "" : user?.name[0]}
             </Avatar>

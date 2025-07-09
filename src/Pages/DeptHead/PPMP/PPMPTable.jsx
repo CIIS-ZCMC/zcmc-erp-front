@@ -25,6 +25,7 @@ import ConfirmationModal from "../../../Components/Common/Dialog/ConfirmationMod
 import PageLoader from "../../../Components/Loading/PageLoader";
 import { ThreeDotsLoader } from "../../../Components/Common/Loading/ThreeDotsLoader";
 import { InfoIcon } from "lucide-react";
+import { usePPMPTotalStore } from "../../../Hooks/PPMP/PPMPItemsHook";
 
 const PPMPTable = memo(
   ({
@@ -243,6 +244,12 @@ const PPMPTable = memo(
       );
       setPPMPTable(updatedData);
       localStorage.setItem("ppmp-items", JSON.stringify(updatedData));
+
+      const newTotal = updatedData.reduce(
+        (sum, row) => sum + (parseFloat(row.total_amount) || 0),
+        0
+      );
+      usePPMPTotalStore.getState().setPPMPTotal(newTotal);
     };
 
     //SEARCH
@@ -466,11 +473,16 @@ const PPMPTable = memo(
               value={searchVal}
               setValue={setSearchVal}
             />
-            <ButtonComponent label="Search" onClick={() => handleSearch()} />
+            <ButtonComponent
+              label="Search"
+              onClick={() => handleSearch()}
+              disabled={searchVal === ""}
+            />
             <ButtonComponent
               variant="outlined"
               label="Clear search"
               onClick={() => handleResetSearch()}
+              disabled={searchVal === ""}
             />
           </Stack>
           <Stack direction="row" gap={1} alignItems="flex-end">

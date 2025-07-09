@@ -205,7 +205,7 @@ function PPMPDashboard(props) {
                   </Box>
                 </Stack>
 
-                <BoxComponent width="100%">
+                <BoxComponent width="100%" padding={2}>
                   <Stack gap={3} alignItems="start">
                     <Typography fontWeight={600} fontSize={20} align="left">
                       About your PPMP
@@ -219,6 +219,7 @@ function PPMPDashboard(props) {
                       label={"View PPMP"}
                       onClick={() => handleNavigate()}
                       width="auto"
+                      boxShadow={"2px 3px 4px #D3D3D3"}
                     />
                   </Stack>
                 </BoxComponent>

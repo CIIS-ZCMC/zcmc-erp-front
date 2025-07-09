@@ -24,7 +24,7 @@ import useItemsHook from "../../../Hooks/ItemsHook";
 import { MdAdd, MdKeyboardArrowDown, MdOpenInNew } from "react-icons/md";
 import ConfirmationModalComponent from "../../../Components/Common/Dialog/ConfirmationModalComponent";
 import useModalHook from "../../../Hooks/ModalHook";
-import { grey } from "@mui/material/colors";
+import { blue, grey } from "@mui/material/colors";
 import userErrorInputHook from "../../../Hooks/ErrorInputHook";
 import AlertDialogComponent from "../../../Components/Common/Dialog/AlertDialogComponent";
 import TextareaComponent from "../../../Components/Form/TextareaComponent";
@@ -35,6 +35,7 @@ import PPMPTable from "./PPMPTable";
 import { InfoIcon } from "lucide-react";
 import { useAuth } from "../../../Store/AuthStore";
 import { socket } from "../../../Services/Socket";
+import { usePPMPTotalStore } from "../../../Hooks/PPMP/PPMPItemsHook";
 
 function PPMPItems(props) {
   const navigate = useNavigate();
@@ -68,6 +69,7 @@ function PPMPItems(props) {
     closeAlertDialog,
   } = useModalHook();
   const { errors, setError, clearErrors } = userErrorInputHook();
+  const ppmpTotal = usePPMPTotalStore((state) => state.ppmpTotal);
 
   const [activity, setActivity] = useState({});
   const [expenseClass, setExpenseClass] = useState({});
@@ -508,43 +510,53 @@ function PPMPItems(props) {
         }
         sx={{ mt: 3 }}
         actions={
-          <Stack direction={"row"} spacing={1}>
-            <ButtonComponent
-              label={"Add Item Request"}
-              color="primary"
-              variant={"outlined"}
-              endDecorator={<BiPlus />}
-              onClick={() => {
-                setActivity({});
-                setExpenseClass({});
-                setOpenReq(true);
-              }}
-            />
-            <ButtonComponent
-              label="Export PPMP"
-              onClick={() => exportToCSV()}
-              isLoading={dlLoader}
-              loadingLabel={"Exporting..."}
-              variant="outlined"
-              disabled={is_draft === 1}
-            />
-            {is_draft === 1 && (
+          <Stack gap={1} alignItems="flex-end">
+            <Stack direction={"row"} spacing={1}>
               <ButtonComponent
-                label={show ? "Exit Edit Mode" : "Edit PPMP"}
-                onClick={() => (show ? disconnectSignal() : handleEditClick())}
-                isLoading={editLoad}
-                color={show ? "danger" : "primary"}
-                disabled={disabled}
+                label={"Add Item Request"}
+                color="primary"
+                variant={"outlined"}
+                endDecorator={<BiPlus />}
+                onClick={() => {
+                  setActivity({});
+                  setExpenseClass({});
+                  setOpenReq(true);
+                }}
               />
-            )}
+              <ButtonComponent
+                label="Export PPMP"
+                onClick={() => exportToCSV()}
+                isLoading={dlLoader}
+                loadingLabel={"Exporting..."}
+                variant="outlined"
+                disabled={is_draft === 1}
+              />
+              {is_draft === 1 && (
+                <ButtonComponent
+                  label={show ? "Exit Edit Mode" : "Edit PPMP"}
+                  onClick={() =>
+                    show ? disconnectSignal() : handleEditClick()
+                  }
+                  isLoading={editLoad}
+                  color={show ? "danger" : "primary"}
+                  disabled={disabled}
+                />
+              )}
 
-            {/* {show && (
+              {/* {show && (
               <ButtonComponent
                 label={"Exit Edit Mode"}
                 onClick={() => disconnectSignal()}
                 color="danger"
               />
             )} */}
+            </Stack>
+            <Stack direction="row" alignItems="center" gap={0.5}>
+              <InfoIcon size={14} style={{ color: blue[800] }} />
+              <Typography fontSize={12} color="primary">
+                Click the <b>"Edit PPMP"</b> button to update your PPMP.
+              </Typography>
+            </Stack>
           </Stack>
         }
       >
@@ -552,10 +564,8 @@ function PPMPItems(props) {
           <>
             <Stack mb={2} direction="row" justifyContent="space-between">
               <Stack direction="row" alignItems="center" gap={1}>
-                <InfoIcon size={20} style={{ color: "primary" }} />
-                <Typography fontSize={14} color="primary">
-                  This is for viewing only. Click the <b>"Edit PPMP"</b> button
-                  to update your PPMP.
+                <Typography level="title-sm">
+                  PPMP Total: ₱ {ppmpTotal.toLocaleString()}
                 </Typography>
               </Stack>
               <Stack direction="row" gap={1}>
