@@ -1,45 +1,64 @@
 import { create } from "zustand";
 import { API } from "../../Data/constants";
 import { read } from "../../Services/RequestMethods";
-const useLibItemHook = create((set) => ({
+
+const useLibItemHook = create((set, get) => ({
   Items: [],
   pagination: {},
   navlinks: {},
   currentPage: 1,
+  search_Query: "",
 
+  setSearchQuery: (query) => {
+    console.log("Setting search query:", query);
+    set({ search_Query: query });
+  },
   setCurrentPage: (page) => {
     set({ currentPage: page });
   },
   inputs: {
     specifications: [],
   },
-  getItems: async (page = 1, callBack) => {
+
+  getItems: async ({ per_page = 15, callBack } = {}) => {
+    const { currentPage, search_Query } = get();
+
+    const params = {
+      page: currentPage,
+      per_page,
+    };
+
+    if (search_Query && search_Query.length > 1) {
+      params.search = search_Query;
+    }
+
     read({
-      url: `${API.ITEMS_}`,
-      params: { page: page },
-      failed: callBack,
+      url: `items`,
+      params,
+      failed: (err) => {
+        set({ isLoading: false, error: err });
+        if (callBack)
+          callBack(false, err?.message || "Failed to fetch categories");
+      },
       success: (res) => {
-        const { status, message, data } = res;
-        console.log(data);
-        set({ Items: data.data, pagination: data.meta, navLinks: data.links });
-        callBack(status, message);
+        const { status, message, data, meta } = res;
+        set({
+          Items: data.data,
+          pagination: {
+            total: data?.meta?.pagination?.total,
+            per_page: data?.meta?.pagination?.per_page,
+            current_page: data?.meta?.pagination?.current_page,
+            last_page: data?.meta?.pagination?.last_page,
+          },
+          isLoading: false,
+          error: null,
+        });
+
+        if (callBack) callBack(status, message);
       },
     });
   },
-  SaveItem: async (data, callBack) => {
-    console.log(data);
-    return;
-    try {
-      const response = await fetch(`${API.ITEM_CLASSIFICATIONS}`, {
-        method: "POST",
-        body: formData,
-      });
-      const data = await response.json();
-      callBack(data.status, data.message);
-    } catch (error) {
-      callBack(false, error.message);
-    }
-  },
+
   updateData: null,
   setInputs: (name, value) =>
     set((state) => ({

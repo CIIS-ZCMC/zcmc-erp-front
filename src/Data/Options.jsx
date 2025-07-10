@@ -18,7 +18,7 @@ export const libaryTabs = [
   { id: 1, name: "Item", value: "" },
   { id: 2, name: "Classification", value: "classification" },
   { id: 3, name: "Category", value: "category" },
-  { id: 4, name: "Variant", value: "variant" },
+  { id: 4, name: "Terminology", value: "variant" },
 ];
 
 export const deadlineTabs = [

@@ -20,12 +20,8 @@ function ServerTableComponent({
   data = [],
   columns,
   paginationMeta = {},
-  currentPage,
-  totalPages,
   onPageChange,
-  pageSize,
   isLoading,
-  withCount,
   stickLast = false,
   bordered = false,
   footer,
@@ -38,18 +34,6 @@ function ServerTableComponent({
 }) {
   const lastColumnWidth = columns[columns.length - 1]?.width || "144px";
 
-  const filteredData = useMemo(() => {
-    if (!search) return data;
-    return data.filter((item) =>
-      fieldsToSearch.some((field) => {
-        const value = get(item, field); // e.g., "objective.description"
-        return (
-          typeof value === "string" &&
-          value.toLowerCase().includes(search.toLowerCase())
-        );
-      })
-    );
-  }, [search, data, fieldsToSearch]);
   return (
     <Box sx={{ width: "100%", overflow: "auto" }}>
       <Stack gap={1} mb={2} justifyContent="space-between">
@@ -61,11 +45,9 @@ function ServerTableComponent({
         variant="outlined"
         sx={() => ({
           "--TableCell-height": "40px",
-          // the number is the amount of the header rows.
           "--TableHeader-height": "calc(1 * var(--TableCell-height))",
           "--Table-firstColumnWidth": columns[0]?.width, //set the width of the first column in px
           "--Table-lastColumnWidth": lastColumnWidth, //set the width of the first column in px
-          // background needs to have transparency to show the scrolling shadows
           "--TableRow-stripeBackground": "rgba(0 0 0 / 0.04)",
           "--TableRow-hoverBackground": "rgba(0 0 0 / 0.08)",
           overflow: "auto",

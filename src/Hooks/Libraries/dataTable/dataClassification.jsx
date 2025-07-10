@@ -11,6 +11,7 @@ const useClassificationDataTable = create((set, get) => ({
   links: null,
   currentPage: 1,
   totalPages: 1,
+
   setCurrentPage: (page) => {
     set({ currentPage: page });
   },
@@ -27,8 +28,7 @@ const useClassificationDataTable = create((set, get) => ({
     };
 
     if (search && search.length > 1) {
-      params.search = search; // Add search query to params if it has more than 1 character
-      params.page = 1; // Reset to the first page when searching
+      params.search = search; // do NOT force page = 1 here
     }
 
     read({

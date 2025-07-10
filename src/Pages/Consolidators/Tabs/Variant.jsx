@@ -1,10 +1,12 @@
-import React, { Fragment, useEffect } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { variantCols } from "../../../Data/Columns";
 import ScrollableTableComponent from "../../../Components/Common/Table/ScrollableTableComponent";
 import useModalHook from "../../../Hooks/ModalHook";
 import useVariantHooks from "../../../Hooks/Libraries/LibVarianHooks";
 import ServerTableComponent from "../../../Components/Common/Table/ServerTableComponent";
 import useTerminologyHooks from "../../../Hooks/Libraries/LibTerminology";
+import SearchBarComponentv2 from "../../../Components/SearchBarWithdeBounce";
+import { Stack } from "@mui/material";
 
 export const Variant = () => {
   const {
@@ -18,6 +20,7 @@ export const Variant = () => {
   } = useTerminologyHooks();
 
   const { setOpenModal } = useModalHook();
+  const [search, setSearch] = useState("");
 
   const setUpdateType = (data) => {
     setType("update");
@@ -29,11 +32,6 @@ export const Variant = () => {
     setType("delete");
     setOpenModal(true, false, true);
     setSelectedData(data);
-  };
-
-  const handlePageChange = (newPage) => {
-    setCurrentPage(newPage);
-    getPaginatedCategories({ page: newPage });
   };
 
   function transformData(data) {
@@ -54,10 +52,16 @@ export const Variant = () => {
 
   return (
     <Fragment>
+      <Stack mb={2} width="30%">
+        <SearchBarComponentv2 value={search} setValue={setSearch} />
+      </Stack>
+
       <ScrollableTableComponent
         data={transformData(terminology)}
         columns={variantCols(setUpdateType, setDeleteType)}
         pageSize={15}
+        search={search}
+        fieldsToSearch={["name", "code", "description"]}
       />
     </Fragment>
   );

@@ -6,29 +6,22 @@ import { IoInformationOutline, IoOpen, IoOpenOutline } from "react-icons/io5";
 import useLibItemHook from "../../../Hooks/Libraries/LibItemHooks";
 import useModalHook from "../../../Hooks/ModalHook";
 import ServerTableComponent from "../../../Components/Common/Table/ServerTableComponent";
+import { itemCols } from "../../../Data/Columns";
 
 export const Items = () => {
-  const { resetInput, setUpdateData, updateData } = useLibItemHook();
   const { openModal, setOpenModal } = useModalHook();
-  const { Items, getItems, pagination, navLinks, currentPage, setCurrentPage } =
-    useLibItemHook();
-
-  const fetchAll = async () => {
-    const wrap = (fn) => new Promise((resolve) => fn(() => resolve()));
-
-    try {
-      await Promise.all([
-        wrap(getItems(currentPage)),
-        // wrap((done) => getFunctionType({ mode: "selection" }, done)),
-      ]);
-    } catch (err) {
-      console.error("Fetching error:", err);
-    }
-  };
-
-  useEffect(() => {
-    fetchAll();
-  }, [currentPage]);
+  const {
+    resetInput,
+    setUpdateData,
+    Items,
+    getItems,
+    pagination,
+    navLinks,
+    currentPage,
+    setCurrentPage,
+    setSearchQuery,
+    search_Query,
+  } = useLibItemHook();
 
   useEffect(() => {
     if (openModal.isNew) {
@@ -36,6 +29,7 @@ export const Items = () => {
       resetInput();
     }
   }, [openModal]);
+
   const data =
     Items.map((row) => ({
       id: row.id,
@@ -47,120 +41,42 @@ export const Items = () => {
       estimated_budget: row.estimated_budget,
     })) || [];
 
-  const objHeaders = [
-    { field: "id", name: "Row #", align: "center", width: "20px" },
-    { field: "name", name: "Item name", width: 200, align: "left" },
-    {
-      field: "classification",
-      name: "Classification",
-      width: 80,
-      align: "left",
-    },
-    { field: "item_category", name: "Category", width: 60, align: "left" },
-    { field: "variant", name: "Variant", width: 90, align: "left" },
-    {
-      field: "unit",
-      name: "Unit of Measurement",
-      width: 60,
-      align: "left",
-    },
-    {
-      field: "estimated_budget",
-      name: "Estimated Budget",
-      width: 70,
-      align: "left",
-      render: (params) => {
-        return (
-          <>
-            <Typography>
-              {"\u20B1"} {params.estimated_budget.toLocaleString()}
-            </Typography>
-          </>
-        );
-      },
-    },
-    {
-      field: "action",
-      name: "Actions",
-      position: "sticky",
-      width: "100px",
-      right: 0,
-      align: "center",
-      render: (params) => {
-        return (
-          <>
-            <Stack
-              direction="row"
-              sx={{
-                justifyContent: "space-between",
-                alignItems: "center",
-                px: 2,
-              }}
-            >
-              <Link
-                onClick={() => {
-                  setUpdateData(params);
-                  setOpenModal(false, false, true);
-                  resetInput();
-                }}
-                size="md"
-                variant="plain"
-                color="primary"
-                underline="hover"
-                fontSize={14}
-                endDecorator={<IoOpenOutline />}
-              >
-                Update
-              </Link>
-              <Link
-                onClick={() => {
-                  setOpenModal(false, true, true);
-                  // alert(`Action clicked for ID: ${params.id}`)
-                }}
-                size="md"
-                variant="plain"
-                color="danger"
-                underline="hover"
-                fontSize={14}
-                endDecorator={<IoOpenOutline />}
-              >
-                Delete
-              </Link>
-            </Stack>
-          </>
-        );
-      },
-    },
-  ];
+  useEffect(() => {
+    if (search_Query.length <= 1) {
+      getItems((message) => {
+        console.log("Error fetching classification data:", message);
+      });
+    }
+  }, [currentPage]);
 
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      console.log("Search query changed:", search_Query);
+      setCurrentPage(1); // ✅ Reset to page 1 when searching
+      getItems((message) => {
+        console.log("Error fetching classification data:", message);
+      });
+    }, 500);
+
+    return () => clearTimeout(handler);
+  }, [search_Query]);
   return (
     <Fragment>
       <ServerTableComponent
         data={data}
-        columns={objHeaders}
+        columns={itemCols}
         pageSize={pagination?.per_page}
-        currentPage={currentPage}
-        totalPages={0}
         onPageChange={setCurrentPage}
         paginationMeta={pagination}
         stripe="even"
         withCount={pagination?.total}
-        fieldsToSearch={["title", "description"]}
-        search={""}
+        fieldsToSearch={["name", "classification", "item_category"]}
+        search={search_Query}
+        setSearch={setSearchQuery}
         bordered
         hoverRow
         stickLast
       />
-      {/* <ScrollableTableComponent
-        data={data}
-        columns={objHeaders}
-        pageSize={5}
-        stripe="even"
-        bordered
-        hoverRow
-        isLoading={false}
-        stickLast
-      /> */}
     </Fragment>
   );
 };

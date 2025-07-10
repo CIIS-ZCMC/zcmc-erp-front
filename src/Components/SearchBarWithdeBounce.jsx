@@ -18,7 +18,7 @@ const SearchBarComponentv2 = ({
   debounceTime = 300,
   onSearch,
   loading = false,
-  fullWidth = true,
+  fullWidth = false,
   size = "md",
   variant = "outlined",
   sx = {},

@@ -15,13 +15,9 @@ export const Classification = () => {
     totalPages,
     setSearchQuery,
     search_Query,
+    setCurrentPage,
+    getClassifications,
   } = useClassificationDataTable();
-  const setCurrentPage = useClassificationDataTable(
-    (state) => state.setCurrentPage
-  );
-  const getClassifications = useClassificationDataTable(
-    (state) => state.getClassifications
-  );
 
   // const search_Query = useClassificationDataTable(
   //   (state) => state.search_Query
@@ -50,27 +46,25 @@ export const Classification = () => {
     setOpenModal(true, false, true);
     setSelectedData(data);
   };
+
   useEffect(() => {
-    console.log(
-      "Fetching classification data with search query:",
-      search_Query
-    );
-    getClassifications((message) => {
-      console.log("Error fetching classification data:", message);
-    });
+    if (search_Query.length <= 1) {
+      getClassifications((message) => {
+        console.log("Error fetching classification data:", message);
+      });
+    }
   }, [currentPage]);
 
   useEffect(() => {
     const handler = setTimeout(() => {
       console.log("Search query changed:", search_Query);
+      setCurrentPage(1); // ✅ Reset to page 1 when searching
       getClassifications((message) => {
         console.log("Error fetching classification data:", message);
       });
-    }, 500); // Debounce the search query
+    }, 500);
 
-    return () => {
-      clearTimeout(handler); // Cancel previous timeout if input changes quickly
-    };
+    return () => clearTimeout(handler);
   }, [search_Query]);
 
   return (
@@ -85,7 +79,7 @@ export const Classification = () => {
         paginationMeta={pagination}
         stripe="even"
         withCount={pagination?.pagination?.total}
-        fieldsToSearch={["title", "description"]}
+        fieldsToSearch={["clName", "description"]}
         bordered
         hoverRow
         stickLast

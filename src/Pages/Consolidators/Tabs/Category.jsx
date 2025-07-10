@@ -16,6 +16,9 @@ export const Category = () => {
     getPaginatedCategories,
     setCurrentPage,
     isLoading,
+    search_Query,
+    setSearchQuery,
+    currentPage,
   } = useCategoryHooks();
 
   const { setOpenModal } = useModalHook();
@@ -30,11 +33,6 @@ export const Category = () => {
     setSelectedData(data);
   };
 
-  const handlePageChange = (newPage) => {
-    setCurrentPage(newPage);
-    getPaginatedCategories({ page: newPage });
-  };
-
   function transformData(data) {
     console.log("Transforming category data:", data);
     return data.map((item) => ({
@@ -46,10 +44,25 @@ export const Category = () => {
       updated_at: item.meta.updated_at.split("T")[0],
     }));
   }
+  useEffect(() => {
+    if (search_Query.length <= 1) {
+      getPaginatedCategories((message) => {
+        console.log("Error fetching classification data:", message);
+      });
+    }
+  }, [currentPage]);
 
   useEffect(() => {
-    getPaginatedCategories({ page: pagination.current_page });
-  }, []);
+    const handler = setTimeout(() => {
+      console.log("Search query changed:", search_Query);
+      setCurrentPage(1); // ✅ Reset to page 1 when searching
+      getPaginatedCategories((message) => {
+        console.log("Error fetching classification data:", message);
+      });
+    }, 500);
+
+    return () => clearTimeout(handler);
+  }, [search_Query]);
 
   return (
     <Fragment>
@@ -59,11 +72,13 @@ export const Category = () => {
         pageSize={pagination?.pagination?.per_page || 20}
         currentPage={pagination?.current_page}
         totalPages={pagination?.total}
-        onPageChange={handlePageChange}
+        onPageChange={setCurrentPage}
         paginationMeta={pagination}
+        search={search_Query}
+        setSearch={setSearchQuery}
         stripe="even"
         withCount={pagination?.total}
-        fieldsToSearch={["title", "description"]}
+        fieldsToSearch={["name", "code", "description"]}
         bordered
         hoverRow
         stickLast

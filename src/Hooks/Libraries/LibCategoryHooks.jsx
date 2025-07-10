@@ -2,7 +2,7 @@ import { create } from "zustand";
 import { read } from "../../Services/RequestMethods";
 import { API } from "../../Data/constants";
 
-const useCategoryHooks = create((set) => ({
+const useCategoryHooks = create((set, get) => ({
   inputs: {
     currentLibName: "sada",
     pin: null,
@@ -14,19 +14,36 @@ const useCategoryHooks = create((set) => ({
     current_page: 1,
     last_page: 1,
   },
+  currentPage: 1,
+  search_Query: "",
   isLoading: false,
   error: null,
 
-  getPaginatedCategories: async ({
-    page = 1,
-    per_page = 15,
-    callBack,
-  } = {}) => {
+  setSearchQuery: (query) => {
+    console.log("Setting search query:", query);
+    set({ search_Query: query });
+  },
+
+  setCurrentPage: (page) => {
+    set({ currentPage: page });
+  },
+
+  getPaginatedCategories: async ({ per_page = 15, callBack } = {}) => {
+    const { currentPage, search_Query } = get();
+
+    const params = {
+      page: currentPage,
+      per_page,
+    };
+
+    if (search_Query && search_Query.length > 1) {
+      params.search = search_Query;
+    }
     set({ isLoading: true, error: null });
 
     read({
       url: `${API.ITEM_CATEGORIES}`,
-      params: { page, per_page },
+      params,
       failed: (err) => {
         set({ isLoading: false, error: err });
         if (callBack)
@@ -50,14 +67,6 @@ const useCategoryHooks = create((set) => ({
       },
     });
   },
-
-  setCurrentPage: (page) =>
-    set((state) => ({
-      pagination: {
-        ...state.pagination,
-        current_page: page,
-      },
-    })),
 
   type: "create", // ['create', 'update', 'delete']
   isloading: false,
