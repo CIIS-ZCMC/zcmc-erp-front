@@ -117,7 +117,7 @@ const Footer = () => {
             </Avatar>
             <Stack>
               <Typography
-                level="body-sm"
+                level="body-xs"
                 sx={{
                   color: "orange",
                 }}
@@ -125,15 +125,30 @@ const Footer = () => {
                 {" "}
                 {user?.name}
               </Typography>
-              <Typography level="body-xs" sx={{ color: "#E6E6E6" }}>
+              <Typography fontSize={10} sx={{ color: "#E6E6E6" }}>
                 {" "}
-                {user?.email}
+                {user?.designation?.name}
+              </Typography>
+              <Typography fontSize={10} sx={{ color: "#E6E6E6" }}>
+                {" "}
+                {user?.assignedArea?.name}
               </Typography>
             </Stack>
           </Stack>
           <Divider sx={{ my: 2 }} />
-          <Stack direction="row" alignItems="center" px={1}>
-            <Box>{<LogOutIcon color="orange" />}</Box>
+          <Stack
+            direction="row"
+            alignItems="center"
+            sx={{
+              py: 1,
+              px: 2,
+              borderRadius: "10px",
+              "&:hover": {
+                bgcolor: "rgba(255,255,255,0.09)",
+              },
+            }}
+          >
+            <Box>{<LogOutIcon color="orange" style={{ paddingTop: 3 }} />}</Box>
             {!isCollapsed && (
               <Link
                 component="button"

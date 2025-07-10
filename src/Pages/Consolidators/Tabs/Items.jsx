@@ -43,38 +43,47 @@ export const Items = () => {
       classification: row.classification,
       item_category: row.category,
       variant: row.variant,
-      unit: row.unit,
+      unit: row.item_unit.name,
       estimated_budget: row.estimated_budget,
     })) || [];
 
   const objHeaders = [
-    { field: "id", name: "Row #", align: "center", width: "50px" },
+    { field: "id", name: "Row #", align: "center", width: "20px" },
     { field: "name", name: "Item name", width: 200, align: "left" },
     {
       field: "classification",
       name: "Classification",
-      width: 200,
+      width: 80,
       align: "left",
     },
-    { field: "item_category", name: "Category", width: 200, align: "left" },
-    { field: "variant", name: "Variant", width: 200, align: "left" },
+    { field: "item_category", name: "Category", width: 60, align: "left" },
+    { field: "variant", name: "Variant", width: 90, align: "left" },
     {
       field: "unit",
       name: "Unit of Measurement",
-      width: 200,
+      width: 60,
       align: "left",
     },
     {
       field: "estimated_budget",
       name: "Estimated Budget",
-      width: 200,
+      width: 70,
       align: "left",
+      render: (params) => {
+        return (
+          <>
+            <Typography>
+              {"\u20B1"} {params.estimated_budget.toLocaleString()}
+            </Typography>
+          </>
+        );
+      },
     },
     {
       field: "action",
       name: "Actions",
       position: "sticky",
-      width: "150px",
+      width: "100px",
       right: 0,
       align: "center",
       render: (params) => {
@@ -82,7 +91,11 @@ export const Items = () => {
           <>
             <Stack
               direction="row"
-              sx={{ justifyContent: "space-between", alignItems: "center" }}
+              sx={{
+                justifyContent: "space-between",
+                alignItems: "center",
+                px: 2,
+              }}
             >
               <Link
                 onClick={() => {

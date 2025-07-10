@@ -949,11 +949,12 @@ export const variantCols = (updateCallBack, delCallback) => [
 ];
 
 export const categoryCols = (updateCallBack, delCallback) => [
-  { field: "id", name: "Row #", align: "left", width: "50px" },
-  { field: "clName", name: "Classification", width: 200, align: "left" },
-
-  { field: "created_at", name: "Created at", width: 200, align: "left" },
-  { field: "updated_at", name: "Updated at", width: 200, align: "left" },
+  { field: "id", name: "Row #", align: "left", width: "30px" },
+  { field: "code", name: "Code", width: 80, align: "left" },
+  { field: "name", name: "Category", width: 150, align: "left" },
+  { field: "description", name: "Description", width: 200, align: "left" },
+  { field: "created_at", name: "Created at", width: 80, align: "left" },
+  { field: "updated_at", name: "Updated at", width: 80, align: "left" },
   {
     field: "action",
     name: "Actions",
@@ -1002,13 +1003,29 @@ export const classificationCols = (updateCallBack, delCallback) => [
   { field: "code", name: "Code", width: 100, align: "left" },
   { field: "clName", name: "Classification", width: 200, align: "left" },
   { field: "description", name: "Description", width: 250, align: "left" },
-  { field: "created_at", name: "Created at", width: 200, align: "left" },
-  { field: "updated_at", name: "Updated at", width: 200, align: "left" },
+  {
+    field: "created_at",
+    name: "Created at",
+    width: 80,
+    align: "left",
+    render: (params) => {
+      return moment(params.created_at).format("L");
+    },
+  },
+  {
+    field: "updated_at",
+    name: "Updated at",
+    width: 80,
+    align: "left",
+    render: (params) => {
+      return moment(params.updated_at).format("L");
+    },
+  },
   {
     field: "action",
     name: "Actions",
     position: "sticky",
-    width: "150px",
+    width: "100px",
     right: 0,
     align: "center",
     render: (params) => {
@@ -1046,6 +1063,7 @@ export const classificationCols = (updateCallBack, delCallback) => [
     },
   },
 ];
+
 export const myOwnItemRequestListCols = () => [
   {
     field: "code",

@@ -115,6 +115,7 @@ function ServerTableComponent({
                         fontSize: 13,
                         textAlign: column.align || "left",
                         backgroundColor: "rgba(240, 240, 240, 1)",
+                        textWrap: "wrap",
                       }}
                     >
                       {column.name}
@@ -133,6 +134,7 @@ function ServerTableComponent({
                         fontSize: 13,
                         textAlign: column.align || "left",
                         backgroundColor: "rgba(240, 240, 240, 1)",
+                        textWrap: "wrap",
                       }}
                     >
                       {column.name}
@@ -233,6 +235,7 @@ function ServerTableComponent({
         </Table>
       </Sheet>
 
+      {console.log("Pagination Meta:", paginationMeta)}
       {/* Pagination Component */}
       {paginationMeta?.total > 0 && (
         <PaginationComponent
