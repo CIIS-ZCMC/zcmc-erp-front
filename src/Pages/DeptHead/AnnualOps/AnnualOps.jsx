@@ -23,13 +23,30 @@ import useResponsiblePeopleHook from "../../../Hooks/ResponsiblePeopleHook";
 import useObjectivesHook from "../../../Hooks/ObjectivesHook";
 import useActivitiesHook from "../../../Hooks/ActivitiesHook";
 import useResourceHook from "../../../Hooks/ResourceHook";
+import { socket } from "../../../Services/Socket";
+
+import { useAuth } from "../../../Store/AuthStore";
 
 const AnnualOps = () => {
   const navigate = useNavigate();
 
+  const { user } = useAuth();
+  const { name, id, assignedArea } = user ?? {};
+
+  // useEffect(() => {
+  //   if (!assignedArea?.name) return;
+
+  //   socket.emit("register-user", {
+  //     userId: id,
+  //     name: name,
+  //     area: assignedArea.name,
+  //   });
+  // }, [assignedArea])
+
   // const [aopObjectives, setAopObjectives] = useState([]);
 
   const [isLoading, setIsLoading] = useState(false);
+
 
   const {
     aop_id,

@@ -1,7 +1,7 @@
 import { Fragment, useEffect, useState, useCallback } from "react";
 
 import { useNavigate, Outlet } from "react-router-dom";
-import { Stack, Link, Checkbox } from "@mui/joy";
+import { Stack, Link, Checkbox, Snackbar, Alert } from "@mui/joy";
 import { Plus, ExternalLink } from "lucide-react";
 
 //custom components
@@ -35,6 +35,8 @@ import { AOP_HEADER } from "../../../../../Data/Columns";
 // utils
 import { localStorageSetter, localStorageGetter } from "../../../../../Utils/LocalStorage";
 import { buildAOP } from "../../../../../Utils/aopBuilder";
+import { useAuth } from "../../../../../Store/AuthStore";
+import { socket } from "../../../../../Services/Socket";
 
 const Objectives = () => {
 
@@ -42,9 +44,79 @@ const Objectives = () => {
     const OBJECTIVES = localStorageGetter('objectives-storage');
     const savedMission = localStorageGetter("mission");
 
+    const { user } = useAuth();
+    const { name, id, assignedArea } = user ?? {};
+
     useEffect(() => {
-        console.log(savedMission)
-        console.log(APPLICATION_OBJECTIVE_ID)
+        if (!assignedArea?.name) return;
+        socket.emit("register-user", {
+            userId: id,
+            name: name,
+            area: assignedArea.name,
+        });
+    }, [assignedArea]);
+
+    useEffect(() => {
+        socket.on("editing", handleEditing);
+        return () => {
+            socket.off("editing"); // Clean up on unmount
+        };
+    }, [socket]);
+
+    // AUTHENTICATE
+    useEffect(() => {
+        socket.emit("authenticate", {
+            id: id,
+            area: assignedArea?.name,
+        });
+
+        return () => {
+            socket.disconnect(); // Clean up on unmount
+        };
+    }, []);
+
+    const editSignal = () => {
+        socket.emit('start-edit', {
+            userId: id,
+            name: name,
+            area: assignedArea?.name,
+        })
+    }
+
+    const disconnectSignal = () => {
+        socket.emit('stop-edit', {
+            userId: id,
+            area: assignedArea?.name,
+        })
+        setShow(false);
+        handleCloseSnack();
+    }
+
+    const handleEditing = ({ editable, showEdit, editorName, editorId }) => {
+        setDisabled(!editable);
+        setShow(showEdit);
+        setOpenNotify(editable ? false : true);
+        setEditor(() => {
+            return { editorName: editorName, editorId: editorId };
+        });
+
+        if (!editable) {
+            return notify();
+        }
+    };
+
+    const handleEditClick = () => {
+        setEditLoad(true)
+        setTimeout(() => {
+            editSignal();
+            setShow(true);
+            setEditLoad(false)
+        }, 500);
+    }
+
+    useEffect(() => {
+        // console.log(savedMission)
+        // console.log(APPLICATION_OBJECTIVE_ID)
     }, [savedMission, APPLICATION_OBJECTIVE_ID])
 
     const { create, getSingleAOP } = useAOPActions();
@@ -91,10 +163,14 @@ const Objectives = () => {
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
     const [openConfirmDiscussedDialog, setOpenConfirmDiscussedDialog] = useState(false);
     const [openAlertSuccess, setOpenAlertSuccess] = useState(false)
-    const [openSubmitModal, setOpenSubmitModal] = useState(false);
     const [openSaveMissionModal, setOpenSaveMissionModal] = useState(false);
     const [openFeedbackModal, setOpenFeedbackModal] = useState(false)
     const [openCancelRequestModal, setOpenCancelRequestModal] = useState(false)
+    const [openNotify, setOpenNotify] = useState(false);
+    const [editor, setEditor] = useState(null);
+    const [show, setShow] = useState(false);
+    const [editLoad, setEditLoad] = useState(false);
+    const [disabled, setDisabled] = useState(false);
 
     const [authorizationPin, setAuthorizationPin] = useState(null);
     const [isDraft, setIsDraft] = useState(false);
@@ -106,6 +182,11 @@ const Objectives = () => {
         }
         )
     });
+
+    const handleCloseSnack = () => {
+        setEditor(null);
+        setOpenNotify(false);
+    };
 
     // check for open modals
     useEffect(() => {
@@ -487,6 +568,13 @@ const Objectives = () => {
                                 disabled={isSubmitEnabled}
                                 onClick={() => handleDiscussedConfirmationModal()} //open the has discussed modal
                             />
+
+                            <ButtonComponent
+                                label="Test Edit"
+                                onClick={() => (show ? disconnectSignal() : handleEditClick())}
+                                size="md"
+                                variant="outlined"
+                            />
                         </Stack>
                     </Fragment>
                 }
@@ -566,6 +654,27 @@ const Objectives = () => {
                     />
                 )
             }
+
+            {/* <AlertDialogComponent
+                leftButtonAction={() => handleClose()}
+            /> */}
+
+            <Snackbar
+                open={openNotify}
+                // autoHideDuration={2000}
+                onClose={handleCloseSnack}
+                color="success"
+            >
+                <Alert
+                    onClose={handleCloseSnack}
+                    severity="success"
+                    variant="filled"
+                    sx={{ width: "100%" }}
+                >
+                    {/* {editor?.editorName} */}
+                    is currently editing
+                </Alert>
+            </Snackbar>
 
             <Outlet />
         </Fragment>
