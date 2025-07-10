@@ -8,14 +8,16 @@ import { useCategoryHook } from "../../../Hooks/Libraries/dataTable/CategoryHook
 import ServerTableComponent from "../../../Components/Common/Table/ServerTableComponent";
 
 export const Category = () => {
-  const { setType, setSelectedData } = useCategoryHooks();
   const {
+    setType,
+    setSelectedData,
     categories,
     pagination,
     getPaginatedCategories,
     setCurrentPage,
     isLoading,
-  } = useCategoryHook();
+  } = useCategoryHooks();
+
   const { setOpenModal } = useModalHook();
   const setUpdateType = (data) => {
     setType("update");

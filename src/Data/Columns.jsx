@@ -901,15 +901,31 @@ export const PPMP_VIEW_HEADER = [
 
 export const variantCols = (updateCallBack, delCallback) => [
   { field: "id", name: "Row #", align: "left", width: "50px" },
-  { field: "clName", name: "Classification", width: 200, align: "left" },
-
-  { field: "created_at", name: "Created at", width: 200, align: "left" },
-  { field: "updated_at", name: "Updated at", width: 200, align: "left" },
+  { field: "name", name: "System", width: 200, align: "left" },
+  { field: "code", name: "Code", width: 200, align: "left" },
+  {
+    field: "created_at",
+    name: "Created at",
+    width: 100,
+    align: "left",
+    render: (params) => {
+      return moment(params.created_at).format("L");
+    },
+  },
+  {
+    field: "updated_at",
+    name: "Updated at",
+    width: 100,
+    align: "left",
+    render: (params) => {
+      return moment(params.created_at).format("L");
+    },
+  },
   {
     field: "action",
     name: "Actions",
     position: "sticky",
-    width: "150px",
+    width: "100px",
     right: 0,
     align: "center",
     render: (params) => {
@@ -953,13 +969,29 @@ export const categoryCols = (updateCallBack, delCallback) => [
   { field: "code", name: "Code", width: 80, align: "left" },
   { field: "name", name: "Category", width: 150, align: "left" },
   { field: "description", name: "Description", width: 200, align: "left" },
-  { field: "created_at", name: "Created at", width: 80, align: "left" },
-  { field: "updated_at", name: "Updated at", width: 80, align: "left" },
+  {
+    field: "created_at",
+    name: "Created at",
+    width: 80,
+    align: "left",
+    render: (params) => {
+      return moment(params.created_at).format("L");
+    },
+  },
+  {
+    field: "updated_at",
+    name: "Updated at",
+    width: 80,
+    align: "left",
+    render: (params) => {
+      return moment(params.created_at).format("L");
+    },
+  },
   {
     field: "action",
     name: "Actions",
     position: "sticky",
-    width: "150px",
+    width: "100px",
     right: 0,
     align: "center",
     render: (params) => {

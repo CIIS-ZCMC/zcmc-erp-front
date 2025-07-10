@@ -51,6 +51,7 @@ const Footer = () => {
           p: 1.5,
           borderRadius: "10px",
           backgroundColor: color.light,
+          alignItems: "center",
         }}
       >
         {!isCollapsed ? (
@@ -73,15 +74,17 @@ const Footer = () => {
             </Stack>
           </>
         ) : (
-          <IconButton
-            sx={{
-              color: "white",
-              fontSize: 20,
-              ":hover": { color: "white", bgcolor: "transparent" },
-            }}
-          >
-            <MdHelpOutline />
-          </IconButton>
+          <Stack direction="row" alignItems="center" justifyContent="center">
+            <IconButton
+              sx={{
+                color: "white",
+                fontSize: 25,
+                ":hover": { color: "white", bgcolor: "transparent" },
+              }}
+            >
+              <MdHelpOutline />
+            </IconButton>
+          </Stack>
         )}
       </Sheet>
 
@@ -169,6 +172,7 @@ const Footer = () => {
             <Avatar
               src={profile_url && profile_url}
               sx={{ boxShadow: "0 0 0 2px rgba(255,255,255,0.3)" }}
+              size="sm"
             >
               {profile_url ? "" : user?.name[0]}
             </Avatar>
