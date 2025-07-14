@@ -19,7 +19,7 @@ const useClassificationDataTable = create((set, get) => ({
     console.log("Setting search query:", query);
     set({ search_Query: query });
   },
-  getClassifications: (failedCallback) => {
+  getClassifications: ({ per_page = 15, callBack } = {}) => {
     const { currentPage: page, search_Query: search } = get(); // 🔥 correctly access the current state
 
     const params = {
@@ -34,10 +34,9 @@ const useClassificationDataTable = create((set, get) => ({
     read({
       url: API.ClASSIFICATION,
       params,
-      failed: failedCallback,
       success: (res) => {
         const {
-          data: { data, meta, links },
+          data: { data, meta, links, message, status },
         } = res;
 
         set({
@@ -47,7 +46,7 @@ const useClassificationDataTable = create((set, get) => ({
           currentPage: meta.current_page,
           totalPages: meta.last_page,
         });
-        return res;
+        if (callBack) callBack(status, message);
       },
     });
   },

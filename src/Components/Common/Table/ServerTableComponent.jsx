@@ -162,15 +162,7 @@ function ServerTableComponent({
                       justifyContent: "center",
                     }}
                   >
-                    <ThreeDots
-                      visible={true}
-                      width="80"
-                      color="#4fa94d"
-                      radius="9"
-                      ariaLabel="three-dots-loading"
-                      wrapperStyle={{}}
-                      wrapperClass=""
-                    />
+                    <CircularProgress />
                   </Box>
                 </td>
               </tr>

@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useRef } from "react";
+import React, { Fragment, useEffect, useRef, useState } from "react";
 import { classificationCols } from "../../../Data/Columns";
 import ScrollableTableComponent from "../../../Components/Common/Table/ScrollableTableComponent";
 import useModalHook from "../../../Hooks/ModalHook";
@@ -18,6 +18,7 @@ export const Classification = () => {
     setCurrentPage,
     getClassifications,
   } = useClassificationDataTable();
+  const [loading, setLoading] = useState(false);
 
   // const search_Query = useClassificationDataTable(
   //   (state) => state.search_Query
@@ -48,20 +49,20 @@ export const Classification = () => {
   };
 
   useEffect(() => {
-    if (search_Query.length <= 1) {
-      getClassifications((message) => {
-        console.log("Error fetching classification data:", message);
-      });
-    }
-  }, [currentPage]);
+    setLoading(true);
+    getClassifications({
+      per_page: 15,
+      search: search_Query, // Pass the current search query
+      callBack: (status, message) => {
+        setLoading(false);
+        console.log("Response:", status, message);
+      },
+    });
+  }, [currentPage, search_Query]);
 
   useEffect(() => {
     const handler = setTimeout(() => {
-      console.log("Search query changed:", search_Query);
-      setCurrentPage(1); // ✅ Reset to page 1 when searching
-      getClassifications((message) => {
-        console.log("Error fetching classification data:", message);
-      });
+      setCurrentPage(1); // 👈 Only change the page, let the other useEffect handle loading & fetching
     }, 500);
 
     return () => clearTimeout(handler);
@@ -70,6 +71,7 @@ export const Classification = () => {
   return (
     <Fragment>
       <ServerTableComponent
+        isLoading={loading}
         data={transformData(classi_dataTable)}
         columns={classificationCols(setUpdateType, setDeleteType)}
         pageSize={pagination?.pagination?.per_page || 15}

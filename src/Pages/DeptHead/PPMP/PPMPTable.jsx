@@ -1,6 +1,7 @@
 import {
   Autocomplete,
   Box,
+  CircularProgress,
   Divider,
   Sheet,
   Stack,
@@ -574,7 +575,16 @@ const PPMPTable = memo(
               {loading ? (
                 <tr>
                   <td colSpan={columns?.length} style={{ padding: 0 }}>
-                    <ThreeDotsLoader />
+                    <Box
+                      sx={{
+                        py: 10,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <CircularProgress />
+                    </Box>
                   </td>
                 </tr>
               ) : filteredTable?.length > 0 ? (

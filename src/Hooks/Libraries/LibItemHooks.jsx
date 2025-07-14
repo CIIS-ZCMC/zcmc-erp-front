@@ -35,11 +35,6 @@ const useLibItemHook = create((set, get) => ({
     read({
       url: `items`,
       params,
-      failed: (err) => {
-        set({ isLoading: false, error: err });
-        if (callBack)
-          callBack(false, err?.message || "Failed to fetch categories");
-      },
       success: (res) => {
         const { status, message, data, meta } = res;
         set({
@@ -50,7 +45,6 @@ const useLibItemHook = create((set, get) => ({
             current_page: data?.meta?.pagination?.current_page,
             last_page: data?.meta?.pagination?.last_page,
           },
-          isLoading: false,
           error: null,
         });
 

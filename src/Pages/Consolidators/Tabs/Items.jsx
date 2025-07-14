@@ -22,6 +22,7 @@ export const Items = () => {
     setSearchQuery,
     search_Query,
   } = useLibItemHook();
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     if (openModal.isNew) {
@@ -42,28 +43,30 @@ export const Items = () => {
     })) || [];
 
   useEffect(() => {
-    if (search_Query.length <= 1) {
-      getItems((message) => {
-        console.log("Error fetching classification data:", message);
-      });
-    }
-  }, [currentPage]);
+    setLoading(true);
+    getItems({
+      per_page: 15,
+      search: search_Query, // Pass the current search query
+      callBack: (status, message) => {
+        setLoading(false);
+        console.log("Response:", status, message);
+      },
+    });
+  }, [currentPage, search_Query]);
 
   useEffect(() => {
     const handler = setTimeout(() => {
-      console.log("Search query changed:", search_Query);
-      setCurrentPage(1); // ✅ Reset to page 1 when searching
-      getItems((message) => {
-        console.log("Error fetching classification data:", message);
-      });
+      setCurrentPage(1); // 👈 Only change the page, let the other useEffect handle loading & fetching
     }, 500);
 
     return () => clearTimeout(handler);
   }, [search_Query]);
+
   return (
     <Fragment>
       <ServerTableComponent
         data={data}
+        isLoading={loading}
         columns={itemCols}
         pageSize={pagination?.per_page}
         onPageChange={setCurrentPage}

@@ -21,6 +21,7 @@ export const Variant = () => {
 
   const { setOpenModal } = useModalHook();
   const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(false);
 
   const setUpdateType = (data) => {
     setType("update");
@@ -47,7 +48,14 @@ export const Variant = () => {
   }
 
   useEffect(() => {
-    getTerminology({ page: pagination.current_page });
+    setLoading(true);
+    getTerminology({
+      page: pagination.current_page,
+      callBack: (status, message) => {
+        console.log("Callback received:", status, message);
+        setLoading(false);
+      },
+    });
   }, []);
 
   return (
@@ -57,6 +65,7 @@ export const Variant = () => {
       </Stack>
 
       <ScrollableTableComponent
+        isLoading={loading}
         data={transformData(terminology)}
         columns={variantCols(setUpdateType, setDeleteType)}
         pageSize={15}

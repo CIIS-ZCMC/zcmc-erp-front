@@ -1143,7 +1143,7 @@ export const itemCols = [
             sx={{
               justifyContent: "space-between",
               alignItems: "center",
-              px: 2,
+              px: 1,
             }}
           >
             <Link

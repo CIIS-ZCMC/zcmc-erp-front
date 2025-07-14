@@ -481,22 +481,34 @@ function PPMPItems(props) {
     });
   }, [assignedArea]);
 
+  // useEffect(() => {
+  //   socket.on("editing", handleEditing);
+  //   return () => {
+  //     socket.off("editing"); // Clean up on unmount
+  //   };
+  // }, [socket]);
+
+  // // AUTHENTICATE
+  // useEffect(() => {
+  //   socket.emit("authenticate", {
+  //     id: id,
+  //     area: assignedArea?.name,
+  //   });
+
+  //   return () => {
+  //     socket.disconnect(); // Clean up on unmount
+  //   };
+  // }, []);
+
   useEffect(() => {
+    socket.connect(); // Connect every time component mounts
+    socket.emit("authenticate", { id: id, area: assignedArea?.name });
+
     socket.on("editing", handleEditing);
-    return () => {
-      socket.off("editing"); // Clean up on unmount
-    };
-  }, [socket]);
-
-  // AUTHENTICATE
-  useEffect(() => {
-    socket.emit("authenticate", {
-      id: id,
-      area: assignedArea?.name,
-    });
 
     return () => {
-      socket.disconnect(); // Clean up on unmount
+      socket.off("editing");
+      // socket.disconnect();
     };
   }, []);
 
