@@ -2,7 +2,7 @@ import { useState, Fragment, useEffect } from "react";
 
 import { Outlet, useLocation, useParams, useNavigate } from "react-router-dom";
 
-import { Box, Stack, Typography } from "@mui/joy";
+import { Box, Stack, Typography, Snackbar, Alert } from "@mui/joy";
 import { ChevronDown, ChevronUp, Plus } from "lucide-react";
 
 import ButtonComponent from "../../../../../../Components/Common/ButtonComponent";
@@ -10,6 +10,7 @@ import SheetComponent from "../../../../../../Components/Common/SheetComponent";
 import IconButtonComponent from "../../../../../../Components/Common/IconButtonComponent";
 import ContainerComponent from "../../../../../../Components/Common/ContainerComponent";
 import EditableTableComponent from "../../../../../../Components/Common/Table/EditableTableComponent";
+import AlertDialogComponent from "../../../../../../Components/Common/Dialog/AlertDialogComponent";;
 
 import ActivitiesTable from "./ActivitiesTable";
 
@@ -19,7 +20,15 @@ import { AOP_ACTIVITIES_HEADER } from "../../../../../../Data/Columns";
 import useActivitiesHook from "../../../../../../Hooks/ActivitiesHook";
 import useObjectivesHook from "../../../../../../Hooks/ObjectivesHook";
 
+import { useAuth } from "../../../../../../Store/AuthStore";
+import { socket } from "../../../../../../Services/Socket";
+import { localStorageGetter } from "../../../../../../Utils/LocalStorage";
+
 const Activities = () => {
+
+    const APPLICATION_OBJECTIVE_ID = localStorageGetter('aop-app-id');
+    const remarks = localStorageGetter("remarks");
+    const comments = localStorageGetter("all_comments");
 
     const location = useLocation();
     const navigate = useNavigate();
@@ -39,12 +48,98 @@ const Activities = () => {
     const currentPath = location.pathname;
     const childPath = currentPath === `/aop-management/activities/${objectiveId}`;
     const [loading, setLoading] = useState(true);
+    const [openNotify, setOpenNotify] = useState(false);
+    const [editor, setEditor] = useState(null);
+    const [show, setShow] = useState(false);
+    const [editLoad, setEditLoad] = useState(false);
+    const [disabled, setDisabled] = useState(false);
 
     const hasActivitiesForParent = activities.some((act) => act.parentId === parentId);
 
-    // useEffect(() => {
-    //     console.log('location', location.state)
-    // })
+    const { user } = useAuth();
+    const { name, id, assignedArea } = user ?? {};
+
+    useEffect(() => {
+        console.log(disabled)
+    }, [disabled])
+
+    useEffect(() => {
+        if (!assignedArea?.name) return;
+        socket.emit("register-user", {
+            userId: id,
+            name: name,
+            area: assignedArea.name,
+        });
+    }, [assignedArea]);
+
+    useEffect(() => {
+        socket.on("editing", handleEditing);
+        return () => {
+            socket.off("editing"); // Clean up on unmount
+        };
+    }, [socket]);
+
+    // AUTHENTICATE
+    useEffect(() => {
+        socket.emit("authenticate", {
+            id: id,
+            area: assignedArea?.name,
+        });
+    }, []);
+
+    const editSignal = () => {
+        socket.emit('start-edit', {
+            userId: id,
+            name: name,
+            area: assignedArea?.name,
+        })
+    }
+
+    const disconnectSignal = () => {
+        socket.emit('stop-edit', {
+            userId: id,
+            area: assignedArea?.name,
+        })
+        setShow(false);
+        handleCloseSnack();
+    }
+
+    const handleEditing = ({ editable, showEdit, editorName, editorId }) => {
+        setDisabled(!editable);
+        setShow(showEdit);
+        setOpenNotify(editable ? false : true);
+        setEditor(() => {
+            return { editorName: editorName, editorId: editorId };
+        });
+
+        if (!editable) {
+            return notify();
+        }
+    };
+
+    const handleEditClick = () => {
+        setEditLoad(true)
+        setTimeout(() => {
+            editSignal();
+            setShow(true)
+            setEditLoad(false)
+        }, 300)
+    }
+
+    const handleClose = () => {
+        close;
+        closeAlertDialog();
+        // setOpenReq(false);
+        // setItemReq({});
+        // setActivity({});
+        // setExpenseClass({});
+        // setPin("");
+    };
+
+    const handleCloseSnack = () => {
+        setEditor(null);
+        setOpenNotify(false);
+    };
 
     useEffect(() => {
         if (!hasActivitiesForParent && parentId && loading) {
@@ -86,6 +181,18 @@ const Activities = () => {
         navigate(`/aop-management`, { state: { ...location.state } })
     }
 
+    const disabledEditMode = () => {
+
+        if (!APPLICATION_OBJECTIVE_ID) return false
+
+        const noRemarks = !remarks || remarks.length === 0;
+        const noComments = !comments || comments.length === 0;
+
+        if (noRemarks && noComments) return true;
+
+        return disabled;
+    }
+
     return (
         <Fragment>
             {childPath && (
@@ -94,6 +201,7 @@ const Activities = () => {
                         title={`${AOP_CONSTANTS.MANAGE_ACTIVITIES_HEADER} row ${rowId} - ${functionType?.label || "please select a function type"}`}
                         description={AOP_CONSTANTS.MANAGE_ACTIVITIES_SUBHEADER}
                         isTable={false}
+                        sx={{ mt: 3 }}
                         actions={
                             <Stack>
                                 <IconButtonComponent
@@ -123,7 +231,7 @@ const Activities = () => {
                                             </Typography>
                                             <Box width={"200px"} mt={1}>
                                                 <Typography fontSize={12} color="primary">
-                                                    {functionType.label || "please select a function type"}
+                                                    {functionType?.label || "please select a function type"}
                                                 </Typography>
                                             </Box>
                                         </SheetComponent>
@@ -163,11 +271,25 @@ const Activities = () => {
                         description={AOP_CONSTANTS.TABLE_ACTIVITY_SUBHEADING}
                         isTable={true}
                         actions={
-                            <Stack>
+                            <Stack
+                                direction={'row'}
+                                spacing={1}
+                            >
                                 <ButtonComponent
                                     onClick={() => addActivity(current_parent_id ? current_parent_id : parentId)}
                                     label={"Add an Activity"}
                                     endDecorator={<Plus size={16} />}
+                                    disabled={disabledEditMode()}
+                                />
+
+                                <ButtonComponent
+                                    // onClick={() => }
+                                    label={show ? "Exit Edit Mode" : "Edit Activities"}
+                                    onClick={() => (show ? disconnectSignal() : handleEditClick())}
+                                    isLoading={editLoad}
+                                    color={show ? "danger" : "primary"}
+                                    variant="outlined"
+                                    disabled={disabledEditMode()}
                                 />
                             </Stack>
                         }
@@ -176,6 +298,7 @@ const Activities = () => {
                             columns={AOP_ACTIVITIES_HEADER}
                             tableRow={
                                 <ActivitiesTable
+                                    isEditing={show}
                                     handleChange={updateActivityField}
                                     parentId={parentId ?? current_parent_id}
                                     objectiveRowId={objectiveRowId ?? current_row_id}
@@ -203,6 +326,29 @@ const Activities = () => {
                     </ContainerComponent>
                 </Fragment>
             )}
+
+            <AlertDialogComponent
+                leftButtonAction={() => handleClose()}
+            />
+
+            <Snackbar
+                open={openNotify}
+                // autoHideDuration={2000}
+                onClose={handleCloseSnack}
+                color="success"
+            >
+                <Alert
+                    onClose={handleCloseSnack}
+                    severity="success"
+                    variant="filled"
+                    sx={{ width: "100%" }}
+                >
+                    {editor?.editorName}
+                    is currently editing
+                </Alert>
+            </Snackbar>
+
+
             <Outlet />
         </Fragment>
     );

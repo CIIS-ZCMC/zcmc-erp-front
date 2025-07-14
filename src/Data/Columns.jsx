@@ -181,7 +181,7 @@ export const successIndicator = [
 export const AOP_HEADER = [
   {
     field: "id",
-    name: "Row #",
+    name: "#",
     width: 20,
     align: "center",
   },
@@ -218,7 +218,7 @@ export const AOP_HEADER = [
 export const AOP_ACTIVITIES_HEADER = [
   {
     field: "id",
-    name: "Row #",
+    name: "#",
     width: 20,
     align: "center",
   },

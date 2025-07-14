@@ -14,6 +14,8 @@ import ConfirmationModalComponent from "../../../../../../../Components/Common/D
 import { formattedPrice } from "../../../../../../../Utils/formattedPrice";
 
 const Resources = ({
+    isEditing,
+    editLoad,
     rows,
     parentId,
     purchase_types,
@@ -31,13 +33,10 @@ const Resources = ({
     const { setAlertDialog, closeConfirmation, setConfirmationModal } = useModalHook();
 
     const [localResources, setLocalResources] = useState(rows);
-    const [editRowId, setEditRowId] = useState(null);
     const [openDeleteModal, setOpenDeleteModal] = useState(false);
     const [resourceId, setResourceId] = useState(null);
     const [pin, setPin] = useState('')
     const [isLoading, setIsLoading] = useState(false);
-
-    const handleOnRowClick = (id) => setEditRowId(id);
 
     function onRemove(id) {
         setLocalResources(
@@ -166,12 +165,12 @@ const Resources = ({
                                     <Typography>{index + 1}</Typography>
                                 </td>
 
-                                <td onClick={() => handleOnRowClick(id)}>
+                                <td>
                                     <Typography>{name || "-"}{pin}</Typography>
                                 </td>
 
-                                <td onClick={() => handleOnRowClick(id)}>
-                                    {editRowId === id ? (
+                                <td>
+                                    {isEditing ? (
                                         <Input
                                             value={quantity ?? 0}
                                             size="sm"
@@ -193,14 +192,14 @@ const Resources = ({
                                     </Typography>
                                 </td>
 
-                                <td onClick={() => handleOnRowClick(id)}>
+                                <td>
                                     <Typography>
                                         {formattedPrice(quantity * individualPrice) || "-"}
                                     </Typography>
                                 </td>
 
-                                <td onClick={() => handleOnRowClick(id)}>
-                                    {editRowId === id ? (
+                                <td>
+                                    {isEditing ? (
                                         <>
                                             <AutocompleteComponent
                                                 placeholder="Select Purchase"
@@ -220,8 +219,8 @@ const Resources = ({
                                     )}
                                 </td>
 
-                                <td onClick={() => handleOnRowClick(id)}>
-                                    {editRowId === id ? (
+                                <td>
+                                    {isEditing ? (
                                         <>
                                             <AutocompleteComponent
                                                 placeholder="Select Expense Class"
@@ -243,9 +242,10 @@ const Resources = ({
                                 <td>
                                     <IconButtonComponent
                                         onClick={() => handleOpenDeleteModal(id)}
+                                        disabled={!isEditing}
                                         icon={<Trash size={14} />}
                                         size={"sm"}
-                                        // color={'danger'}
+                                        color={'danger'}
                                         variant={"text"}
                                     />
                                 </td>

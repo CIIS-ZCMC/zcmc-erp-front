@@ -493,9 +493,9 @@ function PPMPItems(props) {
       area: assignedArea?.name,
     });
 
-    return () => {
-      socket.disconnect(); // Clean up on unmount
-    };
+    // return () => {
+    //   socket.disconnect(); // Clean up on unmount
+    // };
   }, []);
 
   return (

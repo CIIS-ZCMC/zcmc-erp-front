@@ -1,7 +1,7 @@
 import { Fragment, useEffect, useState, useCallback } from "react";
 
 import { useNavigate, Outlet } from "react-router-dom";
-import { Stack, Link, Checkbox, Snackbar, Alert } from "@mui/joy";
+import { Stack, Link, Checkbox, Snackbar, Alert, Divider } from "@mui/joy";
 import { Plus, ExternalLink } from "lucide-react";
 
 //custom components
@@ -43,6 +43,23 @@ const Objectives = () => {
     const APPLICATION_OBJECTIVE_ID = localStorageGetter('aop-app-id');
     const OBJECTIVES = localStorageGetter('objectives-storage');
     const savedMission = localStorageGetter("mission");
+    const remarks = localStorageGetter("remarks");
+    const comments = localStorageGetter("all_comments");
+
+    useEffect(() => {
+        console.log('remarks', remarks)
+        console.log('comments', comments) //show only comments for unit 
+    }, [remarks, comments])
+
+    const getCommentsByApplicationId = () => {
+        const commentsByApplicationId = comments?.filter((comment) => comment.application_id === APPLICATION_OBJECTIVE_ID);
+        console.log(`${APPLICATION_OBJECTIVE_ID}:`, commentsByApplicationId)
+        return commentsByApplicationId;
+    }
+
+    useEffect(() => {
+        getCommentsByApplicationId()
+    }, [comments])
 
     const { user } = useAuth();
     const { name, id, assignedArea } = user ?? {};
@@ -69,10 +86,6 @@ const Objectives = () => {
             id: id,
             area: assignedArea?.name,
         });
-
-        return () => {
-            socket.disconnect(); // Clean up on unmount
-        };
     }, []);
 
     const editSignal = () => {
@@ -114,10 +127,17 @@ const Objectives = () => {
         }, 500);
     }
 
-    useEffect(() => {
-        // console.log(savedMission)
-        // console.log(APPLICATION_OBJECTIVE_ID)
-    }, [savedMission, APPLICATION_OBJECTIVE_ID])
+    const disabledEditMode = () => {
+
+        if (!APPLICATION_OBJECTIVE_ID) return false
+
+        const noRemarks = !remarks || remarks.length === 0;
+        const noComments = !comments || comments.length === 0;
+
+        if (noRemarks && noComments) return true;
+
+        return disabled;
+    }
 
     const { create, getSingleAOP } = useAOPActions();
 
@@ -155,7 +175,6 @@ const Objectives = () => {
     } = useCommentActions();
 
     const navigate = useNavigate();
-
 
     // local states
     const [isLoading, setIsLoading] = useState(false);
@@ -301,17 +320,26 @@ const Objectives = () => {
         }, 2000)
     }
 
-    const handleSubmit = async () => {
+    // useEffect(() => {
+    //     console.log(isDraft)
+    // }, [isDraft])
+
+    const handleSubmit = async (is_draft) => {
+
+        console.log('payload', is_draft)
+
         setOpenConfirmDialog(false);
-        setIsLoading(true); // ✅ Set loading immediately at the start
+        setIsLoading(true); // ✅ Set loading at the start
 
         const payload = {
             mission: mission,
             has_discussed: !!hasDiscussed,
-            status: isDraft ? 'draft' : 'pending',
+            status: is_draft ? 'draft' : 'pending',
             authorization_pin: authorizationPin,
             application_objectives: buildAopPayload(),
         };
+
+        console.log(payload)
 
         const responseMessages = {
             existing: {
@@ -393,7 +421,7 @@ const Objectives = () => {
         setConfirmationModal
         const data = {
             status: "warning",
-            title: ` Are you sure you want to cancel this request?`,
+            title: ` Are you sure you want to cancel this request ? `,
             description: "If you confirm, you will be redirected back to the AOP page.",
         };
         setConfirmationModal(data);
@@ -430,7 +458,9 @@ const Objectives = () => {
 
         const fetch = () => {
             // if (!isDivisionHead || !isMCC) {
-            getCommentsByApplication(APPLICATION_OBJECTIVE_ID, () => { });
+            getCommentsByApplication(APPLICATION_OBJECTIVE_ID, () => {
+                getCommentsByApplicationId()
+            });
             // }
 
             getRemarksByApplication(APPLICATION_OBJECTIVE_ID, () => {
@@ -474,14 +504,24 @@ const Objectives = () => {
     };
 
 
+    const handleClose = () => {
+        close;
+        closeAlertDialog();
+        // setOpenReq(false);
+        // setItemReq({});
+        // setActivity({});
+        // setExpenseClass({});
+        // setPin("");
+    };
+
     return (
         <Fragment>
             <ContainerComponent
                 title={AOP_CONSTANTS.MANAGE_OBJECTIVES_HEADER}
                 description={AOP_CONSTANTS.MANAGE_OBJECTIVES_SUBHEADER}
+                sx={{ mt: 3 }}
                 actions={
-                    <Stack direction={"row"} gap={1}>
-
+                    <Stack direction={"row"} spacing={1}>
                         {
                             APPLICATION_OBJECTIVE_ID &&
                             <ButtonComponent
@@ -495,22 +535,58 @@ const Objectives = () => {
                             onClick={addObjective}
                             label={"Add an Objective"}
                             endDecorator={<Plus size={16} />}
+                            disabled={disabledEditMode()}
                         />
                         {
                             !APPLICATION_OBJECTIVE_ID &&
                             <ButtonComponent
                                 onClick={() => {
                                     setIsDraft(true);
-                                    // handleSubmit("draft");
+                                    handleSubmit(true);
                                 }}
                                 label={"Save as Draft"}
                                 variant={"outlined"}
                                 disabled={isDraft}
                             />
                         }
+
+                        <ButtonComponent
+                            label={show ? "Exit Edit Mode" : "Edit Objectives"}
+                            onClick={() => (show ? disconnectSignal() : handleEditClick())}
+                            size="md"
+                            isLoading={editLoad}
+                            color={show ? "danger" : "primary"}
+                            variant="outlined"
+                            disabled={disabledEditMode()}  //get the remarks and comments then check if empty, user cannot edit and also if socket detected that there is someone editing
+                        />
                     </Stack>
                 }
             >
+                <Stack
+                    mb={2}
+                    direction={"flex"}
+                    alignItems={"center"}
+                    justifyContent={"end"}
+                    gap={1}
+                >
+                    <ButtonComponent
+                        label={"Cancel Request"}
+                        size={"md"}
+                        variant={"outlined"}
+                        onClick={() => handleOpenCancelRequestModal()}
+                    />
+
+                    <ButtonComponent
+                        label={APPLICATION_OBJECTIVE_ID ? "Resubmit AOP" : "Submit AOP"}
+                        size={"md"}
+                        variant={"solid"}
+                        disabled={!show}
+                        onClick={() => handleDiscussedConfirmationModal()} //open the has discussed modal
+                    />
+                </Stack>
+                <Divider sx={{ mb: 2 }} />
+
+
                 {isLoading
                     ?
                     <BoxComponent
@@ -537,6 +613,7 @@ const Objectives = () => {
                             }
                             tableRow={
                                 <ObjectivesTable
+                                    isEditing={show}
                                     rows={objectives}
                                     deleteRow={removeObjective}
                                     handleChange={updateObjectiveField}
@@ -546,36 +623,6 @@ const Objectives = () => {
                             }
                             stickLast
                         />
-
-                        <Stack
-                            mt={2}
-                            direction={"flex"}
-                            alignItems={"center"}
-                            justifyContent={"start"}
-                            gap={1}
-                        >
-                            <ButtonComponent
-                                label={"Cancel Request"}
-                                size={"md"}
-                                variant={"outlined"}
-                                onClick={() => handleOpenCancelRequestModal()}
-                            />
-
-                            <ButtonComponent
-                                label={APPLICATION_OBJECTIVE_ID ? "Resubmit AOP" : "Submit AOP"}
-                                size={"md"}
-                                variant={"solid"}
-                                disabled={isSubmitEnabled}
-                                onClick={() => handleDiscussedConfirmationModal()} //open the has discussed modal
-                            />
-
-                            <ButtonComponent
-                                label="Test Edit"
-                                onClick={() => (show ? disconnectSignal() : handleEditClick())}
-                                size="md"
-                                variant="outlined"
-                            />
-                        </Stack>
                     </Fragment>
                 }
             </ContainerComponent>
@@ -655,9 +702,9 @@ const Objectives = () => {
                 )
             }
 
-            {/* <AlertDialogComponent
+            <AlertDialogComponent
                 leftButtonAction={() => handleClose()}
-            /> */}
+            />
 
             <Snackbar
                 open={openNotify}
@@ -671,7 +718,7 @@ const Objectives = () => {
                     variant="filled"
                     sx={{ width: "100%" }}
                 >
-                    {/* {editor?.editorName} */}
+                    {editor?.editorName}
                     is currently editing
                 </Alert>
             </Snackbar>

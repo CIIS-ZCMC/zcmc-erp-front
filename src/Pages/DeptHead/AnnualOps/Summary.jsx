@@ -55,7 +55,7 @@ const Summary = (
             <BoxComponent
                 p={3}
             >
-                <Typography sx={{ fontSize: 32, fontWeight: 600 }}>
+                <Typography sx={{ fontSize: 24, fontWeight: 600 }}>
                     Annual Operations Plan summary:
                 </Typography>
 

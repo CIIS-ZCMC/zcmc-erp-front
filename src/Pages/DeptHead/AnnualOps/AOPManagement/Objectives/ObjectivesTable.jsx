@@ -20,6 +20,7 @@ const ObjectivesTable = ({
     deleteRow,
     function_types,
     activitiesCount,
+    isEditing,
 }) => {
     const navigate = useNavigate();
 
@@ -32,7 +33,6 @@ const ObjectivesTable = ({
     const [openOthersModal, setOpenOthersModal] = useState(false);
     const [openDeleteModal, setOpenDeleteModal] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const [editRowId, setEditRowId] = useState(null);
     const [pin, setPin] = useState(null)
 
     const handleRemoveObjective = (id) => {
@@ -154,110 +154,104 @@ const ObjectivesTable = ({
                                     </Typography>
                                 </td>
 
-                                <td onClick={() => setEditRowId(id)}
-                                    style={tableDataStyles}
-                                >
-                                    {editRowId === id ?
-                                        (
-                                            <AutocompleteComponent
-                                                placeholder="Select function type"
-                                                value={functionType}
-                                                setValue={(val) => {
-                                                    handleChange(id, 'functionType', val);
-                                                    setEditRowId(null);
-                                                }}
-                                                options={function_types}
-                                            />
-                                        )
-                                        :
-                                        (
-                                            <Typography>
-                                                {functionType?.label || ""}
-                                                {functionType?.description}
-                                            </Typography>
+                                <td style={tableDataStyles}>
 
-                                        )
-                                    }
-                                </td>
-
-                                <td onClick={() => setEditRowId(id)}
-                                    style={tableDataStyles}
-                                >
-
-                                    {editRowId === id ?
+                                    {isEditing ?
                                         (
-                                            <Fragment>
-                                                <Stack
-                                                    direction={'row'}
-                                                    alignItems={'center'}
-                                                    gap={1}
-                                                >
+                                            <>
+                                                <Stack>
                                                     <AutocompleteComponent
-                                                        placeholder="Select objective"
-                                                        value={objective}
+                                                        placeholder="Select function type"
+                                                        value={functionType}
                                                         setValue={(val) => {
-                                                            handleChange(id, 'objective', val);
-                                                            if (val?.code !== 'OBJ-O-6480') {
-                                                                clearOthersFields(id); // Clear if not "Other" type
-                                                            }
-                                                            setEditRowId(null);
+                                                            handleChange(id, 'functionType', val);
                                                         }}
-                                                        options={functionType?.objectives ?? []}
-                                                        isRenderOption
+                                                        options={function_types}
                                                     />
 
-                                                    {objective?.description === 'Others, please insert note/remarks' &&
-                                                        <IconButtonComponent
-                                                            onClick={() => handleOpenOthersModal(id)}
-                                                            icon={<PencilLine size={14} />}
-                                                            // color={'danger'}
-                                                            disabled={isEnableRemove}
-                                                            size={'sm'}
-                                                            variant={'text'}
-                                                        />
-                                                    }
-
+                                                    <Typography mt={1}>
+                                                        {functionType?.label || ""}
+                                                        {/* {functionType?.description} */}
+                                                    </Typography>
                                                 </Stack>
-
-                                                <Typography mt={1}>
-                                                    {objective?.description === 'Others, please insert note/remarks' ? othersObjective : objective?.description || ''}
-                                                </Typography>
-                                            </Fragment>
+                                            </>
                                         )
                                         :
                                         (
-                                            // <Tooltip title={objective ? objective?.description : ''} variant="solid">
-                                            <Typography >
-                                                {objective?.description === 'Others, please insert note/remarks' ? othersObjective : objective?.description || '-'}
+                                            <Typography mt={1}>
+                                                {functionType?.label || "-"}
+                                                {/* {functionType?.description} */}
                                             </Typography>
-                                            // </Tooltip>
                                         )
                                     }
                                 </td>
 
-                                <td onClick={() => setEditRowId(id)}
-                                    style={tableDataStyles}
-                                >
-                                    {editRowId === id ?
-                                        (
-                                            <Fragment>
+                                <td style={tableDataStyles}>
+                                    {isEditing ? (
+                                        <Fragment>
+                                            <Stack
+                                                direction={'row'}
+                                                alignItems={'center'}
+                                                gap={1}
+                                            >
                                                 <AutocompleteComponent
-                                                    placeholder="Select success indicator"
-                                                    value={successIndicator}
+                                                    placeholder="Select objective"
+                                                    value={objective}
                                                     setValue={(val) => {
-                                                        handleChange(id, 'successIndicator', val);
-                                                        setEditRowId(null);
+                                                        handleChange(id, 'objective', val);
+                                                        if (val?.code !== 'OBJ-O-6480') {
+                                                            clearOthersFields(id); // Clear if not "Other" type
+                                                        }
                                                     }}
-                                                    options={objective?.success_indicators ?? []}
+                                                    options={functionType?.objectives ?? []}
                                                     isRenderOption
                                                 />
-                                                <Typography mt={1} >
-                                                    {objective?.description === 'Others, please insert note/remarks' ? othersSuccessIndicator : successIndicator?.description || ''}
-                                                </Typography>
-                                            </Fragment>
 
-                                        )
-                                        :
+                                                {objective?.description === 'Others, please insert note/remarks' &&
+                                                    <IconButtonComponent
+                                                        onClick={() => handleOpenOthersModal(id)}
+                                                        icon={<PencilLine size={14} />}
+                                                        // color={'danger'}
+                                                        disabled={isEnableRemove}
+                                                        size={'sm'}
+                                                        variant={'text'}
+                                                    />
+                                                }
+
+                                            </Stack>
+
+                                            <Typography mt={1}>
+                                                {objective?.description === 'Others, please insert note/remarks' ? othersObjective : objective?.description || ''}
+                                            </Typography>
+                                        </Fragment>
+                                    ) : (
+                                        // <Tooltip title={objective ? objective?.description : ''} variant="solid">
+                                        <Typography >
+                                            {objective?.description === 'Others, please insert note/remarks' ? othersObjective : objective?.description || '-'}
+                                        </Typography>
+                                        // </Tooltip>
+                                    )}
+                                </td>
+
+                                <td style={tableDataStyles}>
+
+                                    {isEditing ? (
+                                        <Fragment>
+                                            <AutocompleteComponent
+                                                placeholder="Select success indicator"
+                                                value={successIndicator}
+                                                setValue={(val) => {
+                                                    handleChange(id, 'successIndicator', val);
+                                                }}
+                                                options={objective?.success_indicators ?? []}
+                                                isRenderOption
+                                            />
+                                            <Typography mt={1} >
+                                                {objective?.description === 'Others, please insert note/remarks' ? othersSuccessIndicator : successIndicator?.description || ''}
+                                            </Typography>
+                                        </Fragment>
+
+                                    ) :
                                         (
                                             <Typography >
                                                 {objective?.description === 'Others, please insert note/remarks' ? othersSuccessIndicator : successIndicator?.description || '-'}
@@ -300,18 +294,20 @@ const ObjectivesTable = ({
                                             </Chip>
                                         </Stack>
 
-                                        <Stack>
+                                        <Stack
+                                            alignItems={'center'}
+                                            justifyContent={'center'}
+                                        >
                                             <IconButtonComponent
                                                 onClick={() => handleOpenDeleteModal(id)}
                                                 // onClick={() => handleRemoveObjective(id)}
                                                 icon={<Trash size={14} />}
-                                                // color={'danger'}
-                                                disabled={isEnableRemove}
+                                                color={'danger'}
+                                                disabled={!isEditing}
                                                 size={'sm'}
                                                 variant={'text'}
                                             />
                                         </Stack>
-
 
                                     </Stack>
                                 </td>
@@ -336,9 +332,6 @@ const ObjectivesTable = ({
                                                     'othersObjective',
                                                     e.target.value
                                                 )}
-                                                onBlur={() => {
-                                                    setEditRowId(null);
-                                                }}
                                             />
 
                                             <TextareaComponent
@@ -350,9 +343,6 @@ const ObjectivesTable = ({
                                                     'othersSuccessIndicator',
                                                     e.target.value
                                                 )}
-                                                onBlur={() => {
-                                                    setEditRowId(null);
-                                                }}
                                             />
                                         </Stack>
 

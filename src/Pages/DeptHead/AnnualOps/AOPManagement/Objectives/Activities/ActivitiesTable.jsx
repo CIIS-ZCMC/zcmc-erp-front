@@ -24,6 +24,7 @@ const gadRelatedOptions = [
 ]
 
 const ActivitiesTable = ({
+    isEditing,
     rows,
     handleChange,
     deleteRow,
@@ -68,12 +69,6 @@ const ActivitiesTable = ({
 
     }, {});
 
-    //local state
-    const [editRowId, setEditRowId] = useState(null);
-
-    const handleOnRowClick = (id) => {
-        setEditRowId(id);
-    };
 
     const handleOpenDeleteModal = (params) => {
         setActivityId(params)
@@ -162,7 +157,7 @@ const ActivitiesTable = ({
         <Fragment>
             {filteredActivities?.map(({ rowId, id, parentId, name, isGadRelated, cost, startMonth, endMonth, target: { firstQuarter, secondQuarter, thirdQuarter, fourthQuarter } }, index) => {
 
-                const isEditing = editRowId === id;
+                // const isEditing = editRowId === id;
                 const isEnableRemove = !name && !isGadRelated;
 
                 return (
@@ -174,21 +169,8 @@ const ActivitiesTable = ({
                             </Typography>
                         </td>
 
-                        <td onClick={() => handleOnRowClick(id)}>
+                        <td >
                             {isEditing ? (
-                                // <Input
-                                //     value={name}
-                                //     size='sm'
-                                //     placeholder='name'
-                                //     onChange={(e) =>
-                                //         handleChange(id, 'name', e.target.value)
-                                //     }
-                                //     onBlur={() => {
-                                //         handleChange(id, 'name', name);
-                                //         setEditRowId(null);
-                                //     }}
-                                // />
-
                                 <TextareaComponent
                                     // label={'Objective'}
                                     placeholder="Activity name"
@@ -199,14 +181,13 @@ const ActivitiesTable = ({
                                         setEditRowId(null);
                                     }}
                                 />
-
                             ) : (
                                 <Typography>{name || '-'}</Typography>
                             )}
 
                         </td>
 
-                        <td onClick={() => handleOnRowClick(id)}>
+                        <td>
                             {isEditing ? (
                                 <>
                                     <Input
@@ -224,7 +205,7 @@ const ActivitiesTable = ({
                             )}
                         </td>
 
-                        <td onClick={() => handleOnRowClick(id)}>
+                        <td>
                             {isEditing ? (
                                 <Input
                                     size='sm'
@@ -241,7 +222,7 @@ const ActivitiesTable = ({
                             )}
                         </td>
 
-                        <td onClick={() => handleOnRowClick(id)}>
+                        <td>
                             {isEditing ? (
                                 <Input
                                     value={firstQuarter}
@@ -261,7 +242,7 @@ const ActivitiesTable = ({
                             )}
                         </td>
 
-                        <td onClick={() => handleOnRowClick(id)}>
+                        <td>
                             {isEditing ? (
                                 <Input
                                     value={secondQuarter}
@@ -281,7 +262,7 @@ const ActivitiesTable = ({
                             )}
                         </td>
 
-                        <td onClick={() => handleOnRowClick(id)}>
+                        <td>
                             {isEditing ? (
                                 <Input
                                     value={thirdQuarter}
@@ -302,7 +283,7 @@ const ActivitiesTable = ({
                             )}
                         </td>
 
-                        <td onClick={() => handleOnRowClick(id)}>
+                        <td>
                             {isEditing ? (
                                 <Input
                                     value={fourthQuarter}
@@ -329,7 +310,7 @@ const ActivitiesTable = ({
                             </Typography>
                         </td>
 
-                        <td onClick={() => handleOnRowClick(id)}>
+                        <td>
                             {isEditing ? (
 
                                 <AutocompleteComponent
@@ -424,12 +405,12 @@ const ActivitiesTable = ({
                                     </Chip>
                                 </Stack>
 
-
                                 <IconButtonComponent
                                     onClick={() => handleOpenDeleteModal(id)}
-                                    disabled={isEnableRemove}
+                                    disabled={!isEditing}
                                     icon={<Trash size={14} />}
                                     size={'sm'}
+                                    color={'danger'}
                                     variant={'text'}
                                 />
                             </Stack>

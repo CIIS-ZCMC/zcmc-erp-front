@@ -36,7 +36,7 @@ const Timeline = ({ aop_id }) => {
                 p={3}
             >
                 <Stack mb={2}>
-                    <Typography sx={{ fontSize: 32, fontWeight: 600 }}>
+                    <Typography sx={{ fontSize: 24, fontWeight: 600 }}>
                         Approval timeline for this AOP
                     </Typography>
                     <Typography sx={{ fontSize: 14 }}>
