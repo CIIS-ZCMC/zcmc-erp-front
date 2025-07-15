@@ -3,9 +3,9 @@ import React, { Fragment } from "react";
 import { Box, Stack, Typography, Divider } from "@mui/joy";
 import { LucideDot, Minus, Plus, Trash } from "lucide-react";
 
-import ButtonComponent from "../../Components/Common/ButtonComponent";
-import QuantityControlComponent from "../../Components/Cart/QuantityControlComponent";
-import IconButtonComponent from "../../Components/Common/IconButtonComponent";
+import ButtonComponent from "@Components/Common/ButtonComponent";
+import QuantityControlComponent from "@Components/Cart/QuantityControlComponent";
+import IconButtonComponent from "@Components/Common/IconButtonComponent";
 
 const ItemsCart = ({
   item,
