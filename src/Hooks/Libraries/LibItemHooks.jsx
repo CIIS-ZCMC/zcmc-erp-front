@@ -8,6 +8,7 @@ const useLibItemHook = create((set, get) => ({
   navlinks: {},
   currentPage: 1,
   search_Query: "",
+  updateData: {},
 
   setSearchQuery: (query) => {
     console.log("Setting search query:", query);

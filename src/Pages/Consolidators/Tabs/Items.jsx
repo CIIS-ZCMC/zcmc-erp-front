@@ -1,15 +1,23 @@
 import React, { Fragment, useEffect, useState } from "react";
 import ScrollableTableComponent from "../../../Components/Common/Table/ScrollableTableComponent";
-import { Typography } from "@mui/joy";
+import { Textarea, Typography } from "@mui/joy";
 import { Stack, Link } from "@mui/joy";
 import { IoInformationOutline, IoOpen, IoOpenOutline } from "react-icons/io5";
 import useLibItemHook from "../../../Hooks/Libraries/LibItemHooks";
 import useModalHook from "../../../Hooks/ModalHook";
 import ServerTableComponent from "../../../Components/Common/Table/ServerTableComponent";
 import { itemCols } from "../../../Data/Columns";
+import ModalComponent from "../../../Components/Common/Dialog/ModalComponent";
+import TextareaComponent from "../../../Components/Form/TextareaComponent";
+import InputComponent from "../../../Components/Form/InputComponent";
+import { handleChangeInput } from "../../../Utils/HandleInput";
+import ConfirmationModalComponent from "../../../Components/Common/Dialog/ConfirmationModalComponent";
+import usePinHook from "../../../Hooks/PinHook";
 
 export const Items = () => {
-  const { openModal, setOpenModal } = useModalHook();
+  const { openModal, setOpenModal, setConfirmationModal, closeConfirmation } =
+    useModalHook();
+  const { pin, setPin } = usePinHook;
   const {
     resetInput,
     setUpdateData,
@@ -21,15 +29,36 @@ export const Items = () => {
     setCurrentPage,
     setSearchQuery,
     search_Query,
+    updateData,
   } = useLibItemHook();
-  const [loading, setLoading] = useState(false);
 
-  useEffect(() => {
-    if (openModal.isNew) {
-      setUpdateData(null);
-      resetInput();
-    }
-  }, [openModal]);
+  const [loading, setLoading] = useState(false);
+  const [openUpdate, setOpenUpdate] = useState(false);
+  const [openDel, setOpenDel] = useState(false);
+  const [updatedData, setUpdatedData] = useState({
+    name: "",
+    estimated_budget: "",
+  });
+
+  const handleUpdate = (data) => {
+    setOpenUpdate(true);
+    setUpdateData(data);
+  };
+
+  const handleDelete = (params) => {
+    setOpenDel(true);
+    setUpdateData(params);
+    const data = {
+      status: "error",
+      title: `Delete item (${params?.name}) ?`,
+      description: "This action cannot be undone.",
+    };
+    setConfirmationModal(data);
+  };
+
+  const deleteItem = (selected) => {
+    setOpenDel(false);
+  };
 
   const data =
     Items.map((row) => ({
@@ -62,12 +91,21 @@ export const Items = () => {
     return () => clearTimeout(handler);
   }, [search_Query]);
 
+  useEffect(() => {
+    if (openUpdate && updateData) {
+      setUpdatedData({
+        name: updateData.name || "",
+        estimated_budget: updateData.estimated_budget || "",
+      });
+    }
+  }, [updateData, openUpdate]);
+
   return (
     <Fragment>
       <ServerTableComponent
         data={data}
         isLoading={loading}
-        columns={itemCols}
+        columns={itemCols(handleUpdate, handleDelete)}
         pageSize={pagination?.per_page}
         onPageChange={setCurrentPage}
         paginationMeta={pagination}
@@ -80,6 +118,56 @@ export const Items = () => {
         hoverRow
         stickLast
       />
+      {openUpdate && (
+        <ModalComponent
+          title={
+            <Typography>
+              Update{" "}
+              <Typography sx={{ color: "#C98503" }}>
+                {updateData.name}
+              </Typography>
+            </Typography>
+          }
+          height="auto"
+          maxWidth={"480px"}
+          isOpen={openUpdate}
+          handleClose={() => setOpenUpdate(false)}
+          content={
+            <>
+              <TextareaComponent
+                name={"name"}
+                label={"Item Name"}
+                value={updatedData.name}
+                onChange={(e) =>
+                  handleChangeInput("name", setUpdatedData, e.target.value)
+                }
+              />
+              <InputComponent
+                label={"Estimated budget"}
+                name={"estimated_budget"}
+                value={updatedData.estimated_budget}
+                onChange={(e) =>
+                  handleChangeInput(
+                    "estimated_budget",
+                    setUpdatedData,
+                    e.target.value
+                  )
+                }
+                type="number"
+              />
+            </>
+          }
+          hasActionButtons
+        />
+      )}
+      {openDel && (
+        <ConfirmationModalComponent
+          status="error"
+          rightButtonAction={() => deleteItem(updateData.id)}
+          withAuthPin
+          setAuthPin={setPin}
+        />
+      )}
     </Fragment>
   );
 };

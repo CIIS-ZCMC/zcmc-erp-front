@@ -209,7 +209,6 @@ function ServerTableComponent({
         </Table>
       </Sheet>
 
-      {console.log("Pagination Meta:", paginationMeta)}
       {/* Pagination Component */}
       {paginationMeta?.total > 0 && (
         <PaginationComponent

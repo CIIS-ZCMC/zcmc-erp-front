@@ -16,7 +16,6 @@ import useSidebarHook from "../../../Hooks/SidebarHook";
 import { MdHelpOutline } from "react-icons/md";
 import { BASE_URL } from "../../../Services/Config";
 import MenuItemComponent from "../Content/MenuItemComponent";
-import ConfirmationModal from "../../../Components/Common/Dialog/ConfirmationModal";
 import useModalHook from "../../../Hooks/ModalHook";
 import ConfirmationModalComponent from "../../../Components/Common/Dialog/ConfirmationModalComponent";
 import { useAuth } from "../../../Store/AuthStore";

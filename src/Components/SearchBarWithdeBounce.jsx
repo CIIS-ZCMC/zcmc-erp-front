@@ -9,7 +9,6 @@ import {
 } from "@mui/joy";
 import { Search, X } from "lucide-react";
 import React from "react";
-import useClassificationDataTable from "../Hooks/Libraries/dataTable/dataClassification";
 
 const SearchBarComponentv2 = ({
   value,

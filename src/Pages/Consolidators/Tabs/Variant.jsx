@@ -7,10 +7,13 @@ import ServerTableComponent from "../../../Components/Common/Table/ServerTableCo
 import useTerminologyHooks from "../../../Hooks/Libraries/LibTerminology";
 import SearchBarComponentv2 from "../../../Components/SearchBarWithdeBounce";
 import { Stack } from "@mui/material";
+import ConfirmationModalComponent from "../../../Components/Common/Dialog/ConfirmationModalComponent";
+import usePinHook from "../../../Hooks/PinHook";
 
 export const Variant = () => {
   const {
     setType,
+    selectedData,
     setSelectedData,
     terminology,
     pagination,
@@ -19,20 +22,31 @@ export const Variant = () => {
     getTerminology,
   } = useTerminologyHooks();
 
-  const { setOpenModal } = useModalHook();
+  const { setOpenModal, setConfirmationModal } = useModalHook();
+  const { pin, setPin } = usePinHook();
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
+  const [openUpdate, setOpenUpdate] = useState(false);
+  const [openDel, setOpenDel] = useState(false);
 
   const setUpdateType = (data) => {
-    setType("update");
-    setOpenModal(true, false, true);
+    setOpenUpdate(true);
     setSelectedData(data);
   };
 
-  const setDeleteType = (data) => {
-    setType("delete");
-    setOpenModal(true, false, true);
-    setSelectedData(data);
+  const setDeleteType = (params) => {
+    setOpenDel(true);
+    setSelectedData(params);
+    const data = {
+      status: "error",
+      title: `Delete classification (${params?.name}) ?`,
+      description: "This action cannot be undone.",
+    };
+    setConfirmationModal(data);
+  };
+
+  const deleteItem = (selected) => {
+    setOpenDel(false);
   };
 
   function transformData(data) {
@@ -72,6 +86,18 @@ export const Variant = () => {
         search={search}
         fieldsToSearch={["name", "code", "description"]}
       />
+
+      {/* {openUpdate && (
+
+      )} */}
+      {openDel && (
+        <ConfirmationModalComponent
+          status="error"
+          rightButtonAction={() => deleteItem(selectedData.id)}
+          withAuthPin
+          setAuthPin={setPin}
+        />
+      )}
     </Fragment>
   );
 };

@@ -11,10 +11,8 @@ import {
 import { memo, useEffect, useRef, useState } from "react";
 import NoResultComponent from "../../../Components/Common/Table/NoResultComponent";
 import InputComponent from "../../../Components/Form/InputComponent";
-import { ThreeDots } from "react-loader-spinner";
 import { flattenColumns } from "../../../Utils/FlattenColumns";
 import usePPMPHook from "../../../Hooks/PPMP/PPMPHook";
-import useItemsHook from "../../../Hooks/ItemsHook";
 import { ppmpHeaders } from "../../../Data/Columns";
 import ButtonComponent from "../../../Components/Common/ButtonComponent";
 import PaginationComponent from "../../../Components/Common/Table/PaginationComponent";
@@ -22,10 +20,7 @@ import AlertDialogComponent from "../../../Components/Common/Dialog/AlertDialogC
 import useModalHook from "../../../Hooks/ModalHook";
 import AutocompleteComponent from "../../../Components/Form/AutocompleteComponent";
 import ConfirmationModalComponent from "../../../Components/Common/Dialog/ConfirmationModalComponent";
-import ConfirmationModal from "../../../Components/Common/Dialog/ConfirmationModal";
-import PageLoader from "../../../Components/Loading/PageLoader";
-import { ThreeDotsLoader } from "../../../Components/Common/Loading/ThreeDotsLoader";
-import { InfoIcon } from "lucide-react";
+
 import { usePPMPTotalStore } from "../../../Hooks/PPMP/PPMPItemsHook";
 
 const PPMPTable = memo(

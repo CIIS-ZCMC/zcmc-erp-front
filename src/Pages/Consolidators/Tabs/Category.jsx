@@ -1,11 +1,15 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { categoryCols, classificationCols } from "../../../Data/Columns";
 import ScrollableTableComponent from "../../../Components/Common/Table/ScrollableTableComponent";
-import { Typography } from "@mui/joy";
+import { Divider, Stack, Typography } from "@mui/joy";
 import useModalHook from "../../../Hooks/ModalHook";
 import useCategoryHooks from "../../../Hooks/Libraries/LibCategoryHooks";
-import { useCategoryHook } from "../../../Hooks/Libraries/dataTable/CategoryHook";
 import ServerTableComponent from "../../../Components/Common/Table/ServerTableComponent";
+import ModalComponent from "../../../Components/Common/Dialog/ModalComponent";
+import InputComponent from "../../../Components/Form/InputComponent";
+import TextareaComponent from "../../../Components/Form/TextareaComponent";
+import ConfirmationModalComponent from "../../../Components/Common/Dialog/ConfirmationModalComponent";
+import usePinHook from "../../../Hooks/PinHook";
 
 export const Category = () => {
   const {
@@ -19,24 +23,39 @@ export const Category = () => {
     search_Query,
     setSearchQuery,
     currentPage,
+    selectedData,
   } = useCategoryHooks();
-
-  const { setOpenModal } = useModalHook();
+  const { pin, setPin } = usePinHook();
+  const { setOpenModal, setConfirmationModal } = useModalHook();
   const [loading, setLoading] = useState(false);
+  const [openUpdate, setOpenUpdate] = useState(false);
+  const [openDel, setOpenDel] = useState(false);
+  const [updateData, setUpdateData] = useState({
+    name: "",
+    description: "",
+  });
 
   const setUpdateType = (data) => {
-    setType("update");
-    setOpenModal(true, false, true);
+    setOpenUpdate(true);
     setSelectedData(data);
   };
-  const setDeleteType = (data) => {
-    setType("delete");
-    setOpenModal(true, false, true);
-    setSelectedData(data);
+
+  const setDeleteType = (params) => {
+    setOpenDel(true);
+    setSelectedData(params);
+    const data = {
+      status: "error",
+      title: `Delete classification (${params?.name}) ?`,
+      description: "This action cannot be undone.",
+    };
+    setConfirmationModal(data);
+  };
+
+  const deleteItem = (selected) => {
+    setOpenDel(false);
   };
 
   function transformData(data) {
-    console.log("Transforming category data:", data);
     return data.map((item) => ({
       id: item.id,
       name: item.name,
@@ -46,6 +65,7 @@ export const Category = () => {
       updated_at: item.meta.updated_at.split("T")[0],
     }));
   }
+
   useEffect(() => {
     setLoading(true);
     getPaginatedCategories({
@@ -65,6 +85,15 @@ export const Category = () => {
 
     return () => clearTimeout(handler);
   }, [search_Query]);
+
+  useEffect(() => {
+    if (openUpdate && selectedData) {
+      setUpdateData({
+        name: selectedData?.name || "",
+        description: selectedData?.description || "",
+      });
+    }
+  }, [selectedData, openUpdate]);
 
   return (
     <Fragment>
@@ -86,6 +115,55 @@ export const Category = () => {
         hoverRow
         stickLast
       />
+      {openUpdate && (
+        <ModalComponent
+          title={`Update category: ${selectedData?.name}`}
+          isOpen={openUpdate}
+          handleClose={() => setOpenUpdate(false)}
+          hasActionButtons
+          content={
+            <>
+              <Stack gap={2}>
+                <InputComponent
+                  label={"Category Name"}
+                  value={updateData.name}
+                  onChange={(e) =>
+                    setUpdateData({ ...updateData, name: e.target.value })
+                  }
+                  helperText={
+                    "Use a specific and descriptive naming convention for best results."
+                  }
+                />
+                <TextareaComponent
+                  label={"Description"}
+                  value={updateData.description}
+                  onChange={(e) =>
+                    setUpdateData({
+                      ...updateData,
+                      description: e.target.value,
+                    })
+                  }
+                />
+                <Divider />
+                <InputComponent
+                  label={"Authorization PIN"}
+                  helperText={
+                    "Confirm your action by typing-in your authorization PIN."
+                  }
+                />
+              </Stack>
+            </>
+          }
+        />
+      )}
+      {openDel && (
+        <ConfirmationModalComponent
+          status="error"
+          rightButtonAction={() => deleteItem(updateData.id)}
+          withAuthPin
+          setAuthPin={setPin}
+        />
+      )}
     </Fragment>
   );
 };

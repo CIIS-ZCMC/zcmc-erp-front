@@ -15,10 +15,15 @@ export const approvalPageTabs = [
 ];
 
 export const libaryTabs = [
-  { id: 1, name: "Item", value: "" },
-  { id: 2, name: "Classification", value: "classification" },
-  { id: 3, name: "Category", value: "category" },
-  { id: 4, name: "Terminology", value: "variant" },
+  { id: 1, name: "Item", value: "", path: "" },
+  {
+    id: 2,
+    name: "Classification",
+    value: "classification",
+    path: "classification",
+  },
+  { id: 3, name: "Category", value: "category", path: "category" },
+  { id: 4, name: "Terminology", value: "variant", path: "variant" },
 ];
 
 export const deadlineTabs = [

@@ -15,6 +15,7 @@ export default function TabComponent({
   index,
   setIndex,
   notificationView = false,
+  handleTabChange,
 }) {
   const notifications = useNotifications();
 
@@ -32,7 +33,9 @@ export default function TabComponent({
       <Tabs
         aria-label="Pipeline"
         value={index}
-        onChange={(event, value) => setIndex(value)}
+        onChange={(event, value) =>
+          handleTabChange ? handleTabChange(value) : setIndex(value)
+        }
         sx={{ bgcolor: "white" }}
       >
         <TabList

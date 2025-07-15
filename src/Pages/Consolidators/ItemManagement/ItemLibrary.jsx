@@ -1,83 +1,223 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, use } from "react";
 import PageTitle from "../../../Components/Common/PageTitle";
 import { Fragment } from "react";
 import { LIBRARY_CONSTANTS } from "../../../Data/constants";
 import ContainerComponent from "../../../Components/Common/ContainerComponent";
 import ButtonComponent from "../../../Components/Common/ButtonComponent";
-import { ExternalLink } from "lucide-react";
-import { Stack, Box, Input } from "@mui/joy";
+import { Divide, ExternalLink, Plus } from "lucide-react";
+import { Stack, Box, Input, Divider } from "@mui/joy";
 import { Outlet, useNavigate } from "react-router-dom";
 import TabComponent from "../../../Components/Common/TabComponent";
-import ScrollableTableComponent from "../../../Components/Common/Table/ScrollableTableComponent";
-import { objHeaders } from "../../../Data/Columns";
-import SearchBarComponent from "../../../Components/SearchBarComponent";
-
-import Button from "@mui/joy/Button";
-import Modal from "@mui/joy/Modal";
-import ModalClose from "@mui/joy/ModalClose";
 import Typography from "@mui/joy/Typography";
-import Sheet from "@mui/joy/Sheet";
 import { useLocation } from "react-router-dom";
-
-import { CategoryModalContent } from "../Modals/CategoryModalContent";
-import { ClassificationModalContent } from "../Modals/ClassificationModalContent";
-import { VariantModalContent } from "../Modals/VariantModalContent";
-import { ItemModalContent } from "../Modals/ItemModalContent";
 import useModalHook from "../../../Hooks/ModalHook";
-import RenderDialog from "../Modals/RenderDialog";
-import useClassificationHooks from "../../../Hooks/Libraries/LibClassificationHooks";
-import useCategoryHooks from "../../../Hooks/Libraries/LibCategoryHooks";
-import useVariantHooks from "../../../Hooks/Libraries/LibVarianHooks";
 import { libaryTabs } from "../../../Data/Options";
-import SearchBarComponentv2 from "../../../Components/SearchBarWithdeBounce";
-import useClassificationDataTable from "../../../Hooks/Libraries/dataTable/dataClassification";
+import ModalComponent from "../../../Components/Common/Dialog/ModalComponent";
+import InputComponent from "../../../Components/Form/InputComponent";
+import AutocompleteComponent from "../../../Components/Form/AutocompleteComponent";
+import TextareaComponent from "../../../Components/Form/TextareaComponent";
+
 const ItemLibrary = () => {
-  const [index, setIndex] = useState("");
-
-  const setTypeclassi = useClassificationHooks((state) => state.setType);
-  const setTypecateg = useCategoryHooks((state) => state.setType);
-  const setTypevariant = useVariantHooks((state) => state.setType);
-
-  const setSearchQuery = useClassificationDataTable(
-    (state) => state.setSearchQuery
-  );
-  const { search_Query } = useClassificationDataTable();
-
-  // Unified setter
-  const setAllTypes = (type) => {
-    setTypeclassi(type);
-    setTypecateg(type);
-    setTypevariant(type);
-  };
-  const { openModal, setOpenModal, successDialog, setSuccessDialog } =
-    useModalHook();
-  const [isOpen, setIsOpen] = useState(false);
   const location = useLocation();
   const navigate = useNavigate();
-  const UrllastSegment = location.pathname.split("/").filter(Boolean).pop();
-  const closeModal = () => {
-    setSuccessDialog(false);
-  };
 
-  const ModalContent = () => {
-    switch (UrllastSegment) {
-      case "classification":
-        return <ClassificationModalContent />;
-      case "category":
-        return <CategoryModalContent />;
-      case "variant":
-        return <VariantModalContent />;
-      default:
-        return <ItemModalContent />;
+  const [index, setIndex] = useState("");
+  const [newItem, setNewItem] = useState({
+    name: "",
+    classification: "",
+    category: "",
+    variant: "",
+    unitOfMeasurement: "",
+    estimatedBudget: "",
+    specs: ["", "", ""],
+  });
+  const [newData, setNewData] = useState({});
+  const [openNew, setOpenNew] = useState(false);
+
+  // 👇 Handle tab change and navigate
+  const handleTabChange = (newValue) => {
+    setIndex(newValue);
+    const selectedTab = libaryTabs.find((tab) => tab.value === newValue);
+    if (selectedTab) {
+      navigate(selectedTab.path); // Empty string stays on /item-library
     }
   };
 
-  useEffect(() => {
-    navigate(index);
-  }, [index]);
+  const getModalContent = (index) => {
+    switch (index) {
+      case "":
+        return (
+          <Stack direction={"row"} gap={3}>
+            <Stack width={"100%"} gap={3}>
+              <TextareaComponent
+                label="Item Name"
+                minRows={2}
+                helperText={
+                  "Use a specific and descriptive naming convention for best results."
+                }
+              />
+              <Stack direction={"row"} gap={1}>
+                <AutocompleteComponent label="Classification" />
+                <AutocompleteComponent label="Category" />
+              </Stack>
+              <AutocompleteComponent label="Variant" />
+              <Stack direction={"row"} gap={1}>
+                <AutocompleteComponent label="Unit of measurement" />
+                <InputComponent label="Estimated budget" />
+              </Stack>
+            </Stack>
+
+            <Stack width={"100%"} gap={1}>
+              <Typography level="title-sm">Specifications</Typography>
+              <Stack overflow="auto" maxHeight={"200px"}>
+                {newItem.specs.map((spec, index) => (
+                  <Stack key={index} mt={1}>
+                    <Stack
+                      direction="row"
+                      alignItems="center"
+                      justifyContent="space-between"
+                    >
+                      <Typography level="body-sm">
+                        Specifications {index + 1}
+                      </Typography>
+                      {index > 0 && (
+                        <ButtonComponent
+                          label={"Remove"}
+                          onClick={() => {
+                            const updatedSpecs = newData.specs.filter(
+                              (_, i) => i !== index
+                            );
+                            setNewItem({ ...newItem, specs: updatedSpecs });
+                          }}
+                          variant="plain"
+                          color="danger"
+                        />
+                      )}
+                    </Stack>
+
+                    <TextareaComponent
+                      value={spec}
+                      onChange={(e) => {
+                        const updatedSpecs = [...newItem.specs];
+                        updatedSpecs[index] = e.target.value;
+                        setNewItem({ ...newItem, specs: updatedSpecs });
+                      }}
+                      minRows={2}
+                    />
+                  </Stack>
+                ))}
+              </Stack>
+              <Stack>
+                <Divider sx={{ my: 1 }} />
+                <ButtonComponent
+                  onClick={() =>
+                    setNewItem({ ...newItem, specs: [...newItem.specs, ""] })
+                  }
+                  label={"Add another"}
+                  endDecorator={<Plus />}
+                  width="150px"
+                  variant="plain"
+                />
+              </Stack>
+
+              <InputComponent
+                label={"Authorization PIN"}
+                helperText={
+                  "Confirm your action by typing-in your authorization PIN."
+                }
+              />
+            </Stack>
+          </Stack>
+        );
+      case "classification":
+        return (
+          <Stack gap={2}>
+            <InputComponent
+              label={"Classification Name"}
+              value={newData.classification}
+              onChange={(e) =>
+                setNewData({ ...newData, classification: e.target.value })
+              }
+              helperText={
+                "Use a specific and descriptive naming convention for best results."
+              }
+            />
+            <TextareaComponent
+              label={"Description"}
+              value={newData.description}
+              onChange={(e) =>
+                setNewData({ ...newData, description: e.target.value })
+              }
+            />
+            <Divider />
+            <InputComponent
+              label={"Authorization PIN"}
+              helperText={
+                "Confirm your action by typing-in your authorization PIN."
+              }
+            />
+          </Stack>
+        );
+      case "category":
+        return (
+          <Stack gap={2}>
+            <InputComponent
+              label={"Category Name"}
+              value={newData.category}
+              onChange={(e) =>
+                setNewData({ ...newData, category: e.target.value })
+              }
+              helperText={
+                "Use a specific and descriptive naming convention for best results."
+              }
+            />
+            <TextareaComponent
+              label={"Description"}
+              value={newData.description}
+              onChange={(e) =>
+                setNewData({ ...newData, description: e.target.value })
+              }
+            />
+            <Divider />
+            <InputComponent
+              label={"Authorization PIN"}
+              helperText={
+                "Confirm your action by typing-in your authorization PIN."
+              }
+            />
+          </Stack>
+        );
+      case "variant":
+        return (
+          <Stack gap={2}>
+            <AutocompleteComponent label={"System name"} />
+            <InputComponent
+              label={"Code"}
+              value={newData.description}
+              onChange={(e) =>
+                setNewData({ ...newData, description: e.target.value })
+              }
+            />
+            <Divider />
+            <InputComponent
+              label={"Authorization PIN"}
+              helperText={
+                "Confirm your action by typing-in your authorization PIN."
+              }
+            />
+          </Stack>
+        );
+      default:
+        return null;
+    }
+  };
+
+  const { openModal, setOpenModal, successDialog, setSuccessDialog } =
+    useModalHook();
 
   return (
     <Fragment>
+      {console.log("ItemLibrary", index)}
       <PageTitle
         title={LIBRARY_CONSTANTS.LIBRARY_TITLE}
         description={LIBRARY_CONSTANTS.LIBRARY_SUBTITLE}
@@ -100,66 +240,53 @@ const ItemLibrary = () => {
                 variant={"solid"}
                 size={"sm"}
                 onClick={() => {
-                  setAllTypes("create");
-                  setOpenModal(true, false, true);
+                  setOpenNew(true);
                 }}
               />
             </Stack>
           }
         >
-          <TabComponent tabs={libaryTabs} index={index} setIndex={setIndex} />
+          <TabComponent
+            tabs={libaryTabs}
+            index={index}
+            handleTabChange={handleTabChange}
+          />
 
-          <Box
-            sx={{
-              mt: 2,
-              display: "flex",
-              alignItems: "center",
-              justifyContent: "space-between",
-              mb: 2,
-            }}
-          >
-            {/* {searchQuery} */}
-
-            {/* <SearchBarComponentv2
-              value={search_Query}
-              setValue={setSearchQuery}
-            /> */}
-            {/* <DatePickerComponent /> */}
-          </Box>
+          <br />
           <Outlet />
         </ContainerComponent>
       </Box>
-
-      <Modal
-        aria-labelledby="modal-title"
-        aria-describedby="modal-desc"
-        open={openModal.isOpen}
-        onClose={() => setOpenModal(false, false, false)}
-        sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}
-      >
-        <Sheet
-          variant="outlined"
-          sx={{ maxWidth: 500, borderRadius: "md", p: 3, boxShadow: "lg" }}
-        >
-          <ModalClose variant="plain" sx={{ m: 1 }} />
-          <ModalContent />
-        </Sheet>
-      </Modal>
-      <Modal
-        aria-labelledby="modal-title"
-        aria-describedby="modal-desc"
-        open={successDialog}
-        onClose={() => setSuccessDialog(false)}
-        sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}
-      >
-        <Sheet
-          variant="outlined"
-          sx={{ maxWidth: 500, borderRadius: "md", p: 3, boxShadow: "lg" }}
-        >
-          <ModalClose variant="plain" sx={{ m: 1 }} />
-          <RenderDialog lib={UrllastSegment} closeModal={closeModal} />
-        </Sheet>
-      </Modal>
+      {openNew && (
+        <ModalComponent
+          isOpen={openNew}
+          height="auto"
+          maxWidth={index === "" ? "1060px" : "480px"}
+          minWidth={index === "" ? "1060px" : "480px"}
+          title={
+            index === ""
+              ? "Create New Item"
+              : index === "classification"
+              ? "Add New Classification"
+              : index === "category"
+              ? "Add New Category"
+              : "Add New Variant"
+          }
+          description={
+            index === ""
+              ? "Fill-in basic identification of the item you wish to add to the item library."
+              : index === "classification"
+              ? "Add a new classification to the library."
+              : index === "category"
+              ? "Add a new category to the library."
+              : "Add a new variant to the library."
+          }
+          handleClose={() => {
+            setOpenNew(false);
+          }}
+          content={getModalContent(index)}
+          hasActionButtons
+        />
+      )}
     </Fragment>
   );
 };

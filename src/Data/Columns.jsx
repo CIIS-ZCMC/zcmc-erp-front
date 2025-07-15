@@ -1096,7 +1096,7 @@ export const classificationCols = (updateCallBack, delCallback) => [
   },
 ];
 
-export const itemCols = [
+export const itemCols = (handleUpdate, handleDelete) => [
   { field: "id", name: "Row #", align: "center", width: "20px" },
   { field: "name", name: "Item name", width: 200, align: "left" },
   {
@@ -1148,9 +1148,7 @@ export const itemCols = [
           >
             <Link
               onClick={() => {
-                setUpdateData(params);
-                setOpenModal(false, false, true);
-                resetInput();
+                handleUpdate(params);
               }}
               size="md"
               variant="plain"
@@ -1163,8 +1161,7 @@ export const itemCols = [
             </Link>
             <Link
               onClick={() => {
-                setOpenModal(false, true, true);
-                // alert(`Action clicked for ID: ${params.id}`)
+                handleDelete(params);
               }}
               size="md"
               variant="plain"
