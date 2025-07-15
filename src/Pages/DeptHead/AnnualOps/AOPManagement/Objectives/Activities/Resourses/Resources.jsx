@@ -29,6 +29,7 @@ const Resources = () => {
     const APPLICATION_OBJECTIVE_ID = localStorageGetter('aop-app-id');
     const remarks = localStorageGetter("remarks");
     const comments = localStorageGetter("all_comments");
+    const aopStatus = localStorage.getItem("aop-status");
 
     const { resources, addResource } = useResourceHook();
     const { items, getItems } = useItemsHook();
@@ -48,6 +49,11 @@ const Resources = () => {
 
     const { user } = useAuth();
     const { name, id, assignedArea } = user ?? {};
+
+    useEffect(() => {
+        console.log('aop status', aopStatus)
+        console.log('disabled', disabled)
+    }, [disabled, aopStatus])
 
     useEffect(() => {
         if (!assignedArea?.name) return;
@@ -124,6 +130,8 @@ const Resources = () => {
         // setPin("");
     };
 
+    const notify = () => setOpenNotify(true);
+
     const handleCloseSnack = () => {
         setEditor(null);
         setOpenNotify(false);
@@ -153,10 +161,12 @@ const Resources = () => {
 
         if (!APPLICATION_OBJECTIVE_ID) return false
 
-        const noRemarks = !remarks || remarks.length === 0;
-        const noComments = !comments || comments.length === 0;
+        // if (aopStatus === "draft") return false;
 
-        if (noRemarks && noComments) return true;
+        // const noRemarks = !remarks || remarks.length === 0;
+        // const noComments = !comments || comments.length === 0;
+
+        // if (noRemarks && noComments) return true;
 
         return disabled;
     }

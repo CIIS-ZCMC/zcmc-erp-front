@@ -43,6 +43,7 @@ const Responsible = () => {
     const [isLoading, setIsLoading] = useState(false);
     // const [isEnabledSave, setIsEnabledSave] = useState(false);s
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
+    const [openNotify, setOpenNotify] = useState(false);
 
     const hasData =
         activity?.users?.length > 0 ||
@@ -96,6 +97,19 @@ const Responsible = () => {
             <ContainerComponent
                 title={AOP_CONSTANTS.TABLE_PERSON_HEADER}
                 description={AOP_CONSTANTS.TABLE_PERSON_SUBHEADING}
+                actions={
+                    <>
+                        <ButtonComponent
+                            label={'Edit Responsible People'}
+                            onClick={() => handleEditClick()}
+                            size={'md'}
+                            color={"primary"}
+                            variant={'outlined'}
+                            disabled={true}
+                        />
+
+                    </>
+                }
             >
                 <Grid
                     container
@@ -163,15 +177,17 @@ const Responsible = () => {
             </ContainerComponent>
 
             {/* Confirmation modal to proceed */}
-            {openConfirmDialog && (
-                <ConfirmationModalComponent
-                    leftButtonLabel={"Back"}
-                    rightButtonAction={() => proceed(200)}
-                    rightButtonLabel="Proceed"
-                    isLoading={isLoading}
-                />
-            )}
-        </Fragment>
+            {
+                openConfirmDialog && (
+                    <ConfirmationModalComponent
+                        leftButtonLabel={"Back"}
+                        rightButtonAction={() => proceed(200)}
+                        rightButtonLabel="Proceed"
+                        isLoading={isLoading}
+                    />
+                )
+            }
+        </Fragment >
     );
 };
 

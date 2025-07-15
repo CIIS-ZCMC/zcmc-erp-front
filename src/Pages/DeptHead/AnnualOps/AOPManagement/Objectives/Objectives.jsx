@@ -23,7 +23,7 @@ import useAOPObjectivesHooks from "../../../../../Hooks/AOP/AOPObjectivesHook";
 import useObjectivesHook from "../../../../../Hooks/ObjectivesHook";
 import useActivitiesHook from "../../../../../Hooks/ActivitiesHook";
 import useModalHook from "../../../../../Hooks/ModalHook";
-import { useAOPActions } from "../../../../../Hooks/AOP/AOPObjectivesHook";
+import { useAOPActions, useAopStatus } from "../../../../../Hooks/AOP/AOPObjectivesHook";
 import useResourceHook from "../../../../../Hooks/ResourceHook";
 import useResponsiblePeopleHook from "../../../../../Hooks/ResponsiblePeopleHook";
 import { useCommentActions } from "../../../../../Hooks/CommentHook";
@@ -45,10 +45,12 @@ const Objectives = () => {
     const savedMission = localStorageGetter("mission");
     const remarks = localStorageGetter("remarks");
     const comments = localStorageGetter("all_comments");
+    const aopStatus = localStorage.getItem("aop-status");
 
     useEffect(() => {
         console.log('remarks', remarks)
         console.log('comments', comments) //show only comments for unit 
+        console.log('aopStatus', aopStatus)
     }, [remarks, comments])
 
     const getCommentsByApplicationId = () => {
@@ -129,19 +131,26 @@ const Objectives = () => {
 
     const disabledEditMode = () => {
 
-        if (!APPLICATION_OBJECTIVE_ID) return false
+        if (!APPLICATION_OBJECTIVE_ID) return false //create mode
+        // if (aopStatus === "draft") return false;
 
-        const noRemarks = !remarks || remarks.length === 0;
-        const noComments = !comments || comments.length === 0;
+        // if (aopStatus === "draft") return false;
 
-        if (noRemarks && noComments) return true;
+        // if (APPLICATION_OBJECTIVE_ID) {
+        //     if (aopStatus === "draft") return false;
+        // } else {
+        //     const noRemarks = !remarks || remarks.length === 0;
+        //     const noComments = !comments || comments.length === 0;
+
+        //     if (noRemarks && noComments) return true;
+        // }
 
         return disabled;
     }
 
     const { create, getSingleAOP } = useAOPActions();
 
-    const { formattedObjectives } = useAOPObjectivesHooks();
+    const { formattedObjectives, aop_status } = useAOPObjectivesHooks();
     const { function_types, getFunctionType } = useFunctionTypeHook();
 
     const {
@@ -191,6 +200,8 @@ const Objectives = () => {
     const [editLoad, setEditLoad] = useState(false);
     const [disabled, setDisabled] = useState(false);
 
+
+
     const [authorizationPin, setAuthorizationPin] = useState(null);
     const [isDraft, setIsDraft] = useState(false);
     const [mission, setMission] = useState(savedMission ? savedMission : "");
@@ -201,6 +212,8 @@ const Objectives = () => {
         }
         )
     });
+
+    const notify = () => setOpenNotify(true);
 
     const handleCloseSnack = () => {
         setEditor(null);
@@ -619,6 +632,7 @@ const Objectives = () => {
                                     handleChange={updateObjectiveField}
                                     function_types={function_types}
                                     activitiesCount={activitiesCount}
+                                    disabledEditMode={disabledEditMode}
                                 />
                             }
                             stickLast

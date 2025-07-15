@@ -14,6 +14,7 @@ const useAOPObjectivesHooks = create((set, get) => ({
   aop_timeline: [],
   mission: "",
   aop_id: null,
+  aop_status: null,
 
   actions: {
     setAopObjectives: (data) => {
@@ -37,7 +38,6 @@ const useAOPObjectivesHooks = create((set, get) => ({
         url: API.AOP_APPLICATION_SUMMARY,
         failed: callBack,
         success: (res) => {
-          // console.log(res)
           const { status, message, data: { data } } = res;
 
           set({
@@ -47,7 +47,8 @@ const useAOPObjectivesHooks = create((set, get) => ({
             formattedActivities: data.formattedActivities,
             formattedResources: data.formattedResources,
             formattedResponsible: data.formattedResponsiblePersons,
-            aop_id: data.summary.aop_application_id
+            aop_id: data.summary.aop_application_id,
+            aop_status: data.aop.status
           });
 
           callBack(status, message);
@@ -151,4 +152,7 @@ export const useAOPActions = () =>
 
 export const useSetAOPID = () =>
   useAOPObjectivesHooks((state) => state.actions);
+
+export const useAopStatus = () =>
+  useAOPObjectivesHooks((state) => state.aop_status);
 

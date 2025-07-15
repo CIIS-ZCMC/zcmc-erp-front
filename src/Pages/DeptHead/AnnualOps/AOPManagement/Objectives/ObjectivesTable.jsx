@@ -21,6 +21,7 @@ const ObjectivesTable = ({
     function_types,
     activitiesCount,
     isEditing,
+    disabledEditMode,
 }) => {
     const navigate = useNavigate();
 
@@ -282,6 +283,7 @@ const ObjectivesTable = ({
                                                     }
                                                 })}
                                                 fontSize={14}
+                                                disabled={disabledEditMode()}
                                             >
                                                 Manage Activities
                                             </Link>
