@@ -4,25 +4,25 @@ import { Outlet, useParams, useLocation, useNavigate } from "react-router-dom";
 import { Stack, Snackbar, Alert } from "@mui/joy";
 import { Plus } from "lucide-react";
 
-import EditableTableComponent from "../../../../../../../Components/Common/Table/EditableTableComponent";
-import ContainerComponent from "../../../../../../../Components/Common/ContainerComponent";
-import ButtonComponent from "../../../../../../../Components/Common/ButtonComponent";
-import BoxComponent from "../../../../../../../Components/Common/Card/BoxComponent";
-import { ThreeDotsLoader } from "../../../../../../../Components/Common/Loading/ThreeDotsLoader";
-import AlertDialogComponent from "../../../../../../../Components/Common/Dialog/AlertDialogComponent";
+import EditableTableComponent from "@Components/Common/Table/EditableTableComponent";
+import ContainerComponent from "@Components/Common/ContainerComponent";
+import ButtonComponent from "@Components/Common/ButtonComponent";
+import BoxComponent from "@Components/Common/Card/BoxComponent";
+import { ThreeDotsLoader } from "@Components/Common/Loading/ThreeDotsLoader";
+import AlertDialogComponent from "@Components/Common/Dialog/AlertDialogComponent";
 
 import ResourcesTable from './ResourcesTable';
 
-import { AOP_CONSTANTS } from "../../../../../../../Data/constants";
-import { AOP_RESOURCE_HEADER } from "../../../../../../../Data/Columns";
+import { AOP_CONSTANTS } from "@Data/constants";
+import { AOP_RESOURCE_HEADER } from "@Data/Columns";
 
-import useResourceHook from "../../../../../../../Hooks/ResourceHook";
-import useItemsHook from "../../../../../../../Hooks/ItemsHook";
-import usePurchaseTypeHook from "../../../../../../../Hooks/PurchaseTypeHook";
+import useResourceHook from "@Hooks/ResourceHook";
+import useItemsHook from "@Hooks/ItemsHook";
+import usePurchaseTypeHook from "@Hooks/PurchaseTypeHook";
 
-import { useAuth } from "../../../../../../../Store/AuthStore";
-import { socket } from "../../../../../../../Services/Socket";
-import { localStorageGetter } from "../../../../../../../Utils/LocalStorage";
+import { useAuth } from "@Store/AuthStore";
+import { socket } from "@Services/Socket";
+import { localStorageGetter } from "@Utils/LocalStorage";
 
 const Resources = () => {
 
