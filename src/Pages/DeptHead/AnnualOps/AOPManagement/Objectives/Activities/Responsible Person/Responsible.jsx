@@ -1,15 +1,15 @@
 import React, { Fragment, useState, useEffect, act } from "react";
-import { Stack, Grid, Checkbox } from "@mui/joy";
+import { Stack, Grid, Checkbox, Snackbar, Alert } from "@mui/joy";
 import { useNavigate, useLocation } from "react-router-dom";
 
 import useResponsiblePeopleHook from "../../../../../../../Hooks/ResponsiblePeopleHook";
 import useModalHook from "../../../../../../../Hooks/ModalHook";
 
 //Custom Components
-
-import ButtonComponent from "../../../../../../../Components/Common/ButtonComponent";
-import ContainerComponent from "../../../../../../../Components/Common/ContainerComponent";
-import ConfirmationModalComponent from "../../../../../../../Components/Common/Dialog/ConfirmationModalComponent";
+import ButtonComponent from "@Components/Common/ButtonComponent";
+import ContainerComponent from "@Components/Common/ContainerComponent";
+import ConfirmationModalComponent from "@Components/Common/Dialog/ConfirmationModalComponent";
+import AlertDialogComponent from "@Components/Common/Dialog/AlertDialogComponent";
 
 import PersonSection from "./PersonSection";
 import DesignationSection from "./DesignationSection";
@@ -17,12 +17,13 @@ import DesignationSection from "./DesignationSection";
 
 //data related
 import { AOP_CONSTANTS } from "../../../../../../../Data/constants";
-
 import { localStorageGetter } from "../../../../../../../Utils/LocalStorage";
+import { useAuth } from "../../../../../../../Store/AuthStore";
+import { socket } from "../../../../../../../Services/Socket";
 
 const Responsible = () => {
 
-    const aopApplicationId = localStorageGetter('aop-app-id');
+    const APPLICATION_OBJECTIVE_ID = localStorageGetter('aop-app-id');
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -44,6 +45,109 @@ const Responsible = () => {
     // const [isEnabledSave, setIsEnabledSave] = useState(false);s
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
     const [openNotify, setOpenNotify] = useState(false);
+    const [editor, setEditor] = useState(null);
+    const [show, setShow] = useState(false);
+    const [editLoad, setEditLoad] = useState(false);
+    const [disabled, setDisabled] = useState(false);
+
+    const { user } = useAuth();
+    const { name, id, assignedArea } = user ?? {};
+
+
+    useEffect(() => {
+        if (!assignedArea.name) return;
+        socket.emit('register-user', {
+            userId: id,
+            name: name,
+            area: assignedArea.name,
+        })
+    }, [])
+
+    useEffect(() => {
+        socket.on("editing", handleEditing);
+        return () => {
+            socket.off("editing"); // Clean up on unmount
+        };
+    }, [socket]);
+
+    // AUTHENTICATE
+    useEffect(() => {
+        socket.emit("authenticate", {
+            id: id,
+            area: assignedArea?.name,
+        });
+    }, []);
+
+    const editSignal = () => {
+        socket.emit('start-edit', {
+            userId: id,
+            name: name,
+            area: assignedArea?.name,
+        })
+    }
+
+    const disconnectSignal = () => {
+        socket.emit('stop-edit', {
+            userId: id,
+            area: assignedArea?.name,
+        })
+        setShow(false);
+        handleCloseSnack();
+    }
+
+    const handleEditing = ({ editable, showEdit, editorName, editorId }) => {
+        setDisabled(!editable);
+        setShow(showEdit);
+        setOpenNotify(editable ? false : true);
+        setEditor(() => {
+            return { editorName: editorName, editorId: editorId };
+        });
+
+        if (!editable) {
+            return notify();
+        }
+    };
+
+    const handleEditClick = () => {
+        setEditLoad(true)
+        setTimeout(() => {
+            editSignal();
+            setShow(true)
+            setEditLoad(false)
+        }, 300)
+    }
+
+
+    const handleClose = () => {
+        close;
+        closeAlertDialog();
+        // setOpenReq(false);
+        // setItemReq({});
+        // setActivity({});
+        // setExpenseClass({});
+        // setPin("");
+    };
+
+    const notify = () => setOpenNotify(true);
+
+    const handleCloseSnack = () => {
+        setEditor(null);
+        setOpenNotify(false);
+    };
+
+    const disabledEditMode = () => {
+
+        if (!APPLICATION_OBJECTIVE_ID) return false
+
+        // if (aopStatus === "draft") return false;
+
+        // const noRemarks = !remarks || remarks.length === 0;
+        // const noComments = !comments || comments.length === 0;
+
+        // if (noRemarks && noComments) return true;
+
+        return disabled;
+    }
 
     const hasData =
         activity?.users?.length > 0 ||
@@ -100,12 +204,12 @@ const Responsible = () => {
                 actions={
                     <>
                         <ButtonComponent
-                            label={'Edit Responsible People'}
-                            onClick={() => handleEditClick()}
-                            size={'md'}
-                            color={"primary"}
+                            label={show ? "Exit Edit Mode" : "Edit Resources"}
+                            onClick={() => (show ? disconnectSignal() : handleEditClick())}
+                            isLoading={editLoad}
+                            color={show ? "danger" : "primary"}
                             variant={'outlined'}
-                            disabled={true}
+                            disabled={disabledEditMode()}
                         />
 
                     </>
@@ -122,11 +226,15 @@ const Responsible = () => {
                     }}
                 >
                     <Grid item={"true"} xs={12} md={6}>
-                        <PersonSection />
+                        <PersonSection
+                            isEditing={show}
+                        />
                     </Grid>
 
                     <Grid item={"true"} xs={12} md={6}>
-                        <DesignationSection />
+                        <DesignationSection
+                            isEditing={show}
+                        />
                     </Grid>
                     {/* 
                     <Grid item={"true"} xs={12} sm={2} md={4}>
@@ -150,7 +258,7 @@ const Responsible = () => {
             variant={"outlined"}
           /> */}
 
-                    {!aopApplicationId ? (
+                    {!APPLICATION_OBJECTIVE_ID ? (
                         <ButtonComponent
                             onClick={() => handleCancel(activityId)}
                             label={"Cancel Selection"}
@@ -187,6 +295,27 @@ const Responsible = () => {
                     />
                 )
             }
+
+            <AlertDialogComponent
+                leftButtonAction={() => handleClose()}
+            />
+
+            <Snackbar
+                open={openNotify}
+                // autoHideDuration={2000}
+                onClose={handleCloseSnack}
+                color="success"
+            >
+                <Alert
+                    onClose={handleCloseSnack}
+                    severity="success"
+                    variant="filled"
+                    sx={{ width: "100%" }}
+                >
+                    {editor?.editorName}
+                    is currently editing
+                </Alert>
+            </Snackbar>
         </Fragment >
     );
 };

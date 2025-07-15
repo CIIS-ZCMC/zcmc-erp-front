@@ -11,7 +11,7 @@ import BoxComponent from '../../../../../../../Components/Common/Card/BoxCompone
 import AutocompleteComponent from '../../../../../../../Components/Form/AutocompleteComponent';
 import ConfirmationModalComponent from '../../../../../../../Components/Common/Dialog/ConfirmationModalComponent';
 
-const SelectJobPositionComponent = ({ parentId }) => {
+const SelectJobPositionComponent = ({ parentId, isEditing }) => {
     const { getByActivityId, handleValue } = useResponsiblePeopleHook();
     const { jobPositions } = useJobPositionsHook()
 
@@ -25,6 +25,7 @@ const SelectJobPositionComponent = ({ parentId }) => {
             size={'md'}
             setValue={(value) => handleValue(parentId, "designations", value)}
             options={jobPositions}
+            disabled={!isEditing}
         />
 
         <Typography
@@ -195,7 +196,7 @@ const JobPositionList = ({ parentId }) => {
     </>
 }
 
-const DesignationSection = () => {
+const DesignationSection = ({ isEditing }) => {
 
     const location = useLocation();
     const activityId = location.state.parentId;
@@ -215,7 +216,7 @@ const DesignationSection = () => {
     return (
         <div>
             <BoxComponent>
-                <SelectJobPositionComponent parentId={activityId} />
+                <SelectJobPositionComponent parentId={activityId} isEditing={isEditing} />
                 <JobPositionList parentId={activityId} />
             </BoxComponent>
         </div >

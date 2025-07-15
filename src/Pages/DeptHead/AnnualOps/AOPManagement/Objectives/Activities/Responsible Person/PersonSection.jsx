@@ -11,7 +11,7 @@ import AutocompleteComponent from '../../../../../../../Components/Form/Autocomp
 import ConfirmationModalComponent from '../../../../../../../Components/Common/Dialog/ConfirmationModalComponent';
 import BoxComponent from '../../../../../../../Components/Common/Card/BoxComponent';
 
-const SelectPersonComponent = ({ parentId }) => {
+const SelectPersonComponent = ({ parentId, isEditing }) => {
     const { handleValue, getByActivityId } = useResponsiblePeopleHook();
     const { users: usersOptions } = useUserHook();
 
@@ -29,6 +29,7 @@ const SelectPersonComponent = ({ parentId }) => {
             size={'md'}
             setValue={(value) => handleValue(parentId, "users", value)}
             options={usersOptions}
+            disabled={!isEditing}
         />
 
         <Typography
@@ -179,7 +180,7 @@ const ResponsiblePersonList = ({ parentId }) => {
 };
 
 
-const PeronSection = () => {
+const PeronSection = ({ isEditing }) => {
 
     const location = useLocation()
     const activityId = location.state.parentId;
@@ -200,8 +201,8 @@ const PeronSection = () => {
     return (
         <div>
             <BoxComponent>
-                <SelectPersonComponent parentId={activityId} />
-                <ResponsiblePersonList parentId={activityId} />
+                <SelectPersonComponent parentId={activityId} isEditing={isEditing} />
+                <ResponsiblePersonList parentId={activityId} isEditing={isEditing} />
             </BoxComponent>
 
 
