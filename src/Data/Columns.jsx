@@ -225,7 +225,7 @@ export const AOP_ACTIVITIES_HEADER = [
   {
     field: "name",
     name: "Activities",
-    width: 100,
+    width: 130,
     align: "center",
   },
 
@@ -279,7 +279,7 @@ export const AOP_ACTIVITIES_HEADER = [
 export const AOP_RESOURCE_HEADER = [
   {
     field: "id_count",
-    name: "Row #",
+    name: "#",
     width: 20,
     align: "center",
   },

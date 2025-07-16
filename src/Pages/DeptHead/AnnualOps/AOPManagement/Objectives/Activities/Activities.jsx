@@ -187,14 +187,12 @@ const Activities = () => {
 
     const disabledEditMode = () => {
 
-        if (!APPLICATION_OBJECTIVE_ID) return false
+        if (!APPLICATION_OBJECTIVE_ID) return false //create mode
 
-        // if (aopStatus === "draft") return false;
+        const noRemarks = !remarks || remarks.length === 0;
+        const noComments = !comments || comments.length === 0;
 
-        // const noRemarks = !remarks || remarks.length === 0;
-        // const noComments = !comments || comments.length === 0;
-
-        // if (noRemarks && noComments) return true;
+        if (noRemarks && noComments) return true;
 
         return disabled;
     }

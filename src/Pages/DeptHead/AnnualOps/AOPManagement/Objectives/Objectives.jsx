@@ -132,18 +132,11 @@ const Objectives = () => {
     const disabledEditMode = () => {
 
         if (!APPLICATION_OBJECTIVE_ID) return false //create mode
-        // if (aopStatus === "draft") return false;
 
-        // if (aopStatus === "draft") return false;
+        const noRemarks = !remarks || remarks.length === 0;
+        const noComments = !comments || comments.length === 0;
 
-        // if (APPLICATION_OBJECTIVE_ID) {
-        //     if (aopStatus === "draft") return false;
-        // } else {
-        //     const noRemarks = !remarks || remarks.length === 0;
-        //     const noComments = !comments || comments.length === 0;
-
-        //     if (noRemarks && noComments) return true;
-        // }
+        if (noRemarks && noComments) return true;
 
         return disabled;
     }
@@ -273,6 +266,7 @@ const Objectives = () => {
         clearResponsiblePeople();
         clearResources();
         clearCart();
+        setMission("");
     };
 
     //with auth pin data
@@ -330,6 +324,7 @@ const Objectives = () => {
             setIsLoading(false)
             setOpenAlertSuccess(false)
             clearLocalStorage();
+
         }, 2000)
     }
 
@@ -339,9 +334,9 @@ const Objectives = () => {
 
     const handleSubmit = async (is_draft) => {
 
-        console.log('payload', is_draft)
+        // console.log('payload', is_draft)
 
-        setOpenConfirmDialog(false);
+        // setOpenConfirmDialog(false);
         setIsLoading(true); // ✅ Set loading at the start
 
         const payload = {
@@ -388,7 +383,6 @@ const Objectives = () => {
             }
 
             if (status === 200) {
-                setMission("");
                 setAlertDialog(responseMessages.success);
                 closeConfirmation();
                 setOpenAlertSuccess(true);
@@ -515,7 +509,6 @@ const Objectives = () => {
         // Remove the objective
         deleteObjective(objectiveId)
     };
-
 
     const handleClose = () => {
         close;

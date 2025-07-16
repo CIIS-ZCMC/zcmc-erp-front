@@ -49,8 +49,8 @@ export default function ManageAOP() {
     getRemarksByApplication,
   } = useCommentActions();
 
-  const allComments = useAllComments() ?? localStorageGetter("all_comments");
-
+  // const allComments = useAllComments() ?? localStorageGetter("all_comments"); kriz old code
+  const allComments = localStorageGetter("all_comments");
   const remarks = useRemarks();
 
   // STATES
@@ -103,6 +103,22 @@ export default function ManageAOP() {
       console.error("Error fetching data:", error);
     });
   }, []);
+
+
+  // useEffect(() => {
+  //   console.log('planning', isPlanning)
+  //   console.log('all comments', allComments?.length);
+  //   console.log('remarks', remarks?.length);
+  // }, [allComments, remarks]);
+
+
+  const feedbackCount = () => {
+
+    const remarksCount = remarks?.length || 0;
+    const commentCount = allComments?.length || 0;
+
+    return isPlanning ? commentCount + remarksCount : 0;
+  };
 
   return (
     <Fragment>
@@ -157,8 +173,7 @@ export default function ManageAOP() {
                     {isAllowedFeedbackViewing() && (
                       <ButtonComponent
                         variant={"outlined"}
-                        label={`Go to feedback (${isPlanning ? allComments?.length : remarks?.length
-                          })`}
+                        label={`Go to feedback (${feedbackCount()})`}
                         endDecorator={<ExternalLink size={14} />}
                         onClick={handleViewFeedback}
                       />
