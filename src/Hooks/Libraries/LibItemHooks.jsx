@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import { API } from "../../Data/constants";
-import { read } from "../../Services/RequestMethods";
+import { read, remove, update } from "../../Services/RequestMethods";
 
 const useLibItemHook = create((set, get) => ({
   Items: [],
@@ -54,32 +54,37 @@ const useLibItemHook = create((set, get) => ({
     });
   },
 
-  updateData: null,
-  setInputs: (name, value) =>
-    set((state) => ({
-      inputs: {
-        ...state.inputs,
-        [name]: value,
+  updateItem: async (body, param, callback) => {
+    update({
+      url: `items`,
+      params: { id: param },
+      form: body,
+      success: (response) => {
+        const { message, data } = response.data;
+        set((state) => ({
+          Items: state.Items.map((itm) =>
+            itm.id === data.id ? { ...itm, ...data } : itm
+          ),
+        }));
+
+        callback(response.status, message, data);
       },
-    })),
-  resetInput: () => {
-    set({
-      inputs: {
-        specifications: [
-          {
-            description: "",
-          },
-        ],
-      },
+      failed: callback,
     });
   },
-  setInputSpecification: (newSpecs) =>
-    set((state) => ({
-      inputs: {
-        ...state.inputs,
-        specifications: newSpecs,
+
+  removeItem: async (params, body, callback) => {
+    remove({
+      url: `items/destroy`,
+      param: { id: params },
+      form: body,
+      success: (response) => {
+        const { message, data } = response.data;
+        callback(response.status, message, data);
       },
-    })),
+      failed: callback,
+    });
+  },
 
   setUpdateData: (data) => {
     set({ updateData: data });

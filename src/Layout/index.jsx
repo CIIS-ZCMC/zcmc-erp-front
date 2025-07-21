@@ -16,7 +16,7 @@ import useSidebarHook from "../Hooks/SidebarHook";
 import { useMediaQuery } from "@mui/material";
 import NotificationMain from "../Components/Notification/NotificationMain";
 import SnackbarComponent from "../Components/Common/SnackbarComponent";
-import useSnackbarHook from "../Components/Common/SnackbarHook";
+import useSnackbarHook from "../Hooks/SnackbarHook";
 import { useAuth } from "../Store/AuthStore";
 
 function Layout() {

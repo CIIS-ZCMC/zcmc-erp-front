@@ -17,7 +17,7 @@ import usePinHook from "../../../Hooks/PinHook";
 export const Items = () => {
   const { openModal, setOpenModal, setConfirmationModal, closeConfirmation } =
     useModalHook();
-  const { pin, setPin } = usePinHook;
+  const { pin, setPin, resetPin } = usePinHook;
   const {
     resetInput,
     setUpdateData,
@@ -30,6 +30,7 @@ export const Items = () => {
     setSearchQuery,
     search_Query,
     updateData,
+    updateItem,
   } = useLibItemHook();
 
   const [loading, setLoading] = useState(false);
@@ -41,11 +42,23 @@ export const Items = () => {
   });
 
   const handleUpdate = (data) => {
+    resetPin;
     setOpenUpdate(true);
     setUpdateData(data);
   };
 
+  const update = () => {
+    const formData = new FormData();
+    formData.append("name", updatedData.name);
+    formData.append("price", updatedData.estimated_budget);
+
+    updateItem(formData, updatedData.id, (status, message) => {
+      console.log(status, message);
+    });
+  };
+
   const handleDelete = (params) => {
+    resetPin;
     setOpenDel(true);
     setUpdateData(params);
     const data = {
@@ -122,9 +135,9 @@ export const Items = () => {
         <ModalComponent
           title={
             <Typography>
-              Update{" "}
+              Update item{" "}
               <Typography sx={{ color: "#C98503" }}>
-                {updateData.name}
+                ({updateData.name})
               </Typography>
             </Typography>
           }
@@ -132,6 +145,7 @@ export const Items = () => {
           maxWidth={"480px"}
           isOpen={openUpdate}
           handleClose={() => setOpenUpdate(false)}
+          rightButtonAction={() => update()}
           content={
             <>
               <TextareaComponent
@@ -155,6 +169,7 @@ export const Items = () => {
                 }
                 type="number"
               />
+              <InputComponent type="password" value={pin} setValue={setPin} />
             </>
           }
           hasActionButtons
@@ -163,6 +178,10 @@ export const Items = () => {
       {openDel && (
         <ConfirmationModalComponent
           status="error"
+          leftButtonAction={() => {
+            closeConfirmation();
+            setOpenDel(false);
+          }}
           rightButtonAction={() => deleteItem(updateData.id)}
           withAuthPin
           setAuthPin={setPin}

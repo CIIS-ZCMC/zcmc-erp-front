@@ -30,7 +30,7 @@ import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../Store/AuthStore";
 import useModalHook from "../../Hooks/ModalHook";
 import ConfirmationModalComponent from "../Common/Dialog/ConfirmationModalComponent";
-import useSnackbarHook from "../Common/SnackbarHook";
+import useSnackbarHook from "../../Hooks/SnackbarHook";
 
 const NotificationMain = () => {
   const [isOpen, setIsOpen] = useState(false);

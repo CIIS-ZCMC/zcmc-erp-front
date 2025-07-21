@@ -514,7 +514,6 @@ function PPMPItems(props) {
 
   return (
     <Fragment>
-      {console.log("editor", is_draft)}
       <ContainerComponent
         title={"List of items"}
         description={

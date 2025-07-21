@@ -6,7 +6,7 @@ import ButtonComponent from "../Common/ButtonComponent";
 import { useComment, useCommentActions } from "../../Hooks/CommentHook";
 import ConfirmationModalComponent from "../Common/Dialog/ConfirmationModalComponent";
 import useModalHook from "../../Hooks/ModalHook";
-import useSnackbarHook from "../Common/SnackbarHook";
+import useSnackbarHook from "../../Hooks/SnackbarHook";
 import { localStorageGetter } from "../../Utils/LocalStorage";
 import { useAOPApplicationsActions } from "../../Hooks/AOP/AOPApplicationsHook";
 import { useActivityUIStates } from "../../Hooks/AOP/ActivityHook";

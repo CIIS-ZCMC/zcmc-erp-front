@@ -38,6 +38,7 @@ const Footer = () => {
     setConfirmationModal(data);
   };
   const handleLogOut = () => {
+    setLogOut(false);
     localStorage.removeItem("ppmp-items");
     localStorage.removeItem("ppmp-edits");
     window.location.href = BASE_URL.development_landing_page;
@@ -193,6 +194,10 @@ const Footer = () => {
       {logOut && (
         <ConfirmationModalComponent
           leftButtonLabel="No, go back"
+          leftButtonAction={() => {
+            closeConfirmation();
+            setLogOut(false);
+          }}
           rightButtonAction={() => handleLogOut()}
           rightButtonLabel="Yes, continue"
           btnColor="danger"

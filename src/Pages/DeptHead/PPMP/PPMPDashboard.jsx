@@ -47,7 +47,6 @@ function PPMPDashboard(props) {
   }, [assignedArea]);
   return (
     <Fragment>
-      {console.log("dashboard", status)}
       {pageLoader ? (
         <Stack height="85vh" alignItems="center" justifyContent="center">
           <ThreeDotsLoader />
