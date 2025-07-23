@@ -57,7 +57,7 @@ const useLibItemHook = create((set, get) => ({
   updateItem: async (body, param, callback) => {
     update({
       url: `items`,
-      params: { id: param },
+      param: { id: param },
       form: body,
       success: (response) => {
         const { message, data } = response.data;

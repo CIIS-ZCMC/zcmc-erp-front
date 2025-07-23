@@ -12,7 +12,7 @@ import useClassificationHook from "../../../Hooks/Libraries/LibClassificationHoo
 
 export const Classification = () => {
   const { pin, setPin } = usePinHook();
-  const { setConfirmationModal } = useModalHook();
+  const { setConfirmationModal, closeConfirmation } = useModalHook();
   const {
     classi_dataTable,
     pagination,
@@ -157,6 +157,10 @@ export const Classification = () => {
       {openDel && (
         <ConfirmationModalComponent
           status="error"
+          leftButtonAction={() => {
+            closeConfirmation();
+            setOpenDel(false);
+          }}
           rightButtonAction={() => deleteItem(updateData.id)}
           withAuthPin
           setAuthPin={setPin}

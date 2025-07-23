@@ -148,28 +148,38 @@ export const Items = () => {
           rightButtonAction={() => update()}
           content={
             <>
-              <TextareaComponent
-                name={"name"}
-                label={"Item Name"}
-                value={updatedData.name}
-                onChange={(e) =>
-                  handleChangeInput("name", setUpdatedData, e.target.value)
-                }
-              />
-              <InputComponent
-                label={"Estimated budget"}
-                name={"estimated_budget"}
-                value={updatedData.estimated_budget}
-                onChange={(e) =>
-                  handleChangeInput(
-                    "estimated_budget",
-                    setUpdatedData,
-                    e.target.value
-                  )
-                }
-                type="number"
-              />
-              <InputComponent type="password" value={pin} setValue={setPin} />
+              <Stack gap={2}>
+                <TextareaComponent
+                  name={"name"}
+                  label={"Item Name"}
+                  value={updatedData.name}
+                  onChange={(e) =>
+                    handleChangeInput("name", setUpdatedData, e.target.value)
+                  }
+                />
+                <InputComponent
+                  label={"Estimated budget"}
+                  name={"estimated_budget"}
+                  value={updatedData.estimated_budget}
+                  handleInput={(e) =>
+                    handleChangeInput(
+                      "estimated_budget",
+                      setUpdatedData,
+                      e.target.value
+                    )
+                  }
+                  type="number"
+                />
+                <InputComponent
+                  label={"Authorization PIN"}
+                  type="password"
+                  value={pin}
+                  setValue={setPin}
+                  helperText={
+                    "Confirm you action by typing-in your authorization PIN."
+                  }
+                />
+              </Stack>
             </>
           }
           hasActionButtons
