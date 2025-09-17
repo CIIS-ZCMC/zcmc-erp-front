@@ -1,7 +1,7 @@
 import { Fragment, useEffect, useState, useCallback } from "react";
 
 import { useNavigate, Outlet } from "react-router-dom";
-import { Stack, Link, Checkbox, Snackbar, Alert, Divider } from "@mui/joy";
+import { Stack, Link, Snackbar, Alert, Divider } from "@mui/joy";
 import { Plus, ExternalLink } from "lucide-react";
 
 //custom components
@@ -11,10 +11,12 @@ import AlertDialogComponent from "../../../../../Components/Common/Dialog/AlertD
 import ButtonComponent from "../../../../../Components/Common/ButtonComponent";
 import ContainerComponent from "../../../../../Components/Common/ContainerComponent";
 import EditableTableComponent from "../../../../../Components/Common/Table/EditableTableComponent";
-import ConfirmationModalComponent from "../../../../../Components/Common/Dialog/ConfirmationModalComponent";
 import ObjectivesTable from "./ObjectivesTable";
 
-import MissionModal from "./MissionModal";
+import MissionModal from "./modals/MissionModal";
+import ConfirmationModal from "./modals/ConfirmationModal";
+import DiscussedModal from "./modals/DiscussedModal";
+import CancelModal from './modals/CancelModal';
 import FeedbackSection from "./FeedbackSection";
 
 // hooks
@@ -33,113 +35,43 @@ import { AOP_CONSTANTS, CONFIRMATION_CONSTANTS } from "../../../../../Data/const
 import { AOP_HEADER } from "../../../../../Data/Columns";
 
 // utils
-import { localStorageSetter, localStorageGetter } from "../../../../../Utils/LocalStorage";
 import { buildAOP } from "../../../../../Utils/aopBuilder";
 import { useAuth } from "../../../../../Store/AuthStore";
-import { socket } from "../../../../../Services/Socket";
+import { useSubmitAOP } from "../../../../../Hooks/AOP/useSubmitAop";
+import { useObjectivesStorage } from "../../../../../Store/useObjectivesStorage";
+import useSocketEditing from "../../../../../Hooks/Socket/useSocketEditing";
+import { disabledEditMode, getActivitiesCount } from "../../../../../Utils/aopUtils";
 
 const Objectives = () => {
 
-    const APPLICATION_OBJECTIVE_ID = localStorageGetter('aop-app-id');
-    const OBJECTIVES = localStorageGetter('objectives-storage');
-    const savedMission = localStorageGetter("mission");
-    const remarks = localStorageGetter("remarks");
-    const comments = localStorageGetter("all_comments");
-    const aopStatus = localStorage.getItem("aop-status");
-
-    useEffect(() => {
-        console.log('remarks', remarks)
-        console.log('comments', comments) //show only comments for unit 
-        console.log('aopStatus', aopStatus)
-    }, [remarks, comments])
-
-    const getCommentsByApplicationId = () => {
-        const commentsByApplicationId = comments?.filter((comment) => comment.application_id === APPLICATION_OBJECTIVE_ID);
-        console.log(`${APPLICATION_OBJECTIVE_ID}:`, commentsByApplicationId)
-        return commentsByApplicationId;
-    }
+    //local staorage data
+    const {
+        APPLICATION_OBJECTIVE_ID,
+        OBJECTIVES,
+        savedMission,
+        remarks,
+        comments,
+        aopStatus,
+        getCommentsByApplicationId,
+    } = useObjectivesStorage()
 
     useEffect(() => {
         getCommentsByApplicationId()
     }, [comments])
 
     const { user } = useAuth();
-    const { name, id, assignedArea } = user ?? {};
+    const { assignedArea } = user ?? {};
 
-    useEffect(() => {
-        if (!assignedArea?.name) return;
-        socket.emit("register-user", {
-            userId: id,
-            name: name,
-            area: assignedArea.name,
-        });
-    }, [assignedArea]);
-
-    useEffect(() => {
-        socket.on("editing", handleEditing);
-        return () => {
-            socket.off("editing"); // Clean up on unmount
-        };
-    }, [socket]);
-
-    // AUTHENTICATE
-    useEffect(() => {
-        socket.emit("authenticate", {
-            id: id,
-            area: assignedArea?.name,
-        });
-    }, []);
-
-    const editSignal = () => {
-        socket.emit('start-edit', {
-            userId: id,
-            name: name,
-            area: assignedArea?.name,
-        })
-    }
-
-    const disconnectSignal = () => {
-        socket.emit('stop-edit', {
-            userId: id,
-            area: assignedArea?.name,
-        })
-        setShow(false);
-        handleCloseSnack();
-    }
-
-    const handleEditing = ({ editable, showEdit, editorName, editorId }) => {
-        setDisabled(!editable);
-        setShow(showEdit);
-        setOpenNotify(editable ? false : true);
-        setEditor(() => {
-            return { editorName: editorName, editorId: editorId };
-        });
-
-        if (!editable) {
-            return notify();
-        }
-    };
-
-    const handleEditClick = () => {
-        setEditLoad(true)
-        setTimeout(() => {
-            editSignal();
-            setShow(true);
-            setEditLoad(false)
-        }, 500);
-    }
-
-    const disabledEditMode = () => {
-
-        if (!APPLICATION_OBJECTIVE_ID) return false //create mode
-
-        const noRemarks = !remarks || remarks.length === 0;
-        const noComments = !comments || comments.length === 0;
-
-        if (noRemarks && noComments) return true;
-
-        return disabled;
-    }
+    const {
+        openNotify,
+        editor,
+        disabled,
+        show,
+        editLoad,
+        handleEditClick,
+        disconnectSignal,
+        closeNotify
+    } = useSocketEditing({ user, assignedArea })
 
     const { create, getSingleAOP } = useAOPActions();
 
@@ -155,19 +87,35 @@ const Objectives = () => {
         setIsDiscussed,
         deleteObjective,
     } = useObjectivesHook();
-    const { findActivitiesByObjectiveID, activities, clearActivities, removeActivity } =
-        useActivitiesHook();
+
+    const {
+        findActivitiesByObjectiveID,
+        activities,
+        clearActivities,
+        removeActivity
+    } = useActivitiesHook();
+
     const {
         responsible_people,
         findResponsiblePeopleByActivityID,
         clearResponsiblePeople,
         removeMultipleResponsiblePersonnel,
     } = useResponsiblePeopleHook();
-    const { resources, findResourcesByActivityID, clearResources, clearCart, removeItemResource } =
-        useResourceHook();
-    const { setAlertDialog, setConfirmationModal, closeConfirmation, closeAlertDialog } =
-        useModalHook();
 
+    const {
+        resources,
+        findResourcesByActivityID,
+        clearResources,
+        clearCart,
+        removeItemResource
+    } = useResourceHook();
+
+    const {
+        setAlertDialog,
+        setConfirmationModal,
+        closeConfirmation,
+        closeAlertDialog
+    } = useModalHook();
 
     // COMMENTS HOOK
     const {
@@ -187,43 +135,43 @@ const Objectives = () => {
     const [openSaveMissionModal, setOpenSaveMissionModal] = useState(false);
     const [openFeedbackModal, setOpenFeedbackModal] = useState(false)
     const [openCancelRequestModal, setOpenCancelRequestModal] = useState(false)
-    const [openNotify, setOpenNotify] = useState(false);
-    const [editor, setEditor] = useState(null);
-    const [show, setShow] = useState(false);
-    const [editLoad, setEditLoad] = useState(false);
-    const [disabled, setDisabled] = useState(false);
-
-
 
     const [authorizationPin, setAuthorizationPin] = useState(null);
     const [isDraft, setIsDraft] = useState(false);
     const [mission, setMission] = useState(savedMission ? savedMission : "");
 
-    const activitiesCount = objectives.map((objective) => {
-        return activities.filter((activity) => {
-            return activity.parentId === objective.id || activity.parentId === objective.objectiveUuid
-        }
-        )
-    });
+    const activitiesCount = getActivitiesCount(objectives, activities);
 
-    const notify = () => setOpenNotify(true);
+    // build aop payload
+    const buildAopPayload = useCallback(() => {
+        return buildAOP({
+            objectives,
+            findActivitiesByObjectiveID,
+            findResourcesByActivityID,
+            findResponsiblePeopleByActivityID,
+            APPLICATION_OBJECTIVE_ID,
+        });
+    }, [
+        objectives,
+        findActivitiesByObjectiveID,
+        findResourcesByActivityID,
+        findResponsiblePeopleByActivityID
+    ]);
+
+    // submit aop
+    const { handleSubmit, isSubmitLoading, alertDialog } = useSubmitAOP({
+        mission,
+        hasDiscussed,
+        authorizationPin,
+        buildAopPayload: buildAopPayload(),
+        APPLICATION_OBJECTIVE_ID,
+        createFn: create // create aop function call
+    })
 
     const handleCloseSnack = () => {
         setEditor(null);
         setOpenNotify(false);
     };
-
-    // check for open modals
-    useEffect(() => {
-        // console.log('global isLoading', isLoading)
-        // console.log('open confirm dialog', openConfirmDialog);
-        // console.log('open confirm discussed dialog', openConfirmDiscussedDialog);
-        // console.log('open alert success', openAlertSuccess);
-        // console.log('open submit modal', openSubmitModal);
-        // console.log('open save mission modal', openSaveMissionModal);
-        // console.log('open feedback modal', openFeedbackModal);
-        // console.log('open cancel request modal', openCancelRequestModal);
-    }, [isLoading])
 
     const isSubmitEnabled = !mission ||
         resources.length === 0 ||
@@ -292,23 +240,6 @@ const Objectives = () => {
         setConfirmationModal(data);
     };
 
-
-    // build aop payload
-    const buildAopPayload = useCallback(() => {
-        return buildAOP({
-            objectives,
-            findActivitiesByObjectiveID,
-            findResourcesByActivityID,
-            findResponsiblePeopleByActivityID,
-            APPLICATION_OBJECTIVE_ID,
-        });
-    }, [
-        objectives,
-        findActivitiesByObjectiveID,
-        findResourcesByActivityID,
-        findResponsiblePeopleByActivityID
-    ]);
-
     // useEffect(() => {
     //     console.log(APPLICATION_OBJECTIVE_ID)
     // }, [APPLICATION_OBJECTIVE_ID])
@@ -324,80 +255,12 @@ const Objectives = () => {
             setIsLoading(false)
             setOpenAlertSuccess(false)
             clearLocalStorage();
-
         }, 2000)
     }
 
     // useEffect(() => {
     //     console.log(isDraft)
     // }, [isDraft])
-
-    const handleSubmit = async (is_draft) => {
-
-        // console.log('payload', is_draft)
-
-        // setOpenConfirmDialog(false);
-        setIsLoading(true); // ✅ Set loading at the start
-
-        const payload = {
-            mission: mission,
-            has_discussed: !!hasDiscussed,
-            status: is_draft ? 'draft' : 'pending',
-            authorization_pin: authorizationPin,
-            application_objectives: buildAopPayload(),
-        };
-
-        console.log(payload)
-
-        const responseMessages = {
-            existing: {
-                status: 200,
-                title: "Existing AOP",
-                description: "You already have an AOP application in your area."
-            },
-            success: {
-                status: 200,
-                title: `AOP for F.Y. 2026 successfully ${APPLICATION_OBJECTIVE_ID ? 'updated' : 'submitted for approval'}.`,
-                isGlobal: false,
-                description: APPLICATION_OBJECTIVE_ID
-                    ? "Your AOP has been successfully updated."
-                    : "Your AOP request has been sent to the next approving body."
-            },
-            error: (status, message) => ({
-                status: status,
-                title: "Submission failed",
-                description: message || "An unexpected error occurred."
-            })
-        };
-
-        try {
-            const { status, message } = await new Promise((resolve) => {
-                create(payload, (status, message) => {
-                    resolve({ status, message });
-                });
-            });
-
-            if (status === 200 && message === responseMessages.existing.description) {
-                setAlertDialog(responseMessages.existing);
-                return;
-            }
-
-            if (status === 200) {
-                setAlertDialog(responseMessages.success);
-                closeConfirmation();
-                setOpenAlertSuccess(true);
-            } else {
-                setAlertDialog(responseMessages.error(status, message));
-            }
-
-        } catch (err) {
-            console.error('Submission error:', err);
-            setAlertDialog(responseMessages.error(err?.status || 500, err?.message));
-        } finally {
-            setIsLoading(false);
-        }
-    };
-
 
     // handle save mission
     const handleSaveMission = () => {
@@ -425,6 +288,7 @@ const Objectives = () => {
 
     const handleOpenCancelRequestModal = () => {
         setOpenCancelRequestModal(true)
+        setOpenConfirmDialog(false)
         setConfirmationModal
         const data = {
             status: "warning",
@@ -510,6 +374,11 @@ const Objectives = () => {
         deleteObjective(objectiveId)
     };
 
+    const handleCancelDiscussedModal = () => {
+        setOpenConfirmDiscussedDialog(false)
+        setOpenConfirmDialog(false)
+    }
+
     const handleClose = () => {
         close;
         closeAlertDialog();
@@ -541,14 +410,15 @@ const Objectives = () => {
                             onClick={addObjective}
                             label={"Add an Objective"}
                             endDecorator={<Plus size={16} />}
-                            disabled={disabledEditMode()}
+                            disabled={!show || disabledEditMode(APPLICATION_OBJECTIVE_ID, remarks, comments, disabled)}
                         />
+
                         {
                             !APPLICATION_OBJECTIVE_ID &&
                             <ButtonComponent
                                 onClick={() => {
                                     setIsDraft(true);
-                                    handleSubmit(true);
+                                    handleSubmit(true, () => setOpenAlertSuccess(true));
                                 }}
                                 label={"Save as Draft"}
                                 variant={"outlined"}
@@ -563,7 +433,7 @@ const Objectives = () => {
                             isLoading={editLoad}
                             color={show ? "danger" : "primary"}
                             variant="outlined"
-                            disabled={disabledEditMode()}  //get the remarks and comments then check if empty, user cannot edit and also if socket detected that there is someone editing
+                            disabled={disabledEditMode(APPLICATION_OBJECTIVE_ID, remarks, comments, disabled)}  //get the remarks and comments then check if empty, user cannot edit and also if socket detected that there is someone editing
                         />
                     </Stack>
                 }
@@ -590,8 +460,8 @@ const Objectives = () => {
                         onClick={() => handleDiscussedConfirmationModal()} //open the has discussed modal
                     />
                 </Stack>
-                <Divider sx={{ mb: 2 }} />
 
+                <Divider sx={{ mb: 2 }} />
 
                 {isLoading
                     ?
@@ -625,6 +495,10 @@ const Objectives = () => {
                                     handleChange={updateObjectiveField}
                                     function_types={function_types}
                                     activitiesCount={activitiesCount}
+                                    applicationObjectiveId={APPLICATION_OBJECTIVE_ID}
+                                    remarks={remarks}
+                                    comments={comments}
+                                    disabled={disabled}
                                     disabledEditMode={disabledEditMode}
                                 />
                             }
@@ -643,52 +517,33 @@ const Objectives = () => {
                 handleSaveMission={handleSaveMission}
             />
 
-            {openConfirmDialog && (
-                <ConfirmationModalComponent
-                    leftButtonlabel={"Back to editor"}
-                    rightButtonAction={() => handleSubmit()}
-                    withAuthPin
-                    rightButtonDisabled={!authorizationPin}
-                    setAuthPin={setAuthorizationPin}
-                    isLoading={isLoading}
-                />
-            )}
+            {/* confirm with authpin submittion */}
+            <ConfirmationModal
+                rightButtonAction={() => handleSubmit(false, () => setOpenAlertSuccess(true))}
+                withAuthPin
+                rightButtonDisabled={authorizationPin}
+                setAuthPin={setAuthorizationPin}
+                isLoading={isLoading}
+                openConfirmDialog={openConfirmDialog}
+            />
 
             {/* Confirmation for handle discussed */}
-            {openConfirmDiscussedDialog && (
-                <ConfirmationModalComponent
-                    leftButtonLabel={"Cancel"}
-                    leftButtonAction={() => setOpenConfirmDiscussedDialog(false)}
-                    rightButtonAction={() => handleProceedAuthModal(200)}
-                    rightButtonLabel="Proceed"
-                    rightButtonDisabled={!hasDiscussed}
-                    isLoading={isLoading}
-                    content={
-                        <>
-                            <Checkbox
-                                label={
-                                    "Yes, I have discussed these plans with my Division Chief."
-                                }
-                                onChange={(e) => {
-                                    setIsDiscussed(e.target.checked);
-                                }}
-                                checked={hasDiscussed}
-                            />
-                        </>
-                    }
-                />
-            )}
+            <DiscussedModal
+                openConfirmDiscussedDialog={openConfirmDiscussedDialog}
+                setOpenConfirmDiscussedDialog={setOpenConfirmDiscussedDialog}
+                leftButtonAction={() => handleCancelDiscussedModal()}
+                rightButtonAction={() => handleProceedAuthModal(200)}
+                hasDiscussed={hasDiscussed}
+                setIsDiscussed={setIsDiscussed}
+                isLoading={isLoading}
+            />
 
-            {/* Confirmation for cancel */}
-            {openCancelRequestModal && (
-                <ConfirmationModalComponent
-                    leftButtonLabel={"Cancel"}
-                    leftButtonAction={() => setOpenCancelRequestModal(false)}
-                    rightButtonAction={() => handleCancelRequest()}
-                    rightButtonLabel="Proceed"
-                    isLoading={isLoading}
-                />
-            )}
+            <CancelModal
+                leftButtonAction={() => setOpenCancelRequestModal(false)}
+                rightButtonAction={() => handleCancelRequest()}
+                openCancelRequestModal={openCancelRequestModal}
+                isLoading={isLoading}
+            />
 
             <FeedbackSection
                 openFeedbackModal={openFeedbackModal}
@@ -709,14 +564,14 @@ const Objectives = () => {
                 )
             }
 
-            <AlertDialogComponent
+            {/* <AlertDialogComponent
                 leftButtonAction={() => handleClose()}
-            />
+            /> */}
 
             <Snackbar
                 open={openNotify}
                 // autoHideDuration={2000}
-                onClose={handleCloseSnack}
+                onClose={closeNotify}
                 color="success"
             >
                 <Alert

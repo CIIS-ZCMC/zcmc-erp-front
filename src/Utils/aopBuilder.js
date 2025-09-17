@@ -9,7 +9,7 @@ export const buildAOP = ({
     APPLICATION_OBJECTIVE_ID
 }) => {
 
-    console.log('aop builder ', APPLICATION_OBJECTIVE_ID)
+    // console.log('aop builder ', APPLICATION_OBJECTIVE_ID)
 
     return objectives?.map((item) => {
 

@@ -81,6 +81,9 @@ export const AOP_CONSTANTS = {
   MODAL_RESOURCE_HEADER: "Select resources for activity Activity",
   MODAL_RESOURCE_SUBHEADING:
     "Select a request status and reasons (if returned) to continue. You may add remarks if necessary.",
+
+  DISCUSSED_TITLE: "Discussed",
+  DISCUSSED_LABEL: "Yes, I have discussed these plans with my Division Chief.",
 };
 
 export const DEADLINES_CONSTANTS = {

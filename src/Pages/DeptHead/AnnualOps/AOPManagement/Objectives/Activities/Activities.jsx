@@ -19,17 +19,23 @@ import { AOP_ACTIVITIES_HEADER } from "../../../../../../Data/Columns";
 
 import useActivitiesHook from "../../../../../../Hooks/ActivitiesHook";
 import useObjectivesHook from "../../../../../../Hooks/ObjectivesHook";
+import { useObjectivesStorage } from "../../../../../../Store/useObjectivesStorage";
 
 import { useAuth } from "../../../../../../Store/AuthStore";
 import { socket } from "../../../../../../Services/Socket";
-import { localStorageGetter } from "../../../../../../Utils/LocalStorage";
+
+import useSocketEditing from "../../../../../../Hooks/Socket/useSocketEditing";
+import { disabledEditMode } from "../../../../../../Utils/aopUtils";
 
 const Activities = () => {
 
-    const APPLICATION_OBJECTIVE_ID = localStorageGetter('aop-app-id');
-    const remarks = localStorageGetter("remarks");
-    const comments = localStorageGetter("all_comments");
-    const aopStatus = localStorage.getItem("aop-status");
+    //local staorage data
+    const {
+        APPLICATION_OBJECTIVE_ID,
+        remarks,
+        comments,
+        aopStatus,
+    } = useObjectivesStorage()
 
     const location = useLocation();
     const navigate = useNavigate();
@@ -49,21 +55,27 @@ const Activities = () => {
     const currentPath = location.pathname;
     const childPath = currentPath === `/aop-management/activities/${objectiveId}`;
     const [loading, setLoading] = useState(true);
-    const [openNotify, setOpenNotify] = useState(false);
-    const [editor, setEditor] = useState(null);
-    const [show, setShow] = useState(false);
-    const [editLoad, setEditLoad] = useState(false);
-    const [disabled, setDisabled] = useState(false);
 
     const hasActivitiesForParent = activities.some((act) => act.parentId === parentId);
 
     const { user } = useAuth();
     const { name, id, assignedArea } = user ?? {};
 
-    useEffect(() => {
-        console.log('aop status', aopStatus)
-        console.log('disabled', disabled)
-    }, [disabled, aopStatus])
+    const {
+        openNotify,
+        editor,
+        disabled,
+        show,
+        editLoad,
+        handleEditClick,
+        disconnectSignal,
+        closeNotify
+    } = useSocketEditing({ user, assignedArea })
+
+    // useEffect(() => {
+    //     console.log('aop status', aopStatus)
+    //     console.log('disabled', disabled)
+    // }, [disabled, aopStatus])
 
     useEffect(() => {
         if (!assignedArea?.name) return;
@@ -97,15 +109,6 @@ const Activities = () => {
         })
     }
 
-    const disconnectSignal = () => {
-        socket.emit('stop-edit', {
-            userId: id,
-            area: assignedArea?.name,
-        })
-        setShow(false);
-        handleCloseSnack();
-    }
-
     const handleEditing = ({ editable, showEdit, editorName, editorId }) => {
         setDisabled(!editable);
         setShow(showEdit);
@@ -118,15 +121,6 @@ const Activities = () => {
             return notify();
         }
     };
-
-    const handleEditClick = () => {
-        setEditLoad(true)
-        setTimeout(() => {
-            editSignal();
-            setShow(true)
-            setEditLoad(false)
-        }, 300)
-    }
 
     const handleClose = () => {
         close;
@@ -183,18 +177,6 @@ const Activities = () => {
     const handleNavigateBack = () => {
         clearParentId()
         navigate(`/aop-management`, { state: { ...location.state } })
-    }
-
-    const disabledEditMode = () => {
-
-        if (!APPLICATION_OBJECTIVE_ID) return false //create mode
-
-        const noRemarks = !remarks || remarks.length === 0;
-        const noComments = !comments || comments.length === 0;
-
-        if (noRemarks && noComments) return true;
-
-        return disabled;
     }
 
     return (
@@ -283,7 +265,7 @@ const Activities = () => {
                                     onClick={() => addActivity(current_parent_id ? current_parent_id : parentId)}
                                     label={"Add an Activity"}
                                     endDecorator={<Plus size={16} />}
-                                    disabled={disabledEditMode()}
+                                    disabled={!show || disabledEditMode(APPLICATION_OBJECTIVE_ID, remarks, comments, disabled)}
                                 />
 
                                 <ButtonComponent
@@ -293,7 +275,7 @@ const Activities = () => {
                                     isLoading={editLoad}
                                     color={show ? "danger" : "primary"}
                                     variant="outlined"
-                                    disabled={disabledEditMode()}
+                                    disabled={disabledEditMode(APPLICATION_OBJECTIVE_ID, remarks, comments, disabled)}
                                 />
                             </Stack>
                         }

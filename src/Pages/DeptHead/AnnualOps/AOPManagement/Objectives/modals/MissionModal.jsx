@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react'
 
-import ModalComponent from '../../../../../Components/Common/Dialog/ModalComponent'
-import TextareaComponent from '../../../../../Components/Form/TextareaComponent'
+import ModalComponent from '@Components/Common/Dialog/ModalComponent';
+import TextareaComponent from '@Components/Form/TextareaComponent';
 
 const MissionModal = ({
     APPLICATION_OBJECTIVE_ID,
