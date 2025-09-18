@@ -19,11 +19,14 @@ import { AOP_RESOURCE_HEADER } from "../../../../../../../Data/Columns";
 import useResourceHook from "../../../../../../../Hooks/ResourceHook";
 import useItemsHook from "../../../../../../../Hooks/ItemsHook";
 import usePurchaseTypeHook from "../../../../../../../Hooks/PurchaseTypeHook";
+import useSocketEditing from "../../../../../../../Hooks/Socket/useSocketEditing";
 
 import { useAuth } from "../../../../../../../Store/AuthStore";
 import { socket } from "../../../../../../../Services/Socket";
 
 import { localStorageGetter } from "../../../../../../../Utils/LocalStorage";
+
+import { disabledEditMode } from "../../../../../../../Utils/aopUtils";
 
 const Resources = () => {
 
@@ -41,15 +44,21 @@ const Resources = () => {
     const parentId = location.state?.parentId; // refers to objectiveId as parent
     const objectiveRowId = location.state?.objectiveRowId;
 
-    const [isLoading, setIsLoading] = useState(false)
-    const [openNotify, setOpenNotify] = useState(false);
-    const [editor, setEditor] = useState(null);
-    const [show, setShow] = useState(false);
-    const [editLoad, setEditLoad] = useState(false);
-    const [disabled, setDisabled] = useState(false);
-
     const { user } = useAuth();
     const { name, id, assignedArea } = user ?? {};
+
+    const [isLoading, setIsLoading] = useState(false);
+
+    const {
+        openNotify,
+        editor,
+        disabled,
+        show,
+        editLoad,
+        handleEditClick,
+        disconnectSignal,
+        closeNotify,
+    } = useSocketEditing({ user, assignedArea })
 
     useEffect(() => {
         console.log('aop status', aopStatus)
@@ -80,23 +89,6 @@ const Resources = () => {
         });
     }, []);
 
-    const editSignal = () => {
-        socket.emit('start-edit', {
-            userId: id,
-            name: name,
-            area: assignedArea?.name,
-        })
-    }
-
-    const disconnectSignal = () => {
-        socket.emit('stop-edit', {
-            userId: id,
-            area: assignedArea?.name,
-        })
-        setShow(false);
-        handleCloseSnack();
-    }
-
     const handleEditing = ({ editable, showEdit, editorName, editorId }) => {
         setDisabled(!editable);
         setShow(showEdit);
@@ -109,15 +101,6 @@ const Resources = () => {
             return notify();
         }
     };
-
-    const handleEditClick = () => {
-        setEditLoad(true)
-        setTimeout(() => {
-            editSignal();
-            setShow(true)
-            setEditLoad(false)
-        }, 300)
-    }
 
     const handleClose = () => {
         close;
@@ -156,18 +139,6 @@ const Resources = () => {
         });
     }, [resources]);
 
-    const disabledEditMode = () => {
-
-        if (!APPLICATION_OBJECTIVE_ID) return false //create mode
-
-        const noRemarks = !remarks || remarks.length === 0;
-        const noComments = !comments || comments.length === 0;
-
-        if (noRemarks && noComments) return true;
-
-        return disabled;
-    }
-
     return (
         <Fragment>
             <ContainerComponent
@@ -183,7 +154,7 @@ const Resources = () => {
                             onClick={() => navigate(`/aop-management/activities/${location.state.objectiveRowId}/items/${location.state.activityRowId}`, { state: { ...location.state } })}
                             label={"Add Resource"}
                             endDecorator={<Plus size={16} />}
-                            disabled={disabledEditMode()}
+                            disabled={!show || disabledEditMode(APPLICATION_OBJECTIVE_ID, remarks, comments, disabled, comments, disabled)}
                         />
                         <ButtonComponent
                             // onClick={() => }
@@ -192,7 +163,7 @@ const Resources = () => {
                             isLoading={editLoad}
                             color={show ? "danger" : "primary"}
                             variant="outlined"
-                            disabled={disabledEditMode()}
+                            disabled={disabledEditMode(APPLICATION_OBJECTIVE_ID, remarks, comments, disabled, comments, disabled)}
                         />
 
                     </Stack>

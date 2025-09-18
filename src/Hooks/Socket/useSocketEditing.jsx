@@ -78,7 +78,7 @@ const useSocketEditing = ({ user, assignedArea }) => {
             area: assignedArea?.name,
         })
         setShow(false);
-        handleCloseSnack();
+        // handleCloseSnack();
     }
 
     return {

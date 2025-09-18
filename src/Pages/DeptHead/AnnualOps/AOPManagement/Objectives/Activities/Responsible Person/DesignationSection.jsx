@@ -37,7 +37,7 @@ const SelectJobPositionComponent = ({ parentId, isEditing }) => {
     </Stack>
 }
 
-const JobPositionList = ({ parentId }) => {
+const JobPositionList = ({ parentId, isEditing }) => {
 
     const { responsible_people, removeResponsiblePersonnel, removeItem } = useResponsiblePeopleHook();
     const { setAlertDialog, setConfirmationModal, closeConfirmation } = useModalHook()
@@ -166,6 +166,7 @@ const JobPositionList = ({ parentId }) => {
                             color='danger'
                             fontSize={14}
                             onClick={() => handleOpenDeleteModal(id, 'designations', parentId)}
+                            disabled={!isEditing}
                         >
                             Remove
                         </Link>
@@ -217,7 +218,7 @@ const DesignationSection = ({ isEditing }) => {
         <div>
             <BoxComponent>
                 <SelectJobPositionComponent parentId={activityId} isEditing={isEditing} />
-                <JobPositionList parentId={activityId} />
+                <JobPositionList parentId={activityId} isEditing={isEditing} />
             </BoxComponent>
         </div >
     )

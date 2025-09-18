@@ -20,10 +20,14 @@ import { AOP_CONSTANTS } from "../../../../../../../Data/constants";
 import { localStorageGetter } from "../../../../../../../Utils/LocalStorage";
 import { useAuth } from "../../../../../../../Store/AuthStore";
 import { socket } from "../../../../../../../Services/Socket";
+import useSocketEditing from "../../../../../../../Hooks/Socket/useSocketEditing";
 
 const Responsible = () => {
 
     const APPLICATION_OBJECTIVE_ID = localStorageGetter('aop-app-id');
+    const remarks = localStorageGetter("remarks");
+    const comments = localStorageGetter("all_comments");
+    const aopStatus = localStorage.getItem("aop-status");
 
     const navigate = useNavigate();
     const location = useLocation();
@@ -42,16 +46,22 @@ const Responsible = () => {
     });
 
     const [isLoading, setIsLoading] = useState(false);
-    // const [isEnabledSave, setIsEnabledSave] = useState(false);s
+    // const [isEnabledSave, setIsEnabledSave] = useState(false);
     const [openConfirmDialog, setOpenConfirmDialog] = useState(false);
-    const [openNotify, setOpenNotify] = useState(false);
-    const [editor, setEditor] = useState(null);
-    const [show, setShow] = useState(false);
-    const [editLoad, setEditLoad] = useState(false);
-    const [disabled, setDisabled] = useState(false);
 
     const { user } = useAuth();
     const { name, id, assignedArea } = user ?? {};
+
+    const {
+        openNotify,
+        editor,
+        disabled,
+        show,
+        editLoad,
+        handleEditClick,
+        disconnectSignal,
+        closeNotify,
+    } = useSocketEditing({ user, assignedArea })
 
 
     useEffect(() => {
@@ -78,23 +88,6 @@ const Responsible = () => {
         });
     }, []);
 
-    const editSignal = () => {
-        socket.emit('start-edit', {
-            userId: id,
-            name: name,
-            area: assignedArea?.name,
-        })
-    }
-
-    const disconnectSignal = () => {
-        socket.emit('stop-edit', {
-            userId: id,
-            area: assignedArea?.name,
-        })
-        setShow(false);
-        handleCloseSnack();
-    }
-
     const handleEditing = ({ editable, showEdit, editorName, editorId }) => {
         setDisabled(!editable);
         setShow(showEdit);
@@ -107,16 +100,6 @@ const Responsible = () => {
             return notify();
         }
     };
-
-    const handleEditClick = () => {
-        setEditLoad(true)
-        setTimeout(() => {
-            editSignal();
-            setShow(true)
-            setEditLoad(false)
-        }, 300)
-    }
-
 
     const handleClose = () => {
         close;

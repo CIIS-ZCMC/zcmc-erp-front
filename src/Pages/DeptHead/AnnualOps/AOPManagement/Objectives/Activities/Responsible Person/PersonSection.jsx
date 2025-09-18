@@ -41,7 +41,7 @@ const SelectPersonComponent = ({ parentId, isEditing }) => {
     </Stack>
 }
 
-const ResponsiblePersonList = ({ parentId }) => {
+const ResponsiblePersonList = ({ parentId, isEditing }) => {
 
     const { responsible_people, removeResponsiblePersonnel, removeItem } = useResponsiblePeopleHook()
     const { setAlertDialog, setConfirmationModal, closeConfirmation } = useModalHook()
@@ -150,6 +150,7 @@ const ResponsiblePersonList = ({ parentId }) => {
                             color="danger"
                             fontSize={14}
                             onClick={() => handleOpenDeleteModal(id, "users", parentId)}
+                            disabled={!isEditing}
                         >
                             Remove
                         </Link>
