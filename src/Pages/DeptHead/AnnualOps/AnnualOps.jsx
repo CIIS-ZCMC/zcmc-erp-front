@@ -4,7 +4,6 @@ import { Stack, Typography, Grid } from "@mui/joy";
 import { useNavigate } from "react-router-dom";
 
 import useAOPObjectivesHooks from "../../../Hooks/AOP/AOPObjectivesHook";
-
 import { useAOPActions, } from "../../../Hooks/AOP/AOPObjectivesHook";
 
 import Header from "./Header";
@@ -13,6 +12,8 @@ import Timeline from "./Timeline";
 
 import ButtonComponent from "../../../Components/Common/ButtonComponent";
 import BoxComponent from "../../../Components/Common/Card/BoxComponent";
+import ModalComponent from '@Components/Common/Dialog/ModalComponent'
+import TextareaComponent from "@Components/Form/TextareaComponent";
 import PageTitle from "../../../Components/Common/PageTitle";
 
 import no_result from "../../../assets/empty-state-icon-base.png";
@@ -20,15 +21,46 @@ import { AOP_CONSTANTS } from "../../../Data/constants";
 
 import { ThreeDotsLoader } from "../../../Components/Common/Loading/ThreeDotsLoader";
 import useResponsiblePeopleHook from "../../../Hooks/ResponsiblePeopleHook";
+
+import { useMission, useObjectivesActions } from "../../../Store/ObjectivesStore.js";
+
 import useObjectivesHook from "../../../Hooks/ObjectivesHook";
 import useActivitiesHook from "../../../Hooks/ActivitiesHook";
 import useResourceHook from "../../../Hooks/ResourceHook";
 
+import { ANNUAL_OPS } from "../../../Data/constants";
+
+const FiscalYearModal = ({ value, onChange, fiscalYear }) => {
+
+  const { missionPlaceHolder } = ANNUAL_OPS;
+
+  return (
+    <>
+      <Stack spacing={1}>
+        <Typography>Fiscal Year: {fiscalYear}</Typography>
+        <TextareaComponent
+          label={'Mission'}
+          placeholder={missionPlaceHolder}
+          value={value}
+          onChange={onChange}
+        />
+      </Stack>
+    </>
+  )
+}
+
 const AnnualOps = () => {
   const navigate = useNavigate();
 
+  const { header, description } = ANNUAL_OPS;
   const [isLoading, setIsLoading] = useState(false);
+  const [openFiscalYearModal, setOpenFiscalYearModal] = useState(false);
 
+  const mission = useMission();
+  const { setMission, clearMission } = useObjectivesActions();
+
+  const currentYear = new Date().getFullYear();
+  const currentFiscalYear = currentYear + 1;
 
   const {
     aop_id,
@@ -42,7 +74,11 @@ const AnnualOps = () => {
   } = useAOPObjectivesHooks();
 
 
-  const { getSummary, setAopId, setMission } = useAOPActions();
+  const {
+    getSummary,
+    setAopId,
+    // setMission
+  } = useAOPActions();
   const { setResponsiblePeople } = useResponsiblePeopleHook();
   const { setObjectives } = useObjectivesHook();
   const { setActivities } = useActivitiesHook();
@@ -62,7 +98,7 @@ const AnnualOps = () => {
     total_users,
     total_responsible_people,
     year,
-    mission,
+    // mission,
   } = aop_summary;
 
   function setStates() {
@@ -104,6 +140,15 @@ const AnnualOps = () => {
       }
     });
   }, []);
+
+  const handleSaveAOP = () => {
+    // alert('successfully created new aop')
+    clearMission()
+    setOpenFiscalYearModal(false)
+    console.log(`fiscal year : ${currentFiscalYear} mission: ${mission}`);
+    navigate("/aop-management")
+    //handle Save aop api here
+  };
 
   return (
     <Fragment>
@@ -169,7 +214,7 @@ const AnnualOps = () => {
 
                 <ButtonComponent
                   label={"Create new AOP"}
-                  onClick={() => navigate("/aop-management")}
+                  onClick={() => setOpenFiscalYearModal(true)}
                 />
               </Stack>
             </BoxComponent>
@@ -211,6 +256,23 @@ const AnnualOps = () => {
           )}
         </>
       )}
+
+      <ModalComponent
+        isOpen={openFiscalYearModal}
+        handleClose={() => setOpenFiscalYearModal(false)}
+        title={header}
+        description={description}
+        content={<FiscalYearModal
+          fiscalYear={currentFiscalYear}
+          value={mission}
+          onChange={(e) => setMission(e.target.value)}
+        />}
+        hasActionButtons={true}
+        rightButtonLabel={'Save AOP'}
+        rightButtonAction={() => handleSaveAOP()}
+        minWidth={500}
+      />
+
     </Fragment>
   );
 };

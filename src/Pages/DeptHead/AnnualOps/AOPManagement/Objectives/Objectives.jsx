@@ -392,8 +392,8 @@ const Objectives = () => {
     return (
         <Fragment>
             <ContainerComponent
-                title={AOP_CONSTANTS.MANAGE_OBJECTIVES_HEADER}
-                description={AOP_CONSTANTS.MANAGE_OBJECTIVES_SUBHEADER}
+                // title={AOP_CONSTANTS.MANAGE_OBJECTIVES_HEADER}
+                // description={AOP_CONSTANTS.MANAGE_OBJECTIVES_SUBHEADER}
                 sx={{ mt: 3 }}
                 actions={
                     <Stack direction={"row"} spacing={1}>

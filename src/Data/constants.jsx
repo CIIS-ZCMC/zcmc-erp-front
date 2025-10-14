@@ -130,6 +130,12 @@ export const CONFIRMATION_CONSTANTS = {
   ALERT_HASDISCUSSED_DESCRIPTION: 'We need to make sure that you already have a previous discussion and official go-signal for creating and submitting this request.',
 }
 
+export const ANNUAL_OPS = {
+  header: "Modal Header",
+  description: "Modal Description",
+  missionPlaceHolder: "Please insert mission content here",
+}
+
 export const MONTHS = [
   { label: "January", value: "01" },
   { label: "February", value: "02" },
