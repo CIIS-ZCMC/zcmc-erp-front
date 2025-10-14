@@ -27,13 +27,27 @@ export const AREA_ID = {
   OMCC: "OMCC-DI-001",
 };
 
+export const OBJECTIVES = {
+  OBJECTIVES_TITLE: "Objectives",
+  OBJECTIVES_SUBHEADING: "This is a subheading. It should add more context to the interaction.",
+  ADD_OBJECTIVE: "Add an objective",
+  ADD_OBJECTIVE_SUBHEADING: "Add details to give context to the objective",
+  OBJECTIVE_ALERT: "After this, you will have to make activities for this objective through manage objectives",
+  MANAGE_OBJECTIVES_HEADER: "Manage Objectives",
+  MANAGE_OBJECTIVES_SUBHEADER:
+    "Set your department’s functions, objectives, and success indicators. Each objective serves as a basis for the activities you’ll also define.",
+  OBJECTIVES_EMPTY_STATE_TITLE: " You don’t have any Objective for this year yet.",
+  OBJECTIVES_CREATE_NEW: "Begin by adding a new one",
+}
+
+
 export const AOP_CONSTANTS = {
   AOP_TITLE: "Annual Operations Planning",
   AOP_SUBHEADING:
     "This is a subheading. It should add more context to the interaction.",
 
-  AOP_EMPTY_STATE_TITLE: " You didn’t have an AOP for this year yet.",
-  AOP_CREATE_NEW_AOP: "Begin by creating a new request",
+  AOP_EMPTY_STATE_TITLE: " You don’t have any Objective for this year yet.",
+  AOP_CREATE_NEW_AOP: "Begin by adding a new one",
   AOP_EMPTY_STATE_CONTENT: `  Nothing to show yet for this year’s AOP. You may request new items for the
                 meantime or create a new AOP request.`,
 
@@ -68,9 +82,9 @@ export const AOP_CONSTANTS = {
   EDIT_AOP_SUBHEADING:
     "This is a subheading. It should add more context to the interaction.",
 
-  MANAGE_OBJECTIVES_HEADER: "Step 1 of 4: Manage functions and objectives",
+  MANAGE_OBJECTIVES_HEADER: "Manage Objectives",
   MANAGE_OBJECTIVES_SUBHEADER:
-    "This is a subheading. It should add more context to the interaction.",
+    "Set your department’s functions, objectives, and success indicators. Each objective serves as a basis for the activities you’ll also define.",
 
   MANAGE_ACTIVITIES_HEADER: `You're Managing activities for Objective:`,
   MANAGE_ACTIVITIES_SUBHEADER: `Collapse this card to view more information about the selected objective.`,

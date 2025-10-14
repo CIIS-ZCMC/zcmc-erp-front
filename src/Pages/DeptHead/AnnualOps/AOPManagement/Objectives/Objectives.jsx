@@ -1,11 +1,12 @@
 import { Fragment, useEffect, useState, useCallback } from "react";
 
 import { useNavigate, Outlet } from "react-router-dom";
-import { Stack, Link, Snackbar, Alert, Divider } from "@mui/joy";
+import { Stack, Link, Snackbar, Alert, Divider, Typography } from "@mui/joy";
 import { Plus, ExternalLink } from "lucide-react";
 
 //custom components
 import { ThreeDotsLoader } from "../../../../../Components/Common/Loading/ThreeDotsLoader";
+import SearchBarComponent from "@Components/SearchBarComponent";
 import BoxComponent from "../../../../../Components/Common/Card/BoxComponent";
 import AlertDialogComponent from "../../../../../Components/Common/Dialog/AlertDialogComponent";
 import ButtonComponent from "../../../../../Components/Common/ButtonComponent";
@@ -41,6 +42,8 @@ import { useSubmitAOP } from "../../../../../Hooks/AOP/useSubmitAop";
 import { useObjectivesStorage } from "../../../../../Store/useObjectivesStorage";
 import useSocketEditing from "../../../../../Hooks/Socket/useSocketEditing";
 import { disabledEditMode, getActivitiesCount } from "../../../../../Utils/aopUtils";
+
+import no_result from "../../../../../assets/empty-state-icon-base.png";
 
 const Objectives = () => {
 
@@ -323,31 +326,31 @@ const Objectives = () => {
     };
 
     // handle view feedback/comments
-    const handleViewFeedback = () => {
-        setOpenFeedbackModal(true);
-        setIsRemarksLoading(true);
+    // const handleViewFeedback = () => {
+    //     setOpenFeedbackModal(true);
+    //     setIsRemarksLoading(true);
 
-        const fetch = () => {
-            // if (!isDivisionHead || !isMCC) {
-            getCommentsByApplication(APPLICATION_OBJECTIVE_ID, () => {
-                getCommentsByApplicationId()
-            });
-            // }
+    //     const fetch = () => {
+    //         // if (!isDivisionHead || !isMCC) {
+    //         getCommentsByApplication(APPLICATION_OBJECTIVE_ID, () => {
+    //             getCommentsByApplicationId()
+    //         });
+    //         // }
 
-            getRemarksByApplication(APPLICATION_OBJECTIVE_ID, () => {
-                setTimeout(() => setIsRemarksLoading(false), 1000);
-            });
-        };
+    //         getRemarksByApplication(APPLICATION_OBJECTIVE_ID, () => {
+    //             setTimeout(() => setIsRemarksLoading(false), 1000);
+    //         });
+    //     };
 
-        Promise.all(fetch())
-            .then(() => {
-                setIsRemarksLoading(false);
-            })
-            .catch((error) => {
-                // console.error("Error fetching comments or remarks:", error);
-                setIsRemarksLoading(false);
-            });
-    }
+    //     Promise.all(fetch())
+    //         .then(() => {
+    //             setIsRemarksLoading(false);
+    //         })
+    //         .catch((error) => {
+    //             // console.error("Error fetching comments or remarks:", error);
+    //             setIsRemarksLoading(false);
+    //         });
+    // }
 
     const removeObjective = (objectiveId) => {
         const relatedActivities = findActivitiesByObjectiveID(objectiveId);
@@ -379,134 +382,101 @@ const Objectives = () => {
         setOpenConfirmDialog(false)
     }
 
-    const handleClose = () => {
-        close;
-        closeAlertDialog();
-        // setOpenReq(false);
-        // setItemReq({});
-        // setActivity({});
-        // setExpenseClass({});
-        // setPin("");
-    };
-
     return (
         <Fragment>
-            <ContainerComponent
-                // title={AOP_CONSTANTS.MANAGE_OBJECTIVES_HEADER}
-                // description={AOP_CONSTANTS.MANAGE_OBJECTIVES_SUBHEADER}
-                sx={{ mt: 3 }}
-                actions={
-                    <Stack direction={"row"} spacing={1}>
-                        {
-                            APPLICATION_OBJECTIVE_ID &&
-                            <ButtonComponent
-                                label={'Read Feedback'}
-                                variant={"outlined"}
-                                onClick={() => handleViewFeedback()}
-                            />
-                        }
 
-                        <ButtonComponent
-                            onClick={addObjective}
-                            label={"Add an Objective"}
-                            endDecorator={<Plus size={16} />}
-                            disabled={!show || disabledEditMode(APPLICATION_OBJECTIVE_ID, remarks, comments, disabled)}
-                        />
-
-                        {
-                            !APPLICATION_OBJECTIVE_ID &&
-                            <ButtonComponent
-                                onClick={() => {
-                                    setIsDraft(true);
-                                    handleSubmit(true, () => setOpenAlertSuccess(true));
-                                }}
-                                label={"Save as Draft"}
-                                variant={"outlined"}
-                                disabled={isDraft}
-                            />
-                        }
-
-                        <ButtonComponent
-                            label={show ? "Exit Edit Mode" : "Edit Objectives"}
-                            onClick={() => (show ? disconnectSignal() : handleEditClick())}
-                            size="md"
-                            isLoading={editLoad}
-                            color={show ? "danger" : "primary"}
-                            variant="outlined"
-                            disabled={disabledEditMode(APPLICATION_OBJECTIVE_ID, remarks, comments, disabled)}  //get the remarks and comments then check if empty, user cannot edit and also if socket detected that there is someone editing
-                        />
-                    </Stack>
-                }
+            <BoxComponent
+                mt={2}
+                p={2}
             >
+
+                <Stack direction={'column'} spacing={1}>
+                    <Typography fontWeight={600}>
+                        {AOP_CONSTANTS.MANAGE_OBJECTIVES_HEADER}
+                    </Typography>
+
+                    <Typography level="body-xs" fontWeight={400}>
+                        {AOP_CONSTANTS.MANAGE_OBJECTIVES_SUBHEADER}
+                    </Typography>
+                </Stack>
+
+                <Divider sx={{ my: 1 }} />
+
                 <Stack
-                    mb={2}
-                    direction={"flex"}
-                    alignItems={"center"}
-                    justifyContent={"end"}
-                    gap={1}
+                    direction={'row'}
+                    spacing={1}
+                    alignItems={'center'}
+                    justifyContent={'space-between'}
                 >
-                    <ButtonComponent
-                        label={"Cancel Request"}
-                        size={"md"}
-                        variant={"outlined"}
-                        onClick={() => handleOpenCancelRequestModal()}
+
+                    <SearchBarComponent
+                        placeholder="search objectives"
                     />
 
                     <ButtonComponent
-                        label={APPLICATION_OBJECTIVE_ID ? "Resubmit AOP" : "Submit AOP"}
-                        size={"md"}
-                        variant={"solid"}
-                        disabled={!show}
-                        onClick={() => handleDiscussedConfirmationModal()} //open the has discussed modal
+                        onClick={addObjective}
+                        label={"Add an Objective"}
+                    // endDecorator={<Plus size={16} />}
+                    // disabled={!show || disabledEditMode(APPLICATION_OBJECTIVE_ID, remarks, comments, disabled)}
                     />
                 </Stack>
 
-                <Divider sx={{ mb: 2 }} />
 
-                {isLoading
-                    ?
-                    <BoxComponent
-                        mt={3}
-                        height={"65vh"}
-                        display={"flex"}
-                        flexDirection={"column"}
+            </BoxComponent>
+
+            {isLoading
+                ?
+                <BoxComponent
+                    mt={3}
+                    height={"65vh"}
+                    display={"flex"}
+                    flexDirection={"column"}
+                    justifyContent={"center"}
+                    alignContent={"center"}
+                >
+                    <ThreeDotsLoader />
+                </BoxComponent>
+                :
+                <BoxComponent
+                    mt={3}
+                    height={"65vh"}
+                    display={"flex"}
+                    flexDirection={"column"}
+                    justifyContent={"center"}
+                    alignContent={"center"}
+                >
+                    <Stack
+                        direction={"column"}
+                        alignItems={"center"}
                         justifyContent={"center"}
-                        alignContent={"center"}
+                        textAlign={"center"}
+                        m={2}
                     >
-                        <ThreeDotsLoader />
-                    </BoxComponent>
-                    :
-                    <Fragment>
-                        <EditableTableComponent
-                            columns={AOP_HEADER}
-                            secondaryHeader={
-                                <Link component="button" onClick={() => handleOpenDialog()} pb={1}>
-                                    <Stack direction={"row"} gap={1} alignItems={"center"}>
-                                        {APPLICATION_OBJECTIVE_ID ? 'Update Mission' : ' Create Mission'}
-                                        <ExternalLink size={16} />
-                                    </Stack>
-                                </Link>
-                            }
-                            tableRow={
-                                <ObjectivesTable
-                                    isEditing={show}
-                                    rows={objectives}
-                                    deleteRow={removeObjective}
-                                    handleChange={updateObjectiveField}
-                                    function_types={function_types}
-                                    activitiesCount={activitiesCount}
-                                    applicationObjectiveId={APPLICATION_OBJECTIVE_ID}
-                                    remarks={remarks}
-                                    comments={comments}
-                                    disabled={disabled}
-                                    disabledEditMode={disabledEditMode}
-                                />
-                            }
-                            stickLast
+                        <Typography sx={{ fontSize: 20, fontWeight: 600 }}>
+                            {AOP_CONSTANTS.AOP_EMPTY_STATE_TITLE}
+                        </Typography>
+
+                        <Typography sx={{ fontSize: 20, fontWeight: 400 }}>
+                            {AOP_CONSTANTS.AOP_CREATE_NEW_AOP}
+                        </Typography>
+                    </Stack>
+
+                    <Stack
+                        direction={"row"}
+                        alignItems={"center"}
+                        justifyContent={"center"}
+                        gap={2}
+                    >
+                        <ButtonComponent
+                            onClick={addObjective}
+                            label={"Add an Objective"}
+                        // endDecorator={<Plus size={16} />}
                         />
-                    </Fragment>
-                }
-            </ContainerComponent>
+                    </Stack>
+
+                    {/* <ThreeDotsLoader /> */}
+                </BoxComponent>
+            }
 
             <MissionModal
                 APPLICATION_OBJECTIVE_ID={APPLICATION_OBJECTIVE_ID}
@@ -515,27 +485,6 @@ const Objectives = () => {
                 mission={mission}
                 setMission={setMission}
                 handleSaveMission={handleSaveMission}
-            />
-
-            {/* confirm with authpin submittion */}
-            <ConfirmationModal
-                rightButtonAction={() => handleSubmit(false, () => setOpenAlertSuccess(true))}
-                withAuthPin
-                rightButtonDisabled={authorizationPin}
-                setAuthPin={setAuthorizationPin}
-                isLoading={isLoading}
-                openConfirmDialog={openConfirmDialog}
-            />
-
-            {/* Confirmation for handle discussed */}
-            <DiscussedModal
-                openConfirmDiscussedDialog={openConfirmDiscussedDialog}
-                setOpenConfirmDiscussedDialog={setOpenConfirmDiscussedDialog}
-                leftButtonAction={() => handleCancelDiscussedModal()}
-                rightButtonAction={() => handleProceedAuthModal(200)}
-                hasDiscussed={hasDiscussed}
-                setIsDiscussed={setIsDiscussed}
-                isLoading={isLoading}
             />
 
             <CancelModal

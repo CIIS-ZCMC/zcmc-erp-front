@@ -10,11 +10,13 @@ import Activities from "../Pages/DeptHead/AnnualOps/AOPManagement/Objectives/Act
 import Resources from "../Pages/DeptHead/AnnualOps/AOPManagement/Objectives/Activities/Resourses/Resources";
 import Responsible from "../Pages/DeptHead/AnnualOps/AOPManagement/Objectives/Activities/Responsible Person/Responsible";
 
+import Objectives from "../Pages/Objectives/Objectives";
+
 import Items from "../Pages/Items";
 
 import ItemRequest from "../Pages/Consolidators/ItemManagement/ItemRequest";
 import ItemLibrary from "../Pages/Consolidators/ItemManagement/ItemLibrary";
-import Objectives from "../Pages/PlanningOps/ObjectiveManagement/Objectives";
+// import Objectives from "../Pages/PlanningOps/ObjectiveManagement/Objectives";
 import EditPPMP from "../Pages/DeptHead/PPMP/EditPPMP";
 import ManageAOP from "../Pages/PlanningOps/Approval/ManageAOP";
 import AOPApproval from "../Pages/PlanningOps/Approval/AOPApproval";
@@ -52,6 +54,12 @@ export const sidebarRoutes = [
     element: <Dashboard />,
     icon: <MdDashboard {...iconStyles} />,
     permissions: ["*"],
+  },
+
+  {
+    path: '/objectives-management',
+    name: "Objectives",
+    element: <Objectives />,
   },
 
   // SUPERVISOR ROUTES

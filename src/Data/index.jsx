@@ -109,6 +109,12 @@ export const sidebarRoutes = [
       },
 
       {
+        path: "/objectives-management",
+        name: "Objectives",
+        childPermissions: ["ERP-AOP-MAN:approve", "ERP-AOP-MAN:view-all"],
+      },
+
+      {
         path: "/ppmp-approval",
         name: "PPMP Management",
         childPermissions: ["ERP-PPMP-MAN:approve", "ERP-PPMP-MAN:view-all"],

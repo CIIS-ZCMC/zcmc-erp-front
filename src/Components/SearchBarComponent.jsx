@@ -52,7 +52,7 @@ const SearchBarComponent = ({
           placeholder={placeholder}
           value={searchTerm}
           onChange={(e) => setSearchTerm(e.target.value)}
-          startDecorator={startDecorator || <Search />}
+          startDecorator={startDecorator || <Search size={14} />}
           endDecorator={
             <>
               {loading && <CircularProgress size="sm" />}
