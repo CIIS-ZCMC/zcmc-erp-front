@@ -1,73 +1,26 @@
-import React, { useState } from 'react';
+import { useEffect, useState } from 'react';
 
-import { Stack, Divider, Typography, Breadcrumbs, Link, Alert } from '@mui/joy';
-import { useNavigate, Outlet } from 'react-router-dom';
-import { ArrowLeft, TriangleAlert } from 'lucide-react'
+import { Stack, Divider, Typography, Breadcrumbs } from '@mui/joy';
 
 import { ThreeDotsLoader } from '@Components/Common/Loading/ThreeDotsLoader';
 
 import BoxComponent from '../../Components/Common/Card/BoxComponent';
 import SearchBarComponent from '../../Components/SearchBarComponent';
 import ButtonComponent from '../../Components/Common/ButtonComponent';
-import IconButtonComponent from '@Components/Common/IconButtonComponent';
 import ModalComponent from '@Components/Common/Dialog/ModalComponent';
-import TextareaComponent from '@Components/Form/TextareaComponent';
-import AutocompleteComponent from '@Components/Form/AutocompleteComponent';
+import ObjectivesModal from './modal/ObjectivesModal';
 
-import { OBJECTIVES, ANNUAL_OPS } from '../../Data/constants';
+import { OBJECTIVES } from '../../Data/constants';
 
-const FiscalYearModal = ({ value, onChange }) => {
-
-    const { missionPlaceHolder } = ANNUAL_OPS;
-
-    return (
-        <>
-            <Stack spacing={3}>
-                <AutocompleteComponent
-                    placeholder="Select function type"
-                    label={'Function type'}
-                    size='lg'
-                // value={functionType}
-                // setValue={(val) => {
-                //     handleChange(id, 'functionType', val);
-                // }}
-                // options={function_types}
-                />
-
-                <AutocompleteComponent
-                    placeholder="Select objectives"
-                    label={'Objectives'}
-                    size='lg'
-                // value={functionType}
-                // setValue={(val) => {
-                //     handleChange(id, 'functionType', val);
-                // }}
-                // options={function_types}
-                />
-
-                <AutocompleteComponent
-                    placeholder="Select success indicators"
-                    label={'Success Indicators'}
-                    size='lg'
-                // value={functionType}
-                // setValue={(val) => {
-                //     handleChange(id, 'functionType', val);
-                // }}
-                // options={function_types}
-                />
-
-                <Alert
-                    color="warning"
-                    startDecorator={<TriangleAlert />}
-                >
-                    {OBJECTIVES.OBJECTIVE_ALERT}
-                </Alert>
-            </Stack>
-        </>
-    )
-}
+import { useFunctionType, useObjective, useSuccessIndicator } from '../../Store/objectivesStore';
 
 const Objectives = () => {
+    const [isLoading, setIsLoading] = useState(false);
+    const [isOpenObjectivesModal, setIsOpenObjectivesModal] = useState(false);
+
+    const functionType = useFunctionType()
+    const objective = useObjective()
+    const successIndicator = useSuccessIndicator()
 
     const {
         OBJECTIVES_EMPTY_STATE_TITLE,
@@ -79,9 +32,6 @@ const Objectives = () => {
         MANAGE_OBJECTIVES_HEADER,
         MANAGE_OBJECTIVES_SUBHEADER,
     } = OBJECTIVES
-
-    const [isLoading, setIsLoading] = useState(false);
-    const [isOpenObjectivesModal, setIsOpenObjectivesModal] = useState(false);
 
     function handleClick(event) {
         event.preventDefault();
@@ -98,6 +48,17 @@ const Objectives = () => {
         setIsOpenObjectivesModal(true);
     }
 
+    const handleSaveObjectives = () => {
+
+    }
+
+    useEffect(() => {
+        console.log(functionType)
+        console.log(objective)
+        console.log(successIndicator)
+    }, [functionType, objective, successIndicator])
+
+
     return (
         <div>
             <Stack spacing={2}>
@@ -106,15 +67,8 @@ const Objectives = () => {
                     alignItems={'center'}
                     alignContent={'start'}
                 >
-                    {/* 
-                    <IconButtonComponent
-                        size={'lg'}
-                        icon={<ArrowLeft />}
-                    // onClick={() => navigate(-1)}
-                    /> */}
-
-
                     <Typography
+                        level="h2"
                         fontWeight={700}
                     >
                         AOP #2025-0031 for Fiscal Year 2026
@@ -138,9 +92,6 @@ const Objectives = () => {
                 mt={2}
                 p={2}
             >
-
-
-
                 <Stack direction={'column'} spacing={1}>
                     <Typography fontWeight={600}>
                         {MANAGE_OBJECTIVES_HEADER}
@@ -234,14 +185,16 @@ const Objectives = () => {
                 handleClose={() => setIsOpenObjectivesModal(false)}
                 title={ADD_OBJECTIVE}
                 description={ADD_OBJECTIVE_SUBHEADING}
-                content={<FiscalYearModal
-                // fiscalYear={currentFiscalYear}
-                // value={mission}
-                // onChange={(e) => setMission(e.target.value)}
-                />}
+                content={
+                    <ObjectivesModal
+                        functionType={functionType}
+                        objective={objective}
+                        successIndicator={successIndicator}
+                    />
+                }
                 hasActionButtons={true}
                 rightButtonLabel={'Save Objective'}
-                rightButtonAction={() => handleSaveAOP()}
+                rightButtonAction={() => handleSaveObjectives()}
             />
 
         </div>

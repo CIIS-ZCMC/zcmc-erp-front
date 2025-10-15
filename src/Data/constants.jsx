@@ -38,6 +38,7 @@ export const OBJECTIVES = {
     "Set your department’s functions, objectives, and success indicators. Each objective serves as a basis for the activities you’ll also define.",
   OBJECTIVES_EMPTY_STATE_TITLE: " You don’t have any Objective for this year yet.",
   OBJECTIVES_CREATE_NEW: "Begin by adding a new one",
+
 }
 
 

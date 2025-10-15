@@ -22,7 +22,7 @@ import { AOP_CONSTANTS } from "../../../Data/constants";
 import { ThreeDotsLoader } from "../../../Components/Common/Loading/ThreeDotsLoader";
 import useResponsiblePeopleHook from "../../../Hooks/ResponsiblePeopleHook";
 
-import { useMission, useObjectivesActions } from "../../../Store/ObjectivesStore.js";
+import { useMission, useObjectivesActions } from "../../../Store/objectivesStore.js";
 
 import useObjectivesHook from "../../../Hooks/ObjectivesHook";
 import useActivitiesHook from "../../../Hooks/ActivitiesHook";
