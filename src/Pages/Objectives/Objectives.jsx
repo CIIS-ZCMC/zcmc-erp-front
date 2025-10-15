@@ -1,18 +1,22 @@
 import { useEffect, useState } from 'react';
 
-import { Stack, Divider, Typography, Breadcrumbs } from '@mui/joy';
+import { Stack, Divider, Typography, Breadcrumbs, CardActions, Card, CardContent, Chip } from '@mui/joy';
 
 import { ThreeDotsLoader } from '@Components/Common/Loading/ThreeDotsLoader';
+
+import { Pencil, Trash, ArrowRight, Check } from 'lucide-react';
 
 import BoxComponent from '../../Components/Common/Card/BoxComponent';
 import SearchBarComponent from '../../Components/SearchBarComponent';
 import ButtonComponent from '../../Components/Common/ButtonComponent';
+import IconButtonComponent from '@Components/Common/IconButtonComponent';
 import ModalComponent from '@Components/Common/Dialog/ModalComponent';
 import ObjectivesModal from './modal/ObjectivesModal';
+import ChipComponent from '@Components/Common/ChipComponent';
 
 import { OBJECTIVES } from '../../Data/constants';
 
-import { useFunctionType, useObjective, useSuccessIndicator } from '../../Store/objectivesStore';
+import { useFunctionType, useObjective, useSuccessIndicator, useObjectives } from '../../Store/objectivesStore';
 
 const Objectives = () => {
     const [isLoading, setIsLoading] = useState(false);
@@ -21,6 +25,7 @@ const Objectives = () => {
     const functionType = useFunctionType()
     const objective = useObjective()
     const successIndicator = useSuccessIndicator()
+    const objectives = useObjectives()
 
     const {
         OBJECTIVES_EMPTY_STATE_TITLE,
@@ -50,17 +55,32 @@ const Objectives = () => {
 
     const handleSaveObjectives = () => {
 
+        if (!functionType || !objective || !successIndicator) {
+            alert('Please fill all the fields')
+            return
+
+        }
+
+        const payload = {
+            functionType,
+            objective,
+            successIndicator,
+        };
+
+        console.log("Submitted data:", payload);
     }
 
     useEffect(() => {
         console.log(functionType)
         console.log(objective)
         console.log(successIndicator)
-    }, [functionType, objective, successIndicator])
+        console.log(objectives.length)
+    }, [functionType, objective, successIndicator, objectives])
 
 
     return (
         <div>
+
             <Stack spacing={2}>
                 <Stack
                     direction={'row'}
@@ -122,62 +142,154 @@ const Objectives = () => {
                     // disabled={!show || disabledEditMode(APPLICATION_OBJECTIVE_ID, remarks, comments, disabled)}
                     />
                 </Stack>
-
-
             </BoxComponent>
 
-            {isLoading
-                ?
-                <BoxComponent
-                    mt={3}
-                    height={"65vh"}
-                    display={"flex"}
-                    flexDirection={"column"}
-                    justifyContent={"center"}
-                    alignContent={"center"}
-                >
-                    <ThreeDotsLoader />
-                </BoxComponent>
-                :
-                <BoxComponent
-                    mt={3}
-                    height={"65vh"}
-                    display={"flex"}
-                    flexDirection={"column"}
-                    justifyContent={"center"}
-                    alignContent={"center"}
-                >
+
+            {objectives.length === 1 || objectives.length === null ?
+                <>
                     <Stack
                         direction={"column"}
                         alignItems={"center"}
                         justifyContent={"center"}
                         textAlign={"center"}
-                        m={2}
+                        my={2}
+                        height={'65vh'}
                     >
                         <Typography sx={{ fontSize: 20, fontWeight: 600 }}>
                             {OBJECTIVES_EMPTY_STATE_TITLE}
                         </Typography>
 
-                        <Typography sx={{ fontSize: 20, fontWeight: 400 }}>
+                        <Typography mb={2} sx={{ fontSize: 20, fontWeight: 400 }}>
                             {OBJECTIVES_CREATE_NEW}
                         </Typography>
-                    </Stack>
 
-                    <Stack
-                        direction={"row"}
-                        alignItems={"center"}
-                        justifyContent={"center"}
-                        gap={2}
-                    >
                         <ButtonComponent
                             onClick={() => handleOpenObjectivesModal()}
                             label={"Add an Objective"}
                         // endDecorator={<Plus size={16} />}
                         />
                     </Stack>
+                </>
+                :
+                <Stack
+                    my={3}
+                    direction={'row'}
+                    spacing={1}
+                >
+                    <Card
+                        sx={{
+                            textAlign: 'center',
+                            overflow: 'auto',
+                            width: "450px",
+                            borderLeft: '6px solid #2E7D32',
+                            borderRadius: 'md',
+                        }}
+                    >
 
-                    {/* <ThreeDotsLoader /> */}
-                </BoxComponent>
+                        <CardContent>
+                            <Stack
+                                direction={'row'}
+                                alignItems={'end'}
+                                justifyContent={'end'}
+                            >
+
+                                <IconButtonComponent
+                                    size={'sm'}
+                                    icon={<Check size={18} />}
+                                />
+
+                                <IconButtonComponent
+                                    size={'sm'}
+                                    icon={<Pencil size={18} />}
+                                />
+
+                                <IconButtonComponent
+                                    size={'sm'}
+                                    icon={<Trash size={18} />}
+                                />
+
+                            </Stack>
+
+
+                            <Stack
+                                direction={'row'}
+                                alignItems={'start'}
+                                justifyContent={'space-between'}
+                                gap={5}
+                            >
+
+                                <Stack
+                                    alignItems={'start'}
+                                >
+                                    <Typography
+                                        level={'body-sm'}
+                                        sx={{ flex: 1 }}
+                                    >
+                                        Function Type
+                                    </Typography>
+
+                                    <Typography
+                                        level={'title-lg'}
+                                        sx={{ flex: 1 }}
+                                    >
+                                        Objective Name #1
+                                    </Typography>
+                                </Stack>
+
+
+
+                                <Typography
+                                    level="body-sm"
+                                    sx={{
+                                        flex: 1,
+                                        // whiteSpace: 'nowrap',
+                                        // overflow: 'hidden',
+                                        // textOverflow: 'ellipsis',
+                                        // maxWidth: '50%',
+                                    }}
+                                >
+                                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Veritatis perspiciatis maiores amet atque ducimus expedita tempora Voluptas, illo.
+                                </Typography>
+                            </Stack>
+                        </CardContent>
+
+                        <Divider inset="none" />
+
+                        <CardActions
+                            sx={{
+                                justifyContent: "flex-end",
+                            }}
+                        >
+                            <Stack
+                                direction={'column'}
+                                alignItems={'center'}
+                            >
+                                <Chip
+                                    variant="soft"
+                                    color="primary"
+                                    size="lg"
+                                    p={2}
+                                    startDecorator={10}
+                                    endDecorator={<ArrowRight size={18} />}
+                                    onClick={() => alert('You clicked the Joy Chip!')}
+                                >
+                                    Activities
+                                </Chip>
+                                {/* 
+                                <ButtonComponent
+                                    variant={'soft'}
+                                    color={'primary'}
+                                    label={`${10} Activities`}
+                                    size={'sm'}
+                                    endDecorator={<ArrowRight size={18} />}
+                                >
+                                    chip
+                                </ButtonComponent> */}
+                            </Stack>
+                        </CardActions>
+
+                    </Card>
+                </Stack>
             }
 
             <ModalComponent
@@ -197,7 +309,7 @@ const Objectives = () => {
                 rightButtonAction={() => handleSaveObjectives()}
             />
 
-        </div>
+        </div >
     )
 }
 
