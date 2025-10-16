@@ -44,6 +44,7 @@ const iconStyles = {
 import ItemSubmittedRequestsList from "../Pages/TEMP/ItemSubmittedRequestsList";
 import { MyOwnRequestsList } from "../Pages/TEMP/ItemMyOwnRequestsLists";
 import { ItemRequestDatatable } from "../Pages/Consolidators/ItemManagement/ItemRequestDatatable";
+import DashboardEndUser from "../Pages/AOP/EndUser/DashboardEndUser";
 // import ResponsiblePerson from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities/ResponsiblePerson";
 
 export const sidebarRoutes = [
@@ -51,13 +52,13 @@ export const sidebarRoutes = [
   {
     path: "/dashboard",
     name: "Dashboard",
-    element: <Dashboard />,
+    element: <DashboardEndUser />,
     icon: <MdDashboard {...iconStyles} />,
     permissions: ["*"],
   },
 
   {
-    path: '/objectives-management',
+    path: "/objectives-management",
     name: "Objectives",
     element: <Objectives />,
   },
@@ -77,9 +78,9 @@ export const sidebarRoutes = [
       },
 
       {
-        path: '/aop-management',
+        path: "/aop-management",
         element: <AOP />,
-        roles: ['super_admin'],
+        roles: ["super_admin"],
         childPermissions: ["ERP-AOP-MAN:write"],
         children: [
           {
@@ -106,8 +107,8 @@ export const sidebarRoutes = [
                 roles: ["super_admin"],
               },
             ],
-          }
-        ]
+          },
+        ],
       },
 
       {
