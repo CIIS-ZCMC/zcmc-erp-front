@@ -21,7 +21,7 @@ function BrandLogo() {
   return (
     <Stack
       gap={1}
-      p={1.5}
+      p={1.2}
       sx={{ backgroundColor: color.light, borderRadius: theme.radius.lg }}
     >
       <Stack
@@ -37,7 +37,7 @@ function BrandLogo() {
           <>
             <Box>
               <Typography
-                fontSize={{ xs: 6, md: 8 }}
+                fontSize={{ xs: 8, md: 10 }}
                 fontWeight={200}
                 sx={{ color: "white" }}
               >
@@ -47,7 +47,7 @@ function BrandLogo() {
                 Zamboanga City Medical Center
               </Typography>
               <Typography
-                fontSize={{ xs: 6, md: 8 }}
+                fontSize={{ xs: 8, md: 10 }}
                 fontWeight={200}
                 fontStyle={"italic"}
                 sx={{ color: "white" }}
@@ -60,7 +60,10 @@ function BrandLogo() {
 
         <IconButton
           onClick={toggleSidebar}
-          sx={{ color: "white", fontSize: 25 }}
+          sx={{
+            color: "white",
+            fontSize: 25,
+          }}
         >
           {isCollapsed ? <MdMenu /> : <MdMenuOpen />}
         </IconButton>
@@ -73,7 +76,7 @@ function BrandLogo() {
           {/* SYSTEM NAME */}
           <Typography
             textAlign={"center"}
-            fontSize={14}
+            fontSize={13.5}
             sx={{ color: "white", fontWeight: 500 }}
           >
             {SYSTEM_NAME}

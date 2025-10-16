@@ -140,15 +140,16 @@ function ConfirmationModalComponent({
                 fullWidth={!rightButtonAction}
                 color={btnColor}
               />
-
-              <ButtonComponent
-                label={rightButtonLabel}
-                isLoading={isLoading}
-                onClick={rightButtonAction}
-                loadingLabel={rightButtonLoadingLabel}
-                disabled={rightButtonDisabled || isLoading}
-                color={btnColor}
-              />
+              {rightButtonAction && (
+                <ButtonComponent
+                  label={rightButtonLabel}
+                  isLoading={isLoading}
+                  onClick={rightButtonAction}
+                  loadingLabel={rightButtonLoadingLabel}
+                  disabled={rightButtonDisabled || isLoading}
+                  color={btnColor}
+                />
+              )}
             </Box>
           </DialogActions>
         </ModalDialog>

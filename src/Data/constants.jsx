@@ -138,12 +138,16 @@ export const ITEM_SUBMITTED_LIST_CONSTANTS = {
 };
 
 export const CONFIRMATION_CONSTANTS = {
-  ALERT_SUBMITTION_TITLE: "Your AOP request is now ready for submission, would you like to get a preview first?",
-  ALERT_SUBMITTION_DESCRIPTION: 'Document previews will be generated and downloaded in Microsoft Excel Spreadsheet (.xls) file format. The document preview is for viewing purposes only to help you ensure that all fields are filled-up correctly and accurately.',
+  ALERT_SUBMITTION_TITLE:
+    "Your AOP request is now ready for submission, would you like to get a preview first?",
+  ALERT_SUBMITTION_DESCRIPTION:
+    "Document previews will be generated and downloaded in Microsoft Excel Spreadsheet (.xls) file format. The document preview is for viewing purposes only to help you ensure that all fields are filled-up correctly and accurately.",
 
-  ALERT_HASDISCUSSED_TITLE: 'Have you discussed this AOP request with your Division Chief?',
-  ALERT_HASDISCUSSED_DESCRIPTION: 'We need to make sure that you already have a previous discussion and official go-signal for creating and submitting this request.',
-}
+  ALERT_HASDISCUSSED_TITLE:
+    "Have you discussed this AOP request with your Division Chief?",
+  ALERT_HASDISCUSSED_DESCRIPTION:
+    "We need to make sure that you already have a previous discussion and official go-signal for creating and submitting this request.",
+};
 
 export const ANNUAL_OPS = {
   header: "Modal Header",
@@ -185,7 +189,7 @@ export const API = {
   AOP_APPLICATION_EDIT: "aop-application-edit",
   AOP_APPLICATION_UPDATE: "aop-application-update",
   // AOP_APPLICATION_STORE: "aop-application-store",
-  AOP_APPLICATION_STORE: 'aop-application-store-aop',
+  AOP_APPLICATION_STORE: "aop-application-store-aop",
   AOP_APPLICATION_SUMMARY: "aop-application-summary",
   AOP_APPLICATION_TIMELINE: "application-timelines",
   AOP_EXPORT_EXCEL: "export-aop",
@@ -224,7 +228,7 @@ export const API = {
   ITEM_CLASSIFICATIONS: "item-classifications",
   ITEM_UNIT: "item-units",
   ITEM_VARIANT: "variants",
-  ITEM_TERMINOLOGY: "terminologies",
+  ITEM_TERMINOLOGY: "reference-terminologies",
   ITEMS_: "items",
   // PPMP
   PPMP_APPLICATION: "ppmp-receiving-list",

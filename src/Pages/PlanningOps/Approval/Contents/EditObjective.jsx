@@ -4,7 +4,7 @@ import ModalComponent from "../../../../Components/Common/Dialog/ModalComponent"
 import { Stack } from "@mui/joy";
 import TextareaComponent from "../../../../Components/Form/TextareaComponent";
 import { useAOPApplicationsActions } from "../../../../Hooks/AOP/AOPApplicationsHook";
-import useSnackbarHook from "../../../../Components/Common/SnackbarHook";
+import useSnackbarHook from "../../../../Hooks/SnackbarHook";
 import { localStorageGetter } from "../../../../Utils/LocalStorage";
 
 const EditObjective = ({ onOpen, data, handleClose }) => {

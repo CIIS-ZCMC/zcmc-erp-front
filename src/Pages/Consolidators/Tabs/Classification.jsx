@@ -1,13 +1,18 @@
-import React, { Fragment, useEffect, useRef } from "react";
+import React, { Fragment, useEffect, useRef, useState } from "react";
 import { classificationCols } from "../../../Data/Columns";
-import ScrollableTableComponent from "../../../Components/Common/Table/ScrollableTableComponent";
 import useModalHook from "../../../Hooks/ModalHook";
-import useClassificationHooks from "../../../Hooks/Libraries/LibClassificationHooks";
-import useClassificationDataTable from "../../../Hooks/Libraries/dataTable/dataClassification";
 import ServerTableComponent from "../../../Components/Common/Table/ServerTableComponent";
+import ModalComponent from "../../../Components/Common/Dialog/ModalComponent";
+import { Divider, Stack } from "@mui/joy";
+import InputComponent from "../../../Components/Form/InputComponent";
+import TextareaComponent from "../../../Components/Form/TextareaComponent";
+import ConfirmationModalComponent from "../../../Components/Common/Dialog/ConfirmationModalComponent";
+import usePinHook from "../../../Hooks/PinHook";
+import useClassificationHook from "../../../Hooks/Libraries/LibClassificationHooks";
+
 export const Classification = () => {
-  const { setType, setSelectedData } = useClassificationHooks();
-  const { setOpenModal } = useModalHook();
+  const { pin, setPin } = usePinHook();
+  const { setConfirmationModal, closeConfirmation } = useModalHook();
   const {
     classi_dataTable,
     pagination,
@@ -15,20 +20,19 @@ export const Classification = () => {
     totalPages,
     setSearchQuery,
     search_Query,
-  } = useClassificationDataTable();
-  const setCurrentPage = useClassificationDataTable(
-    (state) => state.setCurrentPage
-  );
-  const getClassifications = useClassificationDataTable(
-    (state) => state.getClassifications
-  );
+    setCurrentPage,
+    getClassifications,
+    selectedData,
+    setSelectedData,
+  } = useClassificationHook();
+  const [loading, setLoading] = useState(false);
+  const [openUpdate, setOpenUpdate] = useState(false);
+  const [openDel, setOpenDel] = useState(false);
+  const [updateData, setUpdateData] = useState({
+    name: "",
+    description: "",
+  });
 
-  // const search_Query = useClassificationDataTable(
-  //   (state) => state.search_Query
-  // );
-  // const setSearchQuery = useClassificationDataTable(
-  //   (state) => state.setSearchQuery
-  // );
   function transformData(data) {
     return data.map((item) => ({
       id: item.id,
@@ -40,44 +44,61 @@ export const Classification = () => {
     }));
   }
 
-  const setUpdateType = (data) => {
-    setType("update");
-    setOpenModal(true, false, true);
+  const handleUpdate = (data) => {
+    setOpenUpdate(true);
     setSelectedData(data);
   };
-  const setDeleteType = (data) => {
-    setType("delete");
-    setOpenModal(true, false, true);
-    setSelectedData(data);
+
+  const handleDelete = (params) => {
+    setOpenDel(true);
+    setSelectedData(params);
+    const data = {
+      status: "error",
+      title: `Delete classification (${params?.clName}) ?`,
+      description: "This action cannot be undone.",
+    };
+    setConfirmationModal(data);
   };
+
+  const deleteItem = (selected) => {
+    setOpenDel(false);
+  };
+
   useEffect(() => {
-    console.log(
-      "Fetching classification data with search query:",
-      search_Query
-    );
-    getClassifications((message) => {
-      console.log("Error fetching classification data:", message);
+    setLoading(true);
+    getClassifications({
+      per_page: 15,
+      search: search_Query, // Pass the current search query
+      callBack: (status, message) => {
+        setLoading(false);
+        console.log("Response:", status, message);
+      },
     });
-  }, [currentPage]);
+  }, [currentPage, search_Query]);
 
   useEffect(() => {
     const handler = setTimeout(() => {
-      console.log("Search query changed:", search_Query);
-      getClassifications((message) => {
-        console.log("Error fetching classification data:", message);
-      });
-    }, 500); // Debounce the search query
+      setCurrentPage(1); // 👈 Only change the page, let the other useEffect handle loading & fetching
+    }, 500);
 
-    return () => {
-      clearTimeout(handler); // Cancel previous timeout if input changes quickly
-    };
+    return () => clearTimeout(handler);
   }, [search_Query]);
+
+  useEffect(() => {
+    if (openUpdate && selectedData) {
+      setUpdateData({
+        name: selectedData?.clName || "",
+        description: selectedData?.description || "",
+      });
+    }
+  }, [selectedData, openUpdate]);
 
   return (
     <Fragment>
       <ServerTableComponent
+        isLoading={loading}
         data={transformData(classi_dataTable)}
-        columns={classificationCols(setUpdateType, setDeleteType)}
+        columns={classificationCols(handleUpdate, handleDelete)}
         pageSize={pagination?.pagination?.per_page || 15}
         currentPage={currentPage}
         totalPages={totalPages}
@@ -85,13 +106,66 @@ export const Classification = () => {
         paginationMeta={pagination}
         stripe="even"
         withCount={pagination?.pagination?.total}
-        fieldsToSearch={["title", "description"]}
+        fieldsToSearch={["clName", "description"]}
         bordered
         hoverRow
         stickLast
         search={search_Query}
         setSearch={setSearchQuery}
       />
+      {openUpdate && (
+        <ModalComponent
+          title={`Update ${selectedData.clName}`}
+          isOpen={openUpdate}
+          handleClose={() => setOpenUpdate(false)}
+          hasActionButtons
+          content={
+            <>
+              <Stack gap={2}>
+                <InputComponent
+                  label={"Classification Name"}
+                  value={updateData.name}
+                  onChange={(e) =>
+                    setUpdateData({ ...updateData, name: e.target.value })
+                  }
+                  helperText={
+                    "Use a specific and descriptive naming convention for best results."
+                  }
+                />
+                <TextareaComponent
+                  label={"Description"}
+                  value={updateData.description}
+                  onChange={(e) =>
+                    setUpdateData({
+                      ...updateData,
+                      description: e.target.value,
+                    })
+                  }
+                />
+                <Divider />
+                <InputComponent
+                  label={"Authorization PIN"}
+                  helperText={
+                    "Confirm your action by typing-in your authorization PIN."
+                  }
+                />
+              </Stack>
+            </>
+          }
+        />
+      )}
+      {openDel && (
+        <ConfirmationModalComponent
+          status="error"
+          leftButtonAction={() => {
+            closeConfirmation();
+            setOpenDel(false);
+          }}
+          rightButtonAction={() => deleteItem(updateData.id)}
+          withAuthPin
+          setAuthPin={setPin}
+        />
+      )}
     </Fragment>
   );
 };

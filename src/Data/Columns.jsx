@@ -901,16 +901,32 @@ export const PPMP_VIEW_HEADER = [
 ];
 
 export const variantCols = (updateCallBack, delCallback) => [
-  { field: "id", name: "Row #", align: "left", width: "50px" },
-  { field: "clName", name: "Classification", width: 200, align: "left" },
-
-  { field: "created_at", name: "Created at", width: 200, align: "left" },
-  { field: "updated_at", name: "Updated at", width: 200, align: "left" },
+  { field: "id", name: "Row #", align: "center", width: "30px" },
+  { field: "name", name: "System", width: 200, align: "left" },
+  { field: "code", name: "Code", width: 200, align: "left" },
+  {
+    field: "created_at",
+    name: "Created at",
+    width: 100,
+    align: "left",
+    render: (params) => {
+      return moment(params.created_at).format("L");
+    },
+  },
+  {
+    field: "updated_at",
+    name: "Updated at",
+    width: 100,
+    align: "left",
+    render: (params) => {
+      return moment(params.created_at).format("L");
+    },
+  },
   {
     field: "action",
     name: "Actions",
     position: "sticky",
-    width: "150px",
+    width: "100px",
     right: 0,
     align: "center",
     render: (params) => {
@@ -950,16 +966,33 @@ export const variantCols = (updateCallBack, delCallback) => [
 ];
 
 export const categoryCols = (updateCallBack, delCallback) => [
-  { field: "id", name: "Row #", align: "left", width: "50px" },
-  { field: "clName", name: "Classification", width: 200, align: "left" },
-
-  { field: "created_at", name: "Created at", width: 200, align: "left" },
-  { field: "updated_at", name: "Updated at", width: 200, align: "left" },
+  { field: "id", name: "Row #", align: "center", width: "30px" },
+  { field: "code", name: "Code", width: 80, align: "left" },
+  { field: "name", name: "Category", width: 150, align: "left" },
+  { field: "description", name: "Description", width: 200, align: "left" },
+  {
+    field: "created_at",
+    name: "Created at",
+    width: 80,
+    align: "left",
+    render: (params) => {
+      return moment(params.created_at).format("L");
+    },
+  },
+  {
+    field: "updated_at",
+    name: "Updated at",
+    width: 80,
+    align: "left",
+    render: (params) => {
+      return moment(params.created_at).format("L");
+    },
+  },
   {
     field: "action",
     name: "Actions",
     position: "sticky",
-    width: "150px",
+    width: "100px",
     right: 0,
     align: "center",
     render: (params) => {
@@ -999,17 +1032,33 @@ export const categoryCols = (updateCallBack, delCallback) => [
 ];
 
 export const classificationCols = (updateCallBack, delCallback) => [
-  { field: "id", name: "Row #", align: "left", width: "50px" },
+  { field: "id", name: "Row #", align: "center", width: "30px" },
   { field: "code", name: "Code", width: 100, align: "left" },
   { field: "clName", name: "Classification", width: 200, align: "left" },
   { field: "description", name: "Description", width: 250, align: "left" },
-  { field: "created_at", name: "Created at", width: 200, align: "left" },
-  { field: "updated_at", name: "Updated at", width: 200, align: "left" },
+  {
+    field: "created_at",
+    name: "Created at",
+    width: 80,
+    align: "left",
+    render: (params) => {
+      return moment(params.created_at).format("L");
+    },
+  },
+  {
+    field: "updated_at",
+    name: "Updated at",
+    width: 80,
+    align: "left",
+    render: (params) => {
+      return moment(params.updated_at).format("L");
+    },
+  },
   {
     field: "action",
     name: "Actions",
     position: "sticky",
-    width: "150px",
+    width: "100px",
     right: 0,
     align: "center",
     render: (params) => {
@@ -1047,6 +1096,90 @@ export const classificationCols = (updateCallBack, delCallback) => [
     },
   },
 ];
+
+export const itemCols = (handleUpdate, handleDelete) => [
+  { field: "id", name: "Row #", align: "center", width: "20px" },
+  { field: "name", name: "Item name", width: 200, align: "left" },
+  {
+    field: "classification",
+    name: "Classification",
+    width: 80,
+    align: "left",
+  },
+  { field: "item_category", name: "Category", width: 60, align: "left" },
+  { field: "variant", name: "Variant", width: 90, align: "left" },
+  {
+    field: "unit",
+    name: "Unit of Measurement",
+    width: 60,
+    align: "left",
+  },
+  {
+    field: "estimated_budget",
+    name: "Estimated Budget",
+    width: 70,
+    align: "left",
+    render: (params) => {
+      return (
+        <>
+          <Typography>
+            {"\u20B1"} {params.estimated_budget.toLocaleString()}
+          </Typography>
+        </>
+      );
+    },
+  },
+  {
+    field: "action",
+    name: "Actions",
+    position: "sticky",
+    width: "100px",
+    right: 0,
+    align: "center",
+    render: (params) => {
+      return (
+        <>
+          <Stack
+            direction="row"
+            sx={{
+              justifyContent: "space-between",
+              alignItems: "center",
+              px: 1,
+            }}
+          >
+            <Link
+              onClick={() => {
+                handleUpdate(params);
+              }}
+              size="md"
+              variant="plain"
+              color="primary"
+              underline="hover"
+              fontSize={14}
+              endDecorator={<IoOpenOutline />}
+            >
+              Update
+            </Link>
+            <Link
+              onClick={() => {
+                handleDelete(params);
+              }}
+              size="md"
+              variant="plain"
+              color="danger"
+              underline="hover"
+              fontSize={14}
+              endDecorator={<IoOpenOutline />}
+            >
+              Delete
+            </Link>
+          </Stack>
+        </>
+      );
+    },
+  },
+];
+
 export const myOwnItemRequestListCols = () => [
   {
     field: "code",

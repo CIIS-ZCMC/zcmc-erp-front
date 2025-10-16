@@ -1,98 +1,108 @@
 import { create } from "zustand";
-
-import { read } from "../../Services/RequestMethods";
+import { post, read } from "../../Services/RequestMethods";
 import { API } from "../../Data/constants";
-const useClassificationHooks = create((set, get) => ({
-  inputs: {
-    currentLibName: "",
-    currentLibCode: "",
-    currentLibDesc: "",
-    pin: null,
-  },
-  type: "create", // ['create', 'update', 'delete']
-  isloading: false,
-  hasError: false,
-  selectedData: null,
+import { Typography } from "@mui/joy";
 
-  getFormData: () => {
-    const { inputs } = get();
-    const raw = {
-      name: inputs.currentLibName,
-      code: inputs.currentLibCode,
-      description: inputs.currentLibDesc,
-    };
-    const form = new FormData();
+const useClassificationHook = create((set, get) => ({
+  classi_dataTable: [],
+  search_dataTable: [],
+  search_Query: "",
+  pagination: null,
+  links: null,
+  currentPage: 1,
+  totalPages: 1,
+  selectedData: {},
 
-    for (const key in raw) {
-      if (raw[key] !== undefined && raw[key] !== null) {
-        form.append(key, raw[key]);
-      }
-    }
-    return raw;
+  setCurrentPage: (page) => {
+    set({ currentPage: page });
   },
-  classifications: [],
-  unit: [],
-  getClassifications: async (callBack) => {
-    read({
-      url: `${API.ITEM_CLASSIFICATIONS}?mode=selection`,
-      failed: callBack,
-      success: (res) => {
-        const { status, message, data } = res;
-        set({ classifications: data.data });
-        callBack(status, message);
-      },
-    });
+  setSearchQuery: (query) => {
+    console.log("Setting search query:", query);
+    set({ search_Query: query });
   },
-  getUnit: async (callBack) => {
-    read({
-      url: `${API.ITEM_UNIT}?mode=selection`,
-      failed: callBack,
-      success: (res) => {
-        const { status, message, data } = res;
-        set({ unit: data.data });
-        callBack(status, message);
-      },
-    });
-  },
+
   setSelectedData: (data) => {
     set({ selectedData: data });
   },
+  getClassifications: ({ per_page = 15, callBack } = {}) => {
+    const { currentPage: page, search_Query: search } = get(); // 🔥 correctly access the current state
 
-  setInputs: (name, value) =>
-    set((state) => ({
-      inputs: {
-        ...state.inputs,
-        [name]: value,
-      },
-    })),
+    const params = {
+      page: page,
+      per_page: 15, // Set the number of items per page
+    };
 
-  resetInput: () => {
-    set({
-      inputs: {
-        currentLibName: "",
-        currentLibCode: "",
-        currentLibDesc: "",
-        pin: null,
+    if (search && search.length > 1) {
+      params.search = search; // do NOT force page = 1 here
+    }
+
+    read({
+      url: API.ClASSIFICATION,
+      params,
+      success: (res) => {
+        const {
+          data: { data, meta, links, message, status },
+        } = res;
+
+        set({
+          classi_dataTable: data,
+          pagination: meta,
+          links: links,
+          currentPage: meta.current_page,
+          totalPages: meta.last_page,
+        });
+        if (callBack) callBack(status, message);
       },
     });
   },
-
-  setLoading: (isloading) => {
-    set({ isloading });
-  },
-
-  setError: (error) => {
-    set({ hasError: error });
-  },
-
-  setType: (newType) => {
-    const validTypes = ["create", "update", "delete"];
-    if (validTypes.includes(newType)) {
-      set({ type: newType });
-    } else {
-      console.warn(`Invalid type "${newType}" passed to setType.`);
-    }
+  addClassification: (
+    form,
+    setLoading,
+    setError,
+    clearInputs,
+    setAlertDialog,
+    setOpenModal
+  ) => {
+    setLoading(true);
+    post({
+      url: API.ClASSIFICATION,
+      form: form,
+      success: (res) => {
+        const { data } = res;
+        console.log("Classification added successfully:", data);
+        setLoading(false);
+        clearInputs();
+        setAlertDialog({
+          isOpen: true,
+          status: "success",
+          title: (
+            <>
+              <Typography level="title-md" fontWeight="lg">
+                New item {data?.data?.name}{" "}
+                <Typography
+                  sx={{ color: "custom.darkgreen" }}
+                  component="span"
+                  color="primary"
+                  fontWeight="lg"
+                >
+                  #{data?.data?.id}
+                </Typography>{" "}
+                successfully saved to the library.
+              </Typography>
+            </>
+          ),
+          description:
+            "You can now use it for requesting AOP and PPMP documents. Everyone can see and use the new item.",
+        });
+        setOpenModal(false, false, false);
+      },
+      failed: (err) => {
+        console.error("Error adding classification:", err);
+        setLoading(false);
+        setError(true);
+      },
+    });
   },
 }));
 
-export default useClassificationHooks;
+export default useClassificationHook;

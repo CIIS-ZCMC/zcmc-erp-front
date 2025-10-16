@@ -3,7 +3,6 @@ import { myOwnItemRequestListCols } from "../../Data/Columns";
 import ScrollableTableComponent from "../../Components/Common/Table/ScrollableTableComponent";
 import useModalHook from "../../Hooks/ModalHook";
 import useClassificationHooks from "../../Hooks/Libraries/LibClassificationHooks";
-import useClassificationDataTable from "../../Hooks/Libraries/dataTable/dataClassification";
 import ServerTableComponent from "../../Components/Common/Table/ServerTableComponent";
 import useUserRequestItemHook from "../../Hooks/ItemRequest/EndUserItemRequest";
 export const MyOwnRequestsList = () => {

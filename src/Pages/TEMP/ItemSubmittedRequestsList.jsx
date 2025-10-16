@@ -20,7 +20,6 @@ import ContainerComponent from "../../Components/Common/ContainerComponent";
 import ButtonComponent from "../../Components/Common/ButtonComponent";
 import TabComponent from "../../Components/Common/TabComponent";
 import SearchBarComponent from "../../Components/SearchBarComponent";
-import RenderDialog from "../Consolidators/Modals/RenderDialog";
 import { submittedRequestsTabs } from "../../Data/Options";
 import ItemSubmittedRequestModalContent from "./ItemSubmittedRequestModalContent";
 const ItemSubmittedRequestsList = () => {
@@ -109,40 +108,6 @@ const ItemSubmittedRequestsList = () => {
           <Outlet />
         </ContainerComponent>
       </Box>
-
-      <Modal
-        aria-labelledby="modal-title"
-        aria-describedby="modal-desc"
-        open={openModal.isOpen}
-        onClose={() => setOpenModal(false, false, false)}
-        sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}
-      >
-        <Sheet
-          variant="outlined"
-          sx={{ maxWidth: 700, borderRadius: "md", p: 3, boxShadow: "lg" }}
-        >
-          <ModalClose variant="plain" sx={{ m: 1 }} />
-          {/* <ModalContent /> */}
-          <ItemSubmittedRequestModalContent />
-        </Sheet>
-      </Modal>
-
-      {/* Success Indicators modal */}
-      <Modal
-        aria-labelledby="modal-title"
-        aria-describedby="modal-desc"
-        open={successDialog}
-        onClose={() => setSuccessDialog(false)}
-        sx={{ display: "flex", justifyContent: "center", alignItems: "center" }}
-      >
-        <Sheet
-          variant="outlined"
-          sx={{ maxWidth: 500, borderRadius: "md", p: 3, boxShadow: "lg" }}
-        >
-          <ModalClose variant="plain" sx={{ m: 1 }} />
-          <RenderDialog lib={UrllastSegment} />
-        </Sheet>
-      </Modal>
     </Fragment>
   );
 };
