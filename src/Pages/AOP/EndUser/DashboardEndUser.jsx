@@ -76,7 +76,7 @@ function DashboardEndUser(props) {
 
       <Stack
         height="85vh"
-        sx={{ border: "2px solid #003049", borderRadius: 10 }}
+        sx={{ border: "2px solid #003049", borderRadius: 10, bgcolor: "white" }}
         alignItems="center"
         justifyContent="center"
         mt={3}
