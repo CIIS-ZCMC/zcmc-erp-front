@@ -1,0 +1,131 @@
+import PropTypes from "prop-types";
+import {
+  Box,
+  Typography,
+  Autocomplete,
+  FormControl,
+  FormHelperText,
+  FormLabel,
+  Tooltip,
+} from "@mui/joy";
+import { getFontSize } from "../../Utils/Typography";
+import userErrorInputHook from "../../Hooks/ErrorInputHook";
+
+function AutocompleteComponent({
+  multiple = false,
+  label,
+  options = [],
+  helperText,
+  size = "sm",
+  width = "100%",
+  placeholder = "",
+  startDecorator,
+  darkMode = false,
+  setValue,
+  value,
+  name,
+  handleSelect,
+  getOptionLabel,
+  onClose,
+  isRenderOption = false,
+  ...props
+}) {
+  const { errors } = userErrorInputHook(); // Get error state
+  const fieldError = errors?.[name];
+  const handleChange = (event) => {
+    setValue(event);
+  };
+
+  return (
+    <FormControl sx={{ width: width }} {...props}>
+      {label && <FormLabel>{label}</FormLabel>}
+      <Autocomplete
+        multiple={multiple}
+        filterSelectedOptions={true}
+        startDecorator={startDecorator}
+        size={size}
+        placeholder={placeholder}
+        onChange={(_, newValue) => {
+          handleSelect ? handleSelect(newValue) : handleChange(newValue);
+        }}
+        renderOption={
+          isRenderOption &&
+          ((props, option) => (
+            <li
+              {...props}
+              key={option.id}
+              style={{
+                padding: "8px 12px",
+                borderBottom: "1px solid #eee",
+                cursor: "pointer",
+                transition: "background 0.2s ease-in-out",
+              }}
+              onMouseEnter={(e) =>
+                (e.currentTarget.style.background = "#f5f5f5")
+              }
+              onMouseLeave={(e) =>
+                (e.currentTarget.style.background = "transparent")
+              }
+            >
+              <Box display="flex" flexDirection="column">
+                <Typography variant="body1" fontWeight="500">
+                  {/* {console.info(option)} */}
+                  {option.description}
+                </Typography>
+              </Box>
+            </li>
+          ))
+        }
+        value={value}
+        options={options}
+        onClose={onClose}
+        name={name}
+        getOptionLabel={getOptionLabel}
+        isOptionEqualToValue={(option, value) =>
+          option.id === value?.id
+        }
+        sx={{
+          fontSize: getFontSize(size),
+          background: darkMode ? "none" : "inherit",
+          color: darkMode ? "white" : "inherit",
+        }}
+      />
+
+      {(fieldError?.isError || helperText) && (
+        <FormHelperText
+          sx={{
+            fontSize: getFontSize(size) ?? 12,
+            color: fieldError?.isError ? "red" : "inherit",
+          }}
+        >
+          {fieldError?.isError ? fieldError.message : helperText}
+        </FormHelperText>
+      )}
+    </FormControl>
+  );
+}
+
+AutocompleteComponent.propTypes = {
+  label: PropTypes.string,
+  options: PropTypes.arrayOf(
+    PropTypes.oneOfType([
+      PropTypes.string,
+      PropTypes.shape({
+        title: PropTypes.string.isRequired,
+      }),
+    ])
+  ),
+  helperText: PropTypes.string,
+  size: PropTypes.oneOf(["small", "medium", "large"]),
+  width: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  placeholder: PropTypes.string,
+  startDecorator: PropTypes.node,
+  darkMode: PropTypes.bool,
+  multiple: PropTypes.bool,
+  name: PropTypes.string,
+  handleSelect: PropTypes.func,
+  setValue: PropTypes.oneOfType([PropTypes.object]),
+  value: PropTypes.oneOfType([PropTypes.object]),
+};
+
+export default AutocompleteComponent;

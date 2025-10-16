@@ -1,0 +1,249 @@
+import {
+  Box,
+  Button,
+  FormControl,
+  FormLabel,
+  IconButton,
+  Input,
+  Textarea,
+  Tooltip,
+  Typography,
+} from "@mui/joy";
+import React, { act } from "react";
+import { MdInfoOutline } from "react-icons/md";
+import useLibrariesHook from "../../../Hooks/Libraries/LibHooks";
+import useModalHook from "../../../Hooks/ModalHook";
+import useClassificationHooks from "../../../Hooks/Libraries/LibClassificationHooks";
+import useItemsHook from "../../../Hooks/ItemsHook";
+import useClassificationDataTable from "../../../Hooks/Libraries/dataTable/dataClassification";
+
+// ['create', 'update', 'delete']
+
+export const ClassificationModalContent = () => {
+  const {
+    inputs,
+    setInputs,
+    resetInput,
+    isloading,
+    hasError,
+    type,
+    setLoading,
+    selectedData,
+    getFormData,
+    setError,
+  } = useClassificationHooks();
+
+  const addClassification = useClassificationDataTable(
+    (state) => state.addClassification
+  );
+
+  const { setOpenModal, setAlertDialog } = useModalHook();
+
+  const MetaData = {
+    create: {
+      title: "Create a new classification",
+      desc: "Name your classification to create it.",
+      plholder: "Name the classification you wish to create",
+      action: "Confirm and save",
+    },
+    update: {
+      title: "Update a classification",
+      desc: "Keep the classification up-to-date",
+      plholder: "Name the classification you wish to update",
+      action: "Update and save",
+    },
+    delete: {
+      title: "Archive the classification",
+      action: "Archive and save",
+      desc: "This action will archive the classification.",
+    },
+  };
+
+  const getStateOfModal = () => MetaData[type];
+
+  return (
+    <>
+      {/* Header */}
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "space-between",
+          alignItems: "center",
+          mb: 1,
+        }}
+      >
+        <Box>
+          <Typography level="title-lg" mr={type === "delete" ? 3 : 0}>
+            {getStateOfModal().title}
+            {type === "delete" && (
+              <>
+                {" ("}
+                <Typography level="title-lg" textColor={"danger.500"}>
+                  {selectedData?.clName}
+                </Typography>
+                {" )"}
+              </>
+            )}
+          </Typography>
+          <Typography level="body-sm" textColor="text.secondary">
+            {getStateOfModal().desc}
+          </Typography>
+        </Box>
+      </Box>
+
+      {/* Name input */}
+      {type !== "delete" && (
+        <>
+          <FormControl sx={{ mt: 2 }}>
+            <FormLabel>Name of classification</FormLabel>
+            <Input
+              placeholder={getStateOfModal().plholder}
+              variant="outlined"
+              size="md"
+              onChange={(e) => setInputs("currentLibName", e.target.value)}
+              value={inputs.currentLibName}
+            />
+            <Typography
+              level="body-xs"
+              textColor="text.tertiary"
+              sx={{ mt: 0.5 }}
+            >
+              Use a specific and descriptive naming convention for best results.
+            </Typography>
+          </FormControl>
+          <FormControl sx={{ mt: 2 }}>
+            <FormLabel>Code</FormLabel>
+            <Textarea
+              placeholder="Enter unique code identifier"
+              variant="outlined"
+              size="md"
+              minRows={1}
+              onChange={(e) => setInputs("currentLibCode", e.target.value)}
+              value={inputs.currentLibCode}
+              sx={{ minHeight: 60, maxHeight: 120 }}
+            />
+            <Typography
+              level="body-xs"
+              textColor="text.tertiary"
+              sx={{ mt: 0.5 }}
+            >
+              Use short, unique codes for easier reference (e.g., CAT001).
+            </Typography>
+          </FormControl>
+
+          <FormControl sx={{ mt: 2 }}>
+            <FormLabel>Description</FormLabel>
+            <Textarea
+              placeholder="Enter a brief description"
+              variant="outlined"
+              size="md"
+              minRows={3}
+              onChange={(e) => setInputs("currentLibDesc", e.target.value)}
+              value={inputs.currentLibDesc}
+              sx={{ minHeight: 100, maxHeight: 300 }}
+            />
+            <Typography
+              level="body-xs"
+              textColor="text.tertiary"
+              sx={{ mt: 0.5 }}
+            >
+              Provide a clear and concise description to explain the
+              classification's purpose.
+            </Typography>
+          </FormControl>
+        </>
+      )}
+
+      {/* Authorization PIN input */}
+      <FormControl sx={{ mt: 3 }}>
+        <Box
+          sx={{
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <FormLabel>Authorization PIN</FormLabel>
+          <Tooltip title="Used to confirm sensitive actions.">
+            <IconButton size="sm" variant="plain" color="neutral">
+              <MdInfoOutline />
+            </IconButton>
+          </Tooltip>
+        </Box>
+        <Input
+          placeholder="******"
+          type="password"
+          variant="outlined"
+          size="md"
+          error={hasError}
+          sx={{
+            ...(hasError && {
+              animation:
+                "errorFlashBounce 0.8s ease-out, errorIdleGlow 1.5s ease-in-out 0.8s infinite",
+              borderColor: "danger.400",
+            }),
+          }}
+        />
+        <Typography
+          level="body-xs"
+          textColor={hasError ? "danger.500" : "text.tertiary"}
+          sx={{ mt: 0.5 }}
+        >
+          {hasError
+            ? "Invalid PIN. Please try again."
+            : "Confirm your action by typing-in your authorization PIN."}
+        </Typography>
+      </FormControl>
+
+      {/* Buttons */}
+      <Box sx={{ display: "flex", gap: 1.5, mt: 4 }}>
+        <Button
+          onClick={() => {
+            setOpenModal(false, false, false);
+          }}
+          variant="outlined"
+          color="neutral"
+          disabled={isloading}
+          sx={{ flex: 1 }}
+        >
+          Cancel
+        </Button>
+        <Button
+          sx={{ flex: 1 }}
+          onClick={() => {
+            console.log("getFormData", getFormData());
+            addClassification(
+              getFormData(),
+              setLoading,
+              setError,
+              resetInput,
+              setAlertDialog,
+              setOpenModal
+            );
+          }}
+          variant="solid"
+          color={type === "delete" ? "danger" : "primary"}
+          disabled={isloading}
+          startDecorator={
+            isloading && (
+              <Box
+                component="span"
+                sx={{
+                  width: 16,
+                  height: 16,
+                  border: "2px solid",
+                  borderColor: "primary",
+                  borderTopColor: "transparent",
+                  borderRadius: "50%",
+                  animation: "spin 1.5s linear infinite",
+                }}
+              />
+            )
+          }
+        >
+          {isloading ? "Saving..." : getStateOfModal().action}
+        </Button>
+      </Box>
+    </>
+  );
+};

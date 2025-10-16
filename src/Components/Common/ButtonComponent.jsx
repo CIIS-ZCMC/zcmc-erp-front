@@ -6,13 +6,16 @@ const ButtonComponent = ({
   label,
   onClick,
   variant,
-  color = "success",
+  color = "primary",
   startDecorator,
   endDecorator,
   fullWidth,
   width = "auto",
   disabled,
   type,
+  isLoading,
+  loadingLabel,
+  boxShadow,
 }) => {
   return (
     <Button
@@ -25,12 +28,15 @@ const ButtonComponent = ({
       endDecorator={endDecorator}
       fullWidth={fullWidth}
       disabled={disabled}
+      loading={isLoading}
+      loadingIndicator={loadingLabel}
       sx={{
         width: fullWidth ? "100%" : width,
         fontWeight: 400,
         borderRadius: 8,
-        height: 38,
-        fontSize: 14,
+        height: size ?? 38,
+        fontSize: size ?? 13,
+        boxShadow: boxShadow,
       }}
     >
       {label}
@@ -48,7 +54,7 @@ ButtonComponent.propTypes = {
   endDecorator: PropTypes.node,
   fullWidth: PropTypes.bool,
   disabled: PropTypes.bool,
-  type: PropTypes.oneOf(["button", "submit", "reset"]),
+  type: PropTypes.string,
 };
 
 export default ButtonComponent;

@@ -15,8 +15,7 @@ import {
 } from "@mui/joy";
 import { BiX } from "react-icons/bi";
 import ButtonComponent from "../ButtonComponent";
-import { Transition } from "react-transition-group";
-import { useRef } from "react";
+import { Fragment } from "react";
 
 ModalComponent.propTypes = {
   isOpen: PropTypes.bool.isRequired,
@@ -44,8 +43,9 @@ function ModalComponent({
   content, // The primary content displayed within the modal
   title, // The title of the modal, typically displayed at the top
   description, // A subtitle, styled with a smaller font
-  minWidth, // Minimum width of the modal for automatic sizing
   maxWidth, // Maximum width of the modal for automatic sizing
+  minWidth, // Minimum width of the modal for automatic sizing
+  height = "auto",
   handleClose, // Callback function trigger to close the modal This can also be used for left button as the default action for "Close"
   rightButtonLabel = "Proceed", // Label for the right-side button within the modal
   rightButtonAction, // Function executed when the right-side button is clicked
@@ -57,8 +57,8 @@ function ModalComponent({
   isLoading, // Indicates whether the right-side button is in a loading state
   noRightButton, // If set to true, the right button is not displayed Defaults to false
   noDivider = false, // If set to true, the divider between the title and content is hidden
+  hasActionButtons = false,
 }) {
-  const nodeRef = useRef(null); // New update
   const theme = useTheme();
   const custom = theme.palette.custom;
 
@@ -71,83 +71,64 @@ function ModalComponent({
     handleClose();
   };
 
+  // STATES
+
   return (
-    <Transition in={isOpen} timeout={300} nodeRef={nodeRef}>
-      {(state) => (
-        <Modal
-          keepMounted
-          open={!["exited", "exiting"].includes(state)}
-          onClose={handleCloseModal} // Use the updated handler
-          slotProps={{
-            backdrop: {
-              sx: {
-                opacity: 0,
-                backdropFilter: "none",
-                transition: `opacity 300ms, backdrop-filter 300ms`,
-                ...{
-                  entering: { opacity: 1, backdropFilter: "blur(8px)" },
-                  entered: { opacity: 1, backdropFilter: "blur(8px)" },
-                }[state],
-              },
-            },
-          }}
-          sx={[
-            state === "exited"
-              ? { visibility: "hidden" }
-              : { visibility: "visible" },
-          ]}
+    <Modal keepMounted open={isOpen} onClose={handleCloseModal}>
+      <ModalDialog
+        sx={{
+          // Set the max height of the modal
+          width: "auto",
+          // height: "auto",
+          // maxHeight: "80%",
+          // maxWidth: "540px",
+          borderRadius: 20,
+          padding: 3.5,
+          height: height,
+        }}
+        minWidth={minWidth}
+        maxWidth={maxWidth}
+      >
+        {/* TITLE */}
+        <DialogTitle
+          sx={{ alignItems: "start", justifyContent: "space-between" }}
         >
-          <ModalDialog
-            minWidth={minWidth}
-            maxWidth={maxWidth}
-            sx={{
-              width: "auto",
-              borderRadius: 20,
-              opacity: 0,
-              transition: `opacity 300ms`,
-              ...{
-                entering: { opacity: 1 },
-                entered: { opacity: 1 },
-              }[state],
-            }}
-          >
-            {/* TITLE */}
-            <DialogTitle
-              sx={{ alignItems: "start", justifyContent: "space-between" }}
+          <Stack gap={0.3}>
+            <Typography fontSize={{ xs: 15, lg: 18 }} fontWeight={600}>
+              {title}
+            </Typography>
+            <Typography
+              fontWeight={400}
+              fontSize={{ xs: 12, lg: 13 }}
+              color="neutral"
             >
-              <Stack gap={0.3}>
-                <Typography fontSize={{ xs: 15, lg: 18 }} fontWeight={600}>
-                  {title}
-                </Typography>
-                <Typography
-                  fontWeight={400}
-                  fontSize={{ xs: 12, lg: 13 }}
-                  color="neutral"
-                >
-                  {description}
-                </Typography>
-              </Stack>
-              {!noDivider && (
-                <IconButton variant="plain" onClick={handleClose}>
-                  <BiX fontSize={27} />
-                </IconButton>
-              )}
-            </DialogTitle>
+              {description}
+            </Typography>
+          </Stack>
+          {!noDivider && (
+            <IconButton variant="plain" onClick={handleClose}>
+              <BiX fontSize={27} />
+            </IconButton>
+          )}
+        </DialogTitle>
 
-            {withProgress && (
-              <LinearProgress
-                determinate
-                value={progressValue}
-                sx={{ color: custom.buttonBg }}
-              />
-            )}
-            {!noDivider && <Divider sx={{ mx: 0.2 }} />}
+        {withProgress && (
+          <LinearProgress
+            determinate
+            value={progressValue}
+            sx={{ color: custom.buttonBg }}
+          />
+        )}
+        {!noDivider && <Divider sx={{ mx: 0.2 }} />}
 
-            {/* CONTENT */}
-            <DialogContent>{content}</DialogContent>
+        {/* CONTENT */}
+        <DialogContent>{content}</DialogContent>
 
-            {/* FOOTER */}
+        {/* FOOTER */}
+        {hasActionButtons && (
+          <>
             <Divider sx={{ mx: 0.2 }} />
+
             <DialogActions>
               <Box
                 sx={{
@@ -164,24 +145,24 @@ function ModalComponent({
                     fullWidth
                     isLoading={isLoading}
                     onClick={rightButtonAction}
-                    isDisabled={rightButtonDisabled || isLoading}
+                    disabled={rightButtonDisabled || isLoading}
                   />
                 )}
 
                 <ButtonComponent
                   variant="outlined"
-                  color="success"
+                  color="primary"
                   label={leftButtonLabel}
                   fullWidth={!noRightButton}
                   onClick={leftButtonAction ?? handleClose}
-                  isDisabled={isLoading}
+                  disabled={isLoading}
                 />
               </Box>
             </DialogActions>
-          </ModalDialog>
-        </Modal>
-      )}
-    </Transition>
+          </>
+        )}
+      </ModalDialog>
+    </Modal>
   );
 }
 

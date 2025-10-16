@@ -6,25 +6,35 @@ import { useLocation } from "react-router-dom";
 import Header from "./Sidebar/Header";
 import Content from "./Sidebar/Content";
 import Footer from "./Sidebar/Footer";
+import useSidebarHook from "../Hooks/SidebarHook";
+import { useRef } from "react";
+import useResizeObserver from "../Hooks/useResizeObserver";
 
 function Sidebar() {
+  const sidebarRef = useRef();
+  const sidebarSize = useResizeObserver(sidebarRef);
+  const sidebarWidth = sidebarSize.width || 240;
+  const location = useLocation();
+  const currentPath = location.pathname;
 
-
-  const location = useLocation()
-  const currentPath = location.pathname
+  const { isCollapsed, toggleSidebar } = useSidebarHook();
 
   return (
     <Stack
-      p={{ xs: 1.5, sm: 2.5 }} // Responsive padding
-      sx={{ height: "95%", overflowY: "auto" }} // Ensure it scrolls if needed
+      ref={sidebarRef}
+      p={isCollapsed ? 2 : { xs: 1.5, sm: 2.5 }} // Responsive padding
+      sx={{
+        height: "95%",
+        overflowY: "visible",
+        alignItems: isCollapsed ? "center" : "flex-start",
+        zIndex: 250,
+      }} // Ensure it scrolls if needed
     >
       <Header />
-      <Content />
+      <Content sidebarWidth={sidebarWidth} />
       <Footer />
-
-    </Stack >
+    </Stack>
   );
 }
 
 export default Sidebar;
-

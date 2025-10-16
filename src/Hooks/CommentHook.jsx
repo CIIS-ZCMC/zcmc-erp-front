@@ -1,0 +1,126 @@
+import { create } from "zustand";
+import { post, read } from "../Services/RequestMethods";
+import {
+  localStorageGetter,
+  localStorageRemove,
+  localStorageSetter,
+} from "../Utils/LocalStorage";
+// import { APPLICATION_ID } from "./AOP/AOPApplicationsHook";
+
+export const COMMENT = "activity-comments";
+export const REMARKS = "aop-remarks";
+
+const useCommentHook = create((set, get) => ({
+  comments: [],
+  allComments: localStorageGetter("all_comments") ?? [],
+  comment: "",
+  remarks: localStorageGetter("remarks") ?? [],
+  isLoading: false,
+
+  actions: {
+    setComment: (data) => set({ comment: data }),
+    setIsLoading: (load) => set({ isLoading: load }),
+
+    getCommentsByActivity: (id, callback) => {
+      read({
+        url: `${COMMENT}/${id}`,
+        success: (response) => {
+          const {
+            data: { comments },
+          } = response.data;
+
+          set({ comments: comments });
+          localStorageSetter("comments", comments.length === 0 ? [] : comments);
+          callback(response.status, comments);
+        },
+        failed: () => {
+          set({ comments: [] });
+          localStorageRemove("comments");
+        },
+      });
+    },
+
+    getCommentsByApplication: (id, callback) => {
+      read({
+        url: `${COMMENT}`,
+        params: {
+          aop_application_id: id,
+        },
+        success: (response) => {
+          const { data } = response.data;
+
+          set({ allComments: data ?? [] });
+          localStorageSetter("all_comments", data ?? []);
+          callback(response.status, data);
+        },
+        failed: () => {
+          set({ allComments: [] });
+          if (typeof callback === "function") {
+            callback(500, "Something went wrong");
+          }
+        },
+      });
+    },
+
+    getRemarksByApplication: (id, callback) => {
+      console.log(id);
+      read({
+        url: `${REMARKS}/${id}`,
+        success: (response) => {
+          const { data } = response.data;
+          set({ remarks: data });
+          localStorageSetter("remarks", [data]);
+          callback(response.status, data);
+        },
+        failed: (response) => {
+          set({ allComments: [] });
+          callback(response);
+        },
+      });
+    },
+
+    postComment: (body, callback) => {
+      try {
+        const {
+          actions: { appendNewComment },
+        } = get();
+        const dataToSubmit = new FormData();
+
+        dataToSubmit.append("comment", body.comment);
+        dataToSubmit.append("activity_id", body.activityId);
+
+        post({
+          url: COMMENT,
+          form: dataToSubmit,
+          success: (response) => {
+            const { data } = response.data;
+
+            appendNewComment(data);
+
+            callback(response.status, data);
+          },
+          failed: callback,
+        });
+      } catch (error) {
+        console.error("Error posting comment:", error);
+        return callback(
+          error?.status || 500,
+          error?.response || "Unknown error occurred"
+        );
+      }
+    },
+
+    appendNewComment: (data) => {
+      set((state) => ({ comments: [data, ...state.comments] }));
+    },
+  },
+}));
+
+export const useCommentLoading = () =>
+  useCommentHook((state) => state.isLoading);
+export const useComment = () => useCommentHook((state) => state.comment);
+export const useComments = () => useCommentHook((state) => state.comments);
+export const useRemarks = () => useCommentHook((state) => state.remarks);
+export const useAllComments = () =>
+  useCommentHook((state) => state.allComments);
+export const useCommentActions = () => useCommentHook((state) => state.actions);

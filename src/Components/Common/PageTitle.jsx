@@ -2,7 +2,7 @@ import PropTypes from "prop-types";
 import { Box, Stack, Typography } from "@mui/joy";
 
 PageTitle.propTypes = {
-  title: PropTypes.string,
+  title: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
   description: PropTypes.string,
   subPage: PropTypes.string,
   subPath: PropTypes.string,

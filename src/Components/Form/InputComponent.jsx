@@ -9,6 +9,8 @@ import {
 } from "@mui/joy";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
+import userErrorInputHook from "../../Hooks/ErrorInputHook";
+import { getFontSize } from "../../Utils/Typography";
 // import { getFontSize } from "../../Utils/Typography";
 // import { BsEye, BsEyeSlash } from "react-icons/bs";
 // import userErrorInputHook from "../../Hooks/ErrorInputHook";
@@ -30,19 +32,21 @@ const InputComponent = ({
   endDecorator,
   width = "100%",
   isRequired,
+  color = "primary",
   ...props
 }) => {
   const isPassword = type == "password";
   const [showPassword, setShowPassword] = useState(false);
 
-  //   const { errors } = userErrorInputHook();
+  const { errors } = userErrorInputHook(); // Get error state
+  const fieldError = errors?.[name];
 
   const eyeColor = darkMode ? "white" : "black";
   const getIcon = () => {
     return showPassword ? (
-      <Eye style={{ color: eyeColor }} />
+      <Eye style={{ color: eyeColor }} size={16} />
     ) : (
-      <EyeOff style={{ color: eyeColor }} />
+      <EyeOff style={{ color: eyeColor }} size={16} />
     );
   };
 
@@ -69,13 +73,15 @@ const InputComponent = ({
         autoFocus={autoFocus}
         placeholder={placeholder}
         value={value || ""}
+        color={color}
         onChange={handleInput ? handleInput : (e) => setValue(e.target.value)}
         sx={{
-          fontSize: 14,
+          fontSize: 13,
           fontWeight: fontWeight,
           py: size ?? 1,
           background: darkMode && "none",
-          color: darkMode && "white",
+          color: darkMode ? "white" : "neutral.900",
+          borderColor: "neutral.300",
         }}
         startDecorator={startDecorator}
         endDecorator={
@@ -94,14 +100,16 @@ const InputComponent = ({
         {...props}
       />
 
-      {helperText && (
-        <FormHelperText sx={{ fontSize: 12 }}>{helperText}</FormHelperText>
+      {(fieldError?.isError || helperText) && (
+        <FormHelperText
+          sx={{
+            fontSize: getFontSize(size) ?? 12,
+            color: fieldError?.isError ? "red" : "inherit",
+          }}
+        >
+          {fieldError?.isError ? fieldError.message : helperText}
+        </FormHelperText>
       )}
-      {/* {errors[name]?.isError && (
-        <Typography fontSize={"xs"} color="danger">
-          {errors[name]?.message}
-        </Typography>
-      )} */}
     </FormControl>
   );
 };

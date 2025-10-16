@@ -1,0 +1,280 @@
+import { Fragment, useEffect, useState } from "react";
+import { Stack, Typography, Grid } from "@mui/joy";
+
+import { useNavigate } from "react-router-dom";
+
+import useAOPObjectivesHooks from "../../../Hooks/AOP/AOPObjectivesHook";
+import { useAOPActions, } from "../../../Hooks/AOP/AOPObjectivesHook";
+
+import Header from "./Header";
+import Summary from "./Summary";
+import Timeline from "./Timeline";
+
+import ButtonComponent from "../../../Components/Common/ButtonComponent";
+import BoxComponent from "../../../Components/Common/Card/BoxComponent";
+import ModalComponent from '@Components/Common/Dialog/ModalComponent'
+import TextareaComponent from "@Components/Form/TextareaComponent";
+import PageTitle from "../../../Components/Common/PageTitle";
+
+import no_result from "../../../assets/empty-state-icon-base.png";
+import { AOP_CONSTANTS } from "../../../Data/constants";
+
+import { ThreeDotsLoader } from "../../../Components/Common/Loading/ThreeDotsLoader";
+import useResponsiblePeopleHook from "../../../Hooks/ResponsiblePeopleHook";
+
+import { useMission, useObjectivesActions } from "../../../Store/objectivesStore.js";
+
+import useObjectivesHook from "../../../Hooks/ObjectivesHook";
+import useActivitiesHook from "../../../Hooks/ActivitiesHook";
+import useResourceHook from "../../../Hooks/ResourceHook";
+
+import { ANNUAL_OPS } from "../../../Data/constants";
+
+const FiscalYearModal = ({ value, onChange, fiscalYear }) => {
+
+  const { missionPlaceHolder } = ANNUAL_OPS;
+
+  return (
+    <>
+      <Stack spacing={1}>
+        <Typography>Fiscal Year: {fiscalYear}</Typography>
+        <TextareaComponent
+          label={'Mission'}
+          placeholder={missionPlaceHolder}
+          value={value}
+          onChange={onChange}
+        />
+      </Stack>
+    </>
+  )
+}
+
+const AnnualOps = () => {
+  const navigate = useNavigate();
+
+  const { header, description } = ANNUAL_OPS;
+  const [isLoading, setIsLoading] = useState(false);
+  const [openFiscalYearModal, setOpenFiscalYearModal] = useState(false);
+
+  const mission = useMission();
+  const { setMission, clearMission } = useObjectivesActions();
+
+  const currentYear = new Date().getFullYear();
+  const currentFiscalYear = currentYear + 1;
+
+  const {
+    aop_id,
+    aopObjectives,
+    aop_summary,
+    formattedObjectives,
+    formattedActivities,
+    formattedResources,
+    formattedResponsible,
+    aop_status,
+  } = useAOPObjectivesHooks();
+
+
+  const {
+    getSummary,
+    setAopId,
+    // setMission
+  } = useAOPActions();
+  const { setResponsiblePeople } = useResponsiblePeopleHook();
+  const { setObjectives } = useObjectivesHook();
+  const { setActivities } = useActivitiesHook();
+  const { setResources } = useResourceHook();
+
+  const {
+    aop_application_id,
+    total_objectives,
+    total_success_indicators,
+    total_activities,
+    total_gad_related,
+    total_resources,
+    total_not_gad_related,
+    total_cost,
+    total_job_positions,
+    total_areas,
+    total_users,
+    total_responsible_people,
+    year,
+    // mission,
+  } = aop_summary;
+
+  function setStates() {
+
+    // console.log(formattedObjectives);
+    // console.log(formattedActivities);
+    // console.log(formattedResources);
+    // console.log(formattedResponsible);
+
+    setObjectives(formattedObjectives ? formattedObjectives : []);
+    setActivities(formattedActivities ? formattedActivities : []);
+    setResources(formattedResources ? formattedResources : []);
+    setResponsiblePeople(
+      formattedResponsible ? formattedResponsible : []
+    );
+  }
+
+  useEffect(() => {
+    localStorage.setItem("aop-status", aop_status);
+
+    if (aopObjectives !== null || !aop_application_id) {
+      setStates();
+    }
+  }, [aopObjectives, aop_status])
+
+  useEffect(() => {
+    setAopId(aop_application_id)
+    setMission(mission);
+  }, [aop_application_id])
+
+  useEffect(() => {
+    setIsLoading(true);
+
+    getSummary((status, message) => {
+      setIsLoading(false);
+      // console.log(status)
+      if (!(status >= 200 && status < 300)) {
+        return; //Toast error
+      }
+    });
+  }, []);
+
+  const handleSaveAOP = () => {
+    // alert('successfully created new aop')
+    clearMission()
+    setOpenFiscalYearModal(false)
+    console.log(`fiscal year : ${currentFiscalYear} mission: ${mission}`);
+    navigate("/aop-management")
+    //handle Save aop api here
+  };
+
+  return (
+    <Fragment>
+      <PageTitle
+        title={aop_id ? AOP_CONSTANTS.EDIT_AOP_TITLE : AOP_CONSTANTS.CREATE_AOP_TITLE}
+        description={AOP_CONSTANTS.CREATE_AOP_SUBHEADING}
+      />
+      {isLoading ? (
+        <BoxComponent
+          mt={3}
+          height={"83vh"}
+          display={"flex"}
+          flexDirection={"column"}
+          justifyContent={"center"}
+          alignContent={"center"}
+        >
+          <ThreeDotsLoader />
+        </BoxComponent>
+      ) : (
+        <>
+          {!aop_id ? ( //to be fixed
+            <BoxComponent
+              mt={3}
+              height={"83vh"}
+              display={"flex"}
+              flexDirection={"column"}
+              justifyContent={"center"}
+              alignContent={"center"}
+            >
+              <Stack
+                direction={"column"}
+                alignItems={"center"}
+                justifyContent={"center"}
+                textAlign={"center"}
+                m={2}
+              >
+                <img src={no_result} alt="not-found-img" width={"30%"} />
+
+                <Typography sx={{ fontSize: 32, fontWeight: 600 }}>
+                  {AOP_CONSTANTS.AOP_EMPTY_STATE_TITLE}
+                </Typography>
+
+                <Typography sx={{ fontSize: 32, fontWeight: 700 }}>
+                  {AOP_CONSTANTS.AOP_CREATE_NEW_AOP}
+                </Typography>
+
+                <Typography mt={2} sx={{ fontSize: 14 }}>
+                  {AOP_CONSTANTS.AOP_EMPTY_STATE_CONTENT}
+                </Typography>
+              </Stack>
+
+              <Stack
+                direction={"row"}
+                alignItems={"center"}
+                justifyContent={"center"}
+                gap={2}
+              >
+                <ButtonComponent
+                  label={"Request new items"}
+                  variant={"outlined"}
+                // onClick={() => navigate('create')}
+                />
+
+                <ButtonComponent
+                  label={"Create new AOP"}
+                  onClick={() => setOpenFiscalYearModal(true)}
+                />
+              </Stack>
+            </BoxComponent>
+          ) : (
+            <BoxComponent mt={3} height={"83vh"}>
+              <Header year={year} mission={mission} />
+              <Grid
+                container
+                columns={{ xs: 12, sm: 12, md: 12 }}
+                justifyContent={"center"}
+                gap={3}
+                mt={3}
+              >
+                <Grid item={"true"} xs={12} md={6}>
+                  <Summary
+                    aopObjectives={aopObjectives}
+                    total_objectives={total_objectives}
+                    total_success_indicators={total_success_indicators}
+                    total_activities={total_activities}
+                    total_gad_related={total_gad_related}
+                    total_resources={total_resources}
+                    total_not_gad_related={total_not_gad_related}
+                    total_job_positions={total_job_positions}
+                    total_cost={total_cost}
+                    total_areas={total_areas}
+                    total_users={total_users}
+                    total_responsible_people={total_responsible_people}
+                    aop_application_id={aop_application_id}
+                  />
+                </Grid>
+
+                <Grid item={"true"} xs={12} md={4}>
+                  <>
+                    <Timeline aop_id={aop_application_id} />
+                  </>
+                </Grid>
+              </Grid>
+            </BoxComponent>
+          )}
+        </>
+      )}
+
+      <ModalComponent
+        isOpen={openFiscalYearModal}
+        handleClose={() => setOpenFiscalYearModal(false)}
+        title={header}
+        description={description}
+        content={<FiscalYearModal
+          fiscalYear={currentFiscalYear}
+          value={mission}
+          onChange={(e) => setMission(e.target.value)}
+        />}
+        hasActionButtons={true}
+        rightButtonLabel={'Save AOP'}
+        rightButtonAction={() => handleSaveAOP()}
+        minWidth={500}
+      />
+
+    </Fragment>
+  );
+};
+
+export default AnnualOps;

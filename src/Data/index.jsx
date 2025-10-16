@@ -1,48 +1,194 @@
+import { Stack, Typography } from "@mui/joy";
+
 import { BiCategory } from "react-icons/bi";
 import { GrDocument } from "react-icons/gr";
 
 import { Settings } from "lucide-react";
 
+import {
+  MdDashboard,
+  MdLibraryBooks,
+  MdSettings,
+  MdSupervisorAccount,
+} from "react-icons/md";
+import ItemSubmittedRequestsList from "../Pages/TEMP/ItemSubmittedRequestsList";
+import { MyOwnRequestsList } from "../Pages/TEMP/ItemMyOwnRequestsLists";
+
+const iconStyles = {
+  size: 24,
+};
+
 export const sidebarRoutes = [
   {
-    name: "Dashboard",
-    icon: <BiCategory />,
     path: "/dashboard",
+    name: "Dashboard",
+    icon: <MdDashboard {...iconStyles} />,
+    permissions: ["*"],
   },
 
   {
-    name: "Planning and Operations",
-    icon: <GrDocument />,
+    parentPath: "/supervisor",
+    name: "Supervisor",
+    icon: <MdSupervisorAccount {...iconStyles} />,
+    permissions: ["ERP-AOP-MAN:write", "ERP-PPMP-MAN:write"],
     children: [
       {
         path: "/aop",
-        name: "AOP Management",
+        name: "AOP",
+        childPermissions: ["ERP-AOP-MAN:write"],
       },
 
       {
-        path: "/ppmp",
-        name: "PPMP Management",
+        path: "/edit-ppmp",
+        name: "Edit PPMP",
+        childPermissions: ["ERP-PPMP-MAN:write"],
       },
-
       {
-        path: "/objectives",
-        name: "Objectives",
+        path: "/Submitted-items",
+        name: "Requested Items",
+      },
+      {
+        path: "/manage-deadlines",
+        name: "Manage Deadlines",
+      },
+      {
+        path: "/submitted-items",
+        name: "Submitted Items",
+        element: <ItemSubmittedRequestsList />,
+        roles: ["super_admin"],
+        childPermissions: [
+          "ERP-AOP-MAN:write",
+          "M-001:read",
+          "M-001:write",
+          "M-001:edit",
+          "M-001:delete",
+        ],
+        children: [
+          {
+            index: true,
+            element: <MyOwnRequestsList />,
+          },
+          {
+            path: "pending",
+            element: <>pending</>,
+          },
+          {
+            path: "added",
+            element: <>added</>,
+          },
+        ],
       },
     ],
   },
 
   {
-    name: "Item Information Management",
-    icon: <Settings />,
+    parentPath: "/planning-ops",
+    name: "Planning and Operations",
+    icon: <MdLibraryBooks {...iconStyles} />,
+    permissions: [
+      "ERP-AOP-MAN:approve",
+      "ERP-AOP-MAN:view-all",
+      "ERP-PPMP-MAN:approve",
+      "ERP-PPMP-MAN:view-all",
+      "ERP-PPMP-MAN:delete",
+      "ERP-OBJ-MAN:write",
+      "ERP-OBJ-MAN:view",
+      "ERP-OBJ-MAN:update",
+      "ERP-OBJ-MAN:view-all",
+    ],
+    children: [
+      {
+        path: "/aop-approval",
+        name: "AOP Management",
+        childPermissions: ["ERP-AOP-MAN:approve", "ERP-AOP-MAN:view-all"],
+        children: [
+          {
+            path: "objectives/:id",
+          },
+        ],
+      },
+
+      {
+        path: "/objectives-management",
+        name: "Objectives",
+        childPermissions: ["ERP-AOP-MAN:approve", "ERP-AOP-MAN:view-all"],
+      },
+
+      {
+        path: "/ppmp-approval",
+        name: "PPMP Management",
+        childPermissions: ["ERP-PPMP-MAN:approve", "ERP-PPMP-MAN:view-all"],
+        children: [
+          {
+            path: "view/:id",
+          },
+        ],
+      },
+
+      {
+        path: "/objectives",
+        name: "Objectives and KPIs",
+        childPermissions: [
+          "ERP-OBJ-MAN:write",
+          "ERP-OBJ-MAN:view",
+          "ERP-OBJ-MAN:update",
+          "ERP-OBJ-MAN:view-all",
+        ],
+      },
+
+      {
+        path: "/dealine-management",
+        name: "Deadline Management",
+        childPermissions: ["ERP-PPMP-MAN:approve"], // For testing
+      },
+    ],
+  },
+
+  {
+    parentPath: "/consolidator",
+    name: "Item Management",
+    icon: <MdSettings {...iconStyles} />,
+    permissions: [
+      "IM-001:write",
+      "IM-001:view",
+      "IM-001:view-all",
+      "IM-001:update",
+      "IM-001:approve",
+      "IM-001:request",
+      "IM-001:delete",
+    ],
     children: [
       {
         path: "/item-requests",
-        name: " Item requests",
+        name: "Item Requests",
+        childPermissions: [
+          "IM-001:read",
+          "IM-001:write",
+          "IM-001:edit",
+          "IM-001:delete",
+        ],
       },
 
       {
         path: "/item-library",
-        name: " Item library",
+        name: "Libraries",
+        childPermissions: [
+          "IM-001:read",
+          "IM-001:write",
+          "IM-001:edit",
+          "IM-001:delete",
+        ],
+        children: [
+          {
+            path: "classification",
+          },
+          {
+            path: "category",
+          },
+          {
+            path: "variant",
+          },
+        ],
       },
     ],
   },
@@ -55,29 +201,6 @@ export const AOPPathMap = {
   3: "approved",
 };
 
-export const AOP_STEP_HEADER = [
-  { id: 1, header: 'Type of function' },
-  { id: 2, header: 'Objectives' },
-  { id: 3, header: 'Success Indicator' },
-  { id: 4, header: 'Actions' },
-]
-
-export const ACTIVITIES_HEADER = [
-  { id: 1, header: 'Activities' },
-  { id: 2, header: 'Timeframe' },
-  { id: 3, header: 'Target (by quarter)' },
-  { id: 4, header: 'Cost' },
-  { id: 5, header: 'Is GAD related activity' },
-  { id: 6, header: 'Responsible person' },
-  { id: 7, header: 'Actions' },
-]
-
-export const FUNCTION_TYPE_OPTION = [
-  { id: 1, name: "Strategic", value: "Strategic" },
-  { id: 2, name: "Core", value: "Core" },
-  { id: 3, name: "Support", value: "Support" },
-];
-
 export const OBJECTIVE_OPTION = [
   { id: 1, name: "Objective 1", value: "Objective 1" },
   { id: 2, name: "Objective 2", value: "Objective 2" },
@@ -88,4 +211,69 @@ export const SUCCESS_INDICATOR_OPTION = [
   { id: 1, name: "Success Indicator 1", value: "Success Indicator 1" },
   { id: 2, name: "Success Indicator 2", value: "Success Indicator 2" },
   { id: 3, name: "Success Indicator 3", value: "Success Indicator 3" },
+];
+
+export const CART_ITEMS = [
+  {
+    id: 1,
+    name: "Wireless Bluetooth Headphones",
+    specType: "High-end",
+    category: "Electronics",
+    price: 129.99,
+    quantity: 2,
+    image:
+      "https://images.unsplash.com/photo-1532614338840-ab30cf10ed36?auto=format&fit=crop&w=318",
+    inStock: true,
+    rating: 4.5,
+  },
+  {
+    id: 2,
+    name: "Smart Fitness Watch",
+    specType: "High-end",
+    category: "Wearables",
+    price: 89.99,
+    quantity: 1,
+    image:
+      "https://images.unsplash.com/photo-1532614338840-ab30cf10ed36?auto=format&fit=crop&w=318",
+    inStock: true,
+    rating: 4.2,
+  },
+  {
+    id: 3,
+    name: "Organic Cotton T-Shirt",
+    specType: "High-end",
+    category: "Clothing",
+    price: 24.99,
+    quantity: 3,
+    image:
+      "https://images.unsplash.com/photo-1532614338840-ab30cf10ed36?auto=format&fit=crop&w=318",
+    inStock: true,
+    rating: 4.0,
+    color: "Navy Blue",
+  },
+  {
+    id: 4,
+    name: "Stainless Steel Water Bottle",
+    specType: "High-end",
+    category: "Accessories",
+    price: 19.99,
+    quantity: 1,
+    image:
+      "https://images.unsplash.com/photo-1532614338840-ab30cf10ed36?auto=format&fit=crop&w=318",
+    inStock: true,
+    rating: 4.7,
+  },
+  {
+    id: 5,
+    name: "Wireless Phone Charger",
+    specType: "High-end",
+    category: "Electronics",
+    price: 34.99,
+    quantity: 1,
+    image:
+      "https://images.unsplash.com/photo-1532614338840-ab30cf10ed36?auto=format&fit=crop&w=318",
+    inStock: false, // Out of stock item
+    rating: 3.8,
+    backorder: true,
+  },
 ];
