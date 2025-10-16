@@ -17,6 +17,7 @@ const ObjectivesModal = ({
     functionType,
     objective,
     successIndicator,
+    isEditMode,
 }) => {
 
     const { OBJECTIVE_ALERT } = OBJECTIVES;
@@ -66,8 +67,14 @@ const ObjectivesModal = ({
                 />
 
                 <Stack>
-                    <Typography level="body-xs">Description:</Typography>
-                    <Typography level="body-xs" fontWeight={600}>{objective?.description}</Typography>
+                    {objective?.description && (
+                        <>
+                            <Typography level="body-xs">Description:</Typography>
+                            <Typography level="body-xs" fontWeight={600}>
+                                {objective?.description}
+                            </Typography>
+                        </>
+                    )}
                 </Stack>
 
                 <AutocompleteComponent
@@ -82,17 +89,27 @@ const ObjectivesModal = ({
                 />
 
                 <Stack>
-                    <Typography level="body-xs">Description:</Typography>
-                    <Typography level="body-xs">{successIndicator?.description}</Typography>
+                    {successIndicator?.description && (
+                        <>
+                            <Typography level="body-xs">Description:</Typography>
+                            <Typography level="body-xs" fontWeight={600}>
+                                {successIndicator?.description}
+                            </Typography>
+                        </>
+                    )}
                 </Stack>
 
-                <Alert
-                    color="warning"
-                    startDecorator={<TriangleAlert />}
-                >
-                    {OBJECTIVE_ALERT}
-                </Alert>
-            </Stack>
+                {!isEditMode
+                    &&
+                    <Alert
+                        color="warning"
+                        startDecorator={<TriangleAlert />}
+                    >
+                        {OBJECTIVE_ALERT}
+                    </Alert>
+                }
+
+            </Stack >
         </>
     )
 }

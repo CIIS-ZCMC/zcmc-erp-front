@@ -1,26 +1,35 @@
 import { useEffect, useState } from 'react';
 
-import { Stack, Divider, Typography, Breadcrumbs, CardActions, Card, CardContent, Chip } from '@mui/joy';
+import { Stack, Divider, Typography, Breadcrumbs } from '@mui/joy';
 
 import { ThreeDotsLoader } from '@Components/Common/Loading/ThreeDotsLoader';
-
-import { Pencil, Trash, ArrowRight, Check } from 'lucide-react';
 
 import BoxComponent from '../../Components/Common/Card/BoxComponent';
 import SearchBarComponent from '../../Components/SearchBarComponent';
 import ButtonComponent from '../../Components/Common/ButtonComponent';
-import IconButtonComponent from '@Components/Common/IconButtonComponent';
 import ModalComponent from '@Components/Common/Dialog/ModalComponent';
 import ObjectivesModal from './modal/ObjectivesModal';
-import ChipComponent from '@Components/Common/ChipComponent';
+import CardComponent from '@Components/Common/Card/CardComponent';
+import ConfirmationModalComponent from '@Components/Common/Dialog/ConfirmationModalComponent';
+
+import useModalHook from '../../Hooks/ModalHook';
+
+import CardHeader from './card/CardHeader';
+import CardBody from './card/CardBody';
+import CardActions from './card/CardActions';
 
 import { OBJECTIVES } from '../../Data/constants';
 
 import { useFunctionType, useObjective, useSuccessIndicator, useObjectives } from '../../Store/objectivesStore';
 
 const Objectives = () => {
+
+    const { setAlertDialog, setConfirmationModal, closeConfirmation } = useModalHook()
+
     const [isLoading, setIsLoading] = useState(false);
+    const [isEditMode, setIsEditMode] = useState(false);
     const [isOpenObjectivesModal, setIsOpenObjectivesModal] = useState(false);
+    const [openDeleteModal, setOpenDeleteModal] = useState(false);
 
     const functionType = useFunctionType()
     const objective = useObjective()
@@ -31,6 +40,7 @@ const Objectives = () => {
         OBJECTIVES_EMPTY_STATE_TITLE,
         OBJECTIVES_CREATE_NEW,
         ADD_OBJECTIVE,
+        EDIT_OBJECTIVE,
         ADD_OBJECTIVE_SUBHEADING,
         AOP_EMPTY_STATE_TITLE,
         AOP_CREATE_NEW_AOP,
@@ -49,16 +59,11 @@ const Objectives = () => {
         </Typography>,
     ];
 
-    const handleOpenObjectivesModal = () => {
-        setIsOpenObjectivesModal(true);
-    }
-
     const handleSaveObjectives = () => {
 
         if (!functionType || !objective || !successIndicator) {
             alert('Please fill all the fields')
             return
-
         }
 
         const payload = {
@@ -68,6 +73,14 @@ const Objectives = () => {
         };
 
         console.log("Submitted data:", payload);
+
+        setAlertDialog({
+            status: "success",
+            title: `Objectives ${isEditMode ? 'Updated' : 'Created'} successfully!`,
+            description: "",
+        })
+
+        handleCloseModal()
     }
 
     useEffect(() => {
@@ -77,10 +90,38 @@ const Objectives = () => {
         console.log(objectives.length)
     }, [functionType, objective, successIndicator, objectives])
 
+    const handleEdit = () => {
+        setIsEditMode(true)
+        setIsOpenObjectivesModal(true);
+    }
+
+    const handleOpenObjectivesModal = () => {
+        setIsOpenObjectivesModal(true);
+    }
+
+    const handleCloseModal = () => {
+        setIsOpenObjectivesModal(false);
+        setIsEditMode(false);
+    }
+
+    const handleOpenDeleteModal = () => {
+        setOpenDeleteModal(true)
+        const data = {
+            status: "warning",
+            title: ` Are you sure you want to delete item ? `,
+            description:
+                "The selected item will be removed",
+        };
+        setConfirmationModal(data);
+    }
+
+    const handleDeleteObjective = () => {
+        setOpenDeleteModal(false)
+        closeConfirmation()
+    }
 
     return (
         <div>
-
             <Stack spacing={2}>
                 <Stack
                     direction={'row'}
@@ -176,138 +217,58 @@ const Objectives = () => {
                     direction={'row'}
                     spacing={1}
                 >
-                    <Card
-                        sx={{
-                            textAlign: 'center',
-                            overflow: 'auto',
-                            width: "450px",
-                            borderLeft: '6px solid #2E7D32',
-                            borderRadius: 'md',
-                        }}
-                    >
-
-                        <CardContent>
-                            <Stack
-                                direction={'row'}
-                                alignItems={'end'}
-                                justifyContent={'end'}
-                            >
-
-                                <IconButtonComponent
-                                    size={'sm'}
-                                    icon={<Check size={18} />}
-                                />
-
-                                <IconButtonComponent
-                                    size={'sm'}
-                                    icon={<Pencil size={18} />}
-                                />
-
-                                <IconButtonComponent
-                                    size={'sm'}
-                                    icon={<Trash size={18} />}
-                                />
-
-                            </Stack>
-
-
-                            <Stack
-                                direction={'row'}
-                                alignItems={'start'}
-                                justifyContent={'space-between'}
-                                gap={5}
-                            >
-
-                                <Stack
-                                    alignItems={'start'}
-                                >
-                                    <Typography
-                                        level={'body-sm'}
-                                        sx={{ flex: 1 }}
-                                    >
-                                        Function Type
-                                    </Typography>
-
-                                    <Typography
-                                        level={'title-lg'}
-                                        sx={{ flex: 1 }}
-                                    >
-                                        Objective Name #1
-                                    </Typography>
-                                </Stack>
-
-
-
-                                <Typography
-                                    level="body-sm"
-                                    sx={{
-                                        flex: 1,
-                                        // whiteSpace: 'nowrap',
-                                        // overflow: 'hidden',
-                                        // textOverflow: 'ellipsis',
-                                        // maxWidth: '50%',
-                                    }}
-                                >
-                                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Veritatis perspiciatis maiores amet atque ducimus expedita tempora Voluptas, illo.
-                                </Typography>
-                            </Stack>
-                        </CardContent>
-
-                        <Divider inset="none" />
-
-                        <CardActions
-                            sx={{
-                                justifyContent: "flex-end",
-                            }}
-                        >
-                            <Stack
-                                direction={'column'}
-                                alignItems={'center'}
-                            >
-                                <Chip
-                                    variant="soft"
-                                    color="primary"
-                                    size="lg"
-                                    p={2}
-                                    startDecorator={10}
-                                    endDecorator={<ArrowRight size={18} />}
-                                    onClick={() => alert('You clicked the Joy Chip!')}
-                                >
-                                    Activities
-                                </Chip>
-                                {/* 
-                                <ButtonComponent
-                                    variant={'soft'}
-                                    color={'primary'}
-                                    label={`${10} Activities`}
-                                    size={'sm'}
-                                    endDecorator={<ArrowRight size={18} />}
-                                >
-                                    chip
-                                </ButtonComponent> */}
-                            </Stack>
-                        </CardActions>
-
-                    </Card>
+                    <CardComponent
+                        statusColor={null}
+                        cardHeader={<CardHeader
+                            handleSave={() => console.log('save')}
+                            handleEdit={() => handleEdit()}
+                            handleDelete={() => handleOpenDeleteModal()}
+                        />}
+                        cardBody={<CardBody status={false} />}
+                        cardActions={<CardActions
+                            handleActivities={() => console.log('activities')}
+                        />}
+                    />
                 </Stack>
             }
 
+            {/* edit and add objectives modal */}
             <ModalComponent
                 isOpen={isOpenObjectivesModal}
-                handleClose={() => setIsOpenObjectivesModal(false)}
-                title={ADD_OBJECTIVE}
+                handleClose={handleCloseModal}
+                title={isEditMode ? EDIT_OBJECTIVE : ADD_OBJECTIVE}
                 description={ADD_OBJECTIVE_SUBHEADING}
+                minWidth={500}
                 content={
                     <ObjectivesModal
+                        isEditMode={isEditMode}
                         functionType={functionType}
                         objective={objective}
                         successIndicator={successIndicator}
                     />
                 }
                 hasActionButtons={true}
-                rightButtonLabel={'Save Objective'}
+                rightButtonLabel={`${isEditMode ? 'Update' : 'Save'} Objective`}
                 rightButtonAction={() => handleSaveObjectives()}
             />
+
+
+            {/* Delete Objectives Modal */}
+            {
+                openDeleteModal && (
+                    <ConfirmationModalComponent
+                        leftButtonLabel="Cancel"
+                        leftButtonAction={() => {
+                            setOpenDeleteModal(false)
+                            closeConfirmation()
+                        }}
+                        rightButtonLabel="Delete"
+                        rightButtonAction={() => handleDeleteObjective()}
+                        isLoading={isLoading}
+                    />
+                )
+            }
+
 
         </div >
     )
