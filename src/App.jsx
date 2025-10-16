@@ -4,6 +4,7 @@ import { CssBaseline, GlobalStyles } from "@mui/joy";
 
 import AnimatedRoutes from "./Routes/AnimatedRoutes";
 import globalStyles from "./styles/globalStyles";
+import { Warning } from "@mui/icons-material";
 
 const theme = extendTheme({
   colorSchemes: {
@@ -19,6 +20,7 @@ const theme = extendTheme({
           fontReg: "#666666",
           active: "rgba(55, 150, 245, 0.12)",
           darkgreen: "#0E5844",
+          warning: "#ED6C02",
         },
         primary: {
           solidColor: "#ffffff",

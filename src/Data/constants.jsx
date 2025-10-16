@@ -29,18 +29,19 @@ export const AREA_ID = {
 
 export const OBJECTIVES = {
   OBJECTIVES_TITLE: "Objectives",
-  OBJECTIVES_SUBHEADING: "This is a subheading. It should add more context to the interaction.",
+  OBJECTIVES_SUBHEADING:
+    "This is a subheading. It should add more context to the interaction.",
   ADD_OBJECTIVE: "Add an objective",
   ADD_OBJECTIVE_SUBHEADING: "Add details to give context to the objective",
-  OBJECTIVE_ALERT: "After this, you will have to make activities for this objective through manage objectives",
+  OBJECTIVE_ALERT:
+    "After this, you will have to make activities for this objective through manage objectives",
   MANAGE_OBJECTIVES_HEADER: "Manage Objectives",
   MANAGE_OBJECTIVES_SUBHEADER:
     "Set your department’s functions, objectives, and success indicators. Each objective serves as a basis for the activities you’ll also define.",
-  OBJECTIVES_EMPTY_STATE_TITLE: " You don’t have any Objective for this year yet.",
+  OBJECTIVES_EMPTY_STATE_TITLE:
+    " You don’t have any Objective for this year yet.",
   OBJECTIVES_CREATE_NEW: "Begin by adding a new one",
-
-}
-
+};
 
 export const AOP_CONSTANTS = {
   AOP_TITLE: "Annual Operations Planning",
@@ -150,10 +151,11 @@ export const CONFIRMATION_CONSTANTS = {
 };
 
 export const ANNUAL_OPS = {
-  header: "Modal Header",
-  description: "Modal Description",
+  header: "Create New AOP",
+  description:
+    "Fill in the details below to create a new Annual Operational Plan. Once saved, you’ll be able to define your objectives, activities, and resources.",
   missionPlaceHolder: "Please insert mission content here",
-}
+};
 
 export const MONTHS = [
   { label: "January", value: "01" },
