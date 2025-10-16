@@ -7,17 +7,12 @@ import { TbTargetArrow } from "react-icons/tb";
 import ButtonComponent from "../../../Components/Common/ButtonComponent";
 import { useNavigate } from "react-router-dom";
 import usePPMPHook from "../../../Hooks/PPMP/PPMPHook";
-import {
-  MdFindInPage,
-  MdOutlineFindInPage,
-  MdOutlineShop,
-  MdOutlineShoppingCartCheckout,
-} from "react-icons/md";
+import { MdOutlineShoppingCartCheckout } from "react-icons/md";
 import no_result from "../../../assets/empty-state-icon-base.png";
-import PageLoader from "../../../Components/Loading/PageLoader";
 import { ThreeDotsLoader } from "../../../Components/Common/Loading/ThreeDotsLoader";
 import { socket } from "../../../Services/Socket";
 import { useAuth } from "../../../Store/AuthStore";
+import { nextYear } from "../../../Utils/Functions";
 
 function PPMPDashboard(props) {
   const navigate = useNavigate();
@@ -26,14 +21,6 @@ function PPMPDashboard(props) {
   const { user } = useAuth();
   const { name, id, assignedArea } = user ?? {};
   const status = dashboard?.ppmp_application?.is_draft;
-
-  const sendSignal = () => {
-    socket.emit("register-user", {
-      userId: id,
-      name: name,
-      area: assignedArea?.name,
-    });
-  };
 
   const handleNavigate = () => {
     navigate("ppmp-items");
@@ -60,7 +47,6 @@ function PPMPDashboard(props) {
   }, [assignedArea]);
   return (
     <Fragment>
-      {console.log("dashboard", status)}
       {pageLoader ? (
         <Stack height="85vh" alignItems="center" justifyContent="center">
           <ThreeDotsLoader />
@@ -117,7 +103,7 @@ function PPMPDashboard(props) {
                 <Typography
                   sx={{ color: "white", fontSize: 32, fontWeight: 600 }}
                 >
-                  PPMP for Fiscal year 2026
+                  {nextYear} Project Procurement Management Plan (PPMP)
                 </Typography>
                 {/* <Typography sx={{ color: "white", fontSize: 14 }}>
               Mission: This is a sample mission written by the requesting body.
@@ -132,80 +118,66 @@ function PPMPDashboard(props) {
                 bgcolor="#FAFAFA"
                 paddingX={5}
                 paddingY={5}
-                sx={{ borderBottomLeftRadius: 10, borderBottomRightRadius: 10 }}
+                sx={{
+                  borderBottomLeftRadius: 10,
+                  borderBottomRightRadius: 10,
+                }}
                 gap={2}
               >
-                <Stack width="100%" gap={1}>
-                  <Box
-                    display="flex"
-                    alignItems="center"
-                    justifyContent="space-between"
-                    width="100%"
-                  >
-                    <BoxComponent width="100%" padding={2}>
-                      <Typography fontWeight={600} pb={2} fontSize={20}>
-                        Plan summary:
+                <BoxComponent width="100%" padding={2}>
+                  <Typography fontWeight={600} pb={2} fontSize={20}>
+                    Plan summary:
+                  </Typography>
+                  <Stack direction={"row"} spacing={2} alignItems="flex-end">
+                    <BoxComponent width="100%">
+                      <Typography fontSize={16} fontWeight={600} py={1}>
+                        {dashboard?.item_count?.toLocaleString()}
                       </Typography>
-                      <Stack direction={"row"} spacing={2}>
-                        <BoxComponent width="100%">
-                          <Typography fontSize={16} fontWeight={600} py={1}>
-                            {dashboard?.item_count?.toLocaleString()}
-                          </Typography>
-                          <Stack
-                            direction="row"
-                            alignItems="flex-start"
-                            gap={1}
-                          >
-                            <TbTargetArrow
-                              style={{
-                                fontSize: 25,
-                                marginTop: "5px",
-                                color: "#666666",
-                              }}
-                            />
+                      <Stack direction="row" alignItems="flex-start" gap={1}>
+                        <TbTargetArrow
+                          style={{
+                            fontSize: 25,
+                            marginTop: "5px",
+                            color: "#666666",
+                          }}
+                        />
 
-                            <Typography>
-                              Contained from{" "}
-                              <b style={{ color: "#004366" }}>
-                                ({dashboard?.activity_count?.toLocaleString()})
-                              </b>{" "}
-                              total combined activities
-                            </Typography>
-                          </Stack>
-                        </BoxComponent>
-                        <BoxComponent width="100%">
-                          <Typography fontSize={16} fontWeight={600} py={1}>
-                            {dashboard?.total_quantity?.toLocaleString()} total
-                            item quantity
-                          </Typography>
-                          <Stack
-                            direction="row"
-                            alignItems="flex-start"
-                            gap={1}
-                          >
-                            <MdOutlineShoppingCartCheckout
-                              style={{
-                                fontSize: 25,
-                                marginTop: "5px",
-                                color: "#666666",
-                              }}
-                            />
-                            <Typography>
-                              With a PPMP total of{" "}
-                              <b style={{ color: "#004366" }}>
-                                ( &#8369;{" "}
-                                {dashboard?.ppmp_application?.ppmp_total?.toLocaleString()}
-                                )
-                              </b>
-                            </Typography>
-                          </Stack>
-                        </BoxComponent>
+                        <Typography>
+                          Contained from{" "}
+                          <b style={{ color: "#004366" }}>
+                            ({dashboard?.activity_count?.toLocaleString()})
+                          </b>{" "}
+                          total combined activities
+                        </Typography>
                       </Stack>
                     </BoxComponent>
-                  </Box>
-                </Stack>
+                    <BoxComponent width="100%">
+                      <Typography fontSize={16} fontWeight={600} py={1}>
+                        {dashboard?.total_quantity?.toLocaleString()} total item
+                        quantity
+                      </Typography>
+                      <Stack direction="row" alignItems="flex-start" gap={1}>
+                        <MdOutlineShoppingCartCheckout
+                          style={{
+                            fontSize: 25,
+                            marginTop: "5px",
+                            color: "#666666",
+                          }}
+                        />
+                        <Typography>
+                          With a PPMP total of{" "}
+                          <b style={{ color: "#004366" }}>
+                            ( &#8369;{" "}
+                            {dashboard?.ppmp_application?.ppmp_total?.toLocaleString()}
+                            )
+                          </b>
+                        </Typography>
+                      </Stack>
+                    </BoxComponent>
+                  </Stack>
+                </BoxComponent>
 
-                <BoxComponent width="100%">
+                <BoxComponent width="100%" padding={2}>
                   <Stack gap={3} alignItems="start">
                     <Typography fontWeight={600} fontSize={20} align="left">
                       About your PPMP
@@ -219,6 +191,7 @@ function PPMPDashboard(props) {
                       label={"View PPMP"}
                       onClick={() => handleNavigate()}
                       width="auto"
+                      boxShadow={"2px 3px 4px #D3D3D3"}
                     />
                   </Stack>
                 </BoxComponent>

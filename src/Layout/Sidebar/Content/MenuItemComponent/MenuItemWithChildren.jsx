@@ -112,7 +112,7 @@ const MenuItemWithChildren = ({
       sx={{
         py: isExpanded ? 0.5 : 0,
         borderRadius: "md",
-        backgroundColor: isExpanded ? "rgba(255,255,255,0.05)" : "transparent",
+        backgroundColor: isExpanded ? "none" : "transparent",
         transition: "background-color 0.2s ease, padding 0.1s ease",
       }}
     >
@@ -120,7 +120,9 @@ const MenuItemWithChildren = ({
         {content}
       </MenuItemComponent>
       {filteredChildren?.length > 1 ? (
-        <Divider sx={{ mt: !isExpanded && 1, mx: 1.5 }} />
+        <Divider
+          sx={{ mt: !isExpanded && 1, mx: 1, backgroundColor: "#006599" }}
+        />
       ) : null}
       {/* Inline children for expanded sidebar */}
       {!isCollapsed && isExpanded && (

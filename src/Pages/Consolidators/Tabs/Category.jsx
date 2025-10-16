@@ -1,158 +1,169 @@
-import React, { Fragment } from "react";
-import { classificationCols } from "../../../Data/Columns";
+import React, { Fragment, useEffect, useState } from "react";
+import { categoryCols, classificationCols } from "../../../Data/Columns";
 import ScrollableTableComponent from "../../../Components/Common/Table/ScrollableTableComponent";
-import { Typography } from "@mui/joy";
+import { Divider, Stack, Typography } from "@mui/joy";
 import useModalHook from "../../../Hooks/ModalHook";
 import useCategoryHooks from "../../../Hooks/Libraries/LibCategoryHooks";
+import ServerTableComponent from "../../../Components/Common/Table/ServerTableComponent";
+import ModalComponent from "../../../Components/Common/Dialog/ModalComponent";
+import InputComponent from "../../../Components/Form/InputComponent";
+import TextareaComponent from "../../../Components/Form/TextareaComponent";
+import ConfirmationModalComponent from "../../../Components/Common/Dialog/ConfirmationModalComponent";
+import usePinHook from "../../../Hooks/PinHook";
 
 export const Category = () => {
-  const { setType, setSelectedData } = useCategoryHooks();
-  const { setOpenModal } = useModalHook();
+  const {
+    setType,
+    setSelectedData,
+    categories,
+    pagination,
+    getPaginatedCategories,
+    setCurrentPage,
+    isLoading,
+    search_Query,
+    setSearchQuery,
+    currentPage,
+    selectedData,
+  } = useCategoryHooks();
+  const { pin, setPin } = usePinHook();
+  const { setOpenModal, setConfirmationModal } = useModalHook();
+  const [loading, setLoading] = useState(false);
+  const [openUpdate, setOpenUpdate] = useState(false);
+  const [openDel, setOpenDel] = useState(false);
+  const [updateData, setUpdateData] = useState({
+    name: "",
+    description: "",
+  });
+
   const setUpdateType = (data) => {
-    setType("update");
-    setOpenModal(true, false, true);
+    setOpenUpdate(true);
     setSelectedData(data);
   };
-  const setDeleteType = (data) => {
-    setType("delete");
-    setOpenModal(true, false, true);
-    setSelectedData(data);
+
+  const setDeleteType = (params) => {
+    setOpenDel(true);
+    setSelectedData(params);
+    const data = {
+      status: "error",
+      title: `Delete classification (${params?.name}) ?`,
+      description: "This action cannot be undone.",
+    };
+    setConfirmationModal(data);
   };
-  const data = [
-    {
-      id: 1,
-      clName: "Science adaw da adawdadaww adawd",
-      created_at: "2024-05-01",
-      updated_at: "2024-05-10",
-    },
-    {
-      id: 2,
-      clName: "History",
-      created_at: "2024-05-02",
-      updated_at: "2024-05-11",
-    },
-    {
-      id: 3,
-      clName: "Literature",
-      created_at: "2024-05-03",
-      updated_at: "2024-05-12",
-    },
-    {
-      id: 4,
-      clName: "Mathematics",
-      created_at: "2024-05-04",
-      updated_at: "2024-05-13",
-    },
-    {
-      id: 5,
-      clName: "Technology",
-      created_at: "2024-05-05",
-      updated_at: "2024-05-14",
-    },
-    {
-      id: 6,
-      clName: "Philosophy",
-      created_at: "2024-05-06",
-      updated_at: "2024-05-15",
-    },
-    {
-      id: 7,
-      clName: "Art",
-      created_at: "2024-05-07",
-      updated_at: "2024-05-16",
-    },
-    {
-      id: 8,
-      clName: "Music",
-      created_at: "2024-05-08",
-      updated_at: "2024-05-17",
-    },
-    {
-      id: 9,
-      clName: "Biology",
-      created_at: "2024-05-09",
-      updated_at: "2024-05-18",
-    },
-    {
-      id: 10,
-      clName: "Chemistry",
-      created_at: "2024-05-10",
-      updated_at: "2024-05-19",
-    },
-    {
-      id: 11,
-      clName: "Physics",
-      created_at: "2024-05-11",
-      updated_at: "2024-05-20",
-    },
-    {
-      id: 12,
-      clName: "Economics",
-      created_at: "2024-05-12",
-      updated_at: "2024-05-21",
-    },
-    {
-      id: 13,
-      clName: "Geography",
-      created_at: "2024-05-13",
-      updated_at: "2024-05-22",
-    },
-    {
-      id: 14,
-      clName: "Psychology",
-      created_at: "2024-05-14",
-      updated_at: "2024-05-23",
-    },
-    {
-      id: 15,
-      clName: "Sociology",
-      created_at: "2024-05-15",
-      updated_at: "2024-05-24",
-    },
-    {
-      id: 16,
-      clName: "Engineering",
-      created_at: "2024-05-16",
-      updated_at: "2024-05-25",
-    },
-    {
-      id: 17,
-      clName: "Architecture",
-      created_at: "2024-05-17",
-      updated_at: "2024-05-26",
-    },
-    {
-      id: 18,
-      clName: "Law",
-      created_at: "2024-05-18",
-      updated_at: "2024-05-27",
-    },
-    {
-      id: 19,
-      clName: "Medicine",
-      created_at: "2024-05-19",
-      updated_at: "2024-05-28",
-    },
-    {
-      id: 20,
-      clName: "Astronomy",
-      created_at: "2024-05-20",
-      updated_at: "2024-05-29",
-    },
-  ];
+
+  const deleteItem = (selected) => {
+    setOpenDel(false);
+  };
+
+  function transformData(data) {
+    return data.map((item) => ({
+      id: item.id,
+      name: item.name,
+      code: item.code,
+      description: item.description,
+      created_at: item.meta.created_at.split("T")[0],
+      updated_at: item.meta.updated_at.split("T")[0],
+    }));
+  }
+
+  useEffect(() => {
+    setLoading(true);
+    getPaginatedCategories({
+      per_page: 15,
+      search: search_Query, // Pass the current search query
+      callBack: (status, message) => {
+        setLoading(false);
+        console.log("Response:", status, message);
+      },
+    });
+  }, [currentPage, search_Query]);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setCurrentPage(1); // 👈 Only change the page, let the other useEffect handle loading & fetching
+    }, 500);
+
+    return () => clearTimeout(handler);
+  }, [search_Query]);
+
+  useEffect(() => {
+    if (openUpdate && selectedData) {
+      setUpdateData({
+        name: selectedData?.name || "",
+        description: selectedData?.description || "",
+      });
+    }
+  }, [selectedData, openUpdate]);
 
   return (
     <Fragment>
-      <ScrollableTableComponent
-        data={data}
-        columns={classificationCols(setUpdateType, setDeleteType)}
-        pageSize={5}
+      <ServerTableComponent
+        data={transformData(categories)}
+        isLoading={loading}
+        columns={categoryCols(setUpdateType, setDeleteType)}
+        pageSize={pagination?.pagination?.per_page || 20}
+        currentPage={pagination?.current_page}
+        totalPages={pagination?.total}
+        onPageChange={setCurrentPage}
+        paginationMeta={pagination}
+        search={search_Query}
+        setSearch={setSearchQuery}
         stripe="even"
+        withCount={pagination?.total}
+        fieldsToSearch={["name", "code", "description"]}
         bordered
         hoverRow
-        isLoading={false}
         stickLast
       />
+      {openUpdate && (
+        <ModalComponent
+          title={`Update category: ${selectedData?.name}`}
+          isOpen={openUpdate}
+          handleClose={() => setOpenUpdate(false)}
+          hasActionButtons
+          content={
+            <>
+              <Stack gap={2}>
+                <InputComponent
+                  label={"Category Name"}
+                  value={updateData.name}
+                  onChange={(e) =>
+                    setUpdateData({ ...updateData, name: e.target.value })
+                  }
+                  helperText={
+                    "Use a specific and descriptive naming convention for best results."
+                  }
+                />
+                <TextareaComponent
+                  label={"Description"}
+                  value={updateData.description}
+                  onChange={(e) =>
+                    setUpdateData({
+                      ...updateData,
+                      description: e.target.value,
+                    })
+                  }
+                />
+                <Divider />
+                <InputComponent
+                  label={"Authorization PIN"}
+                  helperText={
+                    "Confirm your action by typing-in your authorization PIN."
+                  }
+                />
+              </Stack>
+            </>
+          }
+        />
+      )}
+      {openDel && (
+        <ConfirmationModalComponent
+          status="error"
+          rightButtonAction={() => deleteItem(updateData.id)}
+          withAuthPin
+          setAuthPin={setPin}
+        />
+      )}
     </Fragment>
   );
 };

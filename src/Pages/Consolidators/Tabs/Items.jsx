@@ -1,41 +1,80 @@
 import React, { Fragment, useEffect, useState } from "react";
 import ScrollableTableComponent from "../../../Components/Common/Table/ScrollableTableComponent";
-import { Typography } from "@mui/joy";
+import { Textarea, Typography } from "@mui/joy";
 import { Stack, Link } from "@mui/joy";
 import { IoInformationOutline, IoOpen, IoOpenOutline } from "react-icons/io5";
 import useLibItemHook from "../../../Hooks/Libraries/LibItemHooks";
 import useModalHook from "../../../Hooks/ModalHook";
 import ServerTableComponent from "../../../Components/Common/Table/ServerTableComponent";
+import { itemCols } from "../../../Data/Columns";
+import ModalComponent from "../../../Components/Common/Dialog/ModalComponent";
+import TextareaComponent from "../../../Components/Form/TextareaComponent";
+import InputComponent from "../../../Components/Form/InputComponent";
+import { handleChangeInput } from "../../../Utils/HandleInput";
+import ConfirmationModalComponent from "../../../Components/Common/Dialog/ConfirmationModalComponent";
+import usePinHook from "../../../Hooks/PinHook";
 
 export const Items = () => {
-  const { resetInput, setUpdateData, updateData } = useLibItemHook();
-  const { openModal, setOpenModal } = useModalHook();
-  const { Items, getItems, pagination, navLinks, currentPage, setCurrentPage } =
-    useLibItemHook();
+  const { openModal, setOpenModal, setConfirmationModal, closeConfirmation } =
+    useModalHook();
+  const { pin, setPin, resetPin } = usePinHook;
+  const {
+    resetInput,
+    setUpdateData,
+    Items,
+    getItems,
+    pagination,
+    navLinks,
+    currentPage,
+    setCurrentPage,
+    setSearchQuery,
+    search_Query,
+    updateData,
+    updateItem,
+  } = useLibItemHook();
 
-  const fetchAll = async () => {
-    const wrap = (fn) => new Promise((resolve) => fn(() => resolve()));
+  const [loading, setLoading] = useState(false);
+  const [openUpdate, setOpenUpdate] = useState(false);
+  const [openDel, setOpenDel] = useState(false);
+  const [updatedData, setUpdatedData] = useState({
+    name: "",
+    estimated_budget: "",
+  });
 
-    try {
-      await Promise.all([
-        wrap(getItems(currentPage)),
-        // wrap((done) => getFunctionType({ mode: "selection" }, done)),
-      ]);
-    } catch (err) {
-      console.error("Fetching error:", err);
-    }
+  const handleUpdate = (data) => {
+    resetPin;
+    setOpenUpdate(true);
+    setUpdateData(data);
   };
 
-  useEffect(() => {
-    fetchAll();
-  }, [currentPage]);
+  const update = () => {
+    const formData = new FormData();
+    formData.append("id", updatedData.id);
+    formData.append("name", updatedData.name);
+    formData.append("price", updatedData.estimated_budget);
+    formData.append("pin", pin);
 
-  useEffect(() => {
-    if (openModal.isNew) {
-      setUpdateData(null);
-      resetInput();
-    }
-  }, [openModal]);
+    updateItem(formData, updatedData.id, (status, message) => {
+      console.log(status, message);
+    });
+  };
+
+  const handleDelete = (params) => {
+    resetPin;
+    setOpenDel(true);
+    setUpdateData(params);
+    const data = {
+      status: "error",
+      title: `Delete item (${params?.name}) ?`,
+      description: "This action cannot be undone.",
+    };
+    setConfirmationModal(data);
+  };
+
+  const deleteItem = (selected) => {
+    setOpenDel(false);
+  };
+
   const data =
     Items.map((row) => ({
       id: row.id,
@@ -43,111 +82,124 @@ export const Items = () => {
       classification: row.classification,
       item_category: row.category,
       variant: row.variant,
-      unit: row.unit,
+      unit: row.item_unit.name,
       estimated_budget: row.estimated_budget,
     })) || [];
 
-  const objHeaders = [
-    { field: "id", name: "Row #", align: "center", width: "50px" },
-    { field: "name", name: "Item name", width: 200, align: "left" },
-    {
-      field: "classification",
-      name: "Classification",
-      width: 200,
-      align: "left",
-    },
-    { field: "item_category", name: "Category", width: 200, align: "left" },
-    { field: "variant", name: "Variant", width: 200, align: "left" },
-    {
-      field: "unit",
-      name: "Unit of Measurement",
-      width: 200,
-      align: "left",
-    },
-    {
-      field: "estimated_budget",
-      name: "Estimated Budget",
-      width: 200,
-      align: "left",
-    },
-    {
-      field: "action",
-      name: "Actions",
-      position: "sticky",
-      width: "150px",
-      right: 0,
-      align: "center",
-      render: (params) => {
-        return (
-          <>
-            <Stack
-              direction="row"
-              sx={{ justifyContent: "space-between", alignItems: "center" }}
-            >
-              <Link
-                onClick={() => {
-                  setUpdateData(params);
-                  setOpenModal(false, false, true);
-                  resetInput();
-                }}
-                size="md"
-                variant="plain"
-                color="primary"
-                underline="hover"
-                fontSize={14}
-                endDecorator={<IoOpenOutline />}
-              >
-                Update
-              </Link>
-              <Link
-                onClick={() => {
-                  setOpenModal(false, true, true);
-                  // alert(`Action clicked for ID: ${params.id}`)
-                }}
-                size="md"
-                variant="plain"
-                color="danger"
-                underline="hover"
-                fontSize={14}
-                endDecorator={<IoOpenOutline />}
-              >
-                Delete
-              </Link>
-            </Stack>
-          </>
-        );
+  useEffect(() => {
+    setLoading(true);
+    getItems({
+      per_page: 15,
+      search: search_Query, // Pass the current search query
+      callBack: (status, message) => {
+        setLoading(false);
+        console.log("Response:", status, message);
       },
-    },
-  ];
+    });
+  }, [currentPage, search_Query]);
+
+  useEffect(() => {
+    const handler = setTimeout(() => {
+      setCurrentPage(1); // 👈 Only change the page, let the other useEffect handle loading & fetching
+    }, 500);
+
+    return () => clearTimeout(handler);
+  }, [search_Query]);
+
+  useEffect(() => {
+    if (openUpdate && updateData) {
+      setUpdatedData({
+        name: updateData.name || "",
+        estimated_budget: updateData.estimated_budget || "",
+      });
+    }
+  }, [updateData, openUpdate]);
 
   return (
     <Fragment>
       <ServerTableComponent
         data={data}
-        columns={objHeaders}
+        isLoading={loading}
+        columns={itemCols(handleUpdate, handleDelete)}
         pageSize={pagination?.per_page}
-        currentPage={currentPage}
-        totalPages={0}
         onPageChange={setCurrentPage}
         paginationMeta={pagination}
         stripe="even"
         withCount={pagination?.total}
-        fieldsToSearch={["title", "description"]}
-        search={""}
+        fieldsToSearch={["name", "classification", "item_category"]}
+        search={search_Query}
+        setSearch={setSearchQuery}
         bordered
         hoverRow
         stickLast
       />
-      {/* <ScrollableTableComponent
-        data={data}
-        columns={objHeaders}
-        pageSize={5}
-        stripe="even"
-        bordered
-        hoverRow
-        isLoading={false}
-        stickLast
-      /> */}
+      {openUpdate && (
+        <ModalComponent
+          title={
+            <Typography>
+              Update item{" "}
+              <Typography sx={{ color: "#C98503" }}>
+                ({updateData.name})
+              </Typography>
+            </Typography>
+          }
+          height="auto"
+          maxWidth={"480px"}
+          isOpen={openUpdate}
+          handleClose={() => setOpenUpdate(false)}
+          rightButtonAction={() => update()}
+          content={
+            <>
+              <Stack gap={2}>
+                <TextareaComponent
+                  name={"name"}
+                  label={"Item Name"}
+                  value={updatedData.name}
+                  onChange={(e) =>
+                    handleChangeInput("name", setUpdatedData, e.target.value)
+                  }
+                />
+                <InputComponent
+                  label={"Estimated budget"}
+                  name={"estimated_budget"}
+                  value={updatedData.estimated_budget}
+                  handleInput={(e) =>
+                    handleChangeInput(
+                      "estimated_budget",
+                      setUpdatedData,
+                      e.target.value
+                    )
+                  }
+                  type="number"
+                />
+                <InputComponent
+                  label={"Authorization PIN"}
+                  type="password"
+                  placeholder={"Enter your authorization PIN"}
+                  value={pin} 
+                  setValue={setPin}                  
+                  helperText={
+                    "Confirm you action by typing-in your authorization PIN."
+                  }
+                />
+              </Stack>
+            </>
+          }
+          hasActionButtons
+        />
+      )}
+      {openDel && (
+        <ConfirmationModalComponent
+          status="error"
+          leftButtonAction={() => {
+            closeConfirmation();
+            setOpenDel(false);
+          }}
+          rightButtonAction={() => deleteItem(updateData.id)}
+          withAuthPin
+          setAuthPin={setPin}
+        />
+      )}
     </Fragment>
   );
 };

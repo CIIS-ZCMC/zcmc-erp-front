@@ -23,8 +23,8 @@ const ChildMenuItem = ({ icon, name, path, isInPopout = false }) => {
         borderRadius: "md",
         transition: "background 0.2s",
 
-        backgroundColor: isActive ? "primary.100" : "transparent",
-        color: isActive ? "primary.900" : "white",
+        backgroundColor: isActive ? "#1E5978" : "transparent",
+        color: isActive ? "white" : "white",
         ...(isInPopout
           ? {
               bgcolor: isActive ? "primary.900" : "transparent",

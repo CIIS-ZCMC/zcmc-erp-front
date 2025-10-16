@@ -1,156 +1,103 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { variantCols } from "../../../Data/Columns";
 import ScrollableTableComponent from "../../../Components/Common/Table/ScrollableTableComponent";
 import useModalHook from "../../../Hooks/ModalHook";
 import useVariantHooks from "../../../Hooks/Libraries/LibVarianHooks";
+import ServerTableComponent from "../../../Components/Common/Table/ServerTableComponent";
+import useTerminologyHooks from "../../../Hooks/Libraries/LibTerminology";
+import SearchBarComponentv2 from "../../../Components/SearchBarWithdeBounce";
+import { Stack } from "@mui/material";
+import ConfirmationModalComponent from "../../../Components/Common/Dialog/ConfirmationModalComponent";
+import usePinHook from "../../../Hooks/PinHook";
+
 export const Variant = () => {
-  const { setType, setSelectedData } = useVariantHooks();
-  const { setOpenModal } = useModalHook();
+  const {
+    setType,
+    selectedData,
+    setSelectedData,
+    terminology,
+    pagination,
+    getPaginatedCategories,
+    setCurrentPage,
+    getTerminology,
+  } = useTerminologyHooks();
+
+  const { setOpenModal, setConfirmationModal } = useModalHook();
+  const { pin, setPin } = usePinHook();
+  const [search, setSearch] = useState("");
+  const [loading, setLoading] = useState(false);
+  const [openUpdate, setOpenUpdate] = useState(false);
+  const [openDel, setOpenDel] = useState(false);
+
   const setUpdateType = (data) => {
-    setType("update");
-    setOpenModal(true, false, true);
+    setOpenUpdate(true);
     setSelectedData(data);
   };
-  const setDeleteType = (data) => {
-    setType("delete");
-    setOpenModal(true, false, true);
-    setSelectedData(data);
+
+  const setDeleteType = (params) => {
+    setOpenDel(true);
+    setSelectedData(params);
+    const data = {
+      status: "error",
+      title: `Delete classification (${params?.name}) ?`,
+      description: "This action cannot be undone.",
+    };
+    setConfirmationModal(data);
   };
-  const data = [
-    {
-      id: 1,
-      clName: "sample del",
-      created_at: "2024-05-01",
-      updated_at: "2024-05-10",
-    },
-    {
-      id: 2,
-      clName: "History",
-      created_at: "2024-05-02",
-      updated_at: "2024-05-11",
-    },
-    {
-      id: 3,
-      clName: "Literature",
-      created_at: "2024-05-03",
-      updated_at: "2024-05-12",
-    },
-    {
-      id: 4,
-      clName: "Mathematics",
-      created_at: "2024-05-04",
-      updated_at: "2024-05-13",
-    },
-    {
-      id: 5,
-      clName: "Technology",
-      created_at: "2024-05-05",
-      updated_at: "2024-05-14",
-    },
-    {
-      id: 6,
-      clName: "Philosophy",
-      created_at: "2024-05-06",
-      updated_at: "2024-05-15",
-    },
-    {
-      id: 7,
-      clName: "Art",
-      created_at: "2024-05-07",
-      updated_at: "2024-05-16",
-    },
-    {
-      id: 8,
-      clName: "Music",
-      created_at: "2024-05-08",
-      updated_at: "2024-05-17",
-    },
-    {
-      id: 9,
-      clName: "Biology",
-      created_at: "2024-05-09",
-      updated_at: "2024-05-18",
-    },
-    {
-      id: 10,
-      clName: "Chemistry",
-      created_at: "2024-05-10",
-      updated_at: "2024-05-19",
-    },
-    {
-      id: 11,
-      clName: "Physics",
-      created_at: "2024-05-11",
-      updated_at: "2024-05-20",
-    },
-    {
-      id: 12,
-      clName: "Economics",
-      created_at: "2024-05-12",
-      updated_at: "2024-05-21",
-    },
-    {
-      id: 13,
-      clName: "Geography",
-      created_at: "2024-05-13",
-      updated_at: "2024-05-22",
-    },
-    {
-      id: 14,
-      clName: "Psychology",
-      created_at: "2024-05-14",
-      updated_at: "2024-05-23",
-    },
-    {
-      id: 15,
-      clName: "Sociology",
-      created_at: "2024-05-15",
-      updated_at: "2024-05-24",
-    },
-    {
-      id: 16,
-      clName: "Engineering",
-      created_at: "2024-05-16",
-      updated_at: "2024-05-25",
-    },
-    {
-      id: 17,
-      clName: "Architecture",
-      created_at: "2024-05-17",
-      updated_at: "2024-05-26",
-    },
-    {
-      id: 18,
-      clName: "Law",
-      created_at: "2024-05-18",
-      updated_at: "2024-05-27",
-    },
-    {
-      id: 19,
-      clName: "Medicine",
-      created_at: "2024-05-19",
-      updated_at: "2024-05-28",
-    },
-    {
-      id: 20,
-      clName: "Astronomy",
-      created_at: "2024-05-20",
-      updated_at: "2024-05-29",
-    },
-  ];
+
+  const deleteItem = (selected) => {
+    setOpenDel(false);
+  };
+
+  function transformData(data) {
+    console.log("Transforming category data:", data);
+    return data.map((item) => ({
+      id: item.id,
+      name: item.system,
+      code: item.code,
+      description: item.description,
+      created_at: item.meta.created_at.split("T")[0],
+      updated_at: item.meta.updated_at.split("T")[0],
+    }));
+  }
+
+  useEffect(() => {
+    setLoading(true);
+    getTerminology({
+      page: pagination.current_page,
+      callBack: (status, message) => {
+        console.log("Callback received:", status, message);
+        setLoading(false);
+      },
+    });
+  }, []);
 
   return (
     <Fragment>
+      <Stack mb={2} width="30%">
+        <SearchBarComponentv2 value={search} setValue={setSearch} />
+      </Stack>
+
       <ScrollableTableComponent
-        data={data}
+        isLoading={loading}
+        data={transformData(terminology)}
         columns={variantCols(setUpdateType, setDeleteType)}
-        pageSize={5}
-        stripe="even"
-        bordered
-        hoverRow
-        isLoading={false}
-        stickLast
+        pageSize={15}
+        search={search}
+        fieldsToSearch={["name", "code", "description"]}
       />
+
+      {/* {openUpdate && (
+
+      )} */}
+      {openDel && (
+        <ConfirmationModalComponent
+          status="error"
+          rightButtonAction={() => deleteItem(selectedData.id)}
+          withAuthPin
+          setAuthPin={setPin}
+        />
+      )}
     </Fragment>
   );
 };
