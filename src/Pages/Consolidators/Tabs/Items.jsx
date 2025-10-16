@@ -49,8 +49,10 @@ export const Items = () => {
 
   const update = () => {
     const formData = new FormData();
+    formData.append("id", updatedData.id);
     formData.append("name", updatedData.name);
     formData.append("price", updatedData.estimated_budget);
+    formData.append("pin", pin);
 
     updateItem(formData, updatedData.id, (status, message) => {
       console.log(status, message);
@@ -173,8 +175,9 @@ export const Items = () => {
                 <InputComponent
                   label={"Authorization PIN"}
                   type="password"
-                  value={pin}
-                  setValue={setPin}
+                  placeholder={"Enter your authorization PIN"}
+                  value={pin} 
+                  setValue={setPin}                  
                   helperText={
                     "Confirm you action by typing-in your authorization PIN."
                   }
