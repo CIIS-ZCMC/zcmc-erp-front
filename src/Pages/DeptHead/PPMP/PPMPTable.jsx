@@ -1,6 +1,7 @@
 import {
   Autocomplete,
   Box,
+  CircularProgress,
   Divider,
   Sheet,
   Stack,
@@ -10,10 +11,8 @@ import {
 import { memo, useEffect, useRef, useState } from "react";
 import NoResultComponent from "../../../Components/Common/Table/NoResultComponent";
 import InputComponent from "../../../Components/Form/InputComponent";
-import { ThreeDots } from "react-loader-spinner";
 import { flattenColumns } from "../../../Utils/FlattenColumns";
 import usePPMPHook from "../../../Hooks/PPMP/PPMPHook";
-import useItemsHook from "../../../Hooks/ItemsHook";
 import { ppmpHeaders } from "../../../Data/Columns";
 import ButtonComponent from "../../../Components/Common/ButtonComponent";
 import PaginationComponent from "../../../Components/Common/Table/PaginationComponent";
@@ -21,10 +20,8 @@ import AlertDialogComponent from "../../../Components/Common/Dialog/AlertDialogC
 import useModalHook from "../../../Hooks/ModalHook";
 import AutocompleteComponent from "../../../Components/Form/AutocompleteComponent";
 import ConfirmationModalComponent from "../../../Components/Common/Dialog/ConfirmationModalComponent";
-import ConfirmationModal from "../../../Components/Common/Dialog/ConfirmationModal";
-import PageLoader from "../../../Components/Loading/PageLoader";
-import { ThreeDotsLoader } from "../../../Components/Common/Loading/ThreeDotsLoader";
-import { InfoIcon } from "lucide-react";
+
+import { usePPMPTotalStore } from "../../../Hooks/PPMP/PPMPItemsHook";
 
 const PPMPTable = memo(
   ({
@@ -243,6 +240,12 @@ const PPMPTable = memo(
       );
       setPPMPTable(updatedData);
       localStorage.setItem("ppmp-items", JSON.stringify(updatedData));
+
+      const newTotal = updatedData.reduce(
+        (sum, row) => sum + (parseFloat(row.total_amount) || 0),
+        0
+      );
+      usePPMPTotalStore.getState().setPPMPTotal(newTotal);
     };
 
     //SEARCH
@@ -466,11 +469,16 @@ const PPMPTable = memo(
               value={searchVal}
               setValue={setSearchVal}
             />
-            <ButtonComponent label="Search" onClick={() => handleSearch()} />
+            <ButtonComponent
+              label="Search"
+              onClick={() => handleSearch()}
+              disabled={searchVal === ""}
+            />
             <ButtonComponent
               variant="outlined"
               label="Clear search"
               onClick={() => handleResetSearch()}
+              disabled={searchVal === ""}
             />
           </Stack>
           <Stack direction="row" gap={1} alignItems="flex-end">
@@ -562,7 +570,16 @@ const PPMPTable = memo(
               {loading ? (
                 <tr>
                   <td colSpan={columns?.length} style={{ padding: 0 }}>
-                    <ThreeDotsLoader />
+                    <Box
+                      sx={{
+                        py: 10,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                      }}
+                    >
+                      <CircularProgress />
+                    </Box>
                   </td>
                 </tr>
               ) : filteredTable?.length > 0 ? (

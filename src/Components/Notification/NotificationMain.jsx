@@ -29,9 +29,8 @@ import notif from "../../assets/notif.mp3";
 import { useNavigate } from "react-router-dom";
 import { useAuth } from "../../Store/AuthStore";
 import useModalHook from "../../Hooks/ModalHook";
-import ConfirmationModal from "../Common/Dialog/ConfirmationModal";
 import ConfirmationModalComponent from "../Common/Dialog/ConfirmationModalComponent";
-import useSnackbarHook from "../Common/SnackbarHook";
+import useSnackbarHook from "../../Hooks/SnackbarHook";
 
 const NotificationMain = () => {
   const [isOpen, setIsOpen] = useState(false);

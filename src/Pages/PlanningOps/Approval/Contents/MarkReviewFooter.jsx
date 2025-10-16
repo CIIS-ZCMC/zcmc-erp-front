@@ -6,7 +6,7 @@ import {
   useActivityUIStates,
 } from "../../../../Hooks/AOP/ActivityHook";
 import { localStorageGetter } from "../../../../Utils/LocalStorage";
-import useSnackbarHook from "../../../../Components/Common/SnackbarHook";
+import useSnackbarHook from "../../../../Hooks/SnackbarHook";
 import {
   Box,
   Checkbox,

@@ -1,7 +1,7 @@
 import { Button, Snackbar } from "@mui/joy";
 import { BiCheckDouble, BiCopy } from "react-icons/bi";
 import { getAlertColor } from "../../Utils/ColorScheme";
-import useSnackbarHook from "./SnackbarHook";
+import useSnackbarHook from "../../Hooks/SnackbarHook";
 
 SnackbarComponent.propTypes = {};
 

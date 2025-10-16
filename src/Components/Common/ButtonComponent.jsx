@@ -15,6 +15,7 @@ const ButtonComponent = ({
   type,
   isLoading,
   loadingLabel,
+  boxShadow,
 }) => {
   return (
     <Button
@@ -35,6 +36,7 @@ const ButtonComponent = ({
         borderRadius: 8,
         height: size ?? 38,
         fontSize: size ?? 13,
+        boxShadow: boxShadow,
       }}
     >
       {label}

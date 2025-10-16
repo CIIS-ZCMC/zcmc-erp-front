@@ -12,6 +12,15 @@ const useTerminologyHooks = create((set) => ({
   hasError: true,
   selectedData: null,
   terminology: [],
+  pagination: {
+    total: 0,
+    per_page: 15,
+    current_page: 1,
+    last_page: 1,
+  },
+  isLoading: false,
+  error: null,
+
   setSelectedData: (data) => {
     set({ selectedData: data });
   },
@@ -32,14 +41,30 @@ const useTerminologyHooks = create((set) => ({
     });
   },
 
-  getTerminology: async (callBack) => {
+  getTerminology: async ({ page = 1, per_page = 15, callBack } = {}) => {
     read({
-      url: `${API.ITEM_TERMINOLOGY}`,
-      failed: callBack,
+      url: `item-${API.ITEM_TERMINOLOGY}`,
+      params: { page, per_page },
+      failed: (err) => {
+        set({ isLoading: false, error: err });
+        if (callBack)
+          callBack(false, err?.message || "Failed to fetch categories");
+      },
       success: (res) => {
-        const { status, message, data } = res;
-        set({ terminology: data.data });
-        callBack(status, message);
+        const { status, message, data, meta } = res;
+        set({
+          terminology: data.data,
+          pagination: {
+            total: data?.meta?.pagination?.total,
+            per_page: data?.meta?.pagination?.per_page,
+            current_page: data?.meta?.pagination?.current_page,
+            last_page: data?.meta?.pagination?.last_page,
+          },
+          isLoading: false,
+          error: null,
+        });
+
+        if (callBack) callBack(status, message);
       },
     });
   },
