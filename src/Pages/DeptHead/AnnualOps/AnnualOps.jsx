@@ -4,7 +4,7 @@ import { Stack, Typography, Grid } from "@mui/joy";
 import { useNavigate } from "react-router-dom";
 
 import useAOPObjectivesHooks from "../../../Hooks/AOP/AOPObjectivesHook";
-import { useAOPActions, } from "../../../Hooks/AOP/AOPObjectivesHook";
+import { useAOPActions } from "../../../Hooks/AOP/AOPObjectivesHook";
 
 import Header from "./Header";
 import Summary from "./Summary";
@@ -12,7 +12,7 @@ import Timeline from "./Timeline";
 
 import ButtonComponent from "../../../Components/Common/ButtonComponent";
 import BoxComponent from "../../../Components/Common/Card/BoxComponent";
-import ModalComponent from '@Components/Common/Dialog/ModalComponent'
+import ModalComponent from "@Components/Common/Dialog/ModalComponent";
 import TextareaComponent from "@Components/Form/TextareaComponent";
 import PageTitle from "../../../Components/Common/PageTitle";
 
@@ -22,16 +22,14 @@ import { AOP_CONSTANTS } from "../../../Data/constants";
 import { ThreeDotsLoader } from "../../../Components/Common/Loading/ThreeDotsLoader";
 import useResponsiblePeopleHook from "../../../Hooks/ResponsiblePeopleHook";
 
-import { useMission, useObjectivesActions } from "../../../Store/objectivesStore.js";
-
 import useObjectivesHook from "../../../Hooks/ObjectivesHook";
 import useActivitiesHook from "../../../Hooks/ActivitiesHook";
 import useResourceHook from "../../../Hooks/ResourceHook";
 
 import { ANNUAL_OPS } from "../../../Data/constants";
+// import { useMission, useObjectivesActions } from "../Store/ObjectivesStore";
 
 const FiscalYearModal = ({ value, onChange, fiscalYear }) => {
-
   const { missionPlaceHolder } = ANNUAL_OPS;
 
   return (
@@ -39,15 +37,15 @@ const FiscalYearModal = ({ value, onChange, fiscalYear }) => {
       <Stack spacing={1}>
         <Typography>Fiscal Year: {fiscalYear}</Typography>
         <TextareaComponent
-          label={'Mission'}
+          label={"Mission"}
           placeholder={missionPlaceHolder}
           value={value}
           onChange={onChange}
         />
       </Stack>
     </>
-  )
-}
+  );
+};
 
 const AnnualOps = () => {
   const navigate = useNavigate();
@@ -72,7 +70,6 @@ const AnnualOps = () => {
     formattedResponsible,
     aop_status,
   } = useAOPObjectivesHooks();
-
 
   const {
     getSummary,
@@ -102,7 +99,6 @@ const AnnualOps = () => {
   } = aop_summary;
 
   function setStates() {
-
     // console.log(formattedObjectives);
     // console.log(formattedActivities);
     // console.log(formattedResources);
@@ -111,9 +107,7 @@ const AnnualOps = () => {
     setObjectives(formattedObjectives ? formattedObjectives : []);
     setActivities(formattedActivities ? formattedActivities : []);
     setResources(formattedResources ? formattedResources : []);
-    setResponsiblePeople(
-      formattedResponsible ? formattedResponsible : []
-    );
+    setResponsiblePeople(formattedResponsible ? formattedResponsible : []);
   }
 
   useEffect(() => {
@@ -122,12 +116,12 @@ const AnnualOps = () => {
     if (aopObjectives !== null || !aop_application_id) {
       setStates();
     }
-  }, [aopObjectives, aop_status])
+  }, [aopObjectives, aop_status]);
 
   useEffect(() => {
-    setAopId(aop_application_id)
+    setAopId(aop_application_id);
     setMission(mission);
-  }, [aop_application_id])
+  }, [aop_application_id]);
 
   useEffect(() => {
     setIsLoading(true);
@@ -143,17 +137,19 @@ const AnnualOps = () => {
 
   const handleSaveAOP = () => {
     // alert('successfully created new aop')
-    clearMission()
-    setOpenFiscalYearModal(false)
+    clearMission();
+    setOpenFiscalYearModal(false);
     console.log(`fiscal year : ${currentFiscalYear} mission: ${mission}`);
-    navigate("/aop-management")
+    navigate("/aop-management");
     //handle Save aop api here
   };
 
   return (
     <Fragment>
       <PageTitle
-        title={aop_id ? AOP_CONSTANTS.EDIT_AOP_TITLE : AOP_CONSTANTS.CREATE_AOP_TITLE}
+        title={
+          aop_id ? AOP_CONSTANTS.EDIT_AOP_TITLE : AOP_CONSTANTS.CREATE_AOP_TITLE
+        }
         description={AOP_CONSTANTS.CREATE_AOP_SUBHEADING}
       />
       {isLoading ? (
@@ -209,7 +205,7 @@ const AnnualOps = () => {
                 <ButtonComponent
                   label={"Request new items"}
                   variant={"outlined"}
-                // onClick={() => navigate('create')}
+                  // onClick={() => navigate('create')}
                 />
 
                 <ButtonComponent
@@ -262,17 +258,18 @@ const AnnualOps = () => {
         handleClose={() => setOpenFiscalYearModal(false)}
         title={header}
         description={description}
-        content={<FiscalYearModal
-          fiscalYear={currentFiscalYear}
-          value={mission}
-          onChange={(e) => setMission(e.target.value)}
-        />}
+        content={
+          <FiscalYearModal
+            fiscalYear={currentFiscalYear}
+            value={mission}
+            onChange={(e) => setMission(e.target.value)}
+          />
+        }
         hasActionButtons={true}
-        rightButtonLabel={'Save AOP'}
+        rightButtonLabel={"Save AOP"}
         rightButtonAction={() => handleSaveAOP()}
         minWidth={500}
       />
-
     </Fragment>
   );
 };

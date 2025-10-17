@@ -6,13 +6,16 @@ import no_result from "../../../assets/empty-state-icon-base.svg";
 import { ANNUAL_OPS } from "../../../Data/constants";
 import ModalComponent from "@Components/Common/Dialog/ModalComponent";
 import TextareaComponent from "@Components/Form/TextareaComponent";
+import { Warning } from "@mui/icons-material";
+import InputComponent from "@Components/Form/InputComponent";
 import {
   useMission,
   useObjectivesActions,
-} from "../../../Store/objectivesStore";
-import { Warning } from "@mui/icons-material";
-import { BatteryWarning, Warehouse } from "lucide-react";
-import InputComponent from "@Components/Form/InputComponent";
+} from "../../../Store/ObjectivesStore";
+import BoxComponent from "@Components/Common/Card/BoxComponent";
+import { TbTargetArrow } from "react-icons/tb";
+import { MdOutlineShoppingCartCheckout } from "react-icons/md";
+import YearSelectorComponent from "@Components/Form/YearSelectorComponent";
 
 const FiscalYearModal = ({ value, onChange, fiscalYear }) => {
   const { missionPlaceHolder } = ANNUAL_OPS;
@@ -67,66 +70,209 @@ function DashboardEndUser(props) {
   const currentYear = new Date().getFullYear();
   const currentFiscalYear = currentYear + 1;
 
+  const handleSaveAOP = () => {
+    // alert('successfully created new aop')
+    clearMission();
+    setOpenFiscalYearModal(false);
+    console.log(`fiscal year : ${currentFiscalYear} mission: ${mission}`);
+    navigate("/aop-management");
+    //handle Save aop api here
+  };
+
   return (
     <Fragment>
-      <Stack>
-        <Typography level="h2">Enterprise Resource Planning System</Typography>
-        <Typography level="body-xs">Sample description</Typography>
-      </Stack>
+      {console.log(mission)}
+      {mission !== "" ? (
+        <Fragment>
+          <Stack>
+            <Typography level="h2">Annual Operations Planning</Typography>
+            <Typography level="body-xs">
+              The following below serves as the summary of your AOP request. You
+              can open and update your request before the deadline as set by the
+              administrators.
+            </Typography>
+          </Stack>
+          <BoxComponent mt={3}>
+            <Stack>
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                bgcolor="#006599"
+                padding={3}
+                sx={{ borderTopRightRadius: 10, borderTopLeftRadius: 10 }}
+              >
+                <Box>
+                  <Stack direction="row" spacing={2} alignItems="center">
+                    <Typography
+                      level="title-lg"
+                      sx={{ color: "white" }}
+                      width="100%"
+                    >
+                      AOP for Fiscal year
+                    </Typography>
+                    <YearSelectorComponent
+                      bgcolor="#004366"
+                      txtcolor="white"
+                      width="100px"
+                      size="lg"
+                    />
+                  </Stack>
 
-      <Stack
-        height="85vh"
-        sx={{ border: "2px solid #003049", borderRadius: 10, bgcolor: "white" }}
-        alignItems="center"
-        justifyContent="center"
-        mt={3}
-        gap={2}
-      >
-        <img src={no_result} alt="not-found-img" width={300} />
+                  <Typography level="body-xs" sx={{ color: "white" }}>
+                    Mission: {mission}
+                  </Typography>
+                </Box>
+              </Stack>
 
-        <Box>
-          <Typography fontSize={24} textAlign="center">
-            You don't have an AOP for this year yet.{" "}
-          </Typography>
-          <Typography
-            sx={{ color: "#003049", fontSize: 24, fontWeight: "bold" }}
-            textAlign="center"
+              <Stack
+                direction="row"
+                justifyContent="space-between"
+                alignItems="stretch"
+                bgcolor="#FAFAFA"
+                paddingX={5}
+                paddingY={5}
+                sx={{
+                  borderBottomLeftRadius: 10,
+                  borderBottomRightRadius: 10,
+                }}
+                gap={2}
+              >
+                <BoxComponent width="100%" padding={2}>
+                  <Typography fontWeight={600} pb={2} fontSize={20}>
+                    Plan summary:
+                  </Typography>
+                  <Stack direction={"row"} spacing={2} alignItems="flex-end">
+                    <BoxComponent width="100%">
+                      <Typography
+                        fontSize={16}
+                        fontWeight={600}
+                        py={1}
+                      ></Typography>
+                      <Stack direction="row" alignItems="flex-start" gap={1}>
+                        <TbTargetArrow
+                          style={{
+                            fontSize: 25,
+                            marginTop: "5px",
+                            color: "#666666",
+                          }}
+                        />
+
+                        <Typography>Contained from </Typography>
+                      </Stack>
+                    </BoxComponent>
+                    <BoxComponent width="100%">
+                      <Typography
+                        fontSize={16}
+                        fontWeight={600}
+                        py={1}
+                      ></Typography>
+                      <Stack direction="row" alignItems="flex-start" gap={1}>
+                        <MdOutlineShoppingCartCheckout
+                          style={{
+                            fontSize: 25,
+                            marginTop: "5px",
+                            color: "#666666",
+                          }}
+                        />
+                        <Typography>
+                          With a PPMP total of{" "}
+                          <b style={{ color: "#004366" }}></b>
+                        </Typography>
+                      </Stack>
+                    </BoxComponent>
+                  </Stack>
+                </BoxComponent>
+
+                <BoxComponent width="100%" padding={2}>
+                  <Stack gap={3} alignItems="start">
+                    <Typography fontWeight={600} fontSize={20} align="left">
+                      About your PPMP
+                    </Typography>
+                    <Typography>
+                      This is a draft PPMP request that we’ve generated based
+                      from the AOP you’ve just created recently. Update the
+                      draft so you can submit it for approval.
+                    </Typography>
+                    <ButtonComponent
+                      label={"View PPMP"}
+                      // onClick={() => handleNavigate()}
+                      width="auto"
+                      boxShadow={"2px 3px 4px #D3D3D3"}
+                    />
+                  </Stack>
+                </BoxComponent>
+              </Stack>
+            </Stack>
+          </BoxComponent>
+        </Fragment>
+      ) : (
+        <Fragment>
+          <Stack>
+            <Typography level="h2">
+              Enterprise Resource Planning System
+            </Typography>
+            <Typography level="body-xs">Sample description</Typography>
+          </Stack>
+
+          <Stack
+            height="85vh"
+            sx={{
+              border: "2px solid #003049",
+              borderRadius: 10,
+              bgcolor: "white",
+            }}
+            alignItems="center"
+            justifyContent="center"
+            mt={3}
+            gap={2}
           >
-            Begin by creating a new AOP.
-          </Typography>
-        </Box>
+            <img src={no_result} alt="not-found-img" width={300} />
 
-        <Typography width={"35%"} textAlign="center">
-          Nothing to show yet for this year’s PPMP. You may request new items
-          for the meantime or create a new AOP request.
-        </Typography>
-        <Stack direction="row" gap={1}>
-          <ButtonComponent label="Request new items" variant="outlined" />
-          <ButtonComponent
-            label="Create New AOP"
-            variant="solid"
-            onClick={() => setOpenFiscalYearModal(true)}
-          />
-        </Stack>
-      </Stack>
+            <Box>
+              <Typography fontSize={24} textAlign="center">
+                You don't have an AOP for this year yet.{" "}
+              </Typography>
+              <Typography
+                sx={{ color: "#003049", fontSize: 24, fontWeight: "bold" }}
+                textAlign="center"
+              >
+                Begin by creating a new AOP.
+              </Typography>
+            </Box>
 
-      <ModalComponent
-        isOpen={openFiscalYearModal}
-        handleClose={() => setOpenFiscalYearModal(false)}
-        title={header}
-        description={description}
-        content={
-          <FiscalYearModal
-            fiscalYear={currentFiscalYear}
-            value={mission}
-            onChange={(e) => setMission(e.target.value)}
+            <Typography width={"35%"} textAlign="center">
+              Nothing to show yet for this year’s PPMP. You may request new
+              items for the meantime or create a new AOP request.
+            </Typography>
+            <Stack direction="row" gap={1}>
+              <ButtonComponent label="Request new items" variant="outlined" />
+              <ButtonComponent
+                label="Create New AOP"
+                variant="solid"
+                onClick={() => setOpenFiscalYearModal(true)}
+              />
+            </Stack>
+          </Stack>
+
+          <ModalComponent
+            isOpen={openFiscalYearModal}
+            handleClose={() => setOpenFiscalYearModal(false)}
+            title={header}
+            description={description}
+            content={
+              <FiscalYearModal
+                fiscalYear={currentFiscalYear}
+                value={mission}
+                onChange={(e) => setMission(e.target.value)}
+              />
+            }
+            hasActionButtons={true}
+            rightButtonLabel={"Save AOP"}
+            rightButtonAction={() => handleSaveAOP()}
+            maxWidth={500}
           />
-        }
-        hasActionButtons={true}
-        rightButtonLabel={"Save AOP"}
-        rightButtonAction={() => handleSaveAOP()}
-        minWidth={500}
-      />
+        </Fragment>
+      )}
     </Fragment>
   );
 }
