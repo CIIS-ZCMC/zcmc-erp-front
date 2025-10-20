@@ -8,8 +8,8 @@ import AutocompleteComponent from '@Components/Form/AutocompleteComponent';
 import FunctionTypeHook from '../../../Hooks/FunctionTypeHook';
 
 // Store
-import { useFunctionTypes } from '../../../Store/functionTypesStore';
-import { useObjectivesActions } from '../../../Store/objectivesStore';
+import { useFunctionTypes } from '../../../Store/FunctionTypesStore';
+import { useObjectivesActions } from '../../../Store/ObjectivesStore';
 
 import { OBJECTIVES } from '../../../Data/constants';
 

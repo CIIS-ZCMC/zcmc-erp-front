@@ -20,7 +20,7 @@ import CardActions from './card/CardActions';
 
 import { OBJECTIVES } from '../../Data/constants';
 
-import { useFunctionType, useObjective, useSuccessIndicator, useObjectives } from '../../Store/objectivesStore';
+import { useFunctionType, useObjective, useSuccessIndicator, useObjectives } from '../../Store/ObjectivesStore';
 
 const Objectives = () => {
 
