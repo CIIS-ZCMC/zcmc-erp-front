@@ -188,6 +188,10 @@ export const API = {
   AOP_APPLICATIONS: "aop-applications",
   AOP_APPLICATIONS_STORE: 'aop-application-store',
 
+  OBJECTIVES: "application-objectives",
+  OBJECTIVEBYSECTOR: 'user-application-objectives',
+  OBJECTIVE_STORE: "application-objectives-store",
+
   AOP_APPLICATION_SHOW: "aop-application-show",
   AOP_APPLICATION_EDIT: "aop-application-edit",
   AOP_APPLICATION_UPDATE: "aop-application-update",

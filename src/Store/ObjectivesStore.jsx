@@ -1,6 +1,6 @@
 import { create } from "zustand";
 
-const useObjectivesStore = create((set) => ({
+const useObjectivesStore = create((set, get) => ({
     objectives: [],
     functionType: null,
     objective: null,
@@ -8,10 +8,22 @@ const useObjectivesStore = create((set) => ({
 
     actions: {
         setObjectives: (objectives) => set({ objectives }),
-        clearMission: () => set({ mission: "" }),
         setFunctionType: (functionType) => set({ functionType }),
         setObjective: (objective) => set({ objective }),
         setSuccessIndicator: (successIndicator) => set({ successIndicator }),
+
+        // clear individual fields
+        clearFunctionType: () => set({ functionType: "" }),
+        clearObjective: () => set({ objective: "" }),
+        clearSuccessIndicator: () => set({ successIndicator: "" }),
+
+        //clear all fields
+        clearFields: () => {
+            const { clearFunctionType, clearObjective, clearSuccessIndicator } = get().actions;
+            clearFunctionType();
+            clearObjective();
+            clearSuccessIndicator();
+        },
     }
 
 }))

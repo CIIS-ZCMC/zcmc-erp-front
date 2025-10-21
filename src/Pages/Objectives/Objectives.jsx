@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 
-import { Stack, Divider, Typography, Breadcrumbs } from '@mui/joy';
+import { Stack, Divider, Typography, Breadcrumbs, Grid } from '@mui/joy';
 
 import { ThreeDotsLoader } from '@Components/Common/Loading/ThreeDotsLoader';
 
@@ -20,11 +20,15 @@ import CardActions from './card/CardActions';
 
 import { OBJECTIVES } from '../../Data/constants';
 
-import { useFunctionType, useObjective, useSuccessIndicator, useObjectives } from '../../Store/ObjectivesStore';
+import { useFunctionType, useObjective, useSuccessIndicator, useObjectives, useObjectivesActions } from '../../Store/ObjectivesStore';
+import useObjectivesHook from '../../Hooks/ObjectivesHook';
 
 const Objectives = () => {
 
-    const { setAlertDialog, setConfirmationModal, closeConfirmation } = useModalHook()
+    const { clearFields } = useObjectivesActions();
+    const { setAlertDialog, setConfirmationModal, closeConfirmation } = useModalHook();
+    const { getObjectives, createObjectives } = useObjectivesHook();
+
 
     const [isLoading, setIsLoading] = useState(false);
     const [isEditMode, setIsEditMode] = useState(false);
@@ -35,6 +39,24 @@ const Objectives = () => {
     const objective = useObjective()
     const successIndicator = useSuccessIndicator()
     const objectives = useObjectives()
+
+    useEffect(() => {
+        setIsLoading(true);
+        getObjectives((status, message) => {
+            if (!(status >= 200 && status < 300)) {
+                // if status not success
+                return; //Toast error
+            }
+            setIsLoading(false);
+        });
+    }, [])
+
+    useEffect(() => {
+        // console.log(functionType)
+        // console.log('objective id:', objective?.id)
+        // console.log('succeses indicator id:', successIndicator?.id)
+        console.log('objectives:', objectives)
+    }, [functionType, objective, successIndicator, objectives])
 
     const {
         OBJECTIVES_EMPTY_STATE_TITLE,
@@ -59,36 +81,43 @@ const Objectives = () => {
         </Typography>,
     ];
 
-    const handleSaveObjectives = () => {
+    const handleSaveObjectives = async () => {
 
-        if (!functionType || !objective || !successIndicator) {
-            alert('Please fill all the fields')
-            return
-        }
+        // if (!functionType || !objective || !successIndicator) {
+        //     alert('Please fill all the fields')
+        //     return
+        // }
 
         const payload = {
-            functionType,
-            objective,
-            successIndicator,
+            aop_application_id: 5,
+            objective_id: objective?.id,
+            success_indicator_id: successIndicator?.id,
         };
 
-        console.log("Submitted data:", payload);
+        await createObjectives(payload, (status, message) => {
+
+            console.log('status:', status);
+            console.log('message:', message)
+
+            if (status === 201) {
+                console.log("Application objective created successfully:", message);
+                // clearMission();
+                setIsOpenObjectivesModal(false);
+                console.log('submitted:', payload);
+                // navigate("/aop-management");
+            } else {
+                console.error(" Failed to create AOP:", message);
+            }
+        });
 
         setAlertDialog({
             status: "success",
             title: `Objectives ${isEditMode ? 'Updated' : 'Created'} successfully!`,
             description: "",
         })
-
         handleCloseModal()
     }
 
-    useEffect(() => {
-        console.log(functionType)
-        console.log(objective)
-        console.log(successIndicator)
-        console.log(objectives.length)
-    }, [functionType, objective, successIndicator, objectives])
 
     const handleEdit = () => {
         setIsEditMode(true)
@@ -102,6 +131,7 @@ const Objectives = () => {
     const handleCloseModal = () => {
         setIsOpenObjectivesModal(false);
         setIsEditMode(false);
+        clearFields()
     }
 
     const handleOpenDeleteModal = () => {
@@ -186,51 +216,68 @@ const Objectives = () => {
             </BoxComponent>
 
 
-            {objectives.length === 1 || objectives.length === null ?
-                <>
-                    <Stack
-                        direction={"column"}
-                        alignItems={"center"}
-                        justifyContent={"center"}
-                        textAlign={"center"}
-                        my={2}
-                        height={'65vh'}
-                    >
-                        <Typography sx={{ fontSize: 20, fontWeight: 600 }}>
-                            {OBJECTIVES_EMPTY_STATE_TITLE}
-                        </Typography>
-
-                        <Typography mb={2} sx={{ fontSize: 20, fontWeight: 400 }}>
-                            {OBJECTIVES_CREATE_NEW}
-                        </Typography>
-
-                        <ButtonComponent
-                            onClick={() => handleOpenObjectivesModal()}
-                            label={"Add an Objective"}
-                        // endDecorator={<Plus size={16} />}
-                        />
-                    </Stack>
-                </>
-                :
+            {isLoading ?
                 <Stack
-                    my={3}
-                    direction={'row'}
-                    spacing={1}
+                    direction={"column"}
+                    alignItems={"center"}
+                    justifyContent={"center"}
+                    textAlign={"center"}
+                    my={2}
+                    height={'65vh'}
                 >
-                    <CardComponent
-                        statusColor={null}
-                        cardHeader={<CardHeader
-                            handleSave={() => console.log('save')}
-                            handleEdit={() => handleEdit()}
-                            handleDelete={() => handleOpenDeleteModal()}
-                        />}
-                        cardBody={<CardBody status={false} />}
-                        cardActions={<CardActions
-                            handleActivities={() => console.log('activities')}
-                        />}
-                    />
+                    <ThreeDotsLoader />
                 </Stack>
+                :
+                objectives.length === 0 ?
+                    <>
+                        <Stack
+                            direction={"column"}
+                            alignItems={"center"}
+                            justifyContent={"center"}
+                            textAlign={"center"}
+                            my={2}
+                            height={'65vh'}
+                        >
+                            <Typography sx={{ fontSize: 20, fontWeight: 600 }}>
+                                {OBJECTIVES_EMPTY_STATE_TITLE}
+                            </Typography>
+
+                            <Typography mb={2} sx={{ fontSize: 20, fontWeight: 400 }}>
+                                {OBJECTIVES_CREATE_NEW}
+                            </Typography>
+
+                            <ButtonComponent
+                                onClick={() => handleOpenObjectivesModal()}
+                                label={"Add an Objective"}
+                            // endDecorator={<Plus size={16} />}
+                            />
+                        </Stack>
+                    </>
+                    :
+                    <Grid mt={2} container direction="row" spacing={2} sx={{ flexGrow: 1 }}>
+                        {objectives.map(({ id, objective, success_indicator }) => (
+                            <Grid size={4}>
+                                <CardComponent
+                                    statusColor={null}
+                                    cardHeader={<CardHeader
+                                        handleSave={() => console.log('save')}
+                                        handleEdit={() => handleEdit()}
+                                        handleDelete={() => handleOpenDeleteModal()}
+                                    />}
+                                    cardBody={<CardBody
+                                        success_indicator={success_indicator}
+                                        objective={objective}
+                                        status={false}
+                                    />}
+                                    cardActions={<CardActions
+                                        handleActivities={() => console.log('activities')}
+                                    />}
+                                />
+                            </Grid>
+                        ))}
+                    </Grid>
             }
+
 
             {/* edit and add objectives modal */}
             <ModalComponent
