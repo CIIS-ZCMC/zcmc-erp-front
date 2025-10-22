@@ -1,6 +1,6 @@
 import ButtonComponent from "@Components/Common/ButtonComponent";
-import { Box, Stack, Typography, useTheme } from "@mui/joy";
-import React, { Fragment, useState } from "react";
+import { Box, Divider, Grid, Stack, Typography, useTheme } from "@mui/joy";
+import React, { Fragment, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
 import no_result from "../../../assets/empty-state-icon-base.svg";
 import { ANNUAL_OPS } from "../../../Data/constants";
@@ -16,6 +16,10 @@ import { TbTargetArrow } from "react-icons/tb";
 import { MdOutlineShoppingCartCheckout } from "react-icons/md";
 import YearSelectorComponent from "@Components/Form/YearSelectorComponent";
 import SelectComponent from "@Components/Form/YearSelectComponent";
+import useAOPHook from "../../../Hooks/AOP/AOPHook";
+import { ThreeDotsLoader } from "@Components/Common/Loading/ThreeDotsLoader";
+import useModalHook from "../../../Hooks/ModalHook";
+import AlertDialogComponent from "@Components/Common/Dialog/AlertDialogComponent";
 
 const FiscalYearModal = ({ value, onChange, fiscalYear }) => {
   const { missionPlaceHolder } = ANNUAL_OPS;
@@ -61,26 +65,50 @@ const FiscalYearModal = ({ value, onChange, fiscalYear }) => {
 };
 
 function DashboardEndUser(props) {
-  const navigate = useNavigate();
-  const [openFiscalYearModal, setOpenFiscalYearModal] = useState(false);
   const { header, description } = ANNUAL_OPS;
+  const theme = useTheme();
+  const color = theme.palette.custom;
 
-  // const mission = useMission();
-  const { mission, fiscalYear } = useAOPStore();
-
+  const navigate = useNavigate();
+  const { getAOP, createAOP } = useAOPHook();
+  const { setAlertDialog } = useModalHook();
+  const { aop, mission, fiscalYear } = useAOPStore();
   const { setMission, clearMission } = useAOPActions();
+
+  const [openFiscalYearModal, setOpenFiscalYearModal] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const [year, setYear] = useState("");
 
   const currentYear = new Date().getFullYear();
   const currentFiscalYear = currentYear + 1;
 
-  const handleSaveAOP = () => {
-    // alert('successfully created new aop')
-    clearMission();
-    setOpenFiscalYearModal(false);
-    console.log(`fiscal year : ${currentFiscalYear} mission: ${mission}`);
-    navigate("/aop-management");
-    //handle Save aop api here
+  const handleSaveAOP = async () => {
+    const body = {
+      mission,
+      year: fiscalYear,
+    };
+
+    await createAOP(body, (status, message) => {
+      if (status === 200) {
+        clearMission();
+        setOpenFiscalYearModal(false);
+        console.log(`fiscal year: ${fiscalYear}, mission: ${mission}`);
+        setAlertDialog({
+          status: "success",
+          title: "Success",
+          description: `${message}`,
+        });
+        return;
+        // navigate("/aop-management");
+      } else {
+        setAlertDialog({
+          status: "error",
+          title: `${message}`,
+          description: "",
+        });
+        return;
+      }
+    });
   };
   const startYear = 2024;
 
@@ -89,10 +117,23 @@ function DashboardEndUser(props) {
     (_, i) => currentYear - i
   );
 
+  useEffect(() => {
+    setIsLoading(true);
+    getAOP((status, message) => {
+      if (!(status >= 200 && status < 300)) {
+        // if status not success
+        return; //Toast error
+      }
+      setIsLoading(false);
+    });
+  }, []);
   return (
     <Fragment>
-      {console.log(mission)}
-      {mission !== "" ? (
+      {isLoading ? (
+        <Stack height="85vh" alignItems="center" justifyContent="center">
+          <ThreeDotsLoader />
+        </Stack>
+      ) : aop && aop.length > 0 ? (
         <Fragment>
           <Stack>
             <Typography level="h2">Annual Operations Planning</Typography>
@@ -102,116 +143,132 @@ function DashboardEndUser(props) {
               administrators.
             </Typography>
           </Stack>
-          <BoxComponent mt={3}>
-            <Stack>
-              <Stack
-                direction="row"
-                justifyContent="space-between"
-                bgcolor="#006599"
-                padding={3}
-                sx={{ borderTopRightRadius: 10, borderTopLeftRadius: 10 }}
-              >
-                <Box>
-                  <Stack direction="row" spacing={1} alignItems="center">
-                    <Typography level="h3" sx={{ color: "white" }} width="100%">
+          <BoxComponent
+            mt={3}
+            boxShadow={"xs"}
+            borderRadius={10}
+            sx={{
+              height: "85vh",
+              display: "flex",
+              flexDirection: "column",
+            }}
+          >
+            <Grid
+              xs={12}
+              bgcolor="#006599"
+              sx={{ borderTopRightRadius: 10, borderTopLeftRadius: 10 }}
+              px={2}
+              py={3}
+            >
+              <Stack direction={"row"} justifyContent={"space-between"}>
+                <Stack width={"100%"}>
+                  <Box display="flex" alignItems="center" gap={1}>
+                    <Typography
+                      sx={{ color: "white", fontSize: 28, fontWeight: 600 }}
+                    >
                       AOP for Fiscal year
                     </Typography>
-                    <Box>
-                      <SelectComponent
-                        bgcolor="#004366"
-                        txtcolor="white"
-                        width="100px"
-                        size="lg"
-                        onChange={setYear}
-                      />
-                    </Box>
-                  </Stack>
-
-                  <Typography level="body-xs" sx={{ color: "white" }}>
-                    Mission: {mission}
+                    <SelectComponent
+                      startYear={2024}
+                      width="150px"
+                      bgcolor="#004366"
+                      txtcolor="white"
+                    />
+                  </Box>
+                  <Typography level="body-sm" sx={{ color: "white", mt: 1 }}>
+                    Mission: {aop[0].mission}
                   </Typography>
-                </Box>
-              </Stack>
-
-              <Stack
-                direction="row"
-                justifyContent="space-between"
-                alignItems="stretch"
-                bgcolor="#FAFAFA"
-                paddingX={5}
-                paddingY={5}
-                sx={{
-                  borderBottomLeftRadius: 10,
-                  borderBottomRightRadius: 10,
-                }}
-                gap={2}
-              >
-                <BoxComponent width="100%" padding={2}>
-                  <Typography fontWeight={600} pb={2} fontSize={20}>
-                    Plan summary:
-                  </Typography>
-                  <Stack direction={"row"} spacing={2} alignItems="flex-end">
-                    <BoxComponent width="100%">
-                      <Typography
-                        fontSize={16}
-                        fontWeight={600}
-                        py={1}
-                      ></Typography>
-                      <Stack direction="row" alignItems="flex-start" gap={1}>
-                        <TbTargetArrow
-                          style={{
-                            fontSize: 25,
-                            marginTop: "5px",
-                            color: "#666666",
-                          }}
-                        />
-
-                        <Typography>Contained from </Typography>
-                      </Stack>
-                    </BoxComponent>
-                    <BoxComponent width="100%">
-                      <Typography
-                        fontSize={16}
-                        fontWeight={600}
-                        py={1}
-                      ></Typography>
-                      <Stack direction="row" alignItems="flex-start" gap={1}>
-                        <MdOutlineShoppingCartCheckout
-                          style={{
-                            fontSize: 25,
-                            marginTop: "5px",
-                            color: "#666666",
-                          }}
-                        />
-                        <Typography>
-                          With a PPMP total of{" "}
-                          <b style={{ color: "#004366" }}></b>
-                        </Typography>
-                      </Stack>
-                    </BoxComponent>
-                  </Stack>
-                </BoxComponent>
-
-                <BoxComponent width="100%" padding={2}>
-                  <Stack gap={3} alignItems="start">
-                    <Typography fontWeight={600} fontSize={20} align="left">
-                      About your PPMP
+                </Stack>
+                <Stack
+                  bgcolor={"#FFF4E5"}
+                  borderRadius={5}
+                  direction={"row"}
+                  alignItems="center"
+                  padding={1}
+                  spacing={1.5}
+                  width={"80%"}
+                >
+                  <Warning sx={{ color: color.warning, fontSize: 20 }} />
+                  <Box>
+                    <Typography
+                      level="body-xs"
+                      color="warning"
+                      width={"100%"}
+                      sx={{ fontWeight: 600 }}
+                    >
+                      {" "}
+                      Status: Draft Mode
                     </Typography>
+                    <Typography level="body-xs" color="warning">
+                      This AOP is currently in draft mode. You may click this
+                      button and confirm to submit this AOP for review.
+                    </Typography>
+                  </Box>
+                  <ButtonComponent
+                    label={"Submit AOP for Review"}
+                    width="50%"
+                  />
+                </Stack>
+              </Stack>
+            </Grid>
+
+            <Grid
+              container
+              bgcolor={"#FAFAFA"}
+              padding={1}
+              spacing={2}
+              sx={{
+                flexGrow: 1,
+                borderBottomLeftRadius: 10,
+                borderBottomRightRadius: 10,
+              }}
+            >
+              <Grid xs={8}>
+                <BoxComponent
+                  justifyContent="center"
+                  alignItems="center"
+                  height="65vh"
+                  display="flex"
+                  padding={2}
+                >
+                  <Box textAlign="center">
                     <Typography>
-                      This is a draft PPMP request that we’ve generated based
-                      from the AOP you’ve just created recently. Update the
-                      draft so you can submit it for approval.
+                      You don't have anything for this year's AOP yet.
+                    </Typography>
+                    <Typography fontWeight={600} mb={2}>
+                      {" "}
+                      Begin by adding a new objective.
                     </Typography>
                     <ButtonComponent
-                      label={"View PPMP"}
-                      // onClick={() => handleNavigate()}
-                      width="auto"
-                      boxShadow={"2px 3px 4px #D3D3D3"}
+                      label={"Go to Manage Objectives"}
+                      onClick={() => {
+                        navigate("/objectives-management");
+                      }}
                     />
-                  </Stack>
+                  </Box>
                 </BoxComponent>
-              </Stack>
-            </Stack>
+              </Grid>
+              <Grid xs={4}>
+                <BoxComponent height="65vh" padding={2}>
+                  <Typography level="title-lg">Approval Timeline</Typography>
+                  <Typography level="body-xs">
+                    {" "}
+                    The list below shows the current status of the request.
+                  </Typography>
+                  <Divider sx={{ my: 1, color: "gray" }} />
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                    height={"58vh"}
+                  >
+                    <Typography>No transactions done yet.</Typography>
+                  </Box>
+                </BoxComponent>
+              </Grid>
+            </Grid>
           </BoxComponent>
         </Fragment>
       ) : (
@@ -282,6 +339,7 @@ function DashboardEndUser(props) {
           />
         </Fragment>
       )}
+      <AlertDialogComponent leftButtonAction={() => handleClose()} />
     </Fragment>
   );
 }

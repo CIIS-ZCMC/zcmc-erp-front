@@ -8,6 +8,7 @@ export default function SelectComponent({
   txtcolor = "inherit",
   startYear = 2024,
   onChange,
+  width = "auto",
 }) {
   const currentYear = new Date().getFullYear();
   const nextYear = currentYear + 1;
@@ -29,7 +30,7 @@ export default function SelectComponent({
       value={value}
       onChange={handleChange}
       sx={{
-        width: "auto",
+        width: width,
         fontSize: "22px",
         fontWeight: "600",
         [`& .${selectClasses.indicator}`]: {
