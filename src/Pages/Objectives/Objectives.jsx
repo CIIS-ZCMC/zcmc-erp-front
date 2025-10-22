@@ -100,7 +100,7 @@ const Objectives = () => {
         setIsLoading(true)
 
         const payload = {
-            aop_application_id: 5,
+            aop_application_id: 5, //change this to real aop_application_id
             objective_id: objective?.id,
             success_indicator_id: successIndicator?.id,
         };
@@ -141,9 +141,9 @@ const Objectives = () => {
         setIsLoading(true)
 
         const payload = {
-            aop_application_id: 5,
             objective_id: objective?.id,
             success_indicator_id: successIndicator?.id,
+            // other_success_indicator_description:
         };
 
         const params = { id: selectedObjectiveId };
