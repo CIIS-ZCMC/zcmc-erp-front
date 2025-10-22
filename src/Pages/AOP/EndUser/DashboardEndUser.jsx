@@ -16,6 +16,7 @@ import BoxComponent from "@Components/Common/Card/BoxComponent";
 import { TbTargetArrow } from "react-icons/tb";
 import { MdOutlineShoppingCartCheckout } from "react-icons/md";
 import YearSelectorComponent from "@Components/Form/YearSelectorComponent";
+import SelectComponent from "@Components/Form/YearSelectComponent";
 
 const FiscalYearModal = ({ value, onChange, fiscalYear }) => {
   const { missionPlaceHolder } = ANNUAL_OPS;
@@ -66,6 +67,7 @@ function DashboardEndUser(props) {
   const { header, description } = ANNUAL_OPS;
   const mission = useMission();
   const { setMission, clearMission } = useObjectivesActions();
+  const [year, setYear] = useState("");
 
   const currentYear = new Date().getFullYear();
   const currentFiscalYear = currentYear + 1;
@@ -78,6 +80,12 @@ function DashboardEndUser(props) {
     navigate("/aop-management");
     //handle Save aop api here
   };
+  const startYear = 2024;
+
+  const years = Array.from(
+    { length: currentYear - startYear + 1 },
+    (_, i) => currentYear - i
+  );
 
   return (
     <Fragment>
@@ -102,20 +110,19 @@ function DashboardEndUser(props) {
                 sx={{ borderTopRightRadius: 10, borderTopLeftRadius: 10 }}
               >
                 <Box>
-                  <Stack direction="row" spacing={2} alignItems="center">
-                    <Typography
-                      level="title-lg"
-                      sx={{ color: "white" }}
-                      width="100%"
-                    >
+                  <Stack direction="row" spacing={1} alignItems="center">
+                    <Typography level="h3" sx={{ color: "white" }} width="100%">
                       AOP for Fiscal year
                     </Typography>
-                    <YearSelectorComponent
-                      bgcolor="#004366"
-                      txtcolor="white"
-                      width="100px"
-                      size="lg"
-                    />
+                    <Box>
+                      <SelectComponent
+                        bgcolor="#004366"
+                        txtcolor="white"
+                        width="100px"
+                        size="lg"
+                        onChange={setYear}
+                      />
+                    </Box>
                   </Stack>
 
                   <Typography level="body-xs" sx={{ color: "white" }}>
