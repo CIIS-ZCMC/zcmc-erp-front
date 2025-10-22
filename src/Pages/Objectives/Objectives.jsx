@@ -20,29 +20,37 @@ import CardActions from './card/CardActions';
 
 import { OBJECTIVES } from "../../Data/constants";
 
-import { useFunctionType, useObjective, useSuccessIndicator, useObjectives, useObjectivesActions } from '../../Store/ObjectivesStore';
+import { useFunctionType, useObjective, useSuccessIndicator, useObjectivesActions, useApplicationObjectives, useApplicationObjective } from '../../Store/ObjectivesStore';
 import useObjectivesHook from '../../Hooks/ObjectivesHook';
 
 const Objectives = () => {
 
-    const { clearFields } = useObjectivesActions();
-    const { setAlertDialog, setConfirmationModal, closeConfirmation } = useModalHook();
-    const { getObjectives, createObjectives } = useObjectivesHook();
+    const functionType = useFunctionType()
+    const objective = useObjective()
+    const successIndicator = useSuccessIndicator()
+    const applicationObjectives = useApplicationObjectives();
+    const applicationObjective = useApplicationObjective();
 
+    const { clearFields } = useObjectivesActions();
+
+    const { setAlertDialog, setConfirmationModal, closeConfirmation } = useModalHook();
+    const {
+        getObjectivesBySector,
+        showObjective,
+        createObjective,
+        updateObjective,
+        removeObjective
+    } = useObjectivesHook();
 
     const [isLoading, setIsLoading] = useState(false);
     const [isEditMode, setIsEditMode] = useState(false);
     const [isOpenObjectivesModal, setIsOpenObjectivesModal] = useState(false);
     const [openDeleteModal, setOpenDeleteModal] = useState(false);
-
-    const functionType = useFunctionType()
-    const objective = useObjective()
-    const successIndicator = useSuccessIndicator()
-    const objectives = useObjectives()
+    const [selectedObjectiveId, setSelectedObjectiveId] = useState(null)
 
     useEffect(() => {
         setIsLoading(true);
-        getObjectives((status, message) => {
+        getObjectivesBySector((status, message) => {
             if (!(status >= 200 && status < 300)) {
                 // if status not success
                 return; //Toast error
@@ -52,11 +60,13 @@ const Objectives = () => {
     }, [])
 
     useEffect(() => {
-        // console.log(functionType)
-        // console.log('objective id:', objective?.id)
+        // console.log('selected objective', functionType)
+        // console.log(objectiveState)
+        // console.log('selected objective :', objective)
         // console.log('succeses indicator id:', successIndicator?.id)
-        console.log('objectives:', objectives)
-    }, [functionType, objective, successIndicator, objectives])
+        // console.log('objectives:', objectives)
+        // console.log('application objectives:', applicationObjectives);
+    }, [functionType, objective, successIndicator, applicationObjectives])
 
     const {
         OBJECTIVES_EMPTY_STATE_TITLE,
@@ -81,12 +91,13 @@ const Objectives = () => {
         </Typography>,
     ];
 
+    // useEffect(() => {
+    //     console.log(isLoading)
+    // }, [isLoading])
+
     const handleSaveObjectives = async () => {
 
-        // if (!functionType || !objective || !successIndicator) {
-        //     alert('Please fill all the fields')
-        //     return
-        // }
+        setIsLoading(true)
 
         const payload = {
             aop_application_id: 5,
@@ -94,34 +105,138 @@ const Objectives = () => {
             success_indicator_id: successIndicator?.id,
         };
 
-        await createObjectives(payload, (status, message) => {
+        try {
+            await createObjective(payload, (status, message) => {
+                if (status === 201) {
+                    setAlertDialog({
+                        status: "success",
+                        title: `${message}`,
+                        description: "",
+                    })
+                    setIsLoading(false)
+                    handleCloseModal()
+                } else {
+                    setAlertDialog({
+                        status: "error",
+                        title: message,
+                        description: "Please try again later",
+                    })
+                    setIsLoading(false)
+                    console.error(" Failed to create objectives:", message);
+                }
+            });
 
-            console.log('status:', status);
-            console.log('message:', message)
+        } catch (error) {
+            console.error("Error creating objective:", error);
+            setAlertDialog({
+                status: "error",
+                title: "Unexpected Error",
+                description: error.message || "Something went wrong.",
+            });
+        }
+    }
 
-            if (status === 201) {
-                console.log("Application objective created successfully:", message);
-                // clearMission();
-                setIsOpenObjectivesModal(false);
-                console.log('submitted:', payload);
-                // navigate("/aop-management");
-            } else {
-                console.error(" Failed to create AOP:", message);
-            }
-        });
+    const handleUpdateObjectives = async () => {
 
-        setAlertDialog({
-            status: "success",
-            title: `Objectives ${isEditMode ? 'Updated' : 'Created'} successfully!`,
-            description: "",
-        })
-        handleCloseModal()
+        setIsLoading(true)
+
+        const payload = {
+            aop_application_id: 5,
+            objective_id: objective?.id,
+            success_indicator_id: successIndicator?.id,
+        };
+
+        const params = { id: selectedObjectiveId };
+
+        try {
+            await updateObjective(params, payload, (status, message) => {
+                if (status === 200) {
+                    setAlertDialog({
+                        status: "success",
+                        title: `${message}`,
+                        description: "",
+                    })
+                    setIsLoading(false)
+                    handleCloseModal()
+                } else {
+                    setAlertDialog({
+                        status: "error",
+                        title: message,
+                        description: "Please try again later",
+                    })
+                    setIsLoading(false)
+                    console.error(" Failed to update objectives:", message);
+                }
+            });
+
+        } catch (error) {
+            console.error("Error creating objective:", error);
+            setAlertDialog({
+                status: "error",
+                title: "Unexpected Error",
+                description: error.message || "Something went wrong.",
+            });
+        }
     }
 
 
-    const handleEdit = () => {
+    const handleOpenEditModal = async (objectiveId) => {
+        // setIsLoading(true)
+        setSelectedObjectiveId(objectiveId)
+
+        const params = { id: objectiveId }
+
+        await showObjective(params, (status, message) => {
+            if (!(status >= 200 && status < 300)) {
+                // if status not success
+                return; //Toast error
+            }
+            // setIsLoading(false);
+        });
+
         setIsEditMode(true)
         setIsOpenObjectivesModal(true);
+    }
+
+    const handleConfirmDelete = async () => {
+        if (!selectedObjectiveId) return;
+
+        setIsLoading(true)
+
+        const params = { id: selectedObjectiveId };
+
+        await removeObjective(params, (status, message) => {
+
+            const isSuccess = status === 200 || status === true;
+
+            setAlertDialog({
+                status: isSuccess ? "success" : "error",
+                title: message,
+                description: isSuccess ? "" : "Please try again later.",
+            });
+
+            if (!isSuccess) {
+                console.error("Failed to delete objective:", message);
+            }
+
+            setIsLoading(false);
+            setOpenDeleteModal(false);
+            setSelectedObjectiveId(null);
+        });
+    };
+
+    const handleOpenDeleteModal = (objectiveId) => {
+        setOpenDeleteModal(true)
+        setSelectedObjectiveId(objectiveId)
+
+        const data = {
+            status: "warning",
+            title: ` Are you sure you want to delete this objective ? `,
+            description:
+                "The selected objective will be removed",
+        };
+
+        setConfirmationModal(data);
     }
 
     const handleOpenObjectivesModal = () => {
@@ -132,22 +247,6 @@ const Objectives = () => {
         setIsOpenObjectivesModal(false);
         setIsEditMode(false);
         clearFields()
-    }
-
-    const handleOpenDeleteModal = () => {
-        setOpenDeleteModal(true)
-        const data = {
-            status: "warning",
-            title: ` Are you sure you want to delete item ? `,
-            description:
-                "The selected item will be removed",
-        };
-        setConfirmationModal(data);
-    }
-
-    const handleDeleteObjective = () => {
-        setOpenDeleteModal(false)
-        closeConfirmation()
     }
 
     return (
@@ -217,7 +316,7 @@ const Objectives = () => {
                     <ThreeDotsLoader />
                 </Stack>
                 :
-                objectives.length === 0 ?
+                applicationObjectives.length === 0 ?
                     <>
                         <Stack
                             direction={"column"}
@@ -244,14 +343,20 @@ const Objectives = () => {
                     </>
                     :
                     <Grid mt={2} container direction="row" spacing={2} sx={{ flexGrow: 1 }}>
-                        {objectives.map(({ id, objective, success_indicator }) => (
-                            <Grid size={4}>
+                        {applicationObjectives?.map(({ id, success_indicator, objective }) => (
+                            <Grid
+                                key={id}
+                                size={4}
+                                lg={4}
+                                md={6}
+                                sm={12}
+                            >
                                 <CardComponent
                                     statusColor={null}
                                     cardHeader={<CardHeader
                                         handleSave={() => console.log('save')}
-                                        handleEdit={() => handleEdit()}
-                                        handleDelete={() => handleOpenDeleteModal()}
+                                        handleEdit={() => handleOpenEditModal(id)}
+                                        handleDelete={() => handleOpenDeleteModal(id)}
                                     />}
                                     cardBody={<CardBody
                                         success_indicator={success_indicator}
@@ -281,13 +386,14 @@ const Objectives = () => {
                         functionType={functionType}
                         objective={objective}
                         successIndicator={successIndicator}
+                        applicationObjective={applicationObjective}
                     />
                 }
                 hasActionButtons={true}
                 rightButtonLabel={`${isEditMode ? 'Update' : 'Save'} Objective`}
-                rightButtonAction={() => handleSaveObjectives()}
+                rightButtonAction={() => isEditMode ? handleUpdateObjectives() : handleSaveObjectives()}
+                isLoading={isLoading}
             />
-
 
             {/* Delete Objectives Modal */}
             {
@@ -299,7 +405,7 @@ const Objectives = () => {
                             closeConfirmation()
                         }}
                         rightButtonLabel="Delete"
-                        rightButtonAction={() => handleDeleteObjective()}
+                        rightButtonAction={() => handleConfirmDelete()}
                         isLoading={isLoading}
                     />
                 )
