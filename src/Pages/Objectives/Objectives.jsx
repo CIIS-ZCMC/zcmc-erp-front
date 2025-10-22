@@ -309,3 +309,5 @@ const Objectives = () => {
         </div >
     )
 }
+
+export default Objectives

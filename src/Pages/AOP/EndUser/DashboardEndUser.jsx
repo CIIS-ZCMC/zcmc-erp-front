@@ -8,10 +8,9 @@ import ModalComponent from "@Components/Common/Dialog/ModalComponent";
 import TextareaComponent from "@Components/Form/TextareaComponent";
 import { Warning } from "@mui/icons-material";
 import InputComponent from "@Components/Form/InputComponent";
-import {
-  useMission,
-  useObjectivesActions,
-} from "../../../Store/ObjectivesStore";
+
+import useAOPStore, { useAOPActions } from "../../../Store/AOPStore";
+
 import BoxComponent from "@Components/Common/Card/BoxComponent";
 import { TbTargetArrow } from "react-icons/tb";
 import { MdOutlineShoppingCartCheckout } from "react-icons/md";
@@ -65,8 +64,11 @@ function DashboardEndUser(props) {
   const navigate = useNavigate();
   const [openFiscalYearModal, setOpenFiscalYearModal] = useState(false);
   const { header, description } = ANNUAL_OPS;
-  const mission = useMission();
-  const { setMission, clearMission } = useObjectivesActions();
+
+  // const mission = useMission();
+  const { mission, fiscalYear } = useAOPStore();
+
+  const { setMission, clearMission } = useAOPActions();
   const [year, setYear] = useState("");
 
   const currentYear = new Date().getFullYear();
