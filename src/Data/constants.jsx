@@ -32,6 +32,7 @@ export const OBJECTIVES = {
   OBJECTIVES_SUBHEADING:
     "This is a subheading. It should add more context to the interaction.",
   ADD_OBJECTIVE: "Add an objective",
+  EDIT_OBJECTIVE: "Edit an objective",
   ADD_OBJECTIVE_SUBHEADING: "Add details to give context to the objective",
   OBJECTIVE_ALERT:
     "After this, you will have to make activities for this objective through manage objectives",
@@ -187,10 +188,15 @@ export const approvalActions = [
 
 export const API = {
   AOP_APPLICATIONS: "aop-applications",
+  AOP_APPLICATIONS_STORE: 'aop-application-store',
+
+  OBJECTIVES: "application-objectives",
+  OBJECTIVEBYSECTOR: 'user-application-objectives',
+  OBJECTIVE_STORE: "application-objectives-store",
+
   AOP_APPLICATION_SHOW: "aop-application-show",
   AOP_APPLICATION_EDIT: "aop-application-edit",
   AOP_APPLICATION_UPDATE: "aop-application-update",
-  // AOP_APPLICATION_STORE: "aop-application-store",
   AOP_APPLICATION_STORE: "aop-application-store-aop",
   AOP_APPLICATION_SUMMARY: "aop-application-summary",
   AOP_APPLICATION_TIMELINE: "application-timelines",

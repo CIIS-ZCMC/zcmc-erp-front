@@ -1,9 +1,7 @@
-
-import { create } from "zustand";
 import { API } from "../Data/constants";
 import { read } from "../Services/RequestMethods";
 
-import { useFunctionTypesActions } from "../Store/functionTypesStore";
+import { useFunctionTypesActions } from "../Store/FunctionTypesStore";
 
 const useFunctionTypeHook = () => {
   const { setFunctionTypes } = useFunctionTypesActions()
