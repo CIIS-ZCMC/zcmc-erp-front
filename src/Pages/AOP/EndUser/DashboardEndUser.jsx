@@ -157,10 +157,14 @@ function DashboardEndUser(props) {
               xs={12}
               bgcolor="#006599"
               sx={{ borderTopRightRadius: 10, borderTopLeftRadius: 10 }}
-              px={2}
-              py={3}
+              p={2}
+              mb={1}
             >
-              <Stack direction={"row"} justifyContent={"space-between"}>
+              <Stack
+                direction={"row"}
+                justifyContent={"space-between"}
+                alignItems={"flex-start"}
+              >
                 <Stack width={"100%"}>
                   <Box display="flex" alignItems="center" gap={1}>
                     <Typography
@@ -170,7 +174,7 @@ function DashboardEndUser(props) {
                     </Typography>
                     <SelectComponent
                       startYear={2024}
-                      width="150px"
+                      width="120px"
                       bgcolor="#004366"
                       txtcolor="white"
                     />
@@ -184,16 +188,15 @@ function DashboardEndUser(props) {
                   borderRadius={5}
                   direction={"row"}
                   alignItems="center"
-                  padding={1}
+                  padding={2}
                   spacing={1.5}
-                  width={"80%"}
+                  width={"75%"}
                 >
                   <Warning sx={{ color: color.warning, fontSize: 20 }} />
-                  <Box>
+                  <Box width={"100%"}>
                     <Typography
                       level="body-xs"
                       color="warning"
-                      width={"100%"}
                       sx={{ fontWeight: 600 }}
                     >
                       {" "}
@@ -204,10 +207,12 @@ function DashboardEndUser(props) {
                       button and confirm to submit this AOP for review.
                     </Typography>
                   </Box>
-                  <ButtonComponent
-                    label={"Submit AOP for Review"}
-                    width="50%"
-                  />
+                  <Box width={"450px"}>
+                    <ButtonComponent
+                      label={"Submit AOP for Review"}
+                      fullWidth={"true"}
+                    />
+                  </Box>
                 </Stack>
               </Stack>
             </Grid>
@@ -215,7 +220,7 @@ function DashboardEndUser(props) {
             <Grid
               container
               bgcolor={"#FAFAFA"}
-              padding={1}
+              padding={0.5}
               spacing={2}
               sx={{
                 flexGrow: 1,
@@ -251,7 +256,11 @@ function DashboardEndUser(props) {
               <Grid xs={4}>
                 <BoxComponent height="65vh" padding={2}>
                   <Typography level="title-lg">Approval Timeline</Typography>
-                  <Typography level="body-xs">
+                  <Typography
+                    level="body-xs"
+                    mt={0.5}
+                    sx={{ color: color.fontLight }}
+                  >
                     {" "}
                     The list below shows the current status of the request.
                   </Typography>
@@ -264,7 +273,9 @@ function DashboardEndUser(props) {
                     }}
                     height={"58vh"}
                   >
-                    <Typography>No transactions done yet.</Typography>
+                    <Typography level="body-sm" sx={{ color: color.fontLight }}>
+                      No transactions done yet.
+                    </Typography>
                   </Box>
                 </BoxComponent>
               </Grid>

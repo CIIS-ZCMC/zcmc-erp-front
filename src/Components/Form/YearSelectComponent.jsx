@@ -32,7 +32,7 @@ export default function SelectComponent({
       sx={{
         width: width,
         fontSize: "22px",
-        fontWeight: "600",
+        fontWeight: "bolder",
         [`& .${selectClasses.indicator}`]: {
           transition: "0.2s",
           [`&.${selectClasses.expanded}`]: {
@@ -46,6 +46,7 @@ export default function SelectComponent({
           background: darkMode ? "#333" : bgcolor,
           color: txtcolor,
           cursor: "pointer",
+          fontWeight: "bolder",
         },
       }}
     >
