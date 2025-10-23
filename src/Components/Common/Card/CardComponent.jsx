@@ -15,8 +15,8 @@ const CardComponent = ({
                 sx={{
                     textAlign: 'center',
                     overflow: 'auto',
-                    width: "400px",
-                    height: '200px',
+                    // width: "459px",
+                    height: '250px',
                     borderLeft: `6px solid ${statusColor}`,
                     borderRadius: 'md',
                 }}

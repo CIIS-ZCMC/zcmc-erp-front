@@ -1,4 +1,4 @@
-import { useState, useEffect } from "react";
+import { useEffect } from "react";
 
 import { Stack, Alert, Typography } from "@mui/joy";
 import { TriangleAlert } from "lucide-react";
@@ -13,7 +13,12 @@ import { useObjectivesActions } from "../../../Store/ObjectivesStore";
 
 import { OBJECTIVES } from "../../../Data/constants";
 
-const ObjectivesModal = ({ functionType, objective, successIndicator }) => {
+const ObjectivesModal = ({
+  functionType,
+  objective,
+  successIndicator,
+  applicationObjective
+}) => {
   const { OBJECTIVE_ALERT } = OBJECTIVES;
 
   const function_types = useFunctionTypes();
@@ -21,10 +26,14 @@ const ObjectivesModal = ({ functionType, objective, successIndicator }) => {
     useObjectivesActions();
   const { getFunctionType } = FunctionTypeHook();
 
-  const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    setIsLoading(true);
+    // console.log('function types', function_types)
+    console.log('applicationObjective', applicationObjective)
+  }, [function_types, applicationObjective])
+
+  useEffect(() => {
+    // setIsLoading(true);
     const params = { with_sub_data: 1 };
 
     getFunctionType(params, (status, message) => {
@@ -32,9 +41,24 @@ const ObjectivesModal = ({ functionType, objective, successIndicator }) => {
         // if status not success
         return; //Toast error
       }
-      setIsLoading(false);
+      // setIsLoading(false);
     });
   }, []);
+
+  useEffect(() => {
+    if (applicationObjective) {
+      // Set the function type (top-level)
+      setFunctionType(applicationObjective);
+
+      // Safely get the first objective (if any)
+      const firstObjective = applicationObjective?.objectives?.[0];
+      setObjective(firstObjective || null);
+
+      // Safely get the first success indicator (if any)
+      const firstSuccessIndicator = firstObjective?.success_indicators?.[0];
+      setSuccessIndicator(firstSuccessIndicator || null);
+    }
+  }, [applicationObjective]);
 
   return (
     <>

@@ -1,7 +1,11 @@
+import { useEffect } from 'react'
+
 import { Stack, Typography } from '@mui/joy'
 
 import TextareaComponent from '@Components/Form/TextareaComponent'
 import InputComponent from '@Components/Form/InputComponent'
+
+import { ThreeDotsLoader } from '@Components/Common/Loading/ThreeDotsLoader'
 
 const CardBody = ({
     status,
@@ -9,7 +13,11 @@ const CardBody = ({
     objective,
 }) => {
 
-    const { description, type_of_function } = objective
+    if (!objective) {
+        return <ThreeDotsLoader />; // Still loading or not yet selected
+    }
+
+    const { description, type_of_function } = objective;
 
     return (
         <>
@@ -31,7 +39,7 @@ const CardBody = ({
 
                 {!status ?
                     <Typography
-                        level={'title-lg'}
+                        level={'title-md'}
                         sx={{
                             // flex: 1,
                             textAlign: 'left',
