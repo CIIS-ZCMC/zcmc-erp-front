@@ -20,6 +20,7 @@ import useAOPHook from "../../../Hooks/AOP/AOPHook";
 import { ThreeDotsLoader } from "@Components/Common/Loading/ThreeDotsLoader";
 import useModalHook from "../../../Hooks/ModalHook";
 import AlertDialogComponent from "@Components/Common/Dialog/AlertDialogComponent";
+import PageTitle from "@Components/Common/PageTitle";
 
 const FiscalYearModal = ({ value, onChange, fiscalYear }) => {
   const { missionPlaceHolder } = ANNUAL_OPS;
@@ -135,14 +136,13 @@ function DashboardEndUser(props) {
         </Stack>
       ) : aop && aop.length > 0 ? (
         <Fragment>
-          <Stack>
-            <Typography level="h2">Annual Operations Planning</Typography>
-            <Typography level="body-xs">
-              The following below serves as the summary of your AOP request. You
-              can open and update your request before the deadline as set by the
-              administrators.
-            </Typography>
-          </Stack>
+          <PageTitle
+            title={"Annual Operations Planning"}
+            description={
+              "The following below serves as the summary of your AOP request. You can open and update your request before the deadline as set by the administrators."
+            }
+          />
+
           <BoxComponent
             mt={3}
             boxShadow={"xs"}
