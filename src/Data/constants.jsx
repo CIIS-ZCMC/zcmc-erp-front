@@ -44,6 +44,16 @@ export const OBJECTIVES = {
   OBJECTIVES_CREATE_NEW: "Begin by adding a new one",
 };
 
+export const ACTIVITIES = {
+  MANAGE_ACTIVITIES_HEADER: "Manage Activities for",
+  MANAGE_ACTIVITIES_SUBHEADER: "Define and manage the activities under this objective. Set the timeframe, quarterly targets, and specify the needed resources and responsible persons for each activity",
+  MODAL_TITLE: 'Add Activity',
+  MODAL_DESCRIPTION: 'Enter the number of activities to create. You may define their details later by editing each activity card.',
+  COUNT_LABEL: 'How many activities would you like to add ?',
+  EMPTY_STATE_TITLE: 'No Activities Added Yet',
+  ACTIVITY_CREATE_NEW: 'This objective doesn’t have any activities assigned. Add one to start defining what needs to be accomplished.'
+}
+
 export const AOP_CONSTANTS = {
   AOP_TITLE: "Annual Operations Planning",
   AOP_SUBHEADING:

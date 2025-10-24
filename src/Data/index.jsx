@@ -109,7 +109,7 @@ export const sidebarRoutes = [
       },
 
       {
-        path: "/objectives-management",
+        path: "/objectives/aopId",
         name: "Objectives",
         childPermissions: ["ERP-AOP-MAN:approve", "ERP-AOP-MAN:view-all"],
       },

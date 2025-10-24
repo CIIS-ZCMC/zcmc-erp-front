@@ -83,6 +83,15 @@ const InputComponent = ({
           color: darkMode ? "white" : "neutral.900",
           borderColor: "neutral.300",
         }}
+
+        slotProps={type === "number" && {
+          input: {
+            min: 1,
+            max: 99,
+            step: 1,
+          },
+        }}
+
         startDecorator={startDecorator}
         endDecorator={
           isPassword ? (

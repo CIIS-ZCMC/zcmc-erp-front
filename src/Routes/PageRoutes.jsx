@@ -6,11 +6,12 @@ import Dashboard from "../Pages/Dashboard";
 //updated routing for AOP
 import AOP from "../Pages/DeptHead/AnnualOps/AOPManagement/AOP";
 import AOPObjectives from "../Pages/DeptHead/AnnualOps/AOPManagement/Objectives/Objectives";
-import Activities from "../Pages/DeptHead/AnnualOps/AOPManagement/Objectives/Activities/Activities";
+// import Activities from "../Pages/DeptHead/AnnualOps/AOPManagement/Objectives/Activities/Activities";
 import Resources from "../Pages/DeptHead/AnnualOps/AOPManagement/Objectives/Activities/Resourses/Resources";
 import Responsible from "../Pages/DeptHead/AnnualOps/AOPManagement/Objectives/Activities/Responsible Person/Responsible";
 
 import Objectives from "../Pages/Objectives/Objectives";
+import Activities from "../Pages/Activities/Activities";
 
 import Items from "../Pages/Items";
 
@@ -58,10 +59,17 @@ export const sidebarRoutes = [
   },
 
   {
-    path: "/objectives-management",
+    path: "/dashboard/objectives/:aopId",
     name: "Objectives",
     element: <Objectives />,
   },
+
+  {
+    path: "/dashboard/objectives/:aopId/activities/:objectiveId",
+    name: "Activities",
+    element: <Activities />
+  },
+
 
   // SUPERVISOR ROUTES
   {

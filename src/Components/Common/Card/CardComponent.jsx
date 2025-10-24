@@ -8,6 +8,7 @@ const CardComponent = ({
     cardHeader,
     cardBody,
     cardActions,
+    height,
 }) => {
     return (
         <>
@@ -16,7 +17,7 @@ const CardComponent = ({
                     textAlign: 'center',
                     overflow: 'auto',
                     // width: "459px",
-                    height: '250px',
+                    height: height,
                     borderLeft: `6px solid ${statusColor}`,
                     borderRadius: 'md',
                 }}
