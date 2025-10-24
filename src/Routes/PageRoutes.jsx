@@ -45,6 +45,8 @@ import ItemSubmittedRequestsList from "../Pages/TEMP/ItemSubmittedRequestsList";
 import { MyOwnRequestsList } from "../Pages/TEMP/ItemMyOwnRequestsLists";
 import { ItemRequestDatatable } from "../Pages/Consolidators/ItemManagement/ItemRequestDatatable";
 import DashboardEndUser from "../Pages/AOP/EndUser/DashboardEndUser";
+import { element } from "prop-types";
+import ManageResources from "../Pages/AOP/EndUser/ManageResources";
 // import ResponsiblePerson from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities/ResponsiblePerson";
 
 export const sidebarRoutes = [
@@ -70,6 +72,12 @@ export const sidebarRoutes = [
     icon: <MdSupervisorAccount {...iconStyles} />,
     permissions: ["ERP-AOP-MAN:write", "ERP-PPMP-MAN:write"],
     children: [
+      {
+        path: "/manage-resources",
+        name: "Manage Resources",
+        element: <ManageResources />,
+        childPermissions: ["ERP-AOP-MAN:write"],
+      },
       {
         path: "/aop",
         name: "AOP",
@@ -165,6 +173,7 @@ export const sidebarRoutes = [
           },
         ],
       },
+
       {
         path: "/ppmp-approval",
         name: "PPMP Management",

@@ -119,11 +119,11 @@ const MenuItemWithChildren = ({
       <MenuItemComponent onClick={handleClick} to={firstChild}>
         {content}
       </MenuItemComponent>
-      {filteredChildren?.length > 1 ? (
+      {/* {filteredChildren?.length > 1 ? (
         <Divider
           sx={{ mt: !isExpanded && 1, mx: 1, backgroundColor: "#006599" }}
         />
-      ) : null}
+      ) : null} */}
       {/* Inline children for expanded sidebar */}
       {!isCollapsed && isExpanded && (
         <Stack spacing={1} my={isExpanded && 1} px={2}>
