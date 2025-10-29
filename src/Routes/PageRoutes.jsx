@@ -47,6 +47,8 @@ import { ItemRequestDatatable } from "../Pages/Consolidators/ItemManagement/Item
 import DashboardEndUser from "../Pages/AOP/EndUser/DashboardEndUser";
 import { element } from "prop-types";
 import ManageResources from "../Pages/AOP/EndUser/ManageResources";
+import AOPResources from "../Pages/AOP/EndUser/AOPResources";
+import AddResources from "../Pages/AOP/EndUser/AddResources";
 // import ResponsiblePerson from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities/ResponsiblePerson";
 
 export const sidebarRoutes = [
@@ -75,8 +77,18 @@ export const sidebarRoutes = [
       {
         path: "/manage-resources",
         name: "Manage Resources",
-        element: <ManageResources />,
+        element: <AOPResources />,
         childPermissions: ["ERP-AOP-MAN:write"],
+        children: [
+          {
+            index: true,
+            element: <ManageResources />,
+          },
+          {
+            path: "select-resources",
+            element: <AddResources />,
+          },
+        ],
       },
       {
         path: "/aop",

@@ -69,65 +69,82 @@ function ManageResources(props) {
         />
 
         <BoxComponent bgColor={color.neutralBg} padding={2}>
-          <Stack direction={"row"} spacing={1}>
-            <Typography level="body-md" sx={{ fontWeight: 600 }}>
-              Manage Resources for
-            </Typography>
-            <ChipComponent
-              label={"Activity: Procure Equipment and Tools"} // change to dynamic activity name
-              color={"success"}
-              variant={"outlined"}
-            />
-          </Stack>
-          <Typography level="body-sm">
-            {" "}
-            Manage and allocate all resource requirements for this activity.
-            Add, edit, or review items to ensure accurate budgeting and
-            procurement details.
-          </Typography>
+          <Stack direction={"row"} justifyContent={"space-between"}>
+            <Stack>
+              <Stack direction={"row"} spacing={1}>
+                <Typography level="body-md" sx={{ fontWeight: 600 }}>
+                  Manage Resources for
+                </Typography>
+                <ChipComponent
+                  label={"Activity: Procure Equipment and Tools"} // change to dynamic activity name
+                  color={"success"}
+                  variant={"outlined"}
+                />
+              </Stack>
+              <Typography level="body-sm">
+                {" "}
+                Manage and allocate all resource requirements for this activity.
+                Add, edit, or review items to ensure accurate budgeting and
+                procurement details.
+              </Typography>
+            </Stack>
 
-          <Stack direction={"row"} mt={3} justifyContent={"space-between"}>
-            <Stack direction={"row"} spacing={1} width="100%">
-              <CalendarToday sx={{ fontSize: 30, color: blue[800] }} />{" "}
-              <Stack>
-                <Typography level="body-sm">Timeframe</Typography>
-                <Typography level="title-md">August - September</Typography>
-              </Stack>
-            </Stack>
-            <Stack direction={"row"} spacing={1} width="100%">
-              <Box
-                sx={{ bgcolor: blue[800] }}
-                width={15}
-                height={15}
-                borderRadius={50}
-                display="flex"
-                justifyContent="center"
-                alignItems="center"
-                padding={1}
-              >
-                <PhilippinePesoIcon style={{ color: "white" }} />{" "}
-              </Box>
-              <Stack>
-                <Typography level="body-sm">Total Cost</Typography>
-                <Typography level="title-md">₱ 500,000.00</Typography>
-              </Stack>
-            </Stack>
-            <Stack direction={"row"} spacing={1} width="100%">
-              <Book sx={{ fontSize: 30, color: blue[800] }} />{" "}
-              <Stack>
-                <Typography level="body-sm">Expense class</Typography>
-                <Typography level="title-md">MOOE</Typography>
-              </Stack>
-            </Stack>
-            <Stack direction={"row"} spacing={1} width="100%">
-              <CheckCircle sx={{ fontSize: 30, color: blue[800] }} />{" "}
-              <Stack>
-                <Typography level="body-sm">GAD-related activity</Typography>
-                <Typography level="title-md">Yes</Typography>
-              </Stack>
+            <Stack>
+              <ButtonComponent
+                label={"Add a resource"}
+                startDecorator={<PlusIcon />}
+              />
             </Stack>
           </Stack>
-          <Divider sx={{ my: 2, backgroundColor: grey }} />
+
+          <Stack
+            direction={"row"}
+            justifyContent={"space-between"}
+            spacing={2}
+            mt={3}
+          >
+            <Stack width={"100%"}>
+              <Stack direction={"row"} justifyContent={"space-between"}>
+                <Stack direction={"row"} spacing={1} width="100%">
+                  <CalendarToday sx={{ fontSize: 30, color: blue[800] }} />{" "}
+                  <Stack>
+                    <Typography level="body-sm">Timeframe</Typography>
+                    <Typography level="title-md">August - September</Typography>
+                  </Stack>
+                </Stack>
+                <Stack direction={"row"} spacing={1} width="100%">
+                  <Box
+                    sx={{ bgcolor: blue[800] }}
+                    width={15}
+                    height={15}
+                    borderRadius={50}
+                    display="flex"
+                    justifyContent="center"
+                    alignItems="center"
+                    padding={1}
+                  >
+                    <PhilippinePesoIcon style={{ color: "white" }} />{" "}
+                  </Box>
+                  <Stack>
+                    <Typography level="body-sm">Total Cost</Typography>
+                    <Typography level="title-md">₱ 500,000.00</Typography>
+                  </Stack>
+                </Stack>
+
+                <Stack direction={"row"} spacing={1} width="100%">
+                  <CheckCircle sx={{ fontSize: 30, color: blue[800] }} />{" "}
+                  <Stack>
+                    <Typography level="body-sm">
+                      GAD-related activity
+                    </Typography>
+                    <Typography level="title-md">Yes</Typography>
+                  </Stack>
+                </Stack>
+              </Stack>
+              <Divider sx={{ my: 2, backgroundColor: grey }} />
+            </Stack>
+          </Stack>
+
           <Stack direction={"row"} spacing={1} alignItems={"center"}>
             <Typography level="body-xs" sx={{ fontWeight: 600 }}>
               Target (by quarter){" "}
