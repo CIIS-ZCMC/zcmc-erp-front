@@ -1,6 +1,7 @@
 import { useEffect, useState } from "react";
 
 import { Stack, Divider, Typography, Breadcrumbs, Grid } from '@mui/joy';
+import { useLocation, useNavigate } from "react-router-dom";
 
 import { ThreeDotsLoader } from '@Components/Common/Loading/ThreeDotsLoader';
 
@@ -24,6 +25,11 @@ import { useFunctionType, useObjective, useSuccessIndicator, useObjectivesAction
 import useObjectivesHook from '../../Hooks/ObjectivesHook';
 
 const Objectives = () => {
+
+    const location = useLocation();
+    const navigate = useNavigate();
+
+    const { aopId } = location.state;
 
     const functionType = useFunctionType()
     const objective = useObjective()
@@ -64,8 +70,8 @@ const Objectives = () => {
         // console.log(objectiveState)
         // console.log('selected objective :', objective)
         // console.log('succeses indicator id:', successIndicator?.id)
-        // console.log('objectives:', objectives)
-        // console.log('application objectives:', applicationObjectives);
+        console.log('objective:', applicationObjective)
+        console.log('application objectives:', applicationObjectives);
     }, [functionType, objective, successIndicator, applicationObjectives])
 
     const {
@@ -100,7 +106,7 @@ const Objectives = () => {
         setIsLoading(true)
 
         const payload = {
-            aop_application_id: 1, //change this to real aop_application_id
+            aop_application_id: aopId,
             objective_id: objective?.id,
             success_indicator_id: successIndicator?.id,
         };
@@ -364,7 +370,9 @@ const Objectives = () => {
                                         status={false}
                                     />}
                                     cardActions={<CardActions
-                                        handleActivities={() => console.log('activities')}
+                                        handleActivities={() => navigate(`/dashboard/objectives/${aopId}/activities/${id}`, {
+                                            state: { objId: id }
+                                        })}
                                     />}
                                 />
                             </Grid>

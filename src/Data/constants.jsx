@@ -207,6 +207,10 @@ export const API = {
   OBJECTIVE_DELETE: "delete-application-objectives",
   OBJECTIVE_SHOW: "show-application-objective",
 
+  ACTIVITIES: "activities",
+  ACTIVITIES_STORE: "activities-store",
+  ACTIVITIES_DELETE: "activities-delete",
+
   AOP_APPLICATION_SHOW: "aop-application-show",
   AOP_APPLICATION_EDIT: "aop-application-edit",
   AOP_APPLICATION_UPDATE: "aop-application-update",

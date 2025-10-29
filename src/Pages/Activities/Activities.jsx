@@ -8,26 +8,40 @@ import {
     Grid,
 } from '@mui/joy';
 
+import { useLocation, useNavigate } from 'react-router-dom';
+
 import useModalHook from '../../Hooks/ModalHook';
+import useActivitiesHook from '../../Hooks/ActivitiesHook';
 
 import CardComponent from '@Components/Common/Card/CardComponent';
+import { ThreeDotsLoader } from '@Components/Common/Loading/ThreeDotsLoader';
 import BoxComponent from '@Components/Common/Card/BoxComponent';
 import ButtonComponent from '@Components/Common/ButtonComponent';
 import ModalComponent from '@Components/Common/Dialog/ModalComponent';
 import InputComponent from '@Components/Form/InputComponent';
+import SearchBarComponent from '@Components/SearchBarComponent';
 import ConfirmationModalComponent from '@Components/Common/Dialog/ConfirmationModalComponent';
 
 import ActivitiesModal from './modal/ActivitiesModal';
-
 import ActivitiesList from './ActivitiesList';
 
-import SearchBarComponent from '@Components/SearchBarComponent';
-
-import useActivitiesStore from '../../Store/ActivitiesStore';
+import useActivitiesStore, { useActivitiesActions } from '../../Store/ActivitiesStore';
 
 import { ACTIVITIES } from '../../Data/constants';
 
+const centeredStyle = {
+    direction: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    textAlign: 'center',
+    height: '65vh',
+    my: 2,
+}
+
 const Activities = () => {
+
+    const location = useLocation()
+    const { objId } = location.state
 
     const {
         applicationActivities,
@@ -38,6 +52,10 @@ const Activities = () => {
         isGadRelated,
         target
     } = useActivitiesStore();
+
+    const { setApplicationActivities } = useActivitiesActions();
+
+    const { getActivities, createActivity, removeActivity } = useActivitiesHook();
 
     const {
         setAlertDialog,
@@ -63,6 +81,25 @@ const Activities = () => {
     const [isEditMode, setIsEditMode] = useState(false);
     const [openDeleteModal, setOpenDeleteModal] = useState(false)
     const [selectedActivityId, setSelectedActivityId] = useState(null)
+
+
+    useEffect(() => {
+        setIsLoading(true);
+
+        const params = { application_objective_id: objId }
+
+        getActivities(params, (status, message) => {
+            if (!(status >= 200 && status < 300)) {
+                // if status not success
+                return; //Toast error
+            }
+            setIsLoading(false);
+        })
+    }, [])
+
+    useEffect(() => {
+        console.log(applicationActivities)
+    }, [applicationActivities])
 
     const breadcrumbs = [
         <Typography key="3" sx={{ color: 'text.primary' }}>
@@ -97,16 +134,43 @@ const Activities = () => {
     }
 
     const handleConfirmDelete = async () => {
+
+        if (!selectedActivityId) return
+
         setIsLoading(true)
+
+        const params = { id: selectedActivityId };
+
+        await removeActivity(params, (status, message) => {
+            const isSuccess = status === 200 || status === true;
+
+            setAlertDialog({
+                status: isSuccess ? "success" : "error",
+                title: message,
+                description: isSuccess ? "" : "Please try again later.",
+            });
+
+
+            if (!isSuccess) {
+                console.error("Failed to delete objective:", message);
+            }
+
+            setIsLoading(false);
+            setOpenDeleteModal(false);
+            setSelectedActivityId(null);
+        })
+
+
         setTimeout(() => {
             setIsLoading(false);
             setOpenDeleteModal(false)
         }, 2000);
     }
 
-    const handleOpenDeleteModal = () => {
+    const handleOpenDeleteModal = (activityId) => {
+
         setOpenDeleteModal(true)
-        // setSelectedActivityId(activityId)
+        setSelectedActivityId(activityId)
 
         const data = {
             status: "warning",
@@ -115,6 +179,45 @@ const Activities = () => {
                 "The selected activity will be removed",
         }
         setConfirmationModal(data);
+    }
+
+    const handleCountActivities = async () => {
+
+        setIsLoading(true)
+
+        const payload = {
+            application_objective_id: objId,
+            count: countActivities
+        }
+
+        try {
+            await createActivity(payload, (status, message) => {
+                if (status === 201) {
+                    setAlertDialog({
+                        status: "success",
+                        title: `${message}`,
+                        description: "",
+                    })
+                    setIsLoading(false)
+                    // handleCloseModal()
+                } else {
+                    setAlertDialog({
+                        status: "error",
+                        title: message,
+                        description: "Please try again later",
+                    })
+                    setIsLoading(false)
+                    console.error(" Failed to update objectives:", message);
+                }
+            })
+        } catch (error) {
+            console.error(error)
+            setAlertDialog({
+                status: "error",
+                title: "Unexpected Error",
+                description: error.message || "Something went wrong.",
+            });
+        }
     }
 
     return (
@@ -166,13 +269,56 @@ const Activities = () => {
                 </Stack>
             </BoxComponent>
 
-            <ActivitiesList
-                isLoading={isLoading}
-                activities={applicationActivities}
-                handleAdd={() => handleOpenCountModal()}
-                handleEdit={() => handleOpenEditModal()}
-                handleDelete={() => handleOpenDeleteModal()}
-            />
+            {isLoading ?
+                <Stack
+                    sx={centeredStyle}
+                >
+                    <ThreeDotsLoader />
+                </Stack>
+                :
+                applicationActivities.length === 0 ?
+                    <>
+                        <Stack
+                            sx={centeredStyle}
+                        >
+                            <Typography sx={{ fontSize: 20, fontWeight: 600 }}>
+                                {EMPTY_STATE_TITLE}
+                            </Typography>
+
+                            <Typography mb={2} sx={{ fontSize: 20, fontWeight: 400 }}>
+                                {ACTIVITY_CREATE_NEW}
+                            </Typography>
+
+                            <ButtonComponent
+                                onClick={() => handleOpenCountModal()}
+                                label={"Add Activity"}
+                            // endDecorator={<Plus size={16} />}
+                            />
+                        </Stack>
+                    </>
+                    :
+                    <Grid mt={2} container direction="row" spacing={2} sx={{ flexGrow: 1 }}>
+                        {applicationActivities.map((activity) => (
+                            <Grid
+                                key={activity.id}
+                                size={4}
+                                lg={4}
+                                md={6}
+                                sm={12}
+                            >
+                                <ActivitiesList
+                                    isLoading={isLoading}
+                                    activities={applicationActivities}
+                                    activity={activity}
+                                    handleAdd={() => handleOpenCountModal()}
+                                    handleEdit={() => handleOpenEditModal(activity.id)}
+                                    handleDelete={() => handleOpenDeleteModal(activity.id)}
+                                />
+                            </Grid>
+                        ))}
+                    </Grid >
+            }
+
 
             <ModalComponent
                 isOpen={isCountModal}
@@ -195,7 +341,7 @@ const Activities = () => {
                 }
                 hasActionButtons={true}
                 rightButtonLabel={`Save`}
-                rightButtonAction={() => console.log('activities to be added:', countActivities)}
+                rightButtonAction={() => handleCountActivities()}
                 isLoading={isLoading}
 
             />

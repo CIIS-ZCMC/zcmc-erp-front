@@ -79,6 +79,7 @@ function DashboardEndUser(props) {
 
   const [openFiscalYearModal, setOpenFiscalYearModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [aopId, setAopId] = useState(null);
   const [year, setYear] = useState("");
 
   const currentYear = new Date().getFullYear();
@@ -129,6 +130,14 @@ function DashboardEndUser(props) {
       setIsLoading(false);
     });
   }, []);
+
+  // useEffect(() => {
+  //   if (aop) {
+  //     setAopId(aop[0].id)
+  //   }
+  //   console.log(aop)
+  // }, [aop])
+
   return (
     <Fragment>
       {isLoading ? (
@@ -249,7 +258,9 @@ function DashboardEndUser(props) {
                     <ButtonComponent
                       label={"Go to Manage Objectives"}
                       onClick={() => {
-                        navigate("/objectives-management");
+                        navigate(`/dashboard/objectives/${aopId}`, {
+                          state: { aopId }
+                        });
                       }}
                     />
                   </Box>

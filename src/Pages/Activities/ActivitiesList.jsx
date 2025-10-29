@@ -13,17 +13,9 @@ import CardActions from './card/CardActions';
 
 import { ACTIVITIES } from '../../Data/constants';
 
-const centeredStyle = {
-    direction: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    textAlign: 'center',
-    height: '65vh',
-    my: 2,
-}
-
 const ActivitiesList = (
     {
+        activity,
         isLoading,
         activities,
         handleAdd,
@@ -37,73 +29,31 @@ const ActivitiesList = (
         ACTIVITY_CREATE_NEW,
     } = ACTIVITIES;
 
-    // useEffect(() => {
-    //     console.log('current activities:', activities)
-    // }, [activities])
+    useEffect(() => {
+        console.log('current activities:', activities)
+    }, [activities])
+
+    const { is_draft, name, start_month, end_month, } = activity;
 
     return (
-        <div>
-            {isLoading ?
-                <Stack
-                    sx={centeredStyle}
-                >
-                    <ThreeDotsLoader />
-                </Stack>
-                :
-                activities.length === 0 ?
-                    <>
-                        <Stack
-                            sx={centeredStyle}
-                        >
-                            <Typography sx={{ fontSize: 20, fontWeight: 600 }}>
-                                {EMPTY_STATE_TITLE}
-                            </Typography>
-
-                            <Typography mb={2} sx={{ fontSize: 20, fontWeight: 400 }}>
-                                {ACTIVITY_CREATE_NEW}
-                            </Typography>
-
-                            <ButtonComponent
-                                onClick={handleAdd}
-                                label={"Add Activity"}
-                            // endDecorator={<Plus size={16} />}
-                            />
-                        </Stack>
-                    </>
-                    :
-                    <>
-                        <Grid mt={2} container direction="row" spacing={2} sx={{ flexGrow: 1 }}>
-                            {/* {applicationObjectives?.map(({ id, success_indicator, objective }) => ( */}
-                            <Grid
-                                // key={id}
-                                size={4}
-                                lg={4}
-                                md={6}
-                                sm={12}
-                            >
-                                <CardComponent
-                                    height={150}
-                                    statusColor={'red'}
-                                    cardHeader={<CardHeader
-                                        handleEdit={handleEdit}
-                                        handleDelete={handleDelete}
-                                    />}
-                                    cardBody={<CardBody
-                                        objective={'Objective'}
-                                        activity={'Activity One'}
-                                        timeframe={`start month - end month`}
-                                    />}
-                                    cardActions={<CardActions
-                                        handleActivities={() => console.log('activities')}
-                                    />}
-                                />
-                            </Grid>
-                            {/* ))} */}
-                        </Grid>
-                    </>
-            }
-
-        </div>
+        <>
+            <CardComponent
+                height={150}
+                statusColor={is_draft ? 'red' : 'green'}
+                cardHeader={<CardHeader
+                    handleEdit={handleEdit}
+                    handleDelete={handleDelete}
+                />}
+                cardBody={<CardBody
+                    objective={'Objective'}
+                    activity={name ? name : "Activity Name"}
+                    timeframe={`${start_month ? start_month : "start month"} - ${end_month ? end_month : 'end month'}  `}
+                />}
+                cardActions={<CardActions
+                    handleActivities={() => console.log('activities')}
+                />}
+            />
+        </>
     )
 }
 

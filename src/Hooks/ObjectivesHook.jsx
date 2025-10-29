@@ -1,7 +1,7 @@
 import { API } from "../Data/constants";
 import { read, post, update, remove } from "../Services/RequestMethods";
 
-import { useApplicationObjectives, useObjective, useObjectivesActions } from "../Store/ObjectivesStore";
+import { useApplicationObjectives, useObjectivesActions } from "../Store/ObjectivesStore";
 
 const useObjectivesHook = () => {
 
@@ -126,7 +126,6 @@ const useObjectivesHook = () => {
     }
   }
 
-
   return {
     getObjectivesBySector,
     showObjective,
@@ -134,7 +133,6 @@ const useObjectivesHook = () => {
     updateObjective,
     removeObjective,
   }
-
 
 }
 
