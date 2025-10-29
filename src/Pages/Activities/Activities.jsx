@@ -19,9 +19,7 @@ import ConfirmationModalComponent from '@Components/Common/Dialog/ConfirmationMo
 
 import ActivitiesModal from './modal/ActivitiesModal';
 
-import CardHeader from './card/CardHeader';
-import CardBody from './card/CardBody';
-import CardActions from './card/CardActions';
+import ActivitiesList from './ActivitiesList';
 
 import SearchBarComponent from '@Components/SearchBarComponent';
 
@@ -31,9 +29,21 @@ import { ACTIVITIES } from '../../Data/constants';
 
 const Activities = () => {
 
-    const { activity, cost, startMonth, endMonth, isGadRelated, target } = useActivitiesStore();
+    const {
+        applicationActivities,
+        activity,
+        cost,
+        startMonth,
+        endMonth,
+        isGadRelated,
+        target
+    } = useActivitiesStore();
 
-    const { setAlertDialog, setConfirmationModal, closeConfirmation } = useModalHook();
+    const {
+        setAlertDialog,
+        setConfirmationModal,
+        closeConfirmation
+    } = useModalHook();
 
     const {
         MANAGE_ACTIVITIES_HEADER,
@@ -74,6 +84,10 @@ const Activities = () => {
         setIsOpenActivitiesModal(true)
     }
 
+    const handleOpenCountModal = () => {
+        setIsCountModal(true)
+    }
+
     const handleSaveActivity = () => {
         console.log(activity)
         console.log(startMonth)
@@ -81,7 +95,6 @@ const Activities = () => {
         console.log(isGadRelated)
         console.log(target)
     }
-
 
     const handleConfirmDelete = async () => {
         setIsLoading(true)
@@ -152,58 +165,14 @@ const Activities = () => {
                     />
                 </Stack>
             </BoxComponent>
-            {/* 
-            <Stack
-                direction={"column"}
-                alignItems={"center"}
-                justifyContent={"center"}
-                textAlign={"center"}
-                my={2}
-                height={'65vh'}
-            >
-                <Typography sx={{ fontSize: 20, fontWeight: 600 }}>
-                    {EMPTY_STATE_TITLE}
-                </Typography>
 
-                <Typography mb={2} sx={{ fontSize: 20, fontWeight: 400 }}>
-                    {ACTIVITY_CREATE_NEW}
-                </Typography>
-
-                <ButtonComponent
-                    onClick={() => setIsCountModal(true)}
-                    label={"Add Activity"}
-                // endDecorator={<Plus size={16} />}
-                />
-            </Stack> */}
-
-            <Grid mt={2} container direction="row" spacing={2} sx={{ flexGrow: 1 }}>
-                {/* {applicationObjectives?.map(({ id, success_indicator, objective }) => ( */}
-                <Grid
-                    // key={id}
-                    size={4}
-                    lg={4}
-                    md={6}
-                    sm={12}
-                >
-                    <CardComponent
-                        height={150}
-                        statusColor={'red'}
-                        cardHeader={<CardHeader
-                            handleEdit={() => handleOpenEditModal()}
-                            handleDelete={() => handleOpenDeleteModal()}
-                        />}
-                        cardBody={<CardBody
-                            objective={'Objective'}
-                            activity={'Activity One'}
-                            timeframe={`start month - end month`}
-                        />}
-                        cardActions={<CardActions
-                            handleActivities={() => console.log('activities')}
-                        />}
-                    />
-                </Grid>
-                {/* ))} */}
-            </Grid>
+            <ActivitiesList
+                isLoading={isLoading}
+                activities={applicationActivities}
+                handleAdd={() => handleOpenCountModal()}
+                handleEdit={() => handleOpenEditModal()}
+                handleDelete={() => handleOpenDeleteModal()}
+            />
 
             <ModalComponent
                 isOpen={isCountModal}
