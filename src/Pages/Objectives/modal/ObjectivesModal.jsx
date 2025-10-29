@@ -47,14 +47,12 @@ const ObjectivesModal = ({
 
   useEffect(() => {
     if (applicationObjective) {
-      // Set the function type (top-level)
+
       setFunctionType(applicationObjective);
 
-      // Safely get the first objective (if any)
       const firstObjective = applicationObjective?.objectives?.[0];
       setObjective(firstObjective || null);
 
-      // Safely get the first success indicator (if any)
       const firstSuccessIndicator = firstObjective?.success_indicators?.[0];
       setSuccessIndicator(firstSuccessIndicator || null);
     }

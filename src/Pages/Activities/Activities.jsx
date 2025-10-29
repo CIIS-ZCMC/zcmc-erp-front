@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 
 import {
     Stack,
@@ -6,22 +6,18 @@ import {
     Breadcrumbs,
     Divider,
     Grid,
-    Input,
-    FormControl,
-    FormLabel,
-    Checkbox,
-    Alert
 } from '@mui/joy';
 
-import { TriangleAlert } from 'lucide-react';
+import useModalHook from '../../Hooks/ModalHook';
 
-
-import TextareaComponent from '@Components/Form/TextareaComponent';
 import CardComponent from '@Components/Common/Card/CardComponent';
 import BoxComponent from '@Components/Common/Card/BoxComponent';
 import ButtonComponent from '@Components/Common/ButtonComponent';
 import ModalComponent from '@Components/Common/Dialog/ModalComponent';
 import InputComponent from '@Components/Form/InputComponent';
+import ConfirmationModalComponent from '@Components/Common/Dialog/ConfirmationModalComponent';
+
+import ActivitiesModal from './modal/ActivitiesModal';
 
 import CardHeader from './card/CardHeader';
 import CardBody from './card/CardBody';
@@ -29,10 +25,15 @@ import CardActions from './card/CardActions';
 
 import SearchBarComponent from '@Components/SearchBarComponent';
 
+import useActivitiesStore from '../../Store/ActivitiesStore';
 
 import { ACTIVITIES } from '../../Data/constants';
 
 const Activities = () => {
+
+    const { activity, cost, startMonth, endMonth, isGadRelated, target } = useActivitiesStore();
+
+    const { setAlertDialog, setConfirmationModal, closeConfirmation } = useModalHook();
 
     const {
         MANAGE_ACTIVITIES_HEADER,
@@ -50,6 +51,8 @@ const Activities = () => {
     const [countActivities, setCountActivities] = useState(1);
     const [isOpenActivitiesModal, setIsOpenActivitiesModal] = useState(false);
     const [isEditMode, setIsEditMode] = useState(false);
+    const [openDeleteModal, setOpenDeleteModal] = useState(false)
+    const [selectedActivityId, setSelectedActivityId] = useState(null)
 
     const breadcrumbs = [
         <Typography key="3" sx={{ color: 'text.primary' }}>
@@ -69,6 +72,36 @@ const Activities = () => {
         // console.log(id)
         setIsEditMode(true)
         setIsOpenActivitiesModal(true)
+    }
+
+    const handleSaveActivity = () => {
+        console.log(activity)
+        console.log(startMonth)
+        console.log(endMonth)
+        console.log(isGadRelated)
+        console.log(target)
+    }
+
+
+    const handleConfirmDelete = async () => {
+        setIsLoading(true)
+        setTimeout(() => {
+            setIsLoading(false);
+            setOpenDeleteModal(false)
+        }, 2000);
+    }
+
+    const handleOpenDeleteModal = () => {
+        setOpenDeleteModal(true)
+        // setSelectedActivityId(activityId)
+
+        const data = {
+            status: "warning",
+            title: ` Are you sure you want to delete this activity ? `,
+            description:
+                "The selected activity will be removed",
+        }
+        setConfirmationModal(data);
     }
 
     return (
@@ -157,7 +190,7 @@ const Activities = () => {
                         statusColor={'red'}
                         cardHeader={<CardHeader
                             handleEdit={() => handleOpenEditModal()}
-                        // handleDelete={() => handleOpenDeleteModal(id)}
+                            handleDelete={() => handleOpenDeleteModal()}
                         />}
                         cardBody={<CardBody
                             objective={'Objective'}
@@ -188,7 +221,6 @@ const Activities = () => {
                                 value={countActivities}
                                 setValue={(val) => setCountActivities(val)}
                             />
-
                         </Stack>
                     </>
                 }
@@ -204,139 +236,33 @@ const Activities = () => {
                 handleClose={() => setIsOpenActivitiesModal(false)}
                 title={'Edit Activity'}
                 description={'Add or modify the details of this activity to align with its objective.'}
-                height={700}
+                height={670}
                 minWidth={550}
                 content={
                     <>
-                        <Stack
-                            p={1}
-                        >
-                            <TextareaComponent
-                                label={'Activity name'}
-                                placeholder="Activity name"
-                            // value={name}
-                            // onChange={(e) => handleChange(id, 'name', e.target.value)}
-                            // onBlur={() => {
-                            //     handleChange(id, 'name', name);
-                            //     setEditRowId(null);
-                            // }}
-                            />
-
-
-                            <Stack
-                                mt={2}
-                                gap={1}
-                            >
-                                <Typography>Timeframe</Typography>
-
-                                <Stack
-                                    direction={'row'}
-                                    alignItems={'center'}
-                                    justifyContent={'space-between'}
-                                >
-                                    <FormControl>
-                                        <FormLabel>from</FormLabel>
-                                        <Input
-                                            size='sm'
-                                            type='month'
-                                            fullWidth={true}
-                                            sx={{
-                                                width: 225
-                                            }}
-                                        // value={startMonth}
-                                        // onChange={(e) => handleChange(id, 'startMonth', e.target.value)}
-                                        // onBlur={() => setEditRowId(null)}
-                                        />
-                                    </FormControl>
-
-                                    <FormControl>
-                                        <FormLabel>to</FormLabel>
-                                        <Input
-                                            size='sm'
-                                            type='month'
-                                            fullWidth
-                                            sx={{
-                                                width: 225
-                                            }}
-                                        // value={startMonth}
-                                        // onChange={(e) => handleChange(id, 'startMonth', e.target.value)}
-                                        // onBlur={() => setEditRowId(null)}
-                                        />
-                                    </FormControl>
-                                </Stack>
-
-                                <Stack
-                                    mt={2}
-                                    gap={1}
-                                    direction={'row'}
-                                    alignItems={'center'}
-                                    justifyContent={'space-between'}
-                                >
-                                    <InputComponent
-                                        type={'number'}
-                                        label={'Quarter 1'}
-                                        width={100}
-                                    // value={countActivities}
-                                    // setValue={(val) => setCountActivities(val)}
-                                    />
-
-                                    <InputComponent
-                                        type={'number'}
-                                        label={'Quarter 2'}
-                                        width={100}
-                                    // value={countActivities}
-                                    // setValue={(val) => setCountActivities(val)}
-                                    />
-
-                                    <InputComponent
-                                        type={'number'}
-                                        label={'Quarter 3'}
-                                        width={100}
-                                    // value={countActivities}
-                                    // setValue={(val) => setCountActivities(val)}
-                                    />
-
-                                    <InputComponent
-                                        type={'number'}
-                                        label={'Quarter 4'}
-                                        width={100}
-                                    // value={countActivities}s
-                                    // setValue={(val) => setCountActivities(val)}
-                                    />
-                                </Stack>
-
-                            </Stack>
-
-                            <Stack
-                                mt={5}
-                            >
-                                <Checkbox label="GAD related activity" />
-                            </Stack>
-
-
-                            <Alert
-                                size='sm'
-                                color="warning"
-                                startDecorator={<TriangleAlert />}
-                                sx={{
-                                    mt: 2,
-                                    p: 1,
-                                    width: 460
-                                }}
-                            >
-                                Reminder: This activity doesn’t have assigned resources or responsible persons yet. After saving, you can add them by opening the full details of this activity or through the Manage Activities page.
-                            </Alert>
-
-                        </Stack>
-
-
+                        <ActivitiesModal />
                     </>
                 }
                 hasActionButtons={true}
                 rightButtonLabel={`Save activity`}
-                // rightButtonAction={() => console.log('activities to be added:', countActivities)}
+                rightButtonAction={() => handleSaveActivity()}
                 isLoading={isLoading}
             />
+
+            {
+                openDeleteModal && (
+                    <ConfirmationModalComponent
+                        leftButtonLabel="Cancel"
+                        leftButtonAction={() => {
+                            setOpenDeleteModal(false)
+                            closeConfirmation()
+                        }}
+                        rightButtonLabel="Delete"
+                        rightButtonAction={() => handleConfirmDelete()}
+                        isLoading={isLoading}
+                    />
+                )
+            }
 
         </>
     )

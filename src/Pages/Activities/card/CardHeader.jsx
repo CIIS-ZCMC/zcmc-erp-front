@@ -3,7 +3,7 @@ import React from 'react'
 import IconButtonComponent from '@Components/Common/IconButtonComponent'
 import { Pencil, Trash } from 'lucide-react'
 
-const CardHeader = ({ handleEdit }) => {
+const CardHeader = ({ handleEdit, handleDelete }) => {
     return (
         <>
             <IconButtonComponent
@@ -15,7 +15,7 @@ const CardHeader = ({ handleEdit }) => {
             <IconButtonComponent
                 size={'sm'}
                 icon={<Trash size={18} />}
-            // onClick={handleDelete}
+                onClick={handleDelete}
             />
         </>
     )

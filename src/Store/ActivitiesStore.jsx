@@ -1,10 +1,11 @@
-import { create } from zustand;
+import { create } from 'zustand';
 
 const useActivitiesStore = create((set, get) => ({
 
     applicationActivities: [],
     applicationActivity: null,
 
+    activity: null,
     cost: null,
     startMonth: null,
     endMonth: null,
@@ -16,11 +17,11 @@ const useActivitiesStore = create((set, get) => ({
         fourthQuarter: null,
     },
 
-
     actions: {
         setApplicationActivities: (applicationActivities) => set({ applicationActivities }),
         setApplicationAcivity: (applicationActivity) => set({ applicationActivity }),
 
+        setActivity: (activity) => set({ activity }),
         setCost: (cost) => set({ cost }),
         setStartMonth: (startMonth) => set({ startMonth }),
         setEndMonth: (endMonth) => set({ endMonth }),
