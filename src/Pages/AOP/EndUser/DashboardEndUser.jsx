@@ -1,4 +1,5 @@
 import ButtonComponent from "@Components/Common/ButtonComponent";
+
 import { Box, Divider, Grid, Stack, Typography, useTheme } from "@mui/joy";
 import React, { Fragment, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -22,6 +23,12 @@ import useModalHook from "../../../Hooks/ModalHook";
 import AlertDialogComponent from "@Components/Common/Dialog/AlertDialogComponent";
 
 import { Outlet } from "react-router-dom";
+import ObjectivesCard from "./status/ObjectivesCard";
+import ActivitiesCard from "./status/ActivitiesCard";
+import ResourcesCard from "./status/ResourcesCard";
+import ResponsiblePersonCard from "./status/ResponsiblePersonCard";
+
+import Checklist from "./checklist/Checklist";
 
 const FiscalYearModal = ({ value, onChange, fiscalYear }) => {
   const { missionPlaceHolder } = ANNUAL_OPS;
@@ -72,7 +79,7 @@ function DashboardEndUser(props) {
   const color = theme.palette.custom;
 
   const navigate = useNavigate();
-  const { getAOP, createAOP } = useAOPHook();
+  const { getAOP, createAOP, getAopBySectorAndYear } = useAOPHook();
   const { setAlertDialog } = useModalHook();
   const { aop, mission, fiscalYear } = useAOPStore();
   const { setMission, clearMission } = useAOPActions();
@@ -120,9 +127,23 @@ function DashboardEndUser(props) {
     (_, i) => currentYear - i
   );
 
+  // useEffect(() => {
+  //   setIsLoading(true);
+  //   getAOP((status, message) => {
+  //     if (!(status >= 200 && status < 300)) {
+  //       // if status not success
+  //       return; //Toast error
+  //     }
+  //     setIsLoading(false);
+  //   });
+  // }, []);
+
   useEffect(() => {
     setIsLoading(true);
-    getAOP((status, message) => {
+
+    const params = { year: fiscalYear }
+
+    getAopBySectorAndYear(params, (status, message) => {
       if (!(status >= 200 && status < 300)) {
         // if status not success
         return; //Toast error
@@ -131,12 +152,9 @@ function DashboardEndUser(props) {
     });
   }, []);
 
-  // useEffect(() => {
-  //   if (aop) {
-  //     setAopId(aop[0].id)
-  //   }
-  //   console.log(aop)
-  // }, [aop])
+  useEffect(() => {
+    console.log(aop)
+  }, [aop])
 
   return (
     <Fragment>
@@ -144,7 +162,7 @@ function DashboardEndUser(props) {
         <Stack height="85vh" alignItems="center" justifyContent="center">
           <ThreeDotsLoader />
         </Stack>
-      ) : aop && aop.length > 0 ? (
+      ) : aop ? (
         <Fragment>
           <Stack>
             <Typography level="h2">Annual Operations Planning</Typography>
@@ -191,7 +209,7 @@ function DashboardEndUser(props) {
                     />
                   </Box>
                   <Typography level="body-sm" sx={{ color: "white", mt: 1 }}>
-                    Mission: {aop[0].mission}
+                    Mission: {aop.mission}
                   </Typography>
                 </Stack>
                 <Stack
@@ -239,34 +257,71 @@ function DashboardEndUser(props) {
                 borderBottomRightRadius: 10,
               }}
             >
-              <Grid xs={8}>
-                <BoxComponent
-                  justifyContent="center"
-                  alignItems="center"
-                  height="65vh"
-                  display="flex"
-                  padding={2}
-                >
-                  <Box textAlign="center">
-                    <Typography>
-                      You don't have anything for this year's AOP yet.
-                    </Typography>
-                    <Typography fontWeight={600} mb={2}>
-                      {" "}
-                      Begin by adding a new objective.
-                    </Typography>
-                    <ButtonComponent
-                      label={"Go to Manage Objectives"}
-                      onClick={() => {
-                        navigate(`/dashboard/objectives/${aopId}`, {
-                          state: { aopId }
-                        });
-                      }}
-                    />
-                  </Box>
-                </BoxComponent>
-              </Grid>
-              <Grid xs={4}>
+
+              {!aop.counts.activities_count &&
+                <Grid mt={1} xs={8}>
+                  <BoxComponent
+                    justifyContent="center"
+                    alignItems="center"
+                    height="65vh"
+                    display="flex"
+                    padding={2}
+                  >
+                    <Box textAlign="center">
+                      <Typography>
+                        You don't have anything for this year's AOP yet.
+                      </Typography>
+                      <Typography fontWeight={600} mb={2}>
+                        {" "}
+                        Begin by adding a new objective.
+                      </Typography>
+                      <ButtonComponent
+                        label={"Go to Manage Objectives"}
+                        onClick={() => {
+                          navigate(`/dashboard/objectives/${aop.id}`, {
+                            state: { aopId }
+                          });
+                        }}
+                      />
+                    </Box>
+                  </BoxComponent>
+                </Grid>
+              }
+
+              {(
+                aop.counts.objectives_count ||
+                aop.counts.activities_count ||
+                aop.counts.resources_count ||
+                aop.counts.responsible_people_count
+              ) && (
+                  <>
+                    <Grid xs={5}>
+                      <Grid container>
+                        <Grid xs={6}>
+                          <ObjectivesCard objectiveCounts={aop.counts.objectives_count} />
+                        </Grid>
+
+                        <Grid xs={6}>
+                          <ActivitiesCard activitiesCount={aop.counts.activities_count} />
+                        </Grid>
+
+                        <Grid xs={6}>
+                          <ResourcesCard resourcesCount={aop.counts.resources_count} />
+                        </Grid>
+
+                        <Grid xs={6}>
+                          <ResponsiblePersonCard PersonsCount={aop.counts.responsible_people_count} />
+                        </Grid>
+                      </Grid>
+                    </Grid>
+
+                    <Grid mt={1} xs={3}>
+                      <Checklist fiscalYear={fiscalYear} />
+                    </Grid>
+                  </>
+                )}
+
+              <Grid mt={1} xs={4}>
                 <BoxComponent height="65vh" padding={2}>
                   <Typography level="title-lg">Approval Timeline</Typography>
                   <Typography
@@ -292,7 +347,9 @@ function DashboardEndUser(props) {
                   </Box>
                 </BoxComponent>
               </Grid>
+
             </Grid>
+
           </BoxComponent>
         </Fragment>
       ) : (

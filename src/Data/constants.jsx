@@ -199,6 +199,8 @@ export const approvalActions = [
 export const API = {
   AOP_APPLICATIONS: "aop-applications",
   AOP_APPLICATIONS_STORE: 'aop-application-store',
+  AOP_BY_SECTOR_AND_YEAR: 'user-aop-applications',
+  AOP_CHECKLIST: 'aop-checklist',
 
   OBJECTIVES: "application-objectives",
   OBJECTIVE_BY_SECTOR: 'user-application-objectives',
