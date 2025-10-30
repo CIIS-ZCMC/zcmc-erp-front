@@ -10,6 +10,7 @@ import ContainerComponent from "@Components/Common/ContainerComponent";
 import { useNavigate } from "react-router-dom";
 import SearchBarComponentv2 from "@Components/SearchBarWithdeBounce";
 import ItemCardComponent from "@Components/Resources/ItemCardComponent";
+import ModalComponent from "@Components/Common/Dialog/ModalComponent";
 
 export default function AddResources() {
   const theme = useTheme();
@@ -22,7 +23,16 @@ export default function AddResources() {
   const currentFiscalYear = currentYear + 1;
 
   const [displayLoading, setDisplayLoading] = useState(false);
+  const [openPreview, setOpenPreview] = useState(false);
 
+  const handleOpenItemDialog = (item) => {
+    setSelectedItem(item);
+    setOpenPreview(true);
+  };
+  const handleCloseItemDialog = () => {
+    setOpenPreview(false);
+    setSelectedItem(null);
+  };
   useEffect(() => {
     setDisplayLoading(true);
 
@@ -95,7 +105,7 @@ export default function AddResources() {
                         key={index}
                         item={item}
                         // btnAction={() => addToCart(item)}
-                        // itemInfoAction={() => handleOpenItemDialog(item)}
+                        itemInfoAction={() => handleOpenItemDialog(item)}
                       />
                     </Grid>
                   ))}
@@ -108,6 +118,15 @@ export default function AddResources() {
           </Grid>
         </ContainerComponent>
       </Stack>
+      <ModalComponent
+        isOpen={openPreview}
+        handleClose={handleCloseItemDialog}
+        content={
+          <>
+            <Typography>Hello</Typography>
+          </>
+        }
+      />
     </Fragment>
   );
 }

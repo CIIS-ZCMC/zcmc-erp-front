@@ -6,17 +6,20 @@ import {
   CardContent,
   CardCover,
   CardOverflow,
+  Chip,
   IconButton,
   Stack,
   Typography,
 } from "@mui/joy";
 import { Circle, CircleSmall, ZoomInIcon } from "lucide-react";
-import React, { Fragment } from "react";
+import React, { Fragment, useState } from "react";
 
 import useResourceHook from "../../Hooks/ResourceHook";
 
 import ButtonComponent from "../Common/ButtonComponent";
 import ChipComponent from "../Common/ChipComponent";
+import ModalComponent from "@Components/Common/Dialog/ModalComponent";
+import { RemoveCircle } from "@mui/icons-material";
 
 const ItemCardComponent = ({
   item,

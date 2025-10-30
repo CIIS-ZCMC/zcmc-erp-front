@@ -90,26 +90,28 @@ function ModalComponent({
         maxWidth={maxWidth}
       >
         {/* TITLE */}
+
         <DialogTitle
           sx={{ alignItems: "start", justifyContent: "space-between" }}
         >
-          <Stack gap={0.3}>
-            <Typography fontSize={{ xs: 15, lg: 18 }} fontWeight={600}>
-              {title}
-            </Typography>
-            <Typography
-              fontWeight={400}
-              fontSize={{ xs: 12, lg: 13 }}
-              color="neutral"
-            >
-              {description}
-            </Typography>
-          </Stack>
-          {!noDivider && (
-            <IconButton variant="plain" onClick={handleClose}>
-              <BiX fontSize={27} />
-            </IconButton>
+          {title && (
+            <Stack gap={0.3}>
+              <Typography fontSize={{ xs: 15, lg: 18 }} fontWeight={600}>
+                {title}
+              </Typography>
+              <Typography
+                fontWeight={400}
+                fontSize={{ xs: 12, lg: 13 }}
+                color="neutral"
+              >
+                {description}
+              </Typography>
+            </Stack>
           )}
+
+          <IconButton variant="plain" onClick={handleClose}>
+            <BiX fontSize={27} />
+          </IconButton>
         </DialogTitle>
 
         {withProgress && (
