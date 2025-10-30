@@ -6,10 +6,11 @@ import {
   CardContent,
   CardCover,
   CardOverflow,
+  IconButton,
   Stack,
   Typography,
 } from "@mui/joy";
-import { Circle, CircleSmall } from "lucide-react";
+import { Circle, CircleSmall, ZoomInIcon } from "lucide-react";
 import React, { Fragment } from "react";
 
 import useResourceHook from "../../Hooks/ResourceHook";
@@ -30,82 +31,90 @@ const ItemCardComponent = ({
   btnAction,
 }) => {
   return (
-    <Box
-      sx={{
-        height: "auto",
-        width: "100%",
-        padding: 1,
-        border: "2px solid transparent",
-        "&:hover": {
-          transition: "0.3s",
-          border: 2,
-          borderColor: "lightblue",
-          borderRadius: 10,
-          cursor: "grab",
-        },
-      }}
-    >
+    <Fragment>
       <Card
+        variant="plain"
         sx={{
-          border: 1,
-          borderColor: "neutral.50",
-          // backgroundColor: "neutral.300",
-          height: "156px",
-
-          padding: 0,
+          borderRadius: "lg",
+          "&:hover": {
+            boxShadow: "lg",
+            transform: "scale(1.02)",
+            transition: "0.2s ease-in-out",
+          },
         }}
         onClick={itemInfoAction}
       >
-        <CardCover>
-          {/* <AspectRatio ratio="1"> */}
-          <img
-            src={item?.image ?? image}
-            srcSet={item?.image}
-            role="button"
-            loading="lazy"
-            alt=""
-          />
-          {/* </AspectRatio> */}
-        </CardCover>
+        <CardOverflow>
+          <AspectRatio ratio="4/3">
+            <img
+              src={item?.image ?? image}
+              role="button"
+              loading="lazy"
+              alt={item?.terminology?.name}
+            />
+          </AspectRatio>
 
-        <CardContent sx={{ justifyContent: "flex-end", padding: 1 }}>
-          <ChipComponent
-            label={item?.terminology?.name}
-            size="sm"
-            color={"primary"}
-            startDecorator={<CircleSmall size={12} />}
-          />
+          <Box
+            sx={{
+              position: "absolute",
+              top: 8,
+              left: 8,
+              display: "flex",
+              gap: 1,
+              alignItems: "center",
+            }}
+          >
+            <IconButton size="sm" variant="soft" color="neutral">
+              <ZoomInIcon />
+            </IconButton>
+          </Box>
+
+          <Box
+            sx={{
+              position: "absolute",
+              bottom: 8,
+              left: 8,
+            }}
+          >
+            <ChipComponent
+              label={item?.terminology?.name}
+              size="sm"
+              color={"primary"}
+              startDecorator={<CircleSmall size={12} />}
+            />
+          </Box>
+        </CardOverflow>
+
+        <CardContent>
+          <Typography level="body-xs">
+            {item?.item_category?.description} <CircleSmall size={8} />{" "}
+            {item?.item_unit?.name}
+          </Typography>
+
+          <Typography level="title-md" noWrap>
+            {item?.name}
+          </Typography>
+          <Stack
+            direction={"row"}
+            justifyContent={"space-between"}
+            alignItems={"flex-end"}
+          >
+            <Typography level="title-lg" fontWeight="bold" mt={0.5}>
+              ₱
+              {item?.estimated_budget.toLocaleString("en-PH", {
+                minimumFractionDigits: 2,
+              })}
+            </Typography>
+            <ButtonComponent
+              label={"Add to cart"}
+              size={"sm"}
+              variant={"outlined"}
+              onClick={btnAction}
+            />
+          </Stack>
         </CardContent>
       </Card>
-
-      {/* CONTENT */}
-      <Stack my={1.2} gap={0.5}>
-        <Typography level="body-xs" fontWeight={400}>
-          {item?.item_category?.description} <CircleSmall size={8} />{" "}
-          {item?.item_unit?.name}
-        </Typography>
-        <Typography sx={{ fontSize: "sm", fontWeight: "lg" }}>
-          {item?.name}
-        </Typography>
-      </Stack>
-
-      <Stack
-        direction={"row"}
-        alignItems={"center"}
-        justifyContent={"space-between"}
-      >
-        <Typography sx={{ fontSize: "md", fontWeight: "lg" }}>
-          &#8369; {item?.estimated_budget.toLocaleString()}
-        </Typography>
-
-        <ButtonComponent
-          label={"Add to cart"}
-          size={"sm"}
-          variant={"outlined"}
-          onClick={btnAction}
-        />
-      </Stack>
-    </Box>
+    </Fragment>
   );
 };
 

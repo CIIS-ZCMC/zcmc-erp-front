@@ -28,9 +28,11 @@ import {
   PlusIcon,
 } from "lucide-react";
 import ButtonComponent from "@Components/Common/ButtonComponent";
+import { useNavigate } from "react-router-dom";
 
 function ManageResources(props) {
   const theme = useTheme();
+  const naviagte = useNavigate();
   const color = theme.palette;
   const currentYear = new Date().getFullYear();
   const currentFiscalYear = currentYear + 1;
@@ -93,6 +95,7 @@ function ManageResources(props) {
               <ButtonComponent
                 label={"Add a resource"}
                 startDecorator={<PlusIcon />}
+                onClick={() => naviagte("select-resources")}
               />
             </Stack>
           </Stack>
@@ -183,6 +186,7 @@ function ManageResources(props) {
           <ButtonComponent
             startDecorator={<PlusIcon />}
             label={"Add a resource"}
+            onClick={() => naviagte("select-resources")}
           />
         </BoxComponent>
       </Stack>
