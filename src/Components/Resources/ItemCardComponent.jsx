@@ -10,8 +10,9 @@ import {
   IconButton,
   Stack,
   Typography,
+  useTheme,
 } from "@mui/joy";
-import { Circle, CircleSmall, ZoomInIcon } from "lucide-react";
+import { CircleSmall, ZoomInIcon } from "lucide-react";
 import React, { Fragment, useState } from "react";
 
 import useResourceHook from "../../Hooks/ResourceHook";
@@ -19,7 +20,8 @@ import useResourceHook from "../../Hooks/ResourceHook";
 import ButtonComponent from "../Common/ButtonComponent";
 import ChipComponent from "../Common/ChipComponent";
 import ModalComponent from "@Components/Common/Dialog/ModalComponent";
-import { RemoveCircle } from "@mui/icons-material";
+import { Circle, RemoveCircle, ZoomOutMap } from "@mui/icons-material";
+import { blue } from "@mui/material/colors";
 
 const ItemCardComponent = ({
   item,
@@ -33,6 +35,9 @@ const ItemCardComponent = ({
   itemInfoAction,
   btnAction,
 }) => {
+  const theme = useTheme();
+  const color = theme.palette;
+
   return (
     <Fragment>
       <Card
@@ -45,15 +50,15 @@ const ItemCardComponent = ({
             transition: "0.2s ease-in-out",
           },
         }}
-        onClick={itemInfoAction}
       >
         <CardOverflow>
-          <AspectRatio ratio="4/3">
+          <AspectRatio minHeight={120} maxHeight={200}>
             <img
               src={item?.image ?? image}
               role="button"
               loading="lazy"
-              alt={item?.terminology?.name}
+              alt={item?.name}
+              onClick={itemInfoAction}
             />
           </AspectRatio>
 
@@ -67,8 +72,8 @@ const ItemCardComponent = ({
               alignItems: "center",
             }}
           >
-            <IconButton size="sm" variant="soft" color="neutral">
-              <ZoomInIcon />
+            <IconButton size="sm" variant="soft" sx={{ opacity: 0.6 }}>
+              <ZoomOutMap />
             </IconButton>
           </Box>
 
@@ -80,10 +85,10 @@ const ItemCardComponent = ({
             }}
           >
             <ChipComponent
-              label={item?.terminology?.name}
+              label={item?.terminology?.name ?? "High-end"}
               size="sm"
-              color={"primary"}
-              startDecorator={<CircleSmall size={12} />}
+              color={"success"}
+              startDecorator={<Circle style={{ fontSize: 11 }} />}
             />
           </Box>
         </CardOverflow>
@@ -94,15 +99,18 @@ const ItemCardComponent = ({
             {item?.item_unit?.name}
           </Typography>
 
-          <Typography level="title-md" noWrap>
-            {item?.name}
-          </Typography>
+          <Typography level="title-sm">{item?.name}</Typography>
           <Stack
             direction={"row"}
             justifyContent={"space-between"}
-            alignItems={"flex-end"}
+            alignItems={"center"}
           >
-            <Typography level="title-lg" fontWeight="bold" mt={0.5}>
+            <Typography
+              level="title-md"
+              fontWeight="bold"
+              mt={0.5}
+              sx={{ color: color.custom.light }}
+            >
               ₱
               {item?.estimated_budget.toLocaleString("en-PH", {
                 minimumFractionDigits: 2,

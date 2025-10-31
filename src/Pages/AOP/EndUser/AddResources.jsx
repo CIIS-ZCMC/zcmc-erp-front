@@ -3,7 +3,7 @@ import BoxComponent from "@Components/Common/Card/BoxComponent";
 import IconButtonComponent from "@Components/Common/IconButtonComponent";
 import PageTitle from "@Components/Common/PageTitle";
 import useItemsHook from "../../../Hooks/ItemsHook";
-import { Divider, Grid, Stack, Typography, useTheme } from "@mui/joy";
+import { Divider, Grid, Skeleton, Stack, Typography, useTheme } from "@mui/joy";
 import { X } from "lucide-react";
 import React, { Fragment, useEffect, useState } from "react";
 import ContainerComponent from "@Components/Common/ContainerComponent";
@@ -11,6 +11,7 @@ import { useNavigate } from "react-router-dom";
 import SearchBarComponentv2 from "@Components/SearchBarWithdeBounce";
 import ItemCardComponent from "@Components/Resources/ItemCardComponent";
 import ModalComponent from "@Components/Common/Dialog/ModalComponent";
+import AddToCartLayout from "@Components/Resources/AddToCartLayout";
 
 export default function AddResources() {
   const theme = useTheme();
@@ -26,6 +27,7 @@ export default function AddResources() {
   const [openPreview, setOpenPreview] = useState(false);
 
   const handleOpenItemDialog = (item) => {
+    console.log(item);
     setSelectedItem(item);
     setOpenPreview(true);
   };
@@ -84,49 +86,9 @@ export default function AddResources() {
             </Stack>
           </Stack>
           <Divider sx={{ my: 2, bgcolor: color.primary.fontLight }} />
-          <Grid container spacing={2} sx={{ flexGrow: 1 }}>
-            <Grid xs={8}>
-              <BoxComponent boxShadow="sm">
-                <Stack direction={"row"}>
-                  <SearchBarComponentv2 />
-                </Stack>
-              </BoxComponent>
-              <BoxComponent mt={2} boxShadow="sm" height={"64vh"}>
-                <Grid container spacing={2} padding={1}>
-                  {items.map((item, index) => (
-                    <Grid
-                      xs={12}
-                      sm={6}
-                      md={4}
-                      key={index}
-                      sx={{ cursor: "pointer" }}
-                    >
-                      <ItemCardComponent
-                        key={index}
-                        item={item}
-                        // btnAction={() => addToCart(item)}
-                        itemInfoAction={() => handleOpenItemDialog(item)}
-                      />
-                    </Grid>
-                  ))}
-                </Grid>
-              </BoxComponent>
-            </Grid>
-            <Grid xs={4}>
-              <Typography> Grid 2</Typography>
-            </Grid>
-          </Grid>
+          <AddToCartLayout />
         </ContainerComponent>
       </Stack>
-      <ModalComponent
-        isOpen={openPreview}
-        handleClose={handleCloseItemDialog}
-        content={
-          <>
-            <Typography>Hello</Typography>
-          </>
-        }
-      />
     </Fragment>
   );
 }

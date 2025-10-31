@@ -15,7 +15,7 @@ import BoxComponent from "../../../Components/Common/Card/BoxComponent";
 import ItemCardComponent from "../../../Components/Resources/ItemCardComponent";
 import ButtonComponent from "../../../Components/Common/ButtonComponent";
 import { MdOpenInNew } from "react-icons/md";
-import ItemsCart from "../../../Layout/Items/ItemsCart";
+import ItemsCart from "../../../Components/Resources/ItemsCart";
 import SearchBarComponent from "../../../Components/SearchBarComponent";
 import empty_cart from "../../../assets/empty-cart.png";
 import useItemsHook from "../../../Hooks/ItemsHook";
