@@ -9,13 +9,14 @@ export default function SelectComponent({
   startYear = 2024,
   onChange,
   width = "auto",
+  years,
 }) {
   const currentYear = new Date().getFullYear();
   const nextYear = currentYear + 1;
-  const years = Array.from(
-    { length: nextYear - startYear + 1 },
-    (_, i) => nextYear - i
-  );
+  // const years = Array.from(
+  //   { length: nextYear - startYear + 1 },
+  //   (_, i) => nextYear - i
+  // );
   const [value, setValue] = React.useState(nextYear);
   const handleChange = (event, newValue) => {
     setValue(newValue); // update internal state
@@ -50,7 +51,7 @@ export default function SelectComponent({
         },
       }}
     >
-      {years.map((opt) => (
+      {years?.map((opt) => (
         <Option key={opt} value={opt}>
           {opt}
         </Option>

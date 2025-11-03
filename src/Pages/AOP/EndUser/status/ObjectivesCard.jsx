@@ -1,13 +1,18 @@
 import React from 'react';
 
-import { Stack, Typography } from '@mui/joy';
+import { Stack, Typography, Divider } from '@mui/joy';
+import { ArrowRight } from 'lucide-react';
 
 import BoxComponent from '@Components/Common/Card/BoxComponent';
+
+import ButtonComponent from '@Components/Common/ButtonComponent';
+
 
 import ObjectivesLogo from '../../../../assets/dashboard/Objectives.svg';
 
 const ObjectivesCard = ({
-    objectiveCounts
+    objectiveCounts,
+    handleNavigate,
 }) => {
     return (
         <>
@@ -17,7 +22,7 @@ const ObjectivesCard = ({
                 <Stack
                     px={3}
                     py={2}
-                    spacing={2}
+                    spacing={1}
                 >
                     <img src={ObjectivesLogo} alt="" width={60} />
 
@@ -33,6 +38,16 @@ const ObjectivesCard = ({
                     </Typography>
 
                     <Typography level="body-sm">Contains (14) success indicators in total on this request</Typography>
+
+                    <Divider />
+
+                    <ButtonComponent
+                        label={'Go to Objectives'}
+                        size={'sm'}
+                        onClick={handleNavigate}
+                        endDecorator={<ArrowRight />}
+                        fullWidth
+                    />
 
                 </Stack>
 

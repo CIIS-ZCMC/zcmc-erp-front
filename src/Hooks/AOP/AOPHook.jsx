@@ -4,7 +4,7 @@ import { read, post } from "../../Services/RequestMethods";
 import { useAOPActions } from "../../Store/AOPStore";
 
 const useAOPHook = () => {
-  const { setAop, setAopCheckList } = useAOPActions();
+  const { setAop, setYears, setAopCheckList } = useAOPActions();
 
   const getAOP = async (callBack) => {
     try {
@@ -17,6 +17,27 @@ const useAOPHook = () => {
             data: { data, message },
           } = res;
           setAop(data);
+          callBack(status, message);
+        },
+      });
+    } catch (error) {
+      console.error("Error fetching AOP:", error);
+      callBack(false, error.message);
+    }
+  };
+
+  const getAopYearList = async (callBack) => {
+    try {
+      await read({
+        url: API.AOP_YEAR_LIST,
+        failed: callBack,
+        success: (res) => {
+          console.log(res)
+          const {
+            status,
+            data: { data, message },
+          } = res;
+          setYears(data);
           callBack(status, message);
         },
       });
@@ -91,6 +112,7 @@ const useAOPHook = () => {
 
   return {
     getAOP,
+    getAopYearList,
     getAopBySectorAndYear,
     getAopChecklist,
     createAOP,

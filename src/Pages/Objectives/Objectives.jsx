@@ -70,8 +70,8 @@ const Objectives = () => {
         // console.log(objectiveState)
         // console.log('selected objective :', objective)
         // console.log('succeses indicator id:', successIndicator?.id)
-        console.log('objective:', applicationObjective)
-        console.log('application objectives:', applicationObjectives);
+        // console.log('objective:', applicationObjective)
+        // console.log('application objectives:', applicationObjectives);
     }, [functionType, objective, successIndicator, applicationObjectives])
 
     const {
@@ -97,9 +97,9 @@ const Objectives = () => {
         </Typography>,
     ];
 
-    // useEffect(() => {
-    //     console.log(isLoading)
-    // }, [isLoading])
+    useEffect(() => {
+        console.log('aopId', aopId)
+    }, [aopId])
 
     const handleSaveObjectives = async () => {
 
@@ -349,7 +349,7 @@ const Objectives = () => {
                     </>
                     :
                     <Grid mt={2} container direction="row" spacing={2} sx={{ flexGrow: 1 }}>
-                        {applicationObjectives?.map(({ id, success_indicator, objective }) => (
+                        {applicationObjectives?.map(({ id, success_indicator, objective, activities_count }) => (
                             <Grid
                                 key={id}
                                 size={4}
@@ -370,6 +370,7 @@ const Objectives = () => {
                                         status={false}
                                     />}
                                     cardActions={<CardActions
+                                        count={activities_count}
                                         handleActivities={() => navigate(`/dashboard/objectives/${aopId}/activities/${id}`, {
                                             state: { objId: id }
                                         })}

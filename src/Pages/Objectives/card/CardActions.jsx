@@ -4,7 +4,8 @@ import { Chip } from '@mui/joy'
 import { ArrowRight } from 'lucide-react'
 
 const CardActions = ({
-    handleActivities
+    handleActivities,
+    count
 }) => {
     return (
         <>
@@ -13,7 +14,7 @@ const CardActions = ({
                 color="primary"
                 size="lg"
                 p={2}
-                startDecorator={10}
+                startDecorator={count === 0 ? "0" : count}
                 endDecorator={<ArrowRight size={18} />}
                 onClick={handleActivities}
             >

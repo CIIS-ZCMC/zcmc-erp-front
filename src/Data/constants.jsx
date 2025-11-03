@@ -201,6 +201,7 @@ export const API = {
   AOP_APPLICATIONS_STORE: 'aop-application-store',
   AOP_BY_SECTOR_AND_YEAR: 'user-aop-applications',
   AOP_CHECKLIST: 'aop-checklist',
+  AOP_YEAR_LIST: 'aop-application-yearList ',
 
   OBJECTIVES: "application-objectives",
   OBJECTIVE_BY_SECTOR: 'user-application-objectives',

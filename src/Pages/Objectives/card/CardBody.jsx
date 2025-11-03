@@ -11,6 +11,7 @@ const CardBody = ({
     status,
     success_indicator,
     objective,
+    activities
 }) => {
 
     if (!objective) {
