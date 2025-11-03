@@ -6,16 +6,22 @@ import {
   CardContent,
   CardCover,
   CardOverflow,
+  Chip,
+  IconButton,
   Stack,
   Typography,
+  useTheme,
 } from "@mui/joy";
-import { Circle, CircleSmall } from "lucide-react";
-import React, { Fragment } from "react";
+import { CircleSmall, ZoomInIcon } from "lucide-react";
+import React, { Fragment, useState } from "react";
 
 import useResourceHook from "../../Hooks/ResourceHook";
 
 import ButtonComponent from "../Common/ButtonComponent";
 import ChipComponent from "../Common/ChipComponent";
+import ModalComponent from "@Components/Common/Dialog/ModalComponent";
+import { Circle, RemoveCircle, ZoomOutMap } from "@mui/icons-material";
+import { blue } from "@mui/material/colors";
 
 const ItemCardComponent = ({
   item,
@@ -29,83 +35,99 @@ const ItemCardComponent = ({
   itemInfoAction,
   btnAction,
 }) => {
+  const theme = useTheme();
+  const color = theme.palette;
+
   return (
-    <Box
-      sx={{
-        height: "auto",
-        width: "100%",
-        padding: 1,
-        border: "2px solid transparent",
-        "&:hover": {
-          transition: "0.3s",
-          border: 2,
-          borderColor: "lightblue",
-          borderRadius: 10,
-          cursor: "grab",
-        },
-      }}
-    >
+    <Fragment>
       <Card
+        variant="plain"
         sx={{
-          border: 1,
-          borderColor: "neutral.50",
-          // backgroundColor: "neutral.300",
-          height: "156px",
-
-          padding: 0,
+          borderRadius: "lg",
+          "&:hover": {
+            boxShadow: "lg",
+            transform: "scale(1.02)",
+            transition: "0.2s ease-in-out",
+          },
         }}
-        onClick={itemInfoAction}
       >
-        <CardCover>
-          {/* <AspectRatio ratio="1"> */}
-          <img
-            src={item?.image ?? image}
-            srcSet={item?.image}
-            role="button"
-            loading="lazy"
-            alt=""
-          />
-          {/* </AspectRatio> */}
-        </CardCover>
+        <CardOverflow>
+          <AspectRatio minHeight={120} maxHeight={200}>
+            <img
+              src={item?.image ?? image}
+              role="button"
+              loading="lazy"
+              alt={item?.name}
+              onClick={itemInfoAction}
+            />
+          </AspectRatio>
 
-        <CardContent sx={{ justifyContent: "flex-end", padding: 1 }}>
-          <ChipComponent
-            label={item?.terminology?.name}
-            size="sm"
-            color={"primary"}
-            startDecorator={<CircleSmall size={12} />}
-          />
+          <Box
+            sx={{
+              position: "absolute",
+              top: 8,
+              left: 8,
+              display: "flex",
+              gap: 1,
+              alignItems: "center",
+            }}
+          >
+            <IconButton size="sm" variant="soft" sx={{ opacity: 0.6 }}>
+              <ZoomOutMap />
+            </IconButton>
+          </Box>
+
+          <Box
+            sx={{
+              position: "absolute",
+              bottom: 8,
+              left: 8,
+            }}
+          >
+            <ChipComponent
+              label={item?.terminology ?? "High-end"}
+              size="sm"
+              color={
+                item?.terminology === "Variant-Regular" ? "success" : "warning"
+              }
+              startDecorator={<Circle style={{ fontSize: 11 }} />}
+            />
+          </Box>
+        </CardOverflow>
+
+        <CardContent>
+          <Typography level="body-xs">
+            {item?.item_category?.name} <CircleSmall size={8} />{" "}
+            {item?.item_unit?.name}
+          </Typography>
+
+          <Typography level="title-sm">{item?.name}</Typography>
+          <Stack
+            direction={"row"}
+            justifyContent={"space-between"}
+            alignItems={"center"}
+          >
+            <Typography
+              level="title-md"
+              fontWeight="bold"
+              mt={0.5}
+              sx={{ color: color.custom.light }}
+            >
+              ₱
+              {item?.estimated_budget.toLocaleString("en-PH", {
+                minimumFractionDigits: 2,
+              })}
+            </Typography>
+            <ButtonComponent
+              label={"Add to cart"}
+              size={"sm"}
+              variant={"outlined"}
+              onClick={btnAction}
+            />
+          </Stack>
         </CardContent>
       </Card>
-
-      {/* CONTENT */}
-      <Stack my={1.2} gap={0.5}>
-        <Typography level="body-xs" fontWeight={400}>
-          {item?.item_category?.description} <CircleSmall size={8} />{" "}
-          {item?.item_unit?.name}
-        </Typography>
-        <Typography sx={{ fontSize: "sm", fontWeight: "lg" }}>
-          {item?.name}
-        </Typography>
-      </Stack>
-
-      <Stack
-        direction={"row"}
-        alignItems={"center"}
-        justifyContent={"space-between"}
-      >
-        <Typography sx={{ fontSize: "md", fontWeight: "lg" }}>
-          &#8369; {item?.estimated_budget.toLocaleString()}
-        </Typography>
-
-        <ButtonComponent
-          label={"Add to cart"}
-          size={"sm"}
-          variant={"outlined"}
-          onClick={btnAction}
-        />
-      </Stack>
-    </Box>
+    </Fragment>
   );
 };
 

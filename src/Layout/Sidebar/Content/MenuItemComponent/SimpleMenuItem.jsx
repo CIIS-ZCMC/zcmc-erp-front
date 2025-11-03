@@ -39,7 +39,7 @@ const SimpleMenuItem = ({ name, path, icon, isCollapsed }) => {
           )}
         </MenuItemComponent>
       </Box>
-      {!isCollapsed && <Divider sx={{ mx: 1, backgroundColor: "#006599" }} />}
+      {/* {!isCollapsed && <Divider sx={{ mx: 1, backgroundColor: "#006599" }} />} */}
     </>
   );
 };

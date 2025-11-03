@@ -27,6 +27,7 @@ const theme = extendTheme({
           solidBg: "#004366", // Your custom primary button background
           solidHoverBg: "#004366", // On hover
           solidActiveBg: "#004366",
+          neutralBg: "#F9FAFB",
 
           plainColor: "#004366",
 
