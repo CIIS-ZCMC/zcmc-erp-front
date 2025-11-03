@@ -40,11 +40,11 @@ export default function Cart({
               .reverse()
               .map((item) => (
                 <ItemsCart
-                  key={item?.item_id}
+                  key={item?.id}
                   item={item}
-                  id={item?.item_id}
+                  id={item?.id}
                   onQuantityChange={onQtyChange}
-                  onRemove={() => removeFromCart(item?.item_id)}
+                  onRemove={() => removeFromCart(item?.id)}
                 />
               ))
           ) : (
@@ -80,7 +80,7 @@ export default function Cart({
                 level="body-md"
                 sx={{ color: blue[900], fontWeight: 600 }}
               >
-                0
+                {totalQty.toLocaleString()}
               </Typography>
             </Stack>
             <Stack>

@@ -85,9 +85,11 @@ const ItemCardComponent = ({
             }}
           >
             <ChipComponent
-              label={item?.terminology?.name ?? "High-end"}
+              label={item?.terminology ?? "High-end"}
               size="sm"
-              color={"success"}
+              color={
+                item?.terminology === "Variant-Regular" ? "success" : "warning"
+              }
               startDecorator={<Circle style={{ fontSize: 11 }} />}
             />
           </Box>
@@ -95,7 +97,7 @@ const ItemCardComponent = ({
 
         <CardContent>
           <Typography level="body-xs">
-            {item?.item_category?.description} <CircleSmall size={8} />{" "}
+            {item?.item_category?.name} <CircleSmall size={8} />{" "}
             {item?.item_unit?.name}
           </Typography>
 

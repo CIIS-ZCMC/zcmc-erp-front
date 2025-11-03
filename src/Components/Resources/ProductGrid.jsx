@@ -30,16 +30,18 @@ export default function ProductGrid({
     <Fragment>
       <BoxComponent mt={2} boxShadow="sm" height={height}>
         {displayLoading && items.length === 0 ? (
-          [...Array(6)].map((_, index) => (
-            <Grid key={index} xs={12} sm={2} md={6} lg={4} xl={3.6}>
-              <Skeleton
-                variant="rectangular"
-                animation="wave"
-                height={180}
-                sx={{ borderRadius: 10 }}
-              />
-            </Grid>
-          ))
+          <Grid container spacing={2}>
+            {[...Array(6)].map((_, index) => (
+              <Grid xs={12} sm={6} md={4} key={index}>
+                <Skeleton
+                  variant="rectangular"
+                  animation="wave"
+                  height={180}
+                  sx={{ borderRadius: 10 }}
+                />
+              </Grid>
+            ))}
+          </Grid>
         ) : (
           <Grid container spacing={2}>
             {items.map((item, index) => (

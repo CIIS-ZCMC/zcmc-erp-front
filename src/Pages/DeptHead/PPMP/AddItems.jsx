@@ -19,7 +19,7 @@ import ItemsCart from "../../../Components/Resources/ItemsCart";
 import SearchBarComponent from "../../../Components/SearchBarComponent";
 import empty_cart from "../../../assets/empty-cart.png";
 import useItemsHook from "../../../Hooks/ItemsHook";
-import useItemCartHook from "../../../Hooks/ItemCartHook";
+import useItemCartHook from "../../../Hooks/ItemCartPPMPHook";
 import ConfirmationModalComponent from "../../../Components/Common/Dialog/ConfirmationModalComponent";
 import useModalHook from "../../../Hooks/ModalHook";
 import PageLoader from "../../../Components/Loading/PageLoader";
