@@ -29,19 +29,30 @@ export const AREA_ID = {
 
 export const OBJECTIVES = {
   OBJECTIVES_TITLE: "Objectives",
-  OBJECTIVES_SUBHEADING: "This is a subheading. It should add more context to the interaction.",
+  OBJECTIVES_SUBHEADING:
+    "This is a subheading. It should add more context to the interaction.",
   ADD_OBJECTIVE: "Add an objective",
   EDIT_OBJECTIVE: "Edit an objective",
   ADD_OBJECTIVE_SUBHEADING: "Add details to give context to the objective",
-  OBJECTIVE_ALERT: "After this, you will have to make activities for this objective through manage objectives",
+  OBJECTIVE_ALERT:
+    "After this, you will have to make activities for this objective through manage objectives",
   MANAGE_OBJECTIVES_HEADER: "Manage Objectives",
   MANAGE_OBJECTIVES_SUBHEADER:
     "Set your department’s functions, objectives, and success indicators. Each objective serves as a basis for the activities you’ll also define.",
-  OBJECTIVES_EMPTY_STATE_TITLE: " You don’t have any Objective for this year yet.",
+  OBJECTIVES_EMPTY_STATE_TITLE:
+    " You don’t have any Objective for this year yet.",
   OBJECTIVES_CREATE_NEW: "Begin by adding a new one",
+};
 
+export const ACTIVITIES = {
+  MANAGE_ACTIVITIES_HEADER: "Manage Activities for",
+  MANAGE_ACTIVITIES_SUBHEADER: "Define and manage the activities under this objective. Set the timeframe, quarterly targets, and specify the needed resources and responsible persons for each activity",
+  MODAL_TITLE: 'Add Activity',
+  MODAL_DESCRIPTION: 'Enter the number of activities to create. You may define their details later by editing each activity card.',
+  COUNT_LABEL: 'How many activities would you like to add ?',
+  EMPTY_STATE_TITLE: 'No Activities Added Yet',
+  ACTIVITY_CREATE_NEW: 'This objective doesn’t have any activities assigned. Add one to start defining what needs to be accomplished.'
 }
-
 
 export const AOP_CONSTANTS = {
   AOP_TITLE: "Annual Operations Planning",
@@ -151,10 +162,11 @@ export const CONFIRMATION_CONSTANTS = {
 };
 
 export const ANNUAL_OPS = {
-  header: "Modal Header",
-  description: "Modal Description",
+  header: "Create New AOP",
+  description:
+    "Fill in the details below to create a new Annual Operational Plan. Once saved, you’ll be able to define your objectives, activities, and resources.",
   missionPlaceHolder: "Please insert mission content here",
-}
+};
 
 export const MONTHS = [
   { label: "January", value: "01" },
@@ -186,10 +198,25 @@ export const approvalActions = [
 
 export const API = {
   AOP_APPLICATIONS: "aop-applications",
+  AOP_APPLICATIONS_STORE: 'aop-application-store',
+  AOP_BY_SECTOR_AND_YEAR: 'user-aop-applications',
+  AOP_CHECKLIST: 'aop-checklist',
+  AOP_YEAR_LIST: 'aop-application-yearList ',
+
+  OBJECTIVES: "application-objectives",
+  OBJECTIVE_BY_SECTOR: 'user-application-objectives',
+  OBJECTIVE_STORE: "application-objectives-store",
+  OBJECTIVE_EDIT: "edit-application-objectives",
+  OBJECTIVE_DELETE: "delete-application-objectives",
+  OBJECTIVE_SHOW: "show-application-objective",
+
+  ACTIVITIES: "activities",
+  ACTIVITIES_STORE: "activities-store",
+  ACTIVITIES_DELETE: "activities-delete",
+
   AOP_APPLICATION_SHOW: "aop-application-show",
   AOP_APPLICATION_EDIT: "aop-application-edit",
   AOP_APPLICATION_UPDATE: "aop-application-update",
-  // AOP_APPLICATION_STORE: "aop-application-store",
   AOP_APPLICATION_STORE: "aop-application-store-aop",
   AOP_APPLICATION_SUMMARY: "aop-application-summary",
   AOP_APPLICATION_TIMELINE: "application-timelines",

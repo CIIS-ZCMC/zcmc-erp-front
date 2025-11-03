@@ -1,11 +1,25 @@
+import { useEffect } from 'react'
+
 import { Stack, Typography } from '@mui/joy'
 
 import TextareaComponent from '@Components/Form/TextareaComponent'
 import InputComponent from '@Components/Form/InputComponent'
 
+import { ThreeDotsLoader } from '@Components/Common/Loading/ThreeDotsLoader'
+
 const CardBody = ({
-    status
+    status,
+    success_indicator,
+    objective,
+    activities
 }) => {
+
+    if (!objective) {
+        return <ThreeDotsLoader />; // Still loading or not yet selected
+    }
+
+    const { description, type_of_function } = objective;
+
     return (
         <>
             <Stack
@@ -14,9 +28,9 @@ const CardBody = ({
                 {!status ?
                     <Typography
                         level={'body-sm'}
-                        sx={{ flex: 1 }}
+                    // sx={{ flex: 1 }}
                     >
-                        Function Type
+                        {type_of_function?.type}
                     </Typography>
                     :
                     <InputComponent
@@ -26,10 +40,14 @@ const CardBody = ({
 
                 {!status ?
                     <Typography
-                        level={'title-lg'}
-                        sx={{ flex: 1 }}
+                        level={'title-md'}
+                        sx={{
+                            // flex: 1,
+                            textAlign: 'left',
+                        }}
+
                     >
-                        Objective Name #1
+                        {description}
                     </Typography>
                     :
                     <InputComponent
@@ -42,15 +60,15 @@ const CardBody = ({
                 <Typography
                     level="body-sm"
                     sx={{
-                        flex: 1,
-                        textAlign: 'left',
+                        // flex: 1,
+                        textAlign: 'right',
                         // whiteSpace: 'nowrap',
                         // overflow: 'hidden',
                         // textOverflow: 'ellipsis',
                         // maxWidth: '50%',
                     }}
                 >
-                    Lorem ipsum dolor sit amet consectetur, adipisicing elit. Veritatis perspiciatis maiores amet atque ducimus expedita tempora Voluptas, illo.
+                    {success_indicator?.description}
                 </Typography>
                 :
                 <TextareaComponent

@@ -1,117 +1,117 @@
-import { useState, useEffect } from 'react';
+import { useEffect } from "react";
 
-import { Stack, Alert, Typography, } from '@mui/joy';
-import { TriangleAlert } from 'lucide-react';
+import { Stack, Alert, Typography } from "@mui/joy";
+import { TriangleAlert } from "lucide-react";
 
-import AutocompleteComponent from '@Components/Form/AutocompleteComponent';
+import AutocompleteComponent from "@Components/Form/AutocompleteComponent";
 
-import FunctionTypeHook from '../../../Hooks/FunctionTypeHook';
+import FunctionTypeHook from "../../../Hooks/FunctionTypeHook";
 
 // Store
-import { useFunctionTypes } from '../../../Store/functionTypesStore';
-import { useObjectivesActions } from '../../../Store/objectivesStore';
+import { useFunctionTypes } from "../../../Store/functionTypesStore";
+import { useObjectivesActions } from "../../../Store/ObjectivesStore";
 
-import { OBJECTIVES } from '../../../Data/constants';
+import { OBJECTIVES } from "../../../Data/constants";
 
 const ObjectivesModal = ({
-    functionType,
-    objective,
-    successIndicator,
-    isEditMode,
+  functionType,
+  objective,
+  successIndicator,
+  applicationObjective
 }) => {
+  const { OBJECTIVE_ALERT } = OBJECTIVES;
 
-    const { OBJECTIVE_ALERT } = OBJECTIVES;
+  const function_types = useFunctionTypes();
+  const { setFunctionType, setObjective, setSuccessIndicator } =
+    useObjectivesActions();
+  const { getFunctionType } = FunctionTypeHook();
 
-    const function_types = useFunctionTypes()
-    const { setFunctionType, setObjective, setSuccessIndicator } = useObjectivesActions()
-    const { getFunctionType } = FunctionTypeHook()
 
-    const [isLoading, setIsLoading] = useState(false)
+  useEffect(() => {
+    // console.log('function types', function_types)
+    console.log('applicationObjective', applicationObjective)
+  }, [function_types, applicationObjective])
 
-    useEffect(() => {
-        setIsLoading(true);
-        const params = { with_sub_data: 1 }
+  useEffect(() => {
+    // setIsLoading(true);
+    const params = { with_sub_data: 1 };
 
-        getFunctionType(params, (status, message) => {
-            if (!(status >= 200 && status < 300)) {
-                // if status not success
-                return; //Toast error
-            }
-            setIsLoading(false);
-        });
-    }, [])
+    getFunctionType(params, (status, message) => {
+      if (!(status >= 200 && status < 300)) {
+        // if status not success
+        return; //Toast error
+      }
+      // setIsLoading(false);
+    });
+  }, []);
 
-    return (
-        <>
-            <Stack spacing={2}>
-                <AutocompleteComponent
-                    placeholder="Select function type"
-                    label={'Function type'}
-                    size='md'
-                    value={functionType}
-                    setValue={(val) =>
-                        setFunctionType(val)
-                    }
-                    options={function_types}
-                />
+  useEffect(() => {
+    if (applicationObjective) {
 
-                <AutocompleteComponent
-                    placeholder="Select objectives"
-                    label={'Objectives'}
-                    size='md'
-                    value={objective}
-                    setValue={(val) => {
-                        setObjective(val);
-                    }}
-                    options={functionType?.objectives ?? []}
-                />
+      setFunctionType(applicationObjective);
 
-                <Stack>
-                    {objective?.description && (
-                        <>
-                            <Typography level="body-xs">Description:</Typography>
-                            <Typography level="body-xs" fontWeight={600}>
-                                {objective?.description}
-                            </Typography>
-                        </>
-                    )}
-                </Stack>
+      const firstObjective = applicationObjective?.objectives?.[0];
+      setObjective(firstObjective || null);
 
-                <AutocompleteComponent
-                    placeholder="Select success indicators"
-                    label={'Success Indicators'}
-                    size='md'
-                    value={successIndicator}
-                    setValue={(val) => {
-                        setSuccessIndicator(val);
-                    }}
-                    options={objective?.success_indicators ?? []}
-                />
+      const firstSuccessIndicator = firstObjective?.success_indicators?.[0];
+      setSuccessIndicator(firstSuccessIndicator || null);
+    }
+  }, [applicationObjective]);
 
-                <Stack>
-                    {successIndicator?.description && (
-                        <>
-                            <Typography level="body-xs">Description:</Typography>
-                            <Typography level="body-xs" fontWeight={600}>
-                                {successIndicator?.description}
-                            </Typography>
-                        </>
-                    )}
-                </Stack>
+  return (
+    <>
+      <Stack spacing={2}>
+        <AutocompleteComponent
+          placeholder="Select function type"
+          label={"Function type"}
+          size="md"
+          value={functionType}
+          setValue={(val) => setFunctionType(val)}
+          options={function_types}
+        />
 
-                {!isEditMode
-                    &&
-                    <Alert
-                        color="warning"
-                        startDecorator={<TriangleAlert />}
-                    >
-                        {OBJECTIVE_ALERT}
-                    </Alert>
-                }
+        <AutocompleteComponent
+          placeholder="Select objectives"
+          label={"Objectives"}
+          size="md"
+          value={objective}
+          setValue={(val) => {
+            setObjective(val);
+          }}
+          options={functionType?.objectives ?? []}
+        />
 
-            </Stack >
-        </>
-    )
-}
+        <Stack>
+          <Typography level="body-xs">Description:</Typography>
+          <Typography level="body-xs" fontWeight={600}>
+            {objective?.description}
+          </Typography>
+        </Stack>
 
-export default ObjectivesModal
+        <AutocompleteComponent
+          placeholder="Select success indicators"
+          label={"Success Indicators"}
+          size="md"
+          value={successIndicator}
+          setValue={(val) => {
+            setSuccessIndicator(val);
+          }}
+          options={objective?.success_indicators ?? []}
+        />
+
+        <Stack>
+          <Typography level="body-xs">Description:</Typography>
+          <Typography level="body-xs">
+            {successIndicator?.description}
+          </Typography>
+        </Stack>
+
+        <Alert color="warning" startDecorator={<TriangleAlert />}>
+          {OBJECTIVE_ALERT}
+        </Alert>
+      </Stack>
+    </>
+  );
+};
+
+export default ObjectivesModal;

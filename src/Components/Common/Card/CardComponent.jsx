@@ -8,6 +8,7 @@ const CardComponent = ({
     cardHeader,
     cardBody,
     cardActions,
+    height,
 }) => {
     return (
         <>
@@ -15,7 +16,8 @@ const CardComponent = ({
                 sx={{
                     textAlign: 'center',
                     overflow: 'auto',
-                    width: "450px",
+                    // width: "459px",
+                    height: height,
                     borderLeft: `6px solid ${statusColor}`,
                     borderRadius: 'md',
                 }}

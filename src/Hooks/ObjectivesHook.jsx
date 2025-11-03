@@ -1,148 +1,139 @@
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
-import { v4 as uuid } from "uuid";
-import { post } from "../Services/RequestMethods";
+import { API } from "../Data/constants";
+import { read, post, update, remove } from "../Services/RequestMethods";
 
-const initialObjective = (rowId = 1) => ({
-  id: uuid(),
-  functionType: null,
-  objective: null,
-  successIndicator: null,
-  othersObjective: '',
-  othersSuccessIndicator: '',
-  rowId,
-});
-const useObjectivesHook = create(
+import { useApplicationObjectives, useObjectivesActions } from "../Store/ObjectivesStore";
 
-  persist(
-    (set, get) => ({
-      objectives: [],
-      currentEditedObjective: null,
-      hasDiscussed: false,
-      current_parent_id: null,
-      current_row_id: null,
+const useObjectivesHook = () => {
 
-      setCurrentEditedObjective: (objective) => set({ currentEditedObjective: objective }),
+  const applicationObjectives = useApplicationObjectives();
 
-      setObjectives: (data) => {
-        set((state) => ({
-          objectives: data
-        }))
-      },
+  const { setApplicationObjectives, setApplicationObjective } = useObjectivesActions();
 
-      //clear others and successindicator fields
-      clearOthersFields: (id) => {
-        set(state => ({
-          objectives: state.objectives.map(obj =>
-            obj.id === id
-              ? {
-                ...obj,
-                othersObjective: '',
-                othersSuccessIndicator: ''
-              }
-              : obj
-          ),
-          //clear current edited objective 
-          currentEditedObjective:
-            state.currentEditedObjective?.id === id
-              ? {
-                ...state.currentEditedObjective,
-                othersObjective: '',
-                othersSuccessIndicator: ''
-              }
-              : state.currentEditedObjective
-        }));
-      },
-
-      clearParentId: () => {
-        set(() => ({
-          current_parent_id: null,
-        }))
-      },
-
-      setIsDiscussed: (data) => {
-        set(() => ({
-          hasDiscussed: data
-        }))
-      },
-
-      clearObjectives: () => {
-        set(() => ({
-          objectives: [],
-          hasDiscussed: false
-        }))
-      },
-
-      //update field
-      updateObjectiveField: (id, field, value) => {
-        set((state) => ({
-          objectives: state.objectives?.map((row) =>
-            row.id === id
-              ? {
-                ...row,
-                [field]: value,
-                ...(field === "objective_id" && {
-                  success_indicator_id: null,
-                }),
-              }
-              : row
-          ),
-        }));
-      },
-
-      // add row objective
-      addObjective: () => {
-        const current = get().objectives;
-        set((state) => ({
-          objectives: [
-            ...state.objectives,
-            initialObjective(current.length + 1),
-          ],
-        }));
-      },
-
-      // delete objective with auth pin
-      removeItem: async (body, callback) => {
-        post({
-          url: `check-pin`,
-          // param: { id: params },
-          form: body,
-          success: (response) => {
-            const { message, data } = response.data;
-            callback(response.status, message, data);
-          },
-          failed: callback,
-        });
-      },
-
-      deleteObjective: (id) => {
-        const objectives = get().objectives;
-        const filtered = objectives.filter((item) => item.id !== id)
-        set({ objectives: filtered })
-      },
-
-      setCurrentObjective: (objectiveuuid) => {
-        set(() => ({
-          current_parent_id: objectiveuuid,
-        }));
-      },
-
-      setCurrentRowId: (objectiveRowId) => {
-        set(() => ({
-          current_row_id: objectiveRowId
-        }))
-      }
-    }),
-    {
-      name: "objectives-storage",
-      getStorage: () => localStorage,
+  const getObjectivesBySector = async (callBack) => {
+    try {
+      await read({
+        url: API.OBJECTIVE_BY_SECTOR,
+        failed: callBack,
+        success: (res) => {
+          const {
+            status,
+            data: { data, message },
+          } = res;
+          setApplicationObjectives(Array.isArray(data) ? data : []);
+          callBack(status, message)
+        }
+      });
+    } catch (error) {
+      console.error('Error fetching application objectives:', error);
+      callBack?.(false, error.message)
     }
-  )
-);
+  };
+
+  const showObjective = async (params, callBack) => {
+    try {
+      await read({
+        url: `${API.OBJECTIVE_SHOW}/${params.id}`,
+        failed: callBack,
+        success: (res) => {
+          const {
+            status,
+            data: { data, message },
+          } = res;
+          setApplicationObjective(data);
+          callBack(status, message)
+        }
+      })
+    } catch (error) {
+      console.error('Error fetching application objectives:', error);
+      callBack?.(false, error.message)
+    }
+  }
+
+  const createObjective = async (body, callBack) => {
+    try {
+      await post({
+        url: API.OBJECTIVE_STORE,
+        form: body,
+        failed: callBack,
+        success: async (res) => {
+
+          const {
+            status,
+            data: { data, message },
+          } = res;
+          if (status === 201) {
+            getObjectivesBySector()
+          }
+          callBack?.(status, message);
+        },
+      })
+    }
+    catch (error) {
+      console.error("Error Creatin Objective:", error);
+      callBack(false, error.message);
+    }
+  }
+
+  const updateObjective = async (params, body, callBack) => {
+    try {
+      await update({
+        url: `${API.OBJECTIVE_EDIT}/${params.id}`,
+        form: body,
+        failed: callBack,
+        success: async (res) => {
+          const {
+            status,
+            data: { message },
+          } = res;
+          if (status === 200) {
+            getObjectivesBySector()
+          }
+          callBack?.(status, message);
+        },
+      })
+    }
+    catch (error) {
+      console.error("Error Creatin Objective:", error);
+      callBack(false, error.message);
+    }
+  }
+
+  const removeObjective = async (params, callBack) => {
+    try {
+      await remove({
+        url: `${API.OBJECTIVE_DELETE}/${params.id}`,
+        params: params,
+        failed: callBack,
+        success: (res) => {
+          const {
+            status,
+            data: { message },
+          } = res;
+
+          if (status === 200) {
+            const updatedObjectives = applicationObjectives.filter(
+              (obj) => obj.id !== params.id
+            );
+            setApplicationObjectives(updatedObjectives);
+          }
+          callBack?.(status, message);
+        },
+      })
+    }
+    catch (error) {
+      console.error("Error Deleting Objective:", error);
+      callBack(false, error.message);
+    }
+  }
+
+  return {
+    getObjectivesBySector,
+    showObjective,
+    createObjective,
+    updateObjective,
+    removeObjective,
+  }
+
+}
+
 export default useObjectivesHook;
-
-export const useObjectivesActions = () =>
-  useObjectivesHook(state => state.actions);
-
-export const useObjectives = () =>
-  useObjectivesHook(state => state.objectives)

@@ -9,7 +9,7 @@ import IconButtonComponent from "@Components/Common/IconButtonComponent";
 
 const ItemsCart = ({
   item,
-  image,
+  image = "https://images.unsplash.com/photo-1532614338840-ab30cf10ed36?auto=format&fit=crop&w=318",
   id,
   quantity,
   onRemove,
@@ -37,14 +37,9 @@ const ItemsCart = ({
 
         <Box width={"100%"}>
           <Typography fontSize={13} fontWeight={600}>
-            {item?.description}
+            {item?.name}
           </Typography>
-          <Typography
-            fontSize={12}
-            fontWeight={400}
-            display={"flex"}
-            alignItems={"center"}
-          >
+          <Typography level="body-xs" display={"flex"} alignItems={"center"}>
             {item?.terminology ? (
               <>
                 {item?.terminology} <LucideDot />
@@ -66,9 +61,9 @@ const ItemsCart = ({
             }}
           >
             <QuantityControlComponent
-              quantity={item?.aop_quantity}
-              onDecrease={() => onQuantityChange(id, item.aop_quantity - 1)}
-              onIncrease={() => onQuantityChange(id, item.aop_quantity + 1)}
+              quantity={item.qty}
+              onDecrease={() => onQuantityChange(item.id, item.qty - 1)}
+              onIncrease={() => onQuantityChange(item.id, item.qty + 1)}
             />
 
             <ButtonComponent

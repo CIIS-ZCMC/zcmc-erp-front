@@ -39,6 +39,7 @@ function Layout() {
       <Grid container sx={{ maxHeight: "100vh" }}>
         {/* Notification */}
         <Box position={"absolute"} right={10} py={4} px={2}>
+          <Stack></Stack>
           <Stack direction={"row"} spacing={1} alignItems={"center"}>
             <NotificationMain />
           </Stack>

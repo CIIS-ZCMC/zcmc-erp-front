@@ -1,117 +1,44 @@
 import { create } from "zustand";
-import { persist } from "zustand/middleware";
+import { createJSONStorage, persist } from "zustand/middleware";
 
-const useItemCartHook = create(
-  persist(
-    (set, get) => ({
-      cart: [],
+const useCartStore = (userId = "guest") =>
+  create(
+    persist(
+      (set, get) => ({
+        cart: [],
 
-      selectedActivity: {},
-      expense_class_id: null,
-
-      setCartMeta: ({ selectedActivity, expense_class_id }) =>
-        set(() => ({
-          selectedActivity,
-          expense_class_id,
-        })),
-
-      // Add item to cart
-      addToCart: (item, quantity = 1) => {
-        const { cart, selectedActivity, expense_class_id } = get();
-
-        set((state) => {
-          const existing = cart?.find((i) => i?.item_id === item?.id);
-
+        addToCart: (item) => {
+          const existing = get().cart.find((p) => p.id === item.id);
           if (existing) {
-            return {
-              cart: cart?.map((i) =>
-                i.item_id === item.id
-                  ? {
-                      ...i,
-                      aop_quantity: i.aop_quantity + quantity,
-                    }
-                  : i
+            set({
+              cart: get().cart.map((p) =>
+                p.id === item.id ? { ...p, qty: p.qty + (item.qty || 1) } : p
               ),
-            };
+            });
+          } else {
+            set({
+              cart: [...get().cart, { ...item, qty: item.qty || 1 }],
+            });
           }
+        },
 
-          const newItem = {
-            item_id: item.id,
-            item: item,
-            item_code: item.code,
-            terminology: item.terminology.name,
-            description: item.name,
-            category: item.item_category.name,
-            classification: item.classification,
-            estimated_budget: item.estimated_budget,
-            unit: item.item_unit.name,
-            aop_quantity: quantity,
-            activities: selectedActivity,
-            total_amount: 0,
-            target_by_quarter: {
-              jan: 0,
-              feb: 0,
-              mar: 0,
-              apr: 0,
-              may: 0,
-              jun: 0,
-              jul: 0,
-              aug: 0,
-              sep: 0,
-              oct: 0,
-              nov: 0,
-              dec: 0,
-            },
-            procurement_mode: "",
-            remarks: "",
-            expense_class_id,
-          };
+        removeFromCart: (id) =>
+          set({ cart: get().cart.filter((i) => i.id !== id) }),
 
-          return {
-            cart: [...cart, newItem],
-          };
-        });
-      },
-      // addToCart: (item) => {
-      //   set((state) => {
-      //     const existing = state.cart.find((i) => i.id === item.id);
-      //     if (existing) {
-      //       return {
-      //         cart: state.cart.map((i) =>
-      //           i.id === item.id ? { ...i, quantity: i.quantity + 1 } : i
-      //         ),
-      //       };
-      //     }
-      //     return { cart: [...state.cart, { ...item, quantity: 1 }] };
-      //   });
-      // },
+        updateQty: (id, qty) =>
+          set({
+            cart: get().cart.map((i) =>
+              i.id === id ? { ...i, qty: Math.max(qty, 1) } : i
+            ),
+          }),
 
-      // Update quantity
-      updateQuantity: (id, quantity) =>
-        set((state) => ({
-          cart: state.cart.map((item) =>
-            item.item_id === id ? { ...item, aop_quantity: quantity } : item
-          ),
-        })),
-
-      // Remove item from cart
-      removeFromCart: (id) =>
-        set((state) => ({
-          cart: state.cart.filter((item) => item.item_id !== id),
-        })),
-
-      // Clear the cart
-      clearCart: () =>
-        set({ cart: [], activity_id: null, expense_class_id: null }),
-    }),
-    {
-      name: "cart-storage", // key in localStorage
-      getStorage: () => localStorage, // Default to localStorage
-      partialize: (state) => ({
-        cart: state.cart, // only persist the cart
+        clearCart: () => set({ cart: [] }),
       }),
-    }
-  )
-);
+      {
+        name: `cart-storage-${userId}`, // 👈 per-user key
+        storage: createJSONStorage(() => localStorage),
+      }
+    )
+  );
 
-export default useItemCartHook;
+export default useCartStore;

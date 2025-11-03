@@ -6,11 +6,12 @@ import Dashboard from "../Pages/Dashboard";
 //updated routing for AOP
 import AOP from "../Pages/DeptHead/AnnualOps/AOPManagement/AOP";
 import AOPObjectives from "../Pages/DeptHead/AnnualOps/AOPManagement/Objectives/Objectives";
-import Activities from "../Pages/DeptHead/AnnualOps/AOPManagement/Objectives/Activities/Activities";
+// import Activities from "../Pages/DeptHead/AnnualOps/AOPManagement/Objectives/Activities/Activities";
 import Resources from "../Pages/DeptHead/AnnualOps/AOPManagement/Objectives/Activities/Resourses/Resources";
 import Responsible from "../Pages/DeptHead/AnnualOps/AOPManagement/Objectives/Activities/Responsible Person/Responsible";
 
 import Objectives from "../Pages/Objectives/Objectives";
+import Activities from "../Pages/Activities/Activities";
 
 import Items from "../Pages/Items";
 
@@ -44,6 +45,11 @@ const iconStyles = {
 import ItemSubmittedRequestsList from "../Pages/TEMP/ItemSubmittedRequestsList";
 import { MyOwnRequestsList } from "../Pages/TEMP/ItemMyOwnRequestsLists";
 import { ItemRequestDatatable } from "../Pages/Consolidators/ItemManagement/ItemRequestDatatable";
+import DashboardEndUser from "../Pages/AOP/EndUser/DashboardEndUser";
+import { element } from "prop-types";
+import ManageResources from "../Pages/AOP/EndUser/ManageResources";
+import AOPResources from "../Pages/AOP/EndUser/AOPResources";
+import AddResources from "../Pages/AOP/EndUser/AddResources";
 // import ResponsiblePerson from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities/ResponsiblePerson";
 
 export const sidebarRoutes = [
@@ -51,16 +57,23 @@ export const sidebarRoutes = [
   {
     path: "/dashboard",
     name: "Dashboard",
-    element: <Dashboard />,
+    element: <DashboardEndUser />,
     icon: <MdDashboard {...iconStyles} />,
     permissions: ["*"],
   },
 
   {
-    path: '/objectives-management',
+    path: "/dashboard/objectives/:aopId",
     name: "Objectives",
     element: <Objectives />,
   },
+
+  {
+    path: "/dashboard/objectives/:aopId/activities/:objectiveId",
+    name: "Activities",
+    element: <Activities />
+  },
+
 
   // SUPERVISOR ROUTES
   {
@@ -70,6 +83,22 @@ export const sidebarRoutes = [
     permissions: ["ERP-AOP-MAN:write", "ERP-PPMP-MAN:write"],
     children: [
       {
+        path: "/manage-resources",
+        name: "Manage Resources",
+        element: <AOPResources />,
+        childPermissions: ["ERP-AOP-MAN:write"],
+        children: [
+          {
+            index: true,
+            element: <ManageResources />,
+          },
+          {
+            path: "select-resources",
+            element: <AddResources />,
+          },
+        ],
+      },
+      {
         path: "/aop",
         name: "AOP",
         element: <AnnualOps />,
@@ -77,9 +106,9 @@ export const sidebarRoutes = [
       },
 
       {
-        path: '/aop-management',
+        path: "/aop-management",
         element: <AOP />,
-        roles: ['super_admin'],
+        roles: ["super_admin"],
         childPermissions: ["ERP-AOP-MAN:write"],
         children: [
           {
@@ -106,8 +135,8 @@ export const sidebarRoutes = [
                 roles: ["super_admin"],
               },
             ],
-          }
-        ]
+          },
+        ],
       },
 
       {
@@ -164,6 +193,7 @@ export const sidebarRoutes = [
           },
         ],
       },
+
       {
         path: "/ppmp-approval",
         name: "PPMP Management",

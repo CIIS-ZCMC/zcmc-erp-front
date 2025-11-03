@@ -12,6 +12,8 @@ function YearSelectorComponent({
   darkMode = false,
   value,
   setValue,
+  bgcolor = "inherit",
+  txtcolor = "inherit",
   ...props
 }) {
   const startYear = 2024;
@@ -38,8 +40,8 @@ function YearSelectorComponent({
           }
         }}
         sx={{
-          background: darkMode ? "none" : "inherit",
-          color: darkMode ? "white" : "inherit",
+          background: darkMode ? "none" : bgcolor,
+          color: darkMode ? "white" : txtcolor,
           py: 0.6,
         }}
         {...props}

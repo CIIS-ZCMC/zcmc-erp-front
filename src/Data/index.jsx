@@ -13,6 +13,7 @@ import {
 } from "react-icons/md";
 import ItemSubmittedRequestsList from "../Pages/TEMP/ItemSubmittedRequestsList";
 import { MyOwnRequestsList } from "../Pages/TEMP/ItemMyOwnRequestsLists";
+import ManageResources from "../Pages/AOP/EndUser/ManageResources";
 
 const iconStyles = {
   size: 24,
@@ -37,7 +38,12 @@ export const sidebarRoutes = [
         name: "AOP",
         childPermissions: ["ERP-AOP-MAN:write"],
       },
-
+      {
+        path: "/manage-resources",
+        name: "Manage Resources",
+        element: <ManageResources />,
+        childPermissions: ["ERP-AOP-MAN:write"],
+      },
       {
         path: "/edit-ppmp",
         name: "Edit PPMP",
@@ -109,7 +115,7 @@ export const sidebarRoutes = [
       },
 
       {
-        path: "/objectives-management",
+        path: "/objectives/aopId",
         name: "Objectives",
         childPermissions: ["ERP-AOP-MAN:approve", "ERP-AOP-MAN:view-all"],
       },
