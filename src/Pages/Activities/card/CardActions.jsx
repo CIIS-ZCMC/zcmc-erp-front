@@ -1,47 +1,54 @@
-import React from 'react'
+import React from "react";
 
-import { Chip, Stack } from '@mui/joy'
-import { ArrowRight } from 'lucide-react'
+import { Chip, Stack } from "@mui/joy";
+import { ArrowRight } from "lucide-react";
+import { useNavigate } from "react-router-dom";
 
 const CardActions = ({
-    resourcesCount,
-    responsibleCount
-}) => {
-    return (
-        <>
-            <Stack
-                gap={1}
-                direction={'row'}
-                alignItems={'center'}
-                justifyContent={'end'}
-            >
-                <Chip
-                    variant="outlined"
-                    color="primary"
-                    size="md"
-                    p={2}
-                    startDecorator={resourcesCount}
-                    endDecorator={<ArrowRight size={18} />}
-                // onClick={handleActivities}
-                >
-                    Resources
-                </Chip>
+  activityId,
+  resourcesCount,
+  responsibleCount }) => {
 
-                <Chip
-                    variant="outlined"
-                    color="primary"
-                    size="md"
-                    p={2}
-                    startDecorator={responsibleCount}
-                    endDecorator={<ArrowRight size={18} />}
-                // onClick={handleActivities}
-                >
-                    Responsible Person
-                </Chip>
-            </Stack>
+  const navigate = useNavigate();
 
-        </>
-    )
-}
+  return (
+    <>
+      <Stack
+        gap={1}
+        direction={"row"}
+        alignItems={"center"}
+        justifyContent={"end"}
+      >
+        <Chip
+          variant="outlined"
+          color="primary"
+          size="md"
+          p={2}
+          startDecorator={resourcesCount}
+          endDecorator={<ArrowRight size={18} />}
+          onClick={() =>
+            navigate(`/manage-resources/${activityId}`, {
+              state: { activityId: activityId },
+            })
+          }
+        >
+          Resources
+        </Chip>
 
-export default CardActions
+        <Chip
+          variant="outlined"
+          color="primary"
+          size="md"
+          p={2}
+          startDecorator={responsibleCount}
+          endDecorator={<ArrowRight size={18} />}
+        // onClick={handleActivities}
+        >
+          Responsible Person
+        </Chip>
+      </Stack>
+    </>
+  );
+};
+
+export default CardActions;

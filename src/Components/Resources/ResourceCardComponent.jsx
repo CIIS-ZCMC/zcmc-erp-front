@@ -1,4 +1,4 @@
-import { Remove } from "@mui/icons-material";
+import { Delete } from "@mui/icons-material";
 import {
   AspectRatio,
   Box,
@@ -9,11 +9,10 @@ import {
   Stack,
   Typography,
 } from "@mui/joy";
-import { Delete } from "lucide-react";
 import React, { Fragment } from "react";
 
 export default function ResourceCardComponent({
-  image,
+  image = "https://images.unsplash.com/photo-1532614338840-ab30cf10ed36?auto=format&fit=crop&w=318",
   category,
   name,
   price,
@@ -37,25 +36,26 @@ export default function ResourceCardComponent({
         }}
       >
         <CardOverflow>
-          <AspectRatio ratio="16/9">
+          <AspectRatio ratio="2">
             <img src={image} alt={name} loading="lazy" />
           </AspectRatio>
+          <IconButton
+            aria-label="Like minimal photography"
+            size="md"
+            variant="solid"
+            color="danger"
+            sx={{
+              position: "absolute",
+              zIndex: 2,
+              borderRadius: "50%",
+              right: "1rem",
+              bottom: 0,
+              transform: "translateY(50%)",
+            }}
+          >
+            <Delete />
+          </IconButton>
         </CardOverflow>
-
-        <IconButton
-          variant="solid"
-          color="danger"
-          size="sm"
-          onClick={onDelete}
-          sx={{
-            position: "absolute",
-            top: 8,
-            right: 8,
-            borderRadius: "50%",
-          }}
-        >
-          <Delete fontSize="small" />
-        </IconButton>
 
         <CardContent>
           <Typography level="body-xs" color="neutral">
