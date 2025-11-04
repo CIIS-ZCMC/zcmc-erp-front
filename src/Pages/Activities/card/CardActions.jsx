@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import { Chip, Stack } from "@mui/joy";
 import { ArrowRight } from "lucide-react";
@@ -10,6 +10,10 @@ const CardActions = ({
   responsibleCount }) => {
 
   const navigate = useNavigate();
+
+  useEffect(() => {
+    console.log(resourcesCount)
+  }, [resourcesCount])
 
   return (
     <>
