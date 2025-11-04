@@ -185,7 +185,6 @@ const Objectives = () => {
         }
     }
 
-
     const handleOpenEditModal = async (objectiveId) => {
         // setIsLoading(true)
         setSelectedObjectiveId(objectiveId)

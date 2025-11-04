@@ -2,7 +2,7 @@ import React from 'react'
 
 import { Typography, Stack } from '@mui/joy'
 
-const CardBody = ({ objective, activity, timeframe }) => {
+const CardBody = ({ objective, activity, timeframe, cost }) => {
     return (
         <>
 
@@ -42,7 +42,7 @@ const CardBody = ({ objective, activity, timeframe }) => {
                     // maxWidth: '50%',
                 }}
             >
-                cost here
+                {cost ? cost : "-"}
             </Typography>
 
         </>

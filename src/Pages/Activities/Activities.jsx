@@ -8,7 +8,7 @@ import {
     Grid,
 } from '@mui/joy';
 
-import { useLocation, useNavigate } from 'react-router-dom';
+import { useLocation } from 'react-router-dom';
 
 import useModalHook from '../../Hooks/ModalHook';
 import useActivitiesHook from '../../Hooks/ActivitiesHook';
@@ -45,6 +45,7 @@ const Activities = () => {
 
     const {
         applicationActivities,
+        applicationActivity,
         activity,
         cost,
         startMonth,
@@ -53,9 +54,9 @@ const Activities = () => {
         target
     } = useActivitiesStore();
 
-    const { setApplicationActivities } = useActivitiesActions();
+    const { clearFields } = useActivitiesActions();
 
-    const { getActivities, createActivity, removeActivity } = useActivitiesHook();
+    const { getActivities, createActivity, updateActivity, removeActivity, showActivity } = useActivitiesHook();
 
     const {
         setAlertDialog,
@@ -97,9 +98,13 @@ const Activities = () => {
         })
     }, [])
 
-    useEffect(() => {
-        console.log(applicationActivities)
-    }, [applicationActivities])
+    // useEffect(() => {
+    //     console.log('current activity value:', activity)
+    //     console.log('current start month', startMonth)
+    //     console.log('current end month:', endMonth)
+    //     console.log('current is gad related', isGadRelated)
+    //     console.log('current is gad target', target)
+    // }, [activity, startMonth, endMonth, isGadRelated, target])
 
     const breadcrumbs = [
         <Typography key="3" sx={{ color: 'text.primary' }}>
@@ -115,23 +120,84 @@ const Activities = () => {
         setIsOpenActivitiesModal(false)
     }
 
+    const handleCloseModal = () => {
+        setIsOpenActivitiesModal(false);
+        setIsEditMode(false);
+        clearFields()
+
+        console.log(applicationActivities)
+    }
+
     const handleOpenEditModal = async (activityId) => {
-        // console.log(activityId)
+        console.log(activityId)
+        setIsLoading(true)
         setIsEditMode(true)
         setSelectedActivityId(activityId)
         setIsOpenActivitiesModal(true)
+
+        const params = { id: activityId }
+
+        await showActivity(params, (status, message) => {
+            if (!(status >= 200 && status < 300)) {
+                // if status not success
+                return; //Toast error
+            }
+            setIsLoading(false);
+        });
     }
 
     const handleOpenCountModal = () => {
         setIsCountModal(true)
     }
 
-    const handleSaveActivity = () => {
-        console.log(activity)
-        console.log(startMonth)
-        console.log(endMonth)
-        console.log(isGadRelated)
-        console.log(target)
+    const handleSaveActivity = async () => {
+
+        setIsLoading(true)
+
+        const params = { id: selectedActivityId }
+
+        const payload = {
+            name: activity,
+            start_month: startMonth,
+            end_month: endMonth,
+            is_gad_related: isGadRelated,
+            target: {
+                first_quarter: target.firstQuarter,
+                second_quarter: target.secondQuarter,
+                third_quarter: target.thirdQuarter,
+                fourth_quarter: target.fourthQuarter,
+            }
+        }
+
+        try {
+            await updateActivity(params, payload, (status, message) => {
+                if (status === 200) {
+                    setAlertDialog({
+                        status: "success",
+                        title: `${message}`,
+                        description: "",
+                    })
+                    setIsLoading(false)
+                    handleCloseModal()
+                } else {
+                    setAlertDialog({
+                        status: "error",
+                        title: message,
+                        description: "Please try again later",
+                    })
+                    setIsLoading(false)
+                    console.error(" Failed to update activity:", message);
+                }
+            });
+
+        } catch (error) {
+            console.error("Error creating objective:", error);
+            setAlertDialog({
+                status: "error",
+                title: "Unexpected Error",
+                description: error.message || "Something went wrong.",
+            });
+        }
     }
 
     const handleConfirmDelete = async () => {
@@ -201,6 +267,7 @@ const Activities = () => {
                     })
                     setIsLoading(false)
                     // handleCloseModal()
+                    setIsCountModal(false)
                 } else {
                     setAlertDialog({
                         status: "error",
@@ -309,7 +376,6 @@ const Activities = () => {
                             >
                                 <ActivitiesList
                                     isLoading={isLoading}
-                                    activities={applicationActivities}
                                     activity={activity}
                                     handleAdd={() => handleOpenCountModal()}
                                     handleEdit={() => handleOpenEditModal(activity.id)}
@@ -349,14 +415,17 @@ const Activities = () => {
 
             <ModalComponent
                 isOpen={isOpenActivitiesModal}
-                handleClose={() => setIsOpenActivitiesModal(false)}
+                handleClose={handleCloseModal}
                 title={'Edit Activity'}
                 description={'Add or modify the details of this activity to align with its objective.'}
                 height={670}
                 minWidth={550}
                 content={
                     <>
-                        <ActivitiesModal />
+                        <ActivitiesModal
+                            isEditMode={isEditMode}
+                            selectedActivity={applicationActivity}
+                        />
                     </>
                 }
                 hasActionButtons={true}

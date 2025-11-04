@@ -1,10 +1,8 @@
 import React, { useEffect } from 'react';
 
-import { Stack, Typography, Grid, } from '@mui/joy';
+import moment from 'moment';
 
-import ButtonComponent from '@Components/Common/ButtonComponent';
 import CardComponent from '@Components/Common/Card/CardComponent';
-import { ThreeDotsLoader } from '@Components/Common/Loading/ThreeDotsLoader';
 
 import CardHeader from './card/CardHeader';
 import CardBody from './card/CardBody';
@@ -17,7 +15,6 @@ const ActivitiesList = (
     {
         activity,
         isLoading,
-        activities,
         handleAdd,
         handleEdit,
         handleDelete
@@ -29,11 +26,10 @@ const ActivitiesList = (
         ACTIVITY_CREATE_NEW,
     } = ACTIVITIES;
 
-    useEffect(() => {
-        // console.log('current activities:', activities)
-    }, [activities])
+    const { objective_code, total_cost, is_draft, activity_name, start_month, end_month, resources_count, responsible_people_count } = activity;
 
-    const { is_draft, name, start_month, end_month, } = activity;
+    const formattedStartMonth = moment(start_month, "YYYY-MM").format("MMMM");
+    const formattedEndMonth = moment(end_month, "YYYY-MM").format("MMMM");
 
     return (
         <>
@@ -45,11 +41,14 @@ const ActivitiesList = (
                     handleDelete={handleDelete}
                 />}
                 cardBody={<CardBody
-                    objective={'Objective'}
-                    activity={name ? name : "Activity Name"}
-                    timeframe={`${start_month ? start_month : "start month"} - ${end_month ? end_month : 'end month'}  `}
+                    objective={objective_code}
+                    activity={activity_name ? activity_name : "Activity Name"}
+                    cost={total_cost}
+                    timeframe={`${start_month ? formattedStartMonth : ""} - ${end_month ? formattedEndMonth : ''}  `}
                 />}
                 cardActions={<CardActions
+                    resourcesCount={resources_count}
+                    responsibleCount={responsible_people_count}
                     handleActivities={() => console.log('activities')}
                 />}
             />

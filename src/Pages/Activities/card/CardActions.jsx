@@ -3,7 +3,10 @@ import React from 'react'
 import { Chip, Stack } from '@mui/joy'
 import { ArrowRight } from 'lucide-react'
 
-const CardActions = () => {
+const CardActions = ({
+    resourcesCount,
+    responsibleCount
+}) => {
     return (
         <>
             <Stack
@@ -17,7 +20,7 @@ const CardActions = () => {
                     color="primary"
                     size="md"
                     p={2}
-                    startDecorator={10}
+                    startDecorator={resourcesCount}
                     endDecorator={<ArrowRight size={18} />}
                 // onClick={handleActivities}
                 >
@@ -29,7 +32,7 @@ const CardActions = () => {
                     color="primary"
                     size="md"
                     p={2}
-                    startDecorator={10}
+                    startDecorator={responsibleCount}
                     endDecorator={<ArrowRight size={18} />}
                 // onClick={handleActivities}
                 >

@@ -1,5 +1,5 @@
 import { API } from "../Data/constants";
-import { read, post, remove, } from '../Services/RequestMethods';
+import { read, post, update, remove, } from '../Services/RequestMethods';
 
 import useActivitiesStore, { useActivitiesActions } from "../Store/ActivitiesStore";
 
@@ -7,7 +7,7 @@ import useActivitiesStore, { useActivitiesActions } from "../Store/ActivitiesSto
 const useActivitiesHook = () => {
 
     const { applicationActivities } = useActivitiesStore();
-    const { setApplicationActivities, setApplicationAcivity } = useActivitiesActions();
+    const { setApplicationActivities, setApplicationActivity } = useActivitiesActions();
 
     const getActivities = (params, callBack) => {
         try {
@@ -31,6 +31,26 @@ const useActivitiesHook = () => {
         }
     };
 
+    const showActivity = async (params, callBack) => {
+        try {
+            await read({
+                url: `${API.ACTIVITY_SHOW}/${params.id}`,
+                failed: callBack,
+                success: (res) => {
+                    const {
+                        status,
+                        data: { data, message },
+                    } = res;
+                    setApplicationActivity(data);
+                    callBack(status, message)
+                }
+            })
+        } catch (error) {
+            console.error('Error fetching application activity:', error);
+            callBack?.(false, error.message)
+        }
+    }
+
     const createActivity = (body, callBack) => {
         try {
             post({
@@ -38,13 +58,19 @@ const useActivitiesHook = () => {
                 form: body,
                 failed: callBack,
                 success: async (res) => {
-                    console.log(res)
+                    console.log(res.data)
                     const {
                         status,
-                        data: { message },
+                        data: { data, message },
                     } = res;
                     if (status === 201) {
-                        getActivities()
+                        const fetchParams = { application_objective_id: data[0].application_objective_id };
+
+                        getActivities(fetchParams, (status, message) => {
+                            if (!(status >= 200 && status < 300)) {
+                                console.error("Failed to refresh activities:", message);
+                            }
+                        });
                     }
                     callBack?.(status, message);
                 },
@@ -52,6 +78,40 @@ const useActivitiesHook = () => {
         }
         catch (error) {
             console.error("Error Creatin Objective:", error);
+            callBack(false, error.message);
+        }
+    }
+
+    const updateActivity = async (params, body, callBack) => {
+        try {
+            await update({
+                url: `${API.ACTIVITY_EDIT}/${params.id}`,
+                form: body,
+                failed: callBack,
+                success: async (res) => {
+                    const {
+                        status,
+                        data: { data, message },
+                    } = res;
+
+                    if (status === 200) {
+
+                        const fetchParams = { application_objective_id: data.application_objective_id };
+
+                        getActivities(fetchParams, (status, message) => {
+                            if (!(status >= 200 && status < 300)) {
+                                console.error("Failed to refresh activities:", message);
+                            }
+                        });
+                    }
+
+                    callBack?.(status, message);
+
+                },
+            })
+        }
+        catch (error) {
+            console.error("Error Update Activity:", error);
             callBack(false, error.message);
         }
     }
@@ -86,7 +146,9 @@ const useActivitiesHook = () => {
 
     return {
         getActivities,
+        showActivity,
         createActivity,
+        updateActivity,
         removeActivity,
     }
 }
