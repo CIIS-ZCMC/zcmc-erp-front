@@ -46,7 +46,7 @@ const CardActions = ({
         >
           Responsible Person
         </Chip>
-      </Stack>
+      </Stack >
     </>
   );
 };
