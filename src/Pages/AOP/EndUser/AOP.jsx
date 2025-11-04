@@ -88,8 +88,7 @@ function DashboardEndUser(props) {
   const [openFiscalYearModal, setOpenFiscalYearModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isAopLoading, setIsAopLoading] = useState(false)
-  const [aopId, setAopId] = useState(null);
-  const [year, setYear] = useState("");
+
 
   const currentYear = new Date().getFullYear();
   const currentFiscalYear = currentYear + 1;
@@ -122,8 +121,6 @@ function DashboardEndUser(props) {
       }
     });
   };
-
-  const startYear = 2024;
 
   // const years = Array.from(
   //   { length: currentYear - startYear + 1 },
@@ -171,13 +168,13 @@ function DashboardEndUser(props) {
   const { next_year_included } = years || {};
 
   useEffect(() => {
-    console.log('yearsData', yearsData)
-    console.log('next_year_included', next_year_included)
+    // console.log('yearsData', yearsData)
+    // console.log('next_year_included', next_year_included)
   }, [yearsData])
 
 
   const handleNavigateObjectives = () => {
-    navigate(`/dashboard/objectives/${aop.id}`, {
+    navigate(`/aop/objectives/${aop.id}`, {
       state: { aopId: aop.id }
     });
   }
@@ -310,7 +307,7 @@ function DashboardEndUser(props) {
                   }}
                 >
 
-                  {!aop.counts.activities_count &&
+                  {!aop?.counts?.activities_count &&
                     <Grid mt={1} xs={8}>
                       <BoxComponent
                         justifyContent="center"
@@ -355,11 +352,7 @@ function DashboardEndUser(props) {
                           <ButtonComponent
                             isLoading={isLoading}
                             label={"Go to Manage Objectives"}
-                            onClick={() => {
-                              navigate(`/dashboard/objectives/${aop.id}`, {
-                                state: { aopId }
-                              });
-                            }}
+                            onClick={handleNavigateObjectives}
                           />
 
                         </Box>

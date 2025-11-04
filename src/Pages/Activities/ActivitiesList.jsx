@@ -30,7 +30,7 @@ const ActivitiesList = (
     } = ACTIVITIES;
 
     useEffect(() => {
-        console.log('current activities:', activities)
+        // console.log('current activities:', activities)
     }, [activities])
 
     const { is_draft, name, start_month, end_month, } = activity;

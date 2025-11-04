@@ -4,7 +4,7 @@ import AnnualOps from "../Pages/DeptHead/AnnualOps/AnnualOps";
 import Dashboard from "../Pages/Dashboard";
 
 //updated routing for AOP
-import AOP from "../Pages/DeptHead/AnnualOps/AOPManagement/AOP";
+// import AOP from "../Pages/DeptHead/AnnualOps/AOPManagement/AOP";
 import AOPObjectives from "../Pages/DeptHead/AnnualOps/AOPManagement/Objectives/Objectives";
 // import Activities from "../Pages/DeptHead/AnnualOps/AOPManagement/Objectives/Activities/Activities";
 import Resources from "../Pages/DeptHead/AnnualOps/AOPManagement/Objectives/Activities/Resourses/Resources";
@@ -45,7 +45,7 @@ const iconStyles = {
 import ItemSubmittedRequestsList from "../Pages/TEMP/ItemSubmittedRequestsList";
 import { MyOwnRequestsList } from "../Pages/TEMP/ItemMyOwnRequestsLists";
 import { ItemRequestDatatable } from "../Pages/Consolidators/ItemManagement/ItemRequestDatatable";
-import DashboardEndUser from "../Pages/AOP/EndUser/DashboardEndUser";
+import AOP from "../Pages/AOP/EndUser/AOP";
 import { element } from "prop-types";
 import ManageResources from "../Pages/AOP/EndUser/ManageResources";
 import AOPResources from "../Pages/AOP/EndUser/AOPResources";
@@ -55,21 +55,21 @@ import AddResources from "../Pages/AOP/EndUser/AddResources";
 export const sidebarRoutes = [
   // DASHBOARD ROUTE
   {
-    path: "/dashboard",
-    name: "Dashboard",
-    element: <DashboardEndUser />,
+    path: "/aop",
+    name: "AOP",
+    element: <AOP />,
     icon: <MdDashboard {...iconStyles} />,
     permissions: ["*"],
   },
 
   {
-    path: "/dashboard/objectives/:aopId",
+    path: "/aop/objectives/:aopId",
     name: "Objectives",
     element: <Objectives />,
   },
 
   {
-    path: "/dashboard/objectives/:aopId/activities/:objectiveId",
+    path: "/aop/objectives/:aopId/activities/:objectiveId",
     name: "Activities",
     element: <Activities />
   },
@@ -98,6 +98,9 @@ export const sidebarRoutes = [
           },
         ],
       },
+
+
+
       {
         path: "/aop",
         name: "AOP",
@@ -105,39 +108,39 @@ export const sidebarRoutes = [
         childPermissions: ["ERP-AOP-MAN:write"],
       },
 
-      {
-        path: "/aop-management",
-        element: <AOP />,
-        roles: ["super_admin"],
-        childPermissions: ["ERP-AOP-MAN:write"],
-        children: [
-          {
-            index: true,
-            element: <AOPObjectives />,
-          },
-          {
-            path: "activities/:objectiveId",
-            element: <Activities />,
-            children: [
-              {
-                path: "items/:activityId",
-                element: <Items />,
-              },
-              {
-                path: "resources/:activityId",
-                element: <Resources />,
-                roles: ["super_admin"],
-              },
+      // {
+      //   path: "/aop-management",
+      //   element: <AOP />,
+      //   roles: ["super_admin"],
+      //   childPermissions: ["ERP-AOP-MAN:write"],
+      //   children: [
+      //     {
+      //       index: true,
+      //       element: <AOPObjectives />,
+      //     },
+      //     {
+      //       path: "activities/:objectiveId",
+      //       element: <Activities />,
+      //       children: [
+      //         {
+      //           path: "items/:activityId",
+      //           element: <Items />,
+      //         },
+      //         {
+      //           path: "resources/:activityId",
+      //           element: <Resources />,
+      //           roles: ["super_admin"],
+      //         },
 
-              {
-                path: "person/:activityId",
-                element: <Responsible />,
-                roles: ["super_admin"],
-              },
-            ],
-          },
-        ],
-      },
+      //         {
+      //           path: "person/:activityId",
+      //           element: <Responsible />,
+      //           roles: ["super_admin"],
+      //         },
+      //       ],
+      //     },
+      //   ],
+      // },
 
       {
         path: "/edit-ppmp",

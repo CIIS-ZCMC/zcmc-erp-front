@@ -30,7 +30,7 @@ const Checklist = ({ fiscalYear }) => {
     }, []);
 
     useEffect(() => {
-        console.log('aop check list:', aopChecklist)
+        // console.log('aop check list:', aopChecklist)
     }, [aopChecklist])
 
     return (

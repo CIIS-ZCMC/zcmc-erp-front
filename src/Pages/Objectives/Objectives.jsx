@@ -371,7 +371,7 @@ const Objectives = () => {
                                     />}
                                     cardActions={<CardActions
                                         count={activities_count}
-                                        handleActivities={() => navigate(`/dashboard/objectives/${aopId}/activities/${id}`, {
+                                        handleActivities={() => navigate(`/aop/objectives/${aopId}/activities/${id}`, {
                                             state: { objId: id }
                                         })}
                                     />}

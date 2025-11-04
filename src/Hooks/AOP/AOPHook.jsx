@@ -32,7 +32,7 @@ const useAOPHook = () => {
         url: API.AOP_YEAR_LIST,
         failed: callBack,
         success: (res) => {
-          console.log(res)
+          // console.log(res)
           const {
             status,
             data: { data, message },

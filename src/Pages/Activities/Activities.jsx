@@ -115,9 +115,10 @@ const Activities = () => {
         setIsOpenActivitiesModal(false)
     }
 
-    const handleOpenEditModal = async () => {
-        // console.log(id)
+    const handleOpenEditModal = async (activityId) => {
+        // console.log(activityId)
         setIsEditMode(true)
+        setSelectedActivityId(activityId)
         setIsOpenActivitiesModal(true)
     }
 
