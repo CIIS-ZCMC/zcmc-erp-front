@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React, { Fragment, use, useEffect } from "react";
 import PropTypes from "prop-types";
 import PageTitle from "@Components/Common/PageTitle";
 import {
@@ -28,34 +28,30 @@ import {
   PlusIcon,
 } from "lucide-react";
 import ButtonComponent from "@Components/Common/ButtonComponent";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import ResourceCardComponent from "@Components/Resources/ResourceCardComponent";
+import useResourcesHook from "../../../Hooks/AOP/ResourcesHook";
 
 function ManageResources(props) {
+  const location = useLocation();
+  const { activityId } = location.state;
+
+  const { getAOPResources, resources } = useResourcesHook();
   const theme = useTheme();
   const navigate = useNavigate();
   const color = theme.palette;
   const currentYear = new Date().getFullYear();
   const currentFiscalYear = currentYear + 1;
 
-  const data = [
-    {
-      label: "Timeframe",
-      value: " August - September",
-      icon: <CalendarToday sx={{ fontSize: 30, color: blue[800] }} />,
-    },
-    {
-      label: "Total Cost",
-      value: " ₱ 500,000.00",
-      icon: <PhilippinePesoIcon style={{ fontSize: 30, color: blue[800] }} />,
-    },
-    {
-      label: "Expense class",
-      value: "MOOE",
-      icon: <Book sx={{ fontSize: 30, color: blue[800] }} />,
-    },
-    { label: "GAD-related activity", value: "Yes" },
-  ];
+  useEffect(() => {
+    if (!activityId) return; // prevent calling if id is not ready
+
+    getAOPResources((status, message) => {
+      if (status !== 200) {
+        console.error("Failed to fetch items:", message);
+      }
+    }, activityId);
+  }, [activityId]);
   return (
     <Fragment>
       <Stack spacing={1}>
@@ -167,30 +163,37 @@ function ManageResources(props) {
           </Stack>
         </BoxComponent>
 
-        <BoxComponent
-          borderColor={grey[300]}
-          height={"60vh"}
-          borderRadius={10}
-          justifyContent={"center"}
-          alignItems={"center"}
-          display={"flex"}
-          flexDirection={"column"}
-        >
+        {resources.length > 0 ? (
           <ResourceCardComponent />
-          <Typography level="title-md">No resources yet.</Typography>
-          <Typography level="body-sm">
-            Start by adding the materials, equipment, or other resources needed
-            for this activity.
-          </Typography>
-          <Typography level="body-sm" mb={1}>
-            Click “Add a Resource” to begin.
-          </Typography>
-          <ButtonComponent
-            startDecorator={<PlusIcon />}
-            label={"Add a resource"}
-            onClick={() => navigate("select-resources")}
-          />
-        </BoxComponent>
+        ) : (
+          <BoxComponent
+            borderColor={grey[300]}
+            height={"60vh"}
+            borderRadius={10}
+            justifyContent={"center"}
+            alignItems={"center"}
+            display={"flex"}
+            flexDirection={"column"}
+          >
+            <Typography level="title-md">No resources yet.</Typography>
+            <Typography level="body-sm">
+              Start by adding the materials, equipment, or other resources
+              needed for this activity.
+            </Typography>
+            <Typography level="body-sm" mb={1}>
+              Click “Add a Resource” to begin.
+            </Typography>
+            <ButtonComponent
+              startDecorator={<PlusIcon />}
+              label={"Add a resource"}
+              onClick={() =>
+                navigate(`select-resources/${activityId}`, {
+                  state: { activityId: activityId },
+                })
+              }
+            />
+          </BoxComponent>
+        )}
       </Stack>
     </Fragment>
   );

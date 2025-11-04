@@ -1,8 +1,11 @@
 import { create } from "zustand";
 import { createJSONStorage, persist } from "zustand/middleware";
 
-const useCartStore = (userId = "guest") =>
-  create(
+const cartStores = {};
+
+const useCartStore = (userId = "guest") => {
+  if (cartStores[userId]) return cartStores[userId];
+  const store = create(
     persist(
       (set, get) => ({
         cart: [],
@@ -40,5 +43,8 @@ const useCartStore = (userId = "guest") =>
       }
     )
   );
+  cartStores[userId] = store;
+  return store;
+};
 
 export default useCartStore;

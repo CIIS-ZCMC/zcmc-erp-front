@@ -7,18 +7,35 @@ import { Divider, Grid, Skeleton, Stack, Typography, useTheme } from "@mui/joy";
 import { X } from "lucide-react";
 import React, { Fragment, useEffect, useState } from "react";
 import ContainerComponent from "@Components/Common/ContainerComponent";
-import { useNavigate } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 import SearchBarComponentv2 from "@Components/SearchBarWithdeBounce";
 import ItemCardComponent from "@Components/Resources/ItemCardComponent";
 import ModalComponent from "@Components/Common/Dialog/ModalComponent";
 import AddToCartLayout from "@Components/Resources/AddToCartLayout";
+import useResourcesHook from "../../../Hooks/AOP/ResourcesHook";
+import useCartStore from "../../../Hooks/ItemCartHook";
+import useModalHook from "../../../Hooks/ModalHook";
+import { useAuth } from "../../../Store/AuthStore";
 
 export default function AddResources() {
+  const { user } = useAuth();
+
   const theme = useTheme();
   const color = theme.palette;
   const navigate = useNavigate();
+  const location = useLocation();
+  const { activityId } = location.state;
 
   const { items, getItems } = useItemsHook();
+  const { postAOPResources } = useResourcesHook();
+  const cartStore = useCartStore(user?.id || "guest");
+  const { cart, clearCart } = cartStore();
+  const {
+    setAlertDialog,
+    setConfirmationModal,
+    closeConfirmation,
+    closeAlertDialog,
+  } = useModalHook();
 
   const currentYear = new Date().getFullYear();
   const currentFiscalYear = currentYear + 1;
@@ -35,6 +52,34 @@ export default function AddResources() {
     setOpenPreview(false);
     setSelectedItem(null);
   };
+
+  const handleSaveItems = async () => {
+    const formData = new FormData();
+
+    formData.append("activity_id", activityId);
+
+    cart.forEach((item, index) => {
+      Object.entries(item).forEach(([key, value]) => {
+        formData.append(`items[${index}][${key}]`, value);
+      });
+    });
+
+    await postAOPResources(formData, (status, message) => {
+      if (status === 200) {
+        console.log("Items saved successfully");
+        return;
+        // navigate("/aop-management");
+      } else {
+        setAlertDialog({
+          status: "error",
+          title: `${message}`,
+          description: "",
+        });
+        return;
+      }
+    });
+  };
+
   useEffect(() => {
     setDisplayLoading(true);
 
@@ -47,6 +92,7 @@ export default function AddResources() {
   }, []);
   return (
     <Fragment>
+      {console.log(cart)}
       <PageTitle
         title={`AOP for Fiscal Year ${currentFiscalYear}`}
         description={
@@ -77,7 +123,10 @@ export default function AddResources() {
             </Stack>
             <Stack direction="row" spacing={1}>
               <ButtonComponent label="Cancel Selection" variant={"outlined"} />
-              <ButtonComponent label={"Save items"} />
+              <ButtonComponent
+                label={"Save items"}
+                onClick={() => handleSaveItems()}
+              />
               <IconButtonComponent
                 icon={<X />}
                 size={"sm"}

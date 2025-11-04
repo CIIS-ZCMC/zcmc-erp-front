@@ -82,7 +82,7 @@ export const sidebarRoutes = [
     permissions: ["ERP-AOP-MAN:write", "ERP-PPMP-MAN:write"],
     children: [
       {
-        path: "/manage-resources",
+        path: "/manage-resources/:activityId",
         name: "Manage Resources",
         element: <AOPResources />,
         childPermissions: ["ERP-AOP-MAN:write"],
@@ -92,13 +92,11 @@ export const sidebarRoutes = [
             element: <ManageResources />,
           },
           {
-            path: "select-resources",
+            path: "select-resources/:activityId",
             element: <AddResources />,
           },
         ],
       },
-
-
 
       {
         path: "/aop",
