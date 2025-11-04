@@ -55,9 +55,9 @@ import AddResources from "../Pages/AOP/EndUser/AddResources";
 export const sidebarRoutes = [
   // DASHBOARD ROUTE
   {
-    path: "/aop",
+    path: "/dashboard",
     name: "AOP",
-    element: <AOP />,
+    element: <Dashboard />,
     icon: <MdDashboard {...iconStyles} />,
     permissions: ["*"],
   },
@@ -71,9 +71,8 @@ export const sidebarRoutes = [
   {
     path: "/aop/objectives/:aopId/activities/:objectiveId",
     name: "Activities",
-    element: <Activities />
+    element: <Activities />,
   },
-
 
   // SUPERVISOR ROUTES
   {
@@ -104,7 +103,7 @@ export const sidebarRoutes = [
       {
         path: "/aop",
         name: "AOP",
-        element: <AnnualOps />,
+        element: <AOP />,
         childPermissions: ["ERP-AOP-MAN:write"],
       },
 
