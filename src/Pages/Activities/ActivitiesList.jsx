@@ -26,7 +26,7 @@ const ActivitiesList = (
         ACTIVITY_CREATE_NEW,
     } = ACTIVITIES;
 
-    const { objective_code, total_cost, is_draft, activity_name, start_month, end_month, resources_count, responsible_people_count } = activity;
+    const { id, objective_code, total_cost, is_draft, activity_name, start_month, end_month, resources_count, responsible_people_count } = activity;
 
     const formattedStartMonth = moment(start_month, "YYYY-MM").format("MMMM");
     const formattedEndMonth = moment(end_month, "YYYY-MM").format("MMMM");
@@ -47,6 +47,7 @@ const ActivitiesList = (
                     timeframe={`${start_month ? formattedStartMonth : ""} - ${end_month ? formattedEndMonth : ''}  `}
                 />}
                 cardActions={<CardActions
+                    activityId={id}
                     resourcesCount={resources_count}
                     responsibleCount={responsible_people_count}
                     handleActivities={() => console.log('activities')}
