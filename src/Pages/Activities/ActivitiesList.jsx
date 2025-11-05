@@ -1,10 +1,8 @@
 import React, { useEffect } from "react";
 
-import { Stack, Typography, Grid } from "@mui/joy";
+import moment from 'moment';
 
-import ButtonComponent from "@Components/Common/ButtonComponent";
-import CardComponent from "@Components/Common/Card/CardComponent";
-import { ThreeDotsLoader } from "@Components/Common/Loading/ThreeDotsLoader";
+import CardComponent from '@Components/Common/Card/CardComponent';
 
 import CardHeader from "./card/CardHeader";
 import CardBody from "./card/CardBody";
@@ -13,47 +11,49 @@ import CardActions from "./card/CardActions";
 import { ACTIVITIES } from "../../Data/constants";
 
 const ActivitiesList = ({
-  activity,
-  isLoading,
-  activities,
-  handleAdd,
-  handleEdit,
-  handleDelete,
+    activity,
+    isLoading,
+    activities,
+    handleAdd,
+    handleEdit,
+    handleDelete,
 }) => {
-  const { EMPTY_STATE_TITLE, ACTIVITY_CREATE_NEW } = ACTIVITIES;
 
-  useEffect(() => {
-    // console.log('current activities:', activities)
-  }, [activities]);
+    const {
+        EMPTY_STATE_TITLE,
+        ACTIVITY_CREATE_NEW,
+    } = ACTIVITIES;
 
-  const { id, is_draft, name, start_month, end_month } = activity;
+    const { id, objective_code, total_cost, is_draft, activity_name, start_month, end_month, resources_count, responsible_people_count } = activity;
 
-  return (
-    <>
-      <CardComponent
-        height={150}
-        statusColor={is_draft ? "red" : "green"}
-        cardHeader={
-          <CardHeader handleEdit={handleEdit} handleDelete={handleDelete} />
-        }
-        cardBody={
-          <CardBody
-            objective={"Objective"}
-            activity={name ? name : "Activity Name"}
-            timeframe={`${start_month ? start_month : "start month"} - ${
-              end_month ? end_month : "end month"
-            }  `}
-          />
-        }
-        cardActions={
-          <CardActions
-            handleActivities={() => console.log("activities")}
-            activityId={id}
-          />
-        }
-      />
-    </>
-  );
-};
+    const formattedStartMonth = moment(start_month, "YYYY-MM").format("MMMM");
+    const formattedEndMonth = moment(end_month, "YYYY-MM").format("MMMM");
 
-export default ActivitiesList;
+    return (
+        <>
+            <CardComponent
+                height={150}
+                statusColor={is_draft ? 'red' : 'green'}
+                cardHeader={<CardHeader
+                    handleEdit={handleEdit}
+                    handleDelete={handleDelete}
+                />}
+                cardBody={<CardBody
+                    objective={objective_code}
+                    activity={activity_name ? activity_name : "Activity Name"}
+                    cost={total_cost}
+                    timeframe={`${start_month ? formattedStartMonth : ""} - ${end_month ? formattedEndMonth : ''}  `}
+                />}
+                cardActions={<CardActions
+                    activityId={id}
+                    resourcesCount={resources_count}
+                    responsibleCount={responsible_people_count}
+                    handleActivities={() => console.log('activities')}
+                />}
+            />
+        </>
+    )
+}
+
+
+export default ActivitiesList

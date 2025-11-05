@@ -10,6 +10,7 @@ const useActivitiesStore = create((set, get) => ({
     startMonth: null,
     endMonth: null,
     isGadRelated: false,
+
     target: {
         firstQuarter: null,
         secondQuarter: null,
@@ -19,7 +20,7 @@ const useActivitiesStore = create((set, get) => ({
 
     actions: {
         setApplicationActivities: (applicationActivities) => set({ applicationActivities }),
-        setApplicationAcivity: (applicationActivity) => set({ applicationActivity }),
+        setApplicationActivity: (applicationActivity) => set({ applicationActivity }),
 
         setActivity: (activity) => set({ activity }),
         setCost: (cost) => set({ cost }),
@@ -27,19 +28,20 @@ const useActivitiesStore = create((set, get) => ({
         setEndMonth: (endMonth) => set({ endMonth }),
         setIsGadRelated: (isGadRelated) => set({ isGadRelated }),
 
-        setTarget: (target) =>
-            set((state) => ({
-                target: { ...state.target, ...target },
-            })),
+        setTarget: (target) => {
+            set((state) => {
+                return {
+                    target: { ...state.target, ...target },
+                };
+            });
+        },
 
-        clearFields: () =>
+        clearActivity: () => set({ activity: null }),
+        clearStartMonth: () => set({ startMonth: null }),
+        clearEndMonth: () => set({ endMonth: null }),
+        clearIsGadRelated: () => set({ isGadRelate: false }),
+        clearTarget: () =>
             set({
-                applicationActivities: [],
-                applicationActivity: null,
-                cost: null,
-                startMonth: null,
-                endMonth: null,
-                isGadRelated: false,
                 target: {
                     firstQuarter: null,
                     secondQuarter: null,
@@ -47,6 +49,16 @@ const useActivitiesStore = create((set, get) => ({
                     fourthQuarter: null,
                 },
             }),
+
+        clearFields: () => {
+            const { clearActivity, clearStartMonth, clearEndMonth, clearIsGadRelated, clearTarget } = get().actions
+            clearActivity()
+            clearStartMonth()
+            clearEndMonth()
+            clearIsGadRelated()
+            clearTarget()
+        }
+
     },
 
 }))

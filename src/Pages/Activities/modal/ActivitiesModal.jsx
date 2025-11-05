@@ -11,13 +11,28 @@ import useActivitiesStore from '../../../Store/ActivitiesStore'
 import { useActivitiesActions } from '../../../Store/ActivitiesStore'
 
 const ActivitiesModal = ({
-    activityName,
+    selectedActivity,
 }) => {
 
     const { activity, startMonth, endMonth, isGadRelated, target } = useActivitiesStore();
+    const { firstQuarter, secondQuarter, thirdQuarter, fourthQuarter } = target ?? {};
+
     const { setActivity, setStartMonth, setEndMonth, setIsGadRelated, setTarget } = useActivitiesActions();
 
-    const { firstQuarter, secondQuarter, thirdQuarter, fourthQuarter } = target;
+    useEffect(() => {
+        if (selectedActivity) {
+            setActivity(selectedActivity.name)
+            setStartMonth(selectedActivity.start_month)
+            setEndMonth(selectedActivity.end_month)
+            setIsGadRelated(selectedActivity.is_gad_related)
+            setTarget({
+                firstQuarter: selectedActivity.target.first_quarter || '',
+                secondQuarter: selectedActivity.target.second_quarter || '',
+                thirdQuarter: selectedActivity.target.third_quarter || '',
+                fourthQuarter: selectedActivity.target.fourth_quarter || '',
+            })
+        }
+    }, [selectedActivity])
 
     return (
         <>
@@ -28,7 +43,7 @@ const ActivitiesModal = ({
                 <TextareaComponent
                     label={'Activity name'}
                     placeholder="Activity name"
-                    value={activity}
+                    value={activity || ""}
                     onChange={(e) => setActivity(e.target.value)}
                 />
 
@@ -52,7 +67,7 @@ const ActivitiesModal = ({
                                 sx={{
                                     width: 225
                                 }}
-                                value={startMonth}
+                                value={startMonth || ""}
                                 onChange={(e) => setStartMonth(e.target.value)}
                             />
                         </FormControl>
@@ -66,7 +81,7 @@ const ActivitiesModal = ({
                                 sx={{
                                     width: 225
                                 }}
-                                value={endMonth}
+                                value={endMonth || ""}
                                 onChange={(e) => setEndMonth(e.target.value)}
                             // onBlur={() => setEditRowId(null)}
                             />
@@ -87,7 +102,7 @@ const ActivitiesModal = ({
                             type={'number'}
                             label={'Quarter 1'}
                             width={100}
-                            value={firstQuarter}
+                            value={firstQuarter || ""}
                             onChange={(e) => setTarget({ firstQuarter: e.target.value })}
                         />
 
@@ -95,7 +110,7 @@ const ActivitiesModal = ({
                             type={'number'}
                             label={'Quarter 2'}
                             width={100}
-                            value={secondQuarter}
+                            value={secondQuarter || ""}
                             onChange={(e) => setTarget({ secondQuarter: e.target.value })}
                         />
 
@@ -103,7 +118,7 @@ const ActivitiesModal = ({
                             type={'number'}
                             label={'Quarter 3'}
                             width={100}
-                            value={thirdQuarter}
+                            value={thirdQuarter || ""}
                             onChange={(e) => setTarget({ thirdQuarter: e.target.value })}
                         />
 
@@ -111,7 +126,7 @@ const ActivitiesModal = ({
                             type={'number'}
                             label={'Quarter 4'}
                             width={100}
-                            value={fourthQuarter}
+                            value={fourthQuarter || ""}
                             onChange={(e) => setTarget({ fourthQuarter: e.target.value })}
                         />
                     </Stack>
@@ -122,7 +137,7 @@ const ActivitiesModal = ({
                     mt={10}
                 >
                     <Checkbox
-                        value={isGadRelated}
+                        checked={isGadRelated}
                         label="GAD related activity"
                         onChange={(e) => setIsGadRelated(e.target.checked)}
                     />

@@ -1,11 +1,20 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import { Chip, Stack } from "@mui/joy";
 import { ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 
-const CardActions = ({ activityId }) => {
+const CardActions = ({
+  activityId,
+  resourcesCount,
+  responsibleCount }) => {
+
   const navigate = useNavigate();
+
+  useEffect(() => {
+    console.log(resourcesCount)
+  }, [resourcesCount])
+
   return (
     <>
       <Stack
@@ -19,7 +28,7 @@ const CardActions = ({ activityId }) => {
           color="primary"
           size="md"
           p={2}
-          startDecorator={10}
+          startDecorator={resourcesCount}
           endDecorator={<ArrowRight size={18} />}
           onClick={() =>
             navigate(`/manage-resources/${activityId}`, {
@@ -35,13 +44,13 @@ const CardActions = ({ activityId }) => {
           color="primary"
           size="md"
           p={2}
-          startDecorator={10}
+          startDecorator={responsibleCount}
           endDecorator={<ArrowRight size={18} />}
-          // onClick={handleActivities}
+        // onClick={handleActivities}
         >
           Responsible Person
         </Chip>
-      </Stack>
+      </Stack >
     </>
   );
 };

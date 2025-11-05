@@ -212,7 +212,9 @@ export const API = {
 
   ACTIVITIES: "activities",
   ACTIVITIES_STORE: "activities-store",
+  ACTIVITY_EDIT: 'activities-update',
   ACTIVITIES_DELETE: "activities-delete",
+  ACTIVITY_SHOW: "activities-show",
 
   AOP_APPLICATION_SHOW: "aop-application-show",
   AOP_APPLICATION_EDIT: "aop-application-edit",
