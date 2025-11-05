@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { post, read } from "../../Services/RequestMethods";
+import { post, read, update } from "../../Services/RequestMethods";
 const PATH = "resources";
 
 const useResourcesHook = create((set) => ({
@@ -26,6 +26,27 @@ const useResourcesHook = create((set) => ({
       success: ({ status, data }) => {
         const { message } = data;
         set({ resources: data.data });
+        callBack(status, message);
+      },
+    });
+  },
+
+  updateResourceQty: async (id, form, callBack) => {
+    update({
+      url: `${PATH}-update/${id}/quantity`,
+      form: form,
+      failed: callBack,
+      success: ({ status, data }) => {
+        const { message, data: updatedResource } = data;
+
+        set((state) => ({
+          resources: state.resources.map((res) =>
+            res.id === updatedResource.id
+              ? { ...res, quantity: updatedResource.quantity }
+              : res
+          ),
+        }));
+
         callBack(status, message);
       },
     });

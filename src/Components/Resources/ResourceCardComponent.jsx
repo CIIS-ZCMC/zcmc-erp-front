@@ -19,14 +19,14 @@ import CartPreviewComponent from "./CartPreviewComponent";
 
 export default function ResourceCardComponent({
   image = "https://images.unsplash.com/photo-1532614338840-ab30cf10ed36?auto=format&fit=crop&w=318",
+  resource_id,
   category,
   name,
   price,
   quantity,
   unit,
   specifications = [],
-  onIncrease,
-  onDecrease,
+  onQtyChange,
   onDelete,
 }) {
   const theme = useTheme();
@@ -118,7 +118,11 @@ export default function ResourceCardComponent({
 
             {/* Quantity Controls */}
             <Box>
-              <QuantityControlComponent quantity={quantity} />
+              <QuantityControlComponent
+                quantity={quantity}
+                onDecrease={() => onQtyChange(resource_id, quantity - 1)}
+                onIncrease={() => onQtyChange(resource_id, quantity + 1)}
+              />
             </Box>
           </Stack>
 
@@ -153,7 +157,7 @@ export default function ResourceCardComponent({
         category={category}
         specifications={specifications}
         unit={unit}
-        quantity={quantity}
+        qty={quantity}
         isAddToCart={false}
       />
     </Fragment>

@@ -39,7 +39,7 @@ function ManageResources(props) {
   const location = useLocation();
   const { activityId } = location.state;
 
-  const { getAOPResources, resources } = useResourcesHook();
+  const { getAOPResources, resources, updateResourceQty } = useResourcesHook();
   const { getPurchaseType, purchase_types } = usePurchaseTypeHook();
 
   const theme = useTheme();
@@ -50,6 +50,20 @@ function ManageResources(props) {
   const currentFiscalYear = currentYear + 1;
 
   const [isLoading, setIsLoading] = useState(false);
+
+  const handleUpdateResource = async (id, quantity) => {
+    const body = { quantity: quantity };
+
+    await updateResourceQty(id, body, (status, message) => {
+      // setLoading(false);
+
+      if (status) {
+        console.log("✅ Resource updated successfully:", message);
+      } else {
+        console.error("❌ Failed to update resource:", message);
+      }
+    });
+  };
 
   useEffect(() => {
     if (!activityId) return; // prevent calling if id is not ready
@@ -197,10 +211,12 @@ function ManageResources(props) {
                 <ResourceCardComponent
                   category={item.item.category}
                   name={item.item.name}
+                  resource_id={item.id}
                   price={item.item.estimated_budget}
-                  qty={item.quantity}
+                  quantity={item.quantity}
                   unit={item.item.item_unit?.name}
                   specifications={item.item.item_specifications}
+                  onQtyChange={handleUpdateResource}
                 />
               </Grid>
             ))}
