@@ -8,7 +8,7 @@ import CardHeader from "./card/CardHeader";
 import CardBody from "./card/CardBody";
 import CardActions from "./card/CardActions";
 
-import { ACTIVITIES } from "../../Data/constants";
+import { ACTIVITIES } from "../../../../Data/constants";
 
 const ActivitiesList = ({
     activity,

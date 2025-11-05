@@ -10,8 +10,8 @@ import {
 
 import { useLocation } from 'react-router-dom';
 
-import useModalHook from '../../Hooks/ModalHook';
-import useActivitiesHook from '../../Hooks/ActivitiesHook';
+import useModalHook from '../../../../Hooks/ModalHook';
+import useActivitiesHook from '../../../../Hooks/ActivitiesHook';
 
 import CardComponent from '@Components/Common/Card/CardComponent';
 import { ThreeDotsLoader } from '@Components/Common/Loading/ThreeDotsLoader';
@@ -25,9 +25,9 @@ import ConfirmationModalComponent from '@Components/Common/Dialog/ConfirmationMo
 import ActivitiesModal from './modal/ActivitiesModal';
 import ActivitiesList from './ActivitiesList';
 
-import useActivitiesStore, { useActivitiesActions } from '../../Store/ActivitiesStore';
+import useActivitiesStore, { useActivitiesActions } from '../../../../Store/ActivitiesStore';
 
-import { ACTIVITIES } from '../../Data/constants';
+import { ACTIVITIES } from '../../../../Data/constants';
 
 const centeredStyle = {
     direction: 'column',

@@ -54,6 +54,17 @@ export const ACTIVITIES = {
   ACTIVITY_CREATE_NEW: 'This objective doesn’t have any activities assigned. Add one to start defining what needs to be accomplished.'
 }
 
+export const RESPONSIBLE = {
+  PAGE_TITLE: "AOP for Fiscal Year ",
+  PAGE_DESCRIPTION: "The following below serves as the summary of your AOP request. You can open and update your request before the deadline as set by the administrators.",
+  MANAGE_RESPONSIBLE_HEADER: "Manage Responsible Person for",
+  MANAGE_RESPONSIBLE_SUBHEADER: "Assign designated personnel for each activity to ensure accountability.",
+  EMPTY_STATE_TITLE: 'No Assigned Responsible Persons',
+  EMPTY_STATE_DESCRIPTION: ' You haven’t assigned any responsible persons for this activity. Add someone now to make sure progress and accountability are properly tracked.',
+  MODAL_TITLE: 'Assign Responsible Persons',
+  MODAL_DESCRIPTION: 'Select individuals or job positions who will be responsible for this activity. You can assign multiple people and positions.',
+}
+
 export const AOP_CONSTANTS = {
   AOP_TITLE: "Annual Operations Planning",
   AOP_SUBHEADING:

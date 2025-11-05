@@ -1,29 +1,39 @@
-import { create } from "zustand";
 import { API } from "../Data/constants";
-import { read, post } from "../Services/RequestMethods";
+import { read } from "../Services/RequestMethods";
+import { useUsersActions } from "../Store/UsersStore";
 
-const useUserHook = create((set) => ({
-  users: [],
+const useUserHook = () => {
 
-  getUsers: (callBack) => {
-    read({
-      url: API.USERS,
-      failed: callBack,
-      success: (res) => {
-        const { status, message, data } = res;
-        set({ users: data });
-        callBack(status, message);
-      },
-    });
-  },
+  const { setUsers } = useUsersActions();
 
-  getAuthorized: (pin, Callback) => {
+  const getUsers = (callBack) => {
+    try {
+      read({
+        url: API.USERS,
+        failed: callBack,
+        success: (res) => {
+          const { status, message, data } = res;
+          setUsers(data);
+          callBack(status, message);
+        },
+      });
+    } catch (error) {
+      console.error("Error fetching job positions:", error);
+      callBack(false, error.message);
+    }
+  }
+
+  const getAuthorized = (pin, Callback) => {
     if (pin == "12345") {
       Callback(true);
       return;
     }
-    Callback(false);
-  },
-}));
+  }
+
+  return {
+    getUsers,
+    getAuthorized,
+  }
+}
 
 export default useUserHook;

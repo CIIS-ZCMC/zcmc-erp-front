@@ -16,6 +16,7 @@ function ChipComponent({
   status,
   endDecorator,
   variant,
+  onClick,
   ...props
 }) {
   const sxStyles = {
@@ -34,6 +35,8 @@ function ChipComponent({
       color={color}
       variant={variant}
       sx={sxStyles}
+      onClick={onClick}
+      size="lg"
       endDecorator={endDecorator && getStatusIcon(status, true)} // the second param is for icon display
       {...props}
     >
