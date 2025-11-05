@@ -28,12 +28,17 @@ export default function ResourceCardComponent({
   specifications = [],
   onQtyChange,
   onDelete,
+  options = [],
+  purchase_type,
+  onPurchaseTypeChange,
 }) {
   const theme = useTheme();
   const color = theme.palette;
 
   const total = quantity * price;
   const [openModal, setOpenModal] = useState(false); // ← modal state
+  const [selectedPurchaseType, setSelectedPurchaseType] =
+    useState(purchase_type);
 
   return (
     <Fragment>
@@ -128,7 +133,16 @@ export default function ResourceCardComponent({
 
           <Box>
             <Typography level="body-xs">Purchase Type</Typography>
-            <AutocompleteComponent />
+            <AutocompleteComponent
+              options={options}
+              value={selectedPurchaseType}
+              setValue={(val) => {
+                setSelectedPurchaseType(val);
+                onPurchaseTypeChange(val); // trigger parent update
+              }}
+              getOptionLabel={(opt) => opt?.description || ""}
+              placeholder="Select type"
+            />
           </Box>
 
           {/* Prices */}

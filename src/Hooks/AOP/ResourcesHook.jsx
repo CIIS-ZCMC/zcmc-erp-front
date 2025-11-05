@@ -51,6 +51,27 @@ const useResourcesHook = create((set) => ({
       },
     });
   },
+
+  updatePurchaseType: async (id, form, callBack) => {
+    update({
+      url: `${PATH}-update/${id}/purchase-type`,
+      form: form,
+      failed: callBack,
+      success: ({ status, data }) => {
+        const { message, data: updatedResource } = data;
+
+        set((state) => ({
+          resources: state.resources.map((res) =>
+            res.id === updatedResource.id
+              ? { ...res, purchase_type: updatedResource.purchase_type }
+              : res
+          ),
+        }));
+
+        callBack(status, message);
+      },
+    });
+  },
 }));
 
 export default useResourcesHook;

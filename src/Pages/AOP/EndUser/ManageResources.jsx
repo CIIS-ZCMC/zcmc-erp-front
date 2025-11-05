@@ -39,7 +39,8 @@ function ManageResources(props) {
   const location = useLocation();
   const { activityId } = location.state;
 
-  const { getAOPResources, resources, updateResourceQty } = useResourcesHook();
+  const { getAOPResources, resources, updateResourceQty, updatePurchaseType } =
+    useResourcesHook();
   const { getPurchaseType, purchase_types } = usePurchaseTypeHook();
 
   const theme = useTheme();
@@ -61,6 +62,21 @@ function ManageResources(props) {
         console.log("✅ Resource updated successfully:", message);
       } else {
         console.error("❌ Failed to update resource:", message);
+      }
+    });
+  };
+
+  const handlePurchaseTypeChange = (selectedType, resourceId) => {
+    if (!selectedType) return;
+
+    const formData = new FormData();
+    formData.append("purchase_type_id", selectedType.id);
+
+    updatePurchaseType(resourceId, formData, (status, message) => {
+      if (status === 200) {
+        console.log("Purchase type updated successfully:", message);
+      } else {
+        console.error("Failed to update purchase type:", message);
       }
     });
   };
@@ -217,6 +233,11 @@ function ManageResources(props) {
                   unit={item.item.item_unit?.name}
                   specifications={item.item.item_specifications}
                   onQtyChange={handleUpdateResource}
+                  options={purchase_types}
+                  purchase_type={item.purchase_type}
+                  onPurchaseTypeChange={(selectedType) =>
+                    handlePurchaseTypeChange(selectedType, item.id)
+                  }
                 />
               </Grid>
             ))}
