@@ -55,6 +55,12 @@ export default function AddToCartLayout({}) {
         open={openPreview}
         onClose={() => setOpenPreview(false)}
         item={selectedProduct}
+        price={selectedProduct?.estimated_budget}
+        category={selectedProduct?.item_category?.description}
+        unit={selectedProduct?.item_unit?.name}
+        specifications={selectedProduct?.item_specifications}
+        name={selectedProduct?.name}
+        variant={selectedProduct?.terminology}
         onAddToCart={addToCart}
       />
     </Fragment>

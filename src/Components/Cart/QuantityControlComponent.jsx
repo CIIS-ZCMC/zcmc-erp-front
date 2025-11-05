@@ -1,6 +1,15 @@
 import React from "react";
 
-import { Stack, Typography, Input, Divider, Box } from "@mui/joy";
+import {
+  Stack,
+  Typography,
+  Input,
+  Divider,
+  Box,
+  Button,
+  ButtonGroup,
+  IconButton,
+} from "@mui/joy";
 import { Divide, Minus, Plus } from "lucide-react";
 
 import IconButtonComponent from "../../Components/Common/IconButtonComponent";
@@ -20,47 +29,16 @@ const QuantityControlComponent = ({
         </Typography>
       )}
 
-      <Stack direction="row" alignItems="stretch" spacing={0.5}>
-        <IconButtonComponent
-          size={"sm"}
-          variant={"soft"}
-          icon={<Minus size={14} />}
-          disabled={quantity === 1}
-          onClick={onDecrease}
-        />
-        <Box
-          sx={{
-            borderRadius: 5,
-            backgroundColor: "neutral.100",
-            width: 30,
-            display: "flex",
-            justifyContent: "center",
-            alignItems: "center",
-          }}
-        >
-          <Typography
-            fontSize={12}
-            sx={{
-              color: "black",
-            }}
-            textAlign="center"
-          >
-            {quantity}
-          </Typography>
-        </Box>
+      <ButtonGroup variant="soft" size="sm" color="neutral" spacing="0.2rem">
+        <IconButton onClick={onDecrease} disabled={quantity === 1}>
+          <Minus />
+        </IconButton>
+        <Button>{quantity}</Button>
 
-        {/* <Typography level="body-md" width="2rem" textAlign="center">
-                {quantity}
-            </Typography> */}
-
-        <IconButtonComponent
-          size={"sm"}
-          variant={"soft"}
-          icon={<Plus size={14} />}
-          // disabled={quantity <= 1}
-          onClick={onIncrease}
-        />
-      </Stack>
+        <IconButton onClick={onIncrease}>
+          <Plus />
+        </IconButton>
+      </ButtonGroup>
     </Stack>
   );
 };

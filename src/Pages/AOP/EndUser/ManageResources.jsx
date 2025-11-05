@@ -1,10 +1,11 @@
-import React, { Fragment, use, useEffect } from "react";
+import React, { Fragment, use, useEffect, useState } from "react";
 import PropTypes from "prop-types";
 import PageTitle from "@Components/Common/PageTitle";
 import {
   Box,
   Breadcrumbs,
   Divider,
+  Grid,
   Stack,
   Typography,
   useTheme,
@@ -31,43 +32,62 @@ import ButtonComponent from "@Components/Common/ButtonComponent";
 import { useLocation, useNavigate } from "react-router-dom";
 import ResourceCardComponent from "@Components/Resources/ResourceCardComponent";
 import useResourcesHook from "../../../Hooks/AOP/ResourcesHook";
+import usePurchaseTypeHook from "../../../Hooks/PurchaseTypeHook";
+import { ThreeDotsLoader } from "@Components/Common/Loading/ThreeDotsLoader";
 
 function ManageResources(props) {
   const location = useLocation();
   const { activityId } = location.state;
 
   const { getAOPResources, resources } = useResourcesHook();
+  const { getPurchaseType, purchase_types } = usePurchaseTypeHook();
+
   const theme = useTheme();
   const navigate = useNavigate();
+
   const color = theme.palette;
   const currentYear = new Date().getFullYear();
   const currentFiscalYear = currentYear + 1;
 
+  const [isLoading, setIsLoading] = useState(false);
+
   useEffect(() => {
     if (!activityId) return; // prevent calling if id is not ready
+    setIsLoading(true);
 
     getAOPResources((status, message) => {
       if (status !== 200) {
         console.error("Failed to fetch items:", message);
       }
+      setIsLoading(false);
     }, activityId);
+
+    getPurchaseType((status, message) => {
+      if (status !== 200) {
+        console.error("Failed to fetch items:", message);
+      }
+    });
   }, [activityId]);
   return (
     <Fragment>
-      <Stack spacing={1}>
+      <Stack spacing={3}>
         <PageTitle
           title={`AOP for Fiscal Year ${currentFiscalYear}`}
           description={
             "The following below serves as the summary of your AOP request. You can open and update your request before the deadline as set by the administrators."
           }
           items={[
-            { label: "Objectives", path: "/objectives" },
-            { label: "Activities", path: "/activities" },
-            { label: "Resources", path: "/manage-resources", current: true },
+            { label: "Objectives", path: "/objectives" }, //update path later
+            { label: "Activities", path: "/activities" }, // update path later
+            {
+              label: "Resources",
+              path: `/manage-resources/${activityId}`,
+              current: true,
+            },
           ]}
         />
 
-        <BoxComponent bgColor={color.neutralBg} padding={2}>
+        <BoxComponent bgColor={"#FAFAF9"} boxShadow="sm" padding={2}>
           <Stack direction={"row"} justifyContent={"space-between"}>
             <Stack>
               <Stack direction={"row"} spacing={1}>
@@ -92,7 +112,11 @@ function ManageResources(props) {
               <ButtonComponent
                 label={"Add a resource"}
                 startDecorator={<PlusIcon />}
-                onClick={() => navigate("select-resources")}
+                onClick={() =>
+                  navigate(`select-resources/${activityId}`, {
+                    state: { activityId: activityId },
+                  })
+                }
               />
             </Stack>
           </Stack>
@@ -162,9 +186,25 @@ function ManageResources(props) {
             </Stack>
           </Stack>
         </BoxComponent>
-
-        {resources.length > 0 ? (
-          <ResourceCardComponent />
+        {isLoading ? (
+          <Stack height="60vh" alignItems="center" justifyContent="center">
+            <ThreeDotsLoader />
+          </Stack>
+        ) : resources.length > 0 ? (
+          <Grid container spacing={2}>
+            {resources.map((item, index) => (
+              <Grid xs={12} sm={6} md={3} key={index}>
+                <ResourceCardComponent
+                  category={item.item.category}
+                  name={item.item.name}
+                  price={item.item.estimated_budget}
+                  qty={item.quantity}
+                  unit={item.item.item_unit?.name}
+                  specifications={item.item.item_specifications}
+                />
+              </Grid>
+            ))}
+          </Grid>
         ) : (
           <BoxComponent
             borderColor={grey[300]}

@@ -59,16 +59,22 @@ export default function AddResources() {
     formData.append("activity_id", activityId);
 
     cart.forEach((item, index) => {
-      Object.entries(item).forEach(([key, value]) => {
-        formData.append(`items[${index}][${key}]`, value);
-      });
+      formData.append(`items[${index}][item_id]`, item.id);
+      formData.append(`items[${index}][quantity]`, item.qty);
     });
 
     await postAOPResources(formData, (status, message) => {
-      if (status === 200) {
-        console.log("Items saved successfully");
+      if (status === 201) {
+        setAlertDialog({
+          status: "success",
+          title: `${message}`,
+          description: "",
+        });
+        clearCart();
+        navigate(`/manage-resources/${activityId}`, {
+          state: { activityId: activityId },
+        });
         return;
-        // navigate("/aop-management");
       } else {
         setAlertDialog({
           status: "error",
@@ -122,7 +128,16 @@ export default function AddResources() {
               </Typography>
             </Stack>
             <Stack direction="row" spacing={1}>
-              <ButtonComponent label="Cancel Selection" variant={"outlined"} />
+              <ButtonComponent
+                label="Cancel Selection"
+                variant={"outlined"}
+                onClick={() => {
+                  clearCart();
+                  navigate(`/manage-resources/${activityId}`, {
+                    state: { activityId: activityId },
+                  });
+                }}
+              />
               <ButtonComponent
                 label={"Save items"}
                 onClick={() => handleSaveItems()}
@@ -130,7 +145,11 @@ export default function AddResources() {
               <IconButtonComponent
                 icon={<X />}
                 size={"sm"}
-                onClick={() => navigate("/manage-resources")}
+                onClick={() =>
+                  navigate(`/manage-resources/${activityId}`, {
+                    state: { activityId: activityId },
+                  })
+                }
               />
             </Stack>
           </Stack>
