@@ -16,6 +16,7 @@ import useResourcesHook from "../../../Hooks/AOP/ResourcesHook";
 import useCartStore from "../../../Hooks/ItemCartHook";
 import useModalHook from "../../../Hooks/ModalHook";
 import { useAuth } from "../../../Store/AuthStore";
+import useSearchHook from "../../../Hooks/SearchHook";
 
 export default function AddResources() {
   const { user } = useAuth();
@@ -28,6 +29,8 @@ export default function AddResources() {
 
   const { items, getItems } = useItemsHook();
   const { postAOPResources } = useResourcesHook();
+  const { getSearchSuggestions, getSearchResults, suggestions, results } =
+    useSearchHook();
   const cartStore = useCartStore(user?.id || "guest");
   const { cart, clearCart } = cartStore();
   const {
@@ -154,7 +157,12 @@ export default function AddResources() {
             </Stack>
           </Stack>
           <Divider sx={{ my: 2, bgcolor: color.primary.fontLight }} />
-          <AddToCartLayout />
+          <AddToCartLayout
+            getSearchResults={getSearchResults}
+            getSearchSuggestions={getSearchSuggestions}
+            suggestions={suggestions}
+            results={results}
+          />
         </ContainerComponent>
       </Stack>
     </Fragment>

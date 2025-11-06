@@ -34,13 +34,38 @@ import ResourceCardComponent from "@Components/Resources/ResourceCardComponent";
 import useResourcesHook from "../../../Hooks/AOP/ResourcesHook";
 import usePurchaseTypeHook from "../../../Hooks/PurchaseTypeHook";
 import { ThreeDotsLoader } from "@Components/Common/Loading/ThreeDotsLoader";
+import moment from "moment";
+
+const QuarterTarget = ({ label = "Q1", value }) => (
+  <>
+    <Stack
+      direction="row"
+      spacing={1}
+      alignItems="center"
+      bgcolor="#F2F2F2"
+      padding={0.5}
+      borderRadius={5}
+    >
+      <Typography level="body-xs">{label}</Typography>
+      <Typography sx={{ fontWeight: 600 }}>
+        {" "}
+        {value === null || value === undefined || value === "" ? "-" : value}
+      </Typography>
+    </Stack>
+  </>
+);
 
 function ManageResources(props) {
   const location = useLocation();
   const { activityId } = location.state;
 
-  const { getAOPResources, resources, updateResourceQty, updatePurchaseType } =
-    useResourcesHook();
+  const {
+    getAOPResources,
+    resources,
+    updateResourceQty,
+    updatePurchaseType,
+    activity,
+  } = useResourcesHook();
   const { getPurchaseType, purchase_types } = usePurchaseTypeHook();
 
   const theme = useTheme();
@@ -100,6 +125,7 @@ function ManageResources(props) {
   }, [activityId]);
   return (
     <Fragment>
+      {console.log("activity", activity)}
       <Stack spacing={3}>
         <PageTitle
           title={`AOP for Fiscal Year ${currentFiscalYear}`}
@@ -163,7 +189,10 @@ function ManageResources(props) {
                   <CalendarToday sx={{ fontSize: 30, color: blue[800] }} />{" "}
                   <Stack>
                     <Typography level="body-sm">Timeframe</Typography>
-                    <Typography level="title-md">August - September</Typography>
+                    <Typography level="title-md">
+                      {moment(activity.start_month).format("MMMM")}-{" "}
+                      {moment(activity.end_month).format("MMMM")}
+                    </Typography>
                   </Stack>
                 </Stack>
                 <Stack direction={"row"} spacing={1} width="100%">
@@ -181,7 +210,13 @@ function ManageResources(props) {
                   </Box>
                   <Stack>
                     <Typography level="body-sm">Total Cost</Typography>
-                    <Typography level="title-md">₱ 500,000.00</Typography>
+                    <Typography level="title-md">
+                      ₱{" "}
+                      {activity.cost?.toLocaleString("en-PH", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}
+                    </Typography>
                   </Stack>
                 </Stack>
 
@@ -191,29 +226,35 @@ function ManageResources(props) {
                     <Typography level="body-sm">
                       GAD-related activity
                     </Typography>
-                    <Typography level="title-md">Yes</Typography>
+                    <Typography level="title-md">
+                      {activity.is_gad_related ? "Yes" : "No"}
+                    </Typography>
                   </Stack>
                 </Stack>
               </Stack>
               <Divider sx={{ my: 2, backgroundColor: grey }} />
             </Stack>
           </Stack>
-
-          <Stack direction={"row"} spacing={1} alignItems={"center"}>
+          <Stack direction="row" spacing={3} alignItems="center">
             <Typography level="body-xs" sx={{ fontWeight: 600 }}>
-              Target (by quarter){" "}
+              Target (by quarter)
             </Typography>
-            <Stack
-              direction={"row"}
-              spacing={1}
-              alignItems={"center"}
-              bgcolor={"#F2F2F2"}
-              padding={0.5}
-              borderRadius={5}
-            >
-              <Typography level="body-xs">Q1</Typography>
-              <Typography sx={{ fontWeight: 600 }}>200</Typography>
-            </Stack>
+            <QuarterTarget
+              label={"Q1"}
+              value={activity?.target?.first_quarter}
+            />
+            <QuarterTarget
+              label={"Q2"}
+              value={activity?.target?.second_quarter}
+            />
+            <QuarterTarget
+              label={"Q3"}
+              value={activity?.target?.third_quarter}
+            />
+            <QuarterTarget
+              label={"Q4"}
+              value={activity?.target?.fourth_quarter}
+            />
           </Stack>
         </BoxComponent>
         {isLoading ? (
