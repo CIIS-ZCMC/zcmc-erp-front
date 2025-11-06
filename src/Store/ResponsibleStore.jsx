@@ -1,29 +1,55 @@
 import { create } from 'zustand';
 
 const useResponsibleStore = create((set, get) => ({
+
     responsiblePeople: [],
+    selectedPeople: [],
 
     actions: {
-        setResponsiblePeople: (responsible) => {
+
+        setResponsiblePeople: (responsiblePeople) => set({ responsiblePeople }),
+
+        setSelectedPeople: (responsible) => {
             set((state) => {
-                const currentList = [...state.responsiblePeople];
+                const currentList = state.selectedPeople?.filter(Boolean) || [];
                 const newItems = Array.isArray(responsible)
-                    ? personOrArray
-                    : [responsible];
+                    ? responsible.filter(Boolean)
+                    : responsible
+                        ? [responsible]
+                        : [];
+
+                // Only proceed if we have valid items
+                if (newItems.length === 0) return state;
 
                 const merged = [
                     ...currentList,
                     ...newItems.filter(
-                        (item) => !currentList.some((p) => p.id === item.id)
+                        (item) => item && !currentList.some((p) => p.id === item.id)
                     ),
                 ];
 
-                console.log('Updated responsible people list:', merged);
-                return { responsiblePeople: merged };
+                console.log('Updated responsible people list: ', merged);
+                return { selectedPeople: merged };
             });
         },
 
-        clearResponsiblePeople: () => set({ responsiblePeople: [] })
+        removeResponsiblePerson: (id) => {
+            set((state) => {
+                // Check if the list exists and has items
+                if (!state.selectedPeople || state.selectedPeople.length === 0) {
+                    console.warn('No responsible people to remove.');
+                    return state; // Do nothing
+                }
+
+                return {
+                    selectedPeople: state.selectedPeople.filter((p) => p.id !== id),
+                };
+            });
+        },
+
+
+        clearResponsiblePeople: () => set({ responsiblePeople: [] }),
+        clearSelectedPeople: () => set({ selectedPeople: [] })
     }
 
 }))

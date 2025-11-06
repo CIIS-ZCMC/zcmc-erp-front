@@ -17,8 +17,8 @@ import useJobPositionStore from '../../../../../Store/JobPositionsStore';
 
 const ResponsibleModal = () => {
 
-    const { responsiblePeople } = useResponsibleStore();
-    const { setResponsiblePeople } = useResponsiblePeopleActions();
+    const { selectedPeople } = useResponsibleStore();
+    const { setSelectedPeople, removeResponsiblePerson } = useResponsiblePeopleActions();
 
     const { users } = useUsersStore();
     const { jobPositions } = useJobPositionStore();
@@ -49,19 +49,32 @@ const ResponsibleModal = () => {
     }, [])
 
     // Filter out users that are already selected
-    const availableOptions = useMemo(() => {
+    const availableUsers = useMemo(() => {
         return users.filter(
-            (user) => !responsiblePeople.some((p) => p.id === user.id)
+            (user) => !selectedPeople?.filter(Boolean)
+                .some((p) => p.id === user.id)
         );
-    }, [users, responsiblePeople]);
+    }, [users, selectedPeople]);
+
+    // Filter out job positions that are already selected
+    const availableJobPositions = useMemo(() => {
+        return (jobPositions || []).filter(
+            (position) =>
+                !selectedPeople?.filter(Boolean)
+                    .some((p) => p.id === position.id)
+        );
+    }, [jobPositions, selectedPeople]);
+
+    const userCount = selectedPeople.filter((user) => user.sector_id).length
+    const jobPositionCount = selectedPeople.filter((position) => !position.sector_id).length
 
     return (
         <>
             <Tabs aria-label="Basic tabs" defaultValue={0} >
 
                 <TabList tabFlex={1}>
-                    <Tab>People (4)</Tab>
-                    <Tab>Job Position(2)</Tab>
+                    <Tab>People ({userCount})</Tab>
+                    <Tab>Job Position({jobPositionCount})</Tab>
                 </TabList>
 
                 <TabPanel value={0}>
@@ -69,8 +82,8 @@ const ResponsibleModal = () => {
                         label={'Select Person/People'}
                         size={'lg'}
                         placeholder='Search by name or department'
-                        setValue={(value) => setResponsiblePeople(value)}
-                        options={availableOptions}
+                        setValue={(value) => setSelectedPeople(value)}
+                        options={availableUsers}
                     // disabled={!isEditing}
                     />
                 </TabPanel>
@@ -80,8 +93,8 @@ const ResponsibleModal = () => {
                         label={'Select job position'}
                         placeholder='Search by position or department'
                         size={'lg'}
-                        setValue={(value) => setResponsiblePeople(value)}
-                        options={jobPositions}
+                        setValue={(value) => setSelectedPeople(value)}
+                        options={availableJobPositions}
                     // disabled={!isEditing}
                     />
                 </TabPanel>
@@ -93,14 +106,14 @@ const ResponsibleModal = () => {
                 gap={1}
                 flexWrap="wrap"
             >
-                {responsiblePeople.map(({ id, label }) => (
+                {selectedPeople.map(({ id, label, sector_id }) => (
                     <ChipComponent
                         key={id}
-                        variant="outlined"
-                        color="success"
+                        variant="solid"
+                        color={sector_id ? 'primary' : 'success'}
                         label={label}
                         endDecorator={true}
-                        onClick={() => console.log('delete me:', id)}
+                        onClick={() => removeResponsiblePerson(id)}
                         status={'error'}
                     />
                 ))}

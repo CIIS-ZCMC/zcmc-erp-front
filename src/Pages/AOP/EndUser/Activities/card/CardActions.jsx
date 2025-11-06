@@ -11,9 +11,9 @@ const CardActions = ({
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    console.log(resourcesCount)
-  }, [resourcesCount])
+  // useEffect(() => {
+  //   console.log(activityId)
+  // }, [resourcesCount])
 
   return (
     <>

@@ -227,6 +227,12 @@ export const API = {
   ACTIVITIES_DELETE: "activities-delete",
   ACTIVITY_SHOW: "activities-show",
 
+  PEOPLE: "responsible-people",
+  PEOPLE_STORE: "responsible-people-post",
+  PEOPLE_SHOW: "responsible-people-show",
+  PEOPLE_UPDATE: "responsible-people-update",
+  PEOPLE_DELETE: "responsible-people-delete",
+
   AOP_APPLICATION_SHOW: "aop-application-show",
   AOP_APPLICATION_EDIT: "aop-application-edit",
   AOP_APPLICATION_UPDATE: "aop-application-update",

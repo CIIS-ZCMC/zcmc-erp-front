@@ -40,6 +40,8 @@ function AutocompleteComponent({
     <FormControl sx={{ width: width }} {...props}>
       {label && <FormLabel>{label}</FormLabel>}
       <Autocomplete
+        clearOnBlur
+        clearOnEscape
         multiple={multiple}
         filterSelectedOptions={true}
         startDecorator={startDecorator}
