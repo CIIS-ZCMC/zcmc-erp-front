@@ -1,10 +1,12 @@
 import { Close } from "@mui/icons-material";
 import {
   Autocomplete,
+  AutocompleteOption,
   CircularProgress,
   Divider,
   IconButton,
   List,
+  ListDivider,
   ListItem,
   ListItemContent,
   Modal,
@@ -38,12 +40,13 @@ export default function SearchWithSuggestions({
   onSelect,
   suggestions = [],
   results = [],
+  getItems,
 }) {
   const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
   const [openModal, setOpenModal] = useState(false);
 
-  // ✅ Debounced suggestion fetch
+  // Debounced suggestion fetch
   const debouncedFetchSuggestions = useMemo(
     () =>
       debounce(async (text) => {
@@ -56,23 +59,30 @@ export default function SearchWithSuggestions({
     [getSearchSuggestions, debounceDelay]
   );
 
-  // ✅ Full search
+  // Full search
   const handleFullSearch = async (text) => {
     if (!text.trim()) return;
     setLoading(true);
     await getSearchResults((status, message) => {
       setLoading(false);
-      setOpenModal(true);
+      // setOpenModal(true);
     }, text);
   };
 
-  // ✅ Input change
-  const handleInputChange = (e, value) => {
+  // Input change
+  const handleInputChange = (e, value, reason) => {
     setQuery(value);
+
+    if (reason === "clear" || !value.trim()) {
+      // User clicked the X or cleared the input
+      getItems();
+      return;
+    }
+
     debouncedFetchSuggestions(value);
   };
 
-  // ✅ Suggestion select
+  // Suggestion select
   const handleSelect = (e, value) => {
     if (value) {
       setQuery(value.name);
@@ -81,7 +91,7 @@ export default function SearchWithSuggestions({
     }
   };
 
-  // ✅ Press enter
+  // Press enter
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
@@ -108,11 +118,21 @@ export default function SearchWithSuggestions({
             borderRadius: "md",
             backgroundColor: "background.body",
           }}
+          renderOption={(props, option, { index }) => (
+            <>
+              <AutocompleteOption {...props}>
+                <ListItemContent sx={{ px: 2, py: 1 }}>
+                  <Stack>
+                    <Typography level="body-sm">{option.name}</Typography>
+                  </Stack>
+                </ListItemContent>
+              </AutocompleteOption>
+            </>
+          )}
         />
       </Stack>
 
-      {/* Modal for full results */}
-      <Modal open={openModal} onClose={() => setOpenModal(false)}>
+      {/* <Modal open={openModal} onClose={() => setOpenModal(false)}>
         <ModalDialog
           sx={{
             width: modalWidth,
@@ -163,7 +183,7 @@ export default function SearchWithSuggestions({
             </Typography>
           )}
         </ModalDialog>
-      </Modal>
+      </Modal> */}
     </Fragment>
   );
 }

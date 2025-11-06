@@ -27,10 +27,9 @@ export default function AddResources() {
   const location = useLocation();
   const { activityId } = location.state;
 
-  const { items, getItems } = useItemsHook();
+  const { items, getItems, getSearchResults } = useItemsHook();
   const { postAOPResources } = useResourcesHook();
-  const { getSearchSuggestions, getSearchResults, suggestions, results } =
-    useSearchHook();
+  const { getSearchSuggestions, suggestions } = useSearchHook();
   const cartStore = useCartStore(user?.id || "guest");
   const { cart, clearCart } = cartStore();
   const {
@@ -160,8 +159,10 @@ export default function AddResources() {
           <AddToCartLayout
             getSearchResults={getSearchResults}
             getSearchSuggestions={getSearchSuggestions}
+            getItems={getItems}
             suggestions={suggestions}
-            results={results}
+            loading={displayLoading}
+            items={items}
           />
         </ContainerComponent>
       </Stack>

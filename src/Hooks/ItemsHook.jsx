@@ -76,6 +76,19 @@ const useItemsHook = create((set) => ({
       },
     });
   },
+
+  getSearchResults: async (callBack, query) => {
+    read({
+      url: `search/${PATH}s`,
+      params: { query: query },
+      failed: callBack,
+      success: (res) => {
+        const { status, message, data } = res;
+        set({ items: data.data });
+        callBack(status, message);
+      },
+    });
+  },
 }));
 
 export default useItemsHook;

@@ -14,6 +14,9 @@ export default function AddToCartLayout({
   getSearchResults,
   suggestions,
   results,
+  loading = false,
+  items = [],
+  getItems,
 }) {
   const { user } = useAuth();
   const cartStore = useCartStore(user?.id || "guest");
@@ -40,7 +43,7 @@ export default function AddToCartLayout({
                 getSearchSuggestions={getSearchSuggestions}
                 getSearchResults={getSearchResults}
                 suggestions={suggestions}
-                results={results}
+                getItems={getItems}
                 onSelect={(item) => console.log("Selected item:", item)}
               />
             </Stack>
@@ -51,6 +54,8 @@ export default function AddToCartLayout({
               setOpenPreview(true);
             }}
             onAddToCart={addToCart}
+            loading={loading}
+            items={items}
           />
         </Grid>
         <Grid xs={4}>

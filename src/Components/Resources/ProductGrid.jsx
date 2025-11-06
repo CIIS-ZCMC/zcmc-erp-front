@@ -10,26 +10,13 @@ export default function ProductGrid({
   columnWidth = 300,
   rowHeight = 360,
   height = "64vh",
+  loading = false,
+  items = [],
 }) {
-  const [displayLoading, setDisplayLoading] = useState(false);
-  const { items, getItems } = useItemsHook();
-
-  useEffect(() => {
-    setDisplayLoading(true);
-
-    getItems((status, message, data) => {
-      if (status !== 200) {
-        console.error("Failed to fetch items:", message);
-      }
-      console.log(data);
-      setDisplayLoading(false);
-    });
-  }, []);
-
   return (
     <Fragment>
       <BoxComponent mt={2} boxShadow="sm" height={height}>
-        {displayLoading && items.length === 0 ? (
+        {loading && items.length === 0 ? (
           <Grid container spacing={2}>
             {[...Array(6)].map((_, index) => (
               <Grid xs={12} sm={6} md={4} key={index}>
