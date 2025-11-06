@@ -212,7 +212,7 @@ function ManageResources(props) {
                     <Typography level="body-sm">Total Cost</Typography>
                     <Typography level="title-md">
                       ₱{" "}
-                      {activity.cost?.toLocaleString("en-PH", {
+                      {activity?.cost?.toLocaleString("en-PH", {
                         minimumFractionDigits: 2,
                         maximumFractionDigits: 2,
                       })}

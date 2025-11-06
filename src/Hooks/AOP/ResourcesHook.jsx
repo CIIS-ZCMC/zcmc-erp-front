@@ -38,7 +38,8 @@ const useResourcesHook = create((set) => ({
       form: form,
       failed: callBack,
       success: ({ status, data }) => {
-        const { message, data: updatedResource } = data;
+        const { message, data: updatedResource, activity } = data;
+        console.log(activity);
 
         set((state) => ({
           resources: state.resources.map((res) =>
@@ -46,6 +47,10 @@ const useResourcesHook = create((set) => ({
               ? { ...res, quantity: updatedResource.quantity }
               : res
           ),
+          activity: {
+            ...state.activity,
+            cost: activity?.cost ?? state.activity.cost, // ✅ update only cost
+          },
         }));
 
         callBack(status, message);
