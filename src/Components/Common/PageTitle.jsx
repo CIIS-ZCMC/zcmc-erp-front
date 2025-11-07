@@ -52,14 +52,14 @@ function PageTitle({ title, description, items = [] }) {
               <Link
                 key={index}
                 component="button"
+                onClick={item.path}
                 color="neutral"
                 underline="hover"
                 level="body-sm"
                 sx={{
                   fontWeight: 500,
-                  "&:hover": { color: theme.palette.primary.plainColor },
+                  "&:hover": { color: theme.palette.primary[500] },
                 }}
-                onClick={() => navigate(item.path, { state: item.state ?? {} })}
               >
                 {item.label}
               </Link>

@@ -1,5 +1,4 @@
 import ButtonComponent from "@Components/Common/ButtonComponent";
-import BoxComponent from "@Components/Common/Card/BoxComponent";
 import IconButtonComponent from "@Components/Common/IconButtonComponent";
 import PageTitle from "@Components/Common/PageTitle";
 import useItemsHook from "../../../Hooks/ItemsHook";
@@ -7,16 +6,14 @@ import { Divider, Grid, Skeleton, Stack, Typography, useTheme } from "@mui/joy";
 import { X } from "lucide-react";
 import React, { Fragment, useEffect, useState } from "react";
 import ContainerComponent from "@Components/Common/ContainerComponent";
-import { useLocation, useNavigate } from "react-router-dom";
-import SearchBarComponentv2 from "@Components/SearchBarWithdeBounce";
-import ItemCardComponent from "@Components/Resources/ItemCardComponent";
-import ModalComponent from "@Components/Common/Dialog/ModalComponent";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import AddToCartLayout from "@Components/Resources/AddToCartLayout";
 import useResourcesHook from "../../../Hooks/AOP/ResourcesHook";
 import useCartStore from "../../../Hooks/ItemCartHook";
 import useModalHook from "../../../Hooks/ModalHook";
 import { useAuth } from "../../../Store/AuthStore";
 import useSearchHook from "../../../Hooks/SearchHook";
+import useAOPBreadcrumbs from "../../../Hooks/AOP/AOpBreadcrumbs";
 
 export default function AddResources() {
   const { user } = useAuth();
@@ -25,7 +22,9 @@ export default function AddResources() {
   const color = theme.palette;
   const navigate = useNavigate();
   const location = useLocation();
-  const { activityId } = location.state;
+  const { activityId } = useParams();
+
+  const breadcrumbs = useAOPBreadcrumbs();
 
   const { items, getItems, getSearchResults } = useItemsHook();
   const { postAOPResources } = useResourcesHook();
@@ -103,21 +102,7 @@ export default function AddResources() {
       <PageTitle
         title={`AOP for Fiscal Year ${currentFiscalYear}`}
         description="The following below serves as the summary of your AOP request. You can open and update your request before the deadline as set by the administrators."
-        items={[
-          { label: "Objectives", path: "/objectives" },
-          { label: "Activities", path: "/activities" },
-          {
-            label: "Resources",
-            path: `/manage-resources/${activityId}`,
-            state: { activityId },
-          },
-          {
-            label: "Select Resources",
-            path: `/select-resources/${activityId}`,
-            state: { activityId },
-            current: true,
-          },
-        ]}
+        items={breadcrumbs}
       />
       <Stack mt={2}>
         <ContainerComponent>
