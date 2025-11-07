@@ -3,7 +3,6 @@ import { read, post, update, remove, } from '../Services/RequestMethods';
 
 import useActivitiesStore, { useActivitiesActions } from "../Store/ActivitiesStore";
 
-
 const useActivitiesHook = () => {
 
     const { applicationActivities } = useActivitiesStore();

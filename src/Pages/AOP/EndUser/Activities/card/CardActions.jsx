@@ -11,9 +11,9 @@ const CardActions = ({
 
   const navigate = useNavigate();
 
-  useEffect(() => {
-    console.log(resourcesCount)
-  }, [resourcesCount])
+  // useEffect(() => {
+  //   console.log(activityId)
+  // }, [resourcesCount])
 
   return (
     <>
@@ -28,7 +28,7 @@ const CardActions = ({
           color="primary"
           size="md"
           p={2}
-          startDecorator={resourcesCount}
+          startDecorator={resourcesCount === 0 ? "0" : resourcesCount}
           endDecorator={<ArrowRight size={18} />}
           onClick={() =>
             navigate(`/manage-resources/${activityId}`, {
@@ -44,9 +44,13 @@ const CardActions = ({
           color="primary"
           size="md"
           p={2}
-          startDecorator={responsibleCount}
+          startDecorator={responsibleCount === 0 ? "0" : responsibleCount}
           endDecorator={<ArrowRight size={18} />}
-        // onClick={handleActivities}
+          onClick={() =>
+            navigate(`/responsible-person/${activityId}`, {
+              state: { activityId: activityId },
+            })
+          }
         >
           Responsible Person
         </Chip>

@@ -5,13 +5,13 @@ import { TriangleAlert } from "lucide-react";
 
 import AutocompleteComponent from "@Components/Form/AutocompleteComponent";
 
-import FunctionTypeHook from "../../../Hooks/FunctionTypeHook";
+import FunctionTypeHook from "../../../../../Hooks/FunctionTypeHook";
 
 // Store
-import { useFunctionTypes } from "../../../Store/functionTypesStore";
-import { useObjectivesActions } from "../../../Store/ObjectivesStore";
+import { useFunctionTypes } from "../../../../../Store/functionTypesStore";
+import { useObjectivesActions } from "../../../../../Store/ObjectivesStore";
 
-import { OBJECTIVES } from "../../../Data/constants";
+import { OBJECTIVES } from "../../../../../Data/constants";
 
 const ObjectivesModal = ({
   functionType,

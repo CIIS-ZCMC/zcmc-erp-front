@@ -1,199 +1,103 @@
-import { create } from "zustand";
-import { persist } from "zustand/middleware";
-import { post } from "../Services/RequestMethods";
+import { API } from "../Data/constants";
+import { read, post, update, remove } from '../Services/RequestMethods';
 
-const useResponsiblePeopleHook = create(
-  persist(
-    (set, get) => ({
-      responsible_people: [],
+import useResponsibleStore, { useResponsiblePeopleActions } from "../Store/ResponsibleStore";
 
-      // selectedResponsibleValue: {
-      //   users: [],
-      //   designations: [],
-      //   areas: [],
-      //   isAssigned: false,
-      // },
+const useResponsibleHook = () => {
+  const { responsiblePeople } = useResponsibleStore()
+  const { setResponsiblePeople } = useResponsiblePeopleActions();
 
-      setResponsiblePeople: (data) => {
-        set(() => ({
-          responsible_people: data
-        }))
-      },
-
-      setUpdatedResponsiblePeople: (data) => {
-        set(() => ({
-          responsible_people: data
-        }))
-      },
-
-      clearResponsiblePeople: () => {
-        set(() => ({
-          responsible_people: []
-        }))
-      },
-
-      setAssignmentStatus: (activityId, status) => {
-        set((state) => {
-          const updated = state.responsible_people.map((item) => {
-            if (item.activityId === activityId) {
-              return {
-                ...item,
-                isAssigned: status,
-              };
-            }
-            return item;
-          });
-
-          return {
-            responsible_people: updated,
-          };
-        });
-      },
-
-      getByActivityId: (activityId) => {
-        const { responsible_people } = get();
-        return responsible_people.find((item) => item.activityId === activityId);
-      },
-
-      handleValue: (activityId, key, value) => {
-        set((state) => {
-          const currentList = [...state.responsible_people];
-          const existingIndex = currentList.findIndex(
-            (item) => item.activityId === activityId
-          );
-
-          // If entry doesn't exist, insert new
-          if (existingIndex === -1) {
-            const newItem = {
-              activityId,
-              users: key === "users" ? [value] : [],
-              // areas: key === "areas" ? [value] : [],
-              designations: key === "designations" ? [value] : [],
-              isAssigned: false,
-            };
-
-            return {
-              responsible_people: [...currentList, newItem],
-            };
-          }
-
-          // Otherwise, update existing
-          const alreadyExists = currentList[existingIndex][key].some(
-            (el) => el.id === value.id
-          );
-          if (alreadyExists) return { responsible_people: currentList };
-
-          const updatedItem = {
-            ...currentList[existingIndex],
-            [key]: [...currentList[existingIndex][key], value],
-          };
-
-          currentList[existingIndex] = updatedItem;
-
-          return {
-            responsible_people: currentList,
-          };
-        });
-      },
-
-      removeItem: async (body, callback) => {
-        post({
-          url: `check-pin`,
-          // param: { id: params },
-          form: body,
-          success: (response) => {
-            const { message, data } = response.data;
-            callback(response.status, message, data);
-          },
-          failed: callback,
-        });
-      },
-
-      //remove single responsible personnel
-      removeResponsiblePersonnel: (id, key, activityId) =>
-        set((state) => {
-          const updatedResponsiblePersonnel = state.responsible_people.map(
-            (activity) => {
-              if (activity.activityId !== activityId) return activity;
-
-              const existingList = Array.isArray(activity[key])
-                ? activity[key]
-                : [];
-
-              return {
-                ...activity,
-                [key]: existingList.filter((item) => item.id !== id),
-              };
-            }
-          );
-
-          return {
-            responsible_people: updatedResponsiblePersonnel,
-          };
-        }),
-
-      //remove batch/muiltiple responsible personnel
-      removeMultipleResponsiblePersonnel: (activityIdsToRemove) => {
-        const { responsible_people } = get();
-        const filtered = responsible_people.filter(
-          (entry) => !activityIdsToRemove.includes(entry.activityId)
-        );
-        set({ responsible_people: filtered });
-      },
-
-      // reset value of responsible person selected values
-      resetValues: (activityIndex) => {
-        const { isAssigned, responsible_people } = get();
-        if (isAssigned) return;
-
-        const updated = responsible_people.map((activity) => {
-          // console.log(activity)
-          if (activity.activityId === activityIndex) {
-            return {
-              ...activity,
-              users: [],
-              designations: [],
-              areas: [],
-            };
-          }
-          return activity;
-        });
-
-        set({ responsible_people: updated });
-      },
-
-      findResponsiblePeopleByActivityID: (actID) => {
-        return get()
-          .responsible_people
-          .filter((item) => item.activityId === actID)
-          .map(item => [
-            ...(item.users || []).map((user) => ({
-              id: item.activityId,
-              user_id: user.id,
-              designation_id: null,
-              division_id: null,
-              department_id: null,
-              section_id: null,
-              unit_id: null,
-            })),
-            ...(item.designations || []).map((designation) => ({
-              id: item.activityId,
-              user_id: null,
-              designation_id: designation.id,
-              division_id: null,
-              department_id: null,
-              section_id: null,
-              unit_id: null,
-            })),
-          ])
-          .flat();
-      },
-    }),
-    {
-      name: "responsible-storage",
-      getStorage: () => localStorage,
+  const getPeople = (params, callBack) => {
+    try {
+      read({
+        url: API.PEOPLE,
+        failed: callBack,
+        params,
+        success: (res) => {
+          // console.log(res)
+          const {
+            status,
+            data: { message },
+          } = res;
+          setResponsiblePeople(res.data);
+          callBack(status, message)
+        }
+      });
+    } catch (error) {
+      console.error('Error fetching Responsible People:', error);
+      callBack?.(false, error.message)
     }
-  )
-);
+  };
 
-export default useResponsiblePeopleHook;
+  const createResponsible = (body, callBack) => {
+    try {
+      post({
+        url: API.PEOPLE_STORE,
+        form: body,
+        failed: callBack,
+        success: async (res) => {
+          const {
+            status,
+            data: { data, message },
+          } = res;
+          if (status === 201) {
+            const fetchParams = { activity_id: data[0].activity_id };
+
+            getPeople(fetchParams, (status, message) => {
+              if (!(status >= 200 && status < 300)) {
+                console.error("Failed to refresh activities:", message);
+              }
+            });
+          }
+          callBack?.(status, message);
+        },
+      })
+    }
+    catch (error) {
+      console.error("Error Creatin Objective:", error);
+      callBack(false, error.message);
+    }
+  }
+
+  const removeResponsible = (params, callBack) => {
+    try {
+      remove({
+        url: `${API.PEOPLE_DELETE}/${params.id}`,
+        params: params,
+        failed: callBack,
+        success: (res) => {
+          const {
+            status,
+            data: { message },
+          } = res;
+
+          if (status === 200) {
+            const updatedData = {
+              ...responsiblePeople,
+              responsible_people: responsiblePeople.responsible_people.filter(
+                (person) => person.responsible_person_id !== params.id
+              ),
+            };
+            // console.log('updated people', updatedData);
+            setResponsiblePeople(updatedData);
+          }
+          callBack?.(status, message);
+        },
+      })
+    }
+    catch (error) {
+      console.error("Error Deleting pEOPLE:", error);
+      callBack(false, error.message);
+    }
+  }
+
+
+  return {
+    getPeople,
+    createResponsible,
+    removeResponsible,
+  }
+
+}
+
+export default useResponsibleHook

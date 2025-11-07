@@ -1,14 +1,12 @@
-import React, { useEffect } from 'react'
+import React, { useEffect } from 'react';
 
-import { Stack, Typography, FormControl, FormLabel, Alert, Checkbox, Input } from '@mui/joy'
-
-import TextareaComponent from '@Components/Form/TextareaComponent'
-import InputComponent from '@Components/Form/InputComponent'
-
+import { Stack, Typography, FormControl, FormLabel, Alert, Checkbox, Input } from '@mui/joy';
 import { TriangleAlert } from 'lucide-react'
 
-import useActivitiesStore from '../../../Store/ActivitiesStore'
-import { useActivitiesActions } from '../../../Store/ActivitiesStore'
+import TextareaComponent from '@Components/Form/TextareaComponent';
+import InputComponent from '@Components/Form/InputComponent';
+
+import useActivitiesStore, { useActivitiesActions } from '../../../../../Store/ActivitiesStore';
 
 const ActivitiesModal = ({
     selectedActivity,
@@ -33,6 +31,22 @@ const ActivitiesModal = ({
             })
         }
     }, [selectedActivity])
+
+    useEffect(() => {
+        if (!startMonth && !endMonth) {
+            const defaultYear = new Date().getFullYear() + 1; //set to next year or + 1
+            setStartMonth(`${defaultYear}-01`);
+            setEndMonth(`${defaultYear}-01`);
+        }
+        // console.log(startMonth)
+    }, [startMonth])
+
+    const handleQuarterChange = (quarterKey) => (e) => {
+        const value = e.target.value;
+        if (value === "" || (!isNaN(value) && Number(value) >= 0 && Number(value) <= 100)) {
+            setTarget({ [quarterKey]: value }); // keep as string to allow typing
+        }
+    };
 
     return (
         <>
@@ -102,32 +116,41 @@ const ActivitiesModal = ({
                             type={'number'}
                             label={'Quarter 1'}
                             width={100}
+                            min={0}
+                            max={100}
                             value={firstQuarter || ""}
-                            onChange={(e) => setTarget({ firstQuarter: e.target.value })}
+                            onChange={handleQuarterChange("firstQuarter")}
                         />
 
                         <InputComponent
                             type={'number'}
                             label={'Quarter 2'}
                             width={100}
+                            min={0}
+                            max={100}
                             value={secondQuarter || ""}
-                            onChange={(e) => setTarget({ secondQuarter: e.target.value })}
+                            onChange={handleQuarterChange("secondQuarter")}
+
                         />
 
                         <InputComponent
                             type={'number'}
                             label={'Quarter 3'}
                             width={100}
+                            min={0}
+                            max={100}
                             value={thirdQuarter || ""}
-                            onChange={(e) => setTarget({ thirdQuarter: e.target.value })}
+                            onChange={handleQuarterChange("thirdQuarter")}
                         />
 
                         <InputComponent
                             type={'number'}
                             label={'Quarter 4'}
                             width={100}
+                            min={0}
+                            max={100}
                             value={fourthQuarter || ""}
-                            onChange={(e) => setTarget({ fourthQuarter: e.target.value })}
+                            onChange={handleQuarterChange("fourthQuarter")}
                         />
                     </Stack>
 

@@ -174,7 +174,7 @@ function DashboardEndUser(props) {
 
 
     const handleNavigateObjectives = () => {
-        navigate(`/aop/objectives/${aop.id}`, {
+        navigate(`/objectives/${aop.id}`, {
             state: { aopId: aop.id }
         });
     }

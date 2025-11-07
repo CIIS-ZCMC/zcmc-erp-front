@@ -16,6 +16,7 @@ function ChipComponent({
   status,
   endDecorator,
   variant,
+  onClick,
   fontSize = 12,
   ...props
 }) {
@@ -25,9 +26,9 @@ function ChipComponent({
     ...(variant || color
       ? { color: color }
       : {
-          fontWeight: 600,
-          border: 1,
-        }),
+        fontWeight: 600,
+        border: 1,
+      }),
   };
 
   return (
@@ -35,6 +36,8 @@ function ChipComponent({
       color={color}
       variant={variant}
       sx={sxStyles}
+      onClick={onClick}
+      size="lg"
       endDecorator={endDecorator && getStatusIcon(status, true)} // the second param is for icon display
       {...props}
     >

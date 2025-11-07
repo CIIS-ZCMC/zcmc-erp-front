@@ -6,9 +6,9 @@ import { useFunctionTypesActions } from "../Store/FunctionTypesStore";
 const useFunctionTypeHook = () => {
   const { setFunctionTypes } = useFunctionTypesActions()
 
-  const getFunctionType = async (params, callBack) => {
+  const getFunctionType = (params, callBack) => {
     try {
-      await read({
+      read({
         url: API.TYPE_OF_FUNCTIONS,
         params: params,
         failed: callBack,
