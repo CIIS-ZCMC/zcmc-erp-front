@@ -29,13 +29,14 @@ import {
   PlusIcon,
 } from "lucide-react";
 import ButtonComponent from "@Components/Common/ButtonComponent";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import ResourceCardComponent from "@Components/Resources/ResourceCardComponent";
 import useResourcesHook from "../../../Hooks/AOP/ResourcesHook";
 import usePurchaseTypeHook from "../../../Hooks/PurchaseTypeHook";
 import { ThreeDotsLoader } from "@Components/Common/Loading/ThreeDotsLoader";
 import moment from "moment";
 import SearchBarComponentv2 from "@Components/SearchBarWithdeBounce";
+import useAOPBreadcrumbs from "../../../Hooks/AOP/AOpBreadcrumbs";
 
 const QuarterTarget = ({ label = "Q1", value }) => (
   <>
@@ -58,7 +59,7 @@ const QuarterTarget = ({ label = "Q1", value }) => (
 
 function ManageResources(props) {
   const location = useLocation();
-  const { activityId } = location.state;
+  const { activityId } = useParams();
 
   const {
     getAOPResources,
@@ -72,6 +73,7 @@ function ManageResources(props) {
 
   const theme = useTheme();
   const navigate = useNavigate();
+  const breadcrumbs = useAOPBreadcrumbs();
 
   const color = theme.palette;
   const currentYear = new Date().getFullYear();
@@ -153,15 +155,7 @@ function ManageResources(props) {
         description={
           "The following below serves as the summary of your AOP request. You can open and update your request before the deadline as set by the administrators."
         }
-        items={[
-          { label: "Objectives", path: "/objectives" }, //update path later
-          { label: "Activities", path: "/activities" }, // update path later
-          {
-            label: "Resources",
-            path: `/manage-resources/${activityId}`,
-            current: true,
-          },
-        ]}
+        items={breadcrumbs}
       />
 
       <BoxComponent bgColor={"#FAFAF9"} boxShadow="xs" my={2} padding={2}>
