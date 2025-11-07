@@ -5,6 +5,7 @@ import { useLocation } from 'react-router-dom';
 
 import ModalComponent from '@Components/Common/Dialog/ModalComponent';
 import ConfirmationModalComponent from '@Components/Common/Dialog/ConfirmationModalComponent';
+import { ThreeDotsLoader } from '@Components/Common/Loading/ThreeDotsLoader';
 
 import ResponsibleTitle from './ResponsibleTitle';
 import ResponsibleStatus from './ResponsibleStatus';
@@ -19,6 +20,15 @@ import useModalHook from '../../../../Hooks/ModalHook';
 
 import { RESPONSIBLE } from '../../../../Data/constants';
 
+
+const centeredStyle = {
+    direction: 'column',
+    alignItems: 'center',
+    justifyContent: 'center',
+    textAlign: 'center',
+    height: '65vh',
+    my: 2,
+}
 
 const ResponsiblePerson = () => {
 
@@ -79,6 +89,9 @@ const ResponsiblePerson = () => {
         })
     }, [])
 
+    useEffect(() => {
+        console.log('updated responsible people list', responsiblePeople)
+    }, [responsiblePeople])
 
     const handleAssignPerson = async () => {
 
@@ -175,19 +188,32 @@ const ResponsiblePerson = () => {
     return (
         <>
             <Stack spacing={1}>
-                <ResponsibleTitle />
+                <ResponsibleTitle
+                    activity={activity}
+                />
                 <ResponsibleStatus
                     activity={activity}
                     openResponsibleModal={handleOpenResponsibleModal}
                 />
-                <ResponsibleList
-                    usersCount={users_only}
-                    positionsCount={designations_only}
-                    setSelectedId={setSelectedId}
-                    handleDelete={handleOpenDeleteModal}
-                    responsible_people={responsible_people}
-                    openResponsibleModal={handleOpenResponsibleModal}
-                />
+
+
+                {isLoading ?
+                    <Stack
+                        sx={centeredStyle}
+                    >
+                        <ThreeDotsLoader />
+                    </Stack>
+
+                    :
+                    <ResponsibleList
+                        usersCount={users_only}
+                        positionsCount={designations_only}
+                        setSelectedId={setSelectedId}
+                        handleDelete={handleOpenDeleteModal}
+                        responsible_people={responsible_people}
+                        openResponsibleModal={handleOpenResponsibleModal}
+                    />
+                }
             </Stack>
 
 

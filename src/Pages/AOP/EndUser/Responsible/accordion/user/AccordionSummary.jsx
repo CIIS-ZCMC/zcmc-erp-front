@@ -1,24 +1,24 @@
 import React, { useEffect } from 'react'
 
-import { Avatar, ListItemContent, Stack, Typography } from '@mui/joy'
+import {
+    Avatar,
+    ListItemContent,
+    Stack,
+    Typography
+} from '@mui/joy'
+
 import { CircleUser } from 'lucide-react'
+
+import PeopleIcon from '../../../../../../assets/responsible_people/People.svg'
 
 const AccordionSummary = ({
     usersCount
 }) => {
 
-    useEffect(() => {
-        console.log(usersCount)
-    }, [usersCount])
-
     return (
         <>
-            <Avatar
-                variant='soft'
-                color='primary'
-            >
-                <CircleUser color='white' />
-            </Avatar>
+
+            <img src={PeopleIcon} alt="people-icon" />
 
             <ListItemContent>
                 <Stack
@@ -33,10 +33,17 @@ const AccordionSummary = ({
                         </Typography>
                     </Stack>
 
-                    <Typography level="title-lg">
-                        {usersCount}
-                    </Typography>
+                    <Avatar
+                        variant='soft'
+                        color=''
+                        size='lg'
+                    >
+                        <Typography level="title-lg" color='violet'>
+                            {usersCount}
+                        </Typography>
+                    </Avatar>
                 </Stack>
+
             </ListItemContent>
         </>
     )

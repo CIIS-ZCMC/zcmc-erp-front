@@ -1,19 +1,20 @@
 import React from 'react'
 
-import { Avatar, ListItemContent, Stack, Typography } from '@mui/joy'
-import { CircleUser } from 'lucide-react'
+import {
+    Avatar,
+    ListItemContent,
+    Stack,
+    Typography
+} from '@mui/joy'
+
+import PositionsIcon from '../../../../../../assets/responsible_people/Positions.svg'
 
 const AccordionSummary = ({
     positionsCount
 }) => {
     return (
         <>
-            <Avatar
-                variant='soft'
-                color='primary'
-            >
-                <CircleUser color='white' />
-            </Avatar>
+            <img src={PositionsIcon} alt="positions-icon" />
 
             <ListItemContent>
                 <Stack
@@ -28,9 +29,17 @@ const AccordionSummary = ({
                         </Typography>
                     </Stack>
 
-                    <Typography level="title-lg">
-                        {positionsCount}
-                    </Typography>
+                    <Avatar
+                        variant='soft'
+                        color='secondary'
+                        size='lg'
+                    >
+                        <Typography level="title-lg" color='violet'>
+                            {positionsCount}
+                        </Typography>
+                    </Avatar>
+
+
                 </Stack>
             </ListItemContent>
         </>

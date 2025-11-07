@@ -9,7 +9,8 @@ import {
 
 const AccordionComponent = ({
     accordionSummary,
-    accordionDetails
+    accordionDetails,
+    defaultExpanded
 }) => {
     return (
         <>
@@ -17,7 +18,9 @@ const AccordionComponent = ({
                 // variant='soft'
                 transition="0.2s"
             >
-                <Accordion>
+                <Accordion
+                    defaultExpanded={defaultExpanded}
+                >
                     <AccordionSummary>
                         {accordionSummary}
                     </AccordionSummary>

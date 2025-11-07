@@ -72,10 +72,14 @@ const useResponsibleHook = () => {
           } = res;
 
           if (status === 200) {
-            const updatedPeople = responsiblePeople.responsible_people?.filter(
-              (obj) => obj.responsible_person_id !== params.responsible_person_id
-            );
-            setResponsiblePeople(updatedPeople);
+            const updatedData = {
+              ...responsiblePeople,
+              responsible_people: responsiblePeople.responsible_people.filter(
+                (person) => person.responsible_person_id !== params.id
+              ),
+            };
+            // console.log('updated people', updatedData);
+            setResponsiblePeople(updatedData);
           }
           callBack?.(status, message);
         },

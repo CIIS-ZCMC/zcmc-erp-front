@@ -17,7 +17,6 @@ import PositionAccordionDetails from './accordion/positions/AccordionDetails';
 
 import { RESPONSIBLE } from '../../../../Data/constants';
 
-
 const ResponsibleList = ({
     positionsCount,
     usersCount,
@@ -27,25 +26,13 @@ const ResponsibleList = ({
     responsible_people
 }) => {
 
-    const [isOpenUserAccordion, setIsOpenUserAccordion] = useState(true)
-
     const {
         EMPTY_STATE_TITLE,
         EMPTY_STATE_DESCRIPTION,
     } = RESPONSIBLE;
 
-    const handleOpenUserAccordion = () => {
-        setIsOpenUserAccordion(true)
-    }
-
-
-    useEffect(() => {
-        console.log(usersCount)
-    }, [usersCount])
-
     return (
         <>
-
             {responsible_people?.length === 0 ?
                 <BoxComponent
                     borderColor={grey[300]}
@@ -75,6 +62,7 @@ const ResponsibleList = ({
                     <Grid xs={6}>
                         <BoxComponent>
                             <AccordionComponent
+                                defaultExpanded={true}
                                 accordionSummary={
                                     <UserAccordionSummary
                                         usersCount={usersCount}
@@ -92,6 +80,7 @@ const ResponsibleList = ({
                     <Grid xs={6}>
                         <BoxComponent>
                             <AccordionComponent
+                                defaultExpanded={true}
                                 accordionSummary={
                                     <PositionAccordionSummary
                                         positionsCount={positionsCount}
