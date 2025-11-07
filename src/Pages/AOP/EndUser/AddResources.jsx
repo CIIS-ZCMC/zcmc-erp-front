@@ -100,19 +100,21 @@ export default function AddResources() {
   }, []);
   return (
     <Fragment>
-      {console.log(cart)}
       <PageTitle
         title={`AOP for Fiscal Year ${currentFiscalYear}`}
-        description={
-          "The following below serves as the summary of your AOP request. You can open and update your request before the deadline as set by the administrators."
-        }
+        description="The following below serves as the summary of your AOP request. You can open and update your request before the deadline as set by the administrators."
         items={[
           { label: "Objectives", path: "/objectives" },
           { label: "Activities", path: "/activities" },
-          { label: "Resources", path: "/manage-resources" },
+          {
+            label: "Resources",
+            path: `/manage-resources/${activityId}`,
+            state: { activityId },
+          },
           {
             label: "Select Resources",
-            path: "/select-resources",
+            path: `/select-resources/${activityId}`,
+            state: { activityId },
             current: true,
           },
         ]}
