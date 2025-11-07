@@ -74,12 +74,31 @@ function ModalComponent({
   // STATES
 
   return (
-    <Modal keepMounted open={isOpen} onClose={handleCloseModal}>
+    <Modal
+      keepMounted
+      open={isOpen}
+      onClose={handleCloseModal}
+      sx={{
+        "& .MuiModal-backdrop": {
+          backgroundColor: "rgba(0, 0, 0, 0.3)",
+          backdropFilter: "blur(3px)",
+          transition: "opacity 0.3s ease-in-out",
+        },
+      }}
+    >
       <ModalDialog
         sx={{
           borderRadius: 20,
           padding: 3.5,
           height: height,
+          position: "absolute",
+          top: "50%",
+          left: "50%",
+          transform: isOpen
+            ? "translate(-50%, -50%) scale(1)"
+            : "translate(-50%, -55%) scale(0.95)",
+          opacity: isOpen ? 1 : 0,
+          transition: "all 0.3s ease-in-out",
         }}
         minWidth={minWidth}
         maxWidth={maxWidth}

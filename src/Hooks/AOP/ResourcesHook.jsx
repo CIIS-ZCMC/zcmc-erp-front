@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { post, read, update } from "../../Services/RequestMethods";
+import { post, read, remove, update } from "../../Services/RequestMethods";
 const PATH = "resources";
 
 const useResourcesHook = create((set) => ({
@@ -74,6 +74,25 @@ const useResourcesHook = create((set) => ({
           ),
         }));
 
+        callBack(status, message);
+      },
+    });
+  },
+
+  deleteResource: async (id, callBack) => {
+    remove({
+      url: `${PATH}-delete/${id}`,
+      failed: callBack,
+      success: ({ status, data }) => {
+        const { message, data: deletedResource, activity } = data;
+
+        set((state) => ({
+          resources: state.resources.filter((res) => res.id !== id),
+          activity: {
+            ...state.activity,
+            cost: activity?.cost ?? state.activity.cost, // ✅ update only cost
+          },
+        }));
         callBack(status, message);
       },
     });

@@ -197,6 +197,7 @@ export default function CartPreviewComponent({
                     <Typography level="body-sm">Quantity</Typography>
                     <Typography level="title-md">
                       {qty} {unit}
+                      {qty > 1 ? "(s)" : ""}
                     </Typography>
                   </Stack>
                 )}

@@ -45,18 +45,22 @@ export default function ResourceCardComponent({
       <Card
         variant="outlined"
         sx={{
-          borderRadius: "xl",
-          boxShadow: "sm",
+          maxWidth: "100%",
+          boxShadow: "lg",
           transition: "0.3s",
           "&:hover": { boxShadow: "md", transform: "translateY(-4px)" },
-          height: "100%", // ensures it fills available height
           display: "flex",
           flexDirection: "column",
         }}
       >
         <CardOverflow>
-          <AspectRatio ratio="2">
-            <img src={image} alt={name} loading="lazy" />
+          <AspectRatio sx={{ minWidth: 200 }}>
+            <img
+              src="https://images.unsplash.com/photo-1593121925328-369cc8459c08?auto=format&fit=crop&w=286"
+              srcSet="https://images.unsplash.com/photo-1593121925328-369cc8459c08?auto=format&fit=crop&w=286&dpr=2 2x"
+              loading="lazy"
+              alt=""
+            />
           </AspectRatio>
           <IconButton
             aria-label="delete"
@@ -71,7 +75,7 @@ export default function ResourceCardComponent({
               bottom: 0,
               transform: "translateY(50%)",
             }}
-            onClick={onDelete}
+            onClick={() => onDelete(resource_id)}
           >
             <Delete />
           </IconButton>
@@ -83,6 +87,7 @@ export default function ResourceCardComponent({
             display: "flex",
             flexDirection: "column",
             justifyContent: "space-between", // pushes prices to bottom
+            gap: 2,
           }}
         >
           <Stack
