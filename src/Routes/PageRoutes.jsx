@@ -2,7 +2,7 @@ import { Navigate } from "react-router-dom";
 
 import Dashboard from "../Pages/Dashboard";
 
-import AOP from "../Pages/AOP/EndUser/AOP";
+// import AOP from "../Pages/AOP/EndUser/AOP";
 import Objectives from "../Pages/AOP/EndUser/Objectives/Objectives";
 import Activities from "../Pages/AOP/EndUser/Activities/Activities";
 import ResponsiblePerson from "../Pages/AOP/EndUser/Responsible/ResponsiblePerson";
