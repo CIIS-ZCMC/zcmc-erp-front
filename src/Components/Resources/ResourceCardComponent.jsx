@@ -1,3 +1,6 @@
+import QuantityControlComponent from "@Components/Cart/QuantityControlComponent";
+import IconButtonComponent from "@Components/Common/IconButtonComponent";
+import AutocompleteComponent from "@Components/Form/AutocompleteComponent";
 import { Delete } from "@mui/icons-material";
 import {
   AspectRatio,
@@ -8,39 +11,59 @@ import {
   IconButton,
   Stack,
   Typography,
+  useTheme,
 } from "@mui/joy";
-import React, { Fragment } from "react";
+import { ArrowUpRightIcon } from "lucide-react";
+import React, { Fragment, useState } from "react";
+import CartPreviewComponent from "./CartPreviewComponent";
 
 export default function ResourceCardComponent({
   image = "https://images.unsplash.com/photo-1532614338840-ab30cf10ed36?auto=format&fit=crop&w=318",
+  resource_id,
   category,
   name,
   price,
-  total,
   quantity,
-  onIncrease,
-  onDecrease,
+  unit,
+  specifications = [],
+  onQtyChange,
   onDelete,
+  options = [],
+  purchase_type,
+  onPurchaseTypeChange,
 }) {
+  const theme = useTheme();
+  const color = theme.palette;
+
+  const total = quantity * price;
+  const [openModal, setOpenModal] = useState(false); // ← modal state
+  const [selectedPurchaseType, setSelectedPurchaseType] =
+    useState(purchase_type);
+
   return (
     <Fragment>
       <Card
         variant="outlined"
         sx={{
-          borderRadius: "xl",
-          boxShadow: "sm",
+          maxWidth: "100%",
+          boxShadow: "lg",
           transition: "0.3s",
           "&:hover": { boxShadow: "md", transform: "translateY(-4px)" },
-          width: 320,
-          position: "relative",
+          display: "flex",
+          flexDirection: "column",
         }}
       >
         <CardOverflow>
-          <AspectRatio ratio="2">
-            <img src={image} alt={name} loading="lazy" />
+          <AspectRatio sx={{ minWidth: 200 }}>
+            <img
+              src="https://images.unsplash.com/photo-1593121925328-369cc8459c08?auto=format&fit=crop&w=286"
+              srcSet="https://images.unsplash.com/photo-1593121925328-369cc8459c08?auto=format&fit=crop&w=286&dpr=2 2x"
+              loading="lazy"
+              alt=""
+            />
           </AspectRatio>
           <IconButton
-            aria-label="Like minimal photography"
+            aria-label="delete"
             size="md"
             variant="solid"
             color="danger"
@@ -52,43 +75,91 @@ export default function ResourceCardComponent({
               bottom: 0,
               transform: "translateY(50%)",
             }}
+            onClick={() => onDelete(resource_id)}
           >
             <Delete />
           </IconButton>
         </CardOverflow>
 
-        <CardContent>
-          <Typography level="body-xs" color="neutral">
-            {category}
-          </Typography>
+        <CardContent
+          sx={{
+            flex: 1, // fill remaining space
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "space-between", // pushes prices to bottom
+            gap: 2,
+          }}
+        >
+          <Stack
+            direction={"row"}
+            justifyContent="space-between"
+            alignItems="flex-start"
+            mt={2}
+          >
+            <Box>
+              {category && (
+                <Typography level="body-xs" color="neutral">
+                  {category}
+                </Typography>
+              )}
 
-          <Typography level="title-md" fontWeight={600} sx={{ mb: 1 }}>
-            {name}
-          </Typography>
+              <Stack direction={"row"} spacing={1} alignItems="center" mt={0.5}>
+                <Typography
+                  level="title-sm"
+                  fontWeight={600}
+                  sx={{
+                    mb: 1,
+                    display: "-webkit-box",
+                    WebkitLineClamp: 2,
+                    WebkitBoxOrient: "vertical",
+                    overflow: "hidden",
+                  }}
+                >
+                  {name}
+                </Typography>
+                <IconButtonComponent
+                  icon={<ArrowUpRightIcon />}
+                  size={"xs"}
+                  color={"#323232"}
+                  onClick={() => setOpenModal(true)}
+                />
+              </Stack>
+            </Box>
 
-          {/* Quantity Controls */}
-          {/* <Stack direction="row" alignItems="center" spacing={1}>
-            <IconButton size="sm" variant="outlined" onClick={onDecrease}>
-              <Remove />
-            </IconButton>
-            <Typography level="body-sm" minWidth={24} textAlign="center">
-              {quantity}
-            </Typography>
-            <IconButton size="sm" variant="outlined" onClick={onIncrease}>
-              <Add />
-            </IconButton>
-          </Stack> */}
+            {/* Quantity Controls */}
+            <Box>
+              <QuantityControlComponent
+                quantity={quantity}
+                onDecrease={() => onQtyChange(resource_id, quantity - 1)}
+                onIncrease={() => onQtyChange(resource_id, quantity + 1)}
+              />
+            </Box>
+          </Stack>
+
+          <Box>
+            <Typography level="body-xs">Purchase Type</Typography>
+            <AutocompleteComponent
+              options={options}
+              value={selectedPurchaseType}
+              setValue={(val) => {
+                setSelectedPurchaseType(val);
+                onPurchaseTypeChange(val); // trigger parent update
+              }}
+              getOptionLabel={(opt) => opt?.description || ""}
+              placeholder="Select type"
+            />
+          </Box>
 
           {/* Prices */}
-          <Stack direction="row" justifyContent="space-between" mt={2}>
+          <Stack direction="row" justifyContent="space-between">
             <Box>
-              <Typography fontWeight={600}>
+              <Typography level="body-lg" fontWeight={600}>
                 ₱{price?.toLocaleString()}.00
               </Typography>
               <Typography level="body-xs">per item</Typography>
             </Box>
             <Box textAlign="right">
-              <Typography fontWeight={600} color="primary">
+              <Typography level="body-lg" fontWeight={600} color="primary">
                 ₱{total?.toLocaleString()}.00
               </Typography>
               <Typography level="body-xs">Total Cost</Typography>
@@ -96,6 +167,18 @@ export default function ResourceCardComponent({
           </Stack>
         </CardContent>
       </Card>
+
+      <CartPreviewComponent
+        open={openModal}
+        onClose={() => setOpenModal(false)}
+        price={price}
+        name={name}
+        category={category}
+        specifications={specifications}
+        unit={unit}
+        qty={quantity}
+        isAddToCart={false}
+      />
     </Fragment>
   );
 }

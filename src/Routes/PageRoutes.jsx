@@ -39,7 +39,7 @@ const iconStyles = {
 import ItemSubmittedRequestsList from "../Pages/TEMP/ItemSubmittedRequestsList";
 import { MyOwnRequestsList } from "../Pages/TEMP/ItemMyOwnRequestsLists";
 import { ItemRequestDatatable } from "../Pages/Consolidators/ItemManagement/ItemRequestDatatable";
-
+import AOP from "../Pages/AOP/EndUser/AOPDashboard";
 import { element } from "prop-types";
 import ManageResources from "../Pages/AOP/EndUser/ManageResources";
 import AOPResources from "../Pages/AOP/EndUser/AOPResources";

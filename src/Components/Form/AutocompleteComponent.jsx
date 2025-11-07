@@ -83,9 +83,7 @@ function AutocompleteComponent({
         onClose={onClose}
         name={name}
         getOptionLabel={getOptionLabel}
-        isOptionEqualToValue={(option, value) =>
-          option.id === value?.id
-        }
+        isOptionEqualToValue={(option, value) => option.id === value?.id}
         sx={{
           fontSize: getFontSize(size),
           background: darkMode ? "none" : "inherit",

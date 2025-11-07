@@ -7,8 +7,17 @@ import CartPreviewComponent from "./CartPreviewComponent";
 import Cart from "./Cart";
 import { useAuth } from "../../Store/AuthStore";
 import useCartStore from "../../Hooks/ItemCartHook";
+import SearchWithSuggestions from "@Components/SearchWithSuggestions";
 
-export default function AddToCartLayout({}) {
+export default function AddToCartLayout({
+  getSearchSuggestions,
+  getSearchResults,
+  suggestions,
+  results,
+  loading = false,
+  items = [],
+  getItems,
+}) {
   const { user } = useAuth();
   const cartStore = useCartStore(user?.id || "guest");
   const { cart, addToCart, removeFromCart, updateQty, clearCart } = cartStore();
@@ -29,7 +38,14 @@ export default function AddToCartLayout({}) {
         <Grid xs={8}>
           <BoxComponent boxShadow="sm">
             <Stack direction={"row"}>
-              <SearchBarComponentv2 />
+              <SearchWithSuggestions
+                placeholder="Search items..."
+                getSearchSuggestions={getSearchSuggestions}
+                getSearchResults={getSearchResults}
+                suggestions={suggestions}
+                getItems={getItems}
+                onSelect={(item) => console.log("Selected item:", item)}
+              />
             </Stack>
           </BoxComponent>
           <ProductGrid
@@ -38,6 +54,8 @@ export default function AddToCartLayout({}) {
               setOpenPreview(true);
             }}
             onAddToCart={addToCart}
+            loading={loading}
+            items={items}
           />
         </Grid>
         <Grid xs={4}>
@@ -55,6 +73,12 @@ export default function AddToCartLayout({}) {
         open={openPreview}
         onClose={() => setOpenPreview(false)}
         item={selectedProduct}
+        price={selectedProduct?.estimated_budget}
+        category={selectedProduct?.item_category?.description}
+        unit={selectedProduct?.item_unit?.name}
+        specifications={selectedProduct?.item_specifications}
+        name={selectedProduct?.name}
+        variant={selectedProduct?.terminology}
         onAddToCart={addToCart}
       />
     </Fragment>

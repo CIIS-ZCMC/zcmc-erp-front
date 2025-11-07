@@ -1,26 +1,61 @@
 import QuantityControlComponent from "@Components/Cart/QuantityControlComponent";
 import ButtonComponent from "@Components/Common/ButtonComponent";
 import BoxComponent from "@Components/Common/Card/BoxComponent";
+import ChipComponent from "@Components/Common/ChipComponent";
 import ModalComponent from "@Components/Common/Dialog/ModalComponent";
+import { Circle } from "@mui/icons-material";
 import {
   AspectRatio,
+  Box,
+  Chip,
   Divider,
   Grid,
   IconButton,
   Stack,
   Typography,
+  useTheme,
 } from "@mui/joy";
 import { red } from "@mui/material/colors";
+import { color } from "framer-motion";
 import { CircleSmall, ShoppingCart } from "lucide-react";
-import React, { Fragment } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { BiX } from "react-icons/bi";
 
 export default function CartPreviewComponent({
   open,
   onClose,
   item,
+  category,
+  unit,
+  name,
+  qty,
+  price,
+  specifications = [],
+  onAddToCart,
+  variant,
   image = "https://images.unsplash.com/photo-1532614338840-ab30cf10ed36?auto=format&fit=crop&w=318",
+  isAddToCart = true,
 }) {
+  const theme = useTheme();
+  const color = theme.palette;
+  const [quantity, setQuantity] = useState(1);
+
+  // recompute subtotal
+  const subTotal = (price || 0) * quantity;
+
+  // reset when new item or reopen modal
+  useEffect(() => {
+    if (open) setQuantity(1);
+  }, [open, item]);
+
+  const handleAddToCart = () => {
+    if (!item) return;
+    onAddToCart({
+      ...item,
+      qty: quantity, // 👈 match Zustand store field name
+    });
+    onClose();
+  };
   return (
     <Fragment>
       <ModalComponent
@@ -32,67 +67,159 @@ export default function CartPreviewComponent({
           <>
             <Grid container spacing={2} sx={{ flexGrow: 1 }}>
               <Grid xs={6}>
-                <AspectRatio minHeight={80} maxHeight={130}>
-                  <img
-                    src={item?.image ?? image}
-                    role="button"
-                    loading="lazy"
-                    alt={item?.name}
-                  />
-                </AspectRatio>
-
-                <BoxComponent mt={3} p={2}>
-                  <ButtonComponent
-                    label={"Add to Cart"}
-                    endDecorator={<ShoppingCart />}
-                    fullWidth={true}
-                  />
-                  <Stack
-                    mt={2}
-                    direction={"row"}
-                    justifyContent={"space-between"}
+                <Box sx={{ position: "relative", width: "100%" }}>
+                  <AspectRatio
+                    minHeight={isAddToCart ? 120 : "100%"}
+                    maxHeight={isAddToCart ? 150 : "100%"}
+                    sx={{
+                      flexGrow: isAddToCart ? 0 : 1,
+                      borderRadius: "md",
+                      overflow: "hidden",
+                    }}
                   >
-                    <Stack width={"100%"}>
-                      <Typography level="body-sm">Quantity:</Typography>
-                      <QuantityControlComponent />
+                    <img src={image} loading="lazy" alt={name} />
+                  </AspectRatio>
+
+                  {/* Floating Chip */}
+                  {isAddToCart && (
+                    <ChipComponent
+                      size="sm"
+                      color={
+                        variant === "Variant-Regular" ? "success" : "warning"
+                      }
+                      label={variant}
+                      sx={{
+                        position: "absolute",
+                        bottom: 8,
+                        left: 8, // you can also use 'right' if you prefer top-right corner
+                        boxShadow: "sm",
+                        zIndex: 2,
+                      }}
+                      startDecorator={<Circle style={{ fontSize: 11 }} />}
+                    />
+                  )}
+                </Box>
+
+                {/* Add-to-cart section (only if true) */}
+                {isAddToCart && (
+                  <BoxComponent mt={2} p={2}>
+                    <ButtonComponent
+                      label="Add to Cart"
+                      endDecorator={<ShoppingCart />}
+                      onClick={handleAddToCart}
+                      fullWidth
+                    />
+                    <Stack
+                      direction="row"
+                      justifyContent="space-between"
+                      mt={2}
+                      mb={1}
+                    >
+                      <Stack width="100%">
+                        <Typography level="body-sm">Quantity:</Typography>
+                      </Stack>
+                      <Stack width="100%">
+                        <Typography level="body-sm">Item subtotal:</Typography>
+                      </Stack>
                     </Stack>
-                    <Stack width={"100%"}>
-                      <Typography level="body-sm">Item subtotal:</Typography>
+                    <Stack
+                      direction="row"
+                      justifyContent="space-between"
+                      alignItems={"flex-end"}
+                    >
+                      <Stack width="100%">
+                        <QuantityControlComponent
+                          quantity={quantity}
+                          onDecrease={() =>
+                            setQuantity((q) => Math.max(1, q - 1))
+                          }
+                          onIncrease={() => setQuantity((q) => q + 1)}
+                        />
+                      </Stack>
+                      <Stack width="100%">
+                        <Typography
+                          fontWeight={600}
+                          sx={{ color: color.custom.main }}
+                        >
+                          ₱{" "}
+                          {subTotal?.toLocaleString("en-PH", {
+                            minimumFractionDigits: 2,
+                            maximumFractionDigits: 2,
+                          })}
+                        </Typography>
+                      </Stack>
                     </Stack>
-                  </Stack>
-                </BoxComponent>
+                    <Divider sx={{ mt: 2, color: color.custom.fontLight }} />
+                  </BoxComponent>
+                )}
               </Grid>
-              <Grid xs={6} spacing={1}>
-                <Stack spacing={1}>
+              <Grid xs={6}>
+                <Stack spacing={0.5}>
                   <Stack
                     direction={"row"}
                     justifyContent={"space-between"}
                     alignItems={"center"}
                   >
-                    <Typography level="body-xs">
-                      {item?.item_category?.description}{" "}
-                      <CircleSmall size={8} /> {item?.item_unit?.name}
+                    <Typography
+                      level="body-xs"
+                      sx={{ color: color.custom.main }}
+                    >
+                      {category}
+                      {isAddToCart && (
+                        <>
+                          <CircleSmall size={8} style={{ margin: "0 4px" }} />
+                          {unit}
+                        </>
+                      )}
                     </Typography>
                     <IconButton variant="plain" onClick={onClose}>
                       <BiX fontSize={27} />
                     </IconButton>
                   </Stack>
 
-                  <Typography level="title-lg">{item?.name}</Typography>
+                  <Typography level="title-lg">{name}</Typography>
                   <Typography
                     level="title-md"
                     mt={0.5}
                     sx={{ color: red[900] }}
+                    fontWeight={600}
                   >
                     ₱
-                    {item?.estimated_budget.toLocaleString("en-PH", {
+                    {price?.toLocaleString("en-PH", {
                       minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
                     })}
                   </Typography>
                 </Stack>
                 <Divider sx={{ my: 2 }} />
-                <Stack>
+                {!isAddToCart && (
+                  <Stack mb={1}>
+                    <Typography level="body-sm">Quantity</Typography>
+                    <Typography level="title-md">
+                      {qty} {unit}
+                      {qty > 1 ? "(s)" : ""}
+                    </Typography>
+                  </Stack>
+                )}
+
+                <Stack spacing={1}>
                   <Typography level="body-sm">Specifications: </Typography>
+                  {specifications.length > 0 ? (
+                    specifications.map((spec, index) => (
+                      <Typography
+                        key={index}
+                        level="body-sm"
+                        alignItems="center"
+                        sx={{ color: "black" }}
+                      >
+                        ● {spec.description}
+                      </Typography>
+                    ))
+                  ) : (
+                    <Typography level="body-md">
+                      No specifications provided.
+                    </Typography>
+                  )}
                 </Stack>
               </Grid>
             </Grid>

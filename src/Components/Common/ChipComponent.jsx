@@ -17,11 +17,12 @@ function ChipComponent({
   endDecorator,
   variant,
   onClick,
+  fontSize = 12,
   ...props
 }) {
   const sxStyles = {
     fontWeight: 600,
-    fontSize: 12,
+    fontSize: fontSize,
     ...(variant || color
       ? { color: color }
       : {

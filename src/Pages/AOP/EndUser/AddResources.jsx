@@ -16,6 +16,7 @@ import useResourcesHook from "../../../Hooks/AOP/ResourcesHook";
 import useCartStore from "../../../Hooks/ItemCartHook";
 import useModalHook from "../../../Hooks/ModalHook";
 import { useAuth } from "../../../Store/AuthStore";
+import useSearchHook from "../../../Hooks/SearchHook";
 
 export default function AddResources() {
   const { user } = useAuth();
@@ -26,8 +27,9 @@ export default function AddResources() {
   const location = useLocation();
   const { activityId } = location.state;
 
-  const { items, getItems } = useItemsHook();
+  const { items, getItems, getSearchResults } = useItemsHook();
   const { postAOPResources } = useResourcesHook();
+  const { getSearchSuggestions, suggestions } = useSearchHook();
   const cartStore = useCartStore(user?.id || "guest");
   const { cart, clearCart } = cartStore();
   const {
@@ -59,16 +61,22 @@ export default function AddResources() {
     formData.append("activity_id", activityId);
 
     cart.forEach((item, index) => {
-      Object.entries(item).forEach(([key, value]) => {
-        formData.append(`items[${index}][${key}]`, value);
-      });
+      formData.append(`items[${index}][item_id]`, item.id);
+      formData.append(`items[${index}][quantity]`, item.qty);
     });
 
     await postAOPResources(formData, (status, message) => {
-      if (status === 200) {
-        console.log("Items saved successfully");
+      if (status === 201) {
+        setAlertDialog({
+          status: "success",
+          title: `${message}`,
+          description: "",
+        });
+        clearCart();
+        navigate(`/manage-resources/${activityId}`, {
+          state: { activityId: activityId },
+        });
         return;
-        // navigate("/aop-management");
       } else {
         setAlertDialog({
           status: "error",
@@ -122,7 +130,16 @@ export default function AddResources() {
               </Typography>
             </Stack>
             <Stack direction="row" spacing={1}>
-              <ButtonComponent label="Cancel Selection" variant={"outlined"} />
+              <ButtonComponent
+                label="Cancel Selection"
+                variant={"outlined"}
+                onClick={() => {
+                  clearCart();
+                  navigate(`/manage-resources/${activityId}`, {
+                    state: { activityId: activityId },
+                  });
+                }}
+              />
               <ButtonComponent
                 label={"Save items"}
                 onClick={() => handleSaveItems()}
@@ -130,12 +147,23 @@ export default function AddResources() {
               <IconButtonComponent
                 icon={<X />}
                 size={"sm"}
-                onClick={() => navigate("/manage-resources")}
+                onClick={() =>
+                  navigate(`/manage-resources/${activityId}`, {
+                    state: { activityId: activityId },
+                  })
+                }
               />
             </Stack>
           </Stack>
           <Divider sx={{ my: 2, bgcolor: color.primary.fontLight }} />
-          <AddToCartLayout />
+          <AddToCartLayout
+            getSearchResults={getSearchResults}
+            getSearchSuggestions={getSearchSuggestions}
+            getItems={getItems}
+            suggestions={suggestions}
+            loading={displayLoading}
+            items={items}
+          />
         </ContainerComponent>
       </Stack>
     </Fragment>
