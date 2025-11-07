@@ -288,6 +288,7 @@ function DashboardEndUser(props) {
                                             <Box width={"450px"}>
                                                 <ButtonComponent
                                                     label={"Submit AOP for Review"}
+                                                    onClick={() => navigate('/aop/summary')}
                                                     fullWidth={"true"}
                                                 />
                                             </Box>

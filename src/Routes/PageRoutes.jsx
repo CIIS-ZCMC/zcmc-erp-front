@@ -3,6 +3,8 @@ import { Navigate } from "react-router-dom";
 import Dashboard from "../Pages/Dashboard";
 
 // import AOP from "../Pages/AOP/EndUser/AOP";
+import AOP from "../Pages/AOP/EndUser/AOPDashboard";
+import AOPSummary from "../Pages/AOP/EndUser/AOPSummary";
 import Objectives from "../Pages/AOP/EndUser/Objectives/Objectives";
 import Activities from "../Pages/AOP/EndUser/Activities/Activities";
 import ResponsiblePerson from "../Pages/AOP/EndUser/Responsible/ResponsiblePerson";
@@ -39,7 +41,7 @@ const iconStyles = {
 import ItemSubmittedRequestsList from "../Pages/TEMP/ItemSubmittedRequestsList";
 import { MyOwnRequestsList } from "../Pages/TEMP/ItemMyOwnRequestsLists";
 import { ItemRequestDatatable } from "../Pages/Consolidators/ItemManagement/ItemRequestDatatable";
-import AOP from "../Pages/AOP/EndUser/AOPDashboard";
+
 import { element } from "prop-types";
 import ManageResources from "../Pages/AOP/EndUser/ManageResources";
 import AOPResources from "../Pages/AOP/EndUser/AOPResources";
@@ -67,6 +69,13 @@ export const sidebarRoutes = [
         path: "/aop",
         name: "AOP",
         element: <AOP />,
+        childPermissions: ["ERP-AOP-MAN:write"],
+      },
+
+      {
+        path: "/aop/summary",
+        name: "AOP summary",
+        element: <AOPSummary />,
         childPermissions: ["ERP-AOP-MAN:write"],
       },
 
