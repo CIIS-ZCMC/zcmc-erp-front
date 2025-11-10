@@ -1,66 +1,68 @@
-import React from 'react'
+import React from "react";
 
-import { Card, CardContent, CardActions, Stack, Typography, Chip, Divider } from '@mui/joy'
-import IconButtonComponent from '../IconButtonComponent'
+import {
+  Card,
+  CardContent,
+  CardActions,
+  Stack,
+  Typography,
+  Chip,
+  Divider,
+} from "@mui/joy";
+import IconButtonComponent from "../IconButtonComponent";
 
 const CardComponent = ({
-    statusColor,
-    cardHeader,
-    cardBody,
-    cardActions,
-    height,
+  statusColor,
+  cardHeader,
+  cardBody,
+  cardActions,
+  height,
 }) => {
-    return (
-        <>
-            <Card
-                sx={{
-                    textAlign: 'center',
-                    overflow: 'auto',
-                    // width: "459px",
-                    height: height,
-                    borderLeft: `6px solid ${statusColor}`,
-                    borderRadius: 'md',
-                }}
-            >
+  return (
+    <>
+      <Card
+        sx={{
+          textAlign: "center",
+          overflow: "auto",
+          width: "459px",
+          height: height,
+          borderLeft: `6px solid ${statusColor}`,
+          borderRadius: "md",
+        }}
+      >
+        <CardContent>
+          <Stack
+            direction={"row"}
+            alignItems={"center"}
+            justifyContent={"flex-end"}
+          >
+            {cardHeader}
+          </Stack>
 
-                <CardContent>
-                    <Stack
-                        direction={'row'}
-                        alignItems={'center'}
-                        justifyContent={'flex-end'}
-                    >
-                        {cardHeader}
-                    </Stack>
+          <Stack
+            direction={"row"}
+            alignItems={"start"}
+            justifyContent={"space-between"}
+            gap={5}
+          >
+            {cardBody}
+          </Stack>
+        </CardContent>
 
+        <Divider inset="none" />
 
-                    <Stack
-                        direction={'row'}
-                        alignItems={'start'}
-                        justifyContent={'space-between'}
-                        gap={5}
-                    >
-                        {cardBody}
-                    </Stack>
-                </CardContent>
+        <CardActions
+          sx={{
+            justifyContent: "flex-end",
+          }}
+        >
+          <Stack direction={"column"} alignItems={"center"}>
+            {cardActions}
+          </Stack>
+        </CardActions>
+      </Card>
+    </>
+  );
+};
 
-                <Divider inset="none" />
-
-                <CardActions
-                    sx={{
-                        justifyContent: "flex-end",
-                    }}
-                >
-                    <Stack
-                        direction={'column'}
-                        alignItems={'center'}
-                    >
-                        {cardActions}
-                    </Stack>
-                </CardActions>
-
-            </Card>
-        </>
-    )
-}
-
-export default CardComponent
+export default CardComponent;

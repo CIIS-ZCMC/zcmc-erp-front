@@ -1,83 +1,73 @@
-import { useEffect } from 'react'
+import { useEffect } from "react";
 
-import { Stack, Typography } from '@mui/joy'
+import { Stack, Typography } from "@mui/joy";
 
-import TextareaComponent from '@Components/Form/TextareaComponent'
-import InputComponent from '@Components/Form/InputComponent'
+import TextareaComponent from "@Components/Form/TextareaComponent";
+import InputComponent from "@Components/Form/InputComponent";
 
-import { ThreeDotsLoader } from '@Components/Common/Loading/ThreeDotsLoader'
+import { ThreeDotsLoader } from "@Components/Common/Loading/ThreeDotsLoader";
 
-const CardBody = ({
-    status,
-    success_indicator,
-    objective,
-    activities
-}) => {
+const CardBody = ({ status, success_indicator, objective, activities }) => {
+  if (!objective) {
+    return <ThreeDotsLoader />; // Still loading or not yet selected
+  }
 
-    if (!objective) {
-        return <ThreeDotsLoader />; // Still loading or not yet selected
-    }
+  const { description, type_of_function } = objective;
 
-    const { description, type_of_function } = objective;
+  return (
+    <Stack direction={"row"} alignItems={"flex-start"} gap={2}>
+      <Stack width={"100%"}>
+        {!status ? (
+          <Typography
+            level={"body-sm"}
+            textAlign={"left"}
+            // sx={{ flex: 1 }}
+          >
+            {type_of_function?.type}
+          </Typography>
+        ) : (
+          <InputComponent placeholder={"Function Type"} />
+        )}
 
-    return (
-        <>
-            <Stack
-                alignItems={'start'}
-            >
-                {!status ?
-                    <Typography
-                        level={'body-sm'}
-                    // sx={{ flex: 1 }}
-                    >
-                        {type_of_function?.type}
-                    </Typography>
-                    :
-                    <InputComponent
-                        placeholder={'Function Type'}
-                    />
-                }
+        {!status ? (
+          <Typography
+            level={"title-md"}
+            sx={{
+              // flex: 1,
+              textAlign: "left",
+            }}
+          >
+            {description}
+          </Typography>
+        ) : (
+          <InputComponent placeholder={"Objective Name"} />
+        )}
+      </Stack>
 
-                {!status ?
-                    <Typography
-                        level={'title-md'}
-                        sx={{
-                            // flex: 1,
-                            textAlign: 'left',
-                        }}
+      <Stack
+        width={"100%"}
+        sx={{ textAlign: "left", bgcolor: "#F2F2F2", borderRadius: 5, p: 2 }}
+      >
+        <Typography level="body-xs">Success Indicator</Typography>
+        {!status ? (
+          <Typography
+            level="body-sm"
+            sx={{
+              display: "-webkit-box", // enables the line clamping
+              WebkitLineClamp: 3, // number of lines to show
+              WebkitBoxOrient: "vertical", // required for -webkit-box
+              overflow: "hidden", // hide overflowing text
+              textOverflow: "ellipsis", // show "..." at the end
+            }}
+          >
+            {success_indicator?.description}
+          </Typography>
+        ) : (
+          <TextareaComponent placeholder={"Success indicator"} />
+        )}
+      </Stack>
+    </Stack>
+  );
+};
 
-                    >
-                        {description}
-                    </Typography>
-                    :
-                    <InputComponent
-                        placeholder={'Objective Name'}
-                    />
-                }
-            </Stack>
-
-            {!status ?
-                <Typography
-                    level="body-sm"
-                    sx={{
-                        // flex: 1,
-                        textAlign: 'right',
-                        // whiteSpace: 'nowrap',
-                        // overflow: 'hidden',
-                        // textOverflow: 'ellipsis',
-                        // maxWidth: '50%',
-                    }}
-                >
-                    {success_indicator?.description}
-                </Typography>
-                :
-                <TextareaComponent
-                    placeholder={'Success indicator'}
-                />
-            }
-
-        </>
-    )
-}
-
-export default CardBody
+export default CardBody;
