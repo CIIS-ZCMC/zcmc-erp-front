@@ -41,9 +41,9 @@ import { MyOwnRequestsList } from "../Pages/TEMP/ItemMyOwnRequestsLists";
 import { ItemRequestDatatable } from "../Pages/Consolidators/ItemManagement/ItemRequestDatatable";
 import AOP from "../Pages/AOP/EndUser/AOPDashboard";
 import { element } from "prop-types";
-import ManageResources from "../Pages/AOP/EndUser/ManageResources";
-import AOPResources from "../Pages/AOP/EndUser/AOPResources";
-import AddResources from "../Pages/AOP/EndUser/AddResources";
+import ManageResources from "../Pages/AOP/EndUser/Resources/ManageResources";
+import AOPOutlet from "../Pages/AOP/EndUser/AOPOutlet";
+import AddResources from "../Pages/AOP/EndUser/Resources/AddResources";
 // import ResponsiblePerson from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities/ResponsiblePerson";
 
 export const sidebarRoutes = [
@@ -66,36 +66,27 @@ export const sidebarRoutes = [
       {
         path: "/aop",
         name: "AOP",
-        element: <AOP />,
-        childPermissions: ["ERP-AOP-MAN:write"],
-      },
-
-      {
-        path: "/objectives/:aopId",
-        name: "Objectives",
-        element: <Objectives />,
-      },
-
-      {
-        path: "/activities/:objectiveId",
-        name: "Activities",
-        element: <Activities />,
-      },
-
-      {
-        path: "/responsible-person/:activityId",
-        name: "Responsible Person",
-        element: <ResponsiblePerson />,
-      },
-
-      {
-        path: "/manage-resources/:activityId",
-        name: "Manage Resources",
-        element: <AOPResources />,
+        element: <AOPOutlet />,
         childPermissions: ["ERP-AOP-MAN:write"],
         children: [
           {
             index: true,
+            element: <AOP />,
+          },
+          {
+            path: "objectives/:aopId",
+            element: <Objectives />,
+          },
+          {
+            path: "activities/:objectiveId",
+            element: <Activities />,
+          },
+          {
+            path: "responsible-person/:activityId",
+            element: <ResponsiblePerson />,
+          },
+          {
+            path: "manage-resources/:activityId",
             element: <ManageResources />,
           },
           {

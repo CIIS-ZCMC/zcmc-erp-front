@@ -1,19 +1,19 @@
 import ButtonComponent from "@Components/Common/ButtonComponent";
 import IconButtonComponent from "@Components/Common/IconButtonComponent";
 import PageTitle from "@Components/Common/PageTitle";
-import useItemsHook from "../../../Hooks/ItemsHook";
+import useItemsHook from "../../../../Hooks/ItemsHook";
 import { Divider, Grid, Skeleton, Stack, Typography, useTheme } from "@mui/joy";
 import { X } from "lucide-react";
 import React, { Fragment, useEffect, useState } from "react";
 import ContainerComponent from "@Components/Common/ContainerComponent";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import AddToCartLayout from "@Components/Resources/AddToCartLayout";
-import useResourcesHook from "../../../Hooks/AOP/ResourcesHook";
-import useCartStore from "../../../Hooks/ItemCartHook";
-import useModalHook from "../../../Hooks/ModalHook";
-import { useAuth } from "../../../Store/AuthStore";
-import useSearchHook from "../../../Hooks/SearchHook";
-import useAOPBreadcrumbs from "../../../Hooks/AOP/AOpBreadcrumbs";
+import useResourcesHook from "../../../../Hooks/AOP/ResourcesHook";
+import useCartStore from "../../../../Hooks/ItemCartHook";
+import useModalHook from "../../../../Hooks/ModalHook";
+import { useAuth } from "../../../../Store/AuthStore";
+import useSearchHook from "../../../../Hooks/SearchHook";
+import useAOPBreadcrumbs from "../../../../Hooks/AOP/AOpBreadcrumbs";
 
 export default function AddResources() {
   const { user } = useAuth();

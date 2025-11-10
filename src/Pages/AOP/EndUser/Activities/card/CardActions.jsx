@@ -3,17 +3,17 @@ import React, { useEffect } from "react";
 import { Chip, Stack } from "@mui/joy";
 import { ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import useAOPId from "../../../../../Hooks/AOP/AOPIDHook";
 
-const CardActions = ({
-  activityId,
-  resourcesCount,
-  responsibleCount }) => {
-
+const CardActions = ({ activityId, resourcesCount, responsibleCount }) => {
   const navigate = useNavigate();
+  const { setActivityId } = useAOPId();
 
-  // useEffect(() => {
-  //   console.log(activityId)
-  // }, [resourcesCount])
+  useEffect(() => {
+    if (activityId) {
+      setActivityId(activityId);
+    }
+  }, [activityId]);
 
   return (
     <>
@@ -31,7 +31,7 @@ const CardActions = ({
           startDecorator={resourcesCount === 0 ? "0" : resourcesCount}
           endDecorator={<ArrowRight size={18} />}
           onClick={() =>
-            navigate(`/manage-resources/${activityId}`, {
+            navigate(`/aop/manage-resources/${activityId}`, {
               state: { activityId: activityId },
             })
           }
@@ -47,14 +47,14 @@ const CardActions = ({
           startDecorator={responsibleCount === 0 ? "0" : responsibleCount}
           endDecorator={<ArrowRight size={18} />}
           onClick={() =>
-            navigate(`/responsible-person/${activityId}`, {
+            navigate(`/aop/responsible-person/${activityId}`, {
               state: { activityId: activityId },
             })
           }
         >
           Responsible Person
         </Chip>
-      </Stack >
+      </Stack>
     </>
   );
 };

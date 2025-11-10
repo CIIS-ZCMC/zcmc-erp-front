@@ -21,7 +21,7 @@ function PageTitle({ title, description, items = [] }) {
 
   return (
     <Fragment>
-      <Stack alignItems={"start"}>
+      <Stack alignItems={"flex-start"} width={"90%"}>
         <Breadcrumbs
           separator={<ChevronRightIcon size={16} />}
           sx={{
