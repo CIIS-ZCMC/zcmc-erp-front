@@ -89,6 +89,9 @@ function DashboardEndUser(props) {
     const [isLoading, setIsLoading] = useState(false);
     const [isAopLoading, setIsAopLoading] = useState(false)
 
+    // useEffect(() => {
+    //     console.log(aop)
+    // }, [aop])
 
     const currentYear = new Date().getFullYear();
     const currentFiscalYear = currentYear + 1;
@@ -370,20 +373,31 @@ function DashboardEndUser(props) {
                                                     <Grid container>
                                                         <Grid xs={12} sm={6} >
                                                             <ObjectivesCard
+                                                                height={302}
+                                                                hasFunction={true}
                                                                 handleNavigate={handleNavigateObjectives}
                                                                 objectiveCounts={aop.counts.objectives_count} />
                                                         </Grid>
 
                                                         <Grid xs={12} sm={6}>
-                                                            <ActivitiesCard activitiesCount={aop.counts.activities_count} />
+                                                            <ActivitiesCard
+                                                                height={302}
+                                                                activitiesCount={aop.counts.activities_count}
+                                                            />
                                                         </Grid>
 
                                                         <Grid xs={12} sm={6}>
-                                                            <ResourcesCard resourcesCount={aop.counts.resources_count} />
+                                                            <ResourcesCard
+                                                                height={302}
+                                                                resourcesCount={aop.counts.resources_count}
+                                                            />
                                                         </Grid>
 
                                                         <Grid xs={12} sm={6}>
-                                                            <ResponsiblePersonCard PersonsCount={aop.counts.responsible_people_count} />
+                                                            <ResponsiblePersonCard
+                                                                height={302}
+                                                                PersonsCount={aop.counts.responsible_people_count}
+                                                            />
                                                         </Grid>
                                                     </Grid>
                                                 </Grid>

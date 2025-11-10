@@ -3,17 +3,18 @@ import React, { useEffect, useState } from 'react';
 import {
     Stack,
     Typography,
-    Breadcrumbs,
     Divider,
     Grid,
 } from '@mui/joy';
 
-import { useLocation } from 'react-router-dom';
+import { useLocation, useParams } from 'react-router-dom';
 
 import useModalHook from '../../../../Hooks/ModalHook';
 import useActivitiesHook from '../../../../Hooks/ActivitiesHook';
+import useAOPBreadcrumbs from '../../../../Hooks/AOP/AOPBreadcrumbs';
 
 import CardComponent from '@Components/Common/Card/CardComponent';
+import PageTitle from '@Components/Common/PageTitle';
 import { ThreeDotsLoader } from '@Components/Common/Loading/ThreeDotsLoader';
 import BoxComponent from '@Components/Common/Card/BoxComponent';
 import ButtonComponent from '@Components/Common/ButtonComponent';
@@ -40,8 +41,13 @@ const centeredStyle = {
 
 const Activities = () => {
 
-    const location = useLocation()
-    const { objId } = location.state
+    const breadcrumbs = useAOPBreadcrumbs();
+
+    const { objectiveId } = useParams()
+
+    useEffect(() => {
+        console.log(objectiveId)
+    }, [objectiveId])
 
     const {
         applicationActivities,
@@ -87,7 +93,7 @@ const Activities = () => {
     useEffect(() => {
         setIsLoading(true);
 
-        const params = { application_objective_id: objId }
+        const params = { application_objective_id: objectiveId }
 
         getActivities(params, (status, message) => {
             if (!(status >= 200 && status < 300)) {
@@ -106,11 +112,11 @@ const Activities = () => {
     //     console.log('current is gad target', target)
     // }, [activity, startMonth, endMonth, isGadRelated, target])
 
-    const breadcrumbs = [
-        <Typography key="3" sx={{ color: 'text.primary' }}>
-            Objectives
-        </Typography>,
-    ];
+    // const breadcrumbs = [
+    //     <Typography key="3" sx={{ color: 'text.primary' }}>
+    //         Objectives
+    //     </Typography>,
+    // ];
 
     const handleOpenActivitiesModal = () => {
         setIsOpenActivitiesModal(true)
@@ -290,24 +296,11 @@ const Activities = () => {
 
     return (
         <>
-            <Stack spacing={2}>
-                <Stack
-                    direction={'row'}
-                    alignItems={'center'}
-                    alignContent={'start'}
-                >
-                    <Typography
-                        level="h2"
-                        fontWeight={700}
-                    >
-                        AOP #2025-0031 for Fiscal Year 2026
-                    </Typography>
+            <PageTitle
+                title={`AOP #2025-0031 for Fiscal Year 2026`}
+                items={breadcrumbs}
+            />
 
-                    <Breadcrumbs separator="›" aria-label="breadcrumb">
-                        {breadcrumbs}
-                    </Breadcrumbs>
-                </Stack>
-            </Stack>
 
             <BoxComponent mt={2} p={2}>
                 <Stack direction={"column"} spacing={1}>

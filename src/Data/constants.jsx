@@ -65,6 +65,16 @@ export const RESPONSIBLE = {
   MODAL_DESCRIPTION: 'Select individuals or job positions who will be responsible for this activity. You can assign multiple people and positions.',
 }
 
+export const AOP_SUMMARY = {
+  PAGE_TITLE: 'AOP #2025-0031 for Fiscal Year 2026',
+  PAGE_REVIEW: 'Please carefully review the complete summary of your AOP request below. Verify all details are correct before submitting. Once submitted, your AOP will be forwarded to the the approving bodies for review and approval.',
+  SUMMARY_CARD_HEADER: 'Document Status: Ready for Submission',
+  SUMMARY_CARD_BODY: 'All required sections contain at least one item and have been validated. Your Annual Operations Plan has successfully passed preliminary compliance checks and meets the minimum requirements for official submission. The document will undergo comprehensive review by the Planning Office, Division Chief, and Medical Center Chief. The complete review process typically takes 7-10 business days. You will receive official notification via email and system alert upon completion of each review stage.',
+  SUMMARY_TITLE: 'Detailed Breakdown: Objectives, Activities, Resources, & Personnel',
+  SUMMARY_FOOTER_TITLE: 'Official Submission of Annual Operations Plan',
+  SUMMARY_FOOTER_CONTENT: 'By clicking "Submit for Official Review", you certify that all information contained in this Annual Operations Plan is true, accurate, and complete to the best of your knowledge. This document will be officially submitted to the Approving Bodies for review and approval in accordance with government procurement and planning procedures.'
+}
+
 export const AOP_CONSTANTS = {
   AOP_TITLE: "Annual Operations Planning",
   AOP_SUBHEADING:

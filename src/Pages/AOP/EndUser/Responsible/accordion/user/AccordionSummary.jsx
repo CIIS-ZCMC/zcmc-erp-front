@@ -7,7 +7,6 @@ import {
     Typography
 } from '@mui/joy'
 
-import { CircleUser } from 'lucide-react'
 
 import PeopleIcon from '../../../../../../assets/responsible_people/People.svg'
 
@@ -17,7 +16,6 @@ const AccordionSummary = ({
 
     return (
         <>
-
             <img src={PeopleIcon} alt="people-icon" />
 
             <ListItemContent>
