@@ -29,13 +29,13 @@ const theme = extendTheme({
           solidActiveBg: "#004366",
           neutralBg: "#F9FAFB",
 
-          plainColor: "#004366",
+          plainColor: "#DFF2FF",
 
           outlinedBorder: "#004366",
           outlinedColor: "#004366",
 
           softColor: "#004366",
-          softBg: "#004366", // <-- this sets the text color for plain buttons
+          softBg: "#DFF2FF", // <-- this sets the text color for plain buttons
         },
       },
     },

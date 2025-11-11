@@ -1,449 +1,431 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState } from "react";
 
-import {
-    Stack,
-    Typography,
-    Divider,
-    Grid,
-} from '@mui/joy';
+import { Stack, Typography, Breadcrumbs, Divider, Grid } from "@mui/joy";
 
-import { useLocation, useParams } from 'react-router-dom';
+import { useLocation, useParams } from "react-router-dom";
 
-import useModalHook from '../../../../Hooks/ModalHook';
-import useActivitiesHook from '../../../../Hooks/ActivitiesHook';
-import useAOPBreadcrumbs from '../../../../Hooks/AOP/AOPBreadcrumbs';
+import useModalHook from "../../../../Hooks/ModalHook";
+import useActivitiesHook from "../../../../Hooks/ActivitiesHook";
 
-import CardComponent from '@Components/Common/Card/CardComponent';
-import PageTitle from '@Components/Common/PageTitle';
-import { ThreeDotsLoader } from '@Components/Common/Loading/ThreeDotsLoader';
-import BoxComponent from '@Components/Common/Card/BoxComponent';
-import ButtonComponent from '@Components/Common/ButtonComponent';
-import ModalComponent from '@Components/Common/Dialog/ModalComponent';
-import InputComponent from '@Components/Form/InputComponent';
-import SearchBarComponent from '@Components/SearchBarComponent';
-import ConfirmationModalComponent from '@Components/Common/Dialog/ConfirmationModalComponent';
+import CardComponent from "@Components/Common/Card/CardComponent";
+import { ThreeDotsLoader } from "@Components/Common/Loading/ThreeDotsLoader";
+import BoxComponent from "@Components/Common/Card/BoxComponent";
+import ButtonComponent from "@Components/Common/ButtonComponent";
+import ModalComponent from "@Components/Common/Dialog/ModalComponent";
+import InputComponent from "@Components/Form/InputComponent";
+import SearchBarComponent from "@Components/SearchBarComponent";
+import ConfirmationModalComponent from "@Components/Common/Dialog/ConfirmationModalComponent";
 
-import ActivitiesModal from './modal/ActivitiesModal';
-import ActivitiesList from './ActivitiesList';
+import ActivitiesModal from "./modal/ActivitiesModal";
+import ActivitiesList from "./ActivitiesList";
 
-import useActivitiesStore, { useActivitiesActions } from '../../../../Store/ActivitiesStore';
+import useActivitiesStore, {
+  useActivitiesActions,
+} from "../../../../Store/ActivitiesStore";
 
-import { ACTIVITIES } from '../../../../Data/constants';
+import { ACTIVITIES } from "../../../../Data/constants";
+import PageTitle from "@Components/Common/PageTitle";
+import useAOPBreadcrumbs from "../../../../Hooks/AOP/AOPBreadcrumbs";
+import ChipComponent from "@Components/Common/ChipComponent";
 
 const centeredStyle = {
-    direction: 'column',
-    alignItems: 'center',
-    justifyContent: 'center',
-    textAlign: 'center',
-    height: '65vh',
-    my: 2,
-}
+  direction: "column",
+  alignItems: "center",
+  justifyContent: "center",
+  textAlign: "center",
+  height: "65vh",
+  my: 2,
+};
 
 const Activities = () => {
+  const location = useLocation();
+  const { objectiveId } = useParams();
 
-    const breadcrumbs = useAOPBreadcrumbs();
+  const {
+    applicationActivities,
+    applicationActivity,
+    activity,
+    cost,
+    startMonth,
+    endMonth,
+    isGadRelated,
+    target,
+  } = useActivitiesStore();
 
-    const { objectiveId } = useParams()
+  const { clearFields } = useActivitiesActions();
 
-    useEffect(() => {
-        console.log(objectiveId)
-    }, [objectiveId])
+  const {
+    getActivities,
+    createActivity,
+    updateActivity,
+    removeActivity,
+    showActivity,
+  } = useActivitiesHook();
 
-    const {
-        applicationActivities,
-        applicationActivity,
-        activity,
-        cost,
-        startMonth,
-        endMonth,
-        isGadRelated,
-        target
-    } = useActivitiesStore();
+  const { setAlertDialog, setConfirmationModal, closeConfirmation } =
+    useModalHook();
+  const breadcrumbs = useAOPBreadcrumbs();
 
-    const { clearFields } = useActivitiesActions();
+  const {
+    MANAGE_ACTIVITIES_HEADER,
+    MANAGE_ACTIVITIES_SUBHEADER,
+    MODAL_TITLE,
+    MODAL_DESCRIPTION,
+    COUNT_LABEL,
+    EMPTY_STATE_TITLE,
+    ACTIVITY_CREATE_NEW,
+  } = ACTIVITIES;
 
-    const { getActivities, createActivity, updateActivity, removeActivity, showActivity } = useActivitiesHook();
+  const [isLoading, setIsLoading] = useState(false);
+  const [isCountModal, setIsCountModal] = useState(false);
+  const [countActivities, setCountActivities] = useState(1);
+  const [isOpenActivitiesModal, setIsOpenActivitiesModal] = useState(false);
+  const [isEditMode, setIsEditMode] = useState(false);
+  const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  const [selectedActivityId, setSelectedActivityId] = useState(null);
+  const currentYear = new Date().getFullYear();
+  const currentFiscalYear = currentYear + 1;
 
-    const {
-        setAlertDialog,
-        setConfirmationModal,
-        closeConfirmation
-    } = useModalHook();
+  useEffect(() => {
+    setIsLoading(true);
 
-    const {
-        MANAGE_ACTIVITIES_HEADER,
-        MANAGE_ACTIVITIES_SUBHEADER,
-        MODAL_TITLE,
-        MODAL_DESCRIPTION,
-        COUNT_LABEL,
-        EMPTY_STATE_TITLE,
-        ACTIVITY_CREATE_NEW
-    } = ACTIVITIES;
+    const params = { application_objective_id: objectiveId };
 
+    getActivities(params, (status, message) => {
+      if (!(status >= 200 && status < 300)) {
+        // if status not success
+        return; //Toast error
+      }
+      setIsLoading(false);
+    });
+  }, []);
 
-    const [isLoading, setIsLoading] = useState(false);
-    const [isCountModal, setIsCountModal] = useState(false);
-    const [countActivities, setCountActivities] = useState(1);
-    const [isOpenActivitiesModal, setIsOpenActivitiesModal] = useState(false);
-    const [isEditMode, setIsEditMode] = useState(false);
-    const [openDeleteModal, setOpenDeleteModal] = useState(false)
-    const [selectedActivityId, setSelectedActivityId] = useState(null)
+  // useEffect(() => {
+  //     console.log('current activity value:', activity)
+  //     console.log('current start month', startMonth)
+  //     console.log('current end month:', endMonth)
+  //     console.log('current is gad related', isGadRelated)
+  //     console.log('current is gad target', target)
+  // }, [activity, startMonth, endMonth, isGadRelated, target])
 
+  const handleOpenActivitiesModal = () => {
+    setIsOpenActivitiesModal(true);
+  };
 
-    useEffect(() => {
-        setIsLoading(true);
+  const handleCloseActivitiesModal = () => {
+    setIsOpenActivitiesModal(false);
+  };
 
-        const params = { application_objective_id: objectiveId }
+  const handleCloseModal = () => {
+    setIsOpenActivitiesModal(false);
+    setIsEditMode(false);
+    clearFields();
 
-        getActivities(params, (status, message) => {
-            if (!(status >= 200 && status < 300)) {
-                // if status not success
-                return; //Toast error
-            }
-            setIsLoading(false);
-        })
-    }, [])
+    console.log(applicationActivities);
+  };
 
-    // useEffect(() => {
-    //     console.log('current activity value:', activity)
-    //     console.log('current start month', startMonth)
-    //     console.log('current end month:', endMonth)
-    //     console.log('current is gad related', isGadRelated)
-    //     console.log('current is gad target', target)
-    // }, [activity, startMonth, endMonth, isGadRelated, target])
+  const handleOpenEditModal = async (activityId) => {
+    console.log(activityId);
+    setIsLoading(true);
+    setIsEditMode(true);
+    setSelectedActivityId(activityId);
+    setIsOpenActivitiesModal(true);
 
-    // const breadcrumbs = [
-    //     <Typography key="3" sx={{ color: 'text.primary' }}>
-    //         Objectives
-    //     </Typography>,
-    // ];
+    const params = { id: activityId };
 
-    const handleOpenActivitiesModal = () => {
-        setIsOpenActivitiesModal(true)
-    }
+    await showActivity(params, (status, message) => {
+      if (!(status >= 200 && status < 300)) {
+        // if status not success
+        return; //Toast error
+      }
+      setIsLoading(false);
+    });
+  };
 
-    const handleCloseActivitiesModal = () => {
-        setIsOpenActivitiesModal(false)
-    }
+  const handleOpenCountModal = () => {
+    setIsCountModal(true);
+  };
 
-    const handleCloseModal = () => {
-        setIsOpenActivitiesModal(false);
-        setIsEditMode(false);
-        clearFields()
+  const handleSaveActivity = async () => {
+    setIsLoading(true);
 
-        console.log(applicationActivities)
-    }
+    const params = { id: selectedActivityId };
 
-    const handleOpenEditModal = async (activityId) => {
-        console.log(activityId)
-        setIsLoading(true)
-        setIsEditMode(true)
-        setSelectedActivityId(activityId)
-        setIsOpenActivitiesModal(true)
+    const payload = {
+      name: activity,
+      start_month: startMonth,
+      end_month: endMonth,
+      is_gad_related: isGadRelated,
+      target: {
+        first_quarter: target.firstQuarter,
+        second_quarter: target.secondQuarter,
+        third_quarter: target.thirdQuarter,
+        fourth_quarter: target.fourthQuarter,
+      },
+    };
 
-        const params = { id: activityId }
-
-        await showActivity(params, (status, message) => {
-            if (!(status >= 200 && status < 300)) {
-                // if status not success
-                return; //Toast error
-            }
-            setIsLoading(false);
-        });
-    }
-
-    const handleOpenCountModal = () => {
-        setIsCountModal(true)
-    }
-
-    const handleSaveActivity = async () => {
-
-        setIsLoading(true)
-
-        const params = { id: selectedActivityId }
-
-        const payload = {
-            name: activity,
-            start_month: startMonth,
-            end_month: endMonth,
-            is_gad_related: isGadRelated,
-            target: {
-                first_quarter: target.firstQuarter,
-                second_quarter: target.secondQuarter,
-                third_quarter: target.thirdQuarter,
-                fourth_quarter: target.fourthQuarter,
-            }
+    try {
+      await updateActivity(params, payload, (status, message) => {
+        if (status === 200) {
+          setAlertDialog({
+            status: "success",
+            title: `${message}`,
+            description: "",
+          });
+          setIsLoading(false);
+          handleCloseModal();
+        } else {
+          setAlertDialog({
+            status: "error",
+            title: message,
+            description: "Please try again later",
+          });
+          setIsLoading(false);
+          console.error(" Failed to update activity:", message);
         }
-
-        try {
-            await updateActivity(params, payload, (status, message) => {
-                if (status === 200) {
-                    setAlertDialog({
-                        status: "success",
-                        title: `${message}`,
-                        description: "",
-                    })
-                    setIsLoading(false)
-                    handleCloseModal()
-                } else {
-                    setAlertDialog({
-                        status: "error",
-                        title: message,
-                        description: "Please try again later",
-                    })
-                    setIsLoading(false)
-                    console.error(" Failed to update activity:", message);
-                }
-            });
-
-        } catch (error) {
-            console.error("Error creating objective:", error);
-            setAlertDialog({
-                status: "error",
-                title: "Unexpected Error",
-                description: error.message || "Something went wrong.",
-            });
-        }
+      });
+    } catch (error) {
+      console.error("Error creating objective:", error);
+      setAlertDialog({
+        status: "error",
+        title: "Unexpected Error",
+        description: error.message || "Something went wrong.",
+      });
     }
+  };
 
-    const handleConfirmDelete = async () => {
+  const handleConfirmDelete = async () => {
+    if (!selectedActivityId) return;
 
-        if (!selectedActivityId) return
+    setIsLoading(true);
 
-        setIsLoading(true)
+    const params = { id: selectedActivityId };
 
-        const params = { id: selectedActivityId };
+    await removeActivity(params, (status, message) => {
+      const isSuccess = status === 200 || status === true;
 
-        await removeActivity(params, (status, message) => {
-            const isSuccess = status === 200 || status === true;
+      setAlertDialog({
+        status: isSuccess ? "success" : "error",
+        title: message,
+        description: isSuccess ? "" : "Please try again later.",
+      });
 
-            setAlertDialog({
-                status: isSuccess ? "success" : "error",
-                title: message,
-                description: isSuccess ? "" : "Please try again later.",
-            });
+      if (!isSuccess) {
+        console.error("Failed to delete objective:", message);
+      }
 
+      setIsLoading(false);
+      setOpenDeleteModal(false);
+      setSelectedActivityId(null);
+    });
 
-            if (!isSuccess) {
-                console.error("Failed to delete objective:", message);
-            }
+    setTimeout(() => {
+      setIsLoading(false);
+      setOpenDeleteModal(false);
+    }, 2000);
+  };
 
-            setIsLoading(false);
-            setOpenDeleteModal(false);
-            setSelectedActivityId(null);
-        })
+  const handleOpenDeleteModal = (activityId) => {
+    setOpenDeleteModal(true);
+    setSelectedActivityId(activityId);
 
+    const data = {
+      status: "warning",
+      title: ` Are you sure you want to delete this activity ? `,
+      description: "The selected activity will be removed",
+    };
+    setConfirmationModal(data);
+  };
 
-        setTimeout(() => {
-            setIsLoading(false);
-            setOpenDeleteModal(false)
-        }, 2000);
-    }
+  const handleCountActivities = async () => {
+    setIsLoading(true);
 
-    const handleOpenDeleteModal = (activityId) => {
+    const payload = {
+      application_objective_id: objectiveId,
+      count: countActivities,
+    };
 
-        setOpenDeleteModal(true)
-        setSelectedActivityId(activityId)
-
-        const data = {
-            status: "warning",
-            title: ` Are you sure you want to delete this activity ? `,
-            description:
-                "The selected activity will be removed",
+    try {
+      await createActivity(payload, (status, message) => {
+        if (status === 201) {
+          setAlertDialog({
+            status: "success",
+            title: `${message}`,
+            description: "",
+          });
+          setIsLoading(false);
+          // handleCloseModal()
+          setIsCountModal(false);
+        } else {
+          setAlertDialog({
+            status: "error",
+            title: message,
+            description: "Please try again later",
+          });
+          setIsLoading(false);
+          console.error(" Failed to update objectives:", message);
         }
-        setConfirmationModal(data);
+      });
+    } catch (error) {
+      console.error(error);
+      setAlertDialog({
+        status: "error",
+        title: "Unexpected Error",
+        description: error.message || "Something went wrong.",
+      });
     }
+  };
 
-    const handleCountActivities = async () => {
-
-        setIsLoading(true)
-
-        const payload = {
-            application_objective_id: objId,
-            count: countActivities
+  return (
+    <>
+      <PageTitle
+        title={`AOP for Fiscal Year ${currentFiscalYear}`}
+        description={
+          "The following below serves as the summary of your AOP request. You can open and update your request before the deadline as set by the administrators."
         }
+        items={breadcrumbs}
+      />
+      <BoxComponent mt={2} p={2}>
+        <Stack direction={"column"} spacing={1}>
+          <Stack direction={"row"} spacing={1} alignItems={"center"}>
+            <Typography fontWeight={600}>{MANAGE_ACTIVITIES_HEADER}</Typography>
+            <ChipComponent
+              label={"Objective: Sample Objective"}
+              color={"success"}
+              variant={"outlined"}
+              fontSize={13}
+              size={"lg"}
+            />
+          </Stack>
 
-        try {
-            await createActivity(payload, (status, message) => {
-                if (status === 201) {
-                    setAlertDialog({
-                        status: "success",
-                        title: `${message}`,
-                        description: "",
-                    })
-                    setIsLoading(false)
-                    // handleCloseModal()
-                    setIsCountModal(false)
-                } else {
-                    setAlertDialog({
-                        status: "error",
-                        title: message,
-                        description: "Please try again later",
-                    })
-                    setIsLoading(false)
-                    console.error(" Failed to update objectives:", message);
-                }
-            })
-        } catch (error) {
-            console.error(error)
-            setAlertDialog({
-                status: "error",
-                title: "Unexpected Error",
-                description: error.message || "Something went wrong.",
-            });
-        }
-    }
+          <Typography level="body-xs" fontWeight={400}>
+            {MANAGE_ACTIVITIES_SUBHEADER}
+          </Typography>
+        </Stack>
 
-    return (
+        <Divider sx={{ my: 1 }} />
+
+        <Stack
+          direction={"row"}
+          spacing={1}
+          alignItems={"center"}
+          justifyContent={"space-between"}
+        >
+          <SearchBarComponent placeholder="search activities" />
+
+          <ButtonComponent
+            onClick={() => setIsCountModal(true)}
+            label={"Add Activity"}
+            // endDecorator={<Plus size={16} />}
+            // disabled={!show || disabledEditMode(APPLICATION_OBJECTIVE_ID, remarks, comments, disabled)}
+          />
+        </Stack>
+      </BoxComponent>
+
+      {isLoading ? (
+        <Stack sx={centeredStyle}>
+          <ThreeDotsLoader />
+        </Stack>
+      ) : applicationActivities.length === 0 ? (
         <>
-            <PageTitle
-                title={`AOP #2025-0031 for Fiscal Year 2026`}
-                items={breadcrumbs}
+          <Stack sx={centeredStyle}>
+            <Typography sx={{ fontSize: 20, fontWeight: 600 }}>
+              {EMPTY_STATE_TITLE}
+            </Typography>
+
+            <Typography mb={2} sx={{ fontSize: 20, fontWeight: 400 }}>
+              {ACTIVITY_CREATE_NEW}
+            </Typography>
+
+            <ButtonComponent
+              onClick={() => handleOpenCountModal()}
+              label={"Add Activity"}
+              // endDecorator={<Plus size={16} />}
             />
-
-
-            <BoxComponent mt={2} p={2}>
-                <Stack direction={"column"} spacing={1}>
-                    <Typography fontWeight={600}>{MANAGE_ACTIVITIES_HEADER}</Typography>
-
-                    <Typography level="body-xs" fontWeight={400}>
-                        {MANAGE_ACTIVITIES_SUBHEADER}
-                    </Typography>
-                </Stack>
-
-                <Divider sx={{ my: 1 }} />
-
-                <Stack
-                    direction={"row"}
-                    spacing={1}
-                    alignItems={"center"}
-                    justifyContent={"space-between"}
-                >
-                    <SearchBarComponent placeholder="search activities" />
-
-                    <ButtonComponent
-                        onClick={() => setIsCountModal(true)}
-                        label={"Add Activity"}
-                    // endDecorator={<Plus size={16} />}
-                    // disabled={!show || disabledEditMode(APPLICATION_OBJECTIVE_ID, remarks, comments, disabled)}
-                    />
-                </Stack>
-            </BoxComponent>
-
-            {isLoading ?
-                <Stack
-                    sx={centeredStyle}
-                >
-                    <ThreeDotsLoader />
-                </Stack>
-                :
-                applicationActivities.length === 0 ?
-                    <>
-                        <Stack
-                            sx={centeredStyle}
-                        >
-                            <Typography sx={{ fontSize: 20, fontWeight: 600 }}>
-                                {EMPTY_STATE_TITLE}
-                            </Typography>
-
-                            <Typography mb={2} sx={{ fontSize: 20, fontWeight: 400 }}>
-                                {ACTIVITY_CREATE_NEW}
-                            </Typography>
-
-                            <ButtonComponent
-                                onClick={() => handleOpenCountModal()}
-                                label={"Add Activity"}
-                            // endDecorator={<Plus size={16} />}
-                            />
-                        </Stack>
-                    </>
-                    :
-                    <Grid mt={2} container direction="row" spacing={2} sx={{ flexGrow: 1 }}>
-                        {applicationActivities.map((activity) => (
-                            <Grid
-                                key={activity.id}
-                                size={4}
-                                lg={4}
-                                md={6}
-                                sm={12}
-                            >
-                                <ActivitiesList
-                                    isLoading={isLoading}
-                                    activity={activity}
-                                    handleAdd={() => handleOpenCountModal()}
-                                    handleEdit={() => handleOpenEditModal(activity.id)}
-                                    handleDelete={() => handleOpenDeleteModal(activity.id)}
-                                />
-                            </Grid>
-                        ))}
-                    </Grid >
-            }
-
-
-            <ModalComponent
-                isOpen={isCountModal}
-                handleClose={() => setIsCountModal(false)}
-                title={MODAL_TITLE}
-                description={MODAL_DESCRIPTION}
-                minWidth={500}
-                content={
-                    <>
-                        <Stack direction={'column'} alignItems={'start'} justifyContent={'center'}>
-                            {COUNT_LABEL}
-                            <InputComponent
-                                type={'number'}
-                                width={80}
-                                value={countActivities}
-                                setValue={(val) => setCountActivities(val)}
-                            />
-                        </Stack>
-                    </>
-                }
-                hasActionButtons={true}
-                rightButtonLabel={`Save`}
-                rightButtonAction={() => handleCountActivities()}
-                isLoading={isLoading}
-
-            />
-
-            <ModalComponent
-                isOpen={isOpenActivitiesModal}
-                handleClose={handleCloseModal}
-                title={'Edit Activity'}
-                description={'Add or modify the details of this activity to align with its objective.'}
-                height={670}
-                minWidth={550}
-                content={
-                    <>
-                        <ActivitiesModal
-                            isEditMode={isEditMode}
-                            selectedActivity={applicationActivity}
-                        />
-                    </>
-                }
-                hasActionButtons={true}
-                rightButtonLabel={`Save activity`}
-                rightButtonAction={() => handleSaveActivity()}
-                isLoading={isLoading}
-            />
-
-            {
-                openDeleteModal && (
-                    <ConfirmationModalComponent
-                        leftButtonLabel="Cancel"
-                        leftButtonAction={() => {
-                            setOpenDeleteModal(false)
-                            closeConfirmation()
-                        }}
-                        rightButtonLabel="Delete"
-                        rightButtonAction={() => handleConfirmDelete()}
-                        isLoading={isLoading}
-                    />
-                )
-            }
-
+          </Stack>
         </>
-    )
-}
+      ) : (
+        <Grid mt={2} container direction="row" spacing={2} sx={{ flexGrow: 1 }}>
+          {applicationActivities.map((activity) => (
+            <Grid key={activity.id} size={4} lg={4} md={6} sm={12}>
+              <ActivitiesList
+                isLoading={isLoading}
+                activity={activity}
+                handleAdd={() => handleOpenCountModal()}
+                handleEdit={() => handleOpenEditModal(activity.id)}
+                handleDelete={() => handleOpenDeleteModal(activity.id)}
+              />
+            </Grid>
+          ))}
+        </Grid>
+      )}
 
-export default Activities
+      <ModalComponent
+        isOpen={isCountModal}
+        handleClose={() => setIsCountModal(false)}
+        title={MODAL_TITLE}
+        description={MODAL_DESCRIPTION}
+        minWidth={500}
+        content={
+          <>
+            <Stack
+              direction={"column"}
+              alignItems={"start"}
+              justifyContent={"center"}
+            >
+              {COUNT_LABEL}
+              <InputComponent
+                type={"number"}
+                width={80}
+                value={countActivities}
+                setValue={(val) => setCountActivities(val)}
+              />
+            </Stack>
+          </>
+        }
+        hasActionButtons={true}
+        rightButtonLabel={`Save`}
+        rightButtonAction={() => handleCountActivities()}
+        isLoading={isLoading}
+      />
+
+      <ModalComponent
+        isOpen={isOpenActivitiesModal}
+        handleClose={handleCloseModal}
+        title={"Edit Activity"}
+        description={
+          "Add or modify the details of this activity to align with its objective."
+        }
+        height={670}
+        minWidth={550}
+        content={
+          <>
+            <ActivitiesModal
+              isEditMode={isEditMode}
+              selectedActivity={applicationActivity}
+            />
+          </>
+        }
+        hasActionButtons={true}
+        rightButtonLabel={`Save activity`}
+        rightButtonAction={() => handleSaveActivity()}
+        isLoading={isLoading}
+      />
+
+      {openDeleteModal && (
+        <ConfirmationModalComponent
+          leftButtonLabel="Cancel"
+          leftButtonAction={() => {
+            setOpenDeleteModal(false);
+            closeConfirmation();
+          }}
+          rightButtonLabel="Delete"
+          rightButtonAction={() => handleConfirmDelete()}
+          isLoading={isLoading}
+        />
+      )}
+    </>
+  );
+};
+
+export default Activities;

@@ -1,7 +1,14 @@
-import { Typography } from "@mui/material";
 import React, { Fragment, useEffect, useState } from "react";
 import BoxComponent from "../../../Components/Common/Card/BoxComponent";
-import { Box, Stack } from "@mui/joy";
+import {
+  Box,
+  Divider,
+  Grid,
+  Skeleton,
+  Stack,
+  Typography,
+  useTheme,
+} from "@mui/joy";
 import { TargetIcon } from "lucide-react";
 import { TbTargetArrow } from "react-icons/tb";
 import ButtonComponent from "../../../Components/Common/ButtonComponent";
@@ -13,6 +20,9 @@ import { ThreeDotsLoader } from "../../../Components/Common/Loading/ThreeDotsLoa
 import { socket } from "../../../Services/Socket";
 import { useAuth } from "../../../Store/AuthStore";
 import { nextYear } from "../../../Utils/Functions";
+import SelectComponent from "@Components/Form/YearSelectComponent";
+import { Warning, WarningAmber } from "@mui/icons-material";
+import PageTitle from "@Components/Common/PageTitle";
 
 function PPMPDashboard(props) {
   const navigate = useNavigate();
@@ -21,6 +31,9 @@ function PPMPDashboard(props) {
   const { user } = useAuth();
   const { name, id, assignedArea } = user ?? {};
   const status = dashboard?.ppmp_application?.is_draft;
+
+  const theme = useTheme();
+  const color = theme.palette.custom;
 
   const handleNavigate = () => {
     navigate("ppmp-items");
@@ -47,6 +60,12 @@ function PPMPDashboard(props) {
   }, [assignedArea]);
   return (
     <Fragment>
+      <PageTitle
+        title={"Project Procurement Management Plan"}
+        description={
+          "The following below serves as the summary of your PPMP request. You can open and update your request before the deadline as set by the administrators."
+        }
+      />
       {pageLoader ? (
         <Stack height="85vh" alignItems="center" justifyContent="center">
           <ThreeDotsLoader />
@@ -55,41 +74,128 @@ function PPMPDashboard(props) {
         Object.keys(dashboard).length === 0 &&
         dashboard.constructor === Object ? (
         <>
-          <Stack
-            height="85vh"
-            sx={{ border: "2px solid #003049", borderRadius: 10 }}
-            alignItems="center"
-            justifyContent="center"
+          {" "}
+          <BoxComponent
             mt={3}
-            gap={2}
+            height={"84vh"}
+            boxShadow={"xs"}
+            borderRadius={10}
+            sx={{
+              height: "85vh",
+              display: "flex",
+              flexDirection: "column",
+            }}
           >
-            <img src={no_result} alt="not-found-img" width={300} />
-
-            <Box>
-              <Typography fontSize={24} textAlign="center">
-                Your PPMP for this year isn’t ready yet.{" "}
-              </Typography>
-              <Typography
-                sx={{ color: "#003049", fontSize: 24, fontWeight: "bold" }}
-                textAlign="center"
+            <Grid
+              xs={12}
+              bgcolor="#006599"
+              sx={{ borderTopRightRadius: 10, borderTopLeftRadius: 10 }}
+              p={2}
+              mb={1}
+            >
+              <Stack
+                direction={"row"}
+                justifyContent={"space-between"}
+                alignItems={"center"}
               >
-                Begin by creating a new request.
-              </Typography>
-            </Box>
+                <Stack width={"100%"}>
+                  <Box display="flex" alignItems="center" gap={1}>
+                    <Typography
+                      sx={{ color: "white", fontSize: 28, fontWeight: 600 }}
+                    >
+                      PPMP for Fiscal year
+                    </Typography>
+                    <SelectComponent
+                      width="120px"
+                      bgcolor="#004366"
+                      txtcolor="white"
+                    />
+                  </Box>
+                  <Typography level="body-sm" sx={{ color: "white" }}>
+                    Mission: This is a sample mission written by the requesting
+                    body. This could be as short as a single sentence but could
+                    be as long as two sentences if necessary.
+                  </Typography>
+                </Stack>
+                <Stack
+                  bgcolor={"#FFF4E5"}
+                  borderRadius={5}
+                  direction={"row"}
+                  alignItems="center"
+                  padding={2}
+                  spacing={1.5}
+                  width={"75%"}
+                >
+                  <WarningAmber sx={{ color: color.warning, fontSize: 20 }} />
+                  <Box width={"100%"}>
+                    <Typography
+                      level="body-xs"
+                      color="warning"
+                      sx={{ fontWeight: 600 }}
+                    >
+                      {" "}
+                      Status: Draft Mode
+                    </Typography>
+                    <Typography level="body-xs" color="warning">
+                      This AOP is currently in draft mode. You may click this
+                      button and confirm to submit this AOP for review.
+                    </Typography>
+                  </Box>
+                </Stack>
+              </Stack>
+            </Grid>
 
-            <Typography width={"35%"} textAlign="center">
-              Nothing to show yet for this year’s PPMP. You may request new
-              items for the meantime or create a new AOP request.
-            </Typography>
-            <Stack direction="row" gap={1}>
-              <ButtonComponent label="Request new items" variant="outlined" />
-              <ButtonComponent
-                label="Create AOP"
-                variant="solid"
-                onClick={() => navigate("/aop-create")}
-              />
-            </Stack>
-          </Stack>
+            <Grid
+              container
+              bgcolor={"#FAFAFA"}
+              padding={0.5}
+              spacing={2}
+              sx={{
+                flexGrow: 1,
+                borderBottomLeftRadius: 10,
+                borderBottomRightRadius: 10,
+              }}
+            >
+              <Grid mt={1} xs={8}>
+                <BoxComponent
+                  justifyContent="center"
+                  alignItems="center"
+                  height="64vh"
+                  display="flex"
+                  padding={2}
+                >
+                  <Box textAlign="center"></Box>
+                </BoxComponent>
+              </Grid>
+
+              <Grid mt={1} sm={12} md={4}>
+                <BoxComponent height="64vh" padding={2}>
+                  <Typography level="title-lg">Approval Timeline</Typography>
+                  <Typography
+                    level="body-xs"
+                    mt={0.5}
+                    sx={{ color: color.fontLight }}
+                  >
+                    {" "}
+                    The list below shows the current status of the request.
+                  </Typography>
+                  <Divider sx={{ my: 1, color: "gray" }} />
+                  <Box
+                    sx={{
+                      display: "flex",
+                      justifyContent: "center",
+                      alignItems: "center",
+                    }}
+                    height={"57vh"}
+                  >
+                    <Typography level="body-sm" sx={{ color: color.fontLight }}>
+                      No transactions done yet.
+                    </Typography>
+                  </Box>
+                </BoxComponent>
+              </Grid>
+            </Grid>
+          </BoxComponent>
         </>
       ) : (
         <>

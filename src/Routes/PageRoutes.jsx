@@ -14,12 +14,8 @@ import Items from "../Pages/Items";
 import ItemRequest from "../Pages/Consolidators/ItemManagement/ItemRequest";
 import ItemLibrary from "../Pages/Consolidators/ItemManagement/ItemLibrary";
 // import Objectives from "../Pages/PlanningOps/ObjectiveManagement/Objectives";
-import EditPPMP from "../Pages/DeptHead/PPMP/EditPPMP";
 import ManageAOP from "../Pages/PlanningOps/Approval/ManageAOP";
 import AOPApproval from "../Pages/PlanningOps/Approval/AOPApproval";
-import AddItems from "../Pages/DeptHead/PPMP/AddItems";
-import PPMPItems from "../Pages/DeptHead/PPMP/PPMPItems";
-import PPMPDashboard from "../Pages/DeptHead/PPMP/PPMPDashboard";
 import PPMPApproval from "../Pages/PPMP/Approval/PPMPApproval";
 import ManagePPMP from "../Pages/PPMP/Approval/ManagePPMP";
 
@@ -43,9 +39,13 @@ import { MyOwnRequestsList } from "../Pages/TEMP/ItemMyOwnRequestsLists";
 import { ItemRequestDatatable } from "../Pages/Consolidators/ItemManagement/ItemRequestDatatable";
 
 import { element } from "prop-types";
-import ManageResources from "../Pages/AOP/EndUser/ManageResources";
-import AOPResources from "../Pages/AOP/EndUser/AOPResources";
-import AddResources from "../Pages/AOP/EndUser/AddResources";
+import ManageResources from "../Pages/AOP/EndUser/Resources/ManageResources";
+import AOPOutlet from "../Pages/AOP/EndUser/AOPOutlet";
+import AddResources from "../Pages/AOP/EndUser/Resources/AddResources";
+import EditPPMP from "../Pages/PPMP/EndUser/EditPPMP";
+import PPMPDashboard from "../Pages/PPMP/EndUser/PPMPDashboard";
+import PPMPItems from "../Pages/PPMP/EndUser/PPMPItems";
+import AddItems from "../Pages/PPMP/EndUser/AddItems";
 // import ResponsiblePerson from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities/ResponsiblePerson";
 
 export const sidebarRoutes = [
@@ -68,43 +68,31 @@ export const sidebarRoutes = [
       {
         path: "/aop",
         name: "AOP",
-        element: <AOP />,
-        childPermissions: ["ERP-AOP-MAN:write"],
-      },
-
-      {
-        path: "/aop/summary",
-        name: "AOP summary",
-        element: <AOPSummary />,
-        childPermissions: ["ERP-AOP-MAN:write"],
-      },
-
-      {
-        path: "/objectives/:aopId",
-        name: "Objectives",
-        element: <Objectives />,
-      },
-
-      {
-        path: "/activities/:objectiveId",
-        name: "Activities",
-        element: <Activities />,
-      },
-
-      {
-        path: "/responsible-person/:activityId",
-        name: "Responsible Person",
-        element: <ResponsiblePerson />,
-      },
-
-      {
-        path: "/manage-resources/:activityId",
-        name: "Manage Resources",
-        element: <AOPResources />,
+        element: <AOPOutlet />,
         childPermissions: ["ERP-AOP-MAN:write"],
         children: [
           {
             index: true,
+            element: <AOP />,
+          },
+          {
+            path: "summary",
+            element: <AOPSummary />,
+          },
+          {
+            path: "objectives/:aopId",
+            element: <Objectives />,
+          },
+          {
+            path: "activities/:objectiveId",
+            element: <Activities />,
+          },
+          {
+            path: "responsible-person/:activityId",
+            element: <ResponsiblePerson />,
+          },
+          {
+            path: "manage-resources/:activityId",
             element: <ManageResources />,
           },
           {

@@ -13,13 +13,7 @@ import { Outlet, useLocation, useNavigate } from "react-router-dom";
 function EditPPMP({ props }) {
   return (
     <Fragment>
-      <PageTitle
-        title={"Edit PPMP"}
-        description={"Edit you unit's Project Procurement Management Plan"}
-      />
-      <Fragment>
-        <Outlet />
-      </Fragment>
+      <Outlet />
     </Fragment>
   );
 }

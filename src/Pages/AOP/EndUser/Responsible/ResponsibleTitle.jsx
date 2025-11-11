@@ -1,35 +1,30 @@
-import React, { useEffect } from 'react'
+import React, { useEffect } from "react";
 
-import { useParams } from 'react-router-dom';
+import PageTitle from "@Components/Common/PageTitle";
 
-import PageTitle from '@Components/Common/PageTitle';
-import useAOPBreadcrumbs from '../../../../Hooks/AOP/AOPBreadcrumbs';
-import { RESPONSIBLE } from '../../../../Data/constants';
+import { RESPONSIBLE } from "../../../../Data/constants";
+import useAOPBreadcrumbs from "../../../../Hooks/AOP/AOPBreadcrumbs";
 
-const ResponsibleTitle = (
-    { activity }
-) => {
+const ResponsibleTitle = ({ activity }) => {
+  const { PAGE_TITLE, PAGE_DESCRIPTION } = RESPONSIBLE;
 
-    const breadcrumbs = useAOPBreadcrumbs();
+  const { application_objective_id } = activity || {};
 
-    const { PAGE_TITLE, PAGE_DESCRIPTION } = RESPONSIBLE;
+  const breadcrumbs = useAOPBreadcrumbs();
 
-    const { application_objective_id
-    } = activity || {}
+  useEffect(() => {
+    console.log(application_objective_id);
+  }, [activity]);
 
-    useEffect(() => {
-        console.log(application_objective_id)
-    }, [activity])
+  return (
+    <>
+      <PageTitle
+        title={PAGE_TITLE}
+        description={PAGE_DESCRIPTION}
+        items={breadcrumbs}
+      />
+    </>
+  );
+};
 
-    return (
-        <>
-            <PageTitle
-                title={PAGE_TITLE}
-                description={PAGE_DESCRIPTION}
-                items={breadcrumbs}
-            />
-        </>
-    )
-}
-
-export default ResponsibleTitle
+export default ResponsibleTitle;

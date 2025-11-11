@@ -31,12 +31,12 @@ import {
 import ButtonComponent from "@Components/Common/ButtonComponent";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import ResourceCardComponent from "@Components/Resources/ResourceCardComponent";
-import useResourcesHook from "../../../Hooks/AOP/ResourcesHook";
-import usePurchaseTypeHook from "../../../Hooks/PurchaseTypeHook";
+import useResourcesHook from "../../../../Hooks/AOP/ResourcesHook";
+import usePurchaseTypeHook from "../../../../Hooks/PurchaseTypeHook";
 import { ThreeDotsLoader } from "@Components/Common/Loading/ThreeDotsLoader";
 import moment from "moment";
 import SearchBarComponentv2 from "@Components/SearchBarWithdeBounce";
-import useAOPBreadcrumbs from "../../../Hooks/AOP/AOpBreadcrumbs";
+import useAOPBreadcrumbs from "../../../../Hooks/AOP/AOpBreadcrumbs";
 
 const QuarterTarget = ({ label = "Q1", value }) => (
   <>
@@ -186,7 +186,7 @@ function ManageResources(props) {
               label={"Add a resource"}
               startDecorator={<PlusIcon />}
               onClick={() =>
-                navigate(`select-resources/${activityId}`, {
+                navigate(`/aop/select-resources/${activityId}`, {
                   state: { activityId: activityId },
                 })
               }
@@ -331,7 +331,7 @@ function ManageResources(props) {
             startDecorator={<PlusIcon />}
             label={"Add a resource"}
             onClick={() =>
-              navigate(`select-resources/${activityId}`, {
+              navigate(`/aop/select-resources/${activityId}`, {
                 state: { activityId: activityId },
               })
             }
