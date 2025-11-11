@@ -8,9 +8,10 @@ import StatusCard from './StatusCard';
 
 const ObjectivesCard = ({
     hasFunction = false,
-    objectiveCounts,
+    objectiveCount,
     handleNavigate,
-    height
+    height,
+    successIndicatorCount
 }) => {
     return (
         <>
@@ -18,9 +19,9 @@ const ObjectivesCard = ({
                 height={height}
                 hasFunction={hasFunction}
                 logo={ObjectivesLogo}
-                count={objectiveCounts}
+                count={objectiveCount}
                 title={'objectives'}
-                description={'Contains (14) success indicators in total on this request'}
+                description={`Contains (${successIndicatorCount}) success indicators in total on this request`}
                 functionHandler={
                     <ButtonComponent
                         label={'Go to Objectives'}

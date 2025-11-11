@@ -14,6 +14,7 @@ import { getStatusIcon } from "../../../Utils/StatusIcon";
 // eslint-disable-next-line no-unused-vars
 import { AnimatePresence, motion } from "motion/react";
 import { getModeColorScheme } from "../../../Utils/ColorScheme";
+import { useEffect } from "react";
 
 AlertDialogComponent.propTypes = {
   rightButtonLabel: PropTypes.string,

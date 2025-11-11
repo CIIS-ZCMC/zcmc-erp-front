@@ -4,6 +4,8 @@ import PesoLogo from '../../../../assets/dashboard/Peso.svg'
 
 import StatusCard from './StatusCard'
 
+import formattedPrice from '../../../../Utils/formattedPrice'
+
 const CostCard = ({ totalCost, height }) => {
     return (
         <>
@@ -11,7 +13,7 @@ const CostCard = ({ totalCost, height }) => {
                 height={height}
                 hasFunction={false}
                 logo={PesoLogo}
-                count={totalCost}
+                count={formattedPrice(totalCost)}
                 title={'total cost'}
             />
         </>

@@ -6,7 +6,7 @@ import BoxComponent from '@Components/Common/Card/BoxComponent'
 
 import PeopleIcon from '../../../../../../assets/responsible_people/People.svg'
 
-const PeopleList = () => {
+const PeopleList = ({ responsiblePeople, peopleCount }) => {
     return (
         <>
             <BoxComponent>
@@ -39,7 +39,7 @@ const PeopleList = () => {
                             size='lg'
                         >
                             <Typography level="title-lg" color='violet'>
-                                {/* {usersCount} */} 5
+                                {peopleCount}
                             </Typography>
                         </Avatar>
                     </Stack>
@@ -50,14 +50,24 @@ const PeopleList = () => {
                         padding: 2
                     }}
                 >
-                    <ListItem>
-                        <Stack>
-                            <Typography level="title-sm">Juan Dela Cruz</Typography>
-                            <Typography level="body-sm">
-                                Computer Programmer II
-                            </Typography>
-                        </Stack>
-                    </ListItem>
+                    {responsiblePeople?.map(({ id, user, designation }) => {
+
+                        const { name: employeeName, designation_name } = user || '';
+                        const { name: jobPosition } = designation || ''
+
+                        return <ListItem
+                            key={id}
+                        >
+                            <Stack>
+                                <Typography level="title-sm">{employeeName ? employeeName : jobPosition}</Typography>
+                                <Typography level="body-sm">
+                                    {employeeName ? designation_name : 'Position'}
+                                </Typography>
+                            </Stack>
+                        </ListItem>
+                    })}
+
+
                 </List>
             </BoxComponent>
         </>

@@ -17,6 +17,9 @@ const Summary = ({
     nonGadActivitiesCount,
     responsiblePeopleCount,
     totalCost,
+    successIndicatorCount,
+    usersCount,
+    designationCount,
 }) => {
     return (
         <>
@@ -28,7 +31,8 @@ const Summary = ({
                     <ObjectivesCard
                         hasFunction={false}
                         height={285}
-                        objectiveCounts={objectivesCount}
+                        objectiveCount={objectivesCount}
+                        successIndicatorCount={successIndicatorCount}
                     />
                 </Grid>
 
@@ -45,6 +49,7 @@ const Summary = ({
                     <ResourcesCard
                         height={285}
                         resourcesCount={resourcesCount}
+                        totalCost={totalCost}
                     />
                 </Grid>
 
@@ -52,6 +57,8 @@ const Summary = ({
                     <ResponsiblePersonCard
                         height={285}
                         PersonsCount={responsiblePeopleCount}
+                        usersCount={usersCount}
+                        designationCount={designationCount}
                     />
                 </Grid>
 

@@ -1,8 +1,13 @@
 import React from 'react'
 
 import { Stack, Typography } from '@mui/joy'
+import { formattedDate } from '../../../../../Utils/formattedLongDate'
 
-const CardActions = () => {
+const CardActions = ({
+    datePrepared,
+    dateToday,
+    PreparedBySector
+}) => {
     return (
 
         <>
@@ -15,7 +20,7 @@ const CardActions = () => {
                     Prepared by:
                 </Typography>
                 <Typography level='title-md'>
-                    IISU
+                    {PreparedBySector}
                 </Typography>
             </Stack>
 
@@ -24,10 +29,10 @@ const CardActions = () => {
                 mr={10}
             >
                 <Typography level='body-sm'>
-                    Prepared by:
+                    Date Prepared:
                 </Typography>
                 <Typography level='title-md'>
-                    IISU
+                    {formattedDate(datePrepared)}
                 </Typography>
             </Stack>
 
@@ -36,10 +41,10 @@ const CardActions = () => {
                 mr={10}
             >
                 <Typography level='body-sm'>
-                    Prepared by:
+                    Date Today:
                 </Typography>
                 <Typography level='title-md'>
-                    IISU
+                    {formattedDate(dateToday)}
                 </Typography>
             </Stack>
 

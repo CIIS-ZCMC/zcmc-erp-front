@@ -1,11 +1,17 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { List, ListItem, ListItemContent, Stack, Typography, Avatar } from '@mui/joy'
 
 import BoxComponent from '@Components/Common/Card/BoxComponent'
 
 import ResourcesIcon from '../../../../../../assets/dashboard/Resources.svg'
 
-const ResourcesList = () => {
+import formattedPrice from '../../../../../../Utils/formattedPrice'
+
+const ResourcesList = ({
+    resources,
+    resourcesCount,
+}) => {
+
     return (
         <>
             <BoxComponent >
@@ -39,7 +45,7 @@ const ResourcesList = () => {
                             size='lg'
                         >
                             <Typography level="title-lg" color='violet'>
-                                {/* {usersCount} */} 5
+                                {/* {usersCount} */} {resourcesCount}
                             </Typography>
                         </Avatar>
                     </Stack>
@@ -50,35 +56,49 @@ const ResourcesList = () => {
                         padding: 2
                     }}
                 >
-                    <ListItem
-                        sx={{
-                            display: 'flex',
-                            alignItem: 'center',
-                            justifyContent: 'space-between',
-                            mt: 2
-                        }}
-                    >
-                        <Stack>
-                            <Typography level="title-sm">X-Ray Machine</Typography>
-                            <Typography level="body-sm">
-                                Qty: 2
-                            </Typography>
-                        </Stack>
+                    {resources.map(({ id, item, quantity, item_cost, total_resource_cost, item_category }) => {
 
-                        <Stack>
-                            <Typography level="title-sm">Classification</Typography>
-                            <Typography level="body-sm">
-                                Category
-                            </Typography>
-                        </Stack>
+                        const { name } = item;
 
-                        <Stack>
-                            <Typography level="title-sm">15,000,000</Typography>
-                            <Typography level="body-sm">
-                                1500 per pc
-                            </Typography>
-                        </Stack>
-                    </ListItem>
+                        return (
+                            <ListItem
+                                key={id}
+                                sx={{
+                                    display: 'flex',
+                                    alignItems: 'start',
+                                    justifyContent: 'space-between',
+                                    mt: 2
+                                }}
+                            >
+                                <Stack>
+                                    <Typography level="title-sm">{name}</Typography>
+                                    <Typography level="body-sm">
+                                        Qty: {quantity}
+                                    </Typography>
+                                </Stack>
+
+                                <Stack>
+                                    <Typography level="title-sm">{item_category.name}</Typography>
+                                    {/* <Typography level="body-sm">
+
+                                    </Typography> */}
+                                </Stack>
+
+                                <Stack
+                                    alignItems={'end'}
+                                >
+                                    <Typography level="title-sm">
+                                        {formattedPrice(total_resource_cost)}
+                                    </Typography>
+                                    <Typography level="body-sm">
+                                        {formattedPrice(item_cost)} per pc
+                                    </Typography>
+                                </Stack>
+                            </ListItem>
+                        )
+                    })}
+
+
                 </List>
             </BoxComponent>
 

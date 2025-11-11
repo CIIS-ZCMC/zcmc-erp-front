@@ -1,5 +1,5 @@
 export const formattedPrice = (price) => {
-    return price.toLocaleString(undefined, {
+    return price?.toLocaleString(undefined, {
         style: 'currency',
         currency: 'PHP',  // Philippine Peso
         minimumFractionDigits: 2,
