@@ -381,7 +381,7 @@ function DashboardEndUser(props) {
                             height={302}
                             hasFunction={true}
                             handleNavigate={handleNavigateObjectives}
-                            objectiveCounts={aop.counts.objectives_count} />
+                            objectiveCount={aop.counts.objectives_count} />
                         </Grid>
 
                         <Grid xs={12} sm={6}>
