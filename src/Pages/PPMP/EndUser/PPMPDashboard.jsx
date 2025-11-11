@@ -60,12 +60,16 @@ function PPMPDashboard(props) {
   }, [assignedArea]);
   return (
     <Fragment>
-      <PageTitle
-        title={"Project Procurement Management Plan"}
-        description={
-          "The following below serves as the summary of your PPMP request. You can open and update your request before the deadline as set by the administrators."
-        }
-      />
+      <Stack>
+        <Typography level="h2">
+          Project Procurement Management Planning
+        </Typography>
+        <Typography level="body-xs">
+          The following below serves as the summary of your AOP request. You can
+          open and update your request before the deadline as set by the
+          administrators.
+        </Typography>
+      </Stack>
       {pageLoader ? (
         <Stack height="85vh" alignItems="center" justifyContent="center">
           <ThreeDotsLoader />
@@ -134,11 +138,11 @@ function PPMPDashboard(props) {
                       sx={{ fontWeight: 600 }}
                     >
                       {" "}
-                      Status: Draft Mode
+                      Status: Not Generated
                     </Typography>
                     <Typography level="body-xs" color="warning">
-                      This AOP is currently in draft mode. You may click this
-                      button and confirm to submit this AOP for review.
+                      AOP for 2026 is missing. Submit the AOP to generate the
+                      PPMP and enable updates.
                     </Typography>
                   </Box>
                 </Stack>
@@ -164,7 +168,22 @@ function PPMPDashboard(props) {
                   display="flex"
                   padding={2}
                 >
-                  <Box textAlign="center"></Box>
+                  <Box textAlign="center">
+                    <Stack mb={1}>
+                      <Typography level="body-lg">
+                        {" "}
+                        AOP for 2026 is missing
+                      </Typography>
+                      <Typography level="title-lg">
+                        Submit the AOP first to generate and update the PPMP.
+                      </Typography>
+                    </Stack>
+
+                    <ButtonComponent
+                      label={"Go to AOP"}
+                      onClick={() => navigate("/aop")}
+                    />
+                  </Box>
                 </BoxComponent>
               </Grid>
 
