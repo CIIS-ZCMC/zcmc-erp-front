@@ -12,12 +12,8 @@ import Items from "../Pages/Items";
 import ItemRequest from "../Pages/Consolidators/ItemManagement/ItemRequest";
 import ItemLibrary from "../Pages/Consolidators/ItemManagement/ItemLibrary";
 // import Objectives from "../Pages/PlanningOps/ObjectiveManagement/Objectives";
-import EditPPMP from "../Pages/DeptHead/PPMP/EditPPMP";
 import ManageAOP from "../Pages/PlanningOps/Approval/ManageAOP";
 import AOPApproval from "../Pages/PlanningOps/Approval/AOPApproval";
-import AddItems from "../Pages/DeptHead/PPMP/AddItems";
-import PPMPItems from "../Pages/DeptHead/PPMP/PPMPItems";
-import PPMPDashboard from "../Pages/DeptHead/PPMP/PPMPDashboard";
 import PPMPApproval from "../Pages/PPMP/Approval/PPMPApproval";
 import ManagePPMP from "../Pages/PPMP/Approval/ManagePPMP";
 
@@ -44,6 +40,10 @@ import { element } from "prop-types";
 import ManageResources from "../Pages/AOP/EndUser/Resources/ManageResources";
 import AOPOutlet from "../Pages/AOP/EndUser/AOPOutlet";
 import AddResources from "../Pages/AOP/EndUser/Resources/AddResources";
+import EditPPMP from "../Pages/PPMP/EndUser/EditPPMP";
+import PPMPDashboard from "../Pages/PPMP/EndUser/PPMPDashboard";
+import PPMPItems from "../Pages/PPMP/EndUser/PPMPItems";
+import AddItems from "../Pages/PPMP/EndUser/AddItems";
 // import ResponsiblePerson from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities/ResponsiblePerson";
 
 export const sidebarRoutes = [

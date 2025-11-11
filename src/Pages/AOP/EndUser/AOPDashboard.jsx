@@ -15,7 +15,7 @@ import no_result from "../../../assets/empty-state-icon-base.svg";
 import { ANNUAL_OPS } from "../../../Data/constants";
 import ModalComponent from "@Components/Common/Dialog/ModalComponent";
 import TextareaComponent from "@Components/Form/TextareaComponent";
-import { Warning } from "@mui/icons-material";
+import { Warning, WarningAmber } from "@mui/icons-material";
 import InputComponent from "@Components/Form/InputComponent";
 
 import useAOPStore, { useAOPActions } from "../../../Store/AOPStore";
@@ -274,7 +274,7 @@ function DashboardEndUser(props) {
                   spacing={1.5}
                   width={"75%"}
                 >
-                  <Warning sx={{ color: color.warning, fontSize: 20 }} />
+                  <WarningAmber sx={{ color: color.warning, fontSize: 20 }} />
                   <Box width={"100%"}>
                     <Typography
                       level="body-xs"
