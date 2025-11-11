@@ -76,6 +76,10 @@ export const sidebarRoutes = [
             element: <AOP />,
           },
           {
+            path: "summary",
+            element: <AOPSummary />,
+          },
+          {
             path: "objectives/:aopId",
             element: <Objectives />,
           },
