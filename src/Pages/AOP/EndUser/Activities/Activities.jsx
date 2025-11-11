@@ -26,6 +26,7 @@ import useActivitiesStore, {
 import { ACTIVITIES } from "../../../../Data/constants";
 import PageTitle from "@Components/Common/PageTitle";
 import useAOPBreadcrumbs from "../../../../Hooks/AOP/AOPBreadcrumbs";
+import ChipComponent from "@Components/Common/ChipComponent";
 
 const centeredStyle = {
   direction: "column",
@@ -286,7 +287,16 @@ const Activities = () => {
       />
       <BoxComponent mt={2} p={2}>
         <Stack direction={"column"} spacing={1}>
-          <Typography fontWeight={600}>{MANAGE_ACTIVITIES_HEADER}</Typography>
+          <Stack direction={"row"} spacing={1} alignItems={"center"}>
+            <Typography fontWeight={600}>{MANAGE_ACTIVITIES_HEADER}</Typography>
+            <ChipComponent
+              label={"Objective: Sample Objective"}
+              color={"success"}
+              variant={"outlined"}
+              fontSize={13}
+              size={"lg"}
+            />
+          </Stack>
 
           <Typography level="body-xs" fontWeight={400}>
             {MANAGE_ACTIVITIES_SUBHEADER}
