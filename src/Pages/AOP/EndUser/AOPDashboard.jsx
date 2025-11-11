@@ -98,6 +98,10 @@ function DashboardEndUser(props) {
   const [isLoading, setIsLoading] = useState(false);
   const [isAopLoading, setIsAopLoading] = useState(false);
 
+  // useEffect(() => {
+  //     console.log(aop)
+  // }, [aop])
+
   const currentYear = new Date().getFullYear();
   const currentFiscalYear = currentYear + 1;
 
@@ -217,12 +221,14 @@ function DashboardEndUser(props) {
         </>
       ) : aop ? (
         <Fragment>
-          <PageTitle
-            title={`AOP for Fiscal Year ${currentFiscalYear}`}
-            description={
-              "The following below serves as the summary of your AOP request. You can open and update your request before the deadline as set by the administrators."
-            }
-          />
+          <Stack>
+            <Typography level="h2">Annual Operations Planning</Typography>
+            <Typography level="body-xs">
+              The following below serves as the summary of your AOP request. You
+              can open and update your request before the deadline as set by the
+              administrators.
+            </Typography>
+          </Stack>
           <BoxComponent
             mt={3}
             boxShadow={"xs"}
@@ -274,7 +280,7 @@ function DashboardEndUser(props) {
                   spacing={1.5}
                   width={"75%"}
                 >
-                  <WarningAmber sx={{ color: color.warning, fontSize: 20 }} />
+                  <Warning sx={{ color: color.warning, fontSize: 20 }} />
                   <Box width={"100%"}>
                     <Typography
                       level="body-xs"
@@ -292,6 +298,7 @@ function DashboardEndUser(props) {
                   <Box width={"450px"}>
                     <ButtonComponent
                       label={"Submit AOP for Review"}
+                      onClick={() => navigate("/aop/summary")}
                       fullWidth={"true"}
                     />
                   </Box>
@@ -364,6 +371,8 @@ function DashboardEndUser(props) {
                       <Grid container>
                         <Grid xs={12} sm={6}>
                           <ObjectivesCard
+                            height={302}
+                            hasFunction={true}
                             handleNavigate={handleNavigateObjectives}
                             objectiveCounts={aop.counts.objectives_count}
                           />
@@ -371,18 +380,21 @@ function DashboardEndUser(props) {
 
                         <Grid xs={12} sm={6}>
                           <ActivitiesCard
+                            height={302}
                             activitiesCount={aop.counts.activities_count}
                           />
                         </Grid>
 
                         <Grid xs={12} sm={6}>
                           <ResourcesCard
+                            height={302}
                             resourcesCount={aop.counts.resources_count}
                           />
                         </Grid>
 
                         <Grid xs={12} sm={6}>
                           <ResponsiblePersonCard
+                            height={302}
                             PersonsCount={aop.counts.responsible_people_count}
                           />
                         </Grid>

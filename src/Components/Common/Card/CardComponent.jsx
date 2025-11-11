@@ -17,14 +17,19 @@ const CardComponent = ({
   cardBody,
   cardActions,
   height,
+  justifyContentHeader,
+  justifyContentActions,
+  direction,
 }) => {
   return (
     <>
       <Card
+        // variant=''
+        // color='primary'
         sx={{
           textAlign: "center",
           overflow: "auto",
-          width: "459px",
+          // width: "459px",
           height: height,
           borderLeft: `6px solid ${statusColor}`,
           borderRadius: "md",
@@ -34,7 +39,9 @@ const CardComponent = ({
           <Stack
             direction={"row"}
             alignItems={"center"}
-            justifyContent={"flex-end"}
+            justifyContent={
+              justifyContentHeader ? justifyContentHeader : "flex-end"
+            }
           >
             {cardHeader}
           </Stack>
@@ -53,10 +60,13 @@ const CardComponent = ({
 
         <CardActions
           sx={{
-            justifyContent: "flex-end",
+            justifyContent: justifyContentActions ? "" : "flex-end",
           }}
         >
-          <Stack direction={"column"} alignItems={"center"}>
+          <Stack
+            direction={direction ? direction : "column"}
+            alignItems={"center"}
+          >
             {cardActions}
           </Stack>
         </CardActions>
