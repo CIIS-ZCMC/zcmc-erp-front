@@ -103,6 +103,9 @@ function PPMPItems(props) {
   const { user } = useAuth();
   const { name, id, assignedArea } = user ?? {};
 
+  const currentYear = new Date().getFullYear();
+  const currentFiscalYear = currentYear + 1;
+
   // const { is_draft } = location.state || {};
 
   //SNACKBAR
@@ -238,19 +241,19 @@ function PPMPItems(props) {
       const alertData =
         status === 201
           ? {
-            status: "success",
-            title: is_draft
-              ? "Saved as draft"
-              : "PPMP for F.Y. 2026 successfully submitted for approval.",
-            description: is_draft
-              ? "Your PPMP request has been save as draft. You can continue editing it later or submit it for approval."
-              : "Your PPMP request has been sent to the next approving body and they have been notified for approvals.",
-          }
+              status: "success",
+              title: is_draft
+                ? "Saved as draft"
+                : "PPMP for F.Y. 2026 successfully submitted for approval.",
+              description: is_draft
+                ? "Your PPMP request has been save as draft. You can continue editing it later or submit it for approval."
+                : "Your PPMP request has been sent to the next approving body and they have been notified for approvals.",
+            }
           : {
-            status: "error",
-            title: message,
-            description: message,
-          };
+              status: "error",
+              title: message,
+              description: message,
+            };
 
       setAlertDialog(alertData);
 
@@ -514,6 +517,7 @@ function PPMPItems(props) {
 
   return (
     <Fragment>
+      <PageTitle title={`PPMP for Fiscal Year ${currentFiscalYear}`} />
       <ContainerComponent
         title={"List of items"}
         description={
@@ -693,19 +697,19 @@ function PPMPItems(props) {
           step === 1
             ? "On what activity shall we assign the resources you’ll add?"
             : step === 2
-              ? "General information"
-              : step === 3
-                ? "Specifications"
-                : ""
+            ? "General information"
+            : step === 3
+            ? "Specifications"
+            : ""
         }
         description={
           step === 1
             ? "Select a request status and reasons (if returned) to continue. You may add remarks if necessary."
             : step === 2
-              ? "Fill in the item information to create it."
-              : step === 3
-                ? "List down details for the item you want to cretae to specify it."
-                : ""
+            ? "Fill in the item information to create it."
+            : step === 3
+            ? "List down details for the item you want to cretae to specify it."
+            : ""
         }
         minWidth={"400px"}
         maxWidth={"480px"}
