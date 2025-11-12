@@ -75,6 +75,14 @@ export const AOP_SUMMARY = {
   SUMMARY_FOOTER_CONTENT: 'By clicking "Submit for Official Review", you certify that all information contained in this Annual Operations Plan is true, accurate, and complete to the best of your knowledge. This document will be officially submitted to the Approving Bodies for review and approval in accordance with government procurement and planning procedures.'
 }
 
+
+export const AOP_TIMELINE = {
+  TITLE: 'Approval Timeline',
+  SUBTITLE: 'The list below shows the current status of the request.',
+  EMPTY_STATE: ' No transactions done yet.',
+}
+
+
 export const AOP_CONFRIM_DATA = [
   {
     icon: <Check />,
@@ -90,7 +98,6 @@ export const AOP_CONFRIM_DATA = [
     icon: <Check />,
     title: 'You have the authority to submit this document'
   }
-
 ]
 
 export const AOP_CONSTANTS = {

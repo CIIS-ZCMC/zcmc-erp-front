@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 
 import AccordionSummary from '../Activities/AccordionSummary';
 import AccordionDetails from '../Activities/AccordionDetails';
@@ -17,7 +17,7 @@ const ActivityAccordion = ({ activities }) => {
                     second_quarter,
                     third_quarter,
                     fourth_quarter
-                } = target;
+                } = target || {};
 
                 const activityIndex = index + 1
 

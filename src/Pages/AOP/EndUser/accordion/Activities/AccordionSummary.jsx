@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 
 import { Stack, Typography, } from '@mui/joy'
 
@@ -15,6 +15,12 @@ const AccordionSummary = ({
     resourcesCount,
     peopleCount,
 }) => {
+
+    useEffect(() => {
+        console.log(startMonth)
+        console.log(endMonth)
+    }, [startMonth, endMonth])
+
     return (
         <>
             <>
@@ -43,7 +49,7 @@ const AccordionSummary = ({
                             level='body-sm'
                         // color={'primary'}
                         >
-                            {formattedLongDate(startMonth)} to {formattedLongDate(endMonth)}
+                            {startMonth && endMonth ? `${formattedLongDate(startMonth)} to ${formattedLongDate(endMonth)}` : 'Please select a start month and end month'}
                         </Typography>
                     </Stack>
 

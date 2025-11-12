@@ -23,6 +23,7 @@ const ActivitiesList = ({
   const {
     id,
     objective_code,
+    activity_code,
     total_cost,
     is_draft,
     activity_name,
@@ -45,12 +46,11 @@ const ActivitiesList = ({
         }
         cardBody={
           <CardBody
-            objective={objective_code}
-            activity={activity_name ? activity_name : "Activity Name"}
+            // objective={objective_code}
+            activity={activity_name ? activity_name : activity_code}
             cost={total_cost}
-            timeframe={`${start_month ? formattedStartMonth : ""} - ${
-              end_month ? formattedEndMonth : ""
-            }  `}
+            timeframe={`${start_month ? formattedStartMonth : ""} - ${end_month ? formattedEndMonth : ""
+              }  `}
           />
         }
         cardActions={

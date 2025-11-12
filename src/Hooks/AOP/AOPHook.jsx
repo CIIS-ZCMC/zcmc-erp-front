@@ -122,10 +122,10 @@ const useAOPHook = () => {
 
           const {
             status,
-            data: { message, errors },
+            data: { message, activities_without_resources },
           } = res;
 
-          console.log(message, errors)
+          console.log(activities_without_resources)
 
           // if (status === 200) {
 
@@ -138,7 +138,7 @@ const useAOPHook = () => {
           //   });
           // }
 
-          callBack?.(status, message);
+          callBack?.(status, message, activities_without_resources);
 
         },
       })

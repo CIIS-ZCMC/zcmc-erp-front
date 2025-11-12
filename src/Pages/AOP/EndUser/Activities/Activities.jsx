@@ -2,7 +2,7 @@ import React, { useEffect, useState } from "react";
 
 import { Stack, Typography, Breadcrumbs, Divider, Grid } from "@mui/joy";
 
-import { useLocation, useParams } from "react-router-dom";
+import { useParams } from "react-router-dom";
 
 import useModalHook from "../../../../Hooks/ModalHook";
 import useActivitiesHook from "../../../../Hooks/ActivitiesHook";
@@ -38,7 +38,6 @@ const centeredStyle = {
 };
 
 const Activities = () => {
-  const location = useLocation();
   const { objectiveId } = useParams();
 
   const {
@@ -121,11 +120,11 @@ const Activities = () => {
     setIsEditMode(false);
     clearFields();
 
-    console.log(applicationActivities);
+    // console.log(applicationActivities);
   };
 
   const handleOpenEditModal = async (activityId) => {
-    console.log(activityId);
+    // console.log(activityId);
     setIsLoading(true);
     setIsEditMode(true);
     setSelectedActivityId(activityId);
@@ -290,7 +289,8 @@ const Activities = () => {
           <Stack direction={"row"} spacing={1} alignItems={"center"}>
             <Typography fontWeight={600}>{MANAGE_ACTIVITIES_HEADER}</Typography>
             <ChipComponent
-              label={"Objective: Sample Objective"}
+              //change this
+              label={applicationActivities[0]?.objective_code}
               color={"success"}
               variant={"outlined"}
               fontSize={13}
@@ -316,8 +316,8 @@ const Activities = () => {
           <ButtonComponent
             onClick={() => setIsCountModal(true)}
             label={"Add Activity"}
-            // endDecorator={<Plus size={16} />}
-            // disabled={!show || disabledEditMode(APPLICATION_OBJECTIVE_ID, remarks, comments, disabled)}
+          // endDecorator={<Plus size={16} />}
+          // disabled={!show || disabledEditMode(APPLICATION_OBJECTIVE_ID, remarks, comments, disabled)}
           />
         </Stack>
       </BoxComponent>
@@ -340,7 +340,7 @@ const Activities = () => {
             <ButtonComponent
               onClick={() => handleOpenCountModal()}
               label={"Add Activity"}
-              // endDecorator={<Plus size={16} />}
+            // endDecorator={<Plus size={16} />}
             />
           </Stack>
         </>

@@ -32,12 +32,14 @@ import AlertDialogComponent from "@Components/Common/Dialog/AlertDialogComponent
 import PageTitle from "@Components/Common/PageTitle";
 
 import { Outlet } from "react-router-dom";
-import ObjectivesCard from "./status/ObjectivesCard";
-import ActivitiesCard from "./status/ActivitiesCard";
-import ResourcesCard from "./status/ResourcesCard";
-import ResponsiblePersonCard from "./status/ResponsiblePersonCard";
+import ObjectivesCard from "./Status/ObjectivesCard";
+import ActivitiesCard from "./Status/ActivitiesCard";
+import ResourcesCard from "./Status/ResourcesCard";
+import ResponsiblePersonCard from "./Status/ResponsiblePersonCard";
 
-import Checklist from "./checklist/Checklist";
+
+import Timeline from "./Timeline/Timeline";
+import Checklist from "./Checklist/Checklist";
 
 const FiscalYearModal = ({ value, onChange, fiscalYear }) => {
   const { missionPlaceHolder } = ANNUAL_OPS;
@@ -98,9 +100,9 @@ function DashboardEndUser(props) {
   const [isLoading, setIsLoading] = useState(false);
   const [isAopLoading, setIsAopLoading] = useState(false);
 
-  // useEffect(() => {
-  //     console.log(aop)
-  // }, [aop])
+  useEffect(() => {
+    console.log(aop)
+  }, [aop])
 
   const currentYear = new Date().getFullYear();
   const currentFiscalYear = currentYear + 1;
@@ -221,6 +223,7 @@ function DashboardEndUser(props) {
         </>
       ) : aop ? (
         <Fragment>
+          {/* Title here */}
           <Stack>
             <Typography level="h2">Annual Operations Planning</Typography>
             <Typography level="body-xs">
@@ -246,6 +249,8 @@ function DashboardEndUser(props) {
               p={2}
               mb={1}
             >
+              {/* Header here */}
+
               <Stack
                 direction={"row"}
                 justifyContent={"space-between"}
@@ -271,7 +276,6 @@ function DashboardEndUser(props) {
                     Mission: {aop.mission}
                   </Typography>
                 </Stack>
-
 
                 {aop.status.id !== 2 &&
                   <Stack
@@ -414,31 +418,12 @@ function DashboardEndUser(props) {
                 )}
 
               <Grid mt={1} sm={12} md={4}>
-                <BoxComponent height="65vh" padding={2}>
-                  <Typography level="title-lg">Approval Timeline</Typography>
-                  <Typography
-                    level="body-xs"
-                    mt={0.5}
-                    sx={{ color: color.fontLight }}
-                  >
-                    {" "}
-                    The list below shows the current status of the request.
-                  </Typography>
-                  <Divider sx={{ my: 1, color: "gray" }} />
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
-                    height={"58vh"}
-                  >
-                    <Typography level="body-sm" sx={{ color: color.fontLight }}>
-                      No transactions done yet.
-                    </Typography>
-                  </Box>
-                </BoxComponent>
+                <Timeline
+                  aopId={aop.id}
+                />
               </Grid>
+
+
             </Grid>
           </BoxComponent>
         </Fragment>
@@ -510,7 +495,11 @@ function DashboardEndUser(props) {
           />
         </Fragment>
       )}
-      <AlertDialogComponent leftButtonAction={() => handleClose()} />
+
+      <AlertDialogComponent
+        leftButtonAction={() => handleClose()}
+      />
+
     </Fragment>
   );
 }
