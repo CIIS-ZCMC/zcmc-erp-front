@@ -8,7 +8,7 @@ import PersonsLogo from '../../../../assets/dashboard/Persons.svg'
 
 import StatusCard from './StatusCard';
 
-const ObjectivesCard = ({ PersonsCount, height }) => {
+const ObjectivesCard = ({ PersonsCount, height, designationCount, usersCount }) => {
     return (
         <>
 
@@ -18,7 +18,7 @@ const ObjectivesCard = ({ PersonsCount, height }) => {
                 logo={PersonsLogo}
                 title={'responsible person'}
                 count={PersonsCount}
-                description={'Includes (6) job positions and (6) persons in total'}
+                description={`Includes (${designationCount}) job positions and (${usersCount}) persons in total`}
             />
 
         </>

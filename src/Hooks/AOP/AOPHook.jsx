@@ -1,5 +1,5 @@
 import { API } from "../../Data/constants";
-import { read, post } from "../../Services/RequestMethods";
+import { read, post, update } from "../../Services/RequestMethods";
 
 import { useAOPActions } from "../../Store/AOPStore";
 
@@ -110,12 +110,54 @@ const useAOPHook = () => {
     }
   };
 
+  const updateAOP = async (params, body, callBack) => {
+    try {
+      await update({
+        url: `${API.AOP_UPDATE}/${params.id}`,
+        form: body,
+        failed: callBack,
+        success: async (res) => {
+
+          console.log(res)
+
+          const {
+            status,
+            data: { message, errors },
+          } = res;
+
+          console.log(message, errors)
+
+          // if (status === 200) {
+
+          //   const fetchParams = { application_objective_id: data.application_objective_id };
+
+          //   getActivities(fetchParams, (status, message) => {
+          //     if (!(status >= 200 && status < 300)) {
+          //       console.error("Failed to refresh activities:", message);
+          //     }
+          //   });
+          // }
+
+          callBack?.(status, message);
+
+        },
+      })
+    }
+    catch (error) {
+      console.error("Error Update Activity:", error);
+      callBack(false, error.message);
+    }
+  }
+
+
+
   return {
     getAOP,
     getAopYearList,
     getAopBySectorAndYear,
     getAopChecklist,
     createAOP,
+    updateAOP,
   };
 };
 

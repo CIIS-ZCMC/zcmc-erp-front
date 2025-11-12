@@ -1,4 +1,4 @@
-import { ReceiptEuroIcon } from "lucide-react";
+import { ReceiptEuroIcon, Check } from "lucide-react";
 
 /**
  * System Name must be assign here
@@ -74,6 +74,24 @@ export const AOP_SUMMARY = {
   SUMMARY_FOOTER_TITLE: 'Official Submission of Annual Operations Plan',
   SUMMARY_FOOTER_CONTENT: 'By clicking "Submit for Official Review", you certify that all information contained in this Annual Operations Plan is true, accurate, and complete to the best of your knowledge. This document will be officially submitted to the Approving Bodies for review and approval in accordance with government procurement and planning procedures.'
 }
+
+export const AOP_CONFRIM_DATA = [
+  {
+    icon: <Check />,
+    title: 'All information provided is accurate and complete'
+  },
+
+  {
+    icon: <Check />,
+    title: 'All required sections have been properly filled out'
+  },
+
+  {
+    icon: <Check />,
+    title: 'You have the authority to submit this document'
+  }
+
+]
 
 export const AOP_CONSTANTS = {
   AOP_TITLE: "Annual Operations Planning",
@@ -223,6 +241,7 @@ export const API = {
   AOP_BY_SECTOR_AND_YEAR: 'user-aop-applications',
   AOP_CHECKLIST: 'aop-checklist',
   AOP_YEAR_LIST: 'aop-application-yearList ',
+  AOP_UPDATE: 'aop-application-update-status',
 
   OBJECTIVES: "application-objectives",
   OBJECTIVE_BY_SECTOR: 'user-application-objectives',

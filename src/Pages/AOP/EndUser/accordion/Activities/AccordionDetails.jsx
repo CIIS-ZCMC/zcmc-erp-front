@@ -10,6 +10,10 @@ const AccordionDetails = ({
     second_quarter,
     third_quarter,
     fourth_quarter,
+    resources,
+    responsiblePeople,
+    resourcesCount,
+    peopleCount,
 }) => {
     return (
         <div>
@@ -87,11 +91,17 @@ const AccordionDetails = ({
                 <Grid
                     xs={6}
                 >
-                    <ResourcesList />
+                    <ResourcesList
+                        resources={resources}
+                        resourcesCount={resourcesCount}
+                    />
                 </Grid>
 
                 <Grid xs={6}>
-                    <PeopleList />
+                    <PeopleList
+                        responsiblePeople={responsiblePeople}
+                        peopleCount={peopleCount}
+                    />
                 </Grid>
             </Grid>
 

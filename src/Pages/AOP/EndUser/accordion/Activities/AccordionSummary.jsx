@@ -2,11 +2,14 @@ import React from 'react'
 
 import { Stack, Typography, } from '@mui/joy'
 
+import { formattedLongDate } from '../../../../../Utils/formattedLongDate'
+import formattedPrice from '../../../../../Utils/formattedPrice'
+
 const AccordionSummary = ({
     activityIndex,
     name,
     startMonth,
-    endMOnth,
+    endMonth,
     isGadRelated,
     totalCost,
     resourcesCount,
@@ -38,9 +41,9 @@ const AccordionSummary = ({
 
                         <Typography
                             level='body-sm'
-                            color={'primary'}
+                        // color={'primary'}
                         >
-                            {startMonth} - {endMOnth}
+                            {formattedLongDate(startMonth)} to {formattedLongDate(endMonth)}
                         </Typography>
                     </Stack>
 
@@ -79,7 +82,7 @@ const AccordionSummary = ({
                             level='title-lg'
                             color={'primary'}
                         >
-                            {totalCost}
+                            {formattedPrice(totalCost)}
                         </Typography>
                     </Stack>
 

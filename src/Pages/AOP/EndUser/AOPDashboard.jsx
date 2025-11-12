@@ -271,38 +271,43 @@ function DashboardEndUser(props) {
                     Mission: {aop.mission}
                   </Typography>
                 </Stack>
-                <Stack
-                  bgcolor={"#FFF4E5"}
-                  borderRadius={5}
-                  direction={"row"}
-                  alignItems="center"
-                  padding={2}
-                  spacing={1.5}
-                  width={"75%"}
-                >
-                  <Warning sx={{ color: color.warning, fontSize: 20 }} />
-                  <Box width={"100%"}>
-                    <Typography
-                      level="body-xs"
-                      color="warning"
-                      sx={{ fontWeight: 600 }}
-                    >
-                      {" "}
-                      Status: Draft Mode
-                    </Typography>
-                    <Typography level="body-xs" color="warning">
-                      This AOP is currently in draft mode. You may click this
-                      button and confirm to submit this AOP for review.
-                    </Typography>
-                  </Box>
-                  <Box width={"450px"}>
-                    <ButtonComponent
-                      label={"Submit AOP for Review"}
-                      onClick={() => navigate("/aop/summary")}
-                      fullWidth={"true"}
-                    />
-                  </Box>
-                </Stack>
+
+
+                {aop.status.id !== 2 &&
+                  <Stack
+                    bgcolor={"#FFF4E5"}
+                    borderRadius={5}
+                    direction={"row"}
+                    alignItems="center"
+                    padding={2}
+                    spacing={1.5}
+                    width={"75%"}
+                  >
+                    <Warning sx={{ color: color.warning, fontSize: 20 }} />
+                    <Box width={"100%"}>
+                      <Typography
+                        level="body-xs"
+                        color="warning"
+                        sx={{ fontWeight: 600 }}
+                      >
+                        {" "}
+                        Status: Draft Mode
+                      </Typography>
+                      <Typography level="body-xs" color="warning">
+                        This AOP is currently in draft mode. You may click this
+                        button and confirm to submit this AOP for review.
+                      </Typography>
+                    </Box>
+                    <Box width={"450px"}>
+                      <ButtonComponent
+                        label={"Submit AOP for Review"}
+                        onClick={() => navigate("/aop/summary")}
+                        fullWidth={"true"}
+                      />
+                    </Box>
+                  </Stack>
+                }
+
               </Stack>
             </Grid>
 
@@ -364,18 +369,19 @@ function DashboardEndUser(props) {
                 </Grid>
               )}
 
-              {aop?.counts &&
-                Object.values(aop.counts).some((value) => value > 0) && (
+              {(
+                aop?.counts &&
+                Object.values(aop.counts).some(value => value > 0)
+              ) && (
                   <>
                     <Grid xs={12} sm={10} md={8} lg={5}>
                       <Grid container>
-                        <Grid xs={12} sm={6}>
+                        <Grid xs={12} sm={6} >
                           <ObjectivesCard
                             height={302}
                             hasFunction={true}
                             handleNavigate={handleNavigateObjectives}
-                            objectiveCounts={aop.counts.objectives_count}
-                          />
+                            objectiveCount={aop.counts.objectives_count} />
                         </Grid>
 
                         <Grid xs={12} sm={6}>

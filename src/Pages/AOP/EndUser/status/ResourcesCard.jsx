@@ -1,10 +1,14 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 
 import ResourcesLogo from '../../../../assets/dashboard/Resources.svg';
 
 import StatusCard from './StatusCard';
+import formattedPrice from '../../../../Utils/formattedPrice';
 
-const ResourcesCard = ({ resourcesCount, height }) => {
+const ResourcesCard = ({ resourcesCount, height, totalCost }) => {
+
+    const formattedCost = formattedPrice(totalCost)
+
     return (
         <>
             <StatusCard
@@ -13,7 +17,7 @@ const ResourcesCard = ({ resourcesCount, height }) => {
                 logo={ResourcesLogo}
                 title={'resources'}
                 count={resourcesCount}
-                description={'With (₱22,000,000.00) total allocated budget'}
+                description={`With (${formattedCost}) total allocated budget`}
             />
         </>
     )
