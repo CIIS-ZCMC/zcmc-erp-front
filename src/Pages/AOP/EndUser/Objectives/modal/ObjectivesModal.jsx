@@ -27,10 +27,10 @@ const ObjectivesModal = ({
   const { getFunctionType } = FunctionTypeHook();
 
 
-  useEffect(() => {
-    // console.log('function types', function_types)
-    console.log('applicationObjective', applicationObjective)
-  }, [function_types, applicationObjective])
+  // useEffect(() => {
+  //   // console.log('function types', function_types)
+  //   console.log('applicationObjective', applicationObjective)
+  // }, [function_types, applicationObjective])
 
   useEffect(() => {
     // setIsLoading(true);

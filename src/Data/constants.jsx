@@ -75,6 +75,23 @@ export const AOP_SUMMARY = {
   SUMMARY_FOOTER_CONTENT: 'By clicking "Submit for Official Review", you certify that all information contained in this Annual Operations Plan is true, accurate, and complete to the best of your knowledge. This document will be officially submitted to the Approving Bodies for review and approval in accordance with government procurement and planning procedures.'
 }
 
+export const AOP = {
+  HEADER_TITLE: 'AOP for Fiscal year',
+  MISSION_LABEL: 'Mission',
+  PAGE_TITLE: 'Annual Operations Planning',
+  PAGE_DESCRIPTION: ` The following below serves as the summary of your AOP request. You
+                can open and update your request before the deadline as set by the
+                administrators.`,
+  AOP_EMPTY_OBJECTIVE_TITLE: `You don't have anything for this year's AOP yet`,
+  AOP_EMPTY_OBJECTIVE_DESC: 'Begin by adding a new objective.',
+  EMPTY_STATE_TITLE: ` You don't have an AOP for this year yet.`,
+  EMPTY_STATE_SUBTITLE: `Begin by creating a new AOP.`,
+  EMPTY_STATE_DESCRIPTION: `Nothing to show yet for this year’s PPMP. You may request new
+                    items for the meantime or create a new AOP request.`,
+  EMPTY_TITLE_PAGE: 'Enterprise Resource Planning System',
+  EMPTY_TITLE_DESC: 'Sample description',
+}
+
 
 export const AOP_TIMELINE = {
   TITLE: 'Approval Timeline',

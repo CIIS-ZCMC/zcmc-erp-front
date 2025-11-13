@@ -108,12 +108,12 @@ const Objectives = () => {
     console.info("You clicked a breadcrumb.");
   }
 
-  useEffect(() => {
-    console.log("aopId", aopId);
-    if (aopId) {
-      setAopId(aopId);
-    }
-  }, [aopId]);
+  // useEffect(() => {
+  //   console.log("aopId", aopId);
+  //   if (aopId) {
+  //     setAopId(aopId);
+  //   }
+  // }, [aopId]);
 
   const handleSaveObjectives = async () => {
     setIsLoading(true);

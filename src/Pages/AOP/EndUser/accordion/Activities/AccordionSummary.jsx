@@ -16,85 +16,84 @@ const AccordionSummary = ({
     peopleCount,
 }) => {
 
-    useEffect(() => {
-        console.log(startMonth)
-        console.log(endMonth)
-    }, [startMonth, endMonth])
+    // useEffect(() => {
+    //     console.log(startMonth)
+    //     console.log(endMonth)
+    // }, [startMonth, endMonth])
 
     return (
         <>
-            <>
-                <Stack
-                    direction={'row'}
-                    gap={10}
-                    alignItems={'center'}
-                    p={2}
-                >
-                    <Stack>
-                        <Typography
-                            level='body-sm'
-                            textTransform={'uppercase'}
-                        >
-                            # Activity {activityIndex}
-                        </Typography>
-
-                        <Typography
-                            level='title-md'
-                            color={'primary'}
-                        >
-                            {name}
-                        </Typography>
-
-                        <Typography
-                            level='body-sm'
-                        // color={'primary'}
-                        >
-                            {startMonth && endMonth ? `${formattedLongDate(startMonth)} to ${formattedLongDate(endMonth)}` : 'Please select a start month and end month'}
-                        </Typography>
-                    </Stack>
-
-
+            <Stack
+                direction={'row'}
+                gap={10}
+                alignItems={'center'}
+                p={2}
+            >
+                <Stack>
                     <Typography
                         level='body-sm'
-                        textTransform={'capitalize'}
+                        textTransform={'uppercase'}
                     >
-                        {isGadRelated ? 'GAD-related activity' : 'Not GAD-related activity'}
+                        # Activity {activityIndex}
+                    </Typography>
+
+                    <Typography
+                        level='title-md'
+                        color={'primary'}
+                    >
+                        {name}
                     </Typography>
 
                     <Typography
                         level='body-sm'
-                        textTransform={'capitalize'}
+                    // color={'primary'}
                     >
-                        {resourcesCount} Resources
+                        {startMonth && endMonth ? `${formattedLongDate(startMonth)} to ${formattedLongDate(endMonth)}` : 'Please select a start month and end month'}
                     </Typography>
-
-                    <Typography
-                        level='body-sm'
-                        textTransform={'capitalize'}
-                    >
-                        {peopleCount}  Personnel
-                    </Typography>
-
-                    <Stack
-                        alignItems={'flex-end'}
-                    >
-                        <Typography
-                            level='body-sm'
-                            textTransform={'capitalize'}
-                        >
-                            Cost
-                        </Typography>
-                        <Typography
-                            level='title-lg'
-                            color={'primary'}
-                        >
-                            {formattedPrice(totalCost)}
-                        </Typography>
-                    </Stack>
-
                 </Stack>
-            </>
+
+
+                <Typography
+                    level='body-sm'
+                    textTransform={'capitalize'}
+                >
+                    {isGadRelated ? 'GAD-related activity' : 'Not GAD-related activity'}
+                </Typography>
+
+                <Typography
+                    level='body-sm'
+                    textTransform={'capitalize'}
+                >
+                    {resourcesCount} Resources
+                </Typography>
+
+                <Typography
+                    level='body-sm'
+                    textTransform={'capitalize'}
+                >
+                    {peopleCount}  Personnel
+                </Typography>
+
+                <Stack
+                    alignItems={'flex-end'}
+                >
+                    <Typography
+                        level='body-sm'
+                        textTransform={'capitalize'}
+                    >
+                        Cost
+                    </Typography>
+                    <Typography
+                        level='title-lg'
+                        color={'primary'}
+                    >
+                        {formattedPrice(totalCost)}
+                    </Typography>
+                </Stack>
+
+            </Stack>
         </>
+
     )
 }
 

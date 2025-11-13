@@ -53,9 +53,9 @@ function AlertDialogComponent({
             <ModalDialog
               sx={{
                 width: "auto",
-                maxWidth: "400px",          // make it a bit more responsive
-                maxHeight: "60vh",          // limit height to 80% of the viewport
-                overflowY: "auto",          // allow vertical scrolling
+                maxWidth: "400px",
+                maxHeight: "60vh",
+                overflowY: "auto",
                 p: 2,
               }}
             >

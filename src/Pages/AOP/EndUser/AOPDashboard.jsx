@@ -1,96 +1,34 @@
-import ButtonComponent from "@Components/Common/ButtonComponent";
+import { Grid, Stack, } from "@mui/joy";
 
-import {
-  Box,
-  Divider,
-  Grid,
-  Stack,
-  Typography,
-  useTheme,
-  Skeleton,
-} from "@mui/joy";
 import React, { Fragment, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import no_result from "../../../assets/empty-state-icon-base.svg";
-import { ANNUAL_OPS } from "../../../Data/constants";
-import ModalComponent from "@Components/Common/Dialog/ModalComponent";
-import TextareaComponent from "@Components/Form/TextareaComponent";
-import { Warning, WarningAmber } from "@mui/icons-material";
-import InputComponent from "@Components/Form/InputComponent";
 
+import AlertDialogComponent from "@Components/Common/Dialog/AlertDialogComponent";
+import ModalComponent from "@Components/Common/Dialog/ModalComponent";
+import BoxComponent from "@Components/Common/Card/BoxComponent";
+import { ThreeDotsLoader } from "@Components/Common/Loading/ThreeDotsLoader";
+
+import useAOPHook from "../../../Hooks/AOP/AOPHook";
+import useModalHook from "../../../Hooks/ModalHook";
 import useAOPStore, { useAOPActions } from "../../../Store/AOPStore";
 
-import BoxComponent from "@Components/Common/Card/BoxComponent";
-import { TbTargetArrow } from "react-icons/tb";
-import { MdOutlineShoppingCartCheckout } from "react-icons/md";
-import YearSelectorComponent from "@Components/Form/YearSelectorComponent";
-import SelectComponent from "@Components/Form/YearSelectComponent";
-import useAOPHook from "../../../Hooks/AOP/AOPHook";
-import { ThreeDotsLoader } from "@Components/Common/Loading/ThreeDotsLoader";
-import useModalHook from "../../../Hooks/ModalHook";
-import AlertDialogComponent from "@Components/Common/Dialog/AlertDialogComponent";
-import PageTitle from "@Components/Common/PageTitle";
-
-import { Outlet } from "react-router-dom";
-import ObjectivesCard from "./Status/ObjectivesCard";
-import ActivitiesCard from "./Status/ActivitiesCard";
-import ResourcesCard from "./Status/ResourcesCard";
-import ResponsiblePersonCard from "./Status/ResponsiblePersonCard";
-
-
+import Title from "./Title/Title";
+import Header from './Header/Header';
+import Draft from "./Mode/Draft";
+import AOPEmpty from "./AOPEmpty";
+import AOPEmptyObjectives from "./AOPEmptyObjectives";
 import Timeline from "./Timeline/Timeline";
 import Checklist from "./Checklist/Checklist";
+import FiscalYearModal from "./Modal/FiscalYearModal";
+import AOPDataSummary from "./AOPDataSummary";
 
-const FiscalYearModal = ({ value, onChange, fiscalYear }) => {
-  const { missionPlaceHolder } = ANNUAL_OPS;
-  const theme = useTheme();
-  const color = theme.palette.custom;
-
-  return (
-    <>
-      <Stack spacing={2}>
-        <InputComponent
-          label={"Fiscal Year"}
-          fontWeight={500}
-          value={fiscalYear}
-          disabled
-        />
-        <TextareaComponent
-          label={"Mission"}
-          placeholder={missionPlaceHolder}
-          value={value}
-          onChange={onChange}
-        />
-        <Stack
-          direction="row"
-          spacing={2}
-          bgcolor="#FFF4E5"
-          p={2}
-          borderRadius={8}
-        >
-          <Box>
-            <Warning sx={{ color: color.warning, fontSize: 20 }} />
-          </Box>
-          <Typography color="warning" level="body-xs">
-            After creating this new AOP, you’ll need to define its details such
-            as functions, objectives, activities, resources and responsible
-            persons before formal submission. This AOP will remain in draft mode
-            until all required information is completed and submitted for
-            review.
-          </Typography>
-        </Stack>
-      </Stack>
-    </>
-  );
-};
+import { ANNUAL_OPS } from "../../../Data/constants";
 
 function DashboardEndUser(props) {
   const { header, description } = ANNUAL_OPS;
-  const theme = useTheme();
-  const color = theme.palette.custom;
 
   const navigate = useNavigate();
-  const { getAOP, createAOP, getAopBySectorAndYear, getAopYearList } =
+  const { createAOP, getAopBySectorAndYear, getAopYearList } =
     useAOPHook();
   const { setAlertDialog } = useModalHook();
   const { aop, mission, fiscalYear, years } = useAOPStore();
@@ -100,9 +38,9 @@ function DashboardEndUser(props) {
   const [isLoading, setIsLoading] = useState(false);
   const [isAopLoading, setIsAopLoading] = useState(false);
 
-  useEffect(() => {
-    console.log(aop)
-  }, [aop])
+  // useEffect(() => {
+  //   console.log(aop)
+  // }, [aop])
 
   const currentYear = new Date().getFullYear();
   const currentFiscalYear = currentYear + 1;
@@ -136,22 +74,6 @@ function DashboardEndUser(props) {
     });
   };
 
-  // const years = Array.from(
-  //   { length: currentYear - startYear + 1 },
-  //   (_, i) => currentYear - i
-  // );
-
-  // useEffect(() => {
-  //   setIsLoading(true);
-  //   getAOP((status, message) => {
-  //     if (!(status >= 200 && status < 300)) {
-  //       // if status not success
-  //       return; //Toast error
-  //     }
-  //     setIsLoading(false);
-  //   });
-  // }, []);
-
   useEffect(() => {
     setIsAopLoading(true);
 
@@ -180,11 +102,6 @@ function DashboardEndUser(props) {
 
   const yearsData = years?.years;
   const { next_year_included } = years || {};
-
-  useEffect(() => {
-    // console.log('yearsData', yearsData)
-    // console.log('next_year_included', next_year_included)
-  }, [yearsData]);
 
   const handleNavigateObjectives = () => {
     navigate(`/aop/objectives/${aop.id}`, {
@@ -224,14 +141,8 @@ function DashboardEndUser(props) {
       ) : aop ? (
         <Fragment>
           {/* Title here */}
-          <Stack>
-            <Typography level="h2">Annual Operations Planning</Typography>
-            <Typography level="body-xs">
-              The following below serves as the summary of your AOP request. You
-              can open and update your request before the deadline as set by the
-              administrators.
-            </Typography>
-          </Stack>
+          <Title />
+
           <BoxComponent
             mt={3}
             boxShadow={"xs"}
@@ -249,67 +160,22 @@ function DashboardEndUser(props) {
               p={2}
               mb={1}
             >
-              {/* Header here */}
-
               <Stack
                 direction={"row"}
                 justifyContent={"space-between"}
                 alignItems={"flex-start"}
               >
-                <Stack width={"100%"}>
-                  <Box display="flex" alignItems="center" gap={1}>
-                    <Typography
-                      sx={{ color: "white", fontSize: 28, fontWeight: 600 }}
-                    >
-                      AOP for Fiscal year
-                    </Typography>
-                    <SelectComponent
-                      years={yearsData}
-                      onChange={(e) => handleChangeFiscalYear(e)}
-                      startYear={next_year_included}
-                      width="120px"
-                      bgcolor="#004366"
-                      txtcolor="white"
-                    />
-                  </Box>
-                  <Typography level="body-sm" sx={{ color: "white", mt: 1 }}>
-                    Mission: {aop.mission}
-                  </Typography>
-                </Stack>
+
+                {/* Header here */}
+                <Header
+                  yearsData={yearsData}
+                  nextYearIncluded={next_year_included}
+                  mission={aop.mission}
+                  handleChange={handleChangeFiscalYear}
+                />
 
                 {aop.status.id !== 2 &&
-                  <Stack
-                    bgcolor={"#FFF4E5"}
-                    borderRadius={5}
-                    direction={"row"}
-                    alignItems="center"
-                    padding={2}
-                    spacing={1.5}
-                    width={"75%"}
-                  >
-                    <Warning sx={{ color: color.warning, fontSize: 20 }} />
-                    <Box width={"100%"}>
-                      <Typography
-                        level="body-xs"
-                        color="warning"
-                        sx={{ fontWeight: 600 }}
-                      >
-                        {" "}
-                        Status: Draft Mode
-                      </Typography>
-                      <Typography level="body-xs" color="warning">
-                        This AOP is currently in draft mode. You may click this
-                        button and confirm to submit this AOP for review.
-                      </Typography>
-                    </Box>
-                    <Box width={"450px"}>
-                      <ButtonComponent
-                        label={"Submit AOP for Review"}
-                        onClick={() => navigate("/aop/summary")}
-                        fullWidth={"true"}
-                      />
-                    </Box>
-                  </Stack>
+                  <Draft />
                 }
 
               </Stack>
@@ -328,48 +194,11 @@ function DashboardEndUser(props) {
             >
               {!aop?.counts?.activities_count && (
                 <Grid mt={1} xs={8}>
-                  <BoxComponent
-                    justifyContent="center"
-                    alignItems="center"
-                    height="65vh"
-                    display="flex"
-                    padding={2}
-                  >
-                    <Box textAlign="center">
-                      <Stack direction={"column"} mb={2}>
-                        <Skeleton
-                          loading={isLoading}
-                          animation="wave"
-                          variant="text"
-                        />
-
-                        <Skeleton
-                          loading={isLoading}
-                          animation="wave"
-                          variant="text"
-                        />
-                      </Stack>
-
-                      {!isLoading && (
-                        <>
-                          <Typography>
-                            You don't have anything for this year's AOP yet.
-                          </Typography>
-
-                          <Typography fontWeight={600} mb={2}>
-                            {/* {" "} */}
-                            Begin by adding a new objective.
-                          </Typography>
-                        </>
-                      )}
-
-                      <ButtonComponent
-                        isLoading={isLoading}
-                        label={"Go to Manage Objectives"}
-                        onClick={handleNavigateObjectives}
-                      />
-                    </Box>
-                  </BoxComponent>
+                  {/* have aop but empty objectives */}
+                  <AOPEmptyObjectives
+                    isLoading={isLoading}
+                    handleNavigate={handleNavigateObjectives}
+                  />
                 </Grid>
               )}
 
@@ -380,34 +209,10 @@ function DashboardEndUser(props) {
                   <>
                     <Grid xs={12} sm={10} md={8} lg={5}>
                       <Grid container>
-                        <Grid xs={12} sm={6} >
-                          <ObjectivesCard
-                            height={302}
-                            hasFunction={true}
-                            handleNavigate={handleNavigateObjectives}
-                            objectiveCount={aop.counts.objectives_count} />
-                        </Grid>
-
-                        <Grid xs={12} sm={6}>
-                          <ActivitiesCard
-                            height={302}
-                            activitiesCount={aop.counts.activities_count}
-                          />
-                        </Grid>
-
-                        <Grid xs={12} sm={6}>
-                          <ResourcesCard
-                            height={302}
-                            resourcesCount={aop.counts.resources_count}
-                          />
-                        </Grid>
-
-                        <Grid xs={12} sm={6}>
-                          <ResponsiblePersonCard
-                            height={302}
-                            PersonsCount={aop.counts.responsible_people_count}
-                          />
-                        </Grid>
+                        <AOPDataSummary
+                          aop={aop}
+                          handleNavigateObjectives={handleNavigateObjectives}
+                        />
                       </Grid>
                     </Grid>
 
@@ -422,79 +227,33 @@ function DashboardEndUser(props) {
                   aopId={aop.id}
                 />
               </Grid>
-
-
             </Grid>
           </BoxComponent>
         </Fragment>
       ) : (
-        <Fragment>
-          <Stack>
-            <Typography level="h2">
-              Enterprise Resource Planning System
-            </Typography>
-            <Typography level="body-xs">Sample description</Typography>
-          </Stack>
-
-          <Stack
-            height="85vh"
-            sx={{
-              border: "2px solid #003049",
-              borderRadius: 10,
-              bgcolor: "white",
-            }}
-            alignItems="center"
-            justifyContent="center"
-            mt={3}
-            gap={2}
-          >
-            <img src={no_result} alt="not-found-img" width={300} />
-
-            <Box>
-              <Typography fontSize={24} textAlign="center">
-                You don't have an AOP for this year yet.{" "}
-              </Typography>
-              <Typography
-                sx={{ color: "#003049", fontSize: 24, fontWeight: "bold" }}
-                textAlign="center"
-              >
-                Begin by creating a new AOP.
-              </Typography>
-            </Box>
-
-            <Typography width={"35%"} textAlign="center">
-              Nothing to show yet for this year’s PPMP. You may request new
-              items for the meantime or create a new AOP request.
-            </Typography>
-            <Stack direction="row" gap={1}>
-              <ButtonComponent label="Request new items" variant="outlined" />
-              <ButtonComponent
-                label="Create New AOP"
-                variant="solid"
-                onClick={() => setOpenFiscalYearModal(true)}
-              />
-            </Stack>
-          </Stack>
-
-          <ModalComponent
-            isOpen={openFiscalYearModal}
-            handleClose={() => setOpenFiscalYearModal(false)}
-            title={header}
-            description={description}
-            content={
-              <FiscalYearModal
-                fiscalYear={currentFiscalYear}
-                value={mission}
-                onChange={(e) => setMission(e.target.value)}
-              />
-            }
-            hasActionButtons={true}
-            rightButtonLabel={"Save AOP"}
-            rightButtonAction={() => handleSaveAOP()}
-            maxWidth={500}
-          />
-        </Fragment>
+        // aop empty state
+        <AOPEmpty
+          setOpenFiscalYearModal={setOpenFiscalYearModal}
+        />
       )}
+
+      <ModalComponent
+        isOpen={openFiscalYearModal}
+        handleClose={() => setOpenFiscalYearModal(false)}
+        title={header}
+        description={description}
+        content={
+          <FiscalYearModal
+            fiscalYear={currentFiscalYear}
+            value={mission}
+            onChange={(e) => setMission(e.target.value)}
+          />
+        }
+        hasActionButtons={true}
+        rightButtonLabel={"Save AOP"}
+        rightButtonAction={() => handleSaveAOP()}
+        maxWidth={500}
+      />
 
       <AlertDialogComponent
         leftButtonAction={() => handleClose()}

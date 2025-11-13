@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useState } from 'react'
 
-import { Stack, Typography, Breadcrumbs, Grid, List, ListItem, Divider, Box } from '@mui/joy';
+import { Stack, Typography, Breadcrumbs, Grid, Divider, Box } from '@mui/joy';
 import { useNavigate } from 'react-router-dom';
 
 import { useAop } from '../../../Store/AOPStore'
@@ -37,9 +37,9 @@ const AOPSummary = () => {
     const { updateAOP } = useAOPHook()
     const { setAlertDialog, setConfirmationModal, closeConfirmation, closeAlertDialog } = useModalHook();
 
-    useEffect(() => {
-        console.log(aop)
-    }, [aop])
+    // useEffect(() => {
+    //     console.log(aop)
+    // }, [aop])
 
     const {
         PAGE_TITLE,
@@ -358,9 +358,19 @@ const AOPSummary = () => {
                                                 </>
                                             }
                                             accordionDetails={
-                                                <AccordionDetails
-                                                    activities={activities}
-                                                />
+                                                <>
+                                                    {activities.length === 0 &&
+                                                        <Typography
+                                                            p={4}
+                                                            textAlign={'center'}
+                                                            level='title-md'
+                                                        >
+                                                            There are no activities on this objective
+                                                        </Typography>}
+                                                    <AccordionDetails
+                                                        activities={activities}
+                                                    />
+                                                </>
                                             }
                                         />
                                     </>
