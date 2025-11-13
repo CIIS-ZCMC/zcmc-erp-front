@@ -28,8 +28,7 @@ function DashboardEndUser(props) {
   const { header, description } = ANNUAL_OPS;
 
   const navigate = useNavigate();
-  const { createAOP, getAopBySectorAndYear, getAopYearList } =
-    useAOPHook();
+  const { createAOP, getAopBySectorAndYear, getAopYearList } = useAOPHook();
   const { setAlertDialog } = useModalHook();
   const { aop, mission, fiscalYear, years } = useAOPStore();
   const { setMission, clearMission } = useAOPActions();

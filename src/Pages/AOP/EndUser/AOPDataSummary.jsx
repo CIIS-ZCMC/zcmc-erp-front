@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useEffect } from 'react'
 
 import {
     Grid,
@@ -15,6 +15,20 @@ const AOPDataSummary = ({
     aop,
     handleNavigateObjectives
 }) => {
+
+    const {
+        objectives_count,
+        activities_count,
+        resources_count,
+        responsible_people_count,
+        unified_success_indicators_count,
+        gad_activities_count,
+        non_gad_activities_count,
+        total_cost,
+        users_only,
+        designations_only,
+    } = aop.counts;
+
     return (
         <>
             <Grid xs={12} sm={6} >
@@ -22,27 +36,33 @@ const AOPDataSummary = ({
                     height={302}
                     hasFunction={true}
                     handleNavigate={handleNavigateObjectives}
-                    objectiveCount={aop.counts.objectives_count} />
+                    successIndicatorCount={unified_success_indicators_count}
+                    objectiveCount={objectives_count} />
             </Grid>
 
             <Grid xs={12} sm={6}>
                 <ActivitiesCard
                     height={302}
-                    activitiesCount={aop.counts.activities_count}
+                    activitiesCount={activities_count}
+                    gadActivitiesCount={gad_activities_count}
+                    nonGadActivitiesCount={non_gad_activities_count}
                 />
             </Grid>
 
             <Grid xs={12} sm={6}>
                 <ResourcesCard
+                    totalCost={total_cost}
                     height={302}
-                    resourcesCount={aop.counts.resources_count}
+                    resourcesCount={resources_count}
                 />
             </Grid>
 
             <Grid xs={12} sm={6}>
                 <ResponsiblePersonCard
                     height={302}
-                    PersonsCount={aop.counts.responsible_people_count}
+                    usersCount={users_only}
+                    designationCount={designations_only}
+                    PersonsCount={responsible_people_count}
                 />
             </Grid>
         </>
