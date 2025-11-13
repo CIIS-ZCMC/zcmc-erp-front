@@ -108,7 +108,7 @@ function PPMPDashboard(props) {
   const color = theme.palette.custom;
 
   const handleNavigate = () => {
-    navigate("ppmp-items");
+    navigate("/ppmp/ppmp-items");
   };
   useEffect(() => {
     setPageLoader(true);
@@ -184,7 +184,7 @@ function PPMPDashboard(props) {
                 as long as two sentences if necessary.
               </Typography>
             </Stack>
-            {dashboard.ppmp_application.is_draft ? (
+            {dashboard?.ppmp_application?.is_draft ? (
               <Stack
                 bgcolor={"#FFF4E5"}
                 borderRadius={5}

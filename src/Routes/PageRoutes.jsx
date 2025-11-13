@@ -137,7 +137,7 @@ export const sidebarRoutes = [
       // },
 
       {
-        path: "/edit-ppmp",
+        path: "/ppmp",
         name: "Edit PPMP",
         element: <EditPPMP />,
         childPermissions: ["ERP-PPMP-MAN:write"],

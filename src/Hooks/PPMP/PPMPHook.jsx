@@ -9,6 +9,8 @@ const usePPMPHook = create((set) => ({
   activities: [],
   is_draft: 0,
   dashboard: {},
+  ppmp: [],
+  ppmp_total: 0,
 
   getPPMPItems: (callBack) => {
     read({
@@ -16,12 +18,11 @@ const usePPMPHook = create((set) => ({
       failed: callBack,
       success: (res) => {
         const { status, message, data } = res;
-        localStorage.setItem(
-          "ppmp-items",
-          JSON.stringify(data.data.ppmp_items)
-        );
-        localStorage.setItem("is_draft", JSON.stringify(data.data.is_draft));
-        set({ is_draft: data.data.is_draft });
+        set({
+          is_draft: data.data.is_draft,
+          ppmp: data.data.ppmp_items,
+          ppmp_total: data.data.ppmp_total,
+        });
         callBack(status, message, data);
       },
     });
@@ -29,7 +30,7 @@ const usePPMPHook = create((set) => ({
 
   getPPMPDashboard: (callBack) => {
     read({
-      url: `${PATH}-applications`,
+      url: `${PATH}-application-dashboard`,
       failed: callBack,
       success: (res) => {
         const { status, message, data } = res;

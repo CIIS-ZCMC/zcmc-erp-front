@@ -10,7 +10,7 @@ BoxComponent.propTypes = {
   props: PropTypes.object, // Keep this for spreading additional props
 };
 
-function BoxComponent({ children, height, maxHeight, bgColor, ...props }) {
+function BoxComponent({ children, height, maxHeight, bgColor, p, ...props }) {
   return (
     <Box
       sx={{
@@ -23,7 +23,7 @@ function BoxComponent({ children, height, maxHeight, bgColor, ...props }) {
         bgcolor: bgColor || "white", // Use default color when bgColor is not passed
         borderRadius: 8,
         overflowX: "hidden", // Hide horizontal overflow
-        p: 1,
+        p: p,
         ...props,
       }}
     >

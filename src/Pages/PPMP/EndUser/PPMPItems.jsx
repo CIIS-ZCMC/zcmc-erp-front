@@ -15,6 +15,13 @@ import {
   Option,
   Snackbar,
   Alert,
+  Sheet,
+  Tabs,
+  TabList,
+  Tab,
+  ListItemDecorator,
+  TabPanel,
+  AspectRatio,
 } from "@mui/joy";
 import ModalComponent from "../../../Components/Common/Dialog/ModalComponent";
 import AutocompleteComponent from "../../../Components/Form/AutocompleteComponent";
@@ -24,7 +31,7 @@ import useItemsHook from "../../../Hooks/ItemsHook";
 import { MdAdd, MdKeyboardArrowDown, MdOpenInNew } from "react-icons/md";
 import ConfirmationModalComponent from "../../../Components/Common/Dialog/ConfirmationModalComponent";
 import useModalHook from "../../../Hooks/ModalHook";
-import { blue, grey } from "@mui/material/colors";
+import { blue, grey, orange } from "@mui/material/colors";
 import userErrorInputHook from "../../../Hooks/ErrorInputHook";
 import AlertDialogComponent from "../../../Components/Common/Dialog/AlertDialogComponent";
 import TextareaComponent from "../../../Components/Form/TextareaComponent";
@@ -32,16 +39,28 @@ import InputComponent from "../../../Components/Form/InputComponent";
 import handleSingleChangeAutcomplete from "../../../Utils/HandleAutocomplete";
 import { handleInputValidation } from "../../../Utils/HandleInput";
 import PPMPTable from "./PPMPTable";
-import { InfoIcon } from "lucide-react";
+import { InfoIcon, PlusIcon } from "lucide-react";
 import { useAuth } from "../../../Store/AuthStore";
 import { socket } from "../../../Services/Socket";
 import { usePPMPTotalStore } from "../../../Hooks/PPMP/PPMPItemsHook";
+import BoxComponent from "@Components/Common/Card/BoxComponent";
+import ChipComponent from "@Components/Common/ChipComponent";
+import SearchWithSuggestions from "@Components/SearchWithSuggestions";
+import CollapsibleTable from "@Components/Common/Table/CollapsibleTable";
+import { PPMP_HEADERS } from "../../../Data/Columns";
+import {
+  DocumentScannerOutlined,
+  ExtensionOutlined,
+  TextSnippetOutlined,
+  TodayOutlined,
+} from "@mui/icons-material";
 
 function PPMPItems(props) {
   const navigate = useNavigate();
   const {
     modes,
     // is_draft,
+    ppmp,
     activities,
     getPPMPItems,
     getProcModes,
@@ -438,40 +457,11 @@ function PPMPItems(props) {
   };
 
   useEffect(() => {
-    async function fetchAll() {
-      // Step 2: Wrap callbacks in Promises for async/await
-      const wrap = (fn) => new Promise((resolve) => fn(() => resolve()));
-
-      try {
-        setPageLoader(true);
-        const localData = localStorage.getItem("ppmp-items");
-        if (!localData) {
-          await wrap(getPPMPItems); // ✅ await here
-          setReloadFlag((prev) => !prev);
-        }
-
-        // Fetch is_draft after localStorage is updated
-        const updatedIsDraft =
-          JSON.parse(localStorage.getItem("is_draft")) || 0;
-        setIsDraft(updatedIsDraft);
-        // Step 3: Fetch all other needed data
-        await Promise.all([
-          wrap(getActivities),
-          wrap(getItemClassification),
-          wrap(getItemCategories),
-          wrap(getItemUnits),
-          wrap(getProcModes),
-          wrap(getItems),
-          wrap(getVariants),
-        ]);
-      } catch (err) {
-        console.error("Fetching error:", err);
-      } finally {
-        setPageLoader(false);
+    getPPMPItems((status, message) => {
+      if (status !== 200) {
+        console.error("Failed to fetch items:", message);
       }
-    }
-
-    fetchAll();
+    });
   }, []);
 
   useEffect(() => {
@@ -515,123 +505,163 @@ function PPMPItems(props) {
     };
   }, []);
 
-  return (
+  const renderExpanded = (row) => (
     <Fragment>
-      <PageTitle title={`PPMP for Fiscal Year ${currentFiscalYear}`} />
-      <ContainerComponent
-        title={"List of items"}
-        description={
-          "This is a subheading. It should add more context to the interaction."
-        }
-        sx={{ mt: 3 }}
-        actions={
-          <Stack gap={1} alignItems="flex-end">
-            <Stack direction={"row"} spacing={1}>
-              <ButtonComponent
-                label={"Add Item Request"}
-                color="primary"
-                variant={"outlined"}
-                endDecorator={<BiPlus />}
-                onClick={() => {
-                  setActivity({});
-                  setExpenseClass({});
-                  setOpenReq(true);
+      <Tabs defaultValue="a" sx={{ bgcolor: grey[100] }}>
+        <TabList>
+          <Tab value="a">
+            <ListItemDecorator>
+              <TextSnippetOutlined />
+            </ListItemDecorator>
+            Item Information
+          </Tab>
+          <Tab value="b">
+            <ListItemDecorator>
+              <TodayOutlined />
+            </ListItemDecorator>
+            Procurement Schedule
+          </Tab>
+        </TabList>
+        <TabPanel value="a">
+          <Box
+            sx={{
+              width: "100%",
+              display: "grid",
+              gridTemplateColumns: "repeat(auto-fill, minmax(400px, 1fr))",
+              gap: 2,
+            }}
+          >
+            <BoxComponent p={2}>
+              {" "}
+              {/* Set a fixed height or responsive height */}
+              <img
+                src="https://images.unsplash.com/photo-1593121925328-369cc8459c08?auto=format&fit=crop&w=286"
+                srcSet="https://images.unsplash.com/photo-1593121925328-369cc8459c08?auto=format&fit=crop&w=286&dpr=2 2x"
+                loading="lazy"
+                alt=""
+                style={{
+                  width: "100%", // Fill the width of the container
+                  height: "100%", // Fill the height of the container
+                  objectFit: "cover", // Maintain aspect ratio, crop if necessary
+                  borderRadius: 10,
+                  display: "block", // Remove default inline spacing
                 }}
               />
-              <ButtonComponent
-                label="Export PPMP"
-                onClick={() => exportToCSV()}
-                isLoading={dlLoader}
-                loadingLabel={"Exporting..."}
-                variant="outlined"
-                disabled={is_draft === 1}
-              />
-              {is_draft === 1 && (
-                <ButtonComponent
-                  label={show ? "Exit Edit Mode" : "Edit PPMP"}
-                  onClick={() =>
-                    show ? disconnectSignal() : handleEditClick()
-                  }
-                  isLoading={editLoad}
-                  color={show ? "danger" : "primary"}
-                  disabled={disabled}
-                />
-              )}
+            </BoxComponent>
 
-              {/* {show && (
-              <ButtonComponent
-                label={"Exit Edit Mode"}
-                onClick={() => disconnectSignal()}
-                color="danger"
-              />
-            )} */}
-            </Stack>
-            <Stack direction="row" alignItems="center" gap={0.5}>
-              <InfoIcon size={14} style={{ color: blue[800] }} />
-              <Typography fontSize={12} color="primary">
-                Click the <b>"Edit PPMP"</b> button to update your PPMP.
+            <BoxComponent p={2}>
+              <Stack spacing={2}>
+                <Stack direction={"row"} alignItems={"center"} gap={1}>
+                  <TextSnippetOutlined
+                    style={{ color: blue[800], fontSize: 20 }}
+                  />
+                  <Typography fontWeight={600}>Item Information</Typography>
+                </Stack>
+                <Stack spacing={1}>
+                  <Typography level="body-sm">Mode of Procurement</Typography>
+                  <ChipComponent
+                    label={"Sample"}
+                    sx={{ color: "#7008E7", bgcolor: "#DDD6FF" }}
+                    size={"md"}
+                  />
+                </Stack>
+                <Stack spacing={0.5}>
+                  <Typography level="body-sm">Specifications</Typography>
+                  {row.item.item_specifications.length > 0 ? (
+                    row.item.item_specifications.map((spec, index) => (
+                      <Typography
+                        key={index}
+                        level="body-sm"
+                        alignItems="center"
+                        sx={{ color: "black" }}
+                      >
+                        ● {spec.description}
+                      </Typography>
+                    ))
+                  ) : (
+                    <Typography level="body-md">
+                      No specifications provided.
+                    </Typography>
+                  )}
+                </Stack>
+              </Stack>
+            </BoxComponent>
+            <BoxComponent p={2}>
+              <Stack>
+                <Stack direction={"row"} alignItems={"center"} gap={1}>
+                  <ExtensionOutlined
+                    style={{ color: orange[800], fontSize: 20 }}
+                  />
+                  <Typography fontWeight={600}>
+                    Linked Activities ({row.activities.length})
+                  </Typography>
+                </Stack>
+
+                <Stack mt={2}>
+                  {row.activities.length > 0 ? (
+                    row.activities.map((act, index) => (
+                      <BoxComponent bgColor={"#F5F5F4"} p={3}>
+                        <Stack direction={"row"}>
+                          <ChipComponent label={act.activity_code} />
+                        </Stack>
+                      </BoxComponent>
+                    ))
+                  ) : (
+                    <Typography level="body-md">
+                      No specifications provided.
+                    </Typography>
+                  )}
+                </Stack>
+              </Stack>
+            </BoxComponent>
+          </Box>
+        </TabPanel>
+        <TabPanel value="b">Content of Tab B</TabPanel>
+      </Tabs>
+    </Fragment>
+  );
+
+  return (
+    <Fragment>
+      <PageTitle
+        title={`PPMP for Fiscal Year ${currentFiscalYear}`}
+        description={""}
+      />
+      <BoxComponent my={2} bgColor={"#FAFAF9"} boxShadow="xs" p={2}>
+        <Stack direction={"row"} justifyContent={"space-between"} mb={2}>
+          <Stack>
+            <Stack direction={"row"} gap={1}>
+              <Typography level="body-md" sx={{ fontWeight: 600 }}>
+                Manage Resources for{" "}
               </Typography>
+              <ChipComponent
+                label={`PPMP Fiscal Year ${currentFiscalYear}`} // change to dynamic activity name
+                color={"success"}
+                variant={"outlined"}
+                fontSize={12}
+                size={"sm"}
+              />
             </Stack>
+            <Typography level="body-xs">
+              The below contains a list of resources synced from your submitted
+              AOP request. Click a row to expand and view more details.
+            </Typography>
           </Stack>
-        }
-      >
-        {is_draft === 1 && (
-          <>
-            <Stack mb={2} direction="row" justifyContent="space-between">
-              <Stack direction="row" alignItems="center" gap={1}>
-                <Typography level="title-sm">
-                  PPMP Total: ₱ {ppmpTotal.toLocaleString()}
-                </Typography>
-              </Stack>
-              <Stack direction="row" gap={1}>
-                <ButtonComponent
-                  label="Add Item"
-                  variant="outlined"
-                  disabled={!show}
-                  endDecorator={<BiPlus />}
-                  onClick={() => {
-                    setActivity({});
-                    setExpenseClass({});
-                    setOpenAdd(true);
-                  }}
-                />
-                <ButtonComponent
-                  label="Save as draft"
-                  onClick={() => handleSubmit(1)}
-                  disabled={!show}
-                  isLoading={buttonLoader}
-                  loadingLabel={"Saving..."}
-                />
-                <ButtonComponent
-                  label="Submit PPMP"
-                  disabled={!show || is_draft === 0}
-                  onClick={() => handleConfirmationModal()}
-                />
-              </Stack>
-            </Stack>
-            <Divider sx={{ mb: 2 }} />
-          </>
-        )}
+          <ButtonComponent
+            label={"Add a Resource"}
+            startDecorator={<PlusIcon />}
+          />
+        </Stack>
+        <Stack direction={"row"} justifyContent={"space-between"}>
+          <SearchWithSuggestions />
+        </Stack>
+      </BoxComponent>
 
-        <PPMPTable
-          ppmpTable={tableData}
-          items={items}
-          setPPMPTable={setTableData}
-          modes={modes.data}
-          categories={categories}
-          classifications={classification}
-          openDel={openDel}
-          setOpenDel={setOpenDel}
-          setOpensave={setOpenSave}
-          setSelectedID={setSelectedID}
-          id={selectedID}
-          loading={pageLoader}
-          setLoading={setPageLoader}
-          isEditing={show}
-          setIsEditing={setShow}
-          reloadFlag={reloadFlag}
-        />
-      </ContainerComponent>
+      <CollapsibleTable
+        columns={PPMP_HEADERS}
+        rows={ppmp}
+        renderExpanded={renderExpanded}
+      />
 
       {/* Add items to ppmp */}
       <ModalComponent
@@ -666,18 +696,6 @@ function PPMPItems(props) {
                   </Typography>
                 </>
               )}
-
-              {/* <AutocompleteComponent
-                label={"Select expense class"}
-                helperText={
-                  "Expense class determine the type of budget to be used for the items that are to be selected."
-                }
-                name={"expenseClass"}
-                options={expenseClassData}
-                getOptionLabel={(option) => option?.label || ""}
-                value={expenseClass}
-                setValue={setExpenseClass}
-              /> */}
             </Stack>
           </Fragment>
         }

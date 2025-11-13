@@ -1373,3 +1373,54 @@ export const itemRequestDetailsCols = (onUpdate, openModal) => [
     ),
   },
 ];
+
+export const PPMP_HEADERS = [
+  {
+    id: "name",
+    label: "Item",
+    render: (row) => (
+      <>
+        <Typography level="body-sm" fontWeight={600}>
+          {row?.item?.name}
+        </Typography>
+        <Typography level="body-sm">Qty: {row?.quantity}</Typography>
+      </>
+    ),
+  },
+  {
+    id: "category",
+    label: "Category",
+    render: (row) => (
+      <>
+        <Typography level="body-sm" fontWeight={600}>
+          {row?.item?.item_category?.name}
+        </Typography>
+      </>
+    ),
+  },
+  {
+    id: "cost",
+    label: "Total Cost & Individual Cost",
+
+    render: (row) => (
+      <>
+        <Typography level="body-sm" fontWeight={600}>
+          ₱{row?.total_amount?.toLocaleString()}
+        </Typography>
+        <Typography level="body-sm">
+          ₱{row?.item?.estimated_budget.toLocaleString()} per{" "}
+          {row?.item?.item_unit?.name}
+        </Typography>
+      </>
+    ),
+  },
+  {
+    id: "procurement",
+    label: "Mode of Procurement",
+    render: (row) => (
+      <Chip color="primary" size="sm" variant="soft">
+        {row?.procurement_mode === null ? "-" : row?.procurement_mode}
+      </Chip>
+    ),
+  },
+];
