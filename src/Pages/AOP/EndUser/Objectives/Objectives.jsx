@@ -28,6 +28,7 @@ import {
   useObjectivesActions,
   useApplicationObjectives,
   useApplicationObjective,
+  useOtherSuccessIndicator,
 } from "../../../../Store/ObjectivesStore";
 
 import useObjectivesHook from "../../../../Hooks/ObjectivesHook";
@@ -44,6 +45,7 @@ const Objectives = () => {
   const functionType = useFunctionType();
   const objective = useObjective();
   const successIndicator = useSuccessIndicator();
+  const otherSuccessIndicator = useOtherSuccessIndicator();
   const applicationObjectives = useApplicationObjectives();
   const applicationObjective = useApplicationObjective();
 
@@ -122,6 +124,7 @@ const Objectives = () => {
       aop_application_id: aopId,
       objective_id: objective?.id,
       success_indicator_id: successIndicator?.id,
+      other_success_indicator_description: otherSuccessIndicator,
     };
 
     try {
@@ -160,7 +163,7 @@ const Objectives = () => {
     const payload = {
       objective_id: objective?.id,
       success_indicator_id: successIndicator?.id,
-      // other_success_indicator_description:
+      other_success_indicator_description: otherSuccessIndicator,
     };
 
     const params = { id: selectedObjectiveId };
@@ -345,6 +348,7 @@ const Objectives = () => {
               success_indicator,
               objective,
               activities_count,
+              other_success_indicator,
             }) => (
               <Grid key={id} size={4} lg={4} md={6} sm={12}>
                 <CardComponent
@@ -360,6 +364,7 @@ const Objectives = () => {
                     <CardBody
                       success_indicator={success_indicator}
                       objective={objective}
+                      other_success_indicator={other_success_indicator}
                       status={false}
                     />
                   }
@@ -397,6 +402,7 @@ const Objectives = () => {
             functionType={functionType}
             objective={objective}
             successIndicator={successIndicator}
+            otherSuccessIndicator={otherSuccessIndicator}
             applicationObjective={applicationObjective}
           />
         }

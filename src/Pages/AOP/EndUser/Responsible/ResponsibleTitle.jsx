@@ -12,9 +12,9 @@ const ResponsibleTitle = ({ activity }) => {
 
   const breadcrumbs = useAOPBreadcrumbs();
 
-  useEffect(() => {
-    console.log(application_objective_id);
-  }, [activity]);
+  // useEffect(() => {
+  //   console.log(application_objective_id);
+  // }, [activity]);
 
   return (
     <>
