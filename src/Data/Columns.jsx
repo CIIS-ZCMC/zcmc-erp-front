@@ -27,6 +27,7 @@ import { BiTrash } from "react-icons/bi";
 import { getStatusColorScheme } from "../Utils/ColorScheme";
 import { toCapitalize } from "../Utils/Typography";
 import {
+  CheckOutlined,
   CommentOutlined,
   DeleteOutlineOutlined,
   ModeEditOutlineOutlined,
@@ -1466,7 +1467,7 @@ export const PPMP_HEADERS = (editingRows, handleEditToggle) => [
     align: "right",
     width: "250px",
 
-    render: (row) => (
+    render: (row, open, onToggle) => (
       <Stack direction={"row"} spacing={2} justifyContent={"right"}>
         <ChipComponent
           label={"6"}
@@ -1476,10 +1477,24 @@ export const PPMP_HEADERS = (editingRows, handleEditToggle) => [
         <ChipComponent
           label={editingRows[row.id] ? "Save" : "Edit"}
           variant={"soft"}
-          startDecorator={<ModeEditOutlineOutlined />}
+          startDecorator={
+            editingRows[row.id] ? (
+              <CheckOutlined />
+            ) : (
+              <ModeEditOutlineOutlined />
+            )
+          }
+          color={editingRows[row.id] && "success"}
           onClick={(e) => {
             e.stopPropagation(); // prevent collapsing
             handleEditToggle(row.id);
+            if (!editingRows[row.id]) {
+              // Entering edit mode → force open
+              onToggle();
+            } else {
+              // Leaving edit mode → collapse the row
+              onToggle();
+            }
           }}
         />
         <ChipComponent

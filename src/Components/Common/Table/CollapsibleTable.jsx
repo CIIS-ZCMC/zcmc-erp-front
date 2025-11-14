@@ -18,9 +18,9 @@ export default function CollapsibleTable({
   rows,
   renderExpanded,
   initialOpenRowIndex = null,
+  openIndex,
+  setOpenIndex,
 }) {
-  const [openIndex, setOpenIndex] = React.useState(initialOpenRowIndex);
-
   const handleToggle = (index) => {
     setOpenIndex((prev) => (prev === index ? null : index));
   };
@@ -99,7 +99,7 @@ function ExpandableRow({ row, columns, renderExpanded, open, onToggle }) {
               backgroundColor: open ? grey[100] : "",
             }}
           >
-            {col.render ? col.render(row) : row[col.id]}
+            {col.render ? col.render(row, open, onToggle) : row[col.id]}
           </td>
         ))}
       </tr>
@@ -117,7 +117,7 @@ function ExpandableRow({ row, columns, renderExpanded, open, onToggle }) {
             }}
           >
             <Box sx={{ p: open ? 1.5 : 0, transition: "padding .3s ease" }}>
-              {renderExpanded(row, row.isEditing || false)}
+              {renderExpanded(row)}
             </Box>
           </Box>
         </td>

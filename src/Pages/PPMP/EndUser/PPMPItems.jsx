@@ -118,7 +118,8 @@ function PPMPItems(props) {
       { id: Date.now() + 2, value: "" },
     ],
   });
-  const [editingRows, setEditingRows] = useState({}); // track which row is editing
+  const [editingRows, setEditingRows] = useState({});
+  const [openIndex, setOpenIndex] = useState(null);
 
   const location = useLocation();
   const { user } = useAuth();
@@ -701,6 +702,8 @@ ${act.total_amount.toLocaleString("en-PH", {
       <CollapsibleTable
         columns={PPMP_HEADERS(editingRows, handleEditToggle)}
         rows={ppmp}
+        openIndex={openIndex}
+        setOpenIndex={setOpenIndex}
         renderExpanded={(row) =>
           renderExpanded(row, editingRows[row.id] || false)
         }
