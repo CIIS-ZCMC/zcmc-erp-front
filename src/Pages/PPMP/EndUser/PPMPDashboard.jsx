@@ -336,6 +336,9 @@ function PPMPDashboard(props) {
                   display={"flex"}
                   gap={2}
                   padding={2}
+                  height="62vh" // <-- FULL HEIGHT
+                  flex={1} // <-- ALLOWS STRETCHING IN FLEX CONTEXT
+                  minHeight={0}
                 >
                   <Box
                     sx={{
@@ -402,7 +405,7 @@ function PPMPDashboard(props) {
               </Grid>
               <Grid xs={4}>
                 {/* Approval Timeline Here */}
-                <BoxComponent bgColor={"#FFFFFF"}>
+                <BoxComponent bgColor={"#FFFFFF"} p={2}>
                   <Typography level="title-lg">Approval Timeline</Typography>
                   <Typography
                     level="body-xs"
@@ -419,7 +422,7 @@ function PPMPDashboard(props) {
                       justifyContent: "center",
                       alignItems: "center",
                     }}
-                    height={"57vh"}
+                    height={"55vh"}
                   >
                     <Typography level="body-sm" sx={{ color: color.fontLight }}>
                       No transactions done yet.

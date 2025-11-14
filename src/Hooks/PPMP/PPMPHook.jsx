@@ -20,7 +20,7 @@ const usePPMPHook = create((set) => ({
         const { status, message, data } = res;
         set({
           is_draft: data.data.is_draft,
-          ppmp: data.data.ppmp_items,
+          ppmp: data.data.ppmp_items.data,
           ppmp_total: data.data.ppmp_total,
         });
         callBack(status, message, data);

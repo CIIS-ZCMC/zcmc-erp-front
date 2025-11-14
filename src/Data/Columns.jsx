@@ -26,6 +26,14 @@ import moment from "moment";
 import { BiTrash } from "react-icons/bi";
 import { getStatusColorScheme } from "../Utils/ColorScheme";
 import { toCapitalize } from "../Utils/Typography";
+import {
+  CommentOutlined,
+  DeleteOutlineOutlined,
+  ModeEditOutlineOutlined,
+  WarningAmberOutlined,
+  WarningOutlined,
+} from "@mui/icons-material";
+import { red } from "@mui/material/colors";
 
 export const objHeaders = ({ onUpdate, onDelete, onViewIndicators }) => [
   { field: "id", name: "Row #", align: "center", width: "50px" },
@@ -1374,10 +1382,11 @@ export const itemRequestDetailsCols = (onUpdate, openModal) => [
   },
 ];
 
-export const PPMP_HEADERS = [
+export const PPMP_HEADERS = (editingRows, handleEditToggle) => [
   {
     id: "name",
     label: "Item",
+    width: "300px",
     render: (row) => (
       <>
         <Typography level="body-sm" fontWeight={600}>
@@ -1421,6 +1430,64 @@ export const PPMP_HEADERS = [
       <Chip color="primary" size="sm" variant="soft">
         {row?.procurement_mode === null ? "-" : row?.procurement_mode}
       </Chip>
+    ),
+  },
+  {
+    id: "is_complete",
+    label: "",
+    width: "250px",
+    render: (row) => (
+      <Box
+        p={0.5}
+        bgcolor={red[50]}
+        display={"flex"}
+        justifyContent={"center"}
+        width="160px"
+        borderRadius={5}
+      >
+        <Typography
+          level="body-xs"
+          color="danger"
+          alignItems={"center"}
+          gap={1}
+          startDecorator={
+            <WarningAmberOutlined color="danger" style={{ fontSize: 18 }} />
+          }
+        >
+          {" "}
+          Incomplete Details.
+        </Typography>
+      </Box>
+    ),
+  },
+  {
+    id: "actions",
+    label: "Actions",
+    align: "right",
+    width: "250px",
+
+    render: (row) => (
+      <Stack direction={"row"} spacing={2} justifyContent={"right"}>
+        <ChipComponent
+          label={"6"}
+          startDecorator={<CommentOutlined />}
+          variant={"soft"}
+        />
+        <ChipComponent
+          label={editingRows[row.id] ? "Save" : "Edit"}
+          variant={"soft"}
+          startDecorator={<ModeEditOutlineOutlined />}
+          onClick={(e) => {
+            e.stopPropagation(); // prevent collapsing
+            handleEditToggle(row.id);
+          }}
+        />
+        <ChipComponent
+          label={"Delete"}
+          startDecorator={<DeleteOutlineOutlined />}
+          variant={"soft"}
+        />
+      </Stack>
     ),
   },
 ];

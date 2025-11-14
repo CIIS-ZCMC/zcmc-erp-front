@@ -54,6 +54,7 @@ import {
   TextSnippetOutlined,
   TodayOutlined,
 } from "@mui/icons-material";
+import ProcurementSchedule from "./ProcurementSchedule";
 
 function PPMPItems(props) {
   const navigate = useNavigate();
@@ -117,6 +118,7 @@ function PPMPItems(props) {
       { id: Date.now() + 2, value: "" },
     ],
   });
+  const [editingRows, setEditingRows] = useState({}); // track which row is editing
 
   const location = useLocation();
   const { user } = useAuth();
@@ -171,6 +173,13 @@ function PPMPItems(props) {
       setShow(true);
       setEditLoad(false);
     }, 500);
+  };
+
+  const handleEditToggle = (rowId) => {
+    setEditingRows((prev) => ({
+      ...prev,
+      [rowId]: !prev[rowId],
+    }));
   };
 
   const specsContainerRef = useRef(null);
@@ -505,7 +514,7 @@ function PPMPItems(props) {
     };
   }, []);
 
-  const renderExpanded = (row) => (
+  const renderExpanded = (row, isEditing) => (
     <Fragment>
       <Tabs defaultValue="a" sx={{ bgcolor: grey[100] }}>
         <TabList>
@@ -527,7 +536,7 @@ function PPMPItems(props) {
             sx={{
               width: "100%",
               display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(400px, 1fr))",
+              gridTemplateColumns: "repeat(auto-fill, minmax(380px, 1fr))",
               gap: 2,
             }}
           >
@@ -551,12 +560,16 @@ function PPMPItems(props) {
 
             <BoxComponent p={2}>
               <Stack spacing={2}>
-                <Stack direction={"row"} alignItems={"center"} gap={1}>
-                  <TextSnippetOutlined
-                    style={{ color: blue[800], fontSize: 20 }}
-                  />
-                  <Typography fontWeight={600}>Item Information</Typography>
-                </Stack>
+                <Typography
+                  fontWeight={600}
+                  startDecorator={
+                    <TextSnippetOutlined
+                      style={{ color: blue[800], fontSize: 20 }}
+                    />
+                  }
+                >
+                  Item Information
+                </Typography>
                 <Stack spacing={1}>
                   <Typography level="body-sm">Mode of Procurement</Typography>
                   <ChipComponent
@@ -588,21 +601,45 @@ function PPMPItems(props) {
             </BoxComponent>
             <BoxComponent p={2}>
               <Stack>
-                <Stack direction={"row"} alignItems={"center"} gap={1}>
-                  <ExtensionOutlined
-                    style={{ color: orange[800], fontSize: 20 }}
-                  />
-                  <Typography fontWeight={600}>
-                    Linked Activities ({row.activities.length})
-                  </Typography>
-                </Stack>
+                <Typography
+                  fontWeight={600}
+                  startDecorator={
+                    <ExtensionOutlined
+                      style={{ color: orange[800], fontSize: 20 }}
+                    />
+                  }
+                >
+                  Linked Activities ({row.activities.length})
+                </Typography>
 
                 <Stack mt={2}>
-                  {row.activities.length > 0 ? (
-                    row.activities.map((act, index) => (
-                      <BoxComponent bgColor={"#F5F5F4"} p={3}>
-                        <Stack direction={"row"}>
-                          <ChipComponent label={act.activity_code} />
+                  {row?.activities?.length > 0 ? (
+                    row?.activities?.map((act, index) => (
+                      <BoxComponent bgColor={"#F5F5F4"} p={3} key={index}>
+                        <Stack
+                          direction={"row"}
+                          justifyContent={"space-between"}
+                          width={"100%"}
+                          spacing={2}
+                        >
+                          <ChipComponent
+                            label={act.activity_code}
+                            color={"primary"}
+                          />
+                          <Stack width={"100%"}>
+                            <Typography level="body-md" fontWeight={600}>
+                              {act.activity_name}
+                            </Typography>
+
+                            <Typography level="body-sm">
+                              {" "}
+                              {`${act.resources_quantity} • ₱
+${act.total_amount.toLocaleString("en-PH", {
+  minimumFractionDigits: 2,
+  maximumFractionDigits: 2,
+})}`}{" "}
+                            </Typography>
+                          </Stack>
                         </Stack>
                       </BoxComponent>
                     ))
@@ -616,7 +653,11 @@ function PPMPItems(props) {
             </BoxComponent>
           </Box>
         </TabPanel>
-        <TabPanel value="b">Content of Tab B</TabPanel>
+        <TabPanel value="b">
+          <BoxComponent bgColor={"white"} p={2}>
+            <ProcurementSchedule />
+          </BoxComponent>
+        </TabPanel>
       </Tabs>
     </Fragment>
   );
@@ -658,9 +699,11 @@ function PPMPItems(props) {
       </BoxComponent>
 
       <CollapsibleTable
-        columns={PPMP_HEADERS}
+        columns={PPMP_HEADERS(editingRows, handleEditToggle)}
         rows={ppmp}
-        renderExpanded={renderExpanded}
+        renderExpanded={(row) =>
+          renderExpanded(row, editingRows[row.id] || false)
+        }
       />
 
       {/* Add items to ppmp */}

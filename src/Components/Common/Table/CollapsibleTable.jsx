@@ -3,7 +3,7 @@ import PropTypes from "prop-types";
 import { Sheet, Table, Typography, IconButton, Box } from "@mui/joy";
 import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
-import { grey } from "@mui/material/colors";
+import { grey, red } from "@mui/material/colors";
 
 /**
  * ExpandableTable Component
@@ -19,6 +19,12 @@ export default function CollapsibleTable({
   renderExpanded,
   initialOpenRowIndex = null,
 }) {
+  const [openIndex, setOpenIndex] = React.useState(initialOpenRowIndex);
+
+  const handleToggle = (index) => {
+    setOpenIndex((prev) => (prev === index ? null : index));
+  };
+
   return (
     <Sheet
       sx={{
@@ -29,20 +35,19 @@ export default function CollapsibleTable({
       <Table
         aria-label="collapsible table"
         sx={{
-          "& thead th": { fontWeight: 600 },
           "--TableCell-headBackground": "#E5E5E5",
-
-          "& tbody tr": {
-            transition: "background-color 0.2s ease",
-          },
           "--TableCell-paddingY": "13px",
+          "--TableCell-borderColor": grey[200],
         }}
         hoverRow
       >
         <thead>
           <tr>
             {columns.map((col) => (
-              <th key={col.id} style={{ textAlign: col.align || "left" }}>
+              <th
+                key={col.id}
+                style={{ textAlign: col.align || "left", width: col.width }}
+              >
                 {col.label}
               </th>
             ))}
@@ -55,7 +60,8 @@ export default function CollapsibleTable({
               row={row}
               columns={columns}
               renderExpanded={renderExpanded}
-              initialOpen={index === initialOpenRowIndex}
+              open={openIndex === index}
+              onToggle={() => handleToggle(index)}
             />
           ))}
         </tbody>
@@ -73,16 +79,15 @@ CollapsibleTable.propTypes = {
 
 /* ------------------------------------------------------------------ */
 
-function ExpandableRow({ row, columns, renderExpanded, initialOpen }) {
-  const [open, setOpen] = React.useState(initialOpen || false);
-  const toggleRow = () => setOpen((prev) => !prev);
-
+function ExpandableRow({ row, columns, renderExpanded, open, onToggle }) {
   return (
     <React.Fragment>
       <tr
-        onClick={toggleRow}
+        onClick={onToggle}
         style={{
           cursor: "pointer",
+          transition: "border-bottom .2s",
+          "--TableCell-borderColor": open && "transparent",
         }}
       >
         {columns.map((col) => (
@@ -90,6 +95,7 @@ function ExpandableRow({ row, columns, renderExpanded, initialOpen }) {
             key={col.id}
             style={{
               textAlign: col.align || "left",
+              width: col.width,
               backgroundColor: open ? grey[100] : "",
             }}
           >
@@ -100,17 +106,20 @@ function ExpandableRow({ row, columns, renderExpanded, initialOpen }) {
 
       <tr>
         <td style={{ height: 0, padding: 0 }} colSpan={columns.length}>
-          {open && (
-            <Sheet
-              sx={{
-                p: 1.5,
+          <Box
+            sx={{
+              maxHeight: open ? "600px" : "0px",
+              opacity: open ? 1 : 0,
 
-                backgroundColor: grey[100],
-              }}
-            >
-              {renderExpanded(row)}
-            </Sheet>
-          )}
+              overflow: "hidden",
+              transition: "max-height .35s ease, opacity .25s ease",
+              backgroundColor: grey[100],
+            }}
+          >
+            <Box sx={{ p: open ? 1.5 : 0, transition: "padding .3s ease" }}>
+              {renderExpanded(row, row.isEditing || false)}
+            </Box>
+          </Box>
         </td>
       </tr>
     </React.Fragment>
