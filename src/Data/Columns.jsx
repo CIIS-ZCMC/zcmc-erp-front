@@ -1383,7 +1383,7 @@ export const itemRequestDetailsCols = (onUpdate, openModal) => [
   },
 ];
 
-export const PPMP_HEADERS = (editingRows, handleEditToggle) => [
+export const PPMP_HEADERS = (editingRows) => [
   {
     id: "name",
     label: "Item",
@@ -1467,42 +1467,41 @@ export const PPMP_HEADERS = (editingRows, handleEditToggle) => [
     align: "right",
     width: "250px",
 
-    render: (row, open, onToggle) => (
-      <Stack direction={"row"} spacing={2} justifyContent={"right"}>
-        <ChipComponent
-          label={"6"}
-          startDecorator={<CommentOutlined />}
-          variant={"soft"}
-        />
-        <ChipComponent
-          label={editingRows[row.id] ? "Save" : "Edit"}
-          variant={"soft"}
-          startDecorator={
-            editingRows[row.id] ? (
-              <CheckOutlined />
-            ) : (
-              <ModeEditOutlineOutlined />
-            )
-          }
-          color={editingRows[row.id] && "success"}
-          onClick={(e) => {
-            e.stopPropagation(); // prevent collapsing
-            handleEditToggle(row.id);
-            if (!editingRows[row.id]) {
-              // Entering edit mode → force open
-              onToggle();
-            } else {
-              // Leaving edit mode → collapse the row
-              onToggle();
+    render: (row, open, onToggle, handleEditToggle) => {
+      const isEditing = editingRows[row.id];
+      return (
+        <Stack direction={"row"} spacing={2} justifyContent={"right"}>
+          <ChipComponent
+            label={"6"}
+            startDecorator={<CommentOutlined />}
+            variant={"soft"}
+          />
+          <ChipComponent
+            label={isEditing ? "Save" : "Edit"}
+            variant={"soft"}
+            startDecorator={
+              isEditing ? <CheckOutlined /> : <ModeEditOutlineOutlined />
             }
-          }}
-        />
-        <ChipComponent
-          label={"Delete"}
-          startDecorator={<DeleteOutlineOutlined />}
-          variant={"soft"}
-        />
-      </Stack>
-    ),
+            color={isEditing && "success"}
+            onClick={(e) => {
+              e.stopPropagation(); // prevent collapsing
+              handleEditToggle(row.id);
+              if (!isEditing) {
+                // Entering edit mode → force open
+                onToggle(true);
+              } else {
+                // Leaving edit mode → collapse the row
+                onToggle(false);
+              }
+            }}
+          />
+          <ChipComponent
+            label={"Delete"}
+            startDecorator={<DeleteOutlineOutlined />}
+            variant={"soft"}
+          />
+        </Stack>
+      );
+    },
   },
 ];

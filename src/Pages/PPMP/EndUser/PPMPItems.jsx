@@ -1,8 +1,6 @@
 import React, { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import PageTitle from "../../../Components/Common/PageTitle";
-import ContainerComponent from "../../../Components/Common/ContainerComponent";
 import ButtonComponent from "../../../Components/Common/ButtonComponent";
-import { BiPlus } from "react-icons/bi";
 import {
   Checkbox,
   Divider,
@@ -46,7 +44,7 @@ import { usePPMPTotalStore } from "../../../Hooks/PPMP/PPMPItemsHook";
 import BoxComponent from "@Components/Common/Card/BoxComponent";
 import ChipComponent from "@Components/Common/ChipComponent";
 import SearchWithSuggestions from "@Components/SearchWithSuggestions";
-import CollapsibleTable from "@Components/Common/Table/CollapsibleTable";
+import CollapsibleTable from "./CollapsibleTable";
 import { PPMP_HEADERS } from "../../../Data/Columns";
 import {
   DocumentScannerOutlined,
@@ -55,6 +53,7 @@ import {
   TodayOutlined,
 } from "@mui/icons-material";
 import ProcurementSchedule from "./ProcurementSchedule";
+import { ThreeDotsLoader } from "@Components/Common/Loading/ThreeDotsLoader";
 
 function PPMPItems(props) {
   const navigate = useNavigate();
@@ -467,10 +466,12 @@ function PPMPItems(props) {
   };
 
   useEffect(() => {
+    setPageLoader(true);
     getPPMPItems((status, message) => {
       if (status !== 200) {
         console.error("Failed to fetch items:", message);
       }
+      setPageLoader(false);
     });
   }, []);
 
@@ -484,25 +485,6 @@ function PPMPItems(props) {
     });
   }, [assignedArea]);
 
-  // useEffect(() => {
-  //   socket.on("editing", handleEditing);
-  //   return () => {
-  //     socket.off("editing"); // Clean up on unmount
-  //   };
-  // }, [socket]);
-
-  // // AUTHENTICATE
-  // useEffect(() => {
-  //   socket.emit("authenticate", {
-  //     id: id,
-  //     area: assignedArea?.name,
-  //   });
-
-  //   return () => {
-  //     socket.disconnect(); // Clean up on unmount
-  //   };
-  // }, []);
-
   useEffect(() => {
     socket.connect(); // Connect every time component mounts
     socket.emit("authenticate", { id: id, area: assignedArea?.name });
@@ -515,498 +497,59 @@ function PPMPItems(props) {
     };
   }, []);
 
-  const renderExpanded = (row, isEditing) => (
-    <Fragment>
-      <Tabs defaultValue="a" sx={{ bgcolor: grey[100] }}>
-        <TabList>
-          <Tab value="a">
-            <ListItemDecorator>
-              <TextSnippetOutlined />
-            </ListItemDecorator>
-            Item Information
-          </Tab>
-          <Tab value="b">
-            <ListItemDecorator>
-              <TodayOutlined />
-            </ListItemDecorator>
-            Procurement Schedule
-          </Tab>
-        </TabList>
-        <TabPanel value="a">
-          <Box
-            sx={{
-              width: "100%",
-              display: "grid",
-              gridTemplateColumns: "repeat(auto-fill, minmax(380px, 1fr))",
-              gap: 2,
-            }}
-          >
-            <BoxComponent p={2}>
-              {" "}
-              {/* Set a fixed height or responsive height */}
-              <img
-                src="https://images.unsplash.com/photo-1593121925328-369cc8459c08?auto=format&fit=crop&w=286"
-                srcSet="https://images.unsplash.com/photo-1593121925328-369cc8459c08?auto=format&fit=crop&w=286&dpr=2 2x"
-                loading="lazy"
-                alt=""
-                style={{
-                  width: "100%", // Fill the width of the container
-                  height: "100%", // Fill the height of the container
-                  objectFit: "cover", // Maintain aspect ratio, crop if necessary
-                  borderRadius: 10,
-                  display: "block", // Remove default inline spacing
-                }}
-              />
-            </BoxComponent>
-
-            <BoxComponent p={2}>
-              <Stack spacing={2}>
-                <Typography
-                  fontWeight={600}
-                  startDecorator={
-                    <TextSnippetOutlined
-                      style={{ color: blue[800], fontSize: 20 }}
-                    />
-                  }
-                >
-                  Item Information
-                </Typography>
-                <Stack spacing={1}>
-                  <Typography level="body-sm">Mode of Procurement</Typography>
-                  <ChipComponent
-                    label={"Sample"}
-                    sx={{ color: "#7008E7", bgcolor: "#DDD6FF" }}
-                    size={"md"}
-                  />
-                </Stack>
-                <Stack spacing={0.5}>
-                  <Typography level="body-sm">Specifications</Typography>
-                  {row.item.item_specifications.length > 0 ? (
-                    row.item.item_specifications.map((spec, index) => (
-                      <Typography
-                        key={index}
-                        level="body-sm"
-                        alignItems="center"
-                        sx={{ color: "black" }}
-                      >
-                        ● {spec.description}
-                      </Typography>
-                    ))
-                  ) : (
-                    <Typography level="body-md">
-                      No specifications provided.
-                    </Typography>
-                  )}
-                </Stack>
-              </Stack>
-            </BoxComponent>
-            <BoxComponent p={2}>
-              <Stack>
-                <Typography
-                  fontWeight={600}
-                  startDecorator={
-                    <ExtensionOutlined
-                      style={{ color: orange[800], fontSize: 20 }}
-                    />
-                  }
-                >
-                  Linked Activities ({row.activities.length})
-                </Typography>
-
-                <Stack mt={2}>
-                  {row?.activities?.length > 0 ? (
-                    row?.activities?.map((act, index) => (
-                      <BoxComponent bgColor={"#F5F5F4"} p={3} key={index}>
-                        <Stack
-                          direction={"row"}
-                          justifyContent={"space-between"}
-                          width={"100%"}
-                          spacing={2}
-                        >
-                          <ChipComponent
-                            label={act.activity_code}
-                            color={"primary"}
-                          />
-                          <Stack width={"100%"}>
-                            <Typography level="body-md" fontWeight={600}>
-                              {act.activity_name}
-                            </Typography>
-
-                            <Typography level="body-sm">
-                              {" "}
-                              {`${act.resources_quantity} • ₱
-${act.total_amount.toLocaleString("en-PH", {
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-})}`}{" "}
-                            </Typography>
-                          </Stack>
-                        </Stack>
-                      </BoxComponent>
-                    ))
-                  ) : (
-                    <Typography level="body-md">
-                      No specifications provided.
-                    </Typography>
-                  )}
-                </Stack>
-              </Stack>
-            </BoxComponent>
-          </Box>
-        </TabPanel>
-        <TabPanel value="b">
-          <BoxComponent bgColor={"white"} p={2}>
-            <ProcurementSchedule />
-          </BoxComponent>
-        </TabPanel>
-      </Tabs>
-    </Fragment>
-  );
-
   return (
     <Fragment>
       <PageTitle
         title={`PPMP for Fiscal Year ${currentFiscalYear}`}
         description={""}
       />
-      <BoxComponent my={2} bgColor={"#FAFAF9"} boxShadow="xs" p={2}>
-        <Stack direction={"row"} justifyContent={"space-between"} mb={2}>
-          <Stack>
-            <Stack direction={"row"} gap={1}>
-              <Typography level="body-md" sx={{ fontWeight: 600 }}>
-                Manage Resources for{" "}
-              </Typography>
-              <ChipComponent
-                label={`PPMP Fiscal Year ${currentFiscalYear}`} // change to dynamic activity name
-                color={"success"}
-                variant={"outlined"}
-                fontSize={12}
-                size={"sm"}
+      {pageLoader ? (
+        <Stack height="70vh" alignItems="center" justifyContent="center">
+          <ThreeDotsLoader />
+        </Stack>
+      ) : (
+        <>
+          <BoxComponent my={2} bgColor={"#FAFAF9"} boxShadow="xs" p={2}>
+            <Stack direction={"row"} justifyContent={"space-between"} mb={2}>
+              <Stack>
+                <Stack direction={"row"} gap={1}>
+                  <Typography level="body-md" sx={{ fontWeight: 600 }}>
+                    Manage Resources for{" "}
+                  </Typography>
+                  <ChipComponent
+                    label={`PPMP Fiscal Year ${currentFiscalYear}`} // change to dynamic activity name
+                    color={"success"}
+                    variant={"outlined"}
+                    fontSize={12}
+                    size={"sm"}
+                  />
+                </Stack>
+                <Typography level="body-xs">
+                  The below contains a list of resources synced from your
+                  submitted AOP request. Click a row to expand and view more
+                  details.
+                </Typography>
+              </Stack>
+              <ButtonComponent
+                label={"Add a Resource"}
+                startDecorator={<PlusIcon />}
               />
             </Stack>
-            <Typography level="body-xs">
-              The below contains a list of resources synced from your submitted
-              AOP request. Click a row to expand and view more details.
-            </Typography>
-          </Stack>
-          <ButtonComponent
-            label={"Add a Resource"}
-            startDecorator={<PlusIcon />}
+            <Stack direction={"row"} justifyContent={"space-between"}>
+              <SearchWithSuggestions />
+            </Stack>
+          </BoxComponent>
+          <CollapsibleTable
+            columns={PPMP_HEADERS(editingRows)}
+            rows={ppmp}
+            editingRows={editingRows}
+            onEditToggle={handleEditToggle}
           />
-        </Stack>
-        <Stack direction={"row"} justifyContent={"space-between"}>
-          <SearchWithSuggestions />
-        </Stack>
-      </BoxComponent>
-
-      <CollapsibleTable
-        columns={PPMP_HEADERS(editingRows, handleEditToggle)}
-        rows={ppmp}
-        openIndex={openIndex}
-        setOpenIndex={setOpenIndex}
-        renderExpanded={(row) =>
-          renderExpanded(row, editingRows[row.id] || false)
-        }
-      />
-
-      {/* Add items to ppmp */}
-      <ModalComponent
-        isOpen={openAdd}
-        handleClose={() => setOpenAdd(false)}
-        title={"On what activity shall we assign the resources you’ll add?"}
-        description={
-          "Select a request status and reasons (if returned) to continue. You may add remarks if necessary."
-        }
-        minWidth={"380px"}
-        maxWidth={"480px"}
-        content={
-          <Fragment>
-            <Stack spacing={2}>
-              <AutocompleteComponent
-                label={"Select an activity"}
-                name={"activity"}
-                options={activities}
-                getOptionLabel={(option) => option.activity_code || ""}
-                setValue={setActivity}
-                value={activity}
-                size="sm"
-              />
-              {activity?.name && (
-                <>
-                  <Divider />
-                  <Typography sx={{ fontSize: 12, color: "gray" }}>
-                    Description of selected activity
-                  </Typography>
-                  <Typography sx={{ fontSize: 14 }}>
-                    {activity?.name}
-                  </Typography>
-                </>
-              )}
-            </Stack>
-          </Fragment>
-        }
-        leftButtonLabel="Cancel"
-        rightButtonLabel="Continue"
-        rightButtonAction={() => handleNavigate()}
-        hasActionButtons
-      />
+        </>
+      )}
 
       {/* Submit item request */}
-      <ModalComponent
-        isOpen={openReq}
-        handleClose={() => {
-          setOpenReq(false);
-        }}
-        title={
-          step === 1
-            ? "On what activity shall we assign the resources you’ll add?"
-            : step === 2
-            ? "General information"
-            : step === 3
-            ? "Specifications"
-            : ""
-        }
-        description={
-          step === 1
-            ? "Select a request status and reasons (if returned) to continue. You may add remarks if necessary."
-            : step === 2
-            ? "Fill in the item information to create it."
-            : step === 3
-            ? "List down details for the item you want to cretae to specify it."
-            : ""
-        }
-        minWidth={"400px"}
-        maxWidth={"480px"}
-        height={step === 1 ? "auto" : step === 2 ? "652px" : "680px"}
-        content={
-          <Fragment>
-            <Box mt={1}>
-              {step === 1 && (
-                <Stack spacing={2}>
-                  <AutocompleteComponent
-                    label={"Select one activity"}
-                    name="activity"
-                    options={activities}
-                    getOptionLabel={(option) => option.activity_code || ""}
-                    setValue={setActivity}
-                    value={activity}
-                    size="sm"
-                  />
-                  {activity?.name && (
-                    <>
-                      <Divider />
-                      <Typography sx={{ fontSize: 12, color: "gray" }}>
-                        Description of selected activity
-                      </Typography>
-                      <Typography sx={{ fontSize: 14 }}>
-                        {activity?.name}
-                      </Typography>
-                    </>
-                  )}
-                </Stack>
-              )}
-              {step === 2 && (
-                <Stack spacing={2} mb={1}>
-                  <Stack direction={"row"} gap={1}>
-                    <AutocompleteComponent
-                      label="Classification"
-                      name="classification"
-                      options={classification}
-                      getOptionLabel={(option) => option.name || ""}
-                      value={
-                        classification?.find(
-                          (el) => el.id === itemReq?.classification?.id
-                        ) || null
-                      } // Match the full object in value
-                      handleSelect={(value) => {
-                        handleSingleChangeAutcomplete(
-                          value,
-                          setItemReq,
-                          "classification",
-                          setError
-                        );
-                      }}
-                    />
 
-                    <AutocompleteComponent
-                      label="Category"
-                      name="category"
-                      value={
-                        categories?.find(
-                          (el) => el.id === itemReq?.category?.id
-                        ) || null
-                      }
-                      options={categories}
-                      getOptionLabel={(option) => option.name || ""}
-                      handleSelect={(value) => {
-                        handleSingleChangeAutcomplete(
-                          value,
-                          setItemReq,
-                          "category",
-                          setError
-                        );
-                      }}
-                    />
-                  </Stack>
-                  <TextareaComponent
-                    label="Item name"
-                    name="item_name"
-                    helperText="Use a specific and descriptive naming convention for best results."
-                    value={itemReq?.item_name}
-                    onChange={(e) =>
-                      handleInputValidation(e, setItemReq, setError)
-                    }
-                    size="sm"
-                    minRows={3}
-                  />
-                  <Stack direction={"row"} gap={1} width="100%">
-                    <AutocompleteComponent
-                      label="Unit of measure"
-                      name="unit"
-                      value={
-                        units?.find((el) => el.id === itemReq?.unit?.id) || null
-                      }
-                      options={units}
-                      getOptionLabel={(option) => option.name || ""}
-                      handleSelect={(value) => {
-                        handleSingleChangeAutcomplete(
-                          value,
-                          setItemReq,
-                          "unit",
-                          setError
-                        );
-                      }}
-                    />
-                    <InputComponent
-                      label="Estimated budget"
-                      name="estimated_budget"
-                      size="sm"
-                      value={itemReq?.estimated_budget}
-                      handleInput={(e) => handleInputValidation(e, setItemReq)}
-                      color="primary"
-                    />
-                  </Stack>
-                  <AutocompleteComponent
-                    label="Variant"
-                    name="variant"
-                    value={
-                      variants?.find((el) => el.id === itemReq?.variant?.id) ||
-                      null
-                    }
-                    options={variants}
-                    getOptionLabel={(option) => option.name || ""}
-                    handleSelect={(value) => {
-                      handleSingleChangeAutcomplete(
-                        value,
-                        setItemReq,
-                        "variant",
-                        setError
-                      );
-                    }}
-                  />
-
-                  <Checkbox
-                    label="I have conducted a market research prior setting the budget estimates."
-                    sx={{ color: grey[600] }}
-                    size="sm"
-                    checked={itemReq?.market_research}
-                    onChange={(e) =>
-                      setItemReq((prev) => ({
-                        ...prev,
-                        market_research: e.target.checked,
-                      }))
-                    }
-                  />
-                </Stack>
-              )}
-              {step === 3 && (
-                <Stack spacing={2}>
-                  <Box>
-                    <Typography fontSize={13} color="grey.600">
-                      Item name
-                    </Typography>
-                    <Typography fontSize={14}>
-                      {" "}
-                      {itemReq?.item_name}{" "}
-                    </Typography>
-                    <Divider sx={{ my: 1 }} />
-                  </Box>
-                  <Stack>
-                    <Box
-                      height={"235px"}
-                      overflow="auto"
-                      ref={specsContainerRef}
-                    >
-                      {itemReq?.specs?.map((spec, index) => (
-                        <Box key={spec.id} sx={{ mb: 0.5 }}>
-                          <Stack spacing={1}>
-                            <TextareaComponent
-                              label={`Specification ${index + 1}:`}
-                              placeholder="e.g., Size: Large"
-                              name={`spec-${index}`}
-                              value={spec.value}
-                              onChange={(e) =>
-                                handleChange(spec.id, e.target.value)
-                              }
-                              size="sm"
-                            />
-                            {itemReq?.specs?.length > 1 && (
-                              <Link
-                                onClick={() => removeSpec(spec.id)}
-                                color="danger"
-                                fontSize={12}
-                                justifyContent={"right"}
-                              >
-                                Remove
-                              </Link>
-                            )}
-                          </Stack>
-                        </Box>
-                      ))}
-                    </Box>
-                    <Link
-                      onClick={addSpec}
-                      fontSize={13}
-                      color="success"
-                      endDecorator={<MdAdd />}
-                      sx={{ my: 1 }}
-                    >
-                      Add another
-                    </Link>
-                    <Divider sx={{ my: 1 }} />
-                  </Stack>
-                  <InputComponent
-                    label={"Authorization PIN"}
-                    type="password"
-                    name="pin"
-                    value={itemReq.pin}
-                    helperText="Confirm you action by typing-in your authorization PIN."
-                    handleInput={(e) => handleInputValidation(e, setItemReq)}
-                  />
-                </Stack>
-              )}
-            </Box>
-          </Fragment>
-        }
-        leftButtonLabel={step > 1 ? "Back to previous" : "Cancel"}
-        leftButtonAction={() => {
-          if (step > 1) {
-            handlePreviousStep();
-          } else {
-            setOpenReq(false);
-          }
-        }}
-        rightButtonLabel={step < 3 ? "Next step" : "Confirm and save"}
-        rightButtonAction={() => {
-          if (step < 3) {
-            handleNextStep();
-          } else {
-            handleRequest();
-          }
-        }}
-        isLoading={buttonLoader}
-        hasActionButtons
-      />
       {openSave && (
         <ConfirmationModalComponent
           leftButtonLabel="Back to editor"
