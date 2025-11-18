@@ -68,6 +68,7 @@ function PPMPItems(props) {
     postPPMP,
     postItemRequest,
     exportPPMP,
+    updatePPMP,
   } = usePPMPHook();
   const {
     classification,
@@ -119,6 +120,7 @@ function PPMPItems(props) {
   });
   const [editingRows, setEditingRows] = useState({});
   const [openIndex, setOpenIndex] = useState(null);
+  const updatedRowData = React.useRef({});
 
   const location = useLocation();
   const { user } = useAuth();
@@ -175,7 +177,30 @@ function PPMPItems(props) {
     }, 500);
   };
 
-  const handleEditToggle = (rowId) => {
+  const handleEditToggle = async (rowId) => {
+    const isEditing = editingRows[rowId];
+
+    if (isEditing) {
+      // Save data
+      const getDataFunc = updatedRowData.current[rowId];
+      if (!getDataFunc) return;
+
+      const updatedData = getDataFunc();
+
+      try {
+        updatePPMP(rowId, updatedData, (status, message) => {
+          if (status === 200) {
+            console.log("PPMP item updated successfully:", message);
+          } else {
+            console.error("Failed to update purchase type:", message);
+          }
+        });
+      } catch (err) {
+        console.error("Save error:", err);
+      }
+    }
+
+    // Toggle edit state
     setEditingRows((prev) => ({
       ...prev,
       [rowId]: !prev[rowId],
@@ -502,6 +527,12 @@ function PPMPItems(props) {
       <PageTitle
         title={`PPMP for Fiscal Year ${currentFiscalYear}`}
         description={""}
+        items={[
+          {
+            label: "PPMP",
+            current: true,
+          },
+        ]}
       />
       {pageLoader ? (
         <Stack height="70vh" alignItems="center" justifyContent="center">
@@ -531,8 +562,9 @@ function PPMPItems(props) {
                 </Typography>
               </Stack>
               <ButtonComponent
-                label={"Add a Resource"}
+                label={"Add an Item"}
                 startDecorator={<PlusIcon />}
+                onClick={() => navigate("/ppmp/add-item")}
               />
             </Stack>
             <Stack direction={"row"} justifyContent={"space-between"}>
@@ -544,6 +576,9 @@ function PPMPItems(props) {
             rows={ppmp}
             editingRows={editingRows}
             onEditToggle={handleEditToggle}
+            onGetUpdatedData={(rowId, getDataFunc) => {
+              updatedRowData.current[rowId] = getDataFunc;
+            }}
           />
         </>
       )}

@@ -122,7 +122,7 @@ export default function AddResources() {
                 variant={"outlined"}
                 onClick={() => {
                   clearCart();
-                  navigate(`/manage-resources/${activityId}`, {
+                  navigate(`/aop//manage-resources/${activityId}`, {
                     state: { activityId: activityId },
                   });
                 }}
@@ -135,7 +135,7 @@ export default function AddResources() {
                 icon={<X />}
                 size={"sm"}
                 onClick={() =>
-                  navigate(`/manage-resources/${activityId}`, {
+                  navigate(`/aop/manage-resources/${activityId}`, {
                     state: { activityId: activityId },
                   })
                 }

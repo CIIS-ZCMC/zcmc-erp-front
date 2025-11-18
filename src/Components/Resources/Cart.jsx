@@ -11,6 +11,10 @@ export default function Cart({
   onQtyChange,
   totalCost,
   totalQty,
+  isPPMP = false,
+  removeActivityFromItem,
+  options = [],
+  addActivityToItem,
 }) {
   return (
     <Fragment>
@@ -45,6 +49,10 @@ export default function Cart({
                   id={item?.id}
                   onQuantityChange={onQtyChange}
                   onRemove={() => removeFromCart(item?.id)}
+                  isPPMP={isPPMP}
+                  removeActivityFromItem={removeActivityFromItem}
+                  options={options}
+                  addActivityToItem={addActivityToItem}
                 />
               ))
           ) : (

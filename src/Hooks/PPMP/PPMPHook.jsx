@@ -1,6 +1,12 @@
 import { create } from "zustand";
 import erp_api from "../../Services/ERP_API";
-import { download, post, read, remove } from "../../Services/RequestMethods";
+import {
+  download,
+  post,
+  read,
+  remove,
+  update,
+} from "../../Services/RequestMethods";
 
 const PATH = "ppmp";
 
@@ -46,7 +52,7 @@ const usePPMPHook = create((set) => ({
       failed: callBack,
       success: (res) => {
         const { status, message, data } = res;
-        set({ modes: data });
+        set({ modes: data.data });
         callBack(status, message);
       },
     });
@@ -54,7 +60,7 @@ const usePPMPHook = create((set) => ({
 
   getActivities: async (callBack) => {
     read({
-      url: `activities`,
+      url: `all-activities`,
       failed: callBack,
       success: (res) => {
         const { status, message, data } = res;
@@ -125,6 +131,25 @@ const usePPMPHook = create((set) => ({
         callBack(status, message);
       },
       failed: (status, message) => {
+        callBack(status, message);
+      },
+    });
+  },
+
+  updatePPMP: async (id, form, callBack) => {
+    update({
+      url: `${PATH}-items-update/${id}`,
+      form: form,
+      failed: callBack,
+      success: ({ status, data }) => {
+        const { message, data: updatedItem } = data;
+
+        set((state) => ({
+          ppmp: state.ppmp.map((res) =>
+            res.id === updatedItem.id ? { ...res, ...updatedItem } : res
+          ),
+        }));
+
         callBack(status, message);
       },
     });

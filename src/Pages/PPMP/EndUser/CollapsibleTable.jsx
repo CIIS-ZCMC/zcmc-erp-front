@@ -26,6 +26,8 @@ import AutocompleteComponent from "@Components/Form/AutocompleteComponent";
 import ChipComponent from "@Components/Common/ChipComponent";
 import ProcurementSchedule from "./ProcurementSchedule";
 import InputComponent from "@Components/Form/InputComponent";
+import usePPMPHook from "../../../Hooks/PPMP/PPMPHook";
+import { modes } from "react-transition-group/SwitchTransition";
 
 /**
  * ExpandableTable Component
@@ -41,6 +43,7 @@ export default function CollapsibleTable({
   initialOpenRowIndex = null,
   editingRows,
   onEditToggle,
+  onGetUpdatedData,
 }) {
   const [openIndex, setOpenIndex] = React.useState(null);
 
@@ -90,6 +93,7 @@ export default function CollapsibleTable({
                 else if (forceState === false) setOpenIndex(null); // collapse
                 else handleToggle(index); // normal click
               }}
+              onGetUpdatedData={onGetUpdatedData}
             />
           ))}
         </tbody>
@@ -114,15 +118,88 @@ function ExpandableRow({
   onEditToggle,
   open,
   onToggle,
+  onGetUpdatedData,
 }) {
-  const totalQuantity = row?.activities?.reduce(
+  const { modes, activities, getProcModes, getActivities } = usePPMPHook();
+  const [procurementMode, setProcurementMode] = React.useState(
+    row?.item?.procurement_mode || null
+  );
+  const [activity, setActivity] = React.useState(null);
+  const [linkedActivities, setLinkedActivities] = React.useState(
+    row?.activities || []
+  );
+  const [scheduleData, setScheduleData] = React.useState({});
+
+  const totalQuantity = linkedActivities.reduce(
     (sum, act) => sum + (Number(act.resources_quantity) || 0),
     0
   );
 
-  const unit = row?.activities?.[0]?.unit || "";
+  const unit = row?.item?.item_unit?.name || "";
+
+  const handleAddActivity = (selected) => {
+    if (!selected) return;
+
+    const exists = linkedActivities.some(
+      (a) => a.activity_code === selected.activity_code
+    );
+    if (exists) return;
+
+    const newAct = {
+      ...selected,
+      resources_quantity: 1,
+      total_amount: row?.item?.estimated_budget,
+      unit: selected.unit || "",
+    };
+
+    setLinkedActivities((prev) => [newAct, ...prev]);
+    setActivity(null); // clear dropdown after select
+  };
+
+  // Update quantity of a specific activity
+  const handleQuantityChange = (activityCode, value) => {
+    const qty = Number(value) || 0;
+
+    setLinkedActivities((prev) =>
+      prev.map((item) =>
+        item.activity_code === activityCode
+          ? { ...item, resources_quantity: qty }
+          : item
+      )
+    );
+  };
+
+  React.useEffect(() => {
+    getProcModes((status, message) => {
+      if (status !== 200) {
+        console.error("Failed to fetch items:", message);
+      }
+    });
+    getActivities((status, message) => {
+      if (status !== 200) {
+        console.error("Failed to fetch items:", message);
+      }
+    });
+  }, []);
+
+  const getUpdatedData = () => ({
+    procurement_mode_id: procurementMode?.id || null,
+    schedule: scheduleData,
+    activity_quantities: linkedActivities.map((act) => ({
+      activity_id: act.activity_id,
+      quantity: Number(act.resources_quantity) || 0,
+    })),
+  });
+
+  React.useEffect(() => {
+    if (onGetUpdatedData) {
+      onGetUpdatedData(row.id, getUpdatedData); // register this row's function with parent
+    }
+  }, [procurementMode, linkedActivities, scheduleData]);
+
   return (
     <React.Fragment>
+      {console.log(linkedActivities)}
       <tr
         onClick={() => onToggle()}
         style={{
@@ -159,6 +236,27 @@ function ExpandableRow({
               backgroundColor: grey[100],
             }}
           >
+            {editing && (
+              <Box
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                  bgcolor: red[50],
+
+                  p: 0.5,
+                }}
+              >
+                <Typography
+                  level="body-sm"
+                  sx={{ color: red[800], fontWeight: 500 }}
+                >
+                  You are in editing mode. Click the save button (✓) to save
+                  changes.
+                </Typography>
+              </Box>
+            )}
+
             <Box sx={{ p: open ? 1.5 : 0, transition: "padding .3s ease" }}>
               <React.Fragment>
                 <Tabs defaultValue="a" sx={{ bgcolor: grey[100] }}>
@@ -216,15 +314,23 @@ function ExpandableRow({
                           >
                             Item Information
                           </Typography>
-                          {console.log(editing)}
+
+                          {console.log(modes)}
                           <Stack spacing={1}>
                             <Typography level="body-sm">
                               Mode of Procurement
                             </Typography>
                             {editing ? (
                               // EDIT MODE → Always show the Autocomplete
+
                               <AutocompleteComponent
-                                placeholder="Select Procurement Mode"
+                                label="Procurement Mode"
+                                options={modes}
+                                value={procurementMode}
+                                getOptionLabel={(option) => option.name} // IMPORTANT
+                                handleSelect={(selected) =>
+                                  setProcurementMode(selected)
+                                }
                                 color="danger"
                               />
                             ) : row?.item?.procurement_mode ? (
@@ -279,7 +385,7 @@ function ExpandableRow({
                           >
                             Linked Activities ({row.activities.length})
                           </Typography>
-
+                          {console.log(activities)}
                           <Stack
                             mt={2}
                             spacing={1}
@@ -288,71 +394,92 @@ function ExpandableRow({
                           >
                             {editing && (
                               <AutocompleteComponent
-                                label={"Select/Search Activities"}
+                                label="Select an activity"
+                                options={activities}
+                                value={activity}
+                                getOptionLabel={(option) =>
+                                  option.activity_code
+                                } // IMPORTANT
+                                handleSelect={handleAddActivity}
                                 color="danger"
                               />
                             )}
-                            {row?.activities?.length > 0 ? (
-                              row?.activities?.map((act, index) => (
-                                <BoxComponent
-                                  bgColor={"#F5F5F4"}
-                                  p={2}
-                                  key={index}
-                                >
-                                  <Stack
-                                    direction={"row"}
-                                    width={"100%"}
-                                    spacing={2}
-                                    alignItems={"center"}
+                            <Box height={"300px"} sx={{ overflowY: "scroll" }}>
+                              {linkedActivities?.length > 0 ? (
+                                linkedActivities?.map((act, index) => (
+                                  <BoxComponent
+                                    bgColor={"#F5F5F4"}
+                                    p={1}
+                                    key={index}
+                                    mb={1}
                                   >
-                                    <ChipComponent
-                                      label={act.activity_code}
-                                      color={"primary"}
-                                      fontSize={12}
-                                    />
-                                    <Stack width={"100%"}>
-                                      <Typography
-                                        level="body-md"
-                                        fontWeight={600}
-                                      >
-                                        {act.activity_name}
-                                      </Typography>
+                                    <Stack
+                                      direction={"row"}
+                                      width={"100%"}
+                                      spacing={2}
+                                      alignItems={"center"}
+                                    >
+                                      <Stack width={"40%"}>
+                                        <ChipComponent
+                                          label={act.activity_code}
+                                          color={"primary"}
+                                          fontSize={11}
+                                        />
+                                      </Stack>
 
-                                      <Stack
-                                        direction={"row"}
-                                        alignItems={"flex-end"}
-                                        spacing={1}
-                                      >
-                                        {editing ? (
-                                          <InputComponent
-                                            type={"number"}
-                                            width="30%"
-                                            size="sm"
-                                            value={act.resources_quantity}
-                                          />
-                                        ) : (
-                                          <Typography level="body-sm">
-                                            {`${act.resources_quantity} ${act.unit}(s)`}
-                                          </Typography>
-                                        )}
-
-                                        <Typography>
-                                          {`• ₱
-${act.total_amount.toLocaleString("en-PH", {
-  minimumFractionDigits: 2,
-  maximumFractionDigits: 2,
-})} `}{" "}
+                                      <Stack width={"60%"}>
+                                        <Typography
+                                          level="body-sm"
+                                          fontWeight={600}
+                                        >
+                                          {act.activity_name}
                                         </Typography>
+
+                                        <Stack
+                                          direction={"row"}
+                                          alignItems={"flex-end"}
+                                          spacing={1}
+                                        >
+                                          {editing ? (
+                                            <InputComponent
+                                              type="number"
+                                              width="30%"
+                                              size="sm"
+                                              value={act.resources_quantity}
+                                              onChange={(e) =>
+                                                handleQuantityChange(
+                                                  act.activity_code,
+                                                  e.target.value
+                                                )
+                                              }
+                                            />
+                                          ) : (
+                                            <Typography level="body-sm">
+                                              {`${act.resources_quantity} ${act.unit}(s)`}
+                                            </Typography>
+                                          )}
+
+                                          <Typography>
+                                            • ₱
+                                            {(
+                                              row?.item?.estimated_budget *
+                                              Number(act.resources_quantity)
+                                            ).toLocaleString("en-PH", {
+                                              minimumFractionDigits: 2,
+                                              maximumFractionDigits: 2,
+                                            })}
+                                          </Typography>
+                                        </Stack>
                                       </Stack>
                                     </Stack>
-                                  </Stack>
-                                </BoxComponent>
-                              ))
-                            ) : (
-                              <Typography level="body-md">
-                                No activities found.
-                              </Typography>
-                            )}
+                                  </BoxComponent>
+                                ))
+                              ) : (
+                                <Typography level="body-md">
+                                  No activities found.
+                                </Typography>
+                              )}
+                            </Box>
                           </Stack>
                         </Stack>
                         <Typography textAlign={"right"} level="body-sm" mt={2}>
@@ -367,7 +494,11 @@ ${act.total_amount.toLocaleString("en-PH", {
                   </TabPanel>
                   <TabPanel value="b">
                     <BoxComponent bgColor={"white"} p={2}>
-                      <ProcurementSchedule />
+                      <ProcurementSchedule
+                        editing={editing}
+                        initialData={row?.target_by_month}
+                        onChange={setScheduleData}
+                      />
                     </BoxComponent>
                   </TabPanel>
                 </Tabs>

@@ -1,7 +1,7 @@
-import React from "react";
+import React, { useState } from "react";
 import { Box, Sheet, Typography } from "@mui/joy";
 import { TodayOutlined } from "@mui/icons-material";
-import { grey } from "@mui/material/colors";
+import { grey, red } from "@mui/material/colors";
 
 const months = [
   "Jan",
@@ -18,7 +18,52 @@ const months = [
   "Dec",
 ];
 
-export default function ProcurementSchedule() {
+const monthKeyMap = {
+  Jan: "january",
+  Feb: "february",
+  Mar: "march",
+  Apr: "april",
+  May: "may",
+  Jun: "june",
+  Jul: "july",
+  Aug: "august",
+  Sep: "september",
+  Oct: "october",
+  Nov: "november",
+  Dec: "december",
+};
+
+export default function ProcurementSchedule({
+  editing,
+  initialData,
+  onChange,
+}) {
+  const [schedule, setSchedule] = useState(
+    initialData || {
+      january: 0,
+      february: 0,
+      march: 0,
+      april: 0,
+      may: 0,
+      june: 0,
+      july: 0,
+      august: 0,
+      september: 0,
+      october: 0,
+      november: 0,
+      december: 0,
+    }
+  );
+
+  const handleMonthChange = (monthKey, value) => {
+    const numeric = value.replace(/\D/g, ""); // digits only
+    const updated = {
+      ...schedule,
+      [monthKey]: numeric === "" ? 0 : Number(numeric),
+    };
+    setSchedule(updated);
+    if (onChange) onChange(updated); // propagate to parent
+  };
   return (
     <Sheet>
       {/* Title */}
@@ -92,17 +137,39 @@ export default function ProcurementSchedule() {
                   width: 36,
                   height: 36,
                   borderRadius: "50%",
-                  backgroundColor: grey[400],
+                  backgroundColor: editing ? red[100] : grey[400],
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
                   fontWeight: 600,
                   color: "neutral.solidColor",
-                  border: `1px solid ${grey[400]}`,
+                  border: !editing && `1px solid ${grey[400]}`,
                   mx: "auto",
                 }}
               >
-                –
+                {editing ? (
+                  <input
+                    inputMode="numeric"
+                    pattern="[0-9]*"
+                    value={schedule[monthKeyMap[m]] ?? 0}
+                    onChange={(e) =>
+                      handleMonthChange(monthKeyMap[m], e.target.value)
+                    }
+                    style={{
+                      width: "100%",
+                      height: "100%",
+                      border: "none",
+                      outline: "none",
+                      background: "transparent",
+                      textAlign: "center",
+                      fontSize: 14,
+                      fontWeight: 600,
+                    }}
+                    placeholder="-"
+                  />
+                ) : (
+                  schedule[monthKeyMap[m]] ?? "-"
+                )}
               </Box>
             </Box>
           ))}

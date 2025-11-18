@@ -1,11 +1,22 @@
 import React, { Fragment } from "react";
 
-import { Box, Stack, Typography, Divider } from "@mui/joy";
+import {
+  Box,
+  Stack,
+  Typography,
+  Divider,
+  Autocomplete,
+  ChipDelete,
+  Chip,
+} from "@mui/joy";
 import { LucideDot, Minus, Plus, Trash } from "lucide-react";
 
 import ButtonComponent from "@Components/Common/ButtonComponent";
 import QuantityControlComponent from "@Components/Cart/QuantityControlComponent";
 import IconButtonComponent from "@Components/Common/IconButtonComponent";
+import AutocompleteComponent from "@Components/Form/AutocompleteComponent";
+import ChipComponent from "@Components/Common/ChipComponent";
+import { CancelOutlined } from "@mui/icons-material";
 
 const ItemsCart = ({
   item,
@@ -14,6 +25,10 @@ const ItemsCart = ({
   quantity,
   onRemove,
   onQuantityChange,
+  isPPMP = false,
+  options = [],
+  addActivityToItem,
+  removeActivityFromItem,
 }) => {
   return (
     <Fragment>
@@ -77,6 +92,48 @@ const ItemsCart = ({
           </Box>
         </Box>
       </Box>
+      {isPPMP && (
+        <Fragment>
+          <AutocompleteComponent
+            label={"Select Activity"}
+            placeholder="Select Activity"
+            options={options}
+            getOptionLabel={(option) => option.activity_code}
+            handleSelect={(selected) =>
+              addActivityToItem(item.id, {
+                code: selected.activity_code, // 👈 THIS is the selected activity
+              })
+            }
+          />
+        </Fragment>
+      )}
+      {isPPMP && item?.activities && item.activities.length > 0 && (
+        <Box
+          sx={{
+            mt: 1,
+            p: 1,
+            border: "2px dashed #e0e0e0",
+            borderRadius: "8px",
+            display: "flex",
+            flexWrap: "wrap",
+            gap: 1,
+          }}
+        >
+          {item.activities.map((act, idx) => (
+            <Chip
+              size="sm"
+              color="primary"
+              endDecorator={
+                <ChipDelete
+                  onDelete={() => removeActivityFromItem(item.id, act.code)}
+                />
+              }
+            >
+              {act.code}
+            </Chip>
+          ))}
+        </Box>
+      )}
 
       <Divider sx={{ my: 1.5 }} />
     </Fragment>

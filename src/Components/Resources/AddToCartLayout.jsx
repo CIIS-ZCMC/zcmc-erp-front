@@ -17,6 +17,10 @@ export default function AddToCartLayout({
   loading = false,
   items = [],
   getItems,
+  isPPMP = false,
+  options = [],
+  addActivityToItem,
+  removeActivityFromItem,
 }) {
   const { user } = useAuth();
   const cartStore = useCartStore(user?.id || "guest");
@@ -37,7 +41,7 @@ export default function AddToCartLayout({
       <Grid container spacing={2} sx={{ flexGrow: 1 }}>
         <Grid xs={8}>
           <BoxComponent boxShadow="sm">
-            <Stack direction={"row"}>
+            <Stack direction={"row"} p={1}>
               <SearchWithSuggestions
                 placeholder="Search items..."
                 getSearchSuggestions={getSearchSuggestions}
@@ -65,6 +69,10 @@ export default function AddToCartLayout({
             onQtyChange={updateQty}
             totalCost={totalCost}
             totalQty={totalQty}
+            isPPMP={isPPMP}
+            options={options}
+            removeActivityFromItem={removeActivityFromItem}
+            addActivityToItem={addActivityToItem}
           />
         </Grid>
       </Grid>

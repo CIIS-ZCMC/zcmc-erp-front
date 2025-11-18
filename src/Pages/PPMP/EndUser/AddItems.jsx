@@ -1,4 +1,12 @@
-import { Box, Grid, Skeleton, Stack, Typography } from "@mui/joy";
+import {
+  Box,
+  Divider,
+  Grid,
+  Skeleton,
+  Stack,
+  Typography,
+  useTheme,
+} from "@mui/joy";
 import React, {
   Fragment,
   useCallback,
@@ -10,7 +18,7 @@ import React, {
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import ContainerComponent from "../../../Components/Common/ContainerComponent";
 import IconButtonComponent from "../../../Components/Common/IconButtonComponent";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { ChevronDown, ChevronUp, X } from "lucide-react";
 import BoxComponent from "../../../Components/Common/Card/BoxComponent";
 import ItemCardComponent from "../../../Components/Resources/ItemCardComponent";
 import ButtonComponent from "../../../Components/Common/ButtonComponent";
@@ -25,536 +33,113 @@ import useModalHook from "../../../Hooks/ModalHook";
 import PageLoader from "../../../Components/Loading/PageLoader";
 import Item from "../../Items/Item";
 import ModalComponent from "../../../Components/Common/Dialog/ModalComponent";
-const ITEMS_PER_BATCH = 12;
+import PageTitle from "@Components/Common/PageTitle";
+import AddToCartLayout from "@Components/Resources/AddToCartLayout";
+import useCartStore from "../../../Hooks/ItemCartHook";
+import { useAuth } from "../../../Store/AuthStore";
+import useSearchHook from "../../../Hooks/SearchHook";
+import usePPMPHook from "../../../Hooks/PPMP/PPMPHook";
 
 function AddItems(props) {
+  const { user } = useAuth();
+
   const navigate = useNavigate();
   const location = useLocation();
+  const theme = useTheme();
+  const color = theme.palette;
   const { activity } = location.state || {};
 
-  const { items, getItems } = useItemsHook();
-  const {
-    setCartMeta,
-    addToCart,
-    updateQuantity,
-    cart,
-    removeFromCart,
-    clearCart,
-  } = useItemCartHook();
-  const { setAlertDialog, setConfirmationModal, closeConfirmation } =
-    useModalHook();
-
-  const loadMoreRef = useRef(null);
-
-  const [displayedItems, setDisplayedItems] = useState([]);
-  const [hasMore, setHasMore] = useState(true);
-  const [isCollapsed, setIsCollapsed] = useState(false);
-  const [isLoading, setIsLoading] = useState(false);
+  const { activities, getActivities } = usePPMPHook();
+  const { items, getItems, getSearchResults } = useItemsHook();
+  const { getSearchSuggestions, suggestions } = useSearchHook();
+  const cartStore = useCartStore(user?.id || "guest", true);
+  const { cart, addActivityToItem, removeActivityFromItem, clearCart } =
+    cartStore();
   const [displayLoading, setDisplayLoading] = useState(false);
-  const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [isFetchingMore, setIsFetchingMore] = useState(false);
-  const [quantity, setQuantity] = useState(1);
-  const [selectedItem, setSelectedItem] = useState(null);
-  const [searchTerm, setSearchTerm] = useState("");
 
-  const totalQty = cart.reduce((sum, item) => sum + item.aop_quantity, 0);
-  const totalPrice = cart.reduce(
-    (sum, item) => sum + item.aop_quantity * item.estimated_budget,
-    0
-  );
-  const handleCollapseClick = () => {
-    setIsCollapsed((prev) => !prev);
-  };
-
-  const handleOpenItemDialog = (item) => {
-    setSelectedItem(item);
-    setIsDialogOpen(true);
-  };
-
-  const handleCloseItemDialog = () => {
-    setIsDialogOpen(false);
-    setSelectedItem(null);
-  };
-
-  const add = () => {
-    addToCart(selectedItem, quantity);
-    handleCloseItemDialog();
-  };
-
-  const handleConfirmationModal = () => {
-    const data = {
-      status: "error",
-      title: "Discard selection?",
-      description:
-        "Discarding will forfeit your current item selection fot the selected activity. You’ll need to re-select again later if you discard now.",
-    };
-
-    setConfirmationModal(data);
-  };
-
-  const handleCancel = () => {
-    setIsLoading(true);
-    setCartMeta({ activity_id: null });
-    clearCart();
-
-    setTimeout(() => {
-      closeConfirmation();
-      window.location.href = "/edit-ppmp/ppmp-items";
-    }, 1000);
-  };
-
-  const handleSave = () => {
-    setLoading(true);
-
-    const localKey = "ppmp-items";
-
-    const existingItems = JSON.parse(localStorage.getItem(localKey)) || [];
-
-    // Build a set of existing item_codes to detect duplicates
-    const existingMap = new Map();
-    existingItems.forEach((item) => {
-      existingMap.set(item.item_code, item);
-    });
-
-    let nextId =
-      existingItems.length > 0
-        ? Math.max(...existingItems.map((item) => item.id || 0)) + 1
-        : 1;
-
-    const mergedMap = new Map();
-
-    // First, add existing items
-    existingItems.forEach((item) => {
-      mergedMap.set(item.item_code, item);
-    });
-
-    // Then, merge cart items
-    cart.forEach((cartItem) => {
-      const existing = mergedMap.get(cartItem.item_code);
-
-      if (existing) {
-        // Merge quantities and activities
-        const combinedActivities = [
-          ...existing.activities,
-          ...(Array.isArray(cartItem.activities)
-            ? cartItem.activities
-            : [cartItem.activities]),
-        ];
-        const combinedQuantity =
-          existing.aop_quantity + (cartItem.aop_quantity || 0);
-
-        mergedMap.set(cartItem.item_code, {
-          ...existing,
-          aop_quantity: combinedQuantity,
-          activities: combinedActivities,
-          total_amount: combinedQuantity * (cartItem.estimated_budget || 0),
-        });
-      } else {
-        // New item from cart: assign unique ID if missing
-        const newItem = {
-          ...cartItem,
-          id: cartItem.id || nextId++,
-          activities: Array.isArray(cartItem.activities)
-            ? cartItem.activities
-            : [cartItem.activities],
-        };
-        mergedMap.set(cartItem.item_code, newItem);
-      }
-    });
-
-    const mergedItemsArray = Array.from(mergedMap.values());
-    // 3. Save to hook and localStorage
-
-    localStorage.setItem(localKey, JSON.stringify(mergedItemsArray));
-
-    setCartMeta({ selectedActivity: null });
-    clearCart();
-
-    setTimeout(() => {
-      setLoading(false);
-      navigate("/edit-ppmp/ppmp-items");
-    }, 500);
-  };
-
-  const filteredItems = useMemo(() => {
-    return searchTerm.trim()
-      ? items.filter((item) =>
-          item.name.toLowerCase().includes(searchTerm.toLowerCase())
-        )
-      : items;
-  }, [items, searchTerm]);
-  const fetchMoreItems = useCallback(() => {
-    if (!filteredItems.length) return;
-
-    setIsFetchingMore(true); // Start loading
-
-    setTimeout(() => {
-      setDisplayedItems((prev) => {
-        const nextItems = filteredItems.slice(
-          prev.length,
-          prev.length + ITEMS_PER_BATCH
-        );
-        if (nextItems.length === 0) {
-          setHasMore(false);
-        }
-        return [...prev, ...nextItems];
-      });
-      setIsFetchingMore(false); // End loading
-    }, 500);
-  }, [filteredItems]);
-
-  // Observe loadMoreRef
-  useEffect(() => {
-    const target = loadMoreRef.current; // ✅ Capture current value
-    if (!target) return;
-    const observer = new IntersectionObserver(
-      (entries) => {
-        if (entries[0].isIntersecting && hasMore && !isFetchingMore) {
-          fetchMoreItems();
-        }
-      },
-      { threshold: 1.0 }
-    );
-
-    observer.observe(target);
-
-    return () => {
-      observer.disconnect(); // ✅ Safely disconnect
-    };
-  }, [fetchMoreItems, hasMore, isFetchingMore]);
+  const currentYear = new Date().getFullYear();
+  const currentFiscalYear = currentYear + 1;
 
   useEffect(() => {
-    setCartMeta({
-      selectedActivity: activity,
-    });
-
     setDisplayLoading(true);
+
     getItems((status, message, data) => {
       if (status !== 200) {
         console.error("Failed to fetch items:", message);
       }
+      getActivities((status, message) => {
+        if (status !== 200) {
+          console.error("Failed to fetch items:", message);
+        }
+      });
       setDisplayLoading(false);
     });
   }, []);
-
-  useEffect(() => {
-    setDisplayedItems(filteredItems.slice(0, ITEMS_PER_BATCH));
-    setHasMore(filteredItems.length > ITEMS_PER_BATCH);
-  }, [filteredItems]);
-
   return (
     <Fragment>
-      <ContainerComponent
-        title={`You are managing resources for Activity: ${activity?.activity_code}`}
+      <PageTitle
+        title={`AOP for Fiscal Year ${currentFiscalYear}`}
         description={
-          "Collapse this card to view more information about the selected activity."
+          "The following below serves as the summary of your AOP request. You can open and update your request before the deadline as set by the administrators."
         }
-        sx={{ mt: 2 }}
-        actions={
-          <Stack>
-            <IconButtonComponent
-              variant={"text"}
-              icon={isCollapsed ? <ChevronUp /> : <ChevronDown />}
-              onClick={(e) => {
-                e.stopPropagation();
-                handleCollapseClick();
-              }}
-            />
-          </Stack>
-        }
-      >
-        <Box
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "space-between",
-          }}
-        >
-          {isCollapsed && (
-            <Box>
-              <Stack
-                direction={"row"}
-                gap={2}
-                sx={{
-                  justifyContent: "space-between",
-                }}
-              >
-                <BoxComponent variant={"outlined"}>
-                  <Typography fontSize={14} fontWeight={600}>
-                    Activity code:
-                  </Typography>
-                  <Box width={"200px"} mt={1}>
-                    <Typography fontSize={12} color="primary">
-                      {activity?.activity_code}
-                    </Typography>
-                  </Box>
-                </BoxComponent>
-
-                <BoxComponent variant={"outlined"}>
-                  <Typography fontSize={14} fontWeight={600}>
-                    Activity:
-                  </Typography>
-                  <Box width={"80%"} mt={1}>
-                    <Typography fontSize={12}>
-                      Lorem Ipsum is simply dummy text of the printing and
-                      typesetting industry. Lorem Ipsum has been the industry's
-                      standard dummy text ever since the 1500s, when an unknown
-                      printer took a galley of type and scrambled it to make a
-                      type specimen book.
-                    </Typography>
-                  </Box>
-                </BoxComponent>
-              </Stack>
-            </Box>
-          )}
-        </Box>
-      </ContainerComponent>
-
-      <ContainerComponent
-        title="Select items to add on PPMP"
-        sx={{ mt: 2, height: "67vh" }}
-        actions={
-          <>
-            <Stack direction="row" gap={1}>
+        items={[
+          {
+            label: "PPMP",
+            path: () => navigate(`/ppmp/ppmp-items`),
+          },
+          {
+            label: "Add New Items",
+            current: true,
+          },
+        ]}
+      />
+      <Stack mt={2}>
+        <ContainerComponent>
+          <Stack direction={"row"} justifyContent="space-between">
+            <Stack>
+              <Typography level="body-md" fontWeight={600}>
+                Select resources (items) to add
+              </Typography>
+              <Typography level="body-sm">
+                All resources you'll select here only applies to this selected
+                activity
+              </Typography>
+            </Stack>
+            <Stack direction="row" spacing={1}>
               <ButtonComponent
-                label={"Cancel selection"}
-                endDecorator={<MdOpenInNew />}
+                label="Cancel Selection"
                 variant={"outlined"}
-                onClick={() => handleConfirmationModal()}
+                onClick={() => {
+                  clearCart();
+                  navigate(`/ppmp/ppmp-items`);
+                }}
               />
               <ButtonComponent
-                label={"Save to table"}
-                onClick={() => handleSave()}
+                label={"Save items"}
+                onClick={() => handleSaveItems()}
+              />
+              <IconButtonComponent
+                icon={<X />}
+                size={"sm"}
+                onClick={() => navigate(`/ppmp/ppmp-items`)}
               />
             </Stack>
-          </>
-        }
-      >
-        <Grid
-          container
-          columns={{ xs: 12, sm: 12, md: 12 }}
-          sx={{
-            flexGrow: 1,
-            width: "auto",
-            p: 1,
-          }}
-          gap={3}
-        >
-          {/* Left: Scrollable Item Cards */}
-          <Grid
-            item
-            xs={12} // Full width on extra small screens
-            sm={2} // 2 items on small screens
-            md={8.1}
-          >
-            <BoxComponent sx={{ position: "sticky", top: 0 }}>
-              <SearchBarComponent onSearch={(term) => setSearchTerm(term)} />
-            </BoxComponent>
-            <Grid
-              container
-              columns={{ xs: 12, sm: 6, md: 12 }}
-              gap={4}
-              sx={{
-                flexGrow: 1,
-                mt: 2,
-                p: 1,
-                border: 1,
-                borderColor: "neutral.100",
-                borderRadius: 10,
-                height: "50vh",
-                overflowY: "auto",
-              }}
-            >
-              {displayLoading ? (
-                [...Array(6)].map((_, index) => (
-                  <Grid key={index} item xs={12} sm={2} md={6} lg={4} xl={3.6}>
-                    <Skeleton
-                      variant="rectangular"
-                      animation="wave"
-                      height={180}
-                      sx={{ borderRadius: 10 }}
-                    />
-                  </Grid>
-                ))
-              ) : (
-                <>
-                  {displayedItems.map((item, index) => (
-                    <Grid
-                      key={index}
-                      item
-                      xs={12}
-                      sm={2}
-                      md={6}
-                      lg={4}
-                      xl={3.6}
-                      sx={{ cursor: "pointer" }}
-                    >
-                      <ItemCardComponent
-                        key={index}
-                        item={item}
-                        btnAction={() => addToCart(item)}
-                        itemInfoAction={() => handleOpenItemDialog(item)}
-                      />
-                    </Grid>
-                  ))}
-                  <Grid item xs={12}>
-                    <div ref={loadMoreRef}>
-                      {hasMore && isFetchingMore && (
-                        <Grid container spacing={2}>
-                          {[...Array(3)].map((_, idx) => (
-                            <Grid
-                              item
-                              xs={12}
-                              sm={2}
-                              md={6}
-                              lg={4}
-                              xl={3.6}
-                              key={idx}
-                            >
-                              <Skeleton
-                                variant="rectangular"
-                                animation="wave"
-                                height={180}
-                                sx={{ borderRadius: 10 }}
-                              />
-                            </Grid>
-                          ))}
-                        </Grid>
-                      )}
-                    </div>
-                  </Grid>
-                </>
-              )}
-            </Grid>
-          </Grid>
-
-          {/* Right: Cart */}
-          <Grid
-            item
-            xs={12} // Full width on mobile
-            sm={4} // 4/12 on small screens
-            md={3.7}
-            // xs={4}
-            sx={{
-              width: 350,
-              height: "59vh",
-              position: "sticky",
-              border: 1,
-              borderColor: "neutral.100",
-              borderRadius: 10,
-              bgcolor: "white",
-              display: "flex",
-              flexDirection: "column",
-            }}
-          >
-            <Box sx={{ p: 2, borderBottom: "1px solid #eee" }}>
-              <Typography level="h6">
-                {" "}
-                <Typography fontSize={14} fontWeight={600}>
-                  {totalQty === 0
-                    ? "No items"
-                    : `${totalQty} Item${totalQty > 1 ? "s" : ""}`}{" "}
-                  in cart
-                </Typography>
-              </Typography>
-            </Box>
-
-            <Box
-              sx={{
-                flex: 1,
-                overflowY: "auto",
-                p: 2,
-              }}
-            >
-              {cart?.length > 0 ? (
-                [...cart]
-                  .reverse()
-                  .map((item) => (
-                    <ItemsCart
-                      key={item.item_id}
-                      item={item}
-                      id={item.item_id}
-                      onQuantityChange={updateQuantity}
-                      onRemove={() => removeFromCart(item.item_id)}
-                    />
-                  ))
-              ) : (
-                <Stack
-                  sx={{
-                    justifyContent: "center",
-                    alignItems: "center",
-                    height: "100%",
-                  }}
-                >
-                  <img
-                    src={empty_cart}
-                    alt="Not found"
-                    style={{ width: 140 }}
-                  />
-                  <Typography
-                    fontSize={14}
-                    fontWeight={600}
-                    sx={{ color: "gray" }}
-                  >
-                    Your cart is empty
-                  </Typography>
-                  <Typography
-                    fontSize={13}
-                    sx={{ color: "gray" }}
-                    textAlign={"center"}
-                  >
-                    Looks like you haven't added any items yet.
-                  </Typography>
-                </Stack>
-              )}
-            </Box>
-
-            <Box sx={{ p: 2, borderTop: "1px solid #eee" }}>
-              <Typography
-                textAlign={"right"}
-                sx={{
-                  color: "gray",
-                }}
-                fontSize={13}
-                fontWeight={600}
-              >
-                Total cost:
-              </Typography>
-              <Typography fontSize={20} fontWeight="lg" textAlign={"right"}>
-                &#8369; {totalPrice.toLocaleString()}
-              </Typography>
-            </Box>
-          </Grid>
-        </Grid>
-      </ContainerComponent>
-      <ConfirmationModalComponent
-        leftButtonLabel="Back to selection"
-        rightButtonLabel="Discard and proceed"
-        rightButtonAction={() => handleCancel()}
-        onClose={() => closeConfirmation()}
-      />
-      <ModalComponent
-        handleClose={handleCloseItemDialog}
-        hasActionButtons={false}
-        isOpen={isDialogOpen}
-        title={"Preview Item"}
-        description={
-          "Select a request status and reasons (if returned) to continue. You may add remarks if necessary."
-        }
-        maxWidth={"766px"}
-        content={
-          <Box overflow={"hidden"}>
-            <Item
-              addAction={() => add()}
-              item={selectedItem}
-              quantity={quantity}
-              onDecrease={() => setQuantity(quantity - 1)}
-              onIncrease={() => setQuantity(quantity + 1)}
-            />
-          </Box>
-        }
-      />
-      <PageLoader isLoading={isLoading} />
+          </Stack>
+          <Divider sx={{ my: 2, bgcolor: color.primary.fontLight }} />
+          <AddToCartLayout
+            getSearchResults={getSearchResults}
+            getSearchSuggestions={getSearchSuggestions}
+            getItems={getItems}
+            suggestions={suggestions}
+            loading={displayLoading}
+            items={items}
+            isPPMP={true}
+            options={activities}
+            removeActivityFromItem={removeActivityFromItem}
+            addActivityToItem={addActivityToItem}
+          />
+        </ContainerComponent>
+      </Stack>
     </Fragment>
   );
 }

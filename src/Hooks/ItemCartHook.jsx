@@ -3,7 +3,7 @@ import { createJSONStorage, persist } from "zustand/middleware";
 
 const cartStores = {};
 
-const useCartStore = (userId = "guest") => {
+const useCartStore = (userId = "guest", isPPMP = false) => {
   if (cartStores[userId]) return cartStores[userId];
   const store = create(
     persist(
@@ -12,16 +12,29 @@ const useCartStore = (userId = "guest") => {
 
         addToCart: (item) => {
           const existing = get().cart.find((p) => p.id === item.id);
+
+          // If PPMP mode → attach activities array
+          const baseItem = {
+            ...item,
+            qty: item.qty || 1,
+            activities: isPPMP ? item.activities || [] : undefined,
+          };
           if (existing) {
             set({
               cart: get().cart.map((p) =>
-                p.id === item.id ? { ...p, qty: p.qty + (item.qty || 1) } : p
+                p.id === item.id
+                  ? {
+                      ...p,
+                      qty: p.qty + (item.qty || 1),
+                      activities: isPPMP
+                        ? [...(p.activities || []), ...(item.activities || [])]
+                        : p.activities,
+                    }
+                  : p
               ),
             });
           } else {
-            set({
-              cart: [...get().cart, { ...item, qty: item.qty || 1 }],
-            });
+            set({ cart: [...get().cart, baseItem] });
           }
         },
 
@@ -32,6 +45,33 @@ const useCartStore = (userId = "guest") => {
           set({
             cart: get().cart.map((i) =>
               i.id === id ? { ...i, qty: Math.max(qty, 1) } : i
+            ),
+          }),
+
+        addActivityToItem: (id, activity) =>
+          set({
+            cart: get().cart.map((item) =>
+              item.id === id
+                ? {
+                    ...item,
+                    activities: [...(item.activities || []), activity],
+                  }
+                : item
+            ),
+          }),
+
+        // ❌ Remove activity (PPMP only)
+        removeActivityFromItem: (id, activityCode) =>
+          set({
+            cart: get().cart.map((item) =>
+              item.id === id
+                ? {
+                    ...item,
+                    activities: (item.activities || []).filter(
+                      (a) => a.code !== activityCode
+                    ),
+                  }
+                : item
             ),
           }),
 
