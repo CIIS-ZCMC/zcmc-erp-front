@@ -1430,11 +1430,26 @@ export const PPMP_HEADERS = (editingRows) => [
     id: "procurement",
     label: "Mode of Procurement",
     align: "center",
-    width: "180px",
+    width: "200px",
 
     render: (row) => (
       <Chip
-        sx={{ color: "#7008E7", bgcolor: "#DDD6FF", fontWeight: 500 }}
+        sx={{
+          color: "#7008E7",
+          bgcolor: "#DDD6FF",
+          fontWeight: 500,
+          maxWidth: 200, // limit width
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
+          display: "inline-flex",
+          alignItems: "center",
+          "& .MuiChip-label": {
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+          },
+        }}
         size="md"
         variant="soft"
       >
@@ -1445,30 +1460,33 @@ export const PPMP_HEADERS = (editingRows) => [
   {
     id: "is_complete",
     label: "",
-    width: "200px",
-    render: (row) => (
-      <Box
-        p={0.5}
-        bgcolor={red[50]}
-        display={"flex"}
-        justifyContent={"center"}
-        width="160px"
-        borderRadius={5}
-      >
-        <Typography
-          level="body-xs"
-          color="danger"
-          alignItems={"center"}
-          gap={1}
-          startDecorator={
-            <WarningAmberOutlined color="danger" style={{ fontSize: 18 }} />
-          }
+    width: "150px",
+    render: (row) =>
+      row?.is_complete ? (
+        ""
+      ) : (
+        <Box
+          p={0.5}
+          bgcolor={red[50]}
+          display={"flex"}
+          justifyContent={"center"}
+          width="150px"
+          borderRadius={5}
         >
-          {" "}
-          Incomplete Details.
-        </Typography>
-      </Box>
-    ),
+          <Typography
+            level="body-xs"
+            color="danger"
+            alignItems={"center"}
+            gap={1}
+            startDecorator={
+              <WarningAmberOutlined color="danger" style={{ fontSize: 18 }} />
+            }
+          >
+            {" "}
+            Incomplete Details.
+          </Typography>
+        </Box>
+      ),
   },
   {
     id: "actions",

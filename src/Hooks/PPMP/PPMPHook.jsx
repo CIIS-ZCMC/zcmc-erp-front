@@ -137,16 +137,17 @@ const usePPMPHook = create((set) => ({
   updatePPMP: async (id, form, callBack) => {
     update({
       url: `${PATH}-items-update/${id}`,
-      form: form,
+      form,
       failed: callBack,
       success: ({ status, data }) => {
-        const { message, data: updatedItem } = data; // <-- fixed key
+        const {
+          message,
+          data: { ppmp_item },
+        } = data; // <-- correct destructure
 
         set((state) => ({
           ppmp: state.ppmp.map((res) =>
-            res.id === updatedItem.ppmp_item.id
-              ? { ...res, ...updatedItem.ppmp_item }
-              : res
+            res.id === ppmp_item.id ? { ...res, ...ppmp_item } : res
           ),
         }));
 

@@ -145,7 +145,7 @@ export default function ProcurementSchedule({
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
-                  fontWeight: 600,
+                  fontWeight: 500,
                   color: "neutral.solidColor",
 
                   mx: "auto",
