@@ -99,7 +99,6 @@ export const AOP_TIMELINE = {
   EMPTY_STATE: ' No transactions done yet.',
 }
 
-
 export const AOP_CONFRIM_DATA = [
   {
     icon: <Check />,
@@ -199,7 +198,7 @@ export const LIBRARY_CONSTANTS = {
   LIBRARY_TITLE: "Item information management",
   LIBRARY_SUBTITLE:
     "All information used by end-users around the system, across different modules and areas can be managed here.",
-  LIBRARY_HEADER: "Lis of records ready for AOP and PPMP",
+  LIBRARY_HEADER: "List of records ready for AOP and PPMP",
   LIBRARY_SUBHEADER:
     "The following records of information are used to define user-inputted values",
 };
@@ -317,7 +316,8 @@ export const API = {
   REQUEST_ITEM: "item-requests",
 
   // TIMELINE
-  APPROVAL_TIMELINE: "application-timelines",
+  APPROVAL_TIMELINE: "user-application-timelines",
+  APPROVER_TIMELINE: 'application-timelines/approver',
 
   // OBJECTIVES
   EDIT_OBJECTIVE: "edit-objective-and-success-indicator",

@@ -38,9 +38,9 @@ import { AOP_HEADER } from "../../../../../Data/Columns";
 // utils
 import { buildAOP } from "../../../../../Utils/aopBuilder";
 import { useAuth } from "../../../../../Store/AuthStore";
-import { useSubmitAOP } from "../../../../../Hooks/AOP/useSubmitAop";
+// import { useSubmitAOP } from "../../../../../Hooks/AOP/useSubmitAop";
 import { useObjectivesStorage } from "../../../../../Store/useObjectivesStorage";
-import useSocketEditing from "../../../../../Hooks/Socket/useSocketEditing";
+import useSocketHook from "../../../../../Hooks/Socket/SocketHook";
 import { disabledEditMode, getActivitiesCount } from "../../../../../Utils/aopUtils";
 
 import no_result from "../../../../../assets/empty-state-icon-base.png";
@@ -74,7 +74,7 @@ const Objectives = () => {
         handleEditClick,
         disconnectSignal,
         closeNotify
-    } = useSocketEditing({ user, assignedArea })
+    } = useSocketHook({ user, assignedArea })
 
     const { create, getSingleAOP } = useAOPActions();
 
@@ -162,14 +162,14 @@ const Objectives = () => {
     ]);
 
     // submit aop
-    const { handleSubmit, isSubmitLoading, alertDialog } = useSubmitAOP({
-        mission,
-        hasDiscussed,
-        authorizationPin,
-        buildAopPayload: buildAopPayload(),
-        APPLICATION_OBJECTIVE_ID,
-        createFn: create // create aop function call
-    })
+    // const { handleSubmit, isSubmitLoading, alertDialog } = useSubmitAOP({
+    //     mission,
+    //     hasDiscussed,
+    //     authorizationPin,
+    //     buildAopPayload: buildAopPayload(),
+    //     APPLICATION_OBJECTIVE_ID,
+    //     createFn: create // create aop function call
+    // })
 
     const handleCloseSnack = () => {
         setEditor(null);

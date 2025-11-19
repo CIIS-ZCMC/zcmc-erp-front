@@ -26,19 +26,28 @@ const useAOPApprovalHook = create((set) => ({
     getAOPApprovalTimeline: (AOP_ID, callback) => {
       set(() => ({ isLoading: true }));
       read({
-        url: `${API.APPROVAL_TIMELINE}/${AOP_ID}`,
+        url: `${API.APPROVAL_TIMELINE}/${AOP_ID.aop_application_id}`,
         success: (response) => {
-          const {
-            data: { id, timelines, approval_roles },
 
+          const {
+            // data: {
+            //   id,
+            //   timelines,
+            //   data,
+            //   approval_roles
+            // },
+            data,
             status,
           } = response.data;
 
-          set(() => ({
-            isLoading: false,
-            approvalTimeline: timelines,
-            approvalRoles: approval_roles,
-          }));
+          set(() => (
+            // console.log(data),
+            {
+              isLoading: false,
+              approvalTimeline: data,
+              // approvalTimeline: timelines,
+              approvalRoles: approval_roles,
+            }));
 
           callback(status, `Success fetching approval timeline for AOP ${id}`);
         },

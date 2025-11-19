@@ -25,7 +25,24 @@ import { useUserTypes } from "../../../Store/AuthStore";
 import ProcessAOPContent from "./Contents/ProcessAOPContent";
 import { useApprovalActions } from "../../../Hooks/AOP/AOPApprovalHook";
 
+import useObjectivesHook from "../../../Hooks/ObjectivesHook";
+import useObjectivesStore from "../../../Store/ObjectivesStore";
+
+
 export default function ManageAOP() {
+
+  const params = useParams();
+  const aopId = params.id;
+
+  const { getObjectives } = useObjectivesHook();
+  const { applicationObjectives } = useObjectivesStore();
+
+  useEffect(() => {
+    getObjectives(aopId, (status, message) => {
+      return
+    })
+  }, [])
+
   const { isPlanning, isMCC } = useUserTypes();
   const { getAOPApprovalTimeline } = useApprovalActions();
   const AOPApplication = useAOPApplication();
@@ -185,7 +202,9 @@ export default function ManageAOP() {
                 contentMaxHeight={"62vh"}
                 contentMinHeight={"62vh"}
               >
-                <ObjectivesList />
+                <ObjectivesList
+                  applicationObjectives={applicationObjectives}
+                />
               </ContainerComponent>
             </Grid>
 

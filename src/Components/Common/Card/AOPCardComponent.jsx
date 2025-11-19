@@ -92,13 +92,15 @@ function AOPCardComponent({
             fontWeight={600}
             textColor={"primary.700"}
           >
-            {area_code} [AOP-{year}]
+            {/* {area_code}  */}
+            [AOP-{year}]
           </Typography>
           <ChipComponent
             status={status}
             variant={"soft"}
             label={
-              toCapitalize(statusLabel) === "Approved"
+              statusLabel === 'Approved'
+                // toCapitalize(statusLabel === "Approved"
                 ? "Approved"
                 : statusLabel
             }

@@ -2,12 +2,11 @@ import React, { useEffect, useState } from "react";
 
 import { Stack, Typography, Breadcrumbs, Divider, Grid } from "@mui/joy";
 
-import { useParams } from "react-router-dom";
+import { useParams, useLocation, } from "react-router-dom";
 
 import useModalHook from "../../../../Hooks/ModalHook";
 import useActivitiesHook from "../../../../Hooks/ActivitiesHook";
 
-import CardComponent from "@Components/Common/Card/CardComponent";
 import { ThreeDotsLoader } from "@Components/Common/Loading/ThreeDotsLoader";
 import BoxComponent from "@Components/Common/Card/BoxComponent";
 import ButtonComponent from "@Components/Common/ButtonComponent";
@@ -38,7 +37,13 @@ const centeredStyle = {
 };
 
 const Activities = () => {
+
   const { objectiveId } = useParams();
+  const location = useLocation();
+
+  const { state } = location;
+
+  const objectiveName = state.objective
 
   const {
     applicationActivities,
@@ -99,13 +104,14 @@ const Activities = () => {
     });
   }, []);
 
-  // useEffect(() => {
-  //     console.log('current activity value:', activity)
-  //     console.log('current start month', startMonth)
-  //     console.log('current end month:', endMonth)
-  //     console.log('current is gad related', isGadRelated)
-  //     console.log('current is gad target', target)
-  // }, [activity, startMonth, endMonth, isGadRelated, target])
+  useEffect(() => {
+    // console.log('current activity value:', activity)
+    // console.log('current start month', startMonth)
+    // console.log('current end month:', endMonth)
+    // console.log('current is gad related', isGadRelated)
+    // console.log('current is gad target', target)
+    console.log(state.objective)
+  }, [activity, startMonth, endMonth, isGadRelated, target])
 
   const handleOpenActivitiesModal = () => {
     setIsOpenActivitiesModal(true);
@@ -290,7 +296,7 @@ const Activities = () => {
             <Typography fontWeight={600}>{MANAGE_ACTIVITIES_HEADER}</Typography>
             <ChipComponent
               //change this
-              label={applicationActivities[0]?.objective_code}
+              label={objectiveName}
               color={"success"}
               variant={"outlined"}
               fontSize={13}

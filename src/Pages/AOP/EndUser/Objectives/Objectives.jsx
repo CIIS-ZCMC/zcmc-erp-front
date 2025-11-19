@@ -14,6 +14,7 @@ import CardComponent from "@Components/Common/Card/CardComponent";
 import ConfirmationModalComponent from "@Components/Common/Dialog/ConfirmationModalComponent";
 
 import useModalHook from "../../../../Hooks/ModalHook";
+import useSocket from '../../../../Hooks/Socket/SocketHook';
 
 import CardHeader from "./card/CardHeader";
 import CardBody from "./card/CardBody";
@@ -377,6 +378,7 @@ const Objectives = () => {
                           state: {
                             objId: id,
                             aopId: aop_application_id,
+                            objective: objective.description,
                           },
                         });
                       }}

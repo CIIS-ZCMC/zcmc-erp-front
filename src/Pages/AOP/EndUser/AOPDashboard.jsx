@@ -30,19 +30,12 @@ function DashboardEndUser(props) {
   const navigate = useNavigate();
   const { createAOP, getAopBySectorAndYear, getAopYearList } = useAOPHook();
   const { setAlertDialog } = useModalHook();
-  const { aop, mission, fiscalYear, years } = useAOPStore();
+  const { aop, mission, fiscalYear, yearDetails, } = useAOPStore();
   const { setMission, clearMission } = useAOPActions();
 
   const [openFiscalYearModal, setOpenFiscalYearModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isAopLoading, setIsAopLoading] = useState(false);
-
-  // useEffect(() => {
-  //   console.log(aop)
-  // }, [aop])
-
-  const currentYear = new Date().getFullYear();
-  const currentFiscalYear = currentYear + 1;
 
   const handleSaveAOP = async () => {
     const body = {
@@ -54,7 +47,7 @@ function DashboardEndUser(props) {
       if (status === 200) {
         clearMission();
         setOpenFiscalYearModal(false);
-        console.log(`fiscal year: ${fiscalYear}, mission: ${mission}`);
+        // console.log(`fiscal year: ${fiscalYear}, mission: ${mission}`);
         setAlertDialog({
           status: "success",
           title: "Success",
@@ -79,13 +72,23 @@ function DashboardEndUser(props) {
     const params = { year: fiscalYear };
 
     getAopBySectorAndYear(params, (status, message) => {
-      if (!(status >= 200 && status < 300)) {
-        // if status not success
-        return; //Toast error
+
+      const success = status >= 200 && status < 300;
+
+      if (!success) {
+        // show error toast here
       }
-      setIsAopLoading(false);
+
+      setIsAopLoading(false); // always executed
     });
+
   }, []);
+
+  useEffect(() => {
+    // console.log('aop loading:', isAopLoading)
+    // console.log('loading :', isLoading)
+
+  }, [isAopLoading])
 
   useEffect(() => {
     setIsLoading(true);
@@ -93,14 +96,15 @@ function DashboardEndUser(props) {
     getAopYearList((status, message) => {
       if (!(status >= 200 && status < 300)) {
         // if status not success
+        setIsLoading(false);
         return; //Toast error
       }
+
       setIsLoading(false);
     });
   }, []);
 
-  const yearsData = years?.years;
-  const { next_year_included } = years || {};
+  const { next_year_included, years } = yearDetails || {};
 
   const handleNavigateObjectives = () => {
     navigate(`/aop/objectives/${aop.id}`, {
@@ -121,6 +125,8 @@ function DashboardEndUser(props) {
       setIsLoading(false);
     });
   };
+
+
 
   return (
     <Fragment>
@@ -167,13 +173,13 @@ function DashboardEndUser(props) {
 
                 {/* Header here */}
                 <Header
-                  yearsData={yearsData}
+                  yearsData={years}
                   nextYearIncluded={next_year_included}
                   mission={aop.mission}
                   handleChange={handleChangeFiscalYear}
                 />
 
-                {aop.status.id !== 2 &&
+                {aop?.status?.id !== 2 &&
                   <Draft />
                 }
 
@@ -243,7 +249,7 @@ function DashboardEndUser(props) {
         description={description}
         content={
           <FiscalYearModal
-            fiscalYear={currentFiscalYear}
+            fiscalYear={fiscalYear}
             value={mission}
             onChange={(e) => setMission(e.target.value)}
           />

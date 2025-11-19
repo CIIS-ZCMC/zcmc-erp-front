@@ -1,8 +1,9 @@
-import { Fragment, useState, useEffect } from 'react';
+import { Fragment, useEffect } from 'react';
 
 import { Typography, useTheme, Divider, Box } from '@mui/joy';
 
-import { useApprovalActions, useApprovalLoading, useApprovalTimeline } from '../../../../Hooks/AOP/AOPApprovalHook';
+import useTimelinesStore from '../../../../Store/TimelinesStore';
+import useTimelineHook from '../../../../Hooks/AOP/TimelineHook';
 
 import BoxComponent from '@Components/Common/Card/BoxComponent';
 import StepperComponent from '@Components/Stepper/StepperComponent';
@@ -12,27 +13,34 @@ import { AOP_TIMELINE } from '../../../../Data/constants';
 
 const Timeline = ({ aopId }) => {
 
-    const { TITLE, SUBTITLE, EMPTY_STATE } = AOP_TIMELINE;
+    const {
+        TITLE,
+        SUBTITLE,
+        EMPTY_STATE
+    } = AOP_TIMELINE;
 
     const theme = useTheme();
     const color = theme.palette.custom;
 
-    const { getAOPApprovalTimeline } = useApprovalActions();
-    const approvalTimeline = useApprovalTimeline();
-    const isLoading = useApprovalLoading();
+    const {
+        timelines,
+        isLoading: isTimelineLoading
+    } = useTimelinesStore()
+
+    const { getTimelines } = useTimelineHook();
 
     useEffect(() => {
-        getAOPApprovalTimeline(aopId, (status, message) => {
+        getTimelines(aopId, (status, message) => {
             // console.log(status)
             if (!(status >= 200 && status < 300)) {
                 return; //Toast error
             }
         })
-    }, [aopId])
+    }, [])
 
     // useEffect(() => {
-    //     console.log('current timeline', approvalTimeline)
-    // }, [approvalTimeline])
+    //     console.log('current timeline', timelines)
+    // }, [timelines])
 
     return (
         <Fragment>
@@ -41,25 +49,34 @@ const Timeline = ({ aopId }) => {
                 height="65vh"
                 padding={2}
             >
-                <Typography level="title-lg">
+                <Typography
+                    level="title-lg"
+                >
                     {TITLE}
                 </Typography>
 
                 <Typography
                     level="body-xs"
                     mt={0.5}
-                    sx={{ color: color.fontLight }}
+                    sx={{
+                        color: color.fontLight
+                    }}
                 >
                     {SUBTITLE}
                 </Typography>
 
-                <Divider sx={{ my: 1, color: "gray" }} />
+                <Divider
+                    sx={{
+                        my: 1,
+                        color: "gray"
+                    }}
+                />
 
-                {isLoading ?
+                {isTimelineLoading ?
                     <ThreeDotsLoader />
                     :
                     <Fragment>
-                        {approvalTimeline.length === 0 ?
+                        {timelines?.length === 0 ?
                             <Box
                                 sx={{
                                     display: "flex",
@@ -68,12 +85,17 @@ const Timeline = ({ aopId }) => {
                                 }}
                                 height={"58vh"}
                             >
-                                <Typography level="body-sm" sx={{ color: color.fontLight }}>
+                                <Typography
+                                    level="body-sm"
+                                    sx={{ color: color.fontLight }}
+                                >
                                     {EMPTY_STATE}
                                 </Typography>
                             </Box>
                             :
-                            <StepperComponent data={approvalTimeline} />
+                            <StepperComponent
+                                data={timelines}
+                            />
                         }
                     </Fragment>
                 }

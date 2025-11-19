@@ -63,6 +63,9 @@ const ObjectivesModal = ({
         success_indicators.filter(({ id }) => id === selectedSuccessIndicatorId
         ))
 
+      // console.log(selectedObjective)
+      // console.log(selectedSuccessIndicator)
+
       setSuccessIndicator(selectedSuccessIndicator?.[0] || null)
       setOtherSuccessIndicator(selectedSuccessIndicator?.[0].name || null)
 
@@ -128,7 +131,6 @@ const ObjectivesModal = ({
               size="md"
               value={successIndicator}
               setValue={(val) => {
-                console.log(val)
                 setSuccessIndicator(val);
               }}
               options={objective?.success_indicators ?? []}

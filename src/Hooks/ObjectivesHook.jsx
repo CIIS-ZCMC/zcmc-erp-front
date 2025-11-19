@@ -9,6 +9,26 @@ const useObjectivesHook = () => {
 
   const { setApplicationObjectives, setApplicationObjective } = useObjectivesActions();
 
+  const getObjectives = async (id, callBack) => {
+    try {
+      await read({
+        url: `${API.OBJECTIVES}/${id}`,
+        failed: callBack,
+        success: (res) => {
+          const {
+            status,
+            data: { data, message },
+          } = res;
+          setApplicationObjectives(Array.isArray(data) ? data : []);
+          callBack(status, message)
+        }
+      });
+    } catch (error) {
+      console.error('Error fetching application objectives:', error);
+      callBack?.(false, error.message)
+    }
+  };
+
   const getObjectivesBySector = async (callBack) => {
     try {
       await read({
@@ -127,6 +147,7 @@ const useObjectivesHook = () => {
   }
 
   return {
+    getObjectives,
     getObjectivesBySector,
     showObjective,
     createObjective,

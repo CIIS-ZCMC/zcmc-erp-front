@@ -15,7 +15,7 @@ import ResponsiblePerson from "../Pages/AOP/EndUser/Responsible/ResponsiblePerso
 import Items from "../Pages/Items";
 
 import ItemRequest from "../Pages/Consolidators/ItemManagement/ItemRequest";
-import ItemLibrary from "../Pages/Consolidators/ItemManagement/ItemLibrary";
+import ItemLibrary from "../Pages/Consolidators/ItemManagement/Library/ItemLibrary";
 // import Objectives from "../Pages/PlanningOps/ObjectiveManagement/Objectives";
 import ManageAOP from "../Pages/PlanningOps/Approval/ManageAOP";
 import AOPApproval from "../Pages/PlanningOps/Approval/AOPApproval";

@@ -1,7 +1,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { socket } from "../../Services/Socket";
 
-const useSocketEditing = ({ user, assignedArea }) => {
+const useSocketHook = ({ user, assignedArea }) => {
 
     const { name, id } = user ?? {};
 
@@ -93,4 +93,4 @@ const useSocketEditing = ({ user, assignedArea }) => {
     }
 }
 
-export default useSocketEditing;
+export default useSocketHook;
