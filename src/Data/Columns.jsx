@@ -1400,6 +1400,7 @@ export const PPMP_HEADERS = (editingRows) => [
   {
     id: "category",
     label: "Category",
+    width: "150px",
     render: (row) => (
       <>
         <Typography level="body-sm" fontWeight={600}>
@@ -1411,6 +1412,7 @@ export const PPMP_HEADERS = (editingRows) => [
   {
     id: "cost",
     label: "Total Cost & Individual Cost",
+    width: "200px",
 
     render: (row) => (
       <>
@@ -1427,16 +1429,23 @@ export const PPMP_HEADERS = (editingRows) => [
   {
     id: "procurement",
     label: "Mode of Procurement",
+    align: "center",
+    width: "180px",
+
     render: (row) => (
-      <Chip color="primary" size="sm" variant="soft">
-        {row?.procurement_mode === null ? "-" : row?.procurement_mode}
+      <Chip
+        sx={{ color: "#7008E7", bgcolor: "#DDD6FF", fontWeight: 500 }}
+        size="md"
+        variant="soft"
+      >
+        {row?.procurement_mode === null ? "-" : row?.procurement_mode.name}
       </Chip>
     ),
   },
   {
     id: "is_complete",
     label: "",
-    width: "250px",
+    width: "200px",
     render: (row) => (
       <Box
         p={0.5}
@@ -1465,12 +1474,12 @@ export const PPMP_HEADERS = (editingRows) => [
     id: "actions",
     label: "Actions",
     align: "right",
-    width: "250px",
+    width: "200px",
 
     render: (row, open, onToggle, handleEditToggle) => {
       const isEditing = editingRows[row.id];
       return (
-        <Stack direction={"row"} spacing={2} justifyContent={"right"}>
+        <Stack direction={"row"} spacing={1} justifyContent={"right"}>
           <ChipComponent
             label={"6"}
             startDecorator={<CommentOutlined />}

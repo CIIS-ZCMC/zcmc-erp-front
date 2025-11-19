@@ -108,7 +108,7 @@ function PPMPDashboard(props) {
   const color = theme.palette.custom;
 
   const handleNavigate = () => {
-    navigate("/ppmp/ppmp-items");
+    navigate("/ppmp/manage-items");
   };
   useEffect(() => {
     setPageLoader(true);

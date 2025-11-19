@@ -17,6 +17,7 @@ import IconButtonComponent from "@Components/Common/IconButtonComponent";
 import AutocompleteComponent from "@Components/Form/AutocompleteComponent";
 import ChipComponent from "@Components/Common/ChipComponent";
 import { CancelOutlined } from "@mui/icons-material";
+import useSnackbarHook from "../../Hooks/SnackbarHook";
 
 const ItemsCart = ({
   item,
@@ -30,6 +31,8 @@ const ItemsCart = ({
   addActivityToItem,
   removeActivityFromItem,
 }) => {
+  const { showSnack } = useSnackbarHook();
+
   return (
     <Fragment>
       <Box display={"flex"} gap={1}>
@@ -95,15 +98,29 @@ const ItemsCart = ({
       {isPPMP && (
         <Fragment>
           <AutocompleteComponent
-            label={"Select Activity"}
+            label="Select Activity"
             placeholder="Select Activity"
             options={options}
             getOptionLabel={(option) => option.activity_code}
-            handleSelect={(selected) =>
+            value={null}
+            setValue={(val) => {
+              if (!val) return;
+
+              const alreadySelected = item.activities?.some(
+                (a) => a.code === val.activity_code
+              );
+
+              if (alreadySelected) {
+                // show toast, alert, or ignore
+                showSnack(500, "Activity already selected");
+                return;
+              }
+
               addActivityToItem(item.id, {
-                code: selected.activity_code, // 👈 THIS is the selected activity
-              })
-            }
+                id: val.activity_id,
+                code: val.activity_code,
+              });
+            }}
           />
         </Fragment>
       )}
@@ -125,7 +142,7 @@ const ItemsCart = ({
               color="primary"
               endDecorator={
                 <ChipDelete
-                  onDelete={() => removeActivityFromItem(item.id, act.code)}
+                  onDelete={() => removeActivityFromItem(item.id, act.id)}
                 />
               }
             >

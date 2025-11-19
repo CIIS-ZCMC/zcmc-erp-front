@@ -72,11 +72,10 @@ const usePPMPHook = create((set) => ({
 
   postPPMP: async (body, callback) => {
     post({
-      url: `${PATH}-items`,
+      url: `${PATH}-items-store`,
       form: body,
       success: (response) => {
         const { message, data } = response.data;
-        set({ is_draft: data.is_draft });
         callback(response.status, message, data);
       },
       failed: callback,
@@ -135,18 +134,19 @@ const usePPMPHook = create((set) => ({
       },
     });
   },
-
   updatePPMP: async (id, form, callBack) => {
     update({
       url: `${PATH}-items-update/${id}`,
       form: form,
       failed: callBack,
       success: ({ status, data }) => {
-        const { message, data: updatedItem } = data;
+        const { message, data: updatedItem } = data; // <-- fixed key
 
         set((state) => ({
           ppmp: state.ppmp.map((res) =>
-            res.id === updatedItem.id ? { ...res, ...updatedItem } : res
+            res.id === updatedItem.ppmp_item.id
+              ? { ...res, ...updatedItem.ppmp_item }
+              : res
           ),
         }));
 

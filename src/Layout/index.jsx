@@ -83,9 +83,11 @@ function Layout() {
               xl: isCollapsed ? "5.77%" : "16.77%",
             },
             transition: "margin-left 0.3s",
-            // backgroundColor: color.lightBg,
-            maxHeight: "100vh", // Ensure the main content area fills the screen
-            // overflowY: "auto", // Allow scrolling if content overflows
+            backgroundColor: "white",
+            minHeight: "100vh", // Ensures the box fills full viewport height
+            display: "flex",
+            flexDirection: "column",
+            p: 3,
           }}
         >
           <Box>

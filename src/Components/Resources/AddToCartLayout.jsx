@@ -23,7 +23,7 @@ export default function AddToCartLayout({
   removeActivityFromItem,
 }) {
   const { user } = useAuth();
-  const cartStore = useCartStore(user?.id || "guest");
+  const cartStore = useCartStore(user?.id || "guest", isPPMP);
   const { cart, addToCart, removeFromCart, updateQty, clearCart } = cartStore();
 
   // const [cart, setCart] = useState([]);

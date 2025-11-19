@@ -1,44 +1,19 @@
-import {
-  Box,
-  Divider,
-  Grid,
-  Skeleton,
-  Stack,
-  Typography,
-  useTheme,
-} from "@mui/joy";
-import React, {
-  Fragment,
-  useCallback,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from "react";
-import { useLocation, useNavigate, useParams } from "react-router-dom";
+import { Box, Divider, Stack, Typography, useTheme } from "@mui/joy";
+import React, { Fragment, useEffect, useState } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import ContainerComponent from "../../../Components/Common/ContainerComponent";
 import IconButtonComponent from "../../../Components/Common/IconButtonComponent";
-import { ChevronDown, ChevronUp, X } from "lucide-react";
-import BoxComponent from "../../../Components/Common/Card/BoxComponent";
-import ItemCardComponent from "../../../Components/Resources/ItemCardComponent";
+import { X } from "lucide-react";
 import ButtonComponent from "../../../Components/Common/ButtonComponent";
-import { MdOpenInNew } from "react-icons/md";
-import ItemsCart from "../../../Components/Resources/ItemsCart";
-import SearchBarComponent from "../../../Components/SearchBarComponent";
-import empty_cart from "../../../assets/empty-cart.png";
 import useItemsHook from "../../../Hooks/ItemsHook";
-import useItemCartHook from "../../../Hooks/ItemCartPPMPHook";
-import ConfirmationModalComponent from "../../../Components/Common/Dialog/ConfirmationModalComponent";
 import useModalHook from "../../../Hooks/ModalHook";
-import PageLoader from "../../../Components/Loading/PageLoader";
-import Item from "../../Items/Item";
-import ModalComponent from "../../../Components/Common/Dialog/ModalComponent";
 import PageTitle from "@Components/Common/PageTitle";
 import AddToCartLayout from "@Components/Resources/AddToCartLayout";
 import useCartStore from "../../../Hooks/ItemCartHook";
 import { useAuth } from "../../../Store/AuthStore";
 import useSearchHook from "../../../Hooks/SearchHook";
 import usePPMPHook from "../../../Hooks/PPMP/PPMPHook";
+import AlertDialogComponent from "@Components/Common/Dialog/AlertDialogComponent";
 
 function AddItems(props) {
   const { user } = useAuth();
@@ -48,17 +23,77 @@ function AddItems(props) {
   const theme = useTheme();
   const color = theme.palette;
   const { activity } = location.state || {};
+  const isPPMP = true;
 
-  const { activities, getActivities } = usePPMPHook();
+  const { activities, getActivities, postPPMP } = usePPMPHook();
   const { items, getItems, getSearchResults } = useItemsHook();
   const { getSearchSuggestions, suggestions } = useSearchHook();
-  const cartStore = useCartStore(user?.id || "guest", true);
+  const { setAlertDialog, setConfirmationModal, closeAlertDialog } =
+    useModalHook();
+
+  const cartStore = useCartStore(user?.id || "guest", isPPMP);
   const { cart, addActivityToItem, removeActivityFromItem, clearCart } =
     cartStore();
   const [displayLoading, setDisplayLoading] = useState(false);
 
   const currentYear = new Date().getFullYear();
   const currentFiscalYear = currentYear + 1;
+
+  const handleSaveItems = async () => {
+    if (!cart || cart.length === 0) {
+      setAlertDialog({
+        status: "danger",
+        title: "You have no items in your cart.",
+        isGlobal: false,
+        description: "There is nothing to save. Add items first.",
+      });
+      return; // stop execution
+    }
+
+    let hasError = false;
+    cart.forEach((item, index) => {
+      if (!item.activities || item.activities.length === 0) {
+        console.error(`Item at index ${index} is missing activities!`);
+        hasError = true;
+      }
+    });
+
+    if (hasError) {
+      setAlertDialog({
+        status: "danger",
+        title: "Some items are missing activities.",
+        description: "Please add at least one activity to each PPMP item.",
+      });
+      return; // stop submission
+    }
+
+    const formData = new FormData();
+    cart.forEach((item, index) => {
+      formData.append(`items[${index}][item_id]`, item.id);
+      formData.append(`items[${index}][quantity]`, item.qty);
+      item.activities?.forEach((act) => {
+        formData.append(`items[${index}][activity_id][]`, act.id);
+      });
+    });
+
+    await postPPMP(formData, (status, message) => {
+      if (status === 201) {
+        setAlertDialog({
+          status: "success",
+          title: message,
+          description: "",
+        });
+        clearCart();
+        navigate(`/ppmp/manage-items`);
+      } else {
+        setAlertDialog({
+          status: "error",
+          title: message,
+          description: "",
+        });
+      }
+    });
+  };
 
   useEffect(() => {
     setDisplayLoading(true);
@@ -75,6 +110,7 @@ function AddItems(props) {
       setDisplayLoading(false);
     });
   }, []);
+
   return (
     <Fragment>
       <PageTitle
@@ -85,7 +121,7 @@ function AddItems(props) {
         items={[
           {
             label: "PPMP",
-            path: () => navigate(`/ppmp/ppmp-items`),
+            path: () => navigate(`/ppmp/manage-items`),
           },
           {
             label: "Add New Items",
@@ -111,7 +147,7 @@ function AddItems(props) {
                 variant={"outlined"}
                 onClick={() => {
                   clearCart();
-                  navigate(`/ppmp/ppmp-items`);
+                  navigate(`/ppmp/manage-items`);
                 }}
               />
               <ButtonComponent
@@ -121,7 +157,7 @@ function AddItems(props) {
               <IconButtonComponent
                 icon={<X />}
                 size={"sm"}
-                onClick={() => navigate(`/ppmp/ppmp-items`)}
+                onClick={() => navigate(`/ppmp/manage-items`)}
               />
             </Stack>
           </Stack>
@@ -133,13 +169,14 @@ function AddItems(props) {
             suggestions={suggestions}
             loading={displayLoading}
             items={items}
-            isPPMP={true}
+            isPPMP={isPPMP}
             options={activities}
             removeActivityFromItem={removeActivityFromItem}
             addActivityToItem={addActivityToItem}
           />
         </ContainerComponent>
       </Stack>
+      <AlertDialogComponent noRightButton />
     </Fragment>
   );
 }

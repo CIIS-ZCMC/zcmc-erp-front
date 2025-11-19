@@ -1,7 +1,7 @@
-import React, { useState } from "react";
-import { Box, Sheet, Typography } from "@mui/joy";
+import React, { Fragment, useState } from "react";
+import { Box, Sheet, Stack, Typography } from "@mui/joy";
 import { TodayOutlined } from "@mui/icons-material";
-import { grey, red } from "@mui/material/colors";
+import { green, grey, red } from "@mui/material/colors";
 
 const months = [
   "Jan",
@@ -65,9 +65,9 @@ export default function ProcurementSchedule({
     if (onChange) onChange(updated); // propagate to parent
   };
   return (
-    <Sheet>
+    <Fragment>
       {/* Title */}
-      <Box mb={2}>
+      <Stack mb={2} gap={1}>
         <Typography
           level="title-md"
           startDecorator={
@@ -76,10 +76,10 @@ export default function ProcurementSchedule({
         >
           Procurement Schedule by Month
         </Typography>
-        <Typography level="body-sm">
+        <Typography level="body-sm" mt={1}>
           Distribution of procurement across the fiscal year
         </Typography>
-      </Box>
+      </Stack>
 
       {/* Months Container */}
       <Sheet
@@ -137,13 +137,17 @@ export default function ProcurementSchedule({
                   width: 36,
                   height: 36,
                   borderRadius: "50%",
-                  backgroundColor: editing ? red[100] : grey[400],
+                  backgroundColor: editing
+                    ? red[100]
+                    : schedule[monthKeyMap[m]]
+                    ? green[400]
+                    : grey[400],
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
                   fontWeight: 600,
                   color: "neutral.solidColor",
-                  border: !editing && `1px solid ${grey[400]}`,
+
                   mx: "auto",
                 }}
               >
@@ -162,19 +166,30 @@ export default function ProcurementSchedule({
                       outline: "none",
                       background: "transparent",
                       textAlign: "center",
-                      fontSize: 14,
+                      fontSize: 12,
                       fontWeight: 600,
                     }}
                     placeholder="-"
                   />
                 ) : (
-                  schedule[monthKeyMap[m]] ?? "-"
+                  <Typography
+                    level="body-sm"
+                    sx={{
+                      color: editing
+                        ? red[100]
+                        : schedule[monthKeyMap[m]]
+                        ? "white"
+                        : grey[800],
+                    }}
+                  >
+                    {schedule[monthKeyMap[m]] ?? "-"}
+                  </Typography>
                 )}
               </Box>
             </Box>
           ))}
         </Box>
       </Sheet>
-    </Sheet>
+    </Fragment>
   );
 }

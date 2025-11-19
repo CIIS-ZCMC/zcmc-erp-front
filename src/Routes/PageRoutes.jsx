@@ -42,10 +42,11 @@ import { element } from "prop-types";
 import ManageResources from "../Pages/AOP/EndUser/Resources/ManageResources";
 import AOPOutlet from "../Pages/AOP/EndUser/AOPOutlet";
 import AddResources from "../Pages/AOP/EndUser/Resources/AddResources";
-import EditPPMP from "../Pages/PPMP/EndUser/EditPPMP";
+import EditPPMP from "../Pages/PPMP/EndUser/PPMPOutlet";
 import PPMPDashboard from "../Pages/PPMP/EndUser/PPMPDashboard";
 import PPMPItems from "../Pages/PPMP/EndUser/PPMPItems";
 import AddItems from "../Pages/PPMP/EndUser/AddItems";
+import PPMPOutlet from "../Pages/PPMP/EndUser/PPMPOutlet";
 // import ResponsiblePerson from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities/ResponsiblePerson";
 
 export const sidebarRoutes = [
@@ -139,7 +140,7 @@ export const sidebarRoutes = [
       {
         path: "/ppmp",
         name: "Edit PPMP",
-        element: <EditPPMP />,
+        element: <PPMPOutlet />,
         childPermissions: ["ERP-PPMP-MAN:write"],
         children: [
           {
@@ -147,7 +148,7 @@ export const sidebarRoutes = [
             element: <PPMPDashboard />,
           },
           {
-            path: "ppmp-items",
+            path: "manage-items",
             element: <PPMPItems />,
           },
           {

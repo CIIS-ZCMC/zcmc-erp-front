@@ -122,7 +122,7 @@ function ExpandableRow({
 }) {
   const { modes, activities, getProcModes, getActivities } = usePPMPHook();
   const [procurementMode, setProcurementMode] = React.useState(
-    row?.item?.procurement_mode || null
+    row?.procurement_mode || null
   );
   const [activity, setActivity] = React.useState(null);
   const [linkedActivities, setLinkedActivities] = React.useState(
@@ -199,7 +199,6 @@ function ExpandableRow({
 
   return (
     <React.Fragment>
-      {console.log(linkedActivities)}
       <tr
         onClick={() => onToggle()}
         style={{
@@ -259,15 +258,39 @@ function ExpandableRow({
 
             <Box sx={{ p: open ? 1.5 : 0, transition: "padding .3s ease" }}>
               <React.Fragment>
-                <Tabs defaultValue="a" sx={{ bgcolor: grey[100] }}>
+                <Tabs
+                  defaultValue="a"
+                  sx={{ bgcolor: grey[100] }}
+                  variant="soft"
+                >
                   <TabList>
-                    <Tab value="a">
+                    <Tab
+                      value="a"
+                      sx={{
+                        "&.Mui-selected": {
+                          backgroundColor: blue[50], // selected background
+                          color: blue[800], // selected text
+                        },
+                        borderTopLeftRadius: 10,
+                        borderTopRightRadius: 10,
+                      }}
+                    >
                       <ListItemDecorator>
                         <TextSnippetOutlined />
                       </ListItemDecorator>
                       Item Information
                     </Tab>
-                    <Tab value="b">
+                    <Tab
+                      value="b"
+                      sx={{
+                        "&.Mui-selected": {
+                          backgroundColor: blue[50], // selected background
+                          color: blue[800], // selected text
+                        },
+                        borderTopLeftRadius: 10,
+                        borderTopRightRadius: 10,
+                      }}
+                    >
                       <ListItemDecorator>
                         <TodayOutlined />
                       </ListItemDecorator>
@@ -277,14 +300,19 @@ function ExpandableRow({
                   <TabPanel value="a">
                     <Box
                       sx={{
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
                         width: "100%",
-                        display: "grid",
-                        gridTemplateColumns:
-                          "repeat(auto-fill, minmax(380px, 1fr))",
                         gap: 2,
                       }}
                     >
-                      <BoxComponent p={2}>
+                      <BoxComponent
+                        p={2}
+                        width={350}
+                        height={250} // ⬅️ reduce height
+                        overflow="hidden"
+                      >
                         {" "}
                         {/* Set a fixed height or responsive height */}
                         <img
@@ -302,7 +330,7 @@ function ExpandableRow({
                         />
                       </BoxComponent>
 
-                      <BoxComponent p={2}>
+                      <BoxComponent p={2} width={350} height={250}>
                         <Stack spacing={2}>
                           <Typography
                             fontWeight={600}
@@ -315,7 +343,6 @@ function ExpandableRow({
                             Item Information
                           </Typography>
 
-                          {console.log(modes)}
                           <Stack spacing={1}>
                             <Typography level="body-sm">
                               Mode of Procurement
@@ -333,10 +360,10 @@ function ExpandableRow({
                                 }
                                 color="danger"
                               />
-                            ) : row?.item?.procurement_mode ? (
+                            ) : row?.procurement_mode ? (
                               // VIEW MODE → Show chip if procurement_mode exists
                               <ChipComponent
-                                label={row.item.procurement_mode}
+                                label={row?.procurement_mode?.name}
                                 sx={{ color: "#7008E7", bgcolor: "#DDD6FF" }}
                                 size="md"
                               />
@@ -373,7 +400,7 @@ function ExpandableRow({
                           </Stack>
                         </Stack>
                       </BoxComponent>
-                      <BoxComponent p={2}>
+                      <BoxComponent p={2} width={350} height={250}>
                         <Stack>
                           <Typography
                             fontWeight={600}
@@ -385,11 +412,10 @@ function ExpandableRow({
                           >
                             Linked Activities ({row.activities.length})
                           </Typography>
-                          {console.log(activities)}
                           <Stack
                             mt={2}
                             spacing={1}
-                            height={"230px"}
+                            height={"170px"}
                             overflow={"auto"}
                           >
                             {editing && (
@@ -493,7 +519,7 @@ function ExpandableRow({
                     </Box>
                   </TabPanel>
                   <TabPanel value="b">
-                    <BoxComponent bgColor={"white"} p={2}>
+                    <BoxComponent bgColor={"white"} p={2} borderRadius={20}>
                       <ProcurementSchedule
                         editing={editing}
                         initialData={row?.target_by_month}

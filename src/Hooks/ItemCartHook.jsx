@@ -10,15 +10,19 @@ const useCartStore = (userId = "guest", isPPMP = false) => {
       (set, get) => ({
         cart: [],
 
+        // ---------------------------------------------------
+        // ADD TO CART
+        // ---------------------------------------------------
+
         addToCart: (item) => {
           const existing = get().cart.find((p) => p.id === item.id);
 
-          // If PPMP mode → attach activities array
           const baseItem = {
             ...item,
             qty: item.qty || 1,
             activities: isPPMP ? item.activities || [] : undefined,
           };
+
           if (existing) {
             set({
               cart: get().cart.map((p) =>
@@ -26,9 +30,6 @@ const useCartStore = (userId = "guest", isPPMP = false) => {
                   ? {
                       ...p,
                       qty: p.qty + (item.qty || 1),
-                      activities: isPPMP
-                        ? [...(p.activities || []), ...(item.activities || [])]
-                        : p.activities,
                     }
                   : p
               ),
@@ -38,9 +39,15 @@ const useCartStore = (userId = "guest", isPPMP = false) => {
           }
         },
 
+        // ---------------------------------------------------
+        // REMOVE CART ITEM
+        // ---------------------------------------------------
         removeFromCart: (id) =>
           set({ cart: get().cart.filter((i) => i.id !== id) }),
 
+        // ---------------------------------------------------
+        // UPDATE QUANTITY
+        // ---------------------------------------------------
         updateQty: (id, qty) =>
           set({
             cart: get().cart.map((i) =>
@@ -48,37 +55,55 @@ const useCartStore = (userId = "guest", isPPMP = false) => {
             ),
           }),
 
-        addActivityToItem: (id, activity) =>
+        // ---------------------------------------------------
+        // ADD ACTIVITY (PPMP)
+        // ---------------------------------------------------
+        addActivityToItem: (itemId, activity) =>
           set({
             cart: get().cart.map((item) =>
-              item.id === id
+              item.id === itemId
                 ? {
                     ...item,
-                    activities: [...(item.activities || []), activity],
+                    activities: item.activities?.some(
+                      (a) => a.id === activity.id
+                    )
+                      ? item.activities // prevent duplicates
+                      : [
+                          {
+                            id: activity.id,
+                            code: activity.code,
+                          },
+                          ...(item.activities || []), // add on top
+                        ],
                   }
                 : item
             ),
           }),
 
-        // ❌ Remove activity (PPMP only)
-        removeActivityFromItem: (id, activityCode) =>
+        // ---------------------------------------------------
+        // REMOVE ACTIVITY BY ID
+        // ---------------------------------------------------
+        removeActivityFromItem: (itemId, activityId) =>
           set({
             cart: get().cart.map((item) =>
-              item.id === id
+              item.id === itemId
                 ? {
                     ...item,
                     activities: (item.activities || []).filter(
-                      (a) => a.code !== activityCode
+                      (a) => a.id !== activityId
                     ),
                   }
                 : item
             ),
           }),
 
+        // ---------------------------------------------------
+        // CLEAR CART
+        // ---------------------------------------------------
         clearCart: () => set({ cart: [] }),
       }),
       {
-        name: `cart-storage-${userId}`, // 👈 per-user key
+        name: `cart-storage-${userId}`, // per-user key
         storage: createJSONStorage(() => localStorage),
       }
     )

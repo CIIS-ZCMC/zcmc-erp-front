@@ -27,6 +27,7 @@ export const getStatusIcon = (status, iconOnly) => {
     warning: <MessagesSquare />,
     400: <CircleX />,
     error: <CircleX />,
+    danger: <CircleX />,
     logout: <LogOut />,
   };
 
