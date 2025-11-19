@@ -34,7 +34,7 @@ import {
   WarningAmberOutlined,
   WarningOutlined,
 } from "@mui/icons-material";
-import { red } from "@mui/material/colors";
+import { grey, red } from "@mui/material/colors";
 
 export const objHeaders = ({ onUpdate, onDelete, onViewIndicators }) => [
   { field: "id", name: "Row #", align: "center", width: "50px" },
@@ -1393,7 +1393,9 @@ export const PPMP_HEADERS = (editingRows) => [
         <Typography level="body-sm" fontWeight={600}>
           {row?.item?.name}
         </Typography>
-        <Typography level="body-sm">Qty: {row?.quantity}</Typography>
+        <Typography sx={{ fontSize: 13, color: grey[600] }}>
+          Qty: {row?.quantity}
+        </Typography>
       </>
     ),
   },
@@ -1419,7 +1421,9 @@ export const PPMP_HEADERS = (editingRows) => [
         <Typography level="body-sm" fontWeight={600}>
           ₱{row?.total_amount?.toLocaleString()}
         </Typography>
-        <Typography level="body-sm">
+        <Typography
+          sx={{ fontSize: 13, color: grey[600], textTransform: "lowercase" }}
+        >
           ₱{row?.item?.estimated_budget.toLocaleString()} per{" "}
           {row?.item?.item_unit?.name}
         </Typography>
@@ -1437,15 +1441,11 @@ export const PPMP_HEADERS = (editingRows) => [
         sx={{
           color: "#7008E7",
           bgcolor: "#DDD6FF",
-          fontWeight: 500,
+          fontWeight: 400,
           maxWidth: 200, // limit width
-          overflow: "hidden",
-          textOverflow: "ellipsis",
-          whiteSpace: "nowrap",
-          display: "inline-flex",
-          alignItems: "center",
           "& .MuiChip-label": {
             overflow: "hidden",
+            alignItems: "center",
             textOverflow: "ellipsis",
             whiteSpace: "nowrap",
           },

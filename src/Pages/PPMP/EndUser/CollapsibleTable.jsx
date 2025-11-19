@@ -62,7 +62,8 @@ export default function CollapsibleTable({
         aria-label="collapsible table"
         sx={{
           "--TableCell-headBackground": "#E5E5E5",
-          "--TableCell-paddingY": "13px",
+          "--TableCell-paddingY": "10px",
+          "--TableCell-paddingX": "20px",
           "--TableCell-borderColor": grey[200],
         }}
         hoverRow
