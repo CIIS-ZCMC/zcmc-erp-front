@@ -123,7 +123,7 @@ function ManageResources(props) {
     await deleteResource(id, (status, message) => {
       // setLoading(false);
 
-      if (status) {
+      if (status === 200) {
         console.log("✅ Resource updated successfully:", message);
       } else {
         console.error("❌ Failed to update resource:", message);

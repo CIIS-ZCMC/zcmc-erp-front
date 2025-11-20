@@ -19,34 +19,23 @@ import SearchWithSuggestions from "@Components/SearchWithSuggestions";
 import CollapsibleTable from "./CollapsibleTable";
 import { PPMP_HEADERS } from "../../../Data/Columns";
 import { ThreeDotsLoader } from "@Components/Common/Loading/ThreeDotsLoader";
+import SearchBarComponentv2 from "@Components/SearchBarWithdeBounce";
 
 function PPMPItems(props) {
   const navigate = useNavigate();
   const {
     modes,
-    // is_draft,
+    ppmp_id,
     ppmp,
-    activities,
+    ppmp_total,
+    pagination,
     getPPMPItems,
-    getProcModes,
-    getActivities,
     postPPMP,
     postItemRequest,
     exportPPMP,
     updatePPMP,
+    removeActivity,
   } = usePPMPHook();
-  const {
-    classification,
-    categories,
-    units,
-    items,
-    variants,
-    getItems,
-    getItemCategories,
-    getItemClassification,
-    getItemUnits,
-    getVariants,
-  } = useItemsHook();
   const {
     setAlertDialog,
     setConfirmationModal,
@@ -85,6 +74,9 @@ function PPMPItems(props) {
   });
   const [editingRows, setEditingRows] = useState({});
   const [openIndex, setOpenIndex] = useState(null);
+  const [page, setPage] = useState(1);
+  const [perPage, setPerPage] = useState(10);
+  const [search, setSearch] = useState("");
   const updatedRowData = React.useRef({});
 
   const location = useLocation();
@@ -95,6 +87,14 @@ function PPMPItems(props) {
   const currentFiscalYear = currentYear + 1;
 
   // const { is_draft } = location.state || {};
+
+  // Filter results when search changes
+  const filteredPPMPItems = useMemo(() => {
+    if (!search) return ppmp;
+    return ppmp?.filter((item) =>
+      item.item.name.toLowerCase().includes(search.toLowerCase())
+    );
+  }, [search, ppmp]);
 
   //SNACKBAR
   const notify = () => setOpenNotify(true);
@@ -133,20 +133,10 @@ function PPMPItems(props) {
     }
   };
 
-  const handleEditClick = () => {
-    setEditLoad(true);
-    setTimeout(() => {
-      editSignal();
-      setShow(true);
-      setEditLoad(false);
-    }, 500);
-  };
-
-  const handleEditToggle = async (rowId) => {
+  const handleEditToggle = async (rowId, onToggle, isSaveClick) => {
     const isEditing = editingRows[rowId];
 
-    if (isEditing) {
-      // Save data
+    if (isEditing && isSaveClick) {
       const getDataFunc = updatedRowData.current[rowId];
       if (!getDataFunc) return;
 
@@ -155,60 +145,40 @@ function PPMPItems(props) {
       try {
         updatePPMP(rowId, updatedData, (status, message) => {
           if (status === 200) {
-            console.log("PPMP item updated successfully:", message);
+            setAlertDialog({
+              status: "success",
+              title: "Successfully updated.",
+              isGlobal: false,
+              description: message,
+            });
+            // ✅ collapse row only on success
+            onToggle(false);
+
+            setEditingRows((prev) => ({
+              ...prev,
+              [rowId]: false,
+            }));
           } else {
-            console.error("Failed to update purchase type:", message);
+            console.error("Failed to save:", message);
+            // do nothing — keep row open
           }
         });
       } catch (err) {
         console.error("Save error:", err);
+        // do nothing — keep row open
       }
+
+      return;
     }
 
-    // Toggle edit state
+    // Enter edit mode
     setEditingRows((prev) => ({
       ...prev,
-      [rowId]: !prev[rowId],
+      [rowId]: true,
     }));
-  };
 
-  const specsContainerRef = useRef(null);
-
-  const addSpec = () => {
-    setItemReq((prev) => {
-      const newSpecs = [...prev.specs, { id: Date.now(), value: "" }];
-
-      // Allow the DOM to update before scrolling
-      setTimeout(() => {
-        if (specsContainerRef.current) {
-          specsContainerRef.current.lastElementChild?.scrollIntoView({
-            behavior: "smooth",
-            block: "end",
-          });
-        }
-      }, 100);
-
-      return {
-        ...prev,
-        specs: newSpecs,
-      };
-    });
-  };
-
-  const removeSpec = (id) => {
-    setItemReq((prev) => ({
-      ...prev,
-      specs: prev.specs.filter((spec) => spec.id !== id),
-    }));
-  };
-
-  const handleChange = (id, value) => {
-    setItemReq((prev) => ({
-      ...prev,
-      specs: prev.specs.map((spec) =>
-        spec.id === id ? { ...spec, value } : spec
-      ),
-    }));
+    // Force open row when entering edit
+    onToggle(true);
   };
 
   //CONFIRMATION MODAL
@@ -376,54 +346,6 @@ function PPMPItems(props) {
   const isEmptyObject = (obj) =>
     obj && typeof obj === "object" && Object.keys(obj).length === 0;
 
-  const handleNextStep = () => {
-    clearErrors();
-    let hasError = false;
-    if (step === 1) {
-      if (isEmptyObject(activity)) {
-        setError("activity", true, "Please select an option");
-        hasError = true;
-      }
-
-      if (hasError) return;
-    }
-    if (step === 2) {
-      let hasError = false;
-      if (!itemReq.classification) {
-        setError("classification", true, "Please select a classification");
-        hasError = true;
-      }
-      if (!itemReq.category) {
-        setError("category", true, "Please select a category");
-        hasError = true;
-      }
-      if (!itemReq?.item_name || itemReq.item_name.trim() === "") {
-        setError("item_name", true, "Item name is required");
-        hasError = true;
-      }
-      if (!itemReq.unit) {
-        setError("unit", true, "Please select a unit of measure");
-        hasError = true;
-      }
-      if (!itemReq?.estimated_budget || isNaN(itemReq.estimated_budget)) {
-        setError("estimated_budget", true, "Please enter a valid budget");
-        hasError = true;
-      }
-      if (!itemReq.variant) {
-        setError("variant", true, "Please select a variant");
-        hasError = true;
-      }
-
-      if (hasError) return;
-    }
-
-    setStep((prev) => Math.min(prev + 1, 3));
-  };
-
-  const handlePreviousStep = () => {
-    setStep((prev) => Math.max(prev - 1, 1));
-  };
-
   const handleClose = () => {
     close;
     closeAlertDialog();
@@ -457,13 +379,17 @@ function PPMPItems(props) {
 
   useEffect(() => {
     setPageLoader(true);
-    getPPMPItems((status, message) => {
-      if (status !== 200) {
-        console.error("Failed to fetch items:", message);
-      }
-      setPageLoader(false);
-    });
-  }, []);
+    getPPMPItems(
+      (status, message) => {
+        if (status !== 200) {
+          console.error("Failed to fetch items:", message);
+        }
+        setPageLoader(false);
+      },
+      page,
+      perPage
+    );
+  }, [page, perPage]);
 
   useEffect(() => {
     if (!assignedArea?.name) return;
@@ -489,6 +415,7 @@ function PPMPItems(props) {
 
   return (
     <Fragment>
+      {console.log(ppmp)}
       <PageTitle
         title={`PPMP for Fiscal Year ${currentFiscalYear}`}
         description={""}
@@ -507,8 +434,8 @@ function PPMPItems(props) {
         <>
           <BoxComponent my={2} bgColor={"#FAFAF9"} boxShadow="xs" p={2}>
             <Stack direction={"row"} justifyContent={"space-between"} mb={2}>
-              <Stack>
-                <Stack direction={"row"} gap={1}>
+              <Stack spacing={1}>
+                <Stack direction={"row"} gap={1.5}>
                   <Typography level="body-md" sx={{ fontWeight: 600 }}>
                     Manage Resources for{" "}
                   </Typography>
@@ -532,17 +459,60 @@ function PPMPItems(props) {
                 onClick={() => navigate("/ppmp/add-item")}
               />
             </Stack>
-            <Stack direction={"row"} justifyContent={"space-between"}>
-              <SearchWithSuggestions />
+            <Stack
+              direction={"row"}
+              justifyContent={"space-between"}
+              alignItems={"center"}
+            >
+              <SearchBarComponentv2
+                value={search}
+                setValue={setSearch}
+                placeholder="Search resources..."
+                fullWidth
+              />
+              <BoxComponent px={2} py={0.5} bgColor={"white"} borderRadius={10}>
+                <Typography
+                  textTransform={"uppercase"}
+                  level="body-xs"
+                  color="primary"
+                  textAlign={"right"}
+                >
+                  Total Cost
+                </Typography>
+                <Typography
+                  textTransform={"uppercase"}
+                  level="body-lg"
+                  color="primary"
+                  textAlign={"right"}
+                  fontWeight={600}
+                >
+                  &#8369;{" "}
+                  {ppmp_total.toLocaleString("en-PH", {
+                    minimumFractionDigits: 2,
+                    maximumFractionDigits: 2,
+                  })}
+                </Typography>
+              </BoxComponent>
             </Stack>
           </BoxComponent>
           <CollapsibleTable
             columns={PPMP_HEADERS(editingRows)}
-            rows={ppmp}
+            rows={filteredPPMPItems}
             editingRows={editingRows}
             onEditToggle={handleEditToggle}
             onGetUpdatedData={(rowId, getDataFunc) => {
               updatedRowData.current[rowId] = getDataFunc;
+            }}
+            onRemoveActivity={removeActivity}
+            ppmpId={ppmp_id}
+            currentPage={pagination?.current_page}
+            totalPages={pagination?.last_page}
+            totalRows={pagination?.total}
+            onNextPage={() => {
+              if (page < pagination?.last_page) setPage(page + 1);
+            }}
+            onPrevPage={() => {
+              if (page > 1) setPage(page - 1);
             }}
           />
         </>

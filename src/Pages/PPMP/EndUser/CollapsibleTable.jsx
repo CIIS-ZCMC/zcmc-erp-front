@@ -17,6 +17,7 @@ import KeyboardArrowDownIcon from "@mui/icons-material/KeyboardArrowDown";
 import KeyboardArrowUpIcon from "@mui/icons-material/KeyboardArrowUp";
 import { blue, grey, orange, red } from "@mui/material/colors";
 import {
+  CancelOutlined,
   ExtensionOutlined,
   TextSnippetOutlined,
   TodayOutlined,
@@ -28,6 +29,9 @@ import ProcurementSchedule from "./ProcurementSchedule";
 import InputComponent from "@Components/Form/InputComponent";
 import usePPMPHook from "../../../Hooks/PPMP/PPMPHook";
 import { modes } from "react-transition-group/SwitchTransition";
+import PaginationComponent from "@Components/Common/Table/PaginationComponent";
+import IconButtonComponent from "@Components/Common/IconButtonComponent";
+import useModalHook from "../../../Hooks/ModalHook";
 
 /**
  * ExpandableTable Component
@@ -44,6 +48,12 @@ export default function CollapsibleTable({
   editingRows,
   onEditToggle,
   onGetUpdatedData,
+  currentPage,
+  totalPages,
+  totalRows,
+  onNextPage,
+  onPrevPage,
+  onRemoveActivity,
 }) {
   const [openIndex, setOpenIndex] = React.useState(null);
 
@@ -81,7 +91,7 @@ export default function CollapsibleTable({
           </tr>
         </thead>
         <tbody>
-          {rows.map((row, index) => (
+          {rows?.map((row, index) => (
             <ExpandableRow
               key={index}
               row={row}
@@ -95,10 +105,18 @@ export default function CollapsibleTable({
                 else handleToggle(index); // normal click
               }}
               onGetUpdatedData={onGetUpdatedData}
+              onRemoveActivity={onRemoveActivity}
             />
           ))}
         </tbody>
       </Table>
+      <PaginationComponent
+        currentPage={currentPage}
+        totalPages={totalPages}
+        totalRows={totalRows}
+        onNextPage={onNextPage}
+        onPrevPage={onPrevPage}
+      />
     </Sheet>
   );
 }
@@ -120,7 +138,14 @@ function ExpandableRow({
   open,
   onToggle,
   onGetUpdatedData,
+  onRemoveActivity,
 }) {
+  const {
+    setAlertDialog,
+    setConfirmationModal,
+    closeConfirmation,
+    closeAlertDialog,
+  } = useModalHook();
   const { modes, activities, getProcModes, getActivities } = usePPMPHook();
   const [procurementMode, setProcurementMode] = React.useState(
     row?.procurement_mode || null
@@ -155,6 +180,32 @@ function ExpandableRow({
 
     setLinkedActivities((prev) => [newAct, ...prev]);
     setActivity(null); // clear dropdown after select
+  };
+
+  const handleDeleteActivity = async (id, actID) => {
+    if (linkedActivities.length <= 1) {
+      setAlertDialog({
+        status: "danger",
+        title: "Cannot remove the last remaining activity.",
+        isGlobal: false,
+        description: "PPMP Item must have at least one activty.",
+      });
+      return; // exit early
+    }
+    await onRemoveActivity(id, actID, (status, message) => {
+      // setLoading(false);
+
+      if (status === 200) {
+        setAlertDialog({
+          status: "success",
+          title: "Activity removed",
+          isGlobal: false,
+          description: "Activity has been removed.",
+        });
+      } else {
+        console.error("❌ Failed to update resource:", message);
+      }
+    });
   };
 
   // Update quantity of a specific activity
@@ -208,7 +259,7 @@ function ExpandableRow({
           "--TableCell-borderColor": open && "transparent",
         }}
       >
-        {columns.map((col) => (
+        {columns?.map((col) => (
           <td
             key={col.id}
             style={{
@@ -455,12 +506,36 @@ function ExpandableRow({
                                       </Stack>
 
                                       <Stack width={"60%"}>
-                                        <Typography
-                                          level="body-sm"
-                                          fontWeight={600}
+                                        <Stack
+                                          direction={editing && "row"}
+                                          justifyContent={
+                                            editing && "space-between"
+                                          }
+                                          alignItems={editing && "center"}
                                         >
-                                          {act.activity_name}
-                                        </Typography>
+                                          <Typography
+                                            level="body-sm"
+                                            fontWeight={600}
+                                          >
+                                            {act.activity_name}
+                                          </Typography>
+                                          {editing && (
+                                            <IconButtonComponent
+                                              icon={
+                                                <CancelOutlined
+                                                  sx={{ fontSize: 15 }}
+                                                />
+                                              }
+                                              onClick={() =>
+                                                handleDeleteActivity(
+                                                  row.id,
+                                                  act.activity_id
+                                                )
+                                              }
+                                              size={"xs"}
+                                            />
+                                          )}
+                                        </Stack>
 
                                         <Stack
                                           direction={"row"}

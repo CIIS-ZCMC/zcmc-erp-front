@@ -13,21 +13,24 @@ const PATH = "ppmp";
 const usePPMPHook = create((set) => ({
   modes: [],
   activities: [],
-  is_draft: 0,
+  ppmp_id: 0,
   dashboard: {},
   ppmp: [],
   ppmp_total: 0,
+  pagination: {},
 
-  getPPMPItems: (callBack) => {
+  getPPMPItems: (callBack, page = 1, per_page = 15) => {
     read({
       url: `${PATH}-items`,
+      params: { page, per_page },
       failed: callBack,
       success: (res) => {
         const { status, message, data } = res;
         set({
-          is_draft: data.data.is_draft,
-          ppmp: data.data.ppmp_items.data,
+          ppmp: data.data.data,
           ppmp_total: data.data.ppmp_total,
+          pagination: data.data.pagination,
+          ppmp_id: data.data.id,
         });
         callBack(status, message, data);
       },
@@ -145,12 +148,31 @@ const usePPMPHook = create((set) => ({
           data: { ppmp_item },
         } = data; // <-- correct destructure
 
-        set((state) => ({
-          ppmp: state.ppmp.map((res) =>
-            res.id === ppmp_item.id ? { ...res, ...ppmp_item } : res
-          ),
-        }));
+        // set((state) => ({
+        //   ppmp: state.ppmp.map((res) =>
+        //     res.id === ppmp_item.id ? { ...res, ...ppmp_item } : res
+        //   ),
+        // }));
 
+        callBack(status, message);
+      },
+    });
+  },
+
+  removeActivity: async (ppmpID, activityID, callBack) => {
+    remove({
+      url: `${PATH}-remove-activity/${ppmpID}/${activityID}`,
+      failed: callBack,
+      success: ({ status, data }) => {
+        const { message, data: deletedResource, activity } = data;
+
+        // set((state) => ({
+        //   resources: state.resources.filter((res) => res.id !== id),
+        //   activity: {
+        //     ...state.activity,
+        //     cost: activity?.cost ?? state.activity.cost, // ✅ update only cost
+        //   },
+        // }));
         callBack(status, message);
       },
     });

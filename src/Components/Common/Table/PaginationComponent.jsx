@@ -24,7 +24,7 @@ const PaginationComponent = ({
         sx={{ borderRadius: 50 }}
         variant="outlined"
         onClick={onPrevPage}
-        isDisabled={currentPage === 1}
+        disabled={currentPage === 1}
         aria-label="Previous Page"
       >
         <BiChevronLeft />
@@ -33,7 +33,7 @@ const PaginationComponent = ({
         sx={{ borderRadius: 50 }}
         variant="outlined"
         onClick={onNextPage}
-        isDisabled={currentPage === totalPages}
+        disabled={currentPage === totalPages}
         aria-label="Next Page"
       >
         <BiChevronRight />

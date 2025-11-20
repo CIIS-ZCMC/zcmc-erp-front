@@ -1424,8 +1424,12 @@ export const PPMP_HEADERS = (editingRows) => [
         <Typography
           sx={{ fontSize: 13, color: grey[600], textTransform: "lowercase" }}
         >
-          ₱{row?.item?.estimated_budget.toLocaleString()} per{" "}
-          {row?.item?.item_unit?.name}
+          ₱{" "}
+          {(row?.item?.estimated_budget).toLocaleString("en-PH", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}{" "}
+          per {row?.item?.item_unit?.name}
         </Typography>
       </>
     ),
@@ -1441,11 +1445,9 @@ export const PPMP_HEADERS = (editingRows) => [
         sx={{
           color: "#7008E7",
           bgcolor: "#DDD6FF",
-          fontWeight: 400,
+          alignItems: "center",
           maxWidth: 200, // limit width
           "& .MuiChip-label": {
-            overflow: "hidden",
-            alignItems: "center",
             textOverflow: "ellipsis",
             whiteSpace: "nowrap",
           },
@@ -1493,7 +1495,6 @@ export const PPMP_HEADERS = (editingRows) => [
     label: "Actions",
     align: "right",
     width: "200px",
-
     render: (row, open, onToggle, handleEditToggle) => {
       const isEditing = editingRows[row.id];
       return (
@@ -1511,15 +1512,8 @@ export const PPMP_HEADERS = (editingRows) => [
             }
             color={isEditing && "success"}
             onClick={(e) => {
-              e.stopPropagation(); // prevent collapsing
-              handleEditToggle(row.id);
-              if (!isEditing) {
-                // Entering edit mode → force open
-                onToggle(true);
-              } else {
-                // Leaving edit mode → collapse the row
-                onToggle(false);
-              }
+              e.stopPropagation();
+              handleEditToggle(row.id, onToggle, isEditing);
             }}
           />
           <ChipComponent
