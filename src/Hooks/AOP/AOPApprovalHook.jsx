@@ -7,13 +7,33 @@ const useAOPApprovalHook = create((set) => ({
   approvalRoles: [],
   isLoading: false,
   actions: {
+
     // GET ALL AOP APPLICATIONS
-    processAOP: (form, callback) => {
+    // processAOP: (form, callback) => {
+    //   post({
+    //     url: API.PROCESS_AOP_REQUEST,
+    //     form: form,
+    //     failed: callback,
+    //     success: (response) => {
+    //       const {
+    //         data: { status_details, timeline, message },
+    //       } = response.data;
+
+    //       callback(response.status, message);
+    //     },
+    //   });
+    // },
+
+    // GET ALL AOP APPLICATIONS
+    processAOP: (payload, callback) => {
       post({
-        url: API.PROCESS_AOP_REQUEST,
-        form: form,
+        url: `${API.APPROVAL_AOP}`,
+        form: payload,
         failed: callback,
         success: (response) => {
+
+          console.log(response)
+
           const {
             data: { status_details, timeline, message },
           } = response.data;

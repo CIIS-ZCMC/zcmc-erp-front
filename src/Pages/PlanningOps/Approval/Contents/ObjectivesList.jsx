@@ -20,11 +20,12 @@ import { useUserTypes } from "../../../../Store/AuthStore";
 
 import useObjectivesStore from "../../../../Store/ObjectivesStore";
 
-const ObjectivesList = ({ applicationObjectives }) => {
+const ObjectivesList = ({ objectives }) => {
 
-  useEffect(() => {
-    console.log('objectives:', applicationObjectives)
-  }, [applicationObjectives])
+  // useEffect(() => {
+  //   console.log('objectives:', applicationObjectives)
+  // }, [applicationObjectives])
+
 
   // STATES
   const [objectiveData, setObjectiveData] = useState({
@@ -106,7 +107,7 @@ const ObjectivesList = ({ applicationObjectives }) => {
     <Fragment>
       <Stack width={400} gap={2} sx={{ width: "100%" }}>
 
-        {applicationObjectives?.map(({
+        {objectives?.map(({
           id,
           objective,
           activities,
@@ -185,7 +186,7 @@ const ObjectivesList = ({ applicationObjectives }) => {
           </>
         })}
 
-        {AppicationObjectives?.map(
+        {/* {applicationObjectives?.map(
           (
             {
               id,
@@ -257,7 +258,7 @@ const ObjectivesList = ({ applicationObjectives }) => {
               </Stack>
             </CustomAccordionComponent>
           )
-        )}
+        )} */}
 
         {/* EDIT OBJECTIVE */}
         <EditObjective

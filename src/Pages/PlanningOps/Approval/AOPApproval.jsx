@@ -46,9 +46,9 @@ const AOPApproval = () => {
   // call api objectives here
   const { getObjectives } = useObjectivesHook();
 
-  useEffect(() => {
-    console.log(timelines)
-  }, [timelines])
+  // useEffect(() => {
+  //   console.log('', timelines)
+  // }, [timelines])
 
   useEffect(() => {
     getApproverTimeline((status, message) => {
@@ -76,24 +76,21 @@ const AOPApproval = () => {
   const [isFetchLoading, setIsFetchLoading] = useState(false);
 
   // FUNCTIONS
-  const handleClickCard = (id, area_code) => {
-    navigate(`/aop-approval/objectives/${id}`,
-      { state: { aop_id: id } }
+  const handleClickCard = (aopId, timelineId, fiscalYear, approvalRoles, role) => {
+
+    const { applicant } = approvalRoles;
+
+    navigate(`/aop-approval/objectives/${aopId}`,
+      {
+        state: {
+          aopId,
+          timelineId,
+          fiscalYear,
+          applicant,
+          role,
+        }
+      }
     );
-
-    // getObjectives(id, (status, message) => {
-    //   setPageLoading(false);
-
-    // });
-
-    // getAOPApprovalTimeline(id, () => { });
-    // // getAOPApplicationById(id, () => {
-    // //   setPageLoading(false);
-    // //   navigate(`/aop-approval/objectives/${id}`);
-    // // });
-
-    // localStorageSetter("aop_application_id", id);
-    // localStorageSetter("aop_application_area_code", area_code);
   };
 
   const handleViewTimeline = (id) => {
@@ -212,8 +209,15 @@ const AOPApproval = () => {
                 </Box>
               ) : (
                 <>
-                  {timelines.map(({ id, aop_application_id, current_timeline, fiscal_year }) => {
-
+                  {timelines.map(({
+                    id,
+                    aop_application_id,
+                    current_timeline,
+                    fiscal_year,
+                    approval_roles,
+                    current_user
+                  }) => {
+                    const { role } = current_user;
                     const { date_approved, date_created, status, status_id } = current_timeline;
 
                     return (
@@ -228,7 +232,7 @@ const AOPApproval = () => {
                           date_requested={date_created}
                           statusLabel={status}
                           status={status_id}
-                          leftClick={() => handleClickCard(aop_application_id)}
+                          leftClick={() => handleClickCard(aop_application_id, id, fiscal_year, approval_roles, role)}
                           rightClick={() => handleViewTimeline(id)}
                         />
                       </Grid>

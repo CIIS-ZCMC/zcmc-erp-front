@@ -19,10 +19,13 @@ import AlertDialogComponent from "../../../../Components/Common/Dialog/AlertDial
 import { TEST_MODE } from "../../../../Services/Config";
 import { APPROVAL_TIMELINE } from "../../../../Data/TestData";
 
-const ProcessAOPContent = () => {
+const ProcessAOPContent = ({ aopId, timelineId, role }) => {
   // HOOKS
+
   const { isDivisionHead, isPlanning, isMCC } = useUserTypes();
+
   const { processAOP } = useApprovalActions();
+
   const {
     setAlertDialog,
     closeAlertDialog,
@@ -36,6 +39,9 @@ const ProcessAOPContent = () => {
   );
 
   // STATE
+  const [remarks, setRemarks] = useState("");
+  const [pin, setPin] = useState("");
+
   const [processData, setProcessData] = useState({ action: "approved" });
   const [disabledProcessRequest, setDisabledProcessRequest] = useState(true);
 
@@ -49,31 +55,33 @@ const ProcessAOPContent = () => {
   };
 
   const confirmButtonDisabled =
-    !processData?.pin ||
-    !processData?.action ||
-    processData?.pin?.length !== 6 ||
-    processData?.remarks === "" ||
-    processData?.remarks === null;
+    !pin ||
+    pin.length !== 6;
+  // (role !== "Planning Unit" && (!remarks || remarks.trim() === "")) ||
+  // remarks === null;
 
   const getNextOffice = () => {
-    if (isPlanning) {
-      return "Division Head";
-    } else if (isDivisionHead) {
+    if (role === "Division Chief") {
+      return "Planning Unit";
+    } else if (role === "Planning Unit") {
       return "MCC";
     }
   };
 
   // PROCESS AOP
   const handleProcessAOP = () => {
-    setBtnLoading(true);
-    const form = {
-      aop_application_id: AOP_APPLICATION_ID,
-      status: processData?.action,
-      remarks: processData?.remarks ?? null,
-      authorization_pin: processData?.pin,
-    };
 
-    processAOP(form, (status, message) => {
+    const payload = {
+      application_timeline_id: timelineId,
+      action: processData.action === 'approved' ? 4 : 6,
+      remarks,
+      authorization_pin: pin,
+    }
+
+
+    console.log(payload)
+
+    processAOP(payload, (status, message) => {
       setBtnLoading(false);
 
       let data = {};
@@ -89,8 +97,8 @@ const ProcessAOPContent = () => {
           description: isMCC
             ? `The AOP request has been successfully ${processData.action}. All parties involved will be notified of this update.`
             : processData.action === "returned"
-            ? `The request has been returned to the requesting party for necessary revisions. They will be notified of your remarks and required changes.`
-            : `Everyone can now see the changes you’ve made. The request is now ready for processing of the next approving body (${getNextOffice()}).`,
+              ? `The request has been returned to the requesting party for necessary revisions. They will be notified of your remarks and required changes.`
+              : `Everyone can now see the changes you’ve made. The request is now ready for processing of the next approving body (${getNextOffice()}).`,
         };
       } else {
         data = {
@@ -102,9 +110,11 @@ const ProcessAOPContent = () => {
             "An error occurred while updating the status of the AOP request. Please check your authorization PIN and try again. If the problem persists, contact the system administrator.",
         };
       }
-
       setAlertDialog(data);
-    });
+    })
+
+
+    setBtnLoading(true);
   };
 
   const handleCloseConfirmation = () => {
@@ -116,6 +126,7 @@ const ProcessAOPContent = () => {
   useEffect(() => {
     setDisabledProcessRequest(timeline);
   }, [timeline]);
+
   return (
     <Fragment>
       <ButtonComponent
@@ -139,57 +150,70 @@ const ProcessAOPContent = () => {
         rightButtonDisabled={confirmButtonDisabled}
         maxWidth={500}
         content={
-          <Stack gap={isDivisionHead && !isMCC && 1}>
-            <Stack py={isPlanning ? 2 : 1}>
-              {isPlanning && (
-                <Box mb={2}>
-                  <Typography level="title-sm" mb={1}>
-                    Select the action you would like to take:
-                  </Typography>
-                  <RadioButtonComponent
-                    disabled={btnLoading}
-                    actions={approvalActions}
-                    value={processData?.action}
-                    handleChange={(e) =>
-                      handleChangeInput(
-                        "action",
-                        setProcessData,
-                        e.target.value
-                      )
-                    }
+          <>
+            <Stack
+              gap={(role === "Division Chief" && role !== "MCC") && 1}
+            >
+              <Stack
+                py={role === "Planning" ? 2 : 1}
+              >
+
+                {(role === "Division Chief" || role === "Planning Unit") &&
+                  <Box mb={2}>
+
+                    <Typography level="title-sm" mb={1}>
+                      Select the action you would like to take:
+                    </Typography>
+
+                    <RadioButtonComponent
+                      disabled={btnLoading}
+                      actions={approvalActions}
+                      value={processData?.action}
+                      handleChange={(e) => {
+
+                        console.log(e.target.value)
+
+                        handleChangeInput(
+                          "action",
+                          setProcessData,
+                          e.target.value
+                        )
+                      }}
+                    />
+                  </Box>
+                }
+
+                {/* IF OMCC, AUTH PIN */}
+                {role === "Division Chief" && role !== "MCC" ? (
+                  <TextareaComponent
+                    minRows={3}
+                    label={"Remarks"}
+                    isRequired
+                    value={remarks}
+                    onChange={(e) => {
+                      setRemarks(e.target.value)
+                    }}
+                    maxRows={10}
+                    placeholder={"Enter your remarks here"}
                   />
-                </Box>
-              )}
+                ) : null}
 
-              {/* IF OMCC, AUTH PIN */}
-              {isDivisionHead && !isMCC ? (
-                <TextareaComponent
-                  minRows={3}
-                  label={"Remarks"}
-                  isRequired
-                  setValue={(e) =>
-                    handleChangeInput("remarks", setProcessData, e.target.value)
-                  }
-                  value={processData?.remarks}
-                  maxRows={10}
-                  placeholder={"Enter your remarks here"}
-                />
-              ) : null}
+              </Stack>
+
+              {(role === "Division Chief" && role !== "MCC") && <Divider />}
+
+              <InputComponent
+                type="password"
+                label="Authorization pin"
+                helperText={
+                  "Confirm you action by entering your 6-digit authorization PIN."
+                }
+                value={pin}
+                setValue={setPin}
+              />
+
             </Stack>
-
-            {isDivisionHead && !isMCC && <Divider />}
-            <InputComponent
-              type="password"
-              label="Authorization pin"
-              helperText={
-                "Confirm you action by entering your 6-digit authorization PIN."
-              }
-              handleInput={(e) =>
-                handleChangeInput("pin", setProcessData, e.target.value)
-              }
-              value={processData?.pin}
-            />
-          </Stack>
+          </>
         }
       />
       <AlertDialogComponent

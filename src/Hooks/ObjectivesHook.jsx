@@ -15,11 +15,12 @@ const useObjectivesHook = () => {
         url: `${API.OBJECTIVES}/${id}`,
         failed: callBack,
         success: (res) => {
+
           const {
             status,
             data: { data, message },
           } = res;
-          setApplicationObjectives(Array.isArray(data) ? data : []);
+          setApplicationObjectives(data);
           callBack(status, message)
         }
       });
