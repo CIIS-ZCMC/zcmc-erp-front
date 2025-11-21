@@ -58,6 +58,7 @@ function ModalComponent({
   noRightButton, // If set to true, the right button is not displayed Defaults to false
   noDivider = false, // If set to true, the divider between the title and content is hidden
   hasActionButtons = false,
+  padding = 3.5,
 }) {
   const theme = useTheme();
   const custom = theme.palette.custom;
@@ -89,7 +90,7 @@ function ModalComponent({
       <ModalDialog
         sx={{
           borderRadius: 20,
-          padding: 3.5,
+          padding: padding,
           height: height,
           position: "absolute",
           top: "50%",

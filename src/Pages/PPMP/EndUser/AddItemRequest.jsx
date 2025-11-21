@@ -1,6 +1,165 @@
-import React from "react";
+import ModalComponent from "@Components/Common/Dialog/ModalComponent";
+import AutocompleteComponent from "@Components/Form/AutocompleteComponent";
+import InputComponent from "@Components/Form/InputComponent";
+import TextareaComponent from "@Components/Form/TextareaComponent";
+import useModalHook from "../../../Hooks/ModalHook";
+import { Box, Checkbox, Divider, Link, Stack, Typography } from "@mui/joy";
+import React, { Fragment, useEffect, useRef, useState } from "react";
+import useItemsHook from "../../../Hooks/ItemsHook";
+import { grey } from "@mui/material/colors";
+import usePPMPHook from "../../../Hooks/PPMP/PPMPHook";
+import { MdAdd } from "react-icons/md";
 
-export default function AddItemRequest() {
+export default function AddItemRequest({ openReq, setOpenReq }) {
+  const { setAlertDialog } = useModalHook();
+  const {
+    items,
+    categories,
+    classification,
+    units,
+    variants,
+    getItemCategories,
+    getItemClassification,
+    getItemUnits,
+    getVariants,
+  } = useItemsHook();
+  const { activities, getActivities } = usePPMPHook();
+  // === STATE VARIABLES ===
+  const [step, setStep] = useState(1);
+  const [activity, setActivity] = useState(null);
+  const [expenseClass, setExpenseClass] = useState(null); // if needed
+  const [itemReq, setItemReq] = useState({
+    classification: null,
+    category: null,
+    item_name: "",
+    unit: null,
+    estimated_budget: "",
+    variant: null,
+    market_research: false,
+    specs: [{ id: 1, value: "" }],
+    pin: "",
+  });
+  const [buttonLoader, setButtonLoader] = useState(false);
+  const [displayLoading, setDisplayLoading] = useState(false);
+
+  // ref for scrolling container
+  const specsContainerRef = useRef(null);
+
+  // === STEP HANDLERS ===
+  const handleNextStep = () => setStep((prev) => Math.min(prev + 1, 3));
+  const handlePreviousStep = () => setStep((prev) => Math.max(prev - 1, 1));
+
+  // === SPEC HANDLERS ===
+  const addSpec = () =>
+    setItemReq((prev) => ({
+      ...prev,
+      specs: [...prev.specs, { id: Date.now(), value: "" }],
+    }));
+
+  const removeSpec = (id) =>
+    setItemReq((prev) => ({
+      ...prev,
+      specs: prev.specs.filter((spec) => spec.id !== id),
+    }));
+
+  const handleChange = (id, value) =>
+    setItemReq((prev) => ({
+      ...prev,
+      specs: prev.specs.map((spec) =>
+        spec.id === id ? { ...spec, value } : spec
+      ),
+    }));
+
+  const handleRequest = async () => {
+    clearErrors();
+    let hasError = false;
+    // if (!itemReq?.specs?.length || itemReq.specs.some((s) => !s.value.trim())) {
+    //   setError("specs", true, "Please complete all specifications.");
+    //   hasError = true;
+    // }
+    itemReq.specs.forEach((spec, index) => {
+      if (!spec.value.trim()) {
+        setError(
+          `specs[${index}]`,
+          true,
+          `Specification ${index + 1} is required.`
+        );
+        hasError = true;
+      }
+    });
+    if (!itemReq?.pin?.trim()) {
+      setError("pin", true, "Authorization PIN is required.");
+      hasError = true;
+    }
+
+    if (hasError) return;
+
+    try {
+      setButtonLoader(true);
+      const formData = new FormData();
+      formData.append("activity", JSON.stringify(activity));
+      formData.append("expense_class", JSON.stringify(expenseClass));
+      formData.append("classification", JSON.stringify(itemReq.classification));
+      formData.append("category", JSON.stringify(itemReq.category));
+      formData.append("item_name", itemReq.item_name || "");
+      formData.append("unit", JSON.stringify(itemReq.unit));
+      formData.append("estimated_budget", itemReq.estimated_budget || "");
+      formData.append("variant", JSON.stringify(itemReq.variant));
+      formData.append(
+        "market_research",
+        itemReq.market_research ? "true" : "false"
+      );
+      formData.append("specifications", JSON.stringify(itemReq.specs));
+      formData.append("pin", itemReq.pin || "");
+
+      await postItemRequest(formData, (status, message, data) => {
+        setButtonLoader(false);
+
+        const alertData = {
+          status: status === 201 ? "success" : "error",
+          title: message,
+          description: message,
+        };
+
+        setAlertDialog(alertData);
+      });
+    } catch (error) {
+      setButtonLoader(false);
+      setAlertDialog({
+        status: "error",
+        title: "Request Failed",
+        description: "An unexpected error occurred. Please try again.",
+      });
+    }
+  };
+
+  useEffect(() => {
+    setDisplayLoading(true);
+
+    const apiCalls = [
+      { fn: getItemCategories, name: "categories" },
+      { fn: getItemClassification, name: "classification" },
+      { fn: getActivities, name: "activities" },
+      { fn: getItemUnits, name: "units" },
+      { fn: getVariants, name: "variants" },
+    ];
+
+    let completed = 0;
+    const total = apiCalls.length;
+
+    const checkDone = () => {
+      completed += 1;
+      if (completed === total) setDisplayLoading(false);
+    };
+
+    apiCalls.forEach(({ fn, name }) => {
+      fn((status, message) => {
+        if (status !== 200) console.error(`Failed to fetch ${name}:`, message);
+        checkDone();
+      });
+    });
+  }, []);
+
   return (
     <div>
       <ModalComponent
@@ -8,6 +167,7 @@ export default function AddItemRequest() {
         handleClose={() => {
           setOpenReq(false);
         }}
+        padding={2.5}
         title={
           step === 1
             ? "On what activity shall we assign the resources you’ll add?"
@@ -26,9 +186,8 @@ export default function AddItemRequest() {
             ? "List down details for the item you want to cretae to specify it."
             : ""
         }
-        minWidth={"400px"}
-        maxWidth={"480px"}
-        height={step === 1 ? "auto" : step === 2 ? "652px" : "680px"}
+        maxWidth={"500px"}
+        height={step === 1 ? "auto" : step === 2 ? "680px" : "680px"}
         content={
           <Fragment>
             <Box mt={1}>
@@ -57,7 +216,18 @@ export default function AddItemRequest() {
                 </Stack>
               )}
               {step === 2 && (
-                <Stack spacing={2} mb={1}>
+                <Stack spacing={1.5} mb={1}>
+                  <TextareaComponent
+                    label="Item name"
+                    name="item_name"
+                    helperText="Use a specific and descriptive naming convention for best results."
+                    value={itemReq?.item_name}
+                    onChange={(e) =>
+                      handleInputValidation(e, setItemReq, setError)
+                    }
+                    size="sm"
+                    minRows={1}
+                  />
                   <Stack direction={"row"} gap={1}>
                     <AutocompleteComponent
                       label="Classification"
@@ -99,18 +269,18 @@ export default function AddItemRequest() {
                       }}
                     />
                   </Stack>
-                  <TextareaComponent
-                    label="Item name"
-                    name="item_name"
-                    helperText="Use a specific and descriptive naming convention for best results."
-                    value={itemReq?.item_name}
-                    onChange={(e) =>
-                      handleInputValidation(e, setItemReq, setError)
-                    }
-                    size="sm"
-                    minRows={3}
-                  />
+
                   <Stack direction={"row"} gap={1} width="100%">
+                    <InputComponent
+                      label="Quantity"
+                      name="quantity"
+                      size="sm"
+                      value={itemReq?.quantity}
+                      handleInput={(e) => handleInputValidation(e, setItemReq)}
+                      color="primary"
+                      helperText={"Quantity to add in PPMP"}
+                    />
+
                     <AutocompleteComponent
                       label="Unit of measure"
                       name="unit"
@@ -127,14 +297,6 @@ export default function AddItemRequest() {
                           setError
                         );
                       }}
-                    />
-                    <InputComponent
-                      label="Estimated budget"
-                      name="estimated_budget"
-                      size="sm"
-                      value={itemReq?.estimated_budget}
-                      handleInput={(e) => handleInputValidation(e, setItemReq)}
-                      color="primary"
                     />
                   </Stack>
                   <AutocompleteComponent
@@ -155,10 +317,18 @@ export default function AddItemRequest() {
                       );
                     }}
                   />
+                  <InputComponent
+                    label="Estimated budget"
+                    name="estimated_budget"
+                    size="sm"
+                    value={itemReq?.estimated_budget}
+                    handleInput={(e) => handleInputValidation(e, setItemReq)}
+                    color="primary"
+                  />
 
                   <Checkbox
                     label="I have conducted a market research prior setting the budget estimates."
-                    sx={{ color: grey[600] }}
+                    sx={{ color: grey[900], fontSize: 13, pt: 1 }}
                     size="sm"
                     checked={itemReq?.market_research}
                     onChange={(e) =>

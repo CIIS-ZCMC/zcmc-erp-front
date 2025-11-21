@@ -50,7 +50,7 @@ export const upload = ({ url, form, success, failed }) => {
  * @param {function} success : function to be triggered on success request
  * @param {function} failed : function to be triggered on fail request or error encountered.
  */
-export const read = ({ url, params, token, success, failed }) => {
+export const read = ({ url, params, token, success, failed = () => {} }) => {
   erp_api
     .get(url, { params: params }, { cancelToken: token })
     .then((res) => validateStatusOk(res))

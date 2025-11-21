@@ -20,6 +20,7 @@ import CollapsibleTable from "./CollapsibleTable";
 import { PPMP_HEADERS } from "../../../Data/Columns";
 import { ThreeDotsLoader } from "@Components/Common/Loading/ThreeDotsLoader";
 import SearchBarComponentv2 from "@Components/SearchBarWithdeBounce";
+import useSnackbarHook from "../../../Hooks/SnackbarHook";
 
 function PPMPItems(props) {
   const navigate = useNavigate();
@@ -35,6 +36,7 @@ function PPMPItems(props) {
     exportPPMP,
     updatePPMP,
     removeActivity,
+    removeItem,
   } = usePPMPHook();
   const {
     setAlertDialog,
@@ -43,6 +45,7 @@ function PPMPItems(props) {
     closeAlertDialog,
   } = useModalHook();
   const { errors, setError, clearErrors } = userErrorInputHook();
+  const { showSnack } = useSnackbarHook();
   const ppmpTotal = usePPMPTotalStore((state) => state.ppmpTotal);
 
   const [activity, setActivity] = useState({});
@@ -136,6 +139,9 @@ function PPMPItems(props) {
   const handleEditToggle = async (rowId, onToggle, isSaveClick) => {
     const isEditing = editingRows[rowId];
 
+    if (isEditing && !isSaveClick) {
+      return;
+    }
     if (isEditing && isSaveClick) {
       const getDataFunc = updatedRowData.current[rowId];
       if (!getDataFunc) return;
@@ -145,13 +151,9 @@ function PPMPItems(props) {
       try {
         updatePPMP(rowId, updatedData, (status, message) => {
           if (status === 200) {
-            setAlertDialog({
-              status: "success",
-              title: "Successfully updated.",
-              isGlobal: false,
-              description: message,
-            });
-            // ✅ collapse row only on success
+            showSnack(200, message);
+
+            // collapse row only on success
             onToggle(false);
 
             setEditingRows((prev) => ({
@@ -159,26 +161,45 @@ function PPMPItems(props) {
               [rowId]: false,
             }));
           } else {
-            console.error("Failed to save:", message);
+            setAlertDialog({
+              status: "danger",
+              title: "Failed to save.",
+              isGlobal: false,
+              description: message,
+            });
             // do nothing — keep row open
           }
         });
       } catch (err) {
-        console.error("Save error:", err);
+        setAlertDialog({
+          status: "danger",
+          title: "Save error.",
+          isGlobal: false,
+          description: err,
+        });
         // do nothing — keep row open
       }
-
       return;
     }
-
     // Enter edit mode
     setEditingRows((prev) => ({
       ...prev,
       [rowId]: true,
     }));
-
     // Force open row when entering edit
     onToggle(true);
+  };
+
+  const handleDeleteItem = async (id) => {
+    await removeItem(id, (status, message) => {
+      // setLoading(false);
+
+      if (status === 200) {
+        console.log("✅ Resource updated successfully:", message);
+      } else {
+        console.error("❌ Failed to update resource:", message);
+      }
+    });
   };
 
   //CONFIRMATION MODAL
@@ -514,6 +535,7 @@ function PPMPItems(props) {
             onPrevPage={() => {
               if (page > 1) setPage(page - 1);
             }}
+            onDeletePPMP={handleDeleteItem}
           />
         </>
       )}

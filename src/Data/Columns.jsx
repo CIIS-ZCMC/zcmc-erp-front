@@ -1495,7 +1495,7 @@ export const PPMP_HEADERS = (editingRows) => [
     label: "Actions",
     align: "right",
     width: "200px",
-    render: (row, open, onToggle, handleEditToggle) => {
+    render: (row, open, onToggle, handleEditToggle, handleDeletePPMP) => {
       const isEditing = editingRows[row.id];
       return (
         <Stack direction={"row"} spacing={1} justifyContent={"right"}>
@@ -1503,6 +1503,10 @@ export const PPMP_HEADERS = (editingRows) => [
             label={"6"}
             startDecorator={<CommentOutlined />}
             variant={"soft"}
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent row expand
+              // Your comment click logic here
+            }}
           />
           <ChipComponent
             label={isEditing ? "Save" : "Edit"}
@@ -1517,9 +1521,13 @@ export const PPMP_HEADERS = (editingRows) => [
             }}
           />
           <ChipComponent
-            label={"Delete"}
+            label={"Remove"}
             startDecorator={<DeleteOutlineOutlined />}
             variant={"soft"}
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent row expand
+              handleDeletePPMP(row.id);
+            }}
           />
         </Stack>
       );

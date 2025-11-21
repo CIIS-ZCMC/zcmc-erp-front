@@ -32,6 +32,7 @@ import { modes } from "react-transition-group/SwitchTransition";
 import PaginationComponent from "@Components/Common/Table/PaginationComponent";
 import IconButtonComponent from "@Components/Common/IconButtonComponent";
 import useModalHook from "../../../Hooks/ModalHook";
+import useSnackbarHook from "../../../Hooks/SnackbarHook";
 
 /**
  * ExpandableTable Component
@@ -54,6 +55,7 @@ export default function CollapsibleTable({
   onNextPage,
   onPrevPage,
   onRemoveActivity,
+  onDeletePPMP,
 }) {
   const [openIndex, setOpenIndex] = React.useState(null);
 
@@ -106,6 +108,7 @@ export default function CollapsibleTable({
               }}
               onGetUpdatedData={onGetUpdatedData}
               onRemoveActivity={onRemoveActivity}
+              onDeletePPMP={onDeletePPMP}
             />
           ))}
         </tbody>
@@ -139,6 +142,7 @@ function ExpandableRow({
   onToggle,
   onGetUpdatedData,
   onRemoveActivity,
+  onDeletePPMP,
 }) {
   const {
     setAlertDialog,
@@ -155,6 +159,7 @@ function ExpandableRow({
     row?.activities || []
   );
   const [scheduleData, setScheduleData] = React.useState({});
+  const { showSnack } = useSnackbarHook();
 
   const totalQuantity = linkedActivities.reduce(
     (sum, act) => sum + (Number(act.resources_quantity) || 0),
@@ -169,7 +174,10 @@ function ExpandableRow({
     const exists = linkedActivities.some(
       (a) => a.activity_code === selected.activity_code
     );
-    if (exists) return;
+    if (exists) {
+      showSnack(500, "Activity has already been selected.");
+      return;
+    }
 
     const newAct = {
       ...selected,
@@ -196,12 +204,7 @@ function ExpandableRow({
       // setLoading(false);
 
       if (status === 200) {
-        setAlertDialog({
-          status: "success",
-          title: "Activity removed",
-          isGlobal: false,
-          description: "Activity has been removed.",
-        });
+        showSnack(200, message);
       } else {
         console.error("❌ Failed to update resource:", message);
       }
@@ -252,7 +255,13 @@ function ExpandableRow({
   return (
     <React.Fragment>
       <tr
-        onClick={() => onToggle()}
+        onClick={(e) => {
+          if (editing) {
+            e.stopPropagation(); // prevent bubbling
+            return;
+          }
+          onToggle();
+        }}
         style={{
           cursor: "pointer",
           transition: "border-bottom .2s",
@@ -269,7 +278,7 @@ function ExpandableRow({
             }}
           >
             {col.render
-              ? col.render(row, open, onToggle, onEditToggle)
+              ? col.render(row, open, onToggle, onEditToggle, onDeletePPMP)
               : row[col.id]}
           </td>
         ))}

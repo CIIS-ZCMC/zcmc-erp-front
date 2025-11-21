@@ -10,7 +10,7 @@ function SnackbarComponent() {
 
   return (
     <Snackbar
-      anchorOrigin={{ vertical: "top", horizontal: "center" }}
+      anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
       variant="solid"
       color={getAlertColor(statusCode)}
       open={isOpen}

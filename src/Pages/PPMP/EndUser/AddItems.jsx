@@ -14,6 +14,8 @@ import { useAuth } from "../../../Store/AuthStore";
 import useSearchHook from "../../../Hooks/SearchHook";
 import usePPMPHook from "../../../Hooks/PPMP/PPMPHook";
 import AlertDialogComponent from "@Components/Common/Dialog/AlertDialogComponent";
+import useSnackbarHook from "../../../Hooks/SnackbarHook";
+import AddItemRequest from "./AddItemRequest";
 
 function AddItems(props) {
   const { user } = useAuth();
@@ -30,11 +32,13 @@ function AddItems(props) {
   const { getSearchSuggestions, suggestions } = useSearchHook();
   const { setAlertDialog, setConfirmationModal, closeAlertDialog } =
     useModalHook();
+  const { showSnack } = useSnackbarHook();
 
   const cartStore = useCartStore(user?.id || "guest", isPPMP);
   const { cart, addActivityToItem, removeActivityFromItem, clearCart } =
     cartStore();
   const [displayLoading, setDisplayLoading] = useState(false);
+  const [openReq, setOpenReq] = useState(false); // modal visibility state
 
   const currentYear = new Date().getFullYear();
   const currentFiscalYear = currentYear + 1;
@@ -80,35 +84,48 @@ function AddItems(props) {
       if (status === 201) {
         setAlertDialog({
           status: "success",
-          title: message,
-          description: "",
+          title: "New resource item successfully added.",
+          description: message,
         });
         clearCart();
         navigate(`/ppmp/manage-items`);
       } else {
         setAlertDialog({
           status: "error",
-          title: message,
-          description: "",
+          title: "Failed to save.",
+          description: message,
         });
       }
     });
   };
 
   useEffect(() => {
-    setDisplayLoading(true);
+    const fetchData = async () => {
+      try {
+        setDisplayLoading(true);
 
-    getItems((status, message, data) => {
-      if (status !== 200) {
-        console.error("Failed to fetch items:", message);
-      }
-      getActivities((status, message) => {
-        if (status !== 200) {
-          console.error("Failed to fetch items:", message);
+        const itemsResult = await getItems();
+        if (itemsResult.status !== 200) {
+          console.error("Failed to fetch items:", itemsResult.message);
+          return;
         }
-      });
-      setDisplayLoading(false);
-    });
+
+        const activitiesResult = await getActivities();
+        if (activitiesResult.status !== 200) {
+          console.error(
+            "Failed to fetch activities:",
+            activitiesResult.message
+          );
+          return;
+        }
+      } catch (error) {
+        console.error("Unexpected error:", error);
+      } finally {
+        setDisplayLoading(false);
+      }
+    };
+
+    fetchData();
   }, []);
 
   return (
@@ -143,6 +160,11 @@ function AddItems(props) {
             </Stack>
             <Stack direction="row" spacing={1}>
               <ButtonComponent
+                label="Request New Item"
+                variant={"outlined"}
+                onClick={() => setOpenReq(true)} // open modal
+              />
+              <ButtonComponent
                 label="Cancel Selection"
                 variant={"outlined"}
                 onClick={() => {
@@ -176,6 +198,15 @@ function AddItems(props) {
           />
         </ContainerComponent>
       </Stack>
+
+      {/* Render modal */}
+      {openReq && (
+        <AddItemRequest
+          openReq={openReq}
+          setOpenReq={setOpenReq}
+          activities={activities}
+        />
+      )}
       <AlertDialogComponent noRightButton />
     </Fragment>
   );

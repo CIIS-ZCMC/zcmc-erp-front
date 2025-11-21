@@ -97,17 +97,22 @@ const usePPMPHook = create((set) => ({
     });
   },
 
-  removeItem: async (body, callback) => {
-    post({
-      url: `check-pin`,
-      // param: { id: params },
+  removeItem: async (id, callBack) => {
+    remove({
+      url: `${PATH}-items-delete/${id}`,
+      success: ({ status, data }) => {
+        // const { message, data: deletedResource, activity } = data;
 
-      form: body,
-      success: (response) => {
-        const { message, data } = response.data;
-        callback(response.status, message, data);
+        // set((state) => ({
+        //   resources: state.resources.filter((res) => res.id !== id),
+        //   activity: {
+        //     ...state.activity,
+        //     // ✅ update only cost
+        //   },
+        // }));
+        callBack(status, message);
       },
-      failed: callback,
+      failed: callBack,
     });
   },
 
@@ -143,16 +148,16 @@ const usePPMPHook = create((set) => ({
       form,
       failed: callBack,
       success: ({ status, data }) => {
-        const {
-          message,
-          data: { ppmp_item },
-        } = data; // <-- correct destructure
+        // Correct destructure for "data.data"
+        const { message, data: updatedItem, ppmp_total } = data;
 
-        // set((state) => ({
-        //   ppmp: state.ppmp.map((res) =>
-        //     res.id === ppmp_item.id ? { ...res, ...ppmp_item } : res
-        //   ),
-        // }));
+        // Update store
+        set((state) => ({
+          ppmp: state.ppmp.map((res) =>
+            res.id === updatedItem.id ? { ...res, ...updatedItem } : res
+          ),
+          ppmp_total: ppmp_total,
+        }));
 
         callBack(status, message);
       },
@@ -164,15 +169,17 @@ const usePPMPHook = create((set) => ({
       url: `${PATH}-remove-activity/${ppmpID}/${activityID}`,
       failed: callBack,
       success: ({ status, data }) => {
-        const { message, data: deletedResource, activity } = data;
+        const { message, data: updatedItem, ppmp_total } = data; // updatedItem contains the full PPMP with new activities
 
-        // set((state) => ({
-        //   resources: state.resources.filter((res) => res.id !== id),
-        //   activity: {
-        //     ...state.activity,
-        //     cost: activity?.cost ?? state.activity.cost, // ✅ update only cost
-        //   },
-        // }));
+        set((state) => ({
+          ppmp: state.ppmp.map((res) =>
+            res.id === updatedItem.id
+              ? { ...res, activities: updatedItem.activities } // ✅ update only activities
+              : res
+          ),
+          ppmp_total: ppmp_total,
+        }));
+
         callBack(status, message);
       },
     });
