@@ -223,6 +223,11 @@ function ExpandableRow({
       )
     );
   };
+  React.useEffect(() => {
+    if (row?.activities) {
+      setLinkedActivities(row.activities);
+    }
+  }, [row.activities]);
 
   React.useEffect(() => {
     getProcModes((status, message) => {

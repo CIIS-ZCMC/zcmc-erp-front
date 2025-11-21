@@ -169,7 +169,7 @@ const usePPMPHook = create((set) => ({
       url: `${PATH}-remove-activity/${ppmpID}/${activityID}`,
       failed: callBack,
       success: ({ status, data }) => {
-        const { message, data: updatedItem, ppmp_total } = data; // updatedItem contains the full PPMP with new activities
+        const { message, data: updatedItem, ppmp_total_amount } = data; // updatedItem contains the full PPMP with new activities
 
         set((state) => ({
           ppmp: state.ppmp.map((res) =>
@@ -177,7 +177,7 @@ const usePPMPHook = create((set) => ({
               ? { ...res, activities: updatedItem.activities } // ✅ update only activities
               : res
           ),
-          ppmp_total: ppmp_total,
+          ppmp_total: ppmp_total_amount,
         }));
 
         callBack(status, message);
