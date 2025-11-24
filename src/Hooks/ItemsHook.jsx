@@ -77,6 +77,19 @@ const useItemsHook = create((set) => ({
     });
   },
 
+  getVariantsByCategory: async (callBack, item_category_id) => {
+    read({
+      url: `terminologies`,
+      params: { item_category_id },
+      failed: callBack,
+      success: (res) => {
+        const { status, message, data } = res;
+        set({ variants: data.data });
+        callBack(status, message);
+      },
+    });
+  },
+
   getSearchResults: async (callBack, query) => {
     read({
       url: `search/${PATH}s`,

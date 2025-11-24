@@ -2,7 +2,7 @@ import React from "react";
 import { FormControl, FormLabel, FormHelperText, Input } from "@mui/joy";
 import { Fragment } from "react";
 import useUserHook from "../Hooks/UserHook";
-export default function AuthorizationPinComponent({ setIsAuthorized }) {
+export default function AuthorizationPinComponent({ setIsAuthorized, setPin }) {
   const { getAuthorized } = useUserHook();
   return (
     <Fragment>
@@ -11,9 +11,10 @@ export default function AuthorizationPinComponent({ setIsAuthorized }) {
         <Input
           type="password"
           onChange={(e) => {
-            getAuthorized(e.target.value, (res) => {
-              setIsAuthorized(res);
-            });
+            setPin(e.target.value);
+            // getAuthorized(e.target.value, (res) => {
+            //   setIsAuthorized(res);
+            // });
           }}
         />
       </FormControl>

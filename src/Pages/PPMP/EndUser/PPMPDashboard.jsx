@@ -24,6 +24,7 @@ import { useAuth } from "../../../Store/AuthStore";
 import { nextYear } from "../../../Utils/Functions";
 import SelectComponent from "@Components/Form/YearSelectComponent";
 import {
+  Check,
   Comment,
   East,
   FormatListNumbered,
@@ -32,6 +33,10 @@ import {
   WarningAmber,
 } from "@mui/icons-material";
 import PageTitle from "@Components/Common/PageTitle";
+import ModalComponent from "@Components/Common/Dialog/ModalComponent";
+import { grey } from "@mui/material/colors";
+import InputComponent from "@Components/Form/InputComponent";
+import AuthorizationPinComponent from "@Components/AuthorizationPinComponent";
 
 const PPMPCard = ({
   bgColor = "#CCEEFF",
@@ -106,6 +111,9 @@ function PPMPDashboard(props) {
 
   const theme = useTheme();
   const color = theme.palette.custom;
+
+  const [openSave, setOpenSave] = useState(false);
+  const [pin, setPin] = useState("");
 
   const handleNavigate = () => {
     navigate("/ppmp/manage-items");
@@ -214,6 +222,7 @@ function PPMPDashboard(props) {
                   <ButtonComponent
                     label={"Submit PPMP for Review"}
                     width="190px"
+                    onClick={() => setOpenSave(true)}
                   />
                 </Box>
               </Stack>
@@ -435,6 +444,51 @@ function PPMPDashboard(props) {
         )}
       </BoxComponent>
       {/* <PageLoader isLoading={pageLoader} /> */}
+
+      <ModalComponent
+        isOpen={openSave}
+        title={"Official Submission Confirmation"}
+        description={
+          "You are about to officially submit your Project Procurement Management Plan for Fiscal Year 2026 to the approving bodies for review and approval."
+        }
+        maxWidth={"571px"}
+        handleClose={() => setOpenSave(false)}
+        content={
+          <>
+            <Stack
+              sx={{
+                bgcolor: grey[100],
+                border: `1px solid ${grey[400]}`,
+                borderRadius: 10,
+                padding: 2,
+                mt: 1.5,
+              }}
+              spacing={1}
+            >
+              <Typography
+                level="body-sm"
+                sx={{ fontWeight: 500, color: grey[800] }}
+              >
+                Please confirm the following:
+              </Typography>
+              <Typography level="body-sm" sx={{ color: grey[800] }}>
+                <b>✓</b> All information provided is accurate and complete
+              </Typography>
+              <Typography level="body-sm" sx={{ color: grey[800] }}>
+                <b>✓</b> All required resource item details have been properly
+                filled out
+              </Typography>
+              <Typography level="body-sm" sx={{ color: grey[800] }}>
+                <b>✓</b> You have the authority to submit this document
+              </Typography>
+            </Stack>
+            <AuthorizationPinComponent setPin={setPin} />
+          </>
+        }
+        hasActionButtons
+        noRightButton={true}
+        leftButtonLabel="Submit"
+      />
     </Fragment>
   );
 }

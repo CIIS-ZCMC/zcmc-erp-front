@@ -87,7 +87,7 @@ const usePPMPHook = create((set) => ({
 
   postItemRequest: async (body, callback) => {
     post({
-      url: `${PATH}-item-requests`,
+      url: `${PATH}-item-request-store`,
       form: body,
       success: (response) => {
         const { message, data } = response.data;

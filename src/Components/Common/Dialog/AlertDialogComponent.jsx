@@ -94,7 +94,7 @@ function AlertDialogComponent({
                     isDisabled={isLoading}
                     fullWidth={!rightButtonAction}
                     color={getModeColorScheme(status).colorScheme}
-                    variant={"outlined"}
+                    variant={"solid"}
                   />
 
                   {!noRightButton && (

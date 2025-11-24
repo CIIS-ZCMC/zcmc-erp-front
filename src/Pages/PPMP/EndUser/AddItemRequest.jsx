@@ -3,12 +3,25 @@ import AutocompleteComponent from "@Components/Form/AutocompleteComponent";
 import InputComponent from "@Components/Form/InputComponent";
 import TextareaComponent from "@Components/Form/TextareaComponent";
 import useModalHook from "../../../Hooks/ModalHook";
-import { Box, Checkbox, Divider, Link, Stack, Typography } from "@mui/joy";
+import {
+  Box,
+  Checkbox,
+  Chip,
+  ChipDelete,
+  Divider,
+  Link,
+  Stack,
+  Typography,
+} from "@mui/joy";
 import React, { Fragment, useEffect, useRef, useState } from "react";
 import useItemsHook from "../../../Hooks/ItemsHook";
 import { grey } from "@mui/material/colors";
 import usePPMPHook from "../../../Hooks/PPMP/PPMPHook";
 import { MdAdd } from "react-icons/md";
+import { handleInputValidation } from "../../../Utils/HandleInput";
+import handleSingleChangeAutcomplete from "../../../Utils/HandleAutocomplete";
+import useSnackbarHook from "../../../Hooks/SnackbarHook";
+import userErrorInputHook from "../../../Hooks/ErrorInputHook";
 
 export default function AddItemRequest({ openReq, setOpenReq }) {
   const { setAlertDialog } = useModalHook();
@@ -21,9 +34,13 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
     getItemCategories,
     getItemClassification,
     getItemUnits,
-    getVariants,
+    getVariantsByCategory,
   } = useItemsHook();
   const { activities, getActivities } = usePPMPHook();
+  const { showSnack } = useSnackbarHook();
+  const { postItemRequest } = usePPMPHook();
+  const { errors, setError, clearErrors } = userErrorInputHook();
+
   // === STATE VARIABLES ===
   const [step, setStep] = useState(1);
   const [activity, setActivity] = useState(null);
@@ -33,14 +50,19 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
     category: null,
     item_name: "",
     unit: null,
+    quantity: 0,
     estimated_budget: "",
     variant: null,
     market_research: false,
-    specs: [{ id: 1, value: "" }],
+    specs: [
+      { id: 1, value: "" },
+      { id: 2, value: "" },
+    ],
     pin: "",
   });
   const [buttonLoader, setButtonLoader] = useState(false);
   const [displayLoading, setDisplayLoading] = useState(false);
+  const [selectedActivities, setSelectedActivities] = useState([]); // all selected
 
   // ref for scrolling container
   const specsContainerRef = useRef(null);
@@ -133,6 +155,123 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
     }
   };
 
+  const handleSelectActivity = (selected) => {
+    // When user clears the Autocomplete
+    if (!selected) {
+      setActivity(null);
+      return;
+    }
+
+    // Normal selection
+    setActivity(selected);
+
+    setSelectedActivities((prev) => {
+      const exists = prev.some(
+        (item) => item.activity_code === selected.activity_code
+      );
+
+      if (exists) {
+        showSnack(500, "Activity already selected.");
+        return prev; // <-- IMPORTANT FIX
+      }
+
+      return [...prev, selected];
+    });
+  };
+
+  const removeActivity = (activity_code) => {
+    setSelectedActivities((prev) =>
+      prev.filter((a) => a.activity_code !== activity_code)
+    );
+
+    // If the removed activity is currently selected in Autocomplete → clear it
+    setActivity((prev) =>
+      prev?.activity_code === activity_code ? null : prev
+    );
+  };
+
+  const submit = async () => {
+    clearErrors();
+    let hasError = false;
+
+    itemReq.specs.forEach((spec, index) => {
+      if (!spec.value.trim()) {
+        setError(
+          `specs[${index}]`,
+          true,
+          `Specification ${index + 1} is required.`
+        );
+        hasError = true;
+      }
+    });
+    if (!itemReq?.pin?.trim()) {
+      setError("pin", true, "Authorization PIN is required.");
+      hasError = true;
+    }
+
+    if (hasError) return;
+
+    try {
+      setButtonLoader(true);
+      const payload = {
+        activity_id: selectedActivities.map((a) => a.activity_id),
+        name: itemReq.item_name || "",
+        item_classification_id: itemReq.classification.id,
+        item_category_id: itemReq.category.id,
+        quantity: itemReq.quantity,
+        item_unit_id: itemReq.unit.id,
+        variant: itemReq.variant.id,
+        estimated_budget: itemReq.estimated_budget || 0,
+        authorization_pin: itemReq.pin || "",
+        market_research: itemReq.market_research, // boolean
+        specifications: itemReq.specs.map((spec) => ({
+          description: spec.value,
+        })),
+        authorization_pin: itemReq.pin,
+      };
+
+      await postItemRequest(payload, (status, message, data) => {
+        setButtonLoader(false);
+
+        const alertData = {
+          status: status === 201 ? "success" : "error",
+          title: "Request for new item successfully submitted.",
+          description: message,
+        };
+
+        setAlertDialog(alertData);
+
+        if (status === 201) {
+          setItemReq({
+            classification: null,
+            category: null,
+            item_name: "",
+            unit: null,
+            estimated_budget: "",
+            variant: null,
+            market_research: false,
+            specs: [
+              { id: 1, value: "" },
+              { id: 2, value: "" }, // initial two specs
+            ],
+            pin: "",
+          });
+          setActivity(null);
+          setSelectedActivities([]);
+          setOpenReq(false); // close modal
+          setStep(1); // reset to step 1 if using a stepper
+        }
+      });
+    } catch (error) {
+      setButtonLoader(false);
+      setAlertDialog({
+        status: "error",
+        title: "Request Failed",
+        description: "An unexpected error occurred. Please try again.",
+      });
+    }
+  };
+
   useEffect(() => {
     setDisplayLoading(true);
 
@@ -141,8 +280,15 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
       { fn: getItemClassification, name: "classification" },
       { fn: getActivities, name: "activities" },
       { fn: getItemUnits, name: "units" },
-      { fn: getVariants, name: "variants" },
     ];
+
+    // Only fetch variants if category ID exists
+    if (itemReq.category?.id) {
+      apiCalls.push({
+        fn: (callback) => getVariantsByCategory(callback, itemReq.category.id),
+        name: "variants",
+      });
+    }
 
     let completed = 0;
     const total = apiCalls.length;
@@ -158,7 +304,7 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
         checkDone();
       });
     });
-  }, []);
+  }, [itemReq.category?.id]); // Re-run if category changes
 
   return (
     <div>
@@ -187,31 +333,58 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
             : ""
         }
         maxWidth={"500px"}
-        height={step === 1 ? "auto" : step === 2 ? "680px" : "680px"}
+        height={step === 1 ? "auto" : step === 2 ? "680px" : "65s0px"}
         content={
           <Fragment>
             <Box mt={1}>
               {step === 1 && (
                 <Stack spacing={2}>
                   <AutocompleteComponent
-                    label={"Select one activity"}
+                    label={"Select activity"}
                     name="activity"
                     options={activities}
                     getOptionLabel={(option) => option.activity_code || ""}
-                    setValue={setActivity}
+                    setValue={handleSelectActivity}
                     value={activity}
                     size="sm"
                   />
-                  {activity?.name && (
-                    <>
-                      <Divider />
-                      <Typography sx={{ fontSize: 12, color: "gray" }}>
-                        Description of selected activity
-                      </Typography>
-                      <Typography sx={{ fontSize: 14 }}>
-                        {activity?.name}
-                      </Typography>
-                    </>
+                  {selectedActivities.length > 0 && (
+                    <Stack
+                      sx={{
+                        border: `1px dashed ${grey[400]}`,
+                        padding: 1,
+                        borderRadius: 10,
+                      }}
+                      spacing={1}
+                    >
+                      {selectedActivities.map((act) => (
+                        <>
+                          <Stack
+                            direction={"row"}
+                            alignItems={"center"}
+                            spacing={1}
+                          >
+                            <Chip
+                              color="primary"
+                              size="sm"
+                              endDecorator={
+                                <ChipDelete
+                                  onDelete={() =>
+                                    removeActivity(act.activity_code)
+                                  }
+                                />
+                              }
+                            >
+                              {act.activity_code}
+                            </Chip>
+
+                            <Typography sx={{ fontSize: 14 }}>
+                              {act.activity_name}ddd
+                            </Typography>
+                          </Stack>
+                        </>
+                      ))}
+                    </Stack>
                   )}
                 </Stack>
               )}
@@ -278,6 +451,7 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
                       value={itemReq?.quantity}
                       handleInput={(e) => handleInputValidation(e, setItemReq)}
                       color="primary"
+                      fontWeight={500}
                       helperText={"Quantity to add in PPMP"}
                     />
 
@@ -321,6 +495,7 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
                     label="Estimated budget"
                     name="estimated_budget"
                     size="sm"
+                    fontWeight={500}
                     value={itemReq?.estimated_budget}
                     handleInput={(e) => handleInputValidation(e, setItemReq)}
                     color="primary"
@@ -342,19 +517,9 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
               )}
               {step === 3 && (
                 <Stack spacing={2}>
-                  <Box>
-                    <Typography fontSize={13} color="grey.600">
-                      Item name
-                    </Typography>
-                    <Typography fontSize={14}>
-                      {" "}
-                      {itemReq?.item_name}{" "}
-                    </Typography>
-                    <Divider sx={{ my: 1 }} />
-                  </Box>
                   <Stack>
                     <Box
-                      height={"235px"}
+                      height={"280px"}
                       overflow="auto"
                       ref={specsContainerRef}
                     >
@@ -365,6 +530,7 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
                               label={`Specification ${index + 1}:`}
                               placeholder="e.g., Size: Large"
                               name={`spec-${index}`}
+                              minRows={3}
                               value={spec.value}
                               onChange={(e) =>
                                 handleChange(spec.id, e.target.value)
@@ -422,7 +588,7 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
           if (step < 3) {
             handleNextStep();
           } else {
-            handleRequest();
+            submit();
           }
         }}
         isLoading={buttonLoader}
