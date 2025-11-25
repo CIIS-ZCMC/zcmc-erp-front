@@ -40,7 +40,7 @@ const Draft = () => {
                 </Box>
                 <Box width={"450px"}>
                     <ButtonComponent
-                        label={"Submit AOP for Review"}
+                        label={"Create PPMP"}
                         onClick={() => navigate("/aop/summary")}
                         fullWidth={"true"}
                     />

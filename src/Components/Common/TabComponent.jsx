@@ -1,4 +1,4 @@
-import * as React from "react";
+import { useEffect } from "react";
 import Box from "@mui/joy/Box";
 import Chip from "@mui/joy/Chip";
 import Tabs from "@mui/joy/Tabs";
@@ -23,6 +23,11 @@ export default function TabComponent({
     (element) => element.seen === 0
   )?.length;
 
+
+  useEffect(() => {
+    console.log('tabs', tabs)
+  }, [tabs])
+
   return (
     <Box
       sx={{
@@ -33,9 +38,10 @@ export default function TabComponent({
       <Tabs
         aria-label="Pipeline"
         value={index}
-        onChange={(event, value) =>
+        onChange={(event, value) => {
+          console.log(value)
           handleTabChange ? handleTabChange(value) : setIndex(value)
-        }
+        }}
         sx={{ bgcolor: "white" }}
       >
         <TabList
@@ -81,8 +87,8 @@ export default function TabComponent({
               </Tab>
             </>
           ) : (
-            tabs?.map(({ name, value }, key) => (
-              <Tab key={key} value={value}>
+            tabs?.map(({ name, value, id }, key) => (
+              <Tab key={key} value={id} >
                 {name}
               </Tab>
             ))

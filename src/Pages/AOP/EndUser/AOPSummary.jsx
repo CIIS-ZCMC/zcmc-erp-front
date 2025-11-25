@@ -79,7 +79,7 @@ const AOPSummary = () => {
             status: "success",
             title: `Official Submission Confirmation`,
             description:
-                `You are about to officially submit your Annual Operations Plan for Fiscal Year ${year} to the approving bodies for review and approval.`,
+                `You are about to officially create PMMP for Fiscal Year ${year}.`,
         };
         setConfirmationModal(data)
     }
@@ -403,7 +403,7 @@ const AOPSummary = () => {
                                 </Typography>
 
                                 <ButtonComponent
-                                    label={'Submit AOP for Review'}
+                                    label={'Create PPMP'}
                                     size={'lg'}
                                     onClick={() => handleOpenSubmitAopModal()}
                                 />

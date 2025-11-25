@@ -1,4 +1,4 @@
-import React, { Fragment, useMemo, useState } from "react";
+import React, { Fragment, useEffect, useMemo, useState } from "react";
 import { useComments } from "../../../../Hooks/CommentHook";
 import { Divider, Stack } from "@mui/joy";
 import SimpleCommentComponent from "../../../../Components/Comments/SimpleCommentComponent";
@@ -9,11 +9,21 @@ import PostCommentComponent from "../../../../Components/Form/PostCommentCompone
 import ContainerComponent from "../../../../Components/Common/ContainerComponent";
 import { useActivityLoadingState } from "../../../../Hooks/AOP/ActivityHook";
 
+import { useActivity } from "../../../../Hooks/AOP/ActivityHook";
+
 export const CommentsDetails = () => {
+
+  // const { activity } = useActivity();
+
   const comments = useComments();
   const [postCommentModal, setPostCommentModal] = useState(false);
   const commentsDisplay = useMemo(() => groupByDate(comments), [comments]);
   const isLoading = useActivityLoadingState();
+
+  // useEffect(() => {
+  //   console.log(activity)
+  // }, [activity])
+
   return (
     <Fragment>
       <ContainerComponent

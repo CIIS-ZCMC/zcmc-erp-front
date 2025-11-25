@@ -36,6 +36,7 @@ function CommentContainerComponent({
       </Typography>
 
       <EllipsisComponent text={comment} />
+
       <Stack
         mt={comment?.length > 100 ? 4 : 1}
         direction={"row"}

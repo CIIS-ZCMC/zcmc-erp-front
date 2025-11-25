@@ -225,7 +225,7 @@ export const ActivityDetails = () => {
             data={resources}
           />
         }
-        // footer={<ButtonComponent label={"Close"} width={"auto"} />}
+      // footer={<ButtonComponent label={"Close"} width={"auto"} />}
       />
     </Fragment>
   );

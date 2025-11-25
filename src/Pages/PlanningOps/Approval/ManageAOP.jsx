@@ -6,31 +6,16 @@ import { ExternalLink } from "lucide-react";
 import PageTitle from "../../../Components/Common/PageTitle";
 import ContainerComponent from "../../../Components/Common/ContainerComponent";
 import ButtonComponent from "../../../Components/Common/ButtonComponent";
-
-import { useUserTypes } from "../../../Store/AuthStore";
+;
 import useObjectivesStore from "../../../Store/ObjectivesStore";
 
-import {
-  useAOPApplication,
-  useAOPApplicationObjectives,
-} from "../../../Hooks/AOP/AOPApplicationsHook";
-import {
-  useAllComments,
-  useCommentActions,
-  useRemarks,
-} from "../../../Hooks/CommentHook";
-import { useApprovalActions } from "../../../Hooks/AOP/AOPApprovalHook";
 import useObjectivesHook from "../../../Hooks/ObjectivesHook";
-import { useActivityActions } from "../../../Hooks/AOP/ActivityHook";
 
 import ObjectivesList from "./Contents/ObjectivesList";
-
 import { ActivityDetails } from "./Contents/ActivityDetails";
 import { CommentsDetails } from "./Contents/CommentsDetails";
 import { FeedbackContent } from "./Contents/FeedbackContent";
 import ProcessAOPContent from "./Contents/ProcessAOPContent";
-
-import { localStorageGetter } from "../../../Utils/LocalStorage";
 
 export default function ManageAOP() {
 
@@ -46,11 +31,6 @@ export default function ManageAOP() {
     })
   }, [])
 
-  // useEffect(() => {
-  //   console.log('applicationObjectives:', applicationObjectives)
-  // }, [applicationObjectives, aopId])
-
-
   const {
     current_user,
     objectives,
@@ -58,107 +38,37 @@ export default function ManageAOP() {
     fiscal_year,
     status,
     status_id,
-    latest_application_timeline
+    latest_application_timeline,
+    activity_comments,
+    application_timelines,
   } = applicationObjectives;
 
   const { role, area_name } = current_user || {};
   const { id } = latest_application_timeline || {};
 
+  // useEffect(() => {
+  //   console.log('app timelines:', application_timelines)
+  //   console.log('user role:', role)
+  // }, [applicationObjectives, role]);
 
-  const { isPlanning, isMCC } = useUserTypes();
-
-  const { getAOPApprovalTimeline } = useApprovalActions();
-  const AOPApplication = useAOPApplication();
-
-  // AOP HOOK
-  const AOPApplicationObjectives =
-    useAOPApplicationObjectives() ??
-    localStorageGetter("aopApplicationObjectives");
-
-  const AOP_APPLICATION_ID = localStorageGetter("aop_application_id");
-
-  // ACTIVITY HOOK
-  // const defaultActivityId = AOPApplicationObjectives[0]?.activities[0]?.id;
-  const activityId = localStorageGetter("activeActivityId");
-  const { getActivityById } = useActivityActions();
-
-  // COMMENTS HOOK
-  const {
-    getCommentsByActivity,
-    getCommentsByApplication,
-    getRemarksByApplication,
-  } = useCommentActions();
-
-  // const allComments = useAllComments() ?? localStorageGetter("all_comments"); kriz old code
-  const allComments = localStorageGetter("all_comments");
-  const remarks = useRemarks();
+  const userMCC = role === 'MCC';
+  const userPlanning = role === 'Planning Unit';
 
   // STATES
-  const [isRemarksLoading, setIsRemarksLoading] = useState(true);
-
-  const AREA_CODE = localStorageGetter("aop_application_area_code");
-  const FISCAL_YEAR = new Date().getFullYear() + 1;
-
-  // MODAL
   const [openFeedbackModal, setOpenFeedbackModal] = useState(false);
 
   // FUNCTIONS
   const handleViewFeedback = () => {
     setOpenFeedbackModal(true);
-    setIsRemarksLoading(true);
-
-    const fetch = () => {
-      // if (!isDivisionHead || !isMCC) {
-      getCommentsByApplication(AOP_APPLICATION_ID, () => { });
-      // }
-
-      getRemarksByApplication(AOP_APPLICATION_ID, () => {
-        setTimeout(() => setIsRemarksLoading(false), 1000);
-      });
-    };
-
-    Promise.all(fetch())
-      .then(() => {
-        setIsRemarksLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching comments or remarks:", error);
-        setIsRemarksLoading(false);
-      });
   };
 
   const isAllowedFeedbackViewing = () => {
-    return !isMCC;
+    return !userMCC;
   };
 
-  // useEffect(() => {
-  //   if (activityId == defaultActivityId) return;
-
-  //   Promise.all([
-  //     getAOPApprovalTimeline(AOP_APPLICATION_ID, () => { }),
-  //     getActivityById(defaultActivityId, () => { }),
-  //     getCommentsByActivity(defaultActivityId, () => { }),
-  //     getCommentsByApplication(AOP_APPLICATION_ID, () => { }),
-  //   ]).catch((error) => {
-  //     console.error("Error fetching data:", error);
-  //   });
-  // }, []);
-
-
-  // useEffect(() => {
-  //   console.log('planning', isPlanning)
-  //   console.log('all comments', allComments?.length);
-  //   console.log('remarks', remarks?.length);
-  // }, [allComments, remarks]);
-
-
-  const feedbackCount = () => {
-
-    const remarksCount = remarks?.length || 0;
-    const commentCount = allComments?.length || 0;
-
-    return isPlanning ? commentCount + remarksCount : 0;
-  };
+  const remarksCount = application_timelines?.length || 0;
+  const commentCount = activity_comments?.length || 0;
+  const feedbackCount = commentCount + remarksCount;
 
   return (
     <Fragment>
@@ -166,11 +76,11 @@ export default function ManageAOP() {
         <PageTitle
           title={
             <Typography>
-              Manage{" "}
+              Manage
               <Typography textColor={"warning.400"}>{area_name}'s</Typography>{" "}
-              AOP{" "}
+              AOP
               {/* AOP <Typography textColor={"warning.400"}>#{id} </Typography> */}
-              for Fiscal Year{" "}
+              for Fiscal Year
               <Typography textColor={"warning.400"}>{fiscal_year}</Typography>
             </Typography>
           }
@@ -214,7 +124,7 @@ export default function ManageAOP() {
                     {isAllowedFeedbackViewing() && (
                       <ButtonComponent
                         variant={"outlined"}
-                        label={`Go to feedback (${feedbackCount()})`}
+                        label={`Go to feedback (${feedbackCount})`}
                         endDecorator={<ExternalLink size={14} />}
                         onClick={handleViewFeedback}
                       />
@@ -236,17 +146,30 @@ export default function ManageAOP() {
                 <ObjectivesList
                   objectives={objectives}
                 />
+
               </ContainerComponent>
             </Grid>
 
             {/* ACTIVITY DETAILS  */}
-            <Grid item="true" xs={!isPlanning ? 8 : 4} mt={3}>
+            <Grid
+              item="true"
+              xs={!userPlanning ? 8 : 4}
+              mt={3}
+            >
               <ActivityDetails />
             </Grid>
 
             {/* COMMENTS  */}
-            <Grid item="true" xs={4} mt={3} display={!isPlanning && "none"}>
-              <CommentsDetails />
+            <Grid
+              item="true"
+              xs={4}
+              mt={3}
+              display={!userPlanning && "none"}
+            >
+              <CommentsDetails
+
+
+              />
             </Grid>
           </Grid>
         </Box>
@@ -257,7 +180,10 @@ export default function ManageAOP() {
       <FeedbackContent
         openFeedbackModal={openFeedbackModal}
         setOpenFeedbackModal={setOpenFeedbackModal}
-        isLoading={isRemarksLoading}
+        comments={activity_comments}
+        remarks={application_timelines}
+        feedbackCount={feedbackCount}
+        role={role}
       />
     </Fragment>
   );

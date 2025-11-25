@@ -27,6 +27,8 @@ import {
   useApprovalTimeline,
 } from "../../../Hooks/AOP/AOPApprovalHook";
 
+
+
 import useObjectivesHook from "../../../Hooks/ObjectivesHook";
 import useTimelineHook from "../../../Hooks/AOP/TimelineHook";
 import useTimelinesStore from "../../../Store/TimelinesStore";
@@ -45,9 +47,9 @@ const AOPApproval = () => {
   const navigate = useNavigate();
 
   const { getAopYearList } = useAOPHook();
-  const { getApproverTimeline } = useTimelineHook();
+  const { getApproverTimeline, getTimelines } = useTimelineHook();
 
-  const { timelines } = useTimelinesStore();
+  const { timelines, approverTimelines } = useTimelinesStore();
   const { yearDetails } = useAOPStore();
 
   const { application_timelines, filters } = timelines;
@@ -62,27 +64,6 @@ const AOPApproval = () => {
   //   console.log('status id ', status_id);
   //   console.log('year details', yearDetails);
   // }, [yearDetails])
-
-  useEffect(() => {
-
-    // assign default parameters
-
-    setIsLoading(true)
-
-    const params = {
-      year: currentFiscalYear,
-      status_id,
-    }
-
-    getApproverTimeline(params, (status, message) => {
-
-      if (!(status >= 200 && status < 300)) {
-        // if status not success
-        setIsLoading(false)
-        return; //Toast error
-      }
-    });
-  }, []);
 
 
   useEffect(() => {
@@ -103,12 +84,19 @@ const AOPApproval = () => {
     useAOPApplicationsActions();
   const AOPApplications = useAOPApplications();
   const { getAOPApprovalTimeline } = useApprovalActions();
+
   const approvalTimeline = useApprovalTimeline();
+
+
   // const isLoading = useApprovalLoading();
+
+  useEffect(() => {
+    console.log(approverTimelines)
+  }, [approverTimelines])
 
   // STATES
   const [openTimelineModal, setOpenTimelineModal] = useState(false);
-  const [index, setIndex] = useState("all");
+  const [index, setIndex] = useState(8);
   const [year, setYear] = useState(new Date().getFullYear()?.toString());
   const [search, setSearch] = useState(null);
   const [pageLoading, setPageLoading] = useState("");
@@ -119,9 +107,10 @@ const AOPApproval = () => {
     navigate(`/aop-approval/objectives/${aopId}`,);
   };
 
-  const handleViewTimeline = (id) => {
+  const handleViewTimeline = (aopId) => {
+    console.log(aopId)
     setOpenTimelineModal(true);
-    getAOPApprovalTimeline(id, () => { });
+    getApproverTimeline(aopId, () => { });
   };
 
   const yearsData = [2026, 2025];
@@ -129,53 +118,24 @@ const AOPApproval = () => {
   // console.log(yearsData)
 
   useEffect(() => {
+
+    const debouncedFetch = debounce((params) => {
+      setIsFetchLoading(true);
+      getApproverTimeline(params, () => {
+        setIsFetchLoading(false);
+      });
+    }, 300);
+
     const params = {
       year: year,
-      status_id: 6
+      status_id: index,
     }
 
-    console.log(params)
+    debouncedFetch(params);
 
-    getApproverTimeline(params, (status, message) => {
-      if (!(status >= 200 && status < 300)) {
-        // if status not success
-        return; //Toast error
-      }
-    });
-  }, [index, year,])
-
-
-  // useEffect(() => {
-  //   const debouncedFetch = debounce((params) => {
-  //     setIsFetchLoading(true);
-  //     getAOPApplications(params, () => {
-  //       setIsFetchLoading(false);
-  //     });
-  //   }, 300);
-
-  //   const params = {
-  //     status: index == "all" ? null : index,
-  //     year: year,
-  //     search: search,
-  //   };
-
-  //   debouncedFetch(params);
-
-  //   return () => {
-  //     localStorage.removeItem("all_comments");
-  //     debouncedFetch.cancel();
-  //   };
-  // }, [index, year, search, getAOPApplications]);
-
-  const APPLICATIONS = TEST_MODE ? MANAGE_AOP_APPROVAL : AOPApplications;
-
-  // useEffect(() => {
-  //   console.log(APPLICATIONS)
-  // }, [APPLICATIONS])
-
+  }, [index, year])
 
   const TIMELINE = TEST_MODE ? APPROVAL_TIMELINE : approvalTimeline;
-
 
   return (
     <Fragment>
@@ -254,13 +214,13 @@ const AOPApproval = () => {
                     wrapperClass=""
                   />
                 </Box>
-              ) : APPLICATIONS?.length === 0 ? (
+              ) : application_timelines?.length === 0 ? (
                 <Box width="100%">
                   <NoResultComponent />
                 </Box>
               ) : (
                 <>
-                  {application_timelines.map(({
+                  {application_timelines?.map(({
                     id,
                     aop_application_id,
                     current_timeline,
@@ -283,35 +243,12 @@ const AOPApproval = () => {
                           statusLabel={status}
                           status={status_id}
                           leftClick={() => handleClickCard(aop_application_id)}
-                          rightClick={() => handleViewTimeline(id)}
+                          rightClick={() => handleViewTimeline(aop_application_id)}
                         />
                       </Grid>
                     )
 
                   })}
-
-                  {/* {
-                    APPLICATIONS?.map(
-                      (
-                        { id, created_on, date_approved, area_code, status, year },
-                        index
-                      ) => (
-                        <Grid key={index} item="true" xs={4}>
-
-                          <AOPCardComponent
-                            year={year}
-                            date_requested={created_on}
-                            date_approved={date_approved}
-                            status={status}
-                            area_code={area_code ?? "-"}
-                            statusLabel={status}
-                            leftClick={() => handleClickCard(id, area_code)}
-                            rightClick={() => handleViewTimeline(id)}
-                          />
-                        </Grid>
-                      )
-                    )
-                  } */}
                 </>
               )}
             </Grid>
@@ -330,7 +267,7 @@ const AOPApproval = () => {
             {isLoading ? (
               <ThreeDotsLoader />
             ) : (
-              <StepperComponent data={TIMELINE} />
+              <StepperComponent data={approvalTimeline} />
             )}
           </Stack>
         }

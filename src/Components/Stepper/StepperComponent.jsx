@@ -11,7 +11,7 @@ const StepperComponent = ({ data = [] }) => {
   return (
     <Stepper orientation="vertical" sx={{ gap: 2 }} size="sm">
 
-      {data.map(({ id, current_timeline }) => {
+      {data?.map(({ id, current_timeline }) => {
 
         const {
           user,

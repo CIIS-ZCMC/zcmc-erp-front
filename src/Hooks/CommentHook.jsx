@@ -25,6 +25,9 @@ const useCommentHook = create((set, get) => ({
       read({
         url: `${COMMENT}/${id}`,
         success: (response) => {
+
+          console.log(response)
+
           const {
             data: { comments },
           } = response.data;
