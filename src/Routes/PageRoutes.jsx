@@ -42,11 +42,11 @@ import { MyOwnRequestsList } from "../Pages/TEMP/ItemMyOwnRequestsLists";
 import { ItemRequestDatatable } from "../Pages/Consolidators/ItemManagement/ItemRequestDatatable";
 
 import { element } from "prop-types";
-import ManageResources from "../Pages/AOP/EndUser/Resources/ManageResources";
-import AOPOutlet from "../Pages/AOP/EndUser/AOPOutlet";
-import AddResources from "../Pages/AOP/EndUser/Resources/AddResources";
 
-import EditPPMP from "../Pages/PPMP/EndUser/PPMPOutlet";
+// import AOPOutlet from "../Pages/AOP/EndUser/AOPOutlet";
+// import AddResources from "../Pages/AOP/EndUser/Resources/AddResources";
+
+// import EditPPMP from "../Pages/PPMP/EndUser/PPMPOutlet";
 // import EditPPMP from "../Pages/PPMP/EndUser/EditPPMP";
 
 import PPMPDashboard from "../Pages/PPMP/EndUser/PPMPDashboard";
