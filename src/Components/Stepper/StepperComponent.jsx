@@ -1,11 +1,47 @@
-import React from "react";
+import React, { Fragment, useEffect } from "react";
 import StepItem from "./StepItem";
 import { Stack, Step, StepIndicator, Stepper, Typography } from "@mui/joy";
 import { BiCheck, BiCircle } from "react-icons/bi";
 const StepperComponent = ({ data = [] }) => {
+
+  useEffect(() => {
+    console.log(data)
+  }, [data])
+
   return (
     <Stepper orientation="vertical" sx={{ gap: 2 }} size="sm">
-      {data?.map(
+
+      {data.map(({ id, current_timeline }) => {
+
+        const {
+          user,
+          user_position,
+          approver_user_role,
+          approver_user,
+          remarks,
+          status,
+          status_id,
+          date_approved,
+
+        } = current_timeline
+
+        return (
+          <StepItem
+            position={approver_user_role}
+            name={approver_user}
+            remarks={remarks}
+            status={status}
+            user={user}
+            userPosition={user_position}
+            statusId={status_id}
+            approved_at={date_approved}
+          />
+        )
+      })}
+
+
+
+      {/* {data?.map(
         (
           {
             approver_user = "Krizelle Mae Falcasantos",
@@ -62,7 +98,7 @@ const StepperComponent = ({ data = [] }) => {
             );
           }
         }
-      )}
+      )} */}
       {/* 
       <Step
         indicator={

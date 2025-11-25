@@ -3,7 +3,7 @@ import { persist } from "zustand/middleware";
 
 const useAOPStore = create(
     persist(
-        (set, get) => ({
+        (set) => ({
             aop: null,
             mission: "",
             fiscalYear: new Date().getFullYear() + 1,
@@ -14,10 +14,11 @@ const useAOPStore = create(
             actions: {
                 setAop: (aop) => set({ aop }),
                 setMission: (mission) => set({ mission }),
-                clearMission: () => set({ mission: "" }),
                 setFiscalYear: (fiscalYear) => set({ fiscalYear }),
                 setAopCheckList: (aopChecklist) => set({ aopChecklist }),
-                setYears: (years) => set({ years })
+                setYears: (yearDetails) => set({ yearDetails }),
+
+                clearMission: () => set({ mission: "" }),
             }
         }),
         {

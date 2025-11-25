@@ -1,6 +1,6 @@
-import React, { useEffect, useState } from 'react'
+import React, { Fragment, useEffect, useState } from 'react'
 
-import { Stack, Typography, Breadcrumbs, Grid, } from '@mui/joy';
+import { Stack, Typography, Breadcrumbs, Grid, Divider, Box } from '@mui/joy';
 import { useNavigate } from 'react-router-dom';
 
 import { useAop } from '../../../Store/AOPStore'
@@ -37,9 +37,9 @@ const AOPSummary = () => {
     const { updateAOP } = useAOPHook()
     const { setAlertDialog, setConfirmationModal, closeConfirmation, closeAlertDialog } = useModalHook();
 
-    useEffect(() => {
-        console.log(aop)
-    }, [aop])
+    // useEffect(() => {
+    //     console.log(aop)
+    // }, [aop])
 
     const {
         PAGE_TITLE,
@@ -104,12 +104,11 @@ const AOPSummary = () => {
             authorization_pin: pin,
         }
 
-        console.log(payload)
+        // console.log(payload)
 
         try {
-            await updateAOP(params, payload, (status, message,) => {
+            await updateAOP(params, payload, (status, message) => {
                 if (status === 200) {
-
                     const data = {
                         status: status,
                         title: `AOP For F.Y. ${year} ${message}`,
@@ -118,7 +117,127 @@ const AOPSummary = () => {
                     };
                     setAlertDialog(data);
                     setIsLoading(false)
-                } else {
+                } else if (status === 422) {
+                    // console.log(message)
+
+                    const {
+                        message: statusMessage,
+                        activities_without_resources,
+                        activities_without_responsible_people,
+                        activities_without_target,
+                        objectives_without_activities,
+                    } = message
+
+                    const MISSING_DATA_SECTIONS = [
+                        {
+                            title: "These activities do not contain any resources:",
+                            data: activities_without_resources,
+                        },
+                        {
+                            title: "These activities do not contain any responsible people:",
+                            data: activities_without_responsible_people,
+                        },
+                        {
+                            title: "These activities do not contain any target quarter:",
+                            data: activities_without_target,
+                        },
+                    ];
+
+                    const data = {
+                        status: status,
+                        title: statusMessage,
+                        description: <>
+
+                            {objectives_without_activities && <>
+                                <Typography
+                                    level="title-sm"
+                                >
+                                    These objectives do not contain any activities :
+                                </Typography>
+                                {
+                                    objectives_without_activities.map((objective, idx) => (
+                                        <Typography
+                                            key={idx}
+                                            level="body-xs"
+                                        >
+                                            {objective}
+                                        </Typography>
+                                    ))
+                                }
+                            </>}
+
+                            <Divider
+                                sx={{
+                                    my: 1
+                                }}
+                            />
+
+
+                            {MISSING_DATA_SECTIONS.map(({ title, data }, idx) =>
+                                data?.length > 0 ? (
+                                    <Fragment
+                                        key={idx}
+                                    >
+                                        <Typography
+                                            level="title-sm"
+                                        >
+                                            {title}
+                                        </Typography>
+
+                                        <Box
+                                            display="flex"
+                                            flexWrap="wrap"
+                                            gap={1}
+                                            sx={{
+                                                maxWidth: "100%",
+                                                overflowX: "hidden",
+                                            }}
+                                        >
+                                            {data.map(({ objective, activities }, i) => (
+                                                <>
+                                                    {
+                                                        activities.map((activity) => (
+                                                            <Typography
+                                                                key={i}
+                                                                level="body-xs"
+                                                                sx={{
+                                                                    flex: "0 1 auto",
+                                                                    bgcolor: "#F5F5F5",
+                                                                    borderRadius: "8px",
+                                                                    px: 1.5,
+                                                                    py: 0.5,
+                                                                    whiteSpace: "nowrap",
+                                                                }}
+                                                            >
+                                                                {activity},
+                                                            </Typography>
+                                                        ))
+                                                    }
+                                                    <Typography
+                                                        level="body-xs"
+                                                    >
+                                                        From objective: {objective}
+                                                    </Typography>
+                                                </>
+                                            ))}
+                                        </Box>
+
+                                        <Divider
+                                            sx={{
+                                                my: 1
+                                            }}
+                                        />
+
+                                    </Fragment>
+                                ) : null
+                            )}
+                        </>
+                    }
+
+                    setAlertDialog(data)
+                    setIsLoading(false)
+                }
+                else {
                     setAlertDialog({
                         status: "error",
                         title: message,
@@ -239,9 +358,19 @@ const AOPSummary = () => {
                                                 </>
                                             }
                                             accordionDetails={
-                                                <AccordionDetails
-                                                    activities={activities}
-                                                />
+                                                <>
+                                                    {activities.length === 0 &&
+                                                        <Typography
+                                                            p={4}
+                                                            textAlign={'center'}
+                                                            level='title-md'
+                                                        >
+                                                            There are no activities on this objective
+                                                        </Typography>}
+                                                    <AccordionDetails
+                                                        activities={activities}
+                                                    />
+                                                </>
                                             }
                                         />
                                     </>
@@ -287,31 +416,33 @@ const AOPSummary = () => {
 
             <ConfirmationModalComponent
                 withAuthPin
-                content={<>
-                    <BoxComponent>
-                        <Stack
-                            p={2}
-                            spacing={1}
-                        >
-                            <Typography level="title-md">
-                                Please confirm the following:
-                            </Typography>
+                content={
+                    <>
+                        <BoxComponent>
+                            <Stack
+                                p={2}
+                                spacing={1}
+                            >
+                                <Typography level="title-md">
+                                    Please confirm the following:
+                                </Typography>
 
-                            {AOP_CONFRIM_DATA.map(({ title, icon }) => (
-                                <Stack
-                                    direction={'row'}
-                                    alignItems={'center'}
-                                    spacing={1}
-                                >
-                                    {icon}
-                                    <Typography level="body-sm">
-                                        {title}
-                                    </Typography>
-                                </Stack>
-                            ))}
-                        </Stack>
-                    </BoxComponent>
-                </>}
+                                {AOP_CONFRIM_DATA.map(({ title, icon }) => (
+                                    <Stack
+                                        direction={'row'}
+                                        alignItems={'center'}
+                                        spacing={1}
+                                    >
+                                        {icon}
+                                        <Typography level="body-sm">
+                                            {title}
+                                        </Typography>
+                                    </Stack>
+                                ))}
+                            </Stack>
+                        </BoxComponent>
+                    </>
+                }
                 leftButtonLabel='Cancel'
                 leftButtonAction={() => closeConfirmation()}
                 rightButtonLabel='Submit'
@@ -321,12 +452,11 @@ const AOPSummary = () => {
             />
 
             <AlertDialogComponent
-                // leftButtonAction={() => handleConfirm()}
+                leftButtonAction={() => handleConfirm()}
                 rightButtonAction={() => handleConfirm()}
                 isLoading={isLoading}
                 noRightButton={false}
             />
-
 
         </>
     )

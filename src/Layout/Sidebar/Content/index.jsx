@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 
 import { Box, Stack, Tooltip, useTheme } from "@mui/joy";
 
@@ -27,6 +27,8 @@ const Content = ({ sidebarWidth }) => {
 
     return hasPermission;
   });
+
+  // console.log(permissions)
 
   return (
     <Stack

@@ -53,8 +53,10 @@ function AlertDialogComponent({
             <ModalDialog
               sx={{
                 width: "auto",
-                maxWidth: "20%",
-                borderRadius: 20,
+                maxWidth: "400px",
+                maxHeight: "60vh",
+                overflowY: "auto",
+                p: 2,
               }}
             >
               <DialogTitle
@@ -69,13 +71,13 @@ function AlertDialogComponent({
                   >
                     {title}
                   </Typography>
-                  <Typography
+                  {/* <Typography
                     fontWeight={400}
                     fontSize={{ xs: 12, lg: 13 }}
                     color="neutral"
-                  >
-                    {description}
-                  </Typography>
+                  > */}
+                  {description}
+                  {/* </Typography> */}
                 </Stack>
               </DialogTitle>
 

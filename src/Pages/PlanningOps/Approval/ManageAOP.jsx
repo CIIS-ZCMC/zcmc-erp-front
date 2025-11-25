@@ -1,32 +1,72 @@
 import { Fragment, useEffect, useState } from "react";
-import PageTitle from "../../../Components/Common/PageTitle";
-import { useParams } from "react-router-dom";
 import { Box, Grid, Stack, Typography } from "@mui/joy";
+import { useParams, useLocation } from "react-router-dom";
+import { ExternalLink } from "lucide-react";
+
+import PageTitle from "../../../Components/Common/PageTitle";
 import ContainerComponent from "../../../Components/Common/ContainerComponent";
 import ButtonComponent from "../../../Components/Common/ButtonComponent";
-import { ExternalLink } from "lucide-react";
+
+import { useUserTypes } from "../../../Store/AuthStore";
+import useObjectivesStore from "../../../Store/ObjectivesStore";
+
 import {
   useAOPApplication,
   useAOPApplicationObjectives,
 } from "../../../Hooks/AOP/AOPApplicationsHook";
-import { useActivityActions } from "../../../Hooks/AOP/ActivityHook";
-import { localStorageGetter } from "../../../Utils/LocalStorage";
-import ObjectivesList from "./Contents/ObjectivesList";
 import {
   useAllComments,
   useCommentActions,
   useRemarks,
 } from "../../../Hooks/CommentHook";
+import { useApprovalActions } from "../../../Hooks/AOP/AOPApprovalHook";
+import useObjectivesHook from "../../../Hooks/ObjectivesHook";
+import { useActivityActions } from "../../../Hooks/AOP/ActivityHook";
+
+import ObjectivesList from "./Contents/ObjectivesList";
+
 import { ActivityDetails } from "./Contents/ActivityDetails";
 import { CommentsDetails } from "./Contents/CommentsDetails";
-
 import { FeedbackContent } from "./Contents/FeedbackContent";
-import { useUserTypes } from "../../../Store/AuthStore";
 import ProcessAOPContent from "./Contents/ProcessAOPContent";
-import { useApprovalActions } from "../../../Hooks/AOP/AOPApprovalHook";
+
+import { localStorageGetter } from "../../../Utils/LocalStorage";
 
 export default function ManageAOP() {
+
+  const params = useParams();
+  const aopId = params.id;
+
+  const { getObjectives } = useObjectivesHook();
+  const { applicationObjectives } = useObjectivesStore();
+
+  useEffect(() => {
+    getObjectives(aopId, (status, message) => {
+      return
+    })
+  }, [])
+
+  // useEffect(() => {
+  //   console.log('applicationObjectives:', applicationObjectives)
+  // }, [applicationObjectives, aopId])
+
+
+  const {
+    current_user,
+    objectives,
+    processable,
+    fiscal_year,
+    status,
+    status_id,
+    latest_application_timeline
+  } = applicationObjectives;
+
+  const { role, area_name } = current_user || {};
+  const { id } = latest_application_timeline || {};
+
+
   const { isPlanning, isMCC } = useUserTypes();
+
   const { getAOPApprovalTimeline } = useApprovalActions();
   const AOPApplication = useAOPApplication();
 
@@ -38,7 +78,7 @@ export default function ManageAOP() {
   const AOP_APPLICATION_ID = localStorageGetter("aop_application_id");
 
   // ACTIVITY HOOK
-  const defaultActivityId = AOPApplicationObjectives[0]?.activities[0]?.id;
+  // const defaultActivityId = AOPApplicationObjectives[0]?.activities[0]?.id;
   const activityId = localStorageGetter("activeActivityId");
   const { getActivityById } = useActivityActions();
 
@@ -91,18 +131,18 @@ export default function ManageAOP() {
     return !isMCC;
   };
 
-  useEffect(() => {
-    if (activityId == defaultActivityId) return;
+  // useEffect(() => {
+  //   if (activityId == defaultActivityId) return;
 
-    Promise.all([
-      getAOPApprovalTimeline(AOP_APPLICATION_ID, () => { }),
-      getActivityById(defaultActivityId, () => { }),
-      getCommentsByActivity(defaultActivityId, () => { }),
-      getCommentsByApplication(AOP_APPLICATION_ID, () => { }),
-    ]).catch((error) => {
-      console.error("Error fetching data:", error);
-    });
-  }, []);
+  //   Promise.all([
+  //     getAOPApprovalTimeline(AOP_APPLICATION_ID, () => { }),
+  //     getActivityById(defaultActivityId, () => { }),
+  //     getCommentsByActivity(defaultActivityId, () => { }),
+  //     getCommentsByApplication(AOP_APPLICATION_ID, () => { }),
+  //   ]).catch((error) => {
+  //     console.error("Error fetching data:", error);
+  //   });
+  // }, []);
 
 
   // useEffect(() => {
@@ -127,11 +167,11 @@ export default function ManageAOP() {
           title={
             <Typography>
               Manage{" "}
-              <Typography textColor={"warning.400"}>{AREA_CODE}'s</Typography>{" "}
+              <Typography textColor={"warning.400"}>{area_name}'s</Typography>{" "}
               AOP{" "}
               {/* AOP <Typography textColor={"warning.400"}>#{id} </Typography> */}
               for Fiscal Year{" "}
-              <Typography textColor={"warning.400"}>{FISCAL_YEAR}</Typography>
+              <Typography textColor={"warning.400"}>{fiscal_year}</Typography>
             </Typography>
           }
           description={
@@ -169,6 +209,7 @@ export default function ManageAOP() {
                   "Collapse an objective and select one of its activities to view more information."
                 }
                 footer={
+
                   <Stack direction={"row"} spacing={2}>
                     {isAllowedFeedbackViewing() && (
                       <ButtonComponent
@@ -178,14 +219,23 @@ export default function ManageAOP() {
                         onClick={handleViewFeedback}
                       />
                     )}
-                    <ProcessAOPContent />
+
+                    <ProcessAOPContent
+                      processable={processable}
+                      timelineId={id}
+                      aopId={aopId}
+                      role={role}
+                    />
+
                   </Stack>
                 }
                 scrollable
                 contentMaxHeight={"62vh"}
                 contentMinHeight={"62vh"}
               >
-                <ObjectivesList />
+                <ObjectivesList
+                  objectives={objectives}
+                />
               </ContainerComponent>
             </Grid>
 

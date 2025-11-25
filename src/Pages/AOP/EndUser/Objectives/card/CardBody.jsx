@@ -7,7 +7,7 @@ import InputComponent from "@Components/Form/InputComponent";
 
 import { ThreeDotsLoader } from "@Components/Common/Loading/ThreeDotsLoader";
 
-const CardBody = ({ status, success_indicator, objective, activities }) => {
+const CardBody = ({ status, success_indicator, objective, other_success_indicator, activities }) => {
   if (!objective) {
     return <ThreeDotsLoader />; // Still loading or not yet selected
   }
@@ -21,7 +21,7 @@ const CardBody = ({ status, success_indicator, objective, activities }) => {
           <Typography
             level={"body-sm"}
             textAlign={"left"}
-            // sx={{ flex: 1 }}
+          // sx={{ flex: 1 }}
           >
             {type_of_function?.type}
           </Typography>
@@ -60,7 +60,7 @@ const CardBody = ({ status, success_indicator, objective, activities }) => {
               textOverflow: "ellipsis", // show "..." at the end
             }}
           >
-            {success_indicator?.description}
+            {success_indicator ? success_indicator?.description : other_success_indicator.description}
           </Typography>
         ) : (
           <TextareaComponent placeholder={"Success indicator"} />

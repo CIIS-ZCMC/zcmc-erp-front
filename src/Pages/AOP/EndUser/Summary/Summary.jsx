@@ -2,11 +2,11 @@ import React from 'react';
 
 import { Grid } from '@mui/joy';
 
-import ObjectivesCard from '../status/ObjectivesCard';
-import ActivitiesCard from '../status/ActivitiesCard';
-import ResourcesCard from '../status/ResourcesCard';
-import ResponsiblePersonCard from '../status/ResponsiblePersonCard';
-import CostCard from '../status/CostCard';
+import ObjectivesCard from '../Status/ObjectivesCard';
+import ActivitiesCard from '../Status/ActivitiesCard';
+import ResourcesCard from '../Status/ResourcesCard';
+import ResponsiblePersonCard from '../Status/ResponsiblePersonCard';
+import CostCard from '../Status/CostCard';
 
 const Summary = ({
     hasTotalCost = false,

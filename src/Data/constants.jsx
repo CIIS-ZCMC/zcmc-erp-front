@@ -75,6 +75,47 @@ export const AOP_SUMMARY = {
   SUMMARY_FOOTER_CONTENT: 'By clicking "Submit for Official Review", you certify that all information contained in this Annual Operations Plan is true, accurate, and complete to the best of your knowledge. This document will be officially submitted to the Approving Bodies for review and approval in accordance with government procurement and planning procedures.'
 }
 
+export const AOP = {
+  HEADER_TITLE: 'AOP for Fiscal year',
+  MISSION_LABEL: 'Mission',
+  PAGE_TITLE: 'Annual Operations Planning',
+  PAGE_DESCRIPTION: ` The following below serves as the summary of your AOP request. You
+                can open and update your request before the deadline as set by the
+                administrators.`,
+  AOP_EMPTY_OBJECTIVE_TITLE: `You don't have anything for this year's AOP yet`,
+  AOP_EMPTY_OBJECTIVE_DESC: 'Begin by adding a new objective.',
+  EMPTY_STATE_TITLE: ` You don't have an AOP for this year yet.`,
+  EMPTY_STATE_SUBTITLE: `Begin by creating a new AOP.`,
+  EMPTY_STATE_DESCRIPTION: `Nothing to show yet for this year’s PPMP. You may request new
+                    items for the meantime or create a new AOP request.`,
+  EMPTY_TITLE_PAGE: 'Enterprise Resource Planning System',
+  EMPTY_TITLE_DESC: 'Sample description',
+}
+
+
+export const AOP_TIMELINE = {
+  TITLE: 'Approval Timeline',
+  SUBTITLE: 'The list below shows the current status of the request.',
+  EMPTY_STATE: ' No transactions done yet.',
+}
+
+export const PROCESS_AOP = {
+  SELECT_ACTION_LABEL: 'Select the action you would like to take:',
+  INPUT_HELPER: 'Confirm you action by entering your 6-digit authorization PIN.',
+
+  MODAL_TITLE: 'Approve request',
+  MODAL_DESCRIPTION: 'Select a request status and reasons (if returned) to continue. You may add remarks if necessary.',
+
+  RETURN_AOP: 'The AOP request has been returned for revision',
+  SUCCESS_AOP: 'The AOP request successfully approved',
+  APPROVED_AOP: 'Everyone can now see the changes you’ve made. The request is now ready for processing of the next approving body',
+  MCC_APPROVED_AOP: 'The AOP request has been successfully approved. All parties involved will be notified of this update.',
+  RETURNED_AOP: 'The request has been returned to the requesting party for necessary revisions. They will be notified of your remarks and required changes.',
+  ERROR: 'An error occurred while updating the status of the AOP request. Please check your authorization PIN and try again. If the problem persists, contact the system administrator.'
+}
+
+
+
 export const AOP_CONFRIM_DATA = [
   {
     icon: <Check />,
@@ -90,7 +131,6 @@ export const AOP_CONFRIM_DATA = [
     icon: <Check />,
     title: 'You have the authority to submit this document'
   }
-
 ]
 
 export const AOP_CONSTANTS = {
@@ -175,7 +215,7 @@ export const LIBRARY_CONSTANTS = {
   LIBRARY_TITLE: "Item information management",
   LIBRARY_SUBTITLE:
     "All information used by end-users around the system, across different modules and areas can be managed here.",
-  LIBRARY_HEADER: "Lis of records ready for AOP and PPMP",
+  LIBRARY_HEADER: "List of records ready for AOP and PPMP",
   LIBRARY_SUBHEADER:
     "The following records of information are used to define user-inputted values",
 };
@@ -289,11 +329,18 @@ export const API = {
   SHOW_OBJECTIVE: "show-objective-activity",
   PROCESS_AOP_REQUEST: "process-aop-request",
 
+
+  APPROVAL_AOP: 'approve-or-return',
+
+  APPROVAL_DIVISION_CHIEF: 'approve-by-division-chief',
+  RETURNED_DIVISON_CHIEF: 'returned-by-division-chief',
+
   //ITEM REQUESTS
   REQUEST_ITEM: "item-requests",
 
   // TIMELINE
-  APPROVAL_TIMELINE: "application-timelines",
+  APPROVAL_TIMELINE: "user-application-timelines",
+  APPROVER_TIMELINE: 'application-timelines/approver',
 
   // OBJECTIVES
   EDIT_OBJECTIVE: "edit-objective-and-success-indicator",

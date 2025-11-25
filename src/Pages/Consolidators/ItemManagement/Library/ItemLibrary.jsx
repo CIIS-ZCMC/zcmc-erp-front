@@ -1,27 +1,28 @@
 import React, { useState, useEffect, use } from "react";
-import PageTitle from "../../../Components/Common/PageTitle";
+import PageTitle from "../../../../Components/Common/PageTitle";
 import { Fragment } from "react";
-import { LIBRARY_CONSTANTS } from "../../../Data/constants";
-import ContainerComponent from "../../../Components/Common/ContainerComponent";
-import ButtonComponent from "../../../Components/Common/ButtonComponent";
+import { LIBRARY_CONSTANTS } from "../../../../Data/constants";
+import ContainerComponent from "../../../../Components/Common/ContainerComponent";
+import ButtonComponent from "../../../../Components/Common/ButtonComponent";
 import { Divide, ExternalLink, Plus } from "lucide-react";
 import { Stack, Box, Input, Divider } from "@mui/joy";
 import { Outlet, useNavigate } from "react-router-dom";
-import TabComponent from "../../../Components/Common/TabComponent";
+import TabComponent from "../../../../Components/Common/TabComponent";
 import Typography from "@mui/joy/Typography";
 import { useLocation } from "react-router-dom";
-import useModalHook from "../../../Hooks/ModalHook";
-import { libaryTabs } from "../../../Data/Options";
-import ModalComponent from "../../../Components/Common/Dialog/ModalComponent";
-import InputComponent from "../../../Components/Form/InputComponent";
-import AutocompleteComponent from "../../../Components/Form/AutocompleteComponent";
-import TextareaComponent from "../../../Components/Form/TextareaComponent";
+import useModalHook from "../../../../Hooks/ModalHook";
+import { libaryTabs } from "../../../../Data/Options";
+import ModalComponent from "../../../../Components/Common/Dialog/ModalComponent";
+import InputComponent from "../../../../Components/Form/InputComponent";
+import AutocompleteComponent from "../../../../Components/Form/AutocompleteComponent";
+import TextareaComponent from "../../../../Components/Form/TextareaComponent";
 
 const ItemLibrary = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
   const [index, setIndex] = useState("");
+
   const [newItem, setNewItem] = useState({
     name: "",
     classification: "",
@@ -215,13 +216,20 @@ const ItemLibrary = () => {
   const { openModal, setOpenModal, successDialog, setSuccessDialog } =
     useModalHook();
 
+
+  useEffect(() => {
+    console.log('index:', index)
+  }, [index])
+
   return (
     <Fragment>
       {console.log("ItemLibrary", index)}
+
       <PageTitle
         title={LIBRARY_CONSTANTS.LIBRARY_TITLE}
         description={LIBRARY_CONSTANTS.LIBRARY_SUBTITLE}
       />
+
       <Box sx={{ marginTop: "40px" }}>
         <ContainerComponent
           title={LIBRARY_CONSTANTS.LIBRARY_HEADER}
@@ -256,6 +264,7 @@ const ItemLibrary = () => {
           <Outlet />
         </ContainerComponent>
       </Box>
+
       {openNew && (
         <ModalComponent
           isOpen={openNew}
@@ -266,19 +275,19 @@ const ItemLibrary = () => {
             index === ""
               ? "Create New Item"
               : index === "classification"
-              ? "Add New Classification"
-              : index === "category"
-              ? "Add New Category"
-              : "Add New Variant"
+                ? "Add New Classification"
+                : index === "category"
+                  ? "Add New Category"
+                  : "Add New Variant"
           }
           description={
             index === ""
               ? "Fill-in basic identification of the item you wish to add to the item library."
               : index === "classification"
-              ? "Add a new classification to the library."
-              : index === "category"
-              ? "Add a new category to the library."
-              : "Add a new variant to the library."
+                ? "Add a new classification to the library."
+                : index === "category"
+                  ? "Add a new category to the library."
+                  : "Add a new variant to the library."
           }
           handleClose={() => {
             setOpenNew(false);

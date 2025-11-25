@@ -1,47 +1,83 @@
 import React, { Fragment, useEffect, useState } from "react";
-import { useAuth, useUserTypes } from "../../../../Store/AuthStore";
-import { approvalActions } from "../../../../Data/constants";
-import { handleChangeInput } from "../../../../Utils/HandleInput";
 import { Box, Divider, Stack, Typography } from "@mui/joy";
+import { useNavigate } from "react-router-dom";
+
 import RadioButtonComponent from "../../../../Components/Common/RadioButtonComponent";
 import TextareaComponent from "../../../../Components/Form/TextareaComponent";
 import InputComponent from "../../../../Components/Form/InputComponent";
+import ButtonComponent from "../../../../Components/Common/ButtonComponent";
+import ModalComponent from "../../../../Components/Common/Dialog/ModalComponent";
+import AlertDialogComponent from "../../../../Components/Common/Dialog/AlertDialogComponent";
+
 import {
   useApprovalActions,
   useApprovalTimeline,
 } from "../../../../Hooks/AOP/AOPApprovalHook";
-// import { useAOPApplication } from "../../../../Hooks/AOP/AOPApplicationsHook";
-import { localStorageGetter } from "../../../../Utils/LocalStorage";
 import useModalHook from "../../../../Hooks/ModalHook";
-import ButtonComponent from "../../../../Components/Common/ButtonComponent";
-import ModalComponent from "../../../../Components/Common/Dialog/ModalComponent";
-import AlertDialogComponent from "../../../../Components/Common/Dialog/AlertDialogComponent";
+
+// import { useAOPApplication } from "../../../../Hooks/AOP/AOPApplicationsHook";
+
 import { TEST_MODE } from "../../../../Services/Config";
 import { APPROVAL_TIMELINE } from "../../../../Data/TestData";
 
-const ProcessAOPContent = () => {
+import { AOP_TIMELINE } from "../../../../Data/constants";
+
+import { approvalActions, PROCESS_AOP, } from "../../../../Data/constants";
+import { handleChangeInput } from "../../../../Utils/HandleInput";
+import { localStorageGetter } from "../../../../Utils/LocalStorage";
+
+const ProcessAOPContent = ({ aopId, timelineId, role, processable }) => {
   // HOOKS
-  const { isDivisionHead, isPlanning, isMCC } = useUserTypes();
+
+  const {
+    RETURN_AOP,
+    SUCCESS_AOP,
+    APPROVED_AOP,
+    MCC_APPROVED_AOP,
+    RETURNED_AOP,
+    ERROR,
+    SELECT_ACTION_LABEL,
+    MODAL_TITLE,
+    MODAL_DESCRIPTION,
+    INPUT_HELPER,
+
+  } = PROCESS_AOP;
+
+  const navigate = useNavigate()
+
+  const hasRole = (userRole) => role === userRole;
+
+  const userPlanning = hasRole('Planning Unit');
+  const userDiviChief = hasRole('Division Chief');
+  const userMCC = hasRole('MCC');
+
   const { processAOP } = useApprovalActions();
+
   const {
     setAlertDialog,
     closeAlertDialog,
     alertDialogState: { status },
   } = useModalHook();
+
   const approvalTimeline = useApprovalTimeline();
-  const { user } = useAuth();
 
   const timeline = approvalTimeline?.some(
     (item) => item.approver_user_id === user?.id && item.status === "approved"
   );
 
   // STATE
-  const [processData, setProcessData] = useState({ action: "approved" });
-  const [disabledProcessRequest, setDisabledProcessRequest] = useState(true);
+  const [remarks, setRemarks] = useState("");
+  const [pin, setPin] = useState("");
 
-  const AOP_APPLICATION_ID = localStorageGetter("aop_application_id");
+  const [processData, setProcessData] = useState({ action: "approved" });
   const [openProcessModal, setOpenProcessModal] = useState(false);
   const [btnLoading, setBtnLoading] = useState(false);
+
+
+  // const [disabledProcessRequest, setDisabledProcessRequest] = useState(true);
+
+  const AOP_APPLICATION_ID = localStorageGetter("aop_application_id");
+
 
   // FUNCTIONS
   const handleProcessRequest = () => {
@@ -49,48 +85,47 @@ const ProcessAOPContent = () => {
   };
 
   const confirmButtonDisabled =
-    !processData?.pin ||
-    !processData?.action ||
-    processData?.pin?.length !== 6 ||
-    processData?.remarks === "" ||
-    processData?.remarks === null;
+    !pin ||
+    pin.length !== 6;
+  // (role !== "Planning Unit" && (!remarks || remarks.trim() === "")) ||
+  // remarks === null;
 
   const getNextOffice = () => {
-    if (isPlanning) {
-      return "Division Head";
-    } else if (isDivisionHead) {
-      return "MCC";
+    if (userDiviChief) {
+      return 'Planning Unit';
+    } else if (userPlanning) {
+      return 'MCC';
     }
   };
 
   // PROCESS AOP
   const handleProcessAOP = () => {
-    setBtnLoading(true);
-    const form = {
-      aop_application_id: AOP_APPLICATION_ID,
-      status: processData?.action,
-      remarks: processData?.remarks ?? null,
-      authorization_pin: processData?.pin,
-    };
 
-    processAOP(form, (status, message) => {
+    const payload = {
+      application_timeline_id: timelineId,
+      action: processData.action === 'approved' ? 4 : 6,
+      remarks,
+      authorization_pin: pin,
+    }
+
+    processAOP(payload, (status, message) => {
       setBtnLoading(false);
 
       let data = {};
 
       if (status === 200) {
         data = {
-          status: 200,
+          status: processData.action === "returned" ? 404 : 200,
           isGlobal: false,
           title:
             processData.action === "returned"
-              ? "The AOP request has been returned for revision"
-              : "The AOP request successfully approved",
-          description: isMCC
-            ? `The AOP request has been successfully ${processData.action}. All parties involved will be notified of this update.`
+              ? RETURN_AOP
+              : SUCCESS_AOP,
+          description: userMCC
+            ? MCC_APPROVED_AOP
             : processData.action === "returned"
-            ? `The request has been returned to the requesting party for necessary revisions. They will be notified of your remarks and required changes.`
-            : `Everyone can now see the changes you’ve made. The request is now ready for processing of the next approving body (${getNextOffice()}).`,
+              ? RETURNED_AOP
+              : `${APPROVED_AOP} (${getNextOffice()}).`,
         };
       } else {
         data = {
@@ -98,40 +133,48 @@ const ProcessAOPContent = () => {
           isGlobal: false,
           title: "Failed to update status",
           description:
-            message ??
-            "An error occurred while updating the status of the AOP request. Please check your authorization PIN and try again. If the problem persists, contact the system administrator.",
+            message ?? ERROR,
         };
       }
-
       setAlertDialog(data);
-    });
+    })
+
+    setBtnLoading(true);
   };
 
   const handleCloseConfirmation = () => {
+
+    setBtnLoading(true)
     setOpenProcessModal(false);
-    setDisabledProcessRequest(true);
-    closeAlertDialog();
+    // setDisabledProcessRequest(true);
+    setTimeout(() => {
+      navigate('/aop-approval')
+      closeAlertDialog()
+      setBtnLoading(false);
+    }, 2000)
+
   };
 
   useEffect(() => {
-    setDisabledProcessRequest(timeline);
+    // setDisabledProcessRequest(timeline);
   }, [timeline]);
+
   return (
     <Fragment>
+
       <ButtonComponent
         label={"Process request"}
-        disabled={disabledProcessRequest ?? true}
+        disabled={!processable}
         onClick={handleProcessRequest}
-      />{" "}
+      />
+
       {/* MODAL */}
       <ModalComponent
         hasActionButtons
         isOpen={openProcessModal}
         handleClose={() => setOpenProcessModal(false)}
-        title={`Approve request`}
-        description={
-          "Select a request status and reasons (if returned) to continue. You may add remarks if necessary." //  Change if user is not planning officer
-        }
+        title={MODAL_TITLE}
+        description={MODAL_DESCRIPTION}//  Change if user is not planning officer
         leftButtonLabel="Back to request"
         rightButtonLabel="Confirm and save"
         rightButtonAction={handleProcessAOP}
@@ -139,63 +182,76 @@ const ProcessAOPContent = () => {
         rightButtonDisabled={confirmButtonDisabled}
         maxWidth={500}
         content={
-          <Stack gap={isDivisionHead && !isMCC && 1}>
-            <Stack py={isPlanning ? 2 : 1}>
-              {isPlanning && (
-                <Box mb={2}>
-                  <Typography level="title-sm" mb={1}>
-                    Select the action you would like to take:
-                  </Typography>
-                  <RadioButtonComponent
-                    disabled={btnLoading}
-                    actions={approvalActions}
-                    value={processData?.action}
-                    handleChange={(e) =>
-                      handleChangeInput(
-                        "action",
-                        setProcessData,
-                        e.target.value
-                      )
-                    }
+          <>
+            <Stack
+              gap={(userDiviChief && !userMCC) && 1}
+            >
+              <Stack
+                py={userPlanning ? 2 : 1}
+              >
+                {(userDiviChief || userPlanning) &&
+                  <Box mb={2}>
+
+                    <Typography level="title-sm" mb={1}>
+                      {SELECT_ACTION_LABEL}
+                    </Typography>
+
+                    <RadioButtonComponent
+                      disabled={btnLoading}
+                      actions={approvalActions}
+                      value={processData?.action}
+                      handleChange={(e) => {
+                        // console.log(e.target.value)
+                        handleChangeInput(
+                          "action",
+                          setProcessData,
+                          e.target.value
+                        )
+                      }}
+                    />
+                  </Box>
+                }
+
+                {/* IF OMCC, AUTH PIN */}
+                {userDiviChief && !userMCC ? (
+                  <TextareaComponent
+                    minRows={3}
+                    label={"Remarks"}
+                    isRequired
+                    value={remarks}
+                    onChange={(e) => {
+                      setRemarks(e.target.value)
+                    }}
+                    maxRows={10}
+                    placeholder={"Enter your remarks here"}
                   />
-                </Box>
-              )}
+                ) : null}
 
-              {/* IF OMCC, AUTH PIN */}
-              {isDivisionHead && !isMCC ? (
-                <TextareaComponent
-                  minRows={3}
-                  label={"Remarks"}
-                  isRequired
-                  setValue={(e) =>
-                    handleChangeInput("remarks", setProcessData, e.target.value)
-                  }
-                  value={processData?.remarks}
-                  maxRows={10}
-                  placeholder={"Enter your remarks here"}
-                />
-              ) : null}
+              </Stack>
+
+              {(userDiviChief && !userMCC) && <Divider />}
+
+              <InputComponent
+                type="password"
+                label="Authorization pin"
+                helperText={INPUT_HELPER}
+                value={pin}
+                setValue={setPin}
+              />
+
             </Stack>
-
-            {isDivisionHead && !isMCC && <Divider />}
-            <InputComponent
-              type="password"
-              label="Authorization pin"
-              helperText={
-                "Confirm you action by entering your 6-digit authorization PIN."
-              }
-              handleInput={(e) =>
-                handleChangeInput("pin", setProcessData, e.target.value)
-              }
-              value={processData?.pin}
-            />
-          </Stack>
+          </>
         }
       />
+
       <AlertDialogComponent
-        leftButtonAction={
-          status === 200 ? handleCloseConfirmation : closeAlertDialog
-        }
+        isLoading={btnLoading}
+        // leftButtonAction={
+        //   status === 200 ? handleCloseConfirmation : closeAlertDialog
+        // }
+        leftButtonAction={() => handleCloseConfirmation()}
+        rightButtonAction={() => handleCloseConfirmation()}
+        noRightButton={false}
       />
     </Fragment>
   );

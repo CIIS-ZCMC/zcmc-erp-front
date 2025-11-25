@@ -14,6 +14,7 @@ import CardComponent from "@Components/Common/Card/CardComponent";
 import ConfirmationModalComponent from "@Components/Common/Dialog/ConfirmationModalComponent";
 
 import useModalHook from "../../../../Hooks/ModalHook";
+import useSocket from '../../../../Hooks/Socket/SocketHook';
 
 import CardHeader from "./card/CardHeader";
 import CardBody from "./card/CardBody";
@@ -28,6 +29,7 @@ import {
   useObjectivesActions,
   useApplicationObjectives,
   useApplicationObjective,
+  useOtherSuccessIndicator,
 } from "../../../../Store/ObjectivesStore";
 
 import useObjectivesHook from "../../../../Hooks/ObjectivesHook";
@@ -44,6 +46,7 @@ const Objectives = () => {
   const functionType = useFunctionType();
   const objective = useObjective();
   const successIndicator = useSuccessIndicator();
+  const otherSuccessIndicator = useOtherSuccessIndicator();
   const applicationObjectives = useApplicationObjectives();
   const applicationObjective = useApplicationObjective();
 
@@ -108,12 +111,12 @@ const Objectives = () => {
     console.info("You clicked a breadcrumb.");
   }
 
-  useEffect(() => {
-    console.log("aopId", aopId);
-    if (aopId) {
-      setAopId(aopId);
-    }
-  }, [aopId]);
+  // useEffect(() => {
+  //   console.log("aopId", aopId);
+  //   if (aopId) {
+  //     setAopId(aopId);
+  //   }
+  // }, [aopId]);
 
   const handleSaveObjectives = async () => {
     setIsLoading(true);
@@ -122,6 +125,7 @@ const Objectives = () => {
       aop_application_id: aopId,
       objective_id: objective?.id,
       success_indicator_id: successIndicator?.id,
+      other_success_indicator_description: otherSuccessIndicator,
     };
 
     try {
@@ -160,7 +164,7 @@ const Objectives = () => {
     const payload = {
       objective_id: objective?.id,
       success_indicator_id: successIndicator?.id,
-      // other_success_indicator_description:
+      other_success_indicator_description: otherSuccessIndicator,
     };
 
     const params = { id: selectedObjectiveId };
@@ -294,8 +298,8 @@ const Objectives = () => {
           <ButtonComponent
             onClick={() => handleOpenObjectivesModal()}
             label={"Add an Objective"}
-            // endDecorator={<Plus size={16} />}
-            // disabled={!show || disabledEditMode(APPLICATION_OBJECTIVE_ID, remarks, comments, disabled)}
+          // endDecorator={<Plus size={16} />}
+          // disabled={!show || disabledEditMode(APPLICATION_OBJECTIVE_ID, remarks, comments, disabled)}
           />
         </Stack>
       </BoxComponent>
@@ -332,7 +336,7 @@ const Objectives = () => {
             <ButtonComponent
               onClick={() => handleOpenObjectivesModal()}
               label={"Add an Objective"}
-              // endDecorator={<Plus size={16} />}
+            // endDecorator={<Plus size={16} />}
             />
           </Stack>
         </>
@@ -345,6 +349,7 @@ const Objectives = () => {
               success_indicator,
               objective,
               activities_count,
+              other_success_indicator,
             }) => (
               <Grid key={id} size={4} lg={4} md={6} sm={12}>
                 <CardComponent
@@ -360,6 +365,7 @@ const Objectives = () => {
                     <CardBody
                       success_indicator={success_indicator}
                       objective={objective}
+                      other_success_indicator={other_success_indicator}
                       status={false}
                     />
                   }
@@ -369,7 +375,11 @@ const Objectives = () => {
                       handleActivities={() => {
                         setObjectiveId(id);
                         navigate(`/aop/activities/${id}`, {
-                          state: { objId: id, aopId: aop_application_id },
+                          state: {
+                            objId: id,
+                            aopId: aop_application_id,
+                            objective: objective.description,
+                          },
                         });
                       }}
                     />
@@ -394,6 +404,7 @@ const Objectives = () => {
             functionType={functionType}
             objective={objective}
             successIndicator={successIndicator}
+            otherSuccessIndicator={otherSuccessIndicator}
             applicationObjective={applicationObjective}
           />
         }

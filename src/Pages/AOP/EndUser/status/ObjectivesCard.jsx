@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ArrowRight } from 'lucide-react';
 import ButtonComponent from '@Components/Common/ButtonComponent';
 

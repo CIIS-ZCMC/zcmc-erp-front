@@ -26,13 +26,77 @@ import {
   useApprovalLoading,
   useApprovalTimeline,
 } from "../../../Hooks/AOP/AOPApprovalHook";
+
+import useObjectivesHook from "../../../Hooks/ObjectivesHook";
+import useTimelineHook from "../../../Hooks/AOP/TimelineHook";
+import useTimelinesStore from "../../../Store/TimelinesStore";
+
 import { ThreeDotsLoader } from "../../../Components/Common/Loading/ThreeDotsLoader";
 import PageLoader from "../../../Components/Loading/PageLoader";
 import { ThreeDots } from "react-loader-spinner";
 import debounce from "lodash.debounce";
 
+import SelectComponent from "@Components/Form/YearSelectComponent";
+
+import useAOPStore from "../../../Store/AOPStore";
+import useAOPHook from "../../../Hooks/AOP/AOPHook";
+
 const AOPApproval = () => {
   const navigate = useNavigate();
+
+  const { getAopYearList } = useAOPHook();
+  const { getApproverTimeline } = useTimelineHook();
+
+  const { timelines } = useTimelinesStore();
+  const { yearDetails } = useAOPStore();
+
+  const { application_timelines, filters } = timelines;
+  const { status_id, year: currentFiscalYear } = filters || {};
+
+  const { years } = yearDetails || {};
+
+  const [isLoading, setIsLoading] = useState(false);
+
+  // useEffect(() => {
+  //   console.log('year', currentFiscalYear);
+  //   console.log('status id ', status_id);
+  //   console.log('year details', yearDetails);
+  // }, [yearDetails])
+
+  useEffect(() => {
+
+    // assign default parameters
+
+    setIsLoading(true)
+
+    const params = {
+      year: currentFiscalYear,
+      status_id,
+    }
+
+    getApproverTimeline(params, (status, message) => {
+
+      if (!(status >= 200 && status < 300)) {
+        // if status not success
+        setIsLoading(false)
+        return; //Toast error
+      }
+    });
+  }, []);
+
+
+  useEffect(() => {
+    setIsLoading(true);
+    getAopYearList((status, message) => {
+      if (!(status >= 200 && status < 300)) {
+        // if status not success
+        setIsLoading(false);
+        return; //Toast error
+      }
+
+      setIsLoading(false);
+    });
+  }, []);
 
   // HOOKS
   const { getAOPApplications, getAOPApplicationById } =
@@ -40,7 +104,7 @@ const AOPApproval = () => {
   const AOPApplications = useAOPApplications();
   const { getAOPApprovalTimeline } = useApprovalActions();
   const approvalTimeline = useApprovalTimeline();
-  const isLoading = useApprovalLoading();
+  // const isLoading = useApprovalLoading();
 
   // STATES
   const [openTimelineModal, setOpenTimelineModal] = useState(false);
@@ -51,50 +115,67 @@ const AOPApproval = () => {
   const [isFetchLoading, setIsFetchLoading] = useState(false);
 
   // FUNCTIONS
-  const handleClickCard = (id, area_code) => {
-    setPageLoading(true);
-
-    getAOPApprovalTimeline(id, () => { });
-    getAOPApplicationById(id, () => {
-      setPageLoading(false);
-      navigate(`/aop-approval/objectives/${id}`);
-    });
-
-    localStorageSetter("aop_application_id", id);
-    localStorageSetter("aop_application_area_code", area_code);
+  const handleClickCard = (aopId,) => {
+    navigate(`/aop-approval/objectives/${aopId}`,);
   };
 
   const handleViewTimeline = (id) => {
     setOpenTimelineModal(true);
-
     getAOPApprovalTimeline(id, () => { });
   };
 
+  const yearsData = [2026, 2025];
+
+  // console.log(yearsData)
+
   useEffect(() => {
-    const debouncedFetch = debounce((params) => {
-      setIsFetchLoading(true);
-      getAOPApplications(params, () => {
-        setIsFetchLoading(false);
-      });
-    }, 300);
-
     const params = {
-      status: index == "all" ? null : index,
       year: year,
-      search: search,
-    };
+      status_id: 6
+    }
 
-    debouncedFetch(params);
+    console.log(params)
 
-    return () => {
-      localStorage.removeItem("all_comments");
-      debouncedFetch.cancel();
-    };
-  }, [index, year, search, getAOPApplications]);
+    getApproverTimeline(params, (status, message) => {
+      if (!(status >= 200 && status < 300)) {
+        // if status not success
+        return; //Toast error
+      }
+    });
+  }, [index, year,])
+
+
+  // useEffect(() => {
+  //   const debouncedFetch = debounce((params) => {
+  //     setIsFetchLoading(true);
+  //     getAOPApplications(params, () => {
+  //       setIsFetchLoading(false);
+  //     });
+  //   }, 300);
+
+  //   const params = {
+  //     status: index == "all" ? null : index,
+  //     year: year,
+  //     search: search,
+  //   };
+
+  //   debouncedFetch(params);
+
+  //   return () => {
+  //     localStorage.removeItem("all_comments");
+  //     debouncedFetch.cancel();
+  //   };
+  // }, [index, year, search, getAOPApplications]);
 
   const APPLICATIONS = TEST_MODE ? MANAGE_AOP_APPROVAL : AOPApplications;
 
+  // useEffect(() => {
+  //   console.log(APPLICATIONS)
+  // }, [APPLICATIONS])
+
+
   const TIMELINE = TEST_MODE ? APPROVAL_TIMELINE : approvalTimeline;
+
 
   return (
     <Fragment>
@@ -111,11 +192,14 @@ const AOPApproval = () => {
           }
         >
           <Stack gap={3} mt={3}>
+
+            {/* check this  */}
             <TabComponent
               tabs={approvalPageTabs}
               index={index}
               setIndex={setIndex}
             />
+
             <Stack direction={"row"} justifyContent={"space-between"}>
               <InputComponent
                 label={"Search"}
@@ -127,6 +211,7 @@ const AOPApproval = () => {
                 value={search}
               />
               <Stack direction={"row"} gap={2} alignItems={"center"}>
+
                 <YearSelectorComponent
                   width="auto"
                   label={"Select year"}
@@ -174,25 +259,60 @@ const AOPApproval = () => {
                   <NoResultComponent />
                 </Box>
               ) : (
-                APPLICATIONS?.map(
-                  (
-                    { id, created_on, date_approved, area_code, status, year },
-                    index
-                  ) => (
-                    <Grid key={index} item="true" xs={4}>
-                      <AOPCardComponent
-                        year={year}
-                        date_requested={created_on}
-                        date_approved={date_approved}
-                        status={status}
-                        area_code={area_code ?? "-"}
-                        statusLabel={toCapitalize(status)}
-                        leftClick={() => handleClickCard(id, area_code)}
-                        rightClick={() => handleViewTimeline(id)}
-                      />
-                    </Grid>
-                  )
-                )
+                <>
+                  {application_timelines.map(({
+                    id,
+                    aop_application_id,
+                    current_timeline,
+                    fiscal_year,
+                    current_user
+                  }) => {
+                    const { role } = current_user;
+                    const { date_approved, date_created, status, status_id } = current_timeline;
+
+                    return (
+                      <Grid
+                        key={id}
+                        item={true}
+                        xs={4}
+                      >
+                        <AOPCardComponent
+                          year={fiscal_year}
+                          date_approved={date_approved}
+                          date_requested={date_created}
+                          statusLabel={status}
+                          status={status_id}
+                          leftClick={() => handleClickCard(aop_application_id)}
+                          rightClick={() => handleViewTimeline(id)}
+                        />
+                      </Grid>
+                    )
+
+                  })}
+
+                  {/* {
+                    APPLICATIONS?.map(
+                      (
+                        { id, created_on, date_approved, area_code, status, year },
+                        index
+                      ) => (
+                        <Grid key={index} item="true" xs={4}>
+
+                          <AOPCardComponent
+                            year={year}
+                            date_requested={created_on}
+                            date_approved={date_approved}
+                            status={status}
+                            area_code={area_code ?? "-"}
+                            statusLabel={status}
+                            leftClick={() => handleClickCard(id, area_code)}
+                            rightClick={() => handleViewTimeline(id)}
+                          />
+                        </Grid>
+                      )
+                    )
+                  } */}
+                </>
               )}
             </Grid>
           </Stack>

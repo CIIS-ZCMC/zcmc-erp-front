@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { Fragment, useEffect } from 'react'
 
 import AccordionSummary from '../Activities/AccordionSummary';
 import AccordionDetails from '../Activities/AccordionDetails';
@@ -8,7 +8,7 @@ import AccordionComponent from '@Components/Common/AccordionComponent';
 const ActivityAccordion = ({ activities }) => {
     return (
         <>
-            {activities.map(({ name, start_month, end_month, is_gad_related, counts, target, resources, responsible_people }, index) => {
+            {activities.map(({ id, name, start_month, end_month, is_gad_related, counts, target, resources, responsible_people }, index) => {
 
                 const { total_cost, resources_count, responsible_people_count } = counts;
 
@@ -17,7 +17,7 @@ const ActivityAccordion = ({ activities }) => {
                     second_quarter,
                     third_quarter,
                     fourth_quarter
-                } = target;
+                } = target || {};
 
                 const activityIndex = index + 1
 
@@ -25,16 +25,21 @@ const ActivityAccordion = ({ activities }) => {
                     <AccordionComponent
                         defaultExpanded={false}
                         accordionSummary={
-                            <AccordionSummary
-                                activityIndex={activityIndex}
-                                name={name}
-                                startMonth={start_month}
-                                endMonth={end_month}
-                                isGadRelated={is_gad_related}
-                                totalCost={total_cost}
-                                resourcesCount={resources_count}
-                                peopleCount={responsible_people_count}
-                            />}
+                            <Fragment
+                                key={id}
+                            >
+                                <AccordionSummary
+                                    activityIndex={activityIndex}
+                                    name={name}
+                                    startMonth={start_month}
+                                    endMonth={end_month}
+                                    isGadRelated={is_gad_related}
+                                    totalCost={total_cost}
+                                    resourcesCount={resources_count}
+                                    peopleCount={responsible_people_count}
+                                />
+                            </Fragment>
+                        }
                         accordionDetails={
                             <AccordionDetails
                                 first_quarter={first_quarter}

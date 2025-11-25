@@ -7,13 +7,33 @@ const useAOPApprovalHook = create((set) => ({
   approvalRoles: [],
   isLoading: false,
   actions: {
+
     // GET ALL AOP APPLICATIONS
-    processAOP: (form, callback) => {
+    // processAOP: (form, callback) => {
+    //   post({
+    //     url: API.PROCESS_AOP_REQUEST,
+    //     form: form,
+    //     failed: callback,
+    //     success: (response) => {
+    //       const {
+    //         data: { status_details, timeline, message },
+    //       } = response.data;
+
+    //       callback(response.status, message);
+    //     },
+    //   });
+    // },
+
+    // GET ALL AOP APPLICATIONS
+    processAOP: (payload, callback) => {
       post({
-        url: API.PROCESS_AOP_REQUEST,
-        form: form,
+        url: `${API.APPROVAL_AOP}`,
+        form: payload,
         failed: callback,
         success: (response) => {
+
+          console.log(response)
+
           const {
             data: { status_details, timeline, message },
           } = response.data;
@@ -26,19 +46,28 @@ const useAOPApprovalHook = create((set) => ({
     getAOPApprovalTimeline: (AOP_ID, callback) => {
       set(() => ({ isLoading: true }));
       read({
-        url: `${API.APPROVAL_TIMELINE}/${AOP_ID}`,
+        url: `${API.APPROVAL_TIMELINE}/${AOP_ID.aop_application_id}`,
         success: (response) => {
-          const {
-            data: { id, timelines, approval_roles },
 
+          const {
+            // data: {
+            //   id,
+            //   timelines,
+            //   data,
+            //   approval_roles
+            // },
+            data,
             status,
           } = response.data;
 
-          set(() => ({
-            isLoading: false,
-            approvalTimeline: timelines,
-            approvalRoles: approval_roles,
-          }));
+          set(() => (
+            // console.log(data),
+            {
+              isLoading: false,
+              approvalTimeline: data,
+              // approvalTimeline: timelines,
+              approvalRoles: approval_roles,
+            }));
 
           callback(status, `Success fetching approval timeline for AOP ${id}`);
         },

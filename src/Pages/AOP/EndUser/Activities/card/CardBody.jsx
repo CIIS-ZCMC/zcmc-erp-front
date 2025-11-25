@@ -6,7 +6,7 @@ const CardBody = ({ objective, activity, timeframe, cost }) => {
   return (
     <>
       <Stack direction={"column"} textAlign={"left"} width={"80%"}>
-        <Typography level={"body-sm"}>{objective}</Typography>
+        {/* <Typography level={"body-sm"}>{objective}</Typography> */}
 
         <Typography level={"title-md"} sx={{}}>
           {activity}
@@ -40,9 +40,9 @@ const CardBody = ({ objective, activity, timeframe, cost }) => {
           ₱{" "}
           {cost
             ? cost?.toLocaleString("en-PH", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })
+              minimumFractionDigits: 2,
+              maximumFractionDigits: 2,
+            })
             : "0.00"}
         </Typography>
       </Stack>

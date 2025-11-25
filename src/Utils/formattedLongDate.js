@@ -1,4 +1,7 @@
 export function formattedLongDate(dateString, showYear = false) {
+
+    if (!dateString) return "";
+
     try {
         // Handle both "YYYY-MM" and "YYYY-MM-DD" formats
         const date = new Date(dateString.includes('-') ? dateString : `${dateString}-01`);
