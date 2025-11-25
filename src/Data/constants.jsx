@@ -99,6 +99,23 @@ export const AOP_TIMELINE = {
   EMPTY_STATE: ' No transactions done yet.',
 }
 
+export const PROCESS_AOP = {
+  SELECT_ACTION_LABEL: 'Select the action you would like to take:',
+  INPUT_HELPER: 'Confirm you action by entering your 6-digit authorization PIN.',
+
+  MODAL_TITLE: 'Approve request',
+  MODAL_DESCRIPTION: 'Select a request status and reasons (if returned) to continue. You may add remarks if necessary.',
+
+  RETURN_AOP: 'The AOP request has been returned for revision',
+  SUCCESS_AOP: 'The AOP request successfully approved',
+  APPROVED_AOP: 'Everyone can now see the changes you’ve made. The request is now ready for processing of the next approving body',
+  MCC_APPROVED_AOP: 'The AOP request has been successfully approved. All parties involved will be notified of this update.',
+  RETURNED_AOP: 'The request has been returned to the requesting party for necessary revisions. They will be notified of your remarks and required changes.',
+  ERROR: 'An error occurred while updating the status of the AOP request. Please check your authorization PIN and try again. If the problem persists, contact the system administrator.'
+}
+
+
+
 export const AOP_CONFRIM_DATA = [
   {
     icon: <Check />,

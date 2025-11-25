@@ -16,7 +16,7 @@ const StepperComponent = ({ data = [] }) => {
         const {
           user,
           user_position,
-          approver_user_position,
+          approver_user_role,
           approver_user,
           remarks,
           status,
@@ -27,7 +27,7 @@ const StepperComponent = ({ data = [] }) => {
 
         return (
           <StepItem
-            position={approver_user_position}
+            position={approver_user_role}
             name={approver_user}
             remarks={remarks}
             status={status}

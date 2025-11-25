@@ -416,31 +416,33 @@ const AOPSummary = () => {
 
             <ConfirmationModalComponent
                 withAuthPin
-                content={<>
-                    <BoxComponent>
-                        <Stack
-                            p={2}
-                            spacing={1}
-                        >
-                            <Typography level="title-md">
-                                Please confirm the following:
-                            </Typography>
+                content={
+                    <>
+                        <BoxComponent>
+                            <Stack
+                                p={2}
+                                spacing={1}
+                            >
+                                <Typography level="title-md">
+                                    Please confirm the following:
+                                </Typography>
 
-                            {AOP_CONFRIM_DATA.map(({ title, icon }) => (
-                                <Stack
-                                    direction={'row'}
-                                    alignItems={'center'}
-                                    spacing={1}
-                                >
-                                    {icon}
-                                    <Typography level="body-sm">
-                                        {title}
-                                    </Typography>
-                                </Stack>
-                            ))}
-                        </Stack>
-                    </BoxComponent>
-                </>}
+                                {AOP_CONFRIM_DATA.map(({ title, icon }) => (
+                                    <Stack
+                                        direction={'row'}
+                                        alignItems={'center'}
+                                        spacing={1}
+                                    >
+                                        {icon}
+                                        <Typography level="body-sm">
+                                            {title}
+                                        </Typography>
+                                    </Stack>
+                                ))}
+                            </Stack>
+                        </BoxComponent>
+                    </>
+                }
                 leftButtonLabel='Cancel'
                 leftButtonAction={() => closeConfirmation()}
                 rightButtonLabel='Submit'

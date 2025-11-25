@@ -36,26 +36,65 @@ import PageLoader from "../../../Components/Loading/PageLoader";
 import { ThreeDots } from "react-loader-spinner";
 import debounce from "lodash.debounce";
 
+import SelectComponent from "@Components/Form/YearSelectComponent";
+
+import useAOPStore from "../../../Store/AOPStore";
+import useAOPHook from "../../../Hooks/AOP/AOPHook";
+
 const AOPApproval = () => {
   const navigate = useNavigate();
 
-  const { timelines } = useTimelinesStore();
+  const { getAopYearList } = useAOPHook();
   const { getApproverTimeline } = useTimelineHook();
 
+  const { timelines } = useTimelinesStore();
+  const { yearDetails } = useAOPStore();
 
-  // call api objectives here
-  const { getObjectives } = useObjectivesHook();
+  const { application_timelines, filters } = timelines;
+  const { status_id, year: currentFiscalYear } = filters || {};
+
+  const { years } = yearDetails || {};
+
+  const [isLoading, setIsLoading] = useState(false);
 
   // useEffect(() => {
-  //   console.log('', timelines)
-  // }, [timelines])
+  //   console.log('year', currentFiscalYear);
+  //   console.log('status id ', status_id);
+  //   console.log('year details', yearDetails);
+  // }, [yearDetails])
 
   useEffect(() => {
-    getApproverTimeline((status, message) => {
+
+    // assign default parameters
+
+    setIsLoading(true)
+
+    const params = {
+      year: currentFiscalYear,
+      status_id,
+    }
+
+    getApproverTimeline(params, (status, message) => {
+
       if (!(status >= 200 && status < 300)) {
         // if status not success
+        setIsLoading(false)
         return; //Toast error
       }
+    });
+  }, []);
+
+
+  useEffect(() => {
+    setIsLoading(true);
+    getAopYearList((status, message) => {
+      if (!(status >= 200 && status < 300)) {
+        // if status not success
+        setIsLoading(false);
+        return; //Toast error
+      }
+
+      setIsLoading(false);
     });
   }, []);
 
@@ -65,7 +104,7 @@ const AOPApproval = () => {
   const AOPApplications = useAOPApplications();
   const { getAOPApprovalTimeline } = useApprovalActions();
   const approvalTimeline = useApprovalTimeline();
-  const isLoading = useApprovalLoading();
+  // const isLoading = useApprovalLoading();
 
   // STATES
   const [openTimelineModal, setOpenTimelineModal] = useState(false);
@@ -76,50 +115,57 @@ const AOPApproval = () => {
   const [isFetchLoading, setIsFetchLoading] = useState(false);
 
   // FUNCTIONS
-  const handleClickCard = (aopId, timelineId, fiscalYear, approvalRoles, role) => {
-
-    const { applicant } = approvalRoles;
-
-    navigate(`/aop-approval/objectives/${aopId}`,
-      {
-        state: {
-          aopId,
-          timelineId,
-          fiscalYear,
-          applicant,
-          role,
-        }
-      }
-    );
+  const handleClickCard = (aopId,) => {
+    navigate(`/aop-approval/objectives/${aopId}`,);
   };
 
   const handleViewTimeline = (id) => {
     setOpenTimelineModal(true);
-
     getAOPApprovalTimeline(id, () => { });
   };
 
+  const yearsData = [2026, 2025];
+
+  // console.log(yearsData)
+
   useEffect(() => {
-    const debouncedFetch = debounce((params) => {
-      setIsFetchLoading(true);
-      getAOPApplications(params, () => {
-        setIsFetchLoading(false);
-      });
-    }, 300);
-
     const params = {
-      status: index == "all" ? null : index,
       year: year,
-      search: search,
-    };
+      status_id: 6
+    }
 
-    debouncedFetch(params);
+    console.log(params)
 
-    return () => {
-      localStorage.removeItem("all_comments");
-      debouncedFetch.cancel();
-    };
-  }, [index, year, search, getAOPApplications]);
+    getApproverTimeline(params, (status, message) => {
+      if (!(status >= 200 && status < 300)) {
+        // if status not success
+        return; //Toast error
+      }
+    });
+  }, [index, year,])
+
+
+  // useEffect(() => {
+  //   const debouncedFetch = debounce((params) => {
+  //     setIsFetchLoading(true);
+  //     getAOPApplications(params, () => {
+  //       setIsFetchLoading(false);
+  //     });
+  //   }, 300);
+
+  //   const params = {
+  //     status: index == "all" ? null : index,
+  //     year: year,
+  //     search: search,
+  //   };
+
+  //   debouncedFetch(params);
+
+  //   return () => {
+  //     localStorage.removeItem("all_comments");
+  //     debouncedFetch.cancel();
+  //   };
+  // }, [index, year, search, getAOPApplications]);
 
   const APPLICATIONS = TEST_MODE ? MANAGE_AOP_APPROVAL : AOPApplications;
 
@@ -129,6 +175,7 @@ const AOPApproval = () => {
 
 
   const TIMELINE = TEST_MODE ? APPROVAL_TIMELINE : approvalTimeline;
+
 
   return (
     <Fragment>
@@ -145,11 +192,14 @@ const AOPApproval = () => {
           }
         >
           <Stack gap={3} mt={3}>
+
+            {/* check this  */}
             <TabComponent
               tabs={approvalPageTabs}
               index={index}
               setIndex={setIndex}
             />
+
             <Stack direction={"row"} justifyContent={"space-between"}>
               <InputComponent
                 label={"Search"}
@@ -161,6 +211,7 @@ const AOPApproval = () => {
                 value={search}
               />
               <Stack direction={"row"} gap={2} alignItems={"center"}>
+
                 <YearSelectorComponent
                   width="auto"
                   label={"Select year"}
@@ -209,12 +260,11 @@ const AOPApproval = () => {
                 </Box>
               ) : (
                 <>
-                  {timelines.map(({
+                  {application_timelines.map(({
                     id,
                     aop_application_id,
                     current_timeline,
                     fiscal_year,
-                    approval_roles,
                     current_user
                   }) => {
                     const { role } = current_user;
@@ -232,7 +282,7 @@ const AOPApproval = () => {
                           date_requested={date_created}
                           statusLabel={status}
                           status={status_id}
-                          leftClick={() => handleClickCard(aop_application_id, id, fiscal_year, approval_roles, role)}
+                          leftClick={() => handleClickCard(aop_application_id)}
                           rightClick={() => handleViewTimeline(id)}
                         />
                       </Grid>

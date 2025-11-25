@@ -32,13 +32,14 @@ const useTimelineHook = () => {
         }
     }
 
-    const getApproverTimeline = async (callBack) => {
+    const getApproverTimeline = (params, callBack) => {
         // console.log("Calling API...");
         setIsLoading(true);
 
         try {
-            await read({
+            read({
                 url: API.APPROVER_TIMELINE,
+                params,
                 failed: callBack,
                 success: (res) => {
                     const { status, data: { data, message } } = res;

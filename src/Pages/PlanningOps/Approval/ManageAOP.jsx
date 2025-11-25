@@ -220,13 +220,12 @@ export default function ManageAOP() {
                       />
                     )}
 
-                    {processable &&
-                      <ProcessAOPContent
-                        timelineId={id}
-                        aopId={aopId}
-                        role={role}
-                      />
-                    }
+                    <ProcessAOPContent
+                      processable={processable}
+                      timelineId={id}
+                      aopId={aopId}
+                      role={role}
+                    />
 
                   </Stack>
                 }
