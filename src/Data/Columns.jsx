@@ -1383,7 +1383,7 @@ export const itemRequestDetailsCols = (onUpdate, openModal) => [
   },
 ];
 
-export const PPMP_HEADERS = (editingRows) => [
+export const PPMP_HEADERS = (editingRows, handleComments) => [
   {
     id: "name",
     label: "Item",
@@ -1505,6 +1505,7 @@ export const PPMP_HEADERS = (editingRows) => [
             variant={"soft"}
             onClick={(e) => {
               e.stopPropagation(); // Prevent row expand
+              handleComments(row);
               // Your comment click logic here
             }}
           />

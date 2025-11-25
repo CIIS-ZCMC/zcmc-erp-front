@@ -5,6 +5,8 @@ import { Box, Link, Stack, Typography } from "@mui/joy";
 import moment from "moment";
 import { Dot, ExternalLink } from "lucide-react";
 import EllipsisComponent from "../Common/Typography/EllipsisComponent";
+import { blue, grey } from "@mui/material/colors";
+import { Circle } from "@mui/icons-material";
 
 CommentContainerComponent.propTypes = {};
 
@@ -12,6 +14,7 @@ function CommentContainerComponent({
   name,
   comment,
   date,
+  area_code,
   handleClick,
   isActivity = false,
 }) {
@@ -22,17 +25,21 @@ function CommentContainerComponent({
       p={1.7}
       sx={{
         maxHeight: "auto",
-        border: 1,
+        bgcolor: "white",
         borderRadius: 8,
-        borderColor: "neutral.200",
-        "&: hover": {
-          border: 1,
-          borderColor: "neutral.400",
-        },
+        borderLeft: `6px solid ${blue[800]}`,
+        boxShadow: "0 3px 10px -3px rgba(131, 129, 129, 0.2)",
+        // borderColor: "neutral.200",
+        // "&: hover": {
+        //   border: 1,
+        //   borderColor: "neutral.400",
+        // },
       }}
     >
       <Typography fontWeight={600} level="title-sm">
-        {!isActivity ? `Posted by ${name}` : name}
+        {!isActivity
+          ? `Posted by ${area_code} - ${name}`
+          : `${area_code} - ${name}`}
       </Typography>
 
       <EllipsisComponent text={comment} />
@@ -43,8 +50,11 @@ function CommentContainerComponent({
         justifyContent={"space-between"}
       >
         <Typography level={fontSize} display={"flex"} alignItems={"center"}>
-          {moment(date).fromNow()} <Dot />
-          {moment(date).format("LT")}
+          {moment(date).isSame(moment(), "day")
+            ? "Today"
+            : moment(date).format("dddd")}
+          <Circle sx={{ fontSize: 12, mx: 1, color: grey[400] }} />
+          {moment(date).format("h:mm a")}
         </Typography>
 
         {/* {isActivity && (
