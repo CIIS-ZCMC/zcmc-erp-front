@@ -19,7 +19,7 @@ export const BASE_URL = {
   production: "https://api_name.zcmc.online/api/", // Change the sub domain name to your prefer name
   development: "http://localhost:8000/api", // You can change the port or ip here
   socket_development: "http://localhost:3025/",
-  test_landing_page: "http://192.168.36.150:82",
+  test_landing_page: "http://192.168.36.150",
 };
 
 export const TEST_MODE = false;

@@ -1,15 +1,22 @@
-import { Grid, Stack, } from "@mui/joy";
+import { Button, Grid, Stack, } from "@mui/joy";
 
 import React, { Fragment, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
+import { MessageSquareText } from "lucide-react";
 
+import ButtonComponent from "@Components/Common/ButtonComponent";
 import AlertDialogComponent from "@Components/Common/Dialog/AlertDialogComponent";
 import ModalComponent from "@Components/Common/Dialog/ModalComponent";
 import BoxComponent from "@Components/Common/Card/BoxComponent";
 import { ThreeDotsLoader } from "@Components/Common/Loading/ThreeDotsLoader";
+import ChipComponent from "@Components/Common/ChipComponent";
+import { FeedbackContent } from "../../../Pages/PlanningOps/Approval/Contents/FeedbackContent";
 
 import useAOPHook from "../../../Hooks/AOP/AOPHook";
 import useModalHook from "../../../Hooks/ModalHook";
+import useObjectivesHook from "../../../Hooks/ObjectivesHook";
+
+import useObjectivesStore from "../../../Store/ObjectivesStore";
 import useAOPStore, { useAOPActions } from "../../../Store/AOPStore";
 
 import Title from "./Title/Title";
@@ -28,14 +35,42 @@ function DashboardEndUser(props) {
   const { header, description } = ANNUAL_OPS;
 
   const navigate = useNavigate();
+
+  const { getObjectives } = useObjectivesHook();
   const { createAOP, getAopBySectorAndYear, getAopYearList } = useAOPHook();
   const { setAlertDialog } = useModalHook();
+
+  const { applicationObjectives } = useObjectivesStore();
   const { aop, mission, fiscalYear, yearDetails, } = useAOPStore();
   const { setMission, clearMission } = useAOPActions();
 
   const [openFiscalYearModal, setOpenFiscalYearModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isAopLoading, setIsAopLoading] = useState(false);
+  const [openFeedbackModal, setOpenFeedbackModal] = useState(false);
+
+
+  useEffect(() => {
+    getObjectives(aop.id, (status, message) => {
+      return
+    })
+  }, [])
+
+  const {
+    activity_comments,
+    application_timelines,
+    current_user,
+  } = applicationObjectives;
+
+  const { role } = current_user || {}
+
+  useEffect(() => {
+    console.log(application_timelines)
+  }, [application_timelines])
+
+  const remarksCount = application_timelines?.length || 0;
+  const commentCount = activity_comments?.length || 0;
+  const feedbackCount = commentCount + remarksCount;
 
   const handleSaveAOP = async () => {
     const body = {
@@ -126,6 +161,9 @@ function DashboardEndUser(props) {
     });
   };
 
+  const handleViewFeedback = () => {
+    setOpenFeedbackModal(true);
+  };
 
   return (
     <Fragment>
@@ -178,8 +216,30 @@ function DashboardEndUser(props) {
                   handleChange={handleChangeFiscalYear}
                 />
 
-                {aop?.status?.id !== 2 &&
+                {(aop?.status?.id !== 2 && aop?.status?.id !== 4) &&
                   <Draft />
+                }
+
+                {!aop?.status?.id !== 2 &&
+                  <>
+                    <ButtonComponent
+                      variant={'soft'}
+                      label={'Feedback'}
+                      onClick={handleViewFeedback}
+                      endDecorator={
+                        <ChipComponent
+                          variant={'soft'}
+                          size={'sm'}
+                          label={feedbackCount}
+                        />
+                      }
+                      startDecorator={
+                        <MessageSquareText
+                          size={16}
+                        />
+                      }
+                    />
+                  </>
                 }
 
               </Stack>
@@ -261,6 +321,15 @@ function DashboardEndUser(props) {
 
       <AlertDialogComponent
         leftButtonAction={() => handleClose()}
+      />
+
+      <FeedbackContent
+        openFeedbackModal={openFeedbackModal}
+        setOpenFeedbackModal={setOpenFeedbackModal}
+        comments={activity_comments}
+        remarks={application_timelines}
+        feedbackCount={feedbackCount}
+        role={role}
       />
 
     </Fragment>

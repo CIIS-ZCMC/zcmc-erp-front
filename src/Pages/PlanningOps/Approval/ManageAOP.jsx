@@ -166,10 +166,7 @@ export default function ManageAOP() {
               mt={3}
               display={!userPlanning && "none"}
             >
-              <CommentsDetails
-
-
-              />
+              <CommentsDetails />
             </Grid>
           </Grid>
         </Box>

@@ -30,7 +30,7 @@ export const FeedbackContent = ({
   useEffect(() => {
     // console.log('comments', comments)
     // console.log('remarks', remarks)
-    console.log('activeTab', activeTab)
+    // console.log('activeTab', activeTab)
   }, [comments, remarks])
 
   return (

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useMemo } from "react";
 
 import { Stack, Typography, Breadcrumbs, Divider, Grid } from "@mui/joy";
 
@@ -14,6 +14,7 @@ import ModalComponent from "@Components/Common/Dialog/ModalComponent";
 import InputComponent from "@Components/Form/InputComponent";
 import SearchBarComponent from "@Components/SearchBarComponent";
 import ConfirmationModalComponent from "@Components/Common/Dialog/ConfirmationModalComponent";
+import SearchBarComponentv2 from "@Components/SearchBarWithdeBounce";
 
 import ActivitiesModal from "./modal/ActivitiesModal";
 import ActivitiesList from "./ActivitiesList";
@@ -87,6 +88,8 @@ const Activities = () => {
   const [isEditMode, setIsEditMode] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [selectedActivityId, setSelectedActivityId] = useState(null);
+  const [search, setSearch] = useState("");
+
   const currentYear = new Date().getFullYear();
   const currentFiscalYear = currentYear + 1;
 
@@ -110,8 +113,16 @@ const Activities = () => {
     // console.log('current end month:', endMonth)
     // console.log('current is gad related', isGadRelated)
     // console.log('current is gad target', target)
-    console.log(state.objective)
-  }, [activity, startMonth, endMonth, isGadRelated, target])
+    // console.log(state.objective)
+    console.log(applicationActivities)
+  }, [activity, startMonth, endMonth, isGadRelated, target, applicationActivities])
+
+  const filteredActivities = useMemo(() => {
+    if (!search) return applicationActivities;
+    return applicationActivities.filter((act) =>
+      act.activity_name.toLowerCase().includes(search.toLowerCase())
+    );
+  }, [search, applicationActivities]);
 
   const handleOpenActivitiesModal = () => {
     setIsOpenActivitiesModal(true);
@@ -317,7 +328,12 @@ const Activities = () => {
           alignItems={"center"}
           justifyContent={"space-between"}
         >
-          <SearchBarComponent placeholder="search activities" />
+          <SearchBarComponentv2
+            value={search}
+            setValue={setSearch}
+            placeholder="search activities..."
+            fullWidth
+          />
 
           <ButtonComponent
             onClick={() => setIsCountModal(true)}
@@ -352,7 +368,7 @@ const Activities = () => {
         </>
       ) : (
         <Grid mt={2} container direction="row" spacing={2} sx={{ flexGrow: 1 }}>
-          {applicationActivities.map((activity) => (
+          {filteredActivities.map((activity) => (
             <Grid key={activity.id} size={4} lg={4} md={6} sm={12}>
               <ActivitiesList
                 isLoading={isLoading}

@@ -1,17 +1,17 @@
-import { useEffect, useState } from "react";
+import { useEffect, useState, useMemo } from "react";
 
 import { Stack, Divider, Typography, Breadcrumbs, Grid } from "@mui/joy";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import { ThreeDotsLoader } from "@Components/Common/Loading/ThreeDotsLoader";
-
 import BoxComponent from "@Components/Common/Card/BoxComponent";
-import SearchBarComponent from "@Components/SearchBarComponent";
 import ButtonComponent from "@Components/Common/ButtonComponent";
 import ModalComponent from "@Components/Common/Dialog/ModalComponent";
 import ObjectivesModal from "./modal/ObjectivesModal";
 import CardComponent from "@Components/Common/Card/CardComponent";
 import ConfirmationModalComponent from "@Components/Common/Dialog/ConfirmationModalComponent";
+import SearchBarComponentv2 from "@Components/SearchBarWithdeBounce";
+import NoResultComponent from "@Components/Common/Table/NoResultComponent";
 
 import useModalHook from "../../../../Hooks/ModalHook";
 import useSocket from '../../../../Hooks/Socket/SocketHook';
@@ -68,6 +68,8 @@ const Objectives = () => {
   const [isOpenObjectivesModal, setIsOpenObjectivesModal] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [selectedObjectiveId, setSelectedObjectiveId] = useState(null);
+  const [search, setSearch] = useState("");
+
 
   useEffect(() => {
     setIsLoading(true);
@@ -95,8 +97,6 @@ const Objectives = () => {
     ADD_OBJECTIVE,
     EDIT_OBJECTIVE,
     ADD_OBJECTIVE_SUBHEADING,
-    AOP_EMPTY_STATE_TITLE,
-    AOP_CREATE_NEW_AOP,
     MANAGE_OBJECTIVES_HEADER,
     MANAGE_OBJECTIVES_SUBHEADER,
   } = OBJECTIVES;
@@ -111,12 +111,22 @@ const Objectives = () => {
     console.info("You clicked a breadcrumb.");
   }
 
+  const filteredObjectives = useMemo(() => {
+    if (!search) return applicationObjectives;
+    return applicationObjectives.filter((obj) =>
+      obj.objective.code.toLowerCase().includes(search.toLowerCase())
+    );
+  }, [search, applicationObjectives])
+
+
   // useEffect(() => {
-  //   console.log("aopId", aopId);
-  //   if (aopId) {
-  //     setAopId(aopId);
-  //   }
-  // }, [aopId]);
+  //   // console.log("aopId", aopId);
+  //   // if (aopId) {
+  //   //   setAopId(aopId);
+  //   // }
+  //   console.log(filteredObjectives)
+  // }, [aopId, filteredObjectives]);
+
 
   const handleSaveObjectives = async () => {
     setIsLoading(true);
@@ -293,8 +303,13 @@ const Objectives = () => {
           alignItems={"center"}
           justifyContent={"space-between"}
         >
-          <SearchBarComponent placeholder="search objectives" />
 
+          <SearchBarComponentv2
+            value={search}
+            setValue={setSearch}
+            placeholder="search objectives..."
+            fullWidth
+          />
           <ButtonComponent
             onClick={() => handleOpenObjectivesModal()}
             label={"Add an Objective"}
@@ -341,54 +356,61 @@ const Objectives = () => {
           </Stack>
         </>
       ) : (
-        <Grid mt={2} container direction="row" spacing={2} sx={{ flexGrow: 1 }}>
-          {applicationObjectives?.map(
-            ({
-              id,
-              aop_application_id,
-              success_indicator,
-              objective,
-              activities_count,
-              other_success_indicator,
-            }) => (
-              <Grid key={id} size={4} lg={4} md={6} sm={12}>
-                <CardComponent
-                  statusColor={null}
-                  cardHeader={
-                    <CardHeader
-                      handleSave={() => console.log("save")}
-                      handleEdit={() => handleOpenEditModal(id)}
-                      handleDelete={() => handleOpenDeleteModal(id)}
-                    />
-                  }
-                  cardBody={
-                    <CardBody
-                      success_indicator={success_indicator}
-                      objective={objective}
-                      other_success_indicator={other_success_indicator}
-                      status={false}
-                    />
-                  }
-                  cardActions={
-                    <CardActions
-                      count={activities_count}
-                      handleActivities={() => {
-                        setObjectiveId(id);
-                        navigate(`/aop/activities/${id}`, {
-                          state: {
-                            objId: id,
-                            aopId: aop_application_id,
-                            objective: objective.description,
-                          },
-                        });
-                      }}
-                    />
-                  }
-                />
-              </Grid>
-            )
-          )}
-        </Grid>
+        <>
+
+          {filteredObjectives.length === 0 &&
+            <NoResultComponent />
+          }
+
+          <Grid mt={2} container direction="row" spacing={2} sx={{ flexGrow: 1 }}>
+            {filteredObjectives?.map(
+              ({
+                id,
+                aop_application_id,
+                success_indicator,
+                objective,
+                activities_count,
+                other_success_indicator,
+              }) => (
+                <Grid key={id} size={4} lg={4} md={6} sm={12}>
+                  <CardComponent
+                    statusColor={null}
+                    cardHeader={
+                      <CardHeader
+                        handleSave={() => console.log("save")}
+                        handleEdit={() => handleOpenEditModal(id)}
+                        handleDelete={() => handleOpenDeleteModal(id)}
+                      />
+                    }
+                    cardBody={
+                      <CardBody
+                        success_indicator={success_indicator}
+                        objective={objective}
+                        other_success_indicator={other_success_indicator}
+                        status={false}
+                      />
+                    }
+                    cardActions={
+                      <CardActions
+                        count={activities_count}
+                        handleActivities={() => {
+                          setObjectiveId(id);
+                          navigate(`/aop/activities/${id}`, {
+                            state: {
+                              objId: id,
+                              aopId: aop_application_id,
+                              objective: objective.description,
+                            },
+                          });
+                        }}
+                      />
+                    }
+                  />
+                </Grid>
+              )
+            )}
+          </Grid>
+        </>
       )}
 
       {/* edit and add objectives modal */}

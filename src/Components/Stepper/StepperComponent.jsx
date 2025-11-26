@@ -4,9 +4,9 @@ import { Stack, Step, StepIndicator, Stepper, Typography } from "@mui/joy";
 import { BiCheck, BiCircle } from "react-icons/bi";
 const StepperComponent = ({ data = [] }) => {
 
-  useEffect(() => {
-    console.log(data)
-  }, [data])
+  // useEffect(() => {
+  //   console.log(data)
+  // }, [data])
 
   return (
     <Stepper orientation="vertical" sx={{ gap: 2 }} size="sm">

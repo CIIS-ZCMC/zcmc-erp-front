@@ -125,7 +125,7 @@ const AOPApproval = () => {
     }, 300);
 
     const params = {
-      year: year,
+      year: next_year_included,
       status_id: index,
     }
 
@@ -170,25 +170,20 @@ const AOPApproval = () => {
               />
               <Stack direction={"row"} gap={2} alignItems={"center"}>
 
-                {/* <SelectComponent
-                  years={years}
-                  onChange={(e) => handleChange(e)}
-                  startYear={next_year_included}
-                  width="120%"
-                /> */}
-
-                <YearSelectorComponent
-                  width="auto"
-                  label={"Select year"}
-                  setValue={setYear}
-                  options={years}
-                  startYear={next_year_included}
-                  value={{ year: year }}
-                />
+                {next_year_included &&
+                  <YearSelectorComponent
+                    width="auto"
+                    label={"Select year"}
+                    setValue={setYear}
+                    options={years}
+                    value={{ year: next_year_included }}
+                  />
+                }
 
                 <Link fontSize={13} mt={3} mr={1}>
                   Clear filters
                 </Link>
+
               </Stack>
             </Stack>
             {/* LIST */}

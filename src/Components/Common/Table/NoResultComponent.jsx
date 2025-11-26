@@ -13,6 +13,7 @@ function NoResultComponent({ isSearch = false, size }) {
       alignItems={"center"}
       justifyContent={"center"}
       my={size === "xs" ? 0 : 2}
+      height={'60vh'}
     >
       <Stack
         alignItems={"center"}

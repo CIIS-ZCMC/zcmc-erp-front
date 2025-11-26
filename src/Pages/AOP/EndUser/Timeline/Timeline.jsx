@@ -38,9 +38,9 @@ const Timeline = ({ aopId }) => {
         })
     }, [])
 
-    useEffect(() => {
-        console.log('current timeline', timelines)
-    }, [timelines])
+    // useEffect(() => {
+    //     console.log('current timeline', timelines)
+    // }, [timelines])
 
     return (
         <Fragment>

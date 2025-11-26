@@ -19,18 +19,12 @@ function YearSelectorComponent({
   ...props
 }) {
 
-  const startYear = 2024;
-  const endYear = new Date().getFullYear();
-  const years = Array.from({ length: endYear - startYear + 1 }, (_, i) => ({
-    year: `${startYear + 1 + i}`,
-  }));
+  const yearOptions = options?.map((year) => ({ year: year })) || [];
 
-  const yearOptins = options?.map((year) => { year: year })
-
-  useEffect(() => {
-    console.log(yearOptins)
-    console.log(years)
-  }, [options, years])
+  // useEffect(() => {
+  //   console.log(yearOptions)
+  //   console.log(startYear)
+  // }, [options])
 
 
   return (
@@ -42,7 +36,7 @@ function YearSelectorComponent({
         startDecorator={startDecorator}
         size={"sm"}
         placeholder={placeholder}
-        options={years}
+        options={yearOptions}
         value={value}
         getOptionLabel={(option) => option.year}
         onChange={(event, newValue) => {
