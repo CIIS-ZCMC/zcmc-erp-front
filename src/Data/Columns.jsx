@@ -1541,3 +1541,72 @@ export const PPMP_HEADERS = (status, editingRows, handleComments) => [
     },
   },
 ];
+
+export const ITEMS_REQUESTS = () => [
+  {
+    key: "item",
+    label: "Item & Unit",
+    render: (row) => (
+      <div>
+        <strong>{row.name}</strong>
+        <div style={{ fontSize: 12 }}>{row.unit}</div>
+      </div>
+    ),
+    expandTrigger: true, // ❗ only this column toggles expand
+  },
+  {
+    key: "category",
+    label: "Classification & Category",
+    render: (r) => (
+      <div>
+        <strong>{r.classification}</strong>
+        <div style={{ fontSize: 12 }}>{r.category}</div>
+      </div>
+    ),
+  },
+  {
+    key: "budget",
+    label: "Estimated Budget",
+    render: (r) => `₱${r.estimated_budget.toLocaleString()}`,
+  },
+  {
+    key: "requested_on",
+    label: "Requested On",
+    render: (r) => r.created_at,
+  },
+  {
+    key: "variant",
+    label: "Variant",
+    render: (r) => (
+      <Chip variant="soft" color="primary">
+        {r.item_terminology.name}
+      </Chip>
+    ),
+  },
+  {
+    key: "actions",
+    label: "Actions",
+    render: (r) => (
+      <div style={{ display: "flex", gap: "8px" }}>
+        <Button
+          size="sm"
+          onClick={(e) => {
+            e.stopPropagation(); /* approve */
+          }}
+        >
+          Approve
+        </Button>
+
+        <Button
+          size="sm"
+          color="danger"
+          onClick={(e) => {
+            e.stopPropagation(); /* decline */
+          }}
+        >
+          Decline
+        </Button>
+      </div>
+    ),
+  },
+];

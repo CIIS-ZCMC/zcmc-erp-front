@@ -14,7 +14,7 @@ import ResponsiblePerson from "../Pages/AOP/EndUser/Responsible/ResponsiblePerso
 
 import Items from "../Pages/Items";
 
-import ItemRequest from "../Pages/Consolidators/ItemManagement/ItemRequest";
+import ItemRequest from "../Pages/Consolidators/ItemManagement/ItemRequest/ItemRequest";
 import ItemLibrary from "../Pages/Consolidators/ItemManagement/Library/ItemLibrary";
 // import Objectives from "../Pages/PlanningOps/ObjectiveManagement/Objectives";
 import ManageAOP from "../Pages/PlanningOps/Approval/ManageAOP";
@@ -53,6 +53,9 @@ import PPMPDashboard from "../Pages/PPMP/EndUser/PPMPDashboard";
 import PPMPItems from "../Pages/PPMP/EndUser/PPMPItems";
 import AddItems from "../Pages/PPMP/EndUser/AddItems";
 import PPMPOutlet from "../Pages/PPMP/EndUser/PPMPOutlet";
+import All from "../Pages/Consolidators/ItemManagement/ItemRequest/All";
+import Pending from "../Pages/Consolidators/ItemManagement/ItemRequest/Pending";
+import Saved from "../Pages/Consolidators/ItemManagement/ItemRequest/Saved";
 // import ResponsiblePerson from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities/ResponsiblePerson";
 
 export const sidebarRoutes = [
@@ -215,6 +218,20 @@ export const sidebarRoutes = [
           "ERP-ITM-MAN:write",
           "ERP-ITM-MAN:edit",
           "ERP-ITM-MAN:delete",
+        ],
+        children: [
+          {
+            index: true,
+            element: <All />,
+          },
+          {
+            path: "pending",
+            element: <Pending />,
+          },
+          {
+            path: "saved",
+            element: <Saved />,
+          },
         ],
       },
 
