@@ -1,6 +1,7 @@
 import PropTypes from "prop-types";
 import { Autocomplete, FormControl, FormHelperText, FormLabel } from "@mui/joy";
 import { getFontSize } from "../../Utils/Typography";
+import { useEffect } from "react";
 
 function YearSelectorComponent({
   label,
@@ -14,13 +15,23 @@ function YearSelectorComponent({
   setValue,
   bgcolor = "inherit",
   txtcolor = "inherit",
+  options,
   ...props
 }) {
+
   const startYear = 2024;
   const endYear = new Date().getFullYear();
   const years = Array.from({ length: endYear - startYear + 1 }, (_, i) => ({
     year: `${startYear + 1 + i}`,
   }));
+
+  const yearOptins = options?.map((year) => { year: year })
+
+  useEffect(() => {
+    console.log(yearOptins)
+    console.log(years)
+  }, [options, years])
+
 
   return (
     <FormControl sx={{ width: width }}>

@@ -27,8 +27,6 @@ import {
   useApprovalTimeline,
 } from "../../../Hooks/AOP/AOPApprovalHook";
 
-
-
 import useObjectivesHook from "../../../Hooks/ObjectivesHook";
 import useTimelineHook from "../../../Hooks/AOP/TimelineHook";
 import useTimelinesStore from "../../../Store/TimelinesStore";
@@ -55,15 +53,15 @@ const AOPApproval = () => {
   const { application_timelines, filters } = timelines;
   const { status_id, year: currentFiscalYear } = filters || {};
 
-  const { years } = yearDetails || {};
+  const { next_year_included, years } = yearDetails || {};
 
   const [isLoading, setIsLoading] = useState(false);
 
-  // useEffect(() => {
-  //   console.log('year', currentFiscalYear);
-  //   console.log('status id ', status_id);
-  //   console.log('year details', yearDetails);
-  // }, [yearDetails])
+  useEffect(() => {
+    // console.log('year', currentFiscalYear);
+    // console.log('status id ', status_id);
+    console.log('year details', yearDetails);
+  }, [yearDetails])
 
 
   useEffect(() => {
@@ -172,12 +170,22 @@ const AOPApproval = () => {
               />
               <Stack direction={"row"} gap={2} alignItems={"center"}>
 
+                {/* <SelectComponent
+                  years={years}
+                  onChange={(e) => handleChange(e)}
+                  startYear={next_year_included}
+                  width="120%"
+                /> */}
+
                 <YearSelectorComponent
                   width="auto"
                   label={"Select year"}
                   setValue={setYear}
+                  options={years}
+                  startYear={next_year_included}
                   value={{ year: year }}
                 />
+
                 <Link fontSize={13} mt={3} mr={1}>
                   Clear filters
                 </Link>
