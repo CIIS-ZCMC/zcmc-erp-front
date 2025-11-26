@@ -177,12 +177,12 @@ export const sidebarRoutes = [
     name: "Planning and Operations",
     icon: <MdLibraryBooks {...iconStyles} />,
     permissions: [
-      // "ERP-AOP-MAN:approve",
-      // "ERP-PPMP-MAN:approve",
-      // "ERP-OBJ-MAN:write",
-      // "ERP-OBJ-MAN:view",
-      // "ERP-OBJ-MAN:update",
-      // "ERP-OBJ-MAN:view-all",
+      "ERP-AOP-MAN:approve",
+      "ERP-PPMP-MAN:approve",
+      "ERP-OBJ-MAN:write",
+      "ERP-OBJ-MAN:view",
+      "ERP-OBJ-MAN:update",
+      "ERP-OBJ-MAN:view-all",
     ],
     children: [
       {
@@ -231,28 +231,6 @@ export const sidebarRoutes = [
     ],
   },
 
-  //Item Management routes
-  {
-    path: "/item-requests",
-    name: "Request",
-    element: <ItemRequest />,
-    roles: ["super_admin"],
-    abilities: ["M-001:read", "M-001:write", "M-001:edit", "M-001:delete"],
-    children: [
-      {
-        index: true,
-        element: <ItemRequestDatatable />,
-      },
-      {
-        path: "pending",
-        element: <>pending</>,
-      },
-      {
-        path: "added",
-        element: <>added</>,
-      },
-    ],
-  },
   // CONSOLIDATOR ROUTES
   {
     parentPath: "/consolidator",
@@ -308,69 +286,6 @@ export const sidebarRoutes = [
             element: <Variant />,
           },
         ],
-      },
-    ],
-  },
-  {
-    path: "/submitted-items",
-    name: "Submitted Items",
-    element: <ItemSubmittedRequestsList />,
-    roles: ["super_admin"],
-    permissions: ["M-001:read", "M-001:write", "M-001:edit", "M-001:delete"],
-    children: [
-      {
-        index: true,
-        element: <MyOwnRequestsList />,
-      },
-      {
-        path: "pending",
-        element: <>pending</>,
-      },
-      {
-        path: "added",
-        element: <>added</>,
-      },
-    ],
-  },
-  {
-    path: "/submitted-items",
-    name: "Submitted Items",
-    element: <ItemSubmittedRequestsList />,
-    roles: ["super_admin"],
-    permissions: ["M-001:read", "M-001:write", "M-001:edit", "M-001:delete"],
-    children: [
-      {
-        index: true,
-        element: <MyOwnRequestsList />,
-      },
-      {
-        path: "pending",
-        element: <>pending</>,
-      },
-      {
-        path: "added",
-        element: <>added</>,
-      },
-    ],
-  },
-  {
-    path: "/submitted-items",
-    name: "Submitted Items",
-    element: <ItemSubmittedRequestsList />,
-    roles: ["super_admin"],
-    permissions: ["M-001:read", "M-001:write", "M-001:edit", "M-001:delete"],
-    children: [
-      {
-        index: true,
-        element: <MyOwnRequestsList />,
-      },
-      {
-        path: "pending",
-        element: <>pending</>,
-      },
-      {
-        path: "added",
-        element: <>added</>,
       },
     ],
   },

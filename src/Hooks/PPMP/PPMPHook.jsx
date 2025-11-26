@@ -20,6 +20,7 @@ const usePPMPHook = create((set) => ({
   ppmp_total: 0,
   pagination: {},
   years: [],
+  status: [],
 
   getPPMPItems: (callBack, page = 1, per_page = 15) => {
     read({
@@ -33,6 +34,7 @@ const usePPMPHook = create((set) => ({
           ppmp_total: data.data.ppmp_total,
           pagination: data.data.pagination,
           ppmp_id: data.data.id,
+          status: data.data.status,
         });
         callBack(status, message, data);
       },

@@ -32,6 +32,7 @@ function PPMPItems(props) {
   const navigate = useNavigate();
   const {
     modes,
+    status,
     ppmp_id,
     ppmp,
     ppmp_total,
@@ -334,7 +335,7 @@ function PPMPItems(props) {
             </Stack>
           </BoxComponent>
           <CollapsibleTable
-            columns={PPMP_HEADERS(editingRows, handleComments)}
+            columns={PPMP_HEADERS(status, editingRows, handleComments)}
             rows={filteredPPMPItems}
             editingRows={editingRows}
             onEditToggle={handleEditToggle}

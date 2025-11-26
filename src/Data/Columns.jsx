@@ -1383,7 +1383,7 @@ export const itemRequestDetailsCols = (onUpdate, openModal) => [
   },
 ];
 
-export const PPMP_HEADERS = (editingRows, handleComments) => [
+export const PPMP_HEADERS = (status, editingRows, handleComments) => [
   {
     id: "name",
     label: "Item",
@@ -1499,37 +1499,43 @@ export const PPMP_HEADERS = (editingRows, handleComments) => [
       const isEditing = editingRows[row.id];
       return (
         <Stack direction={"row"} spacing={1} justifyContent={"right"}>
-          <ChipComponent
-            label={"6"}
-            startDecorator={<CommentOutlined />}
-            variant={"soft"}
-            onClick={(e) => {
-              e.stopPropagation(); // Prevent row expand
-              handleComments(row);
-              // Your comment click logic here
-            }}
-          />
-          <ChipComponent
-            label={isEditing ? "Save" : "Edit"}
-            variant={"soft"}
-            startDecorator={
-              isEditing ? <CheckOutlined /> : <ModeEditOutlineOutlined />
-            }
-            color={isEditing && "success"}
-            onClick={(e) => {
-              e.stopPropagation();
-              handleEditToggle(row.id, onToggle, isEditing);
-            }}
-          />
-          <ChipComponent
-            label={"Remove"}
-            startDecorator={<DeleteOutlineOutlined />}
-            variant={"soft"}
-            onClick={(e) => {
-              e.stopPropagation(); // Prevent row expand
-              handleDeletePPMP(row.id);
-            }}
-          />
+          {status?.name !== "draft" && (
+            <ChipComponent
+              label={"6"}
+              startDecorator={<CommentOutlined />}
+              variant={"soft"}
+              onClick={(e) => {
+                e.stopPropagation(); // Prevent row expand
+                handleComments(row);
+                // Your comment click logic here
+              }}
+            />
+          )}
+          {status?.name === "draft" && (
+            <>
+              <ChipComponent
+                label={isEditing ? "Save" : "Edit"}
+                variant={"soft"}
+                startDecorator={
+                  isEditing ? <CheckOutlined /> : <ModeEditOutlineOutlined />
+                }
+                color={isEditing && "success"}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleEditToggle(row.id, onToggle, isEditing);
+                }}
+              />
+              <ChipComponent
+                label={"Remove"}
+                startDecorator={<DeleteOutlineOutlined />}
+                variant={"soft"}
+                onClick={(e) => {
+                  e.stopPropagation(); // Prevent row expand
+                  handleDeletePPMP(row.id);
+                }}
+              />
+            </>
+          )}
         </Stack>
       );
     },
