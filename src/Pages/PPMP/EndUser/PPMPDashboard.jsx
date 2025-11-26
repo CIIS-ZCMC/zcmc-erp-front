@@ -4,8 +4,13 @@ import {
   Box,
   Card,
   CardContent,
+  Checkbox,
   Divider,
   Grid,
+  List,
+  ListDivider,
+  ListItem,
+  ListItemDecorator,
   Skeleton,
   Stack,
   Typography,
@@ -37,6 +42,7 @@ import ModalComponent from "@Components/Common/Dialog/ModalComponent";
 import { grey } from "@mui/material/colors";
 import InputComponent from "@Components/Form/InputComponent";
 import AuthorizationPinComponent from "@Components/AuthorizationPinComponent";
+import useModalHook from "../../../Hooks/ModalHook";
 
 const PPMPCard = ({
   bgColor = "#CCEEFF",
@@ -57,6 +63,7 @@ const PPMPCard = ({
           border: "1px solid #F0F0F0",
           borderRadius: 20,
           bgcolor: "white",
+          pt: 3,
         }}
       >
         <CardContent>
@@ -103,7 +110,10 @@ const PPMPCard = ({
 
 function PPMPDashboard(props) {
   const navigate = useNavigate();
-  const { dashboard, getPPMPDashboard } = usePPMPHook();
+  const { dashboard, years, getPPMPDashboard, getYearList, postPPMP } =
+    usePPMPHook();
+  const { setAlertDialog } = useModalHook();
+
   const [pageLoader, setPageLoader] = useState(false);
   const { user } = useAuth();
   const { name, id, assignedArea } = user ?? {};
@@ -114,20 +124,85 @@ function PPMPDashboard(props) {
 
   const [openSave, setOpenSave] = useState(false);
   const [pin, setPin] = useState("");
+  const [year, setYear] = useState(2026);
 
   const handleNavigate = () => {
     navigate("/ppmp/manage-items");
   };
+
+  const handleSubmit = async () => {
+    try {
+      const payload = {
+        status_id: 2,
+        authorization_pin: pin,
+      };
+
+      await postPPMP(
+        dashboard.ppmp_application.id,
+        payload,
+        (status, message, errors) => {
+          if (status === 200) {
+            clearMission();
+            setOpenSave(false);
+            setPin("");
+            setAlertDialog({
+              status: "success",
+              title: "PPMP for F.Y. 2026 successfully submitted for review.",
+              description:
+                "Your PPMP request has been sent to designated to the next approving body and notified them for approvals.",
+            });
+            return;
+          } else {
+            console.log(errors);
+            const errorList = Array.isArray(errors) ? (
+              <Stack spacing={1} mt={1}>
+                {errors.map((err, i) => (
+                  <Typography
+                    key={i}
+                    fontSize={13}
+                    color="danger"
+                    sx={{ lineHeight: 1.3 }}
+                  >
+                    • {err}
+                  </Typography>
+                ))}
+              </Stack>
+            ) : (
+              ""
+            );
+            setAlertDialog({
+              status: "error",
+              title: message,
+              description: errorList,
+            });
+            return;
+          }
+        }
+      );
+    } catch (error) {
+      console.error(error);
+      setAlertDialog({
+        status: "error",
+        title: "Something went wrong",
+        description: error.message ?? "",
+      });
+    }
+  };
+
   useEffect(() => {
     setPageLoader(true);
+    getYearList((status, message) => {
+      if (!(status >= 200 && status < 300)) {
+        // show toast error
+      }
+    });
     getPPMPDashboard((status, message) => {
       if (!(status >= 200 && status < 300)) {
-        // if status not success
-        return; //Toast error
+        // show toast error
       }
-      setPageLoader(false);
-    });
-  }, []);
+      setPageLoader(false); // always hide loader
+    }, year);
+  }, [year]);
 
   useEffect(() => {
     if (!assignedArea?.name) return;
@@ -172,6 +247,7 @@ function PPMPDashboard(props) {
             direction={"row"}
             justifyContent={"space-between"}
             alignItems={"center"}
+            spacing={2}
           >
             <Stack width={"100%"}>
               <Box display="flex" alignItems="center" gap={1}>
@@ -184,6 +260,11 @@ function PPMPDashboard(props) {
                   width="120px"
                   bgcolor="#004366"
                   txtcolor="white"
+                  years={years.years}
+                  onChange={(value) => {
+                    console.log("Selected Year:", value);
+                    setYear(value);
+                  }}
                 />
               </Box>
               <Typography level="body-sm" sx={{ color: "white" }}>
@@ -339,7 +420,7 @@ function PPMPDashboard(props) {
               bgcolor={"#FAFAFA"}
               p={1}
             >
-              <Grid xs={8}>
+              <Grid xs={8.5}>
                 <BoxComponent
                   bgColor={"#FAFAFA"}
                   display={"flex"}
@@ -364,10 +445,8 @@ function PPMPDashboard(props) {
                         <Handyman sx={{ fontSize: 25, color: color.main }} />
                       }
                       label={"   Total Items"}
-                      value={"₱ 12, 000"}
-                      description={
-                        "             Contained from (14) total combined activities"
-                      }
+                      value={dashboard?.summary?.total_items_count}
+                      description={`Contained from (${dashboard?.summary?.activity_count}) total combined activities`}
                       btnAction={() => handleNavigate()}
                       btnLabel={"Go to Item Management"}
                     />
@@ -379,10 +458,14 @@ function PPMPDashboard(props) {
                         />
                       }
                       label={"Total Item Quantity"}
-                      value={"14,000"}
-                      description={
-                        "With (₱22,000,000.00) total allocated budget"
-                      }
+                      value={dashboard?.summary?.total_quantity}
+                      description={`With a total cost of (₱ ${(dashboard?.summary?.total_cost).toLocaleString(
+                        "en-PH",
+                        {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        }
+                      )})`}
                     />
                     <PPMPCard
                       bgColor="#FFD2D2"
@@ -392,27 +475,81 @@ function PPMPDashboard(props) {
                         />
                       }
                       label={"TOTAL COST"}
-                      value={"₱22.0M"}
-                      description={
-                        "as found in (12) items in total on this request"
-                      }
+                      value={`₱ ${(dashboard?.summary?.total_cost).toLocaleString(
+                        "en-PH",
+                        {
+                          minimumFractionDigits: 2,
+                          maximumFractionDigits: 2,
+                        }
+                      )}`}
+                      description={`as found in (${dashboard?.summary?.total_items_count}) items in total on this request`}
                     />
                     <PPMPCard
                       bgColor="#FBE2CC"
                       icon={<Comment sx={{ fontSize: 25, color: "orange" }} />}
                       label={"COMMENTS"}
-                      value={"12"}
-                      description={
-                        "as found in (12) items in total on this request"
-                      }
+                      value={dashboard?.summary?.comments_count}
+                      description={`as found in (${dashboard?.summary?.items_with_comments_count}) items in total on this request`}
                     />
                   </Box>
-                  <BoxComponent width="100%" padding={2}>
+                  <BoxComponent
+                    width="100%"
+                    padding={2}
+                    sx={{
+                      display: "flex",
+                      flexDirection: "column",
+                      height: "100%",
+                    }}
+                  >
                     <Typography level="title-lg">PPMP Checklist</Typography>
+                    <Stack
+                      sx={{
+                        flex: 1,
+                        overflowY: "auto",
+                        pr: 1, // avoid hiding content under scrollbar
+                        maxHeight: "55vh", // choose what fits your layout
+                      }}
+                      spacing={2}
+                    >
+                      <List size="lg" component="nav" variant="">
+                        {dashboard.checklist.map((list, key) => (
+                          <>
+                            <ListItem>
+                              <ListItemDecorator>
+                                <Checkbox
+                                  checked={!!list.status}
+                                  color={!!list.status && "success"}
+                                />
+                              </ListItemDecorator>
+                              <Stack>
+                                <Typography
+                                  level={list.status ? "title-sm" : "body-sm"}
+                                  sx={{
+                                    color: list.status ? grey[900] : grey[400],
+                                  }}
+                                >
+                                  {list.title}
+                                </Typography>
+                                <Typography
+                                  level="body-xs"
+                                  fontWeight={400}
+                                  sx={{
+                                    color: list.status ? grey[700] : grey[400],
+                                  }}
+                                >
+                                  {list.description}
+                                </Typography>
+                              </Stack>
+                            </ListItem>
+                            <ListDivider inset={"gutter"} />
+                          </>
+                        ))}
+                      </List>
+                    </Stack>
                   </BoxComponent>
                 </BoxComponent>
               </Grid>
-              <Grid xs={4}>
+              <Grid xs={3.5}>
                 {/* Approval Timeline Here */}
                 <BoxComponent bgColor={"#FFFFFF"} p={2}>
                   <Typography level="title-lg">Approval Timeline</Typography>
@@ -488,6 +625,7 @@ function PPMPDashboard(props) {
         hasActionButtons
         noRightButton={true}
         leftButtonLabel="Submit"
+        leftButtonAction={() => handleSubmit()}
       />
     </Fragment>
   );

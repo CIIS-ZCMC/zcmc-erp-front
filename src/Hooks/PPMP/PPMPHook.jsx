@@ -7,6 +7,7 @@ import {
   remove,
   update,
 } from "../../Services/RequestMethods";
+import { API } from "../../Data/constants";
 
 const PATH = "ppmp";
 
@@ -18,6 +19,8 @@ const usePPMPHook = create((set) => ({
   ppmp: [],
   ppmp_total: 0,
   pagination: {},
+  years: [],
+  status: [],
 
   getPPMPItems: (callBack, page = 1, per_page = 15) => {
     read({
@@ -31,15 +34,17 @@ const usePPMPHook = create((set) => ({
           ppmp_total: data.data.ppmp_total,
           pagination: data.data.pagination,
           ppmp_id: data.data.id,
+          status: data.data.status,
         });
         callBack(status, message, data);
       },
     });
   },
 
-  getPPMPDashboard: (callBack) => {
+  getPPMPDashboard: (callBack, year) => {
     read({
       url: `${PATH}-application-dashboard`,
+      params: { year },
       failed: callBack,
       success: (res) => {
         const { status, message, data } = res;
@@ -73,13 +78,15 @@ const usePPMPHook = create((set) => ({
     });
   },
 
-  postPPMP: async (body, callback) => {
+  postPPMP: async (id, body, callback) => {
     post({
-      url: `${PATH}-items-store`,
+      url: `${PATH}-update-status/${id}`,
       form: body,
       success: (response) => {
-        const { message, data } = response.data;
-        callback(response.status, message, data);
+        console.log(response);
+
+        const { message, data, errors } = response.data;
+        callback(response.status, message, errors);
       },
       failed: callback,
     });
@@ -101,15 +108,16 @@ const usePPMPHook = create((set) => ({
     remove({
       url: `${PATH}-items-delete/${id}`,
       success: ({ status, data }) => {
-        // const { message, data: deletedResource, activity } = data;
-
-        // set((state) => ({
-        //   resources: state.resources.filter((res) => res.id !== id),
-        //   activity: {
-        //     ...state.activity,
-        //     // ✅ update only cost
-        //   },
-        // }));
+        const {
+          message,
+          data: { deleted_ppmp_item, ppmp_total, summary },
+        } = data;
+        console.log(ppmp_total);
+        set((state) => ({
+          // remove the deleted item from ppmp resources/items
+          ppmp: state.ppmp.filter((res) => res.id !== deleted_ppmp_item.id),
+          ppmp_total: ppmp_total,
+        }));
         callBack(status, message);
       },
       failed: callBack,
@@ -180,6 +188,22 @@ const usePPMPHook = create((set) => ({
           ppmp_total: ppmp_total_amount,
         }));
 
+        callBack(status, message);
+      },
+    });
+  },
+
+  getYearList: async (callBack) => {
+    read({
+      url: API.AOP_YEAR_LIST,
+      failed: callBack,
+      success: (res) => {
+        // console.log(res)
+        const {
+          status,
+          data: { data, message },
+        } = res;
+        set({ years: data });
         callBack(status, message);
       },
     });

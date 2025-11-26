@@ -72,7 +72,11 @@ function DrawerComponent({
               sx={{ alignItems: "start", justifyContent: "space-between" }}
             >
               <Stack gap={0.3}>
-                <Typography fontSize={{ xs: 15, lg: 18 }} fontWeight={600}>
+                <Typography
+                  fontSize={{ xs: 15, lg: 18 }}
+                  fontWeight={600}
+                  textTransform={"capitalize"}
+                >
                   {title}
                 </Typography>
                 <Typography

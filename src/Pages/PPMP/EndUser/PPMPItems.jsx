@@ -1,7 +1,7 @@
 import React, { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import PageTitle from "../../../Components/Common/PageTitle";
 import ButtonComponent from "../../../Components/Common/ButtonComponent";
-import { Stack, Typography, Snackbar, Alert } from "@mui/joy";
+import { Stack, Typography, Snackbar, Alert, Box, Card } from "@mui/joy";
 import { useLocation, useNavigate } from "react-router-dom";
 import usePPMPHook from "../../../Hooks/PPMP/PPMPHook";
 import useItemsHook from "../../../Hooks/ItemsHook";
@@ -21,11 +21,18 @@ import { PPMP_HEADERS } from "../../../Data/Columns";
 import { ThreeDotsLoader } from "@Components/Common/Loading/ThreeDotsLoader";
 import SearchBarComponentv2 from "@Components/SearchBarWithdeBounce";
 import useSnackbarHook from "../../../Hooks/SnackbarHook";
+import DrawerComponent from "@Components/Common/DrawerComponent";
+import { blue, grey } from "@mui/material/colors";
+import moment from "moment";
+import { Circle } from "@mui/icons-material";
+import CommentContainerComponent from "@Components/Comments/CommentContainerComponent";
+import TextareaComponent from "@Components/Form/TextareaComponent";
 
 function PPMPItems(props) {
   const navigate = useNavigate();
   const {
     modes,
+    status,
     ppmp_id,
     ppmp,
     ppmp_total,
@@ -46,41 +53,19 @@ function PPMPItems(props) {
   } = useModalHook();
   const { errors, setError, clearErrors } = userErrorInputHook();
   const { showSnack } = useSnackbarHook();
-  const ppmpTotal = usePPMPTotalStore((state) => state.ppmpTotal);
-
-  const [activity, setActivity] = useState({});
-  const [expenseClass, setExpenseClass] = useState({});
-  const [openAdd, setOpenAdd] = useState(false);
-  const [openSave, setOpenSave] = useState(false);
-  const [openDel, setOpenDel] = useState(false);
-  const [openReq, setOpenReq] = useState(false);
   const [pageLoader, setPageLoader] = useState(false);
-  const [buttonLoader, setButtonLoader] = useState(false);
   const [dlLoader, setDlLoader] = useState(false);
   const [disabled, setDisabled] = useState(false);
+  const [openDrawer, setOpenDrawer] = useState(false);
   const [show, setShow] = useState(false);
-  const [editLoad, setEditLoad] = useState(false);
-  const [reloadFlag, setReloadFlag] = useState(false);
-  const [selectedID, setSelectedID] = useState(null);
-  const [step, setStep] = useState(1);
   const [openNotify, setOpenNotify] = useState(false);
-  const [pin, setPin] = useState("");
   const [editor, setEditor] = useState(null);
-  const [tableData, setTableData] = useState([]);
-  const [is_draft, setIsDraft] = useState(1);
-  const [itemReq, setItemReq] = useState({
-    specs: [
-      { id: Date.now(), value: "" },
-      { id: Date.now() + 1, value: "" },
-      { id: Date.now() + 2, value: "" },
-    ],
-  });
   const [editingRows, setEditingRows] = useState({});
-  const [openIndex, setOpenIndex] = useState(null);
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
   const [search, setSearch] = useState("");
   const updatedRowData = React.useRef({});
+  const [selecetdRow, setSelectedRow] = useState({});
 
   const location = useLocation();
   const { user } = useAuth();
@@ -195,187 +180,16 @@ function PPMPItems(props) {
       // setLoading(false);
 
       if (status === 200) {
-        console.log("✅ Resource updated successfully:", message);
+        showSnack(200, message);
       } else {
-        console.error("❌ Failed to update resource:", message);
+        showSnack(500, message);
       }
     });
-  };
-
-  //CONFIRMATION MODAL
-  const handleConfirmationModal = () => {
-    setOpenDel(false);
-    setOpenSave(true);
-    const data = {
-      status: "success",
-      title:
-        "Changes on PPMP are ready to be reflected to your AOP. Would you like to proceed with the changes?",
-      description:
-        "After submission, a document preview will be available and can be downloaded in Microsoft Excel Spreadsheet (.xls) file format. Please input your authorization pin to proceed with the submission.",
-    };
-
-    setConfirmationModal(data);
   };
 
   //SAVE CHANGES
-  const handleSubmit = async (is_draft) => {
-    if (pin === "" && is_draft === 0) {
-      setAlertDialog({
-        status: "error",
-        title: "Missing Authorization PIN",
-        description: "Please enter your authorization PIN before submitting.",
-      });
-      return;
-    }
-
-    setButtonLoader(true);
-
-    try {
-      const ppmp_items = JSON.parse(localStorage.getItem("ppmp-items")) || [];
-      const formData = new FormData();
-      if (is_draft === 0) {
-        formData.append("pin", pin);
-      }
-      formData.append("is_draft", is_draft);
-      formData.append("PPMP_Items", JSON.stringify(ppmp_items));
-
-      const result = await new Promise((resolve) => {
-        postPPMP(formData, (status, message, data) =>
-          resolve({ status, message, data })
-        );
-      });
-
-      const { status, message, data } = result;
-
-      const alertData =
-        status === 201
-          ? {
-              status: "success",
-              title: is_draft
-                ? "Saved as draft"
-                : "PPMP for F.Y. 2026 successfully submitted for approval.",
-              description: is_draft
-                ? "Your PPMP request has been save as draft. You can continue editing it later or submit it for approval."
-                : "Your PPMP request has been sent to the next approving body and they have been notified for approvals.",
-            }
-          : {
-              status: "error",
-              title: message,
-              description: message,
-            };
-
-      setAlertDialog(alertData);
-
-      if (status === 201) {
-        localStorage.setItem("ppmp-items", JSON.stringify(data.ppmp_items));
-        setIsDraft(data.is_draft);
-        localStorage.setItem("is_draft", JSON.stringify(data.is_draft));
-        closeConfirmation();
-        setOpenSave(false);
-        disconnectSignal();
-        handleCloseSnack();
-      }
-    } catch (error) {
-      setAlertDialog({
-        status: "error",
-        title: "Submission Failed",
-        description: "An unexpected error occurred. Please try again.",
-      });
-    } finally {
-      setButtonLoader(false);
-    }
-  };
-
-  //SUBMIT ADD ITEM REQUEST
-  const handleRequest = async () => {
-    clearErrors();
-    let hasError = false;
-    // if (!itemReq?.specs?.length || itemReq.specs.some((s) => !s.value.trim())) {
-    //   setError("specs", true, "Please complete all specifications.");
-    //   hasError = true;
-    // }
-    itemReq.specs.forEach((spec, index) => {
-      if (!spec.value.trim()) {
-        setError(
-          `specs[${index}]`,
-          true,
-          `Specification ${index + 1} is required.`
-        );
-        hasError = true;
-      }
-    });
-    if (!itemReq?.pin?.trim()) {
-      setError("pin", true, "Authorization PIN is required.");
-      hasError = true;
-    }
-
-    if (hasError) return;
-
-    try {
-      setButtonLoader(true);
-      const formData = new FormData();
-      formData.append("activity", JSON.stringify(activity));
-      formData.append("expense_class", JSON.stringify(expenseClass));
-      formData.append("classification", JSON.stringify(itemReq.classification));
-      formData.append("category", JSON.stringify(itemReq.category));
-      formData.append("item_name", itemReq.item_name || "");
-      formData.append("unit", JSON.stringify(itemReq.unit));
-      formData.append("estimated_budget", itemReq.estimated_budget || "");
-      formData.append("variant", JSON.stringify(itemReq.variant));
-      formData.append(
-        "market_research",
-        itemReq.market_research ? "true" : "false"
-      );
-      formData.append("specifications", JSON.stringify(itemReq.specs));
-      formData.append("pin", itemReq.pin || "");
-
-      await postItemRequest(formData, (status, message, data) => {
-        setButtonLoader(false);
-
-        const alertData = {
-          status: status === 201 ? "success" : "error",
-          title: message,
-          description: message,
-        };
-
-        setAlertDialog(alertData);
-      });
-    } catch (error) {
-      setButtonLoader(false);
-      setAlertDialog({
-        status: "error",
-        title: "Request Failed",
-        description: "An unexpected error occurred. Please try again.",
-      });
-    }
-  };
-
-  const handleNavigate = () => {
-    clearErrors();
-    let hasError = false;
-    if (isEmptyObject(activity)) {
-      setError("activity", true, "Please select an option");
-      hasError = true;
-    }
-    if (hasError) return;
-
-    navigate("/edit-ppmp/add-item", {
-      state: { activity },
-    });
-  };
-
   const isEmptyObject = (obj) =>
     obj && typeof obj === "object" && Object.keys(obj).length === 0;
-
-  const handleClose = () => {
-    close;
-    closeAlertDialog();
-    setOpenReq(false);
-    setItemReq({});
-    setActivity({});
-    setExpenseClass({});
-    setPin("");
-  };
 
   const exportToCSV = () => {
     setDlLoader(true);
@@ -396,6 +210,11 @@ function PPMPItems(props) {
         });
       }
     });
+  };
+
+  const handleComments = (row) => {
+    setSelectedRow(row);
+    setOpenDrawer(true);
   };
 
   useEffect(() => {
@@ -436,7 +255,6 @@ function PPMPItems(props) {
 
   return (
     <Fragment>
-      {console.log(ppmp)}
       <PageTitle
         title={`PPMP for Fiscal Year ${currentFiscalYear}`}
         description={""}
@@ -517,7 +335,7 @@ function PPMPItems(props) {
             </Stack>
           </BoxComponent>
           <CollapsibleTable
-            columns={PPMP_HEADERS(editingRows)}
+            columns={PPMP_HEADERS(status, editingRows, handleComments)}
             rows={filteredPPMPItems}
             editingRows={editingRows}
             onEditToggle={handleEditToggle}
@@ -540,23 +358,6 @@ function PPMPItems(props) {
         </>
       )}
 
-      {/* Submit item request */}
-
-      {openSave && (
-        <ConfirmationModalComponent
-          leftButtonLabel="Back to editor"
-          rightButtonLabel="Save changes"
-          rightButtonAction={() => handleSubmit(0)}
-          leftButtonAction={() => {
-            setOpenSave(false);
-            closeConfirmation();
-          }}
-          isLoading={buttonLoader}
-          setAuthPin={setPin}
-          withAuthPin={true}
-        />
-      )}
-
       <AlertDialogComponent leftButtonAction={() => handleClose()} />
       <Snackbar
         open={openNotify}
@@ -573,6 +374,42 @@ function PPMPItems(props) {
           {editor?.editorName} is currently editing
         </Alert>
       </Snackbar>
+      {console.log(selecetdRow)}
+      <DrawerComponent
+        open={openDrawer}
+        setOpen={setOpenDrawer}
+        title={`${selecetdRow?.item?.name}`}
+        description={`The following comments were submitted by reviewing offices regarding this resource item.`}
+        size="md"
+        content={
+          <Stack width="100%" py={1.5} spacing={2}>
+            <CommentContainerComponent
+              name={"Maria Santos"}
+              comment={"Ok Noted"}
+              area_code={"Planning Unit"}
+            />
+            <CommentContainerComponent
+              name={"Maria Santos"}
+              comment={"Ok Noted"}
+              area_code={"Planning Unit"}
+            />
+          </Stack>
+        }
+        footer={
+          <>
+            <Stack width={"100%"} spacing={2}>
+              <TextareaComponent
+                placeholder={"Comment here .. "}
+                maxRows={3}
+                label={"Add a comment"}
+              />
+              <Stack direction={"row"} justifyContent={"right"}>
+                <ButtonComponent label={"Post Comment"} width="200px" />
+              </Stack>
+            </Stack>
+          </>
+        }
+      />
     </Fragment>
   );
 }
