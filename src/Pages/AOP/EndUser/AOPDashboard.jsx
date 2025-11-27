@@ -51,7 +51,7 @@ function DashboardEndUser(props) {
   const [openFeedbackModal, setOpenFeedbackModal] = useState(false);
 
   useEffect(() => {
-    getObjectives(aop.id, (status, message) => {
+    getObjectives(aop?.id, (status, message) => {
       return
     })
   }, [])

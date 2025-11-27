@@ -60,7 +60,7 @@ const AOPApproval = () => {
   useEffect(() => {
     // console.log('year', currentFiscalYear);
     // console.log('status id ', status_id);
-    console.log('year details', yearDetails);
+    // console.log('year details', yearDetails);
   }, [yearDetails])
 
 

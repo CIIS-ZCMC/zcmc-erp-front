@@ -23,8 +23,8 @@ import useObjectivesStore from "../../../../Store/ObjectivesStore";
 const ObjectivesList = ({ objectives }) => {
 
   // useEffect(() => {
-  //   console.log('objectives:', applicationObjectives)
-  // }, [applicationObjectives])
+  //   console.log('objectives:', objectives)
+  // }, [objectives])
 
 
   // STATES

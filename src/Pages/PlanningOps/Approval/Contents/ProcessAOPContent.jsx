@@ -21,7 +21,7 @@ import { approvalActions, PROCESS_AOP, } from "../../../../Data/constants";
 import { handleChangeInput } from "../../../../Utils/HandleInput";
 import { localStorageGetter } from "../../../../Utils/LocalStorage";
 
-const ProcessAOPContent = ({ aopId, timelineId, role, processable }) => {
+const ProcessAOPContent = ({ aopId, ppmpId, timelineId, role, processable }) => {
   // HOOKS
 
   const {
@@ -42,7 +42,7 @@ const ProcessAOPContent = ({ aopId, timelineId, role, processable }) => {
 
   const hasRole = (userRole) => role === userRole;
 
-  const userPlanning = hasRole('Planning Unit');
+  const userPlanning = hasRole('Planning Officer');
   const userDiviChief = hasRole('Division Chief');
   const userMCC = hasRole('MCC');
 
@@ -75,7 +75,7 @@ const ProcessAOPContent = ({ aopId, timelineId, role, processable }) => {
 
   const confirmButtonDisabled =
     !pin ||
-    pin.length !== 6;
+    pin.length !== 4;
   // (role !== "Planning Unit" && (!remarks || remarks.trim() === "")) ||
   // remarks === null;
 
@@ -91,11 +91,13 @@ const ProcessAOPContent = ({ aopId, timelineId, role, processable }) => {
   const handleProcessAOP = () => {
 
     const payload = {
-      ppmp_application_timeline_id: timelineId,
+      ppmp_application_timeline_id: ppmpId,
       action: processData.action === 'approved' ? 4 : 6,
       remarks,
       authorization_pin: pin,
     }
+
+    console.log(payload)
 
     processPPMP(payload, (status, message) => {
       setBtnLoading(false);
@@ -153,7 +155,7 @@ const ProcessAOPContent = ({ aopId, timelineId, role, processable }) => {
 
       <ButtonComponent
         label={"Process request"}
-        disabled={!processable}
+        // disabled={!processable}
         onClick={handleProcessRequest}
       />
 

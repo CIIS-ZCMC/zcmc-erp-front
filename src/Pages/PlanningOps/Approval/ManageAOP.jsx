@@ -8,6 +8,7 @@ import ContainerComponent from "../../../Components/Common/ContainerComponent";
 import ButtonComponent from "../../../Components/Common/ButtonComponent";
 ;
 import useObjectivesStore from "../../../Store/ObjectivesStore";
+import useFeedbackStore from "../../../Store/FeedbackStore";
 
 import useObjectivesHook from "../../../Hooks/ObjectivesHook";
 
@@ -24,12 +25,17 @@ export default function ManageAOP() {
 
   const { getObjectives } = useObjectivesHook();
   const { applicationObjectives } = useObjectivesStore();
+  const { feedback } = useFeedbackStore();
+
 
   useEffect(() => {
+
+    console.log(aopId)
+
     getObjectives(aopId, (status, message) => {
       return
     })
-  }, [])
+  }, [aopId])
 
   const {
     current_user,
@@ -41,18 +47,21 @@ export default function ManageAOP() {
     latest_application_timeline,
     activity_comments,
     application_timelines,
-  } = applicationObjectives;
+    ppmp_application,
+    latest_ppmp_application_timeline,
+  } = feedback;
 
+  const { id: ppmpId } = latest_ppmp_application_timeline || {}
   const { role, area_name } = current_user || {};
   const { id } = latest_application_timeline || {};
 
-  // useEffect(() => {
-  //   console.log('app timelines:', application_timelines)
-  //   console.log('user role:', role)
-  // }, [applicationObjectives, role]);
+  useEffect(() => {
+    console.log('ppmp app timelines:', latest_ppmp_application_timeline)
+    // console.log('feedback:', feedback)
+  }, [feedback]);
 
   const userMCC = role === 'MCC';
-  const userPlanning = role === 'Planning Unit';
+  const userPlanning = role === 'Planning Officer';
 
   // STATES
   const [openFeedbackModal, setOpenFeedbackModal] = useState(false);
@@ -124,13 +133,15 @@ export default function ManageAOP() {
                     {isAllowedFeedbackViewing() && (
                       <ButtonComponent
                         variant={"outlined"}
-                        label={`Go to feedback (${feedbackCount})`}
+                        label={`Go to feedback (${!userPlanning ? commentCount : feedbackCount})`}
                         endDecorator={<ExternalLink size={14} />}
                         onClick={handleViewFeedback}
                       />
                     )}
 
                     <ProcessAOPContent
+                      //insert ppmp id here
+                      ppmpId={ppmpId}
                       processable={processable}
                       timelineId={id}
                       aopId={aopId}
