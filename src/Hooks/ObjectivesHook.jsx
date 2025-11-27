@@ -2,12 +2,14 @@ import { API } from "../Data/constants";
 import { read, post, update, remove } from "../Services/RequestMethods";
 
 import { useApplicationObjectives, useObjectivesActions } from "../Store/ObjectivesStore";
+import { useFeedbackStoreActions } from "../Store/FeedbackStore";
 
 const useObjectivesHook = () => {
 
   const applicationObjectives = useApplicationObjectives();
 
   const { setApplicationObjectives, setApplicationObjective } = useObjectivesActions();
+  const { setFeedback } = useFeedbackStoreActions()
 
   const getObjectives = async (id, callBack) => {
     try {
@@ -20,7 +22,7 @@ const useObjectivesHook = () => {
             status,
             data: { data, message },
           } = res;
-          setApplicationObjectives(data);
+          setFeedback(data); // get the objectives data and set to feedback so we can access the comments and remarks data
           callBack(status, message)
         }
       });
@@ -36,10 +38,9 @@ const useObjectivesHook = () => {
         url: API.OBJECTIVE_BY_SECTOR,
         failed: callBack,
         success: (res) => {
-          const {
-            status,
-            data: { data, message },
+          const { data: { data, message },
           } = res;
+          // console.log('response data', Array.isArray(data))
           setApplicationObjectives(Array.isArray(data) ? data : []);
           callBack(status, message)
         }

@@ -24,10 +24,10 @@ const useAOPApprovalHook = create((set) => ({
     //   });
     // },
 
-    // GET ALL AOP APPLICATIONS
-    processAOP: (payload, callback) => {
+    // 
+    processPPMP: (payload, callback) => {
       post({
-        url: `${API.APPROVAL_AOP}`,
+        url: `${API.APPROVAL_PPMP}`,
         form: payload,
         failed: callback,
         success: (response) => {

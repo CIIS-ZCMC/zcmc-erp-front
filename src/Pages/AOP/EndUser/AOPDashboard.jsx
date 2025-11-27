@@ -18,6 +18,7 @@ import useObjectivesHook from "../../../Hooks/ObjectivesHook";
 
 import useObjectivesStore from "../../../Store/ObjectivesStore";
 import useAOPStore, { useAOPActions } from "../../../Store/AOPStore";
+import useFeedbackStore from "../../../Store/FeedbackStore";
 
 import Title from "./Title/Title";
 import Header from './Header/Header';
@@ -40,15 +41,14 @@ function DashboardEndUser(props) {
   const { createAOP, getAopBySectorAndYear, getAopYearList } = useAOPHook();
   const { setAlertDialog } = useModalHook();
 
-  const { applicationObjectives } = useObjectivesStore();
   const { aop, mission, fiscalYear, yearDetails, } = useAOPStore();
   const { setMission, clearMission } = useAOPActions();
+  const { feedback } = useFeedbackStore();
 
   const [openFiscalYearModal, setOpenFiscalYearModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isAopLoading, setIsAopLoading] = useState(false);
   const [openFeedbackModal, setOpenFeedbackModal] = useState(false);
-
 
   useEffect(() => {
     getObjectives(aop.id, (status, message) => {
@@ -60,13 +60,14 @@ function DashboardEndUser(props) {
     activity_comments,
     application_timelines,
     current_user,
-  } = applicationObjectives;
+  } = feedback;
 
   const { role } = current_user || {}
 
-  useEffect(() => {
-    console.log(application_timelines)
-  }, [application_timelines])
+  // useEffect(() => {
+  //   console.log('role', role);
+  //   console.log('feedback', feedback);
+  // }, [feedback])
 
   const remarksCount = application_timelines?.length || 0;
   const commentCount = activity_comments?.length || 0;
@@ -220,7 +221,7 @@ function DashboardEndUser(props) {
                   <Draft />
                 }
 
-                {!aop?.status?.id !== 2 &&
+                {aop?.status?.id === 2 &&
                   <>
                     <ButtonComponent
                       variant={'soft'}

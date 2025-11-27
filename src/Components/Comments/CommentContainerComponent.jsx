@@ -38,8 +38,8 @@ function CommentContainerComponent({
     >
       <Typography fontWeight={600} level="title-sm">
         {!isActivity
-          ? `Posted by: ${name} `
-          // `Posted by ${area_code} - ${name}`
+          ?
+          `Posted by ${area_code} - ${name}`
           :
           // `${area_code} - ${name}`} 
           `${name}`}

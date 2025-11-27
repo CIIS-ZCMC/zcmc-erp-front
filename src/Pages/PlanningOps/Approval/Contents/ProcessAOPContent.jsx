@@ -17,11 +17,6 @@ import useModalHook from "../../../../Hooks/ModalHook";
 
 // import { useAOPApplication } from "../../../../Hooks/AOP/AOPApplicationsHook";
 
-import { TEST_MODE } from "../../../../Services/Config";
-import { APPROVAL_TIMELINE } from "../../../../Data/TestData";
-
-import { AOP_TIMELINE } from "../../../../Data/constants";
-
 import { approvalActions, PROCESS_AOP, } from "../../../../Data/constants";
 import { handleChangeInput } from "../../../../Utils/HandleInput";
 import { localStorageGetter } from "../../../../Utils/LocalStorage";
@@ -51,7 +46,7 @@ const ProcessAOPContent = ({ aopId, timelineId, role, processable }) => {
   const userDiviChief = hasRole('Division Chief');
   const userMCC = hasRole('MCC');
 
-  const { processAOP } = useApprovalActions();
+  const { processPPMP } = useApprovalActions();
 
   const {
     setAlertDialog,
@@ -72,12 +67,6 @@ const ProcessAOPContent = ({ aopId, timelineId, role, processable }) => {
   const [processData, setProcessData] = useState({ action: "approved" });
   const [openProcessModal, setOpenProcessModal] = useState(false);
   const [btnLoading, setBtnLoading] = useState(false);
-
-
-  // const [disabledProcessRequest, setDisabledProcessRequest] = useState(true);
-
-  const AOP_APPLICATION_ID = localStorageGetter("aop_application_id");
-
 
   // FUNCTIONS
   const handleProcessRequest = () => {
@@ -102,13 +91,13 @@ const ProcessAOPContent = ({ aopId, timelineId, role, processable }) => {
   const handleProcessAOP = () => {
 
     const payload = {
-      application_timeline_id: timelineId,
+      ppmp_application_timeline_id: timelineId,
       action: processData.action === 'approved' ? 4 : 6,
       remarks,
       authorization_pin: pin,
     }
 
-    processAOP(payload, (status, message) => {
+    processPPMP(payload, (status, message) => {
       setBtnLoading(false);
 
       let data = {};

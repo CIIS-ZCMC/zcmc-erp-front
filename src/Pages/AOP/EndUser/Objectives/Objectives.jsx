@@ -76,9 +76,9 @@ const Objectives = () => {
     getObjectivesBySector((status, message) => {
       if (!(status >= 200 && status < 300)) {
         // if status not success
+        setIsLoading(false);
         return; //Toast error
       }
-      setIsLoading(false);
     });
   }, []);
 
@@ -88,8 +88,8 @@ const Objectives = () => {
     // console.log('selected objective :', objective)
     // console.log('succeses indicator id:', successIndicator?.id)
     // console.log('objective:', applicationObjective)
-    // console.log('application objectives:', applicationObjectives);
-  }, [functionType, objective, successIndicator, applicationObjectives]);
+    // console.log('application objectives:', applicationObjectives)
+  }, [functionType, objective, successIndicator, applicationObjectives, isLoading]);
 
   const {
     OBJECTIVES_EMPTY_STATE_TITLE,
@@ -124,8 +124,13 @@ const Objectives = () => {
   //   // if (aopId) {
   //   //   setAopId(aopId);
   //   // }
-  //   console.log(filteredObjectives)
-  // }, [aopId, filteredObjectives]);
+  //   console.log("applicationObjectives:", applicationObjectives);
+  //   console.log("filteredObjectives:", filteredObjectives);
+  //   console.log("types:", {
+  //     appObj: typeof applicationObjectives,
+  //     filtered: typeof filteredObjectives,
+  //   });
+  // }, [aopId, filteredObjectives, applicationObjectives]);
 
 
   const handleSaveObjectives = async () => {
@@ -363,7 +368,7 @@ const Objectives = () => {
           }
 
           <Grid mt={2} container direction="row" spacing={2} sx={{ flexGrow: 1 }}>
-            {filteredObjectives?.map(
+            {applicationObjectives?.map(
               ({
                 id,
                 aop_application_id,

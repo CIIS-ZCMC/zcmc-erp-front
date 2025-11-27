@@ -114,7 +114,7 @@ const Activities = () => {
     // console.log('current is gad related', isGadRelated)
     // console.log('current is gad target', target)
     // console.log(state.objective)
-    console.log(applicationActivities)
+    // console.log(applicationActivities)
   }, [activity, startMonth, endMonth, isGadRelated, target, applicationActivities])
 
   const filteredActivities = useMemo(() => {
