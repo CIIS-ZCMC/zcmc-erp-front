@@ -14,7 +14,7 @@ import ResponsiblePerson from "../Pages/AOP/EndUser/Responsible/ResponsiblePerso
 
 import Items from "../Pages/Items";
 
-import ItemRequest from "../Pages/Consolidators/ItemManagement/ItemRequest";
+import ItemRequest from "../Pages/Consolidators/ItemManagement/ItemRequest/ItemRequest";
 import ItemLibrary from "../Pages/Consolidators/ItemManagement/Library/ItemLibrary";
 // import Objectives from "../Pages/PlanningOps/ObjectiveManagement/Objectives";
 import ManageAOP from "../Pages/PlanningOps/Approval/ManageAOP";
@@ -53,16 +53,19 @@ import PPMPDashboard from "../Pages/PPMP/EndUser/PPMPDashboard";
 import PPMPItems from "../Pages/PPMP/EndUser/PPMPItems";
 import AddItems from "../Pages/PPMP/EndUser/AddItems";
 import PPMPOutlet from "../Pages/PPMP/EndUser/PPMPOutlet";
+import All from "../Pages/Consolidators/ItemManagement/ItemRequest/All";
+import Pending from "../Pages/Consolidators/ItemManagement/ItemRequest/Pending";
+import Saved from "../Pages/Consolidators/ItemManagement/ItemRequest/Saved";
 // import ResponsiblePerson from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities/ResponsiblePerson";
 
 export const sidebarRoutes = [
   // DASHBOARD ROUTE
   {
     path: "/dashboard",
-    name: "AOP",
+    name: "Dashboard",
     element: <Dashboard />,
     icon: <MdDashboard {...iconStyles} />,
-    permissions: ["*"],
+    permissions: ["ERP-PPMP-MAN:approve", "ERP-PPMP-MAN:approve"],
   },
 
   // SUPERVISOR ROUTES
@@ -109,40 +112,6 @@ export const sidebarRoutes = [
         ],
       },
 
-      // {
-      //   path: "/aop-management",
-      //   element: <AOP />,
-      //   roles: ["super_admin"],
-      //   childPermissions: ["ERP-AOP-MAN:write"],
-      //   children: [
-      //     {
-      //       index: true,
-      //       element: <AOPObjectives />,
-      //     },
-      //     {
-      //       path: "activities/:objectiveId",
-      //       element: <Activities />,
-      //       children: [
-      //         {
-      //           path: "items/:activityId",
-      //           element: <Items />,
-      //         },
-      //         {
-      //           path: "resources/:activityId",
-      //           element: <Resources />,
-      //           roles: ["super_admin"],
-      //         },
-
-      //         {
-      //           path: "person/:activityId",
-      //           element: <Responsible />,
-      //           roles: ["super_admin"],
-      //         },
-      //       ],
-      //     },
-      //   ],
-      // },
-
       {
         path: "/ppmp",
         name: "Edit PPMP",
@@ -166,12 +135,6 @@ export const sidebarRoutes = [
     ],
   },
 
-  // AOP AND PPPMP
-
-  // {
-  //   path: "/items/:activityId",
-  //   children: [{ index: true, element: <Items /> }],
-  // },
   {
     parentPath: "/planning-ops",
     name: "Planning and Operations",
@@ -187,7 +150,7 @@ export const sidebarRoutes = [
     children: [
       {
         path: "/aop-approval",
-        name: "AOP Management",
+        name: "AOP and PPMP Management",
         childPermissions: ["ERP-AOP-MAN:approve"],
         children: [
           { index: true, element: <AOPApproval /> },
@@ -198,18 +161,18 @@ export const sidebarRoutes = [
         ],
       },
 
-      {
-        path: "/ppmp-approval",
-        name: "PPMP Management",
-        childPermissions: ["ERP-PPMP-MAN:approve"],
-        children: [
-          { index: true, element: <PPMPApproval /> },
-          {
-            path: "view/:id",
-            element: <ManagePPMP />,
-          },
-        ],
-      },
+      // {
+      //   path: "/ppmp-approval",
+      //   name: "PPMP Management",
+      //   childPermissions: ["ERP-PPMP-MAN:approve"],
+      //   children: [
+      //     { index: true, element: <PPMPApproval /> },
+      //     {
+      //       path: "view/:id",
+      //       element: <ManagePPMP />,
+      //     },
+      //   ],
+      // },
 
       {
         path: "/objectives",
@@ -237,13 +200,13 @@ export const sidebarRoutes = [
     name: "Item Management",
     icon: <MdSettings {...iconStyles} />,
     permissions: [
-      "IM-001:write",
-      "IM-001:view",
-      "IM-001:view-all",
-      "IM-001:update",
-      "IM-001:approve",
-      "IM-001:request",
-      "IM-001:delete",
+      "ERP-ITM-MAN:write",
+      "ERP-ITM-MAN:view",
+      "ERP-ITM-MAN:view-all",
+      "ERP-ITM-MAN:update",
+      "ERP-ITM-MAN:approve",
+      "ERP-ITM-MAN:request",
+      "ERP-ITM-MAN:delete",
     ],
     children: [
       {
@@ -251,10 +214,24 @@ export const sidebarRoutes = [
         name: "Item Requests",
         element: <ItemRequest />,
         childPermissions: [
-          "IM-001:read",
-          "IM-001:write",
-          "IM-001:edit",
-          "IM-001:delete",
+          "ERP-ITM-MAN:read",
+          "ERP-ITM-MAN:write",
+          "ERP-ITM-MAN:edit",
+          "ERP-ITM-MAN:delete",
+        ],
+        children: [
+          {
+            index: true,
+            element: <All />,
+          },
+          {
+            path: "pending",
+            element: <Pending />,
+          },
+          {
+            path: "saved",
+            element: <Saved />,
+          },
         ],
       },
 
@@ -263,10 +240,10 @@ export const sidebarRoutes = [
         name: "Libraries",
         element: <ItemLibrary />,
         childPermissions: [
-          "IM-001:read",
-          "IM-001:write",
-          "IM-001:edit",
-          "IM-001:delete",
+          "ERP-ITM-MAN:read",
+          "ERP-ITM-MAN:write",
+          "ERP-ITM-MAN:edit",
+          "ERP-ITM-MAN:delete",
         ],
         children: [
           {

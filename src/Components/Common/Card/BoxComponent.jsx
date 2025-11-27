@@ -10,7 +10,14 @@ BoxComponent.propTypes = {
   props: PropTypes.object, // Keep this for spreading additional props
 };
 
-function BoxComponent({ children, height, maxHeight, bgColor, p, ...props }) {
+function BoxComponent({
+  children,
+  height,
+  maxHeight,
+  bgColor,
+  p = 2,
+  ...props
+}) {
   return (
     <Box
       sx={{

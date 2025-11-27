@@ -46,92 +46,106 @@ export const OBJECTIVES = {
 
 export const ACTIVITIES = {
   MANAGE_ACTIVITIES_HEADER: "Manage Activities for",
-  MANAGE_ACTIVITIES_SUBHEADER: "Define and manage the activities under this objective. Set the timeframe, quarterly targets, and specify the needed resources and responsible persons for each activity",
-  MODAL_TITLE: 'Add Activity',
-  MODAL_DESCRIPTION: 'Enter the number of activities to create. You may define their details later by editing each activity card.',
-  COUNT_LABEL: 'How many activities would you like to add ?',
-  EMPTY_STATE_TITLE: 'No Activities Added Yet',
-  ACTIVITY_CREATE_NEW: 'This objective doesn’t have any activities assigned. Add one to start defining what needs to be accomplished.'
-}
+  MANAGE_ACTIVITIES_SUBHEADER:
+    "Define and manage the activities under this objective. Set the timeframe, quarterly targets, and specify the needed resources and responsible persons for each activity",
+  MODAL_TITLE: "Add Activity",
+  MODAL_DESCRIPTION:
+    "Enter the number of activities to create. You may define their details later by editing each activity card.",
+  COUNT_LABEL: "How many activities would you like to add ?",
+  EMPTY_STATE_TITLE: "No Activities Added Yet",
+  ACTIVITY_CREATE_NEW:
+    "This objective doesn’t have any activities assigned. Add one to start defining what needs to be accomplished.",
+};
 
 export const RESPONSIBLE = {
   PAGE_TITLE: "AOP for Fiscal Year ",
-  PAGE_DESCRIPTION: "The following below serves as the summary of your AOP request. You can open and update your request before the deadline as set by the administrators.",
+  PAGE_DESCRIPTION:
+    "The following below serves as the summary of your AOP request. You can open and update your request before the deadline as set by the administrators.",
   MANAGE_RESPONSIBLE_HEADER: "Manage Responsible Person for",
-  MANAGE_RESPONSIBLE_SUBHEADER: "Assign designated personnel for each activity to ensure accountability.",
-  EMPTY_STATE_TITLE: 'No Assigned Responsible Persons',
-  EMPTY_STATE_DESCRIPTION: ' You haven’t assigned any responsible persons for this activity. Add someone now to make sure progress and accountability are properly tracked.',
-  MODAL_TITLE: 'Assign Responsible Persons',
-  MODAL_DESCRIPTION: 'Select individuals or job positions who will be responsible for this activity. You can assign multiple people and positions.',
-}
+  MANAGE_RESPONSIBLE_SUBHEADER:
+    "Assign designated personnel for each activity to ensure accountability.",
+  EMPTY_STATE_TITLE: "No Assigned Responsible Persons",
+  EMPTY_STATE_DESCRIPTION:
+    " You haven’t assigned any responsible persons for this activity. Add someone now to make sure progress and accountability are properly tracked.",
+  MODAL_TITLE: "Assign Responsible Persons",
+  MODAL_DESCRIPTION:
+    "Select individuals or job positions who will be responsible for this activity. You can assign multiple people and positions.",
+};
 
 export const AOP_SUMMARY = {
-  PAGE_TITLE: 'AOP #2025-0031 for Fiscal Year 2026',
-  PAGE_REVIEW: 'Please carefully review the complete summary of your AOP request below. Verify all details are correct before submitting. Once submitted, your AOP will be forwarded to the the approving bodies for review and approval.',
-  SUMMARY_CARD_HEADER: 'Document Status: Ready for Submission',
-  SUMMARY_CARD_BODY: 'All required sections contain at least one item and have been validated. Your Annual Operations Plan has successfully passed preliminary compliance checks and meets the minimum requirements for official submission. The document will undergo comprehensive review by the Planning Office, Division Chief, and Medical Center Chief. The complete review process typically takes 7-10 business days. You will receive official notification via email and system alert upon completion of each review stage.',
-  SUMMARY_TITLE: 'Detailed Breakdown: Objectives, Activities, Resources, & Personnel',
-  SUMMARY_FOOTER_TITLE: 'Official Submission of Annual Operations Plan',
-  SUMMARY_FOOTER_CONTENT: 'By clicking "Submit for Official Review", you certify that all information contained in this Annual Operations Plan is true, accurate, and complete to the best of your knowledge. This document will be officially submitted to the Approving Bodies for review and approval in accordance with government procurement and planning procedures.'
-}
+  PAGE_TITLE: "AOP #2025-0031 for Fiscal Year 2026",
+  PAGE_REVIEW:
+    "Please carefully review the complete summary of your AOP request below. Verify all details are correct before submitting. Once submitted, your AOP will be forwarded to the the approving bodies for review and approval.",
+  SUMMARY_CARD_HEADER: "Document Status: Ready for Submission",
+  SUMMARY_CARD_BODY:
+    "All required sections contain at least one item and have been validated. Your Annual Operations Plan has successfully passed preliminary compliance checks and meets the minimum requirements for official submission. The document will undergo comprehensive review by the Planning Office, Division Chief, and Medical Center Chief. The complete review process typically takes 7-10 business days. You will receive official notification via email and system alert upon completion of each review stage.",
+  SUMMARY_TITLE:
+    "Detailed Breakdown: Objectives, Activities, Resources, & Personnel",
+  SUMMARY_FOOTER_TITLE: "Official Submission of Annual Operations Plan",
+  SUMMARY_FOOTER_CONTENT:
+    'By clicking "Submit for Official Review", you certify that all information contained in this Annual Operations Plan is true, accurate, and complete to the best of your knowledge. This document will be officially submitted to the Approving Bodies for review and approval in accordance with government procurement and planning procedures.',
+};
 
 export const AOP = {
-  HEADER_TITLE: 'AOP for Fiscal year',
-  MISSION_LABEL: 'Mission',
-  PAGE_TITLE: 'Annual Operations Planning',
+  HEADER_TITLE: "AOP for Fiscal year",
+  MISSION_LABEL: "Mission",
+  PAGE_TITLE: "Annual Operations Planning",
   PAGE_DESCRIPTION: ` The following below serves as the summary of your AOP request. You
                 can open and update your request before the deadline as set by the
                 administrators.`,
   AOP_EMPTY_OBJECTIVE_TITLE: `You don't have anything for this year's AOP yet`,
-  AOP_EMPTY_OBJECTIVE_DESC: 'Begin by adding a new objective.',
+  AOP_EMPTY_OBJECTIVE_DESC: "Begin by adding a new objective.",
   EMPTY_STATE_TITLE: ` You don't have an AOP for this year yet.`,
   EMPTY_STATE_SUBTITLE: `Begin by creating a new AOP.`,
   EMPTY_STATE_DESCRIPTION: `Nothing to show yet for this year’s PPMP. You may request new
                     items for the meantime or create a new AOP request.`,
-  EMPTY_TITLE_PAGE: 'Enterprise Resource Planning System',
-  EMPTY_TITLE_DESC: 'Sample description',
-}
-
+  EMPTY_TITLE_PAGE: "Enterprise Resource Planning System",
+  EMPTY_TITLE_DESC: "Sample description",
+};
 
 export const AOP_TIMELINE = {
-  TITLE: 'Approval Timeline',
-  SUBTITLE: 'The list below shows the current status of the request.',
-  EMPTY_STATE: ' No transactions done yet.',
-}
+  TITLE: "Approval Timeline",
+  SUBTITLE: "The list below shows the current status of the request.",
+  EMPTY_STATE: " No transactions done yet.",
+};
 
 export const PROCESS_AOP = {
-  SELECT_ACTION_LABEL: 'Select the action you would like to take:',
-  INPUT_HELPER: 'Confirm you action by entering your 6-digit authorization PIN.',
+  SELECT_ACTION_LABEL: "Select the action you would like to take:",
+  INPUT_HELPER:
+    "Confirm you action by entering your 6-digit authorization PIN.",
 
-  MODAL_TITLE: 'Approve request',
-  MODAL_DESCRIPTION: 'Select a request status and reasons (if returned) to continue. You may add remarks if necessary.',
+  MODAL_TITLE: "Approve request",
+  MODAL_DESCRIPTION:
+    "Select a request status and reasons (if returned) to continue. You may add remarks if necessary.",
 
-  RETURN_AOP: 'The AOP request has been returned for revision',
-  SUCCESS_AOP: 'The AOP request successfully approved',
-  APPROVED_AOP: 'Everyone can now see the changes you’ve made. The request is now ready for processing of the next approving body',
-  MCC_APPROVED_AOP: 'The AOP request has been successfully approved. All parties involved will be notified of this update.',
-  RETURNED_AOP: 'The request has been returned to the requesting party for necessary revisions. They will be notified of your remarks and required changes.',
-  ERROR: 'An error occurred while updating the status of the AOP request. Please check your authorization PIN and try again. If the problem persists, contact the system administrator.'
-}
-
-
+  RETURN_AOP: "The AOP request has been returned for revision",
+  SUCCESS_AOP: "The AOP request successfully approved",
+  APPROVED_AOP:
+    "Everyone can now see the changes you’ve made. The request is now ready for processing of the next approving body",
+  MCC_APPROVED_AOP:
+    "The AOP request has been successfully approved. All parties involved will be notified of this update.",
+  RETURNED_AOP:
+    "The request has been returned to the requesting party for necessary revisions. They will be notified of your remarks and required changes.",
+  ERROR:
+    "An error occurred while updating the status of the AOP request. Please check your authorization PIN and try again. If the problem persists, contact the system administrator.",
+};
 
 export const AOP_CONFRIM_DATA = [
   {
     icon: <Check />,
-    title: 'All information provided is accurate and complete'
+    title: "All information provided is accurate and complete",
   },
 
   {
     icon: <Check />,
-    title: 'All required sections have been properly filled out'
+    title: "All required sections have been properly filled out",
   },
 
   {
     icon: <Check />,
-    title: 'You have the authority to submit this document'
-  }
-]
+    title: "You have the authority to submit this document",
+  },
+];
 
 export const AOP_CONSTANTS = {
   AOP_TITLE: "Annual Operations Planning",
@@ -223,9 +237,9 @@ export const LIBRARY_CONSTANTS = {
 export const ITEM_SUBMITTED_LIST_CONSTANTS = {
   ITEM_SUBMITTED_LIST_TITLE: "Submitted Item Requests",
   ITEM_SUBMITTED_LIST_SUBTITLE: "All your item requests this year appear here.",
-  ITEM_SUBMITTED_LIST_HEADER: "List of requests",
+  ITEM_SUBMITTED_LIST_HEADER: "Item Requests",
   ITEM_SUBMITTED_LIST_SUBHEADER:
-    "You can request new items here if you wish to. Requested items cannot be canceled and are subject to processing by the assigned consolidators.",
+    "Manage and review all submitted item requests. Approve or decline requests based on accuracy, necessity, and compliance with procurement guidelines.",
 };
 
 export const CONFIRMATION_CONSTANTS = {
@@ -277,14 +291,14 @@ export const approvalActions = [
 
 export const API = {
   AOP_APPLICATIONS: "aop-applications",
-  AOP_APPLICATIONS_STORE: 'aop-application-store',
-  AOP_BY_SECTOR_AND_YEAR: 'user-aop-applications',
-  AOP_CHECKLIST: 'aop-checklist',
-  AOP_YEAR_LIST: 'aop-application-yearList ',
-  AOP_UPDATE: 'aop-application-update-status',
+  AOP_APPLICATIONS_STORE: "aop-application-store",
+  AOP_BY_SECTOR_AND_YEAR: "user-aop-applications",
+  AOP_CHECKLIST: "aop-checklist",
+  AOP_YEAR_LIST: "aop-application-yearList ",
+  AOP_UPDATE: "aop-application-update-status",
 
   OBJECTIVES: "application-objectives",
-  OBJECTIVE_BY_SECTOR: 'user-application-objectives',
+  OBJECTIVE_BY_SECTOR: "user-application-objectives",
   OBJECTIVE_STORE: "application-objectives-store",
   OBJECTIVE_EDIT: "edit-application-objectives",
   OBJECTIVE_DELETE: "delete-application-objectives",
@@ -292,7 +306,7 @@ export const API = {
 
   ACTIVITIES: "activities",
   ACTIVITIES_STORE: "activities-store",
-  ACTIVITY_EDIT: 'activities-update',
+  ACTIVITY_EDIT: "activities-update",
   ACTIVITIES_DELETE: "activities-delete",
   ACTIVITY_SHOW: "activities-show",
 
@@ -329,17 +343,24 @@ export const API = {
   SHOW_OBJECTIVE: "show-objective-activity",
   PROCESS_AOP_REQUEST: "process-aop-request",
 
+<<<<<<< HEAD
   APPROVAL_PPMP: 'ppmp-approve-or-return',
 
   APPROVAL_DIVISION_CHIEF: 'approve-by-division-chief',
   RETURNED_DIVISON_CHIEF: 'returned-by-division-chief',
+=======
+  APPROVAL_AOP: "approve-or-return",
+
+  APPROVAL_DIVISION_CHIEF: "approve-by-division-chief",
+  RETURNED_DIVISON_CHIEF: "returned-by-division-chief",
+>>>>>>> e98312894e2d1034c72cbf88f4219f7a29ddb146
 
   //ITEM REQUESTS
   REQUEST_ITEM: "item-requests",
 
   // TIMELINE
   APPROVAL_TIMELINE: "user-application-timelines",
-  APPROVER_TIMELINE: 'application-timelines/approver',
+  APPROVER_TIMELINE: "application-timelines/approver",
 
   // OBJECTIVES
   EDIT_OBJECTIVE: "edit-objective-and-success-indicator",
