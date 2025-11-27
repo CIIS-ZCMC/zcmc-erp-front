@@ -1,6 +1,7 @@
-import { Sheet, Table } from "@mui/joy";
+import { Box, Sheet, Table } from "@mui/joy";
 import { grey } from "@mui/material/colors";
 import React, { useState } from "react";
+import PaginationComponent from "./PaginationComponent";
 
 export default function ExpandableTable({
   columns = [],
@@ -9,11 +10,18 @@ export default function ExpandableTable({
   getRowId = (row) => row.id,
 }) {
   const [openId, setOpenId] = useState(null);
+  const [heights, setHeights] = useState({}); // store row heights
 
   const toggle = (id) => {
     setOpenId((prev) => (prev === id ? null : id));
   };
 
+  const onRef = (id, node) => {
+    if (node && !heights[id]) {
+      const h = node.scrollHeight;
+      setHeights((prev) => ({ ...prev, [id]: h }));
+    }
+  };
   return (
     <Sheet variant="plain" sx={{ borderRadius: "lg", overflow: "hidden" }}>
       <Table borderAxis="xBetween" stickyHeader hoverRow>
@@ -23,7 +31,6 @@ export default function ExpandableTable({
               <th
                 key={col.key}
                 style={{
-                  padding: "10px",
                   textAlign: "left",
                   backgroundColor: grey[200],
                 }}
@@ -50,6 +57,8 @@ export default function ExpandableTable({
                         paddingTop: "10px",
                         paddingBottom: "10px",
                         cursor: col.expandTrigger ? "pointer" : "default",
+                        background: expanded && grey[100],
+                        borderBottom: expanded && "none",
                       }}
                       onClick={() => col.expandTrigger && toggle(id)}
                     >
@@ -58,22 +67,40 @@ export default function ExpandableTable({
                   ))}
                 </tr>
 
-                {/* Expanded Content Row */}
-                {expanded && (
-                  <tr>
-                    <td
-                      colSpan={columns.length}
-                      style={{ background: "#fafafa", padding: "16px" }}
+                {/* EXPANDED ROW WITH TRANSITION */}
+                <tr>
+                  <td
+                    style={{ height: 0, padding: 0 }}
+                    colSpan={columns.length}
+                  >
+                    <div
+                      ref={(node) => onRef(id, node)}
+                      style={{
+                        overflow: "hidden",
+                        maxHeight: expanded ? heights[id] : 0,
+                        opacity: expanded ? 1 : 0,
+                        padding: expanded ? "16px" : "0px", // <--- avoid spacing when closed
+                        background: expanded && grey[100],
+                        transition:
+                          "max-height 0.35s ease, opacity 0.25s ease, padding 0.2s ease",
+                      }}
                     >
-                      {renderExpanded(row)}
-                    </td>
-                  </tr>
-                )}
+                      <Box sx={{ p: 2 }}>{renderExpanded(row)}</Box>
+                    </div>
+                  </td>
+                </tr>
               </React.Fragment>
             );
           })}
         </tbody>
       </Table>
+      {/* <PaginationComponent
+        currentPage={currentPage}
+        totalPages={totalPages}
+        totalRows={totalRows}
+        onNextPage={onNextPage}
+        onPrevPage={onPrevPage}
+      /> */}
     </Sheet>
   );
 }

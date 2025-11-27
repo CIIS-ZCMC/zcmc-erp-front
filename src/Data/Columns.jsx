@@ -28,13 +28,17 @@ import { getStatusColorScheme } from "../Utils/ColorScheme";
 import { toCapitalize } from "../Utils/Typography";
 import {
   CheckOutlined,
+  Circle,
+  Clear,
   CommentOutlined,
   DeleteOutlineOutlined,
   ModeEditOutlineOutlined,
   WarningAmberOutlined,
   WarningOutlined,
+  X,
 } from "@mui/icons-material";
 import { grey, red } from "@mui/material/colors";
+import ButtonComponent from "@Components/Common/ButtonComponent";
 
 export const objHeaders = ({ onUpdate, onDelete, onViewIndicators }) => [
   { field: "id", name: "Row #", align: "center", width: "50px" },
@@ -1542,14 +1546,16 @@ export const PPMP_HEADERS = (status, editingRows, handleComments) => [
   },
 ];
 
-export const ITEMS_REQUESTS = () => [
+export const ITEMS_REQUESTS = (handleOpen) => [
   {
     key: "item",
     label: "Item & Unit",
     render: (row) => (
       <div>
-        <strong>{row.name}</strong>
-        <div style={{ fontSize: 12 }}>{row.unit}</div>
+        <Typography level="body-sm" fontWeight={600} sx={{ color: grey[800] }}>
+          {row.name}
+        </Typography>
+        <Typography level="body-xs">{row.unit}</Typography>
       </div>
     ),
     expandTrigger: true, // ❗ only this column toggles expand
@@ -1559,28 +1565,36 @@ export const ITEMS_REQUESTS = () => [
     label: "Classification & Category",
     render: (r) => (
       <div>
-        <strong>{r.classification}</strong>
-        <div style={{ fontSize: 12 }}>{r.category}</div>
+        <Typography level="body-sm" fontWeight={600} sx={{ color: grey[800] }}>
+          {r.classification}
+        </Typography>
+        <Typography level="body-xs">{r.category}</Typography>
       </div>
     ),
   },
   {
     key: "budget",
     label: "Estimated Budget",
-    render: (r) => `₱${r.estimated_budget.toLocaleString()}`,
+    render: (r) =>
+      `₱${r.estimated_budget.toLocaleString(undefined, {
+        minimumFractionDigits: 2,
+      })}`,
   },
   {
     key: "requested_on",
     label: "Requested On",
-    render: (r) => r.created_at,
+    render: (r) => <Typography>{moment(r.created_at).format("ll")}</Typography>,
   },
   {
     key: "variant",
     label: "Variant",
     render: (r) => (
-      <Chip variant="soft" color="primary">
-        {r.item_terminology.name}
-      </Chip>
+      <ChipComponent
+        size="md"
+        label={r.item_terminology.name}
+        startDecorator={<Circle sx={{ fontSize: 10 }} />}
+        color={"primary"}
+      />
     ),
   },
   {
@@ -1588,24 +1602,29 @@ export const ITEMS_REQUESTS = () => [
     label: "Actions",
     render: (r) => (
       <div style={{ display: "flex", gap: "8px" }}>
-        <Button
-          size="sm"
+        <ChipComponent
+          size="lg"
           onClick={(e) => {
-            e.stopPropagation(); /* approve */
+            e.stopPropagation();
+            handleOpen(4, r); /* approve */
           }}
-        >
-          Approve
-        </Button>
+          color="success"
+          label={"Approve"}
+          variant={"soft"}
+          startDecorator={<CheckOutlined />}
+        />
 
-        <Button
-          size="sm"
+        <ChipComponent
+          size="lg"
           color="danger"
+          variant={"soft"}
           onClick={(e) => {
-            e.stopPropagation(); /* decline */
+            e.stopPropagation();
+            handleOpen(5, r); /* decline */
           }}
-        >
-          Decline
-        </Button>
+          label={"Decline"}
+          startDecorator={<Clear />}
+        />
       </div>
     ),
   },

@@ -12,10 +12,10 @@ const useItemRequestHook = create((set) => ({
   // itemsLoading: false,
   // itemsError: null,
 
-  getItemRequests: async (callBack) => {
+  getItemRequests: async (callBack, status) => {
     read({
       url: `${PATH}s`,
-      params: { mode: "selection" },
+      params: { status },
       failed: callBack,
       success: (res) => {
         const { status, message, data } = res;
