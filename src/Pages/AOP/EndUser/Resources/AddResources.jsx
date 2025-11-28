@@ -72,7 +72,7 @@ export default function AddResources() {
           description: "",
         });
         clearCart();
-        navigate(`/manage-resources/${activityId}`, {
+        navigate(`/aop/manage-resources/${activityId}`, {
           state: { activityId: activityId },
         });
         return;

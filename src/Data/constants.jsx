@@ -343,17 +343,10 @@ export const API = {
   SHOW_OBJECTIVE: "show-objective-activity",
   PROCESS_AOP_REQUEST: "process-aop-request",
 
-<<<<<<< HEAD
-  APPROVAL_PPMP: 'ppmp-approve-or-return',
-
-  APPROVAL_DIVISION_CHIEF: 'approve-by-division-chief',
-  RETURNED_DIVISON_CHIEF: 'returned-by-division-chief',
-=======
-  APPROVAL_AOP: "approve-or-return",
+  APPROVAL_PPMP: "ppmp-approve-or-return",
 
   APPROVAL_DIVISION_CHIEF: "approve-by-division-chief",
   RETURNED_DIVISON_CHIEF: "returned-by-division-chief",
->>>>>>> e98312894e2d1034c72cbf88f4219f7a29ddb146
 
   //ITEM REQUESTS
   REQUEST_ITEM: "item-requests",

@@ -153,7 +153,6 @@ function PPMPDashboard(props) {
             });
             return;
           } else {
-            console.log(errors);
             const errorList = Array.isArray(errors) ? (
               <Stack spacing={1} mt={1}>
                 {errors.map((err, i) => (
@@ -262,7 +261,6 @@ function PPMPDashboard(props) {
                   txtcolor="white"
                   years={years.years}
                   onChange={(value) => {
-                    console.log("Selected Year:", value);
                     setYear(value);
                   }}
                 />
@@ -273,7 +271,7 @@ function PPMPDashboard(props) {
                 as long as two sentences if necessary.
               </Typography>
             </Stack>
-            {dashboard?.ppmp_application?.is_draft ? (
+            {dashboard?.ppmp_application?.status_id === 1 ? (
               <Stack
                 bgcolor={"#FFF4E5"}
                 borderRadius={5}
@@ -301,13 +299,13 @@ function PPMPDashboard(props) {
                 </Box>
                 <Box>
                   <ButtonComponent
-                    label={"Submit PPMP for Review"}
-                    width="190px"
+                    label={"Submit AOP and PPMP for Review"}
+                    width="250px"
                     onClick={() => setOpenSave(true)}
                   />
                 </Box>
               </Stack>
-            ) : (
+            ) : dashboard?.ppmp_application?.status_id === 2 ? (
               <Stack
                 bgcolor={"#FFF4E5"}
                 borderRadius={5}
@@ -333,6 +331,8 @@ function PPMPDashboard(props) {
                   </Typography>
                 </Box>
               </Stack>
+            ) : (
+              ""
             )}
           </Stack>
         </Grid>

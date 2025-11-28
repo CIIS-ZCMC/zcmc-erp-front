@@ -24,7 +24,6 @@ export default function TabComponent({
     (element) => element.seen === 0
   )?.length;
 
-
   // useEffect(() => {
   //   console.log('tabs', tabs)
   // }, [tabs])
@@ -40,15 +39,10 @@ export default function TabComponent({
         aria-label="Pipeline"
         value={index}
         onChange={(event, value) => {
-          console.log(value)
-          handleTabChange ? handleTabChange(value) : setIndex(value)
-<<<<<<< HEAD
+          console.log(value);
+          handleTabChange ? handleTabChange(value) : setIndex(value);
         }}
-        sx={{ bgcolor: "white" }}
-=======
-        }
         sx={{ bgcolor: bgcolor }}
->>>>>>> e98312894e2d1034c72cbf88f4219f7a29ddb146
       >
         <TabList
           sx={{
@@ -93,15 +87,10 @@ export default function TabComponent({
               </Tab>
             </>
           ) : (
-<<<<<<< HEAD
-            tabs?.map(({ name, value, id }, key) => (
-              <Tab key={key} value={id} >
-=======
             tabs?.map(({ name, value, icon }, key) => (
               <Tab key={key} value={value}>
                 {icon && <ListItemDecorator>{icon}</ListItemDecorator>}
 
->>>>>>> e98312894e2d1034c72cbf88f4219f7a29ddb146
                 {name}
               </Tab>
             ))

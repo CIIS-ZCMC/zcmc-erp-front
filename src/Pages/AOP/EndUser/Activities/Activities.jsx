@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo } from "react";
 
 import { Stack, Typography, Breadcrumbs, Divider, Grid } from "@mui/joy";
 
-import { useParams, useLocation, } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 
 import useModalHook from "../../../../Hooks/ModalHook";
 import useActivitiesHook from "../../../../Hooks/ActivitiesHook";
@@ -38,13 +38,12 @@ const centeredStyle = {
 };
 
 const Activities = () => {
-
   const { objectiveId } = useParams();
   const location = useLocation();
 
   const { state } = location;
 
-  const objectiveName = state.objective
+  const objectiveName = state?.objective;
 
   const {
     applicationActivities,
@@ -115,7 +114,14 @@ const Activities = () => {
     // console.log('current is gad target', target)
     // console.log(state.objective)
     // console.log(applicationActivities)
-  }, [activity, startMonth, endMonth, isGadRelated, target, applicationActivities])
+  }, [
+    activity,
+    startMonth,
+    endMonth,
+    isGadRelated,
+    target,
+    applicationActivities,
+  ]);
 
   const filteredActivities = useMemo(() => {
     if (!search) return applicationActivities;
@@ -338,8 +344,8 @@ const Activities = () => {
           <ButtonComponent
             onClick={() => setIsCountModal(true)}
             label={"Add Activity"}
-          // endDecorator={<Plus size={16} />}
-          // disabled={!show || disabledEditMode(APPLICATION_OBJECTIVE_ID, remarks, comments, disabled)}
+            // endDecorator={<Plus size={16} />}
+            // disabled={!show || disabledEditMode(APPLICATION_OBJECTIVE_ID, remarks, comments, disabled)}
           />
         </Stack>
       </BoxComponent>
@@ -362,7 +368,7 @@ const Activities = () => {
             <ButtonComponent
               onClick={() => handleOpenCountModal()}
               label={"Add Activity"}
-            // endDecorator={<Plus size={16} />}
+              // endDecorator={<Plus size={16} />}
             />
           </Stack>
         </>
