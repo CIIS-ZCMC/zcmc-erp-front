@@ -64,10 +64,11 @@ function DashboardEndUser(props) {
 
   const { role } = current_user || {}
 
-  // useEffect(() => {
-  //   console.log('role', role);
-  //   console.log('feedback', feedback);
-  // }, [feedback])
+  useEffect(() => {
+    console.log(aop)
+    // console.log('role', role);
+    // console.log('feedback', feedback);
+  }, [feedback, aop])
 
   const remarksCount = application_timelines?.length || 0;
   const commentCount = activity_comments?.length || 0;
@@ -257,7 +258,8 @@ function DashboardEndUser(props) {
                 borderBottomRightRadius: 10,
               }}
             >
-              {!aop?.counts?.activities_count && (
+
+              {aop?.application_objectives.length === 0 ? (
                 <Grid mt={1} xs={8}>
                   {/* have aop but empty objectives */}
                   <AOPEmptyObjectives
@@ -265,27 +267,23 @@ function DashboardEndUser(props) {
                     handleNavigate={handleNavigateObjectives}
                   />
                 </Grid>
-              )}
-
-              {(
-                aop?.counts &&
-                Object.values(aop.counts).some(value => value > 0)
-              ) && (
-                  <>
-                    <Grid xs={12} sm={10} md={8} lg={5}>
-                      <Grid container>
-                        <AOPDataSummary
-                          aop={aop}
-                          handleNavigateObjectives={handleNavigateObjectives}
-                        />
-                      </Grid>
+              )
+                :
+                <>
+                  <Grid xs={12} sm={10} md={8} lg={5}>
+                    <Grid container>
+                      <AOPDataSummary
+                        aop={aop}
+                        handleNavigateObjectives={handleNavigateObjectives}
+                      />
                     </Grid>
+                  </Grid>
 
-                    <Grid mt={1} sm={12} md={3}>
-                      <Checklist fiscalYear={fiscalYear} />
-                    </Grid>
-                  </>
-                )}
+                  <Grid mt={1} sm={12} md={3}>
+                    <Checklist fiscalYear={fiscalYear} />
+                  </Grid>
+                </>
+              }
 
               <Grid mt={1} sm={12} md={4}>
                 <Timeline
