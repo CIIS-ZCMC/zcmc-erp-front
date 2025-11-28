@@ -19,7 +19,13 @@ import MenuItemComponent from "../Content/MenuItemComponent";
 import useModalHook from "../../../Hooks/ModalHook";
 import ConfirmationModalComponent from "../../../Components/Common/Dialog/ConfirmationModalComponent";
 import { useAuth } from "../../../Store/AuthStore";
+
+import useAOPStore, { useAOPActions } from "../../../Store/AOPStore";
+
 const Footer = () => {
+
+  const { resetAll } = useAOPActions();
+
   const { isCollapsed } = useSidebarHook();
   const { setConfirmationModal, closeConfirmation } = useModalHook();
   const { user } = useAuth();
@@ -39,6 +45,10 @@ const Footer = () => {
   };
   const handleLogOut = () => {
     setLogOut(false);
+
+    resetAll() //reset the memory state 
+    useAOPStore.persist.clearStorage(); //zustand clear persisted state;
+
     localStorage.removeItem("ppmp-items");
     localStorage.removeItem("ppmp-edits");
     window.location.href = BASE_URL.test_landing_page;

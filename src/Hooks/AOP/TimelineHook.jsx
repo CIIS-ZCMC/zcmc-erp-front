@@ -29,6 +29,8 @@ const useTimelineHook = () => {
         } catch (error) {
             console.error('Error fetching approval timelines:', error);
             callBack?.(false, error.message)
+        } finally {
+            setIsLoading(false)
         }
     }
 
@@ -43,8 +45,8 @@ const useTimelineHook = () => {
                 failed: callBack,
                 success: (res) => {
                     const { status, data: { data, message } } = res;
-
                     setTimelines(data);
+                    setIsLoading(false)
                     callBack(status, message);
                 },
                 failed: (err) => {

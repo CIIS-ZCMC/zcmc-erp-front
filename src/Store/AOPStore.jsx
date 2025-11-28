@@ -8,7 +8,6 @@ const useAOPStore = create(
             mission: "",
             fiscalYear: new Date().getFullYear() + 1,
             yearDetails: [],
-
             aopChecklist: null,
 
             actions: {
@@ -19,6 +18,15 @@ const useAOPStore = create(
                 setYears: (yearDetails) => set({ yearDetails }),
 
                 clearMission: () => set({ mission: "" }),
+
+                resetAll: () => ({
+                    aop: null,
+                    mission: "",
+                    fiscalYear: new Date().getFullYear() + 1,
+                    yearDetails: [],
+                    aopChecklist: null,
+                })
+
             }
         }),
         {
