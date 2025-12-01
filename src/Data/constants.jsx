@@ -339,7 +339,7 @@ export const API = {
 
   // TIMELINE
   APPROVAL_TIMELINE: "user-application-timelines",
-  APPROVER_TIMELINE: 'application-timelines/approver',
+  APPROVER_TIMELINE: 'ppmp-application-timelines-approver',
 
   // OBJECTIVES
   EDIT_OBJECTIVE: "edit-objective-and-success-indicator",

@@ -43,7 +43,8 @@ const ActivitiesModal = ({
 
     const handleQuarterChange = (quarterKey) => (e) => {
         const value = e.target.value;
-        if (value === "" || (!isNaN(value) && Number(value) >= 0 && Number(value) <= 100)) {
+
+        if (value === "" || /^(\d{1,3})?%?$/.test(value) && (value.replace('%', '') === '' || Number(value.replace('%', '')) <= 100)) {
             setTarget({ [quarterKey]: value }); // keep as string to allow typing
         }
     };
@@ -113,7 +114,7 @@ const ActivitiesModal = ({
                     >
 
                         <InputComponent
-                            type={'number'}
+                            type={'text'}
                             label={'Quarter 1'}
                             width={100}
                             min={0}
@@ -123,7 +124,7 @@ const ActivitiesModal = ({
                         />
 
                         <InputComponent
-                            type={'number'}
+                            type={'text'}
                             label={'Quarter 2'}
                             width={100}
                             min={0}
@@ -134,7 +135,7 @@ const ActivitiesModal = ({
                         />
 
                         <InputComponent
-                            type={'number'}
+                            type={'text'}
                             label={'Quarter 3'}
                             width={100}
                             min={0}
@@ -144,7 +145,7 @@ const ActivitiesModal = ({
                         />
 
                         <InputComponent
-                            type={'number'}
+                            type={'text'}
                             label={'Quarter 4'}
                             width={100}
                             min={0}

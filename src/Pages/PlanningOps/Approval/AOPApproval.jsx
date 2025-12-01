@@ -58,10 +58,11 @@ const AOPApproval = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    console.log(application_timelines)
     // console.log('year', currentFiscalYear);
     // console.log('status id ', status_id);
     // console.log('year details', yearDetails);
-  }, [yearDetails])
+  }, [yearDetails, application_timelines])
 
 
   useEffect(() => {
@@ -108,7 +109,7 @@ const AOPApproval = () => {
   const handleViewTimeline = (aopId) => {
     console.log(aopId)
     setOpenTimelineModal(true);
-    getApproverTimeline(aopId, () => { });
+    getApproverTimeline(() => { });
   };
 
   const yearsData = [2026, 2025];
@@ -225,13 +226,15 @@ const AOPApproval = () => {
                 <>
                   {application_timelines?.map(({
                     id,
-                    aop_application_id,
                     current_timeline,
                     fiscal_year,
-                    current_user
+                    // current_user,
+                    ppmp_application,
+                    aop_application_id,
                   }) => {
-                    const { role } = current_user;
-                    const { date_approved, date_created, status, status_id } = current_timeline;
+                    // const { role } = current_user;
+                    // const { aop_application_id } = ppmp_application;
+                    const { date_approved, date_returned, date_created, status, status_id } = current_timeline;
 
                     return (
                       <Grid
@@ -243,6 +246,7 @@ const AOPApproval = () => {
                           year={fiscal_year}
                           date_approved={date_approved}
                           date_requested={date_created}
+                          date_returned={date_returned}
                           statusLabel={status}
                           status={status_id}
                           leftClick={() => handleClickCard(aop_application_id)}

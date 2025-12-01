@@ -65,7 +65,7 @@ function DashboardEndUser(props) {
   const { role } = current_user || {}
 
   useEffect(() => {
-    console.log(aop)
+    // console.log(aop)
     // console.log('role', role);
     // console.log('feedback', feedback);
   }, [feedback, aop])
@@ -219,7 +219,9 @@ function DashboardEndUser(props) {
                 />
 
                 {(aop?.status?.id !== 2 && aop?.status?.id !== 4) &&
-                  <Draft />
+                  <Draft
+                    status={aop?.status.id}
+                  />
                 }
 
                 {aop?.status?.id === 2 &&

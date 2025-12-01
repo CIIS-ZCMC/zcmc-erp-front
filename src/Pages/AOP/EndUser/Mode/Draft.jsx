@@ -6,12 +6,13 @@ import { Warning } from '@mui/icons-material';
 
 import ButtonComponent from '@Components/Common/ButtonComponent';
 
-const Draft = () => {
+const Draft = ({ status }) => {
 
     const theme = useTheme();
     const color = theme.palette.custom;
 
     const navigate = useNavigate()
+
 
     return (
         <>
@@ -31,16 +32,16 @@ const Draft = () => {
                         color="warning"
                         sx={{ fontWeight: 600 }}
                     >
-                        Status: Draft Mode
+                        Status:  {`${status === 6 ? 'Review' : 'Draft'}`}
                     </Typography>
                     <Typography level="body-xs" color="warning">
-                        This AOP is currently in draft mode. You may click this
-                        button and confirm to submit this AOP for review.
+                        {`${status === 6 ? 'AOP Returned for review' : 'This AOP is currently in draft mode. You may click this button and confirm to submit this AOP for review.'}`}
+
                     </Typography>
                 </Box>
                 <Box width={"450px"}>
                     <ButtonComponent
-                        label={"Create PPMP"}
+                        label={status === 6 ? 'Review PPMP' : "Create PPMP"}
                         onClick={() => navigate("/aop/summary")}
                         fullWidth={"true"}
                     />

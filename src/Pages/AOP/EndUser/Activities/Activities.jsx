@@ -42,9 +42,9 @@ const Activities = () => {
   const { objectiveId } = useParams();
   const location = useLocation();
 
-  const { state } = location;
+  // const { state } = location;
 
-  const objectiveName = state.objective
+
 
   const {
     applicationActivities,
@@ -116,6 +116,8 @@ const Activities = () => {
     // console.log(state.objective)
     // console.log(applicationActivities)
   }, [activity, startMonth, endMonth, isGadRelated, target, applicationActivities])
+
+  const objectiveName = applicationActivities?.[0]?.objective_code
 
   const filteredActivities = useMemo(() => {
     if (!search) return applicationActivities;

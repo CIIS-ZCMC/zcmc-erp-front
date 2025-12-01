@@ -90,14 +90,18 @@ function AlertDialogComponent({
                     flexDirection: { xs: "column", sm: "row" },
                   }}
                 >
-                  <ButtonComponent
-                    label={leftButtonLabel}
-                    onClick={leftButtonAction ?? closeAlertDialog}
-                    isDisabled={isLoading}
-                    fullWidth={!rightButtonAction}
-                    color={getModeColorScheme(status).colorScheme}
-                    variant={"solid"}
-                  />
+
+                  {!isLoading && (
+                    <ButtonComponent
+                      label={leftButtonLabel}
+                      onClick={leftButtonAction ?? closeAlertDialog}
+                      isDisabled={isLoading}
+                      fullWidth={!rightButtonAction}
+                      // color={getModeColorScheme(status).colorScheme}
+                      variant={"outlined"}
+                    />
+                  )}
+
 
                   {!noRightButton && (
                     <ButtonComponent
@@ -105,6 +109,7 @@ function AlertDialogComponent({
                       isLoading={isLoading}
                       onClick={rightButtonAction}
                       isDisabled={rightButtonDisabled || isLoading}
+                      variant={"solid"}
                     />
                   )}
                 </Box>

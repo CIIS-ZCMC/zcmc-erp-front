@@ -110,7 +110,7 @@ const AOPSummary = () => {
             await updateAOP(params, payload, (status, message) => {
                 if (status === 200) {
                     const data = {
-                        status: status,
+                        status,
                         title: `AOP For F.Y. ${year} ${message}`,
                         isGlobal: false,
                         description: '',
@@ -119,9 +119,8 @@ const AOPSummary = () => {
                     setIsLoading(false)
                 } else if (status === 422) {
                     // console.log(message)
-
                     const {
-                        message: statusMessage,
+                        statusMessage,
                         activities_without_resources,
                         activities_without_responsible_people,
                         activities_without_target,
@@ -147,7 +146,6 @@ const AOPSummary = () => {
                         status: status,
                         title: statusMessage,
                         description: <>
-
                             {objectives_without_activities && <>
                                 <Typography
                                     level="title-sm"
@@ -171,7 +169,6 @@ const AOPSummary = () => {
                                     my: 1
                                 }}
                             />
-
 
                             {MISSING_DATA_SECTIONS.map(({ title, data }, idx) =>
                                 data?.length > 0 ? (
@@ -403,7 +400,7 @@ const AOPSummary = () => {
                                 </Typography>
 
                                 <ButtonComponent
-                                    label={'Create PPMP'}
+                                    label={status.id === 6 ? 'Resubmit PPMP' : 'Create PPMP'}
                                     size={'lg'}
                                     onClick={() => handleOpenSubmitAopModal()}
                                 />
@@ -445,7 +442,7 @@ const AOPSummary = () => {
                 }
                 leftButtonLabel='Cancel'
                 leftButtonAction={() => closeConfirmation()}
-                rightButtonLabel='Submit'
+                rightButtonLabel={status.id === 6 ? 'Resubmit' : 'Submit'}
                 rightButtonAction={() => handleSubmitAop()}
                 setAuthPin={setPin}
                 isLoading={isLoading}
