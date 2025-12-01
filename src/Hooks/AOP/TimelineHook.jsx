@@ -9,34 +9,30 @@ const useTimelineHook = () => {
         useTimelinesActions();
 
     const getTimelines = (aopId, callBack) => {
-        setIsLoading(true);
 
-        const getTimelines = (aopId, callBack) => {
+        setIsLoading(true)
 
-            setIsLoading(true)
-
-            try {
-                read({
-                    url: `${API.APPROVAL_TIMELINE}/${aopId}`,
-                    failed: callBack,
-                    success: (res) => {
-                        const {
-                            status,
-                            data: { data, message },
-                        } = res;
-                        setTimelines(data)
-                        setIsLoading(false)
-                        callBack(status, message)
-                    }
-                });
-            } catch (error) {
-                console.error('Error fetching approval timelines:', error);
-                callBack?.(false, error.message)
-            } finally {
-                setIsLoading(false)
-            }
+        try {
+            read({
+                url: `${API.APPROVAL_TIMELINE}/${aopId}`,
+                failed: callBack,
+                success: (res) => {
+                    const {
+                        status,
+                        data: { data, message },
+                    } = res;
+                    setTimelines(data)
+                    setIsLoading(false)
+                    callBack(status, message)
+                }
+            });
+        } catch (error) {
+            console.error('Error fetching approval timelines:', error);
+            callBack?.(false, error.message)
+        } finally {
+            setIsLoading(false)
         }
-    };
+    }
 
     const getApproverTimeline = (params, callBack) => {
         // console.log("Calling API...");
