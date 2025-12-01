@@ -69,9 +69,4 @@ const useTimelineHook = () => {
     }
 };
 
-return {
-    getTimelines,
-    getApproverTimeline,
-};
-
 export default useTimelineHook;
