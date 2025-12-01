@@ -14,7 +14,7 @@ import SearchBarComponentv2 from "@Components/SearchBarWithdeBounce";
 import NoResultComponent from "@Components/Common/Table/NoResultComponent";
 
 import useModalHook from "../../../../Hooks/ModalHook";
-import useSocket from '../../../../Hooks/Socket/SocketHook';
+import useSocket from "../../../../Hooks/Socket/SocketHook";
 
 import CardHeader from "./card/CardHeader";
 import CardBody from "./card/CardBody";
@@ -70,7 +70,6 @@ const Objectives = () => {
   const [selectedObjectiveId, setSelectedObjectiveId] = useState(null);
   const [search, setSearch] = useState("");
 
-
   useEffect(() => {
     setIsLoading(true);
     getObjectivesBySector((status, message) => {
@@ -89,7 +88,13 @@ const Objectives = () => {
     // console.log('succeses indicator id:', successIndicator?.id)
     // console.log('objective:', applicationObjective)
     // console.log('application objectives:', applicationObjectives)
-  }, [functionType, objective, successIndicator, applicationObjectives, isLoading]);
+  }, [
+    functionType,
+    objective,
+    successIndicator,
+    applicationObjectives,
+    isLoading,
+  ]);
 
   const {
     OBJECTIVES_EMPTY_STATE_TITLE,
@@ -116,8 +121,7 @@ const Objectives = () => {
     return applicationObjectives.filter((obj) =>
       obj.objective.code.toLowerCase().includes(search.toLowerCase())
     );
-  }, [search, applicationObjectives])
-
+  }, [search, applicationObjectives]);
 
   // useEffect(() => {
   //   // console.log("aopId", aopId);
@@ -131,7 +135,6 @@ const Objectives = () => {
   //     filtered: typeof filteredObjectives,
   //   });
   // }, [aopId, filteredObjectives, applicationObjectives]);
-
 
   const handleSaveObjectives = async () => {
     setIsLoading(true);
@@ -308,7 +311,6 @@ const Objectives = () => {
           alignItems={"center"}
           justifyContent={"space-between"}
         >
-
           <SearchBarComponentv2
             value={search}
             setValue={setSearch}
@@ -318,8 +320,8 @@ const Objectives = () => {
           <ButtonComponent
             onClick={() => handleOpenObjectivesModal()}
             label={"Add an Objective"}
-          // endDecorator={<Plus size={16} />}
-          // disabled={!show || disabledEditMode(APPLICATION_OBJECTIVE_ID, remarks, comments, disabled)}
+            // endDecorator={<Plus size={16} />}
+            // disabled={!show || disabledEditMode(APPLICATION_OBJECTIVE_ID, remarks, comments, disabled)}
           />
         </Stack>
       </BoxComponent>
@@ -356,18 +358,21 @@ const Objectives = () => {
             <ButtonComponent
               onClick={() => handleOpenObjectivesModal()}
               label={"Add an Objective"}
-            // endDecorator={<Plus size={16} />}
+              // endDecorator={<Plus size={16} />}
             />
           </Stack>
         </>
       ) : (
         <>
+          {filteredObjectives.length === 0 && <NoResultComponent />}
 
-          {filteredObjectives.length === 0 &&
-            <NoResultComponent />
-          }
-
-          <Grid mt={2} container direction="row" spacing={2} sx={{ flexGrow: 1 }}>
+          <Grid
+            mt={2}
+            container
+            direction="row"
+            spacing={2}
+            sx={{ flexGrow: 1 }}
+          >
             {applicationObjectives?.map(
               ({
                 id,
@@ -402,7 +407,7 @@ const Objectives = () => {
                           setObjectiveId(id);
                           navigate(`/aop/activities/${id}`, {
                             state: {
-                              objId: id,
+                              objectiveId: id,
                               aopId: aop_application_id,
                               objective: objective.description,
                             },

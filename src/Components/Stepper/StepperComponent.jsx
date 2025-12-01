@@ -3,16 +3,13 @@ import StepItem from "./StepItem";
 import { Stack, Step, StepIndicator, Stepper, Typography } from "@mui/joy";
 import { BiCheck, BiCircle } from "react-icons/bi";
 const StepperComponent = ({ data = [] }) => {
-
   // useEffect(() => {
   //   console.log(data)
   // }, [data])
 
   return (
     <Stepper orientation="vertical" sx={{ gap: 2 }} size="sm">
-
       {data?.map(({ id, current_timeline }) => {
-
         const {
           user,
           user_position,
@@ -22,8 +19,7 @@ const StepperComponent = ({ data = [] }) => {
           status,
           status_id,
           date_approved,
-
-        } = current_timeline
+        } = current_timeline;
 
         return (
           <StepItem
@@ -36,10 +32,8 @@ const StepperComponent = ({ data = [] }) => {
             statusId={status_id}
             approved_at={date_approved}
           />
-        )
+        );
       })}
-
-
 
       {/* {data?.map(
         (

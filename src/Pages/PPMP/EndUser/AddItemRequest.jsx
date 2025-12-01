@@ -227,7 +227,6 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
         specifications: itemReq.specs.map((spec) => ({
           description: spec.value,
         })),
-        authorization_pin: itemReq.pin,
       };
 
       await postItemRequest(payload, (status, message, data) => {
@@ -499,6 +498,7 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
                     value={itemReq?.estimated_budget}
                     handleInput={(e) => handleInputValidation(e, setItemReq)}
                     color="primary"
+                    startDecorator={"₱"}
                   />
 
                   <Checkbox

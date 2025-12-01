@@ -21,6 +21,7 @@ const usePPMPHook = create((set) => ({
   pagination: {},
   years: [],
   status: [],
+  timeline: [],
 
   getPPMPItems: (callBack, page = 1, per_page = 15) => {
     read({
@@ -78,13 +79,23 @@ const usePPMPHook = create((set) => ({
     });
   },
 
+  getPPMPTimeline: async (id, callBack) => {
+    read({
+      url: `${PATH}-application-timelines/${id}`,
+      failed: callBack,
+      success: (res) => {
+        const { status, message, data } = res;
+        set({ timeline: data.data });
+        callBack(status, message);
+      },
+    });
+  },
+
   postPPMP: async (id, body, callback) => {
     post({
       url: `${PATH}-update-status/${id}`,
       form: body,
       success: (response) => {
-        console.log(response);
-
         const { message, data, errors } = response.data;
         callback(response.status, message, errors);
       },

@@ -5,7 +5,7 @@ import Tabs from "@mui/joy/Tabs";
 import TabList from "@mui/joy/TabList";
 import Tab, { tabClasses } from "@mui/joy/Tab";
 import TabPanel from "@mui/joy/TabPanel";
-import { Badge } from "@mui/joy";
+import { Badge, ListItemDecorator } from "@mui/joy";
 import { useNotifications } from "../../Hooks/NotificationsHook";
 // import useNotificationHook from "../../Hooks/NotificationHook";
 
@@ -16,13 +16,13 @@ export default function TabComponent({
   setIndex,
   notificationView = false,
   handleTabChange,
+  bgcolor = "white",
 }) {
   const notifications = useNotifications();
 
   const unreadCount = notifications?.filter(
     (element) => element.seen === 0
   )?.length;
-
 
   // useEffect(() => {
   //   console.log('tabs', tabs)
@@ -39,10 +39,10 @@ export default function TabComponent({
         aria-label="Pipeline"
         value={index}
         onChange={(event, value) => {
-          console.log(value)
-          handleTabChange ? handleTabChange(value) : setIndex(value)
+          console.log(value);
+          handleTabChange ? handleTabChange(value) : setIndex(value);
         }}
-        sx={{ bgcolor: "white" }}
+        sx={{ bgcolor: bgcolor }}
       >
         <TabList
           sx={{
@@ -87,8 +87,10 @@ export default function TabComponent({
               </Tab>
             </>
           ) : (
-            tabs?.map(({ name, value, id }, key) => (
-              <Tab key={key} value={id} >
+            tabs?.map(({ name, value, icon }, key) => (
+              <Tab key={key} value={value}>
+                {icon && <ListItemDecorator>{icon}</ListItemDecorator>}
+
                 {name}
               </Tab>
             ))

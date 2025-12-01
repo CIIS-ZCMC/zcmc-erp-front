@@ -1,38 +1,42 @@
 import { API } from "../../Data/constants";
 
-import { read } from '../../Services/RequestMethods';
+import { read } from "../../Services/RequestMethods";
 
 import { useTimelinesActions } from "../../Store/TimelinesStore";
 
 const useTimelineHook = () => {
-
-    const { setTimelines, setApproverTimelines, setIsLoading } = useTimelinesActions();
+    const { setTimelines, setApproverTimelines, setIsLoading } =
+        useTimelinesActions();
 
     const getTimelines = (aopId, callBack) => {
+        setIsLoading(true);
 
-        setIsLoading(true)
+        const getTimelines = (aopId, callBack) => {
 
-        try {
-            read({
-                url: `${API.APPROVAL_TIMELINE}/${aopId}`,
-                failed: callBack,
-                success: (res) => {
-                    const {
-                        status,
-                        data: { data, message },
-                    } = res;
-                    setTimelines(data)
-                    setIsLoading(false)
-                    callBack(status, message)
-                }
-            });
-        } catch (error) {
-            console.error('Error fetching approval timelines:', error);
-            callBack?.(false, error.message)
-        } finally {
-            setIsLoading(false)
+            setIsLoading(true)
+
+            try {
+                read({
+                    url: `${API.APPROVAL_TIMELINE}/${aopId}`,
+                    failed: callBack,
+                    success: (res) => {
+                        const {
+                            status,
+                            data: { data, message },
+                        } = res;
+                        setTimelines(data)
+                        setIsLoading(false)
+                        callBack(status, message)
+                    }
+                });
+            } catch (error) {
+                console.error('Error fetching approval timelines:', error);
+                callBack?.(false, error.message)
+            } finally {
+                setIsLoading(false)
+            }
         }
-    }
+    };
 
     const getApproverTimeline = (params, callBack) => {
         // console.log("Calling API...");
@@ -63,7 +67,11 @@ const useTimelineHook = () => {
         getTimelines,
         getApproverTimeline,
     }
+};
 
-}
+return {
+    getTimelines,
+    getApproverTimeline,
+};
 
 export default useTimelineHook;

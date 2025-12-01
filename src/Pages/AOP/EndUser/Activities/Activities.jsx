@@ -2,7 +2,7 @@ import React, { useEffect, useState, useMemo } from "react";
 
 import { Stack, Typography, Breadcrumbs, Divider, Grid } from "@mui/joy";
 
-import { useParams, useLocation, } from "react-router-dom";
+import { useParams, useLocation } from "react-router-dom";
 
 import useModalHook from "../../../../Hooks/ModalHook";
 import useActivitiesHook from "../../../../Hooks/ActivitiesHook";
@@ -38,13 +38,10 @@ const centeredStyle = {
 };
 
 const Activities = () => {
-
   const { objectiveId } = useParams();
   const location = useLocation();
 
   // const { state } = location;
-
-
 
   const {
     applicationActivities,
@@ -115,7 +112,14 @@ const Activities = () => {
     // console.log('current is gad target', target)
     // console.log(state.objective)
     // console.log(applicationActivities)
-  }, [activity, startMonth, endMonth, isGadRelated, target, applicationActivities])
+  }, [
+    activity,
+    startMonth,
+    endMonth,
+    isGadRelated,
+    target,
+    applicationActivities,
+  ]);
 
   const objectiveName = applicationActivities?.[0]?.objective_code
 

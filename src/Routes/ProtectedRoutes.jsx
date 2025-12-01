@@ -5,12 +5,13 @@ import { BASE_URL, ROOT_PATH, SSO_SIGNING_PATH } from "../Services/Config";
 import { useEffect } from "react";
 import axios from "axios";
 import { localStorageGetter } from "../Utils/LocalStorage";
-import { useAuthActions } from "../Store/AuthStore";
+import { useAuth, useAuthActions } from "../Store/AuthStore";
 
 function ProtectedRoutes({ children }) {
   const navigate = useNavigate();
   const location = useLocation();
   const { sessionValidation } = useAuthActions();
+  const { permissions } = useAuth();
   // const [loading, setLoading] = useState(true);
 
   function initialize(token) {
@@ -28,13 +29,35 @@ function ProtectedRoutes({ children }) {
         return;
       }
       if (status === 200) {
-        if (!localStorageGetter("path")) {
-          // setLoading(false);
+        const lastPath = localStorageGetter("path");
+
+        // --- SAFELY CHECK PERMISSION ---
+        const hasApproval =
+          Array.isArray(permissions) &&
+          permissions.includes("ERP-AOP-MAN:approval");
+
+        // --- When no redirect history exists ---
+        if (!lastPath) {
+          // If user does NOT have approval permission → redirect to /aop
+          if (!hasApproval) {
+            return navigate("/aop");
+          }
+
+          // Otherwise go to ROOT_PATH (/dashboard)
           return navigate(ROOT_PATH);
         }
-        // setLoading(false);
-        return navigate(localStorageGetter("path") ?? ROOT_PATH);
+
+        // --- If lastPath exists ---
+        return navigate(lastPath ?? ROOT_PATH);
       }
+
+      // if (!localStorageGetter("path")) {
+      //   // setLoading(false);
+      //   return navigate(ROOT_PATH);
+      // }
+      // // setLoading(false);
+      // return navigate(localStorageGetter("path") ?? ROOT_PATH);
+
       // setLoading(false);
     });
   }

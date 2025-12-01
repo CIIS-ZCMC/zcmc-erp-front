@@ -149,7 +149,6 @@ function PPMPItems(props) {
             setAlertDialog({
               status: "danger",
               title: "Failed to save.",
-              isGlobal: false,
               description: message,
             });
             // do nothing — keep row open
@@ -159,7 +158,6 @@ function PPMPItems(props) {
         setAlertDialog({
           status: "danger",
           title: "Save error.",
-          isGlobal: false,
           description: err,
         });
         // do nothing — keep row open

@@ -43,6 +43,7 @@ import { grey } from "@mui/material/colors";
 import InputComponent from "@Components/Form/InputComponent";
 import AuthorizationPinComponent from "@Components/AuthorizationPinComponent";
 import useModalHook from "../../../Hooks/ModalHook";
+import StepperComponent from "@Components/Stepper/StepperComponent";
 
 const PPMPCard = ({
   bgColor = "#CCEEFF",
@@ -110,8 +111,15 @@ const PPMPCard = ({
 
 function PPMPDashboard(props) {
   const navigate = useNavigate();
-  const { dashboard, years, getPPMPDashboard, getYearList, postPPMP } =
-    usePPMPHook();
+  const {
+    dashboard,
+    years,
+    timeline,
+    getPPMPDashboard,
+    getYearList,
+    postPPMP,
+    getPPMPTimeline,
+  } = usePPMPHook();
   const { setAlertDialog } = useModalHook();
 
   const [pageLoader, setPageLoader] = useState(false);
@@ -153,7 +161,6 @@ function PPMPDashboard(props) {
             });
             return;
           } else {
-            console.log(errors);
             const errorList = Array.isArray(errors) ? (
               <Stack spacing={1} mt={1}>
                 {errors.map((err, i) => (
@@ -203,6 +210,14 @@ function PPMPDashboard(props) {
       setPageLoader(false); // always hide loader
     }, year);
   }, [year]);
+
+  useEffect(() => {
+    getPPMPTimeline(dashboard?.ppmp_application?.id, (status, message) => {
+      if (!(status >= 200 && status < 300)) {
+        // show toast error
+      }
+    });
+  }, [dashboard?.ppmp_application?.id]);
 
   useEffect(() => {
     if (!assignedArea?.name) return;
@@ -262,7 +277,6 @@ function PPMPDashboard(props) {
                   txtcolor="white"
                   years={years.years}
                   onChange={(value) => {
-                    console.log("Selected Year:", value);
                     setYear(value);
                   }}
                 />
@@ -273,7 +287,7 @@ function PPMPDashboard(props) {
                 as long as two sentences if necessary.
               </Typography>
             </Stack>
-            {dashboard?.ppmp_application?.is_draft ? (
+            {dashboard?.ppmp_application?.status_id === 1 ? (
               <Stack
                 bgcolor={"#FFF4E5"}
                 borderRadius={5}
@@ -301,13 +315,13 @@ function PPMPDashboard(props) {
                 </Box>
                 <Box>
                   <ButtonComponent
-                    label={"Submit PPMP for Review"}
-                    width="190px"
+                    label={"Submit AOP and PPMP for Review"}
+                    width="250px"
                     onClick={() => setOpenSave(true)}
                   />
                 </Box>
               </Stack>
-            ) : (
+            ) : dashboard?.ppmp_application?.status_id === null ? (
               <Stack
                 bgcolor={"#FFF4E5"}
                 borderRadius={5}
@@ -333,6 +347,8 @@ function PPMPDashboard(props) {
                   </Typography>
                 </Box>
               </Stack>
+            ) : (
+              ""
             )}
           </Stack>
         </Grid>
@@ -564,15 +580,24 @@ function PPMPDashboard(props) {
                   <Divider sx={{ my: 1, color: "gray" }} />
                   <Box
                     sx={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
+                      display: timeline?.length === 0 && "flex",
+                      justifyContent: timeline?.length === 0 && "center",
+                      alignItems: timeline?.length === 0 && "center",
+                      mt: timeline?.length > 0 && 2,
+                      p: timeline?.length > 0 && 1,
                     }}
                     height={"55vh"}
                   >
-                    <Typography level="body-sm" sx={{ color: color.fontLight }}>
-                      No transactions done yet.
-                    </Typography>
+                    {timeline?.length > 0 ? (
+                      <StepperComponent data={timeline} />
+                    ) : (
+                      <Typography
+                        level="body-sm"
+                        sx={{ color: color.fontLight }}
+                      >
+                        No transactions done yet.
+                      </Typography>
+                    )}
                   </Box>
                 </BoxComponent>
               </Grid>
