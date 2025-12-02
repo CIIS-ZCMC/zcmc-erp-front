@@ -50,7 +50,7 @@ const AOPApproval = () => {
   const { timelines, approverTimelines } = useTimelinesStore();
   const { yearDetails } = useAOPStore();
 
-  const { application_timelines, filters } = timelines;
+  const { timelines: applicationTimelines, filters } = timelines;
   const { status_id, year: currentFiscalYear } = filters || {};
 
   const { next_year_included, years } = yearDetails || {};
@@ -58,11 +58,11 @@ const AOPApproval = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    console.log(application_timelines)
+    console.log(applicationTimelines)
     // console.log('year', currentFiscalYear);
     // console.log('status id ', status_id);
     // console.log('year details', yearDetails);
-  }, [yearDetails, application_timelines])
+  }, [yearDetails, applicationTimelines])
 
 
   useEffect(() => {
@@ -218,13 +218,13 @@ const AOPApproval = () => {
                     wrapperClass=""
                   />
                 </Box>
-              ) : application_timelines?.length === 0 ? (
+              ) : applicationTimelines?.length === 0 ? (
                 <Box width="100%">
                   <NoResultComponent />
                 </Box>
               ) : (
                 <>
-                  {application_timelines?.map(({
+                  {applicationTimelines?.map(({
                     id,
                     current_timeline,
                     fiscal_year,
