@@ -12,6 +12,8 @@ import { ThreeDots } from "react-loader-spinner";
 import { useUserTypes } from "../../../../Store/AuthStore";
 import { localStorageGetter } from "../../../../Utils/LocalStorage";
 
+import { useNavigate } from "react-router-dom";
+
 export const FeedbackContent = ({
   openFeedbackModal,
   setOpenFeedbackModal,
@@ -90,7 +92,7 @@ export const FeedbackContent = ({
               )}
 
               {activeTab === 0 &&
-                comments?.map(({ comment_id, comment, created_at, user }) => {
+                comments?.map(({ comment_id, comment, created_at, user, activity_id }) => {
                   const { name } = user
                   return <>
 
@@ -101,7 +103,7 @@ export const FeedbackContent = ({
                       // area_code={area_code}
                       date={created_at}
                       isActivity
-                    // handleClick={}
+                      handleClick={() => navigate(`aop/activities/${activity_id}`)}
                     />
 
                   </>

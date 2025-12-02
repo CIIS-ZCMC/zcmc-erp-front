@@ -350,6 +350,7 @@ export const API = {
 
   //ITEM REQUESTS
   REQUEST_ITEM: "item-requests",
+  APPROVAL_ITEM_REQUEST: "item-request-approval",
 
   // TIMELINE
   APPROVAL_TIMELINE: "user-application-timelines",

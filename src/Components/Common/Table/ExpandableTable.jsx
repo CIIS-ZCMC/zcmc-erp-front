@@ -1,6 +1,6 @@
 import { Box, Sheet, Table } from "@mui/joy";
 import { grey } from "@mui/material/colors";
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import PaginationComponent from "./PaginationComponent";
 
 export default function ExpandableTable({
@@ -22,6 +22,13 @@ export default function ExpandableTable({
       setHeights((prev) => ({ ...prev, [id]: h }));
     }
   };
+
+
+  // useEffect(() => {
+  //   console.log(rows)
+  //   console.log(columns)
+  // }, [rows, columns])
+
   return (
     <>
       <Table borderAxis="xBetween" stickyHeader hoverRow>

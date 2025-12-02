@@ -1566,9 +1566,9 @@ export const ITEMS_REQUESTS = (handleOpen) => [
     render: (r) => (
       <div>
         <Typography level="body-sm" fontWeight={600} sx={{ color: grey[800] }}>
-          {r.classification}
+          {r.item_category.name}
         </Typography>
-        <Typography level="body-xs">{r.category}</Typography>
+        <Typography level="body-xs">{r.item_category.name}</Typography>
       </div>
     ),
   },
@@ -1591,7 +1591,7 @@ export const ITEMS_REQUESTS = (handleOpen) => [
     render: (r) => (
       <ChipComponent
         size="md"
-        label={r.item_terminology?.name}
+        label={r.terminology_category.name}
         startDecorator={<Circle sx={{ fontSize: 10 }} />}
         color={"primary"}
       />

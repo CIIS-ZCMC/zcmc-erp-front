@@ -61,7 +61,7 @@ function CommentContainerComponent({
           {moment(date).format("h:mm a")}
         </Typography>
 
-        {/* {isActivity && (
+        {isActivity && (
           <Link
             level={fontSize}
             gap={0.7}
@@ -71,7 +71,7 @@ function CommentContainerComponent({
           >
             Go to activity <ExternalLink size={14} />
           </Link>
-        )} */}
+        )}
       </Stack>
     </Box>
   );

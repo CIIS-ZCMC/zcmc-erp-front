@@ -29,9 +29,9 @@ export default function Pending() {
     }, 3);
   }, []);
 
-  useEffect(() => {
-    console.log(data)
-  }, [data])
+  // useEffect(() => {
+  //   console.log(data)
+  // }, [data])
 
   return (
     <div>

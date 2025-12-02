@@ -50,12 +50,6 @@ function DashboardEndUser(props) {
   const [isAopLoading, setIsAopLoading] = useState(false);
   const [openFeedbackModal, setOpenFeedbackModal] = useState(false);
 
-  useEffect(() => {
-    getObjectives(aop?.id, (status, message) => {
-      return
-    })
-  }, [])
-
   const {
     activity_comments,
     application_timelines,
@@ -67,7 +61,7 @@ function DashboardEndUser(props) {
   useEffect(() => {
     // console.log(aop)
     // console.log('role', role);
-    // console.log('feedback', feedback);
+    console.log('feedback', feedback);
   }, [feedback, aop])
 
   const remarksCount = application_timelines?.length || 0;
@@ -164,7 +158,12 @@ function DashboardEndUser(props) {
   };
 
   const handleViewFeedback = () => {
+    setIsLoading(true)
     setOpenFeedbackModal(true);
+    getObjectives(aop.id, (status, message) => {
+      setIsLoading(false)
+      return
+    })
   };
 
   return (

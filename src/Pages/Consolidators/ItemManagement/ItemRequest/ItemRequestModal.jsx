@@ -5,15 +5,24 @@ import InputComponent from "@Components/Form/InputComponent";
 import TextareaComponent from "@Components/Form/TextareaComponent";
 import useItemsHook from "../../../../Hooks/ItemsHook";
 import { TextSnippetOutlined, Today } from "@mui/icons-material";
-import { Checkbox, Divider, Stack, Typography } from "@mui/joy";
+import { Checkbox, Divider, Stack, Typography, Box, Link } from "@mui/joy";
 import { grey } from "@mui/material/colors";
 import React, { useEffect, useState } from "react";
 import AutocompleteComponent from "@Components/Form/AutocompleteComponent";
 
+import { MdAdd } from "react-icons/md";
+
+import useItemRequestHook from "../../../../Hooks/ItemRequest/ItemRequestHookv2";
+
+import IconLessRadioButtonComponent from "@Components/IconLessRadioButtonComponent";
+
+
 export default function ItemRequestModal({ open, handleClose, status, row }) {
+
   const [pin, setPin] = useState("");
   const [displayLoading, setDisplayLoading] = useState(false);
   const [index, setIndex] = useState("info");
+  const [selectedVariant, setSelectedVariant] = useState(null);
 
   // Local editable state
   const [formData, setFormData] = useState({
@@ -36,6 +45,7 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
     getItemUnits,
     getVariantsByCategory,
   } = useItemsHook();
+
   const tabs = [
     { name: "General info", value: "info", icon: <TextSnippetOutlined /> },
     { name: "Specifications", value: "specs", icon: <Today /> },
@@ -110,6 +120,34 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
       });
     });
   }, [formData.category.id]); // Re-run if category changes
+
+  useEffect(() => {
+    console.log(variants)
+  }, [variants])
+
+
+  const handleSubmitItemRequest = () => {
+
+    console.log(formData)
+
+    const { name, estimated_budget, unit, classification, market_research_done, item_specifications } = formData;
+
+    const payload = {
+      status_id: 4,
+      authorization_pin: pin,
+      name,
+      estimated_budget,
+      item_unit_id: unit.id,
+      item_category_id: classification.id,
+      terminology_category_id: Number(selectedVariant),
+      market_research: market_research_done,
+      specifications: item_specifications.map(({ description }) => ({ description }))
+    };
+
+    console.log(payload)
+
+  }
+
   return (
     <div>
       <ModalComponent
@@ -198,6 +236,14 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
                         }}
                       />
                     </Stack>
+
+                    <Stack>
+                      <IconLessRadioButtonComponent
+                        data={variants}
+                        onChange={(id) => setSelectedVariant(id)}
+                      />
+                    </Stack>
+
                     <Stack direction={"row"} spacing={1}>
                       <AutocompleteComponent
                         label="Unit of measure"
@@ -238,7 +284,7 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
                     <Box
                       height={"280px"}
                       overflow="auto"
-                      ref={specsContainerRef}
+                    // ref={specsContainerRef}
                     >
                       {formData?.specs?.map((spec, index) => (
                         <Box key={spec.id} sx={{ mb: 0.5 }}>
@@ -288,6 +334,10 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
           )
         }
         hasActionButtons
+        rightButtonLabel='Submit'
+        rightButtonAction={() => handleSubmitItemRequest()}
+        noRightButton={false}
+
       />
     </div>
   );
