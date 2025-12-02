@@ -15,10 +15,10 @@ export const feedbackTabOptions = [
 // ];
 
 export const approvalPageTabs = [
-  { id: 3, name: "Pending", value: "pending" },
-  { id: 4, name: "Approved", value: "approved" },
-  { id: 6, name: "Returned", value: "returned" },
-  { id: 8, name: "All requests", value: "all" },
+  { id: 3, name: "Pending", value: 3 },
+  { id: 4, name: "Approved", value: 4 },
+  { id: 6, name: "Returned", value: 6 },
+  { id: 8, name: "All requests", value: 8 },
 ];
 
 export const libaryTabs = [

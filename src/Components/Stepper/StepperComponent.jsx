@@ -19,6 +19,7 @@ const StepperComponent = ({ data = [] }) => {
           status,
           status_id,
           date_approved,
+          date_created,
         } = current_timeline;
 
         return (
@@ -31,6 +32,7 @@ const StepperComponent = ({ data = [] }) => {
             userPosition={user_position}
             statusId={status_id}
             approved_at={date_approved}
+            created_at={date_created}
           />
         );
       })}

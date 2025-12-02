@@ -47,9 +47,8 @@ function StepItem({
   date_approved,
   user,
   userPosition,
+  created_at,
 }) {
-
-
   // useEffect(() => {
   //   console.log(remarks)
   // }, [remarks])
@@ -109,24 +108,21 @@ function StepItem({
             color={getStatusColorScheme(status?.toLowerCase())}
             variant={status === "Pending" ? "outlined" : "solid"}
           />
-
         </Stack>
 
         <Stack gap={1.5} ml={0.7}>
           <Typography fontWeight={400} level="body-xs">
-
-            {name &&
+            {name && (
               <Typography>
                 {status === "Approved" && "Approved By: "}
               </Typography>
-            }
+            )}
 
-            {name ?
+            {name ? (
               <Typography textColor={"neutral.900"}>{name}</Typography>
-              :
+            ) : (
               <Typography textColor={"neutral.900"}>{user}</Typography>
-            }
-
+            )}
           </Typography>
 
           <Stack gap={{ xs: 2, sm: 1 }}>
@@ -141,7 +137,15 @@ function StepItem({
           </Stack>
 
           <Divider sx={dividerStyles} />
-
+          {created_at && (
+            <>
+              <StepTextDisplay
+                label={"Created on:"}
+                value={moment(created_at).format("LLL")}
+              />
+              {/* <Divider sx={dividerStyles} /> */}
+            </>
+          )}
           {approved_at && (
             <>
               <StepTextDisplay
@@ -159,7 +163,6 @@ function StepItem({
                 value={`${number_of_comments} comments in ${activities_with_comments} activities`}
               />
               <Divider sx={dividerStyles} />
-
             </>
           )}
           {/* {remarks && (
@@ -175,7 +178,6 @@ function StepItem({
 
         {/* <Divider sx={{ my: 0.3 }} /> */}
         {/* BODY */}
-
       </Step>
 
       {/* COMMENT */}
@@ -192,17 +194,13 @@ function StepItem({
         handleClose={() => setViewCommentModal(false)}
         leftButtonAction={() => setViewCommentModal(false)}
         content={
-          <Stack
-            gap={1}
-          >
+          <Stack gap={1}>
             <Typography level="body-sm">Remarks:</Typography>
-            <Typography fontSize={15}>
-              {remarks}
-            </Typography>
+            <Typography fontSize={15}>{remarks}</Typography>
           </Stack>
         }
       />
-    </Fragment >
+    </Fragment>
   );
 }
 
