@@ -58,12 +58,11 @@ const AOPApproval = () => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
-    console.log(applicationTimelines)
+    console.log(applicationTimelines);
     // console.log('year', currentFiscalYear);
     // console.log('status id ', status_id);
     // console.log('year details', yearDetails);
-  }, [yearDetails, applicationTimelines])
-
+  }, [yearDetails, applicationTimelines]);
 
   useEffect(() => {
     setIsLoading(true);
@@ -86,12 +85,11 @@ const AOPApproval = () => {
 
   const approvalTimeline = useApprovalTimeline();
 
-
   // const isLoading = useApprovalLoading();
 
   useEffect(() => {
-    console.log(approverTimelines)
-  }, [approverTimelines])
+    console.log(approverTimelines);
+  }, [approverTimelines]);
 
   // STATES
   const [openTimelineModal, setOpenTimelineModal] = useState(false);
@@ -102,14 +100,14 @@ const AOPApproval = () => {
   const [isFetchLoading, setIsFetchLoading] = useState(false);
 
   // FUNCTIONS
-  const handleClickCard = (aopId,) => {
-    navigate(`/aop-approval/objectives/${aopId}`,);
+  const handleClickCard = (aopId) => {
+    navigate(`/aop-approval/objectives/${aopId}`);
   };
 
   const handleViewTimeline = (aopId) => {
-    console.log(aopId)
+    console.log(aopId);
     setOpenTimelineModal(true);
-    getApproverTimeline(() => { });
+    getApproverTimeline(() => {});
   };
 
   const yearsData = [2026, 2025];
@@ -117,7 +115,6 @@ const AOPApproval = () => {
   // console.log(yearsData)
 
   useEffect(() => {
-
     const debouncedFetch = debounce((params) => {
       setIsFetchLoading(true);
       getApproverTimeline(params, () => {
@@ -128,11 +125,10 @@ const AOPApproval = () => {
     const params = {
       year: next_year_included,
       status_id: index,
-    }
+    };
 
     debouncedFetch(params);
-
-  }, [index, year])
+  }, [index, year]);
 
   const TIMELINE = TEST_MODE ? APPROVAL_TIMELINE : approvalTimeline;
 
@@ -151,7 +147,6 @@ const AOPApproval = () => {
           }
         >
           <Stack gap={3} mt={3}>
-
             {/* check this  */}
             <TabComponent
               tabs={approvalPageTabs}
@@ -170,8 +165,7 @@ const AOPApproval = () => {
                 value={search}
               />
               <Stack direction={"row"} gap={2} alignItems={"center"}>
-
-                {next_year_included &&
+                {next_year_included && (
                   <YearSelectorComponent
                     width="auto"
                     label={"Select year"}
@@ -179,12 +173,11 @@ const AOPApproval = () => {
                     options={years}
                     value={{ year: next_year_included }}
                   />
-                }
+                )}
 
                 <Link fontSize={13} mt={3} mr={1}>
                   Clear filters
                 </Link>
-
               </Stack>
             </Stack>
             {/* LIST */}
@@ -205,7 +198,7 @@ const AOPApproval = () => {
                   alignItems={"center"}
                   justifyContent={"center"}
                   width="100%"
-                // minHeight={contentMaxHeight}
+                  // minHeight={contentMaxHeight}
                 >
                   <ThreeDots
                     visible={true}
@@ -224,38 +217,47 @@ const AOPApproval = () => {
                 </Box>
               ) : (
                 <>
-                  {applicationTimelines?.map(({
-                    id,
-                    current_timeline,
-                    fiscal_year,
-                    // current_user,
-                    ppmp_application,
-                    aop_application_id,
-                  }) => {
-                    // const { role } = current_user;
-                    // const { aop_application_id } = ppmp_application;
-                    const { date_approved, date_returned, date_created, status, status_id } = current_timeline;
+                  {applicationTimelines?.map(
+                    ({
+                      id,
+                      current_timeline,
+                      fiscal_year,
+                      // current_user,
+                      ppmp_application,
+                      aop_application_id,
+                    }) => {
+                      // const { role } = current_user;
+                      // const { aop_application_id } = ppmp_application;
+                      const {
+                        date_approved,
+                        date_returned,
+                        date_created,
+                        status,
+                        status_id,
+                        actor,
+                      } = current_timeline;
 
-                    return (
-                      <Grid
-                        key={id}
-                        item={true}
-                        xs={4}
-                      >
-                        <AOPCardComponent
-                          year={fiscal_year}
-                          date_approved={date_approved}
-                          date_requested={date_created}
-                          date_returned={date_returned}
-                          statusLabel={status}
-                          status={status_id}
-                          leftClick={() => handleClickCard(aop_application_id)}
-                          rightClick={() => handleViewTimeline(aop_application_id)}
-                        />
-                      </Grid>
-                    )
-
-                  })}
+                      return (
+                        <Grid key={id} item={true} xs={4}>
+                          <AOPCardComponent
+                            year={fiscal_year}
+                            date_approved={date_approved}
+                            date_requested={date_created}
+                            date_returned={date_returned}
+                            area_code={actor?.area}
+                            statusLabel={status}
+                            status={status_id}
+                            leftClick={() =>
+                              handleClickCard(aop_application_id)
+                            }
+                            rightClick={() =>
+                              handleViewTimeline(aop_application_id)
+                            }
+                          />
+                        </Grid>
+                      );
+                    }
+                  )}
                 </>
               )}
             </Grid>

@@ -74,7 +74,7 @@ function AOPCardComponent({
         // },
       }}
       orientation="horizontal"
-    // onClick={onClick}
+      // onClick={onClick}
     >
       <CardContent>
         {/* TITLE */}
@@ -92,16 +92,16 @@ function AOPCardComponent({
             fontWeight={600}
             textColor={"primary.700"}
           >
-            {/* {area_code}  */}
-            [AOP-{year}]
+            {area_code}
+            {/* [{area_code}: AOP and PPMP - {year}] */}
           </Typography>
           <ChipComponent
             status={status}
             variant={"soft"}
             label={
-              statusLabel === 'Approved'
-                // toCapitalize(statusLabel === "Approved"
-                ? "Approved"
+              statusLabel === "Approved"
+                ? // toCapitalize(statusLabel === "Approved"
+                  "Approved"
                 : statusLabel
             }
             color={getStatusColorScheme(status)}
@@ -186,4 +186,3 @@ function AOPCardComponent({
 }
 
 export default AOPCardComponent;
-
