@@ -104,7 +104,7 @@ function AOPCardComponent({
                   "Approved"
                 : statusLabel
             }
-            color={getStatusColorScheme(status)}
+            color={getStatusColorScheme((statusLabel || "").toLowerCase())}
             endDecorator
           />
         </Stack>

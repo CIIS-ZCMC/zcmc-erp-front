@@ -33,7 +33,7 @@ export const getStatusColorScheme = (status) => {
     approved: "success",
     received: "success",
     pending: "neutral",
-    submitted: "neutral",
+    submitted: "primary",
     cancelled: "error",
     denied: "danger",
     returned: "warning",

@@ -232,9 +232,8 @@ const AOPApproval = () => {
                         date_approved,
                         date_returned,
                         date_created,
-                        status,
+                        status_name,
                         status_id,
-                        actor,
                       } = current_timeline;
 
                       return (
@@ -244,8 +243,7 @@ const AOPApproval = () => {
                             date_approved={date_approved}
                             date_requested={date_created}
                             date_returned={date_returned}
-                            area_code={actor?.area}
-                            statusLabel={status}
+                            statusLabel={status_name}
                             status={status_id}
                             leftClick={() =>
                               handleClickCard(aop_application_id)
