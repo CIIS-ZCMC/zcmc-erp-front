@@ -1591,7 +1591,7 @@ export const ITEMS_REQUESTS = (handleOpen) => [
     render: (r) => (
       <ChipComponent
         size="md"
-        label={r.item_terminology.name}
+        label={r.item_terminology?.name}
         startDecorator={<Circle sx={{ fontSize: 10 }} />}
         color={"primary"}
       />

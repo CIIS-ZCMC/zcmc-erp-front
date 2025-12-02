@@ -234,7 +234,7 @@ const AOPApproval = () => {
                   }) => {
                     // const { role } = current_user;
                     // const { aop_application_id } = ppmp_application;
-                    const { date_approved, date_returned, date_created, status, status_id } = current_timeline;
+                    const { date_approved, date_returned, date_created, status_name, status_id } = current_timeline;
 
                     return (
                       <Grid
@@ -247,7 +247,7 @@ const AOPApproval = () => {
                           date_approved={date_approved}
                           date_requested={date_created}
                           date_returned={date_returned}
-                          statusLabel={status}
+                          statusLabel={status_name}
                           status={status_id}
                           leftClick={() => handleClickCard(aop_application_id)}
                           rightClick={() => handleViewTimeline(aop_application_id)}

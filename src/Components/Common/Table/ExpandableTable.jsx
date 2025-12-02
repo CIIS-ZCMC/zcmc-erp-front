@@ -23,7 +23,7 @@ export default function ExpandableTable({
     }
   };
   return (
-    <Sheet variant="plain" sx={{ borderRadius: "lg", overflow: "hidden" }}>
+    <>
       <Table borderAxis="xBetween" stickyHeader hoverRow>
         <thead>
           <tr>
@@ -42,7 +42,7 @@ export default function ExpandableTable({
         </thead>
 
         <tbody>
-          {rows.map((row) => {
+          {rows?.map((row) => {
             const id = getRowId(row);
             const expanded = openId === id;
 
@@ -94,13 +94,6 @@ export default function ExpandableTable({
           })}
         </tbody>
       </Table>
-      {/* <PaginationComponent
-        currentPage={currentPage}
-        totalPages={totalPages}
-        totalRows={totalRows}
-        onNextPage={onNextPage}
-        onPrevPage={onPrevPage}
-      /> */}
-    </Sheet>
+    </>
   );
 }

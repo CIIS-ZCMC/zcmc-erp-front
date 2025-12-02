@@ -50,6 +50,10 @@ const ItemRequest = () => {
   }, [currentTab]);
 
   const handleTabChange = (tab) => {
+
+    console.log(tab)
+    { console.log(activeTab) }
+
     setActiveTab(tab);
 
     if (tab === "view-all") {
@@ -65,7 +69,7 @@ const ItemRequest = () => {
         title={ITEM_SUBMITTED_LIST_CONSTANTS.ITEM_SUBMITTED_LIST_TITLE}
         description={ITEM_SUBMITTED_LIST_CONSTANTS.ITEM_SUBMITTED_LIST_SUBTITLE}
       />
-      {console.log(activeTab)}
+
       <BoxComponent
         bgColor={"#F9FAFB"}
         my={2}

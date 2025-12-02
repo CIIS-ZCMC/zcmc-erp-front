@@ -19,6 +19,8 @@ export default function Pending() {
     setOpenApprove(true);
   };
 
+  const { data } = requests;
+
   useEffect(() => {
     getItemRequests((status, message) => {
       if (status !== 200) {
@@ -26,11 +28,17 @@ export default function Pending() {
       }
     }, 3);
   }, []);
+
+  useEffect(() => {
+    console.log(data)
+  }, [data])
+
   return (
     <div>
+
       <ExpandableTable
         columns={ITEMS_REQUESTS(handleOpen)}
-        rows={requests}
+        rows={data}
         renderExpanded={(row) => (
           <>
             <Typography
@@ -60,6 +68,7 @@ export default function Pending() {
           </>
         )}
       />
+
       <ItemRequestModal
         open={openApprove}
         handleClose={() => setOpenApprove(false)}
