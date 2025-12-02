@@ -1,4 +1,4 @@
-import { Button, Grid, Stack, } from "@mui/joy";
+import { Button, Grid, Stack } from "@mui/joy";
 
 import React, { Fragment, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -21,7 +21,7 @@ import useAOPStore, { useAOPActions } from "../../../Store/AOPStore";
 import useFeedbackStore from "../../../Store/FeedbackStore";
 
 import Title from "./Title/Title";
-import Header from './Header/Header';
+import Header from "./Header/Header";
 import Draft from "./Mode/Draft";
 import AOPEmpty from "./AOPEmpty";
 import AOPEmptyObjectives from "./AOPEmptyObjectives";
@@ -41,7 +41,7 @@ function DashboardEndUser(props) {
   const { createAOP, getAopBySectorAndYear, getAopYearList } = useAOPHook();
   const { setAlertDialog } = useModalHook();
 
-  const { aop, mission, fiscalYear, yearDetails, } = useAOPStore();
+  const { aop, mission, fiscalYear, yearDetails } = useAOPStore();
   const { setMission, clearMission } = useAOPActions();
   const { feedback } = useFeedbackStore();
 
@@ -52,23 +52,19 @@ function DashboardEndUser(props) {
 
   useEffect(() => {
     getObjectives(aop?.id, (status, message) => {
-      return
-    })
-  }, [])
+      return;
+    });
+  }, []);
 
-  const {
-    activity_comments,
-    application_timelines,
-    current_user,
-  } = feedback;
+  const { activity_comments, application_timelines, current_user } = feedback;
 
-  const { role } = current_user || {}
+  const { role } = current_user || {};
 
   useEffect(() => {
     // console.log(aop)
     // console.log('role', role);
     // console.log('feedback', feedback);
-  }, [feedback, aop])
+  }, [feedback, aop]);
 
   const remarksCount = application_timelines?.length || 0;
   const commentCount = activity_comments?.length || 0;
@@ -109,7 +105,6 @@ function DashboardEndUser(props) {
     const params = { year: fiscalYear };
 
     getAopBySectorAndYear(params, (status, message) => {
-
       const success = status >= 200 && status < 300;
 
       if (!success) {
@@ -118,14 +113,12 @@ function DashboardEndUser(props) {
 
       setIsAopLoading(false); // always executed
     });
-
   }, []);
 
   useEffect(() => {
     // console.log('aop loading:', isAopLoading)
     // console.log('loading :', isLoading)
-
-  }, [isAopLoading])
+  }, [isAopLoading]);
 
   useEffect(() => {
     setIsLoading(true);
@@ -209,7 +202,6 @@ function DashboardEndUser(props) {
                 justifyContent={"space-between"}
                 alignItems={"flex-start"}
               >
-
                 {/* Header here */}
                 <Header
                   yearsData={years}
@@ -218,34 +210,27 @@ function DashboardEndUser(props) {
                   handleChange={handleChangeFiscalYear}
                 />
 
-                {(aop?.status?.id !== 2 && aop?.status?.id !== 4) &&
-                  <Draft
-                    status={aop?.status.id}
-                  />
-                }
+                {aop?.status?.id !== 2 && aop?.status?.id !== 4 && (
+                  <Draft status={aop?.status.id} />
+                )}
 
-                {aop?.status?.id === 2 &&
+                {aop?.status?.id === 2 && (
                   <>
                     <ButtonComponent
-                      variant={'soft'}
-                      label={'Feedback'}
+                      variant={"soft"}
+                      label={"Feedback"}
                       onClick={handleViewFeedback}
                       endDecorator={
                         <ChipComponent
-                          variant={'soft'}
-                          size={'sm'}
+                          variant={"soft"}
+                          size={"sm"}
                           label={feedbackCount}
                         />
                       }
-                      startDecorator={
-                        <MessageSquareText
-                          size={16}
-                        />
-                      }
+                      startDecorator={<MessageSquareText size={16} />}
                     />
                   </>
-                }
-
+                )}
               </Stack>
             </Grid>
 
@@ -253,53 +238,48 @@ function DashboardEndUser(props) {
               container
               bgcolor={"#FAFAFA"}
               padding={0.5}
-              spacing={2}
+              spacing={1.5}
               sx={{
                 flexGrow: 1,
+                marginTop: 1,
                 borderBottomLeftRadius: 10,
                 borderBottomRightRadius: 10,
               }}
             >
-
               {aop?.application_objectives.length === 0 ? (
-                <Grid mt={1} xs={8}>
-                  {/* have aop but empty objectives */}
+                <Grid item xs={12} sm={8}>
                   <AOPEmptyObjectives
                     isLoading={isLoading}
                     handleNavigate={handleNavigateObjectives}
                   />
                 </Grid>
-              )
-                :
+              ) : (
                 <>
-                  <Grid xs={12} sm={10} md={8} lg={5}>
-                    <Grid container>
-                      <AOPDataSummary
-                        aop={aop}
-                        handleNavigateObjectives={handleNavigateObjectives}
-                      />
-                    </Grid>
+                  {/* LEFT – AOP Data Summary (big) */}
+                  <Grid item xs={12} sm={12} md={6} lg={6} xl={5.3}>
+                    <AOPDataSummary
+                      aop={aop}
+                      handleNavigateObjectives={handleNavigateObjectives}
+                    />
                   </Grid>
 
-                  <Grid mt={1} sm={12} md={3}>
+                  {/* MIDDLE – Checklist (medium) */}
+                  <Grid item xs={12} sm={12} md={4} lg={4} xl={3.2}>
                     <Checklist fiscalYear={fiscalYear} />
                   </Grid>
                 </>
-              }
+              )}
 
-              <Grid mt={1} sm={12} md={4}>
-                <Timeline
-                  aopId={aop.id}
-                />
+              {/* RIGHT – Timeline (small) */}
+              <Grid item xs={12} sm={12} md={2} lg={2} xl={3.5}>
+                <Timeline aopId={aop.id} />
               </Grid>
             </Grid>
           </BoxComponent>
         </Fragment>
       ) : (
         // aop empty state
-        <AOPEmpty
-          setOpenFiscalYearModal={setOpenFiscalYearModal}
-        />
+        <AOPEmpty setOpenFiscalYearModal={setOpenFiscalYearModal} />
       )}
 
       <ModalComponent
@@ -320,9 +300,7 @@ function DashboardEndUser(props) {
         maxWidth={500}
       />
 
-      <AlertDialogComponent
-        leftButtonAction={() => handleClose()}
-      />
+      <AlertDialogComponent leftButtonAction={() => handleClose()} />
 
       <FeedbackContent
         openFeedbackModal={openFeedbackModal}
@@ -332,7 +310,6 @@ function DashboardEndUser(props) {
         feedbackCount={feedbackCount}
         role={role}
       />
-
     </Fragment>
   );
 }

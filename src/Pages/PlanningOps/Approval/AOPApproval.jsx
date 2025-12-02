@@ -43,39 +43,14 @@ import useAOPHook from "../../../Hooks/AOP/AOPHook";
 
 const AOPApproval = () => {
   const navigate = useNavigate();
-
   const { getAopYearList } = useAOPHook();
   const { getApproverTimeline, getTimelines } = useTimelineHook();
-
   const { timelines, approverTimelines } = useTimelinesStore();
   const { yearDetails } = useAOPStore();
-
   const { timelines: applicationTimelines, filters } = timelines;
   const { status_id, year: currentFiscalYear } = filters || {};
-
   const { next_year_included, years } = yearDetails || {};
-
   const [isLoading, setIsLoading] = useState(false);
-
-  useEffect(() => {
-    console.log(applicationTimelines);
-    // console.log('year', currentFiscalYear);
-    // console.log('status id ', status_id);
-    // console.log('year details', yearDetails);
-  }, [yearDetails, applicationTimelines]);
-
-  useEffect(() => {
-    setIsLoading(true);
-    getAopYearList((status, message) => {
-      if (!(status >= 200 && status < 300)) {
-        // if status not success
-        setIsLoading(false);
-        return; //Toast error
-      }
-
-      setIsLoading(false);
-    });
-  }, []);
 
   // HOOKS
   const { getAOPApplications, getAOPApplicationById } =
@@ -98,16 +73,26 @@ const AOPApproval = () => {
   const [search, setSearch] = useState(null);
   const [pageLoading, setPageLoading] = useState("");
   const [isFetchLoading, setIsFetchLoading] = useState(false);
+  const [timeline, setTimeline] = useState([]);
 
   // FUNCTIONS
-  const handleClickCard = (aopId) => {
-    navigate(`/aop-approval/objectives/${aopId}`);
+  const handleClickCard = (id, area_code) => {
+    setPageLoading(true);
+
+    getAOPApprovalTimeline(id, () => {});
+    getAOPApplicationById(id, () => {
+      setPageLoading(false);
+      navigate(`/aop-approval/objectives/${id}`);
+    });
+
+    localStorageSetter("aop_application_id", id);
+    localStorageSetter("aop_application_area_code", area_code);
   };
 
-  const handleViewTimeline = (aopId) => {
-    console.log(aopId);
+  const handleViewTimeline = (id) => {
     setOpenTimelineModal(true);
-    getApproverTimeline(() => {});
+
+    getAOPApprovalTimeline(id, () => {});
   };
 
   const yearsData = [2026, 2025];
@@ -115,20 +100,46 @@ const AOPApproval = () => {
   // console.log(yearsData)
 
   useEffect(() => {
+    console.log(applicationTimelines);
+    // console.log('year', currentFiscalYear);
+    // console.log('status id ', status_id);
+    // console.log('year details', yearDetails);
+  }, [yearDetails, applicationTimelines]);
+
+  useEffect(() => {
+    setIsLoading(true);
+    getAopYearList((status, message) => {
+      if (!(status >= 200 && status < 300)) {
+        // if status not success
+        setIsLoading(false);
+        return; //Toast error
+      }
+
+      setIsLoading(false);
+    });
+  }, []);
+
+  useEffect(() => {
     const debouncedFetch = debounce((params) => {
       setIsFetchLoading(true);
-      getApproverTimeline(params, () => {
+      getAOPApplications(params, () => {
         setIsFetchLoading(false);
       });
     }, 300);
 
     const params = {
+      search: search,
       year: next_year_included,
       status_id: index,
     };
 
     debouncedFetch(params);
-  }, [index, year]);
+
+    return () => {
+      localStorage.removeItem("all_comments");
+      debouncedFetch.cancel();
+    };
+  }, [index, year, search, getAOPApplications]);
 
   const TIMELINE = TEST_MODE ? APPROVAL_TIMELINE : approvalTimeline;
 
@@ -211,13 +222,13 @@ const AOPApproval = () => {
                     wrapperClass=""
                   />
                 </Box>
-              ) : applicationTimelines?.length === 0 ? (
+              ) : AOPApplications?.length === 0 ? (
                 <Box width="100%">
                   <NoResultComponent />
                 </Box>
               ) : (
                 <>
-                  {applicationTimelines?.map(
+                  {AOPApplications?.map(
                     ({
                       id,
                       current_timeline,
@@ -225,6 +236,7 @@ const AOPApproval = () => {
                       // current_user,
                       ppmp_application,
                       aop_application_id,
+                      ppmp_total,
                     }) => {
                       // const { role } = current_user;
                       // const { aop_application_id } = ppmp_application;
@@ -234,6 +246,7 @@ const AOPApproval = () => {
                         date_created,
                         status_name,
                         status_id,
+                        actor,
                       } = current_timeline;
 
                       return (
@@ -243,10 +256,12 @@ const AOPApproval = () => {
                             date_approved={date_approved}
                             date_requested={date_created}
                             date_returned={date_returned}
+                            area_code={actor?.area}
                             statusLabel={status_name}
                             status={status_id}
+                            total_cost={ppmp_total}
                             leftClick={() =>
-                              handleClickCard(aop_application_id)
+                              handleClickCard(aop_application_id, actor?.area)
                             }
                             rightClick={() =>
                               handleViewTimeline(aop_application_id)

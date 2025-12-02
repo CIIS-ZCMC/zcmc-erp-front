@@ -18,14 +18,26 @@ const useAOPApplicationsHook = create((set) => ({
 
   actions: {
     // GET ALL AOP APPLICATIONS
+    // getAOPApplications: (params, callback) => {
+    //   read({
+    //     url: API.AOP_REQUESTS,
+    //     params: params,
+    //     failed: callback,
+    //     success: (response) => {
+    //       const { data, message } = response.data;
+    //       set({ aopApplications: data });
+    //       callback(200, message);
+    //     },
+    //   });
+    // },
     getAOPApplications: (params, callback) => {
       read({
-        url: API.AOP_REQUESTS,
+        url: `requests-approver`,
         params: params,
         failed: callback,
         success: (response) => {
           const { data, message } = response.data;
-          set({ aopApplications: data });
+          set({ aopApplications: data.applications });
           callback(200, message);
         },
       });

@@ -48,6 +48,7 @@ function AOPCardComponent({
   leftClick, // The whole card
   rightClick, // The whole card
   requester_area, // Area display
+  total_cost,
 }) {
   const linkStyles = {
     color: "primary.700",
@@ -96,7 +97,7 @@ function AOPCardComponent({
             {/* [{area_code}: AOP and PPMP - {year}] */}
           </Typography>
           <ChipComponent
-            status={status}
+            status={statusLabel?.toLowerCase()}
             variant={"soft"}
             label={
               statusLabel === "Approved"
@@ -126,6 +127,19 @@ function AOPCardComponent({
               <CardInfoDisplay
                 label={"Created on:"}
                 value={moment(date_requested).format("LL (LT)")}
+              />
+            </BoxComponent>
+            <BoxComponent width={{ xs: "auto", md: "100%" }}>
+              <CardInfoDisplay
+                label={"Total cost:"}
+                value={
+                  total_cost
+                    ? `₱ ${Number(total_cost).toLocaleString("en-US", {
+                        minimumFractionDigits: 2,
+                        maximumFractionDigits: 2,
+                      })}`
+                    : "--"
+                }
               />
             </BoxComponent>
 
@@ -159,6 +173,7 @@ function AOPCardComponent({
           </Stack>
           <Divider />
           {/* ACTIONS */}
+
           <Stack
             direction={{ xs: "column", sm: "row" }}
             sx={{ alignItems: "start", justifyContent: "space-between" }}

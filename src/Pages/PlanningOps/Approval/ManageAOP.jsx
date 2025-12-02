@@ -6,7 +6,6 @@ import { ExternalLink } from "lucide-react";
 import PageTitle from "../../../Components/Common/PageTitle";
 import ContainerComponent from "../../../Components/Common/ContainerComponent";
 import ButtonComponent from "../../../Components/Common/ButtonComponent";
-;
 import useObjectivesStore from "../../../Store/ObjectivesStore";
 import useFeedbackStore from "../../../Store/FeedbackStore";
 
@@ -19,7 +18,6 @@ import { FeedbackContent } from "./Contents/FeedbackContent";
 import ProcessAOPContent from "./Contents/ProcessAOPContent";
 
 export default function ManageAOP() {
-
   const params = useParams();
   const aopId = params.id;
 
@@ -27,15 +25,13 @@ export default function ManageAOP() {
   const { applicationObjectives } = useObjectivesStore();
   const { feedback } = useFeedbackStore();
 
-
   useEffect(() => {
-
-    console.log(aopId)
+    console.log(aopId);
 
     getObjectives(aopId, (status, message) => {
-      return
-    })
-  }, [aopId])
+      return;
+    });
+  }, [aopId]);
 
   const {
     current_user,
@@ -51,17 +47,17 @@ export default function ManageAOP() {
     latest_ppmp_application_timeline,
   } = feedback;
 
-  const { id: ppmpId } = latest_ppmp_application_timeline || {}
+  const { id: ppmpId } = latest_ppmp_application_timeline || {};
   const { role, area_name } = current_user || {};
   const { id } = latest_application_timeline || {};
 
   useEffect(() => {
-    console.log('ppmp app timelines:', latest_ppmp_application_timeline)
+    console.log("ppmp app timelines:", latest_ppmp_application_timeline);
     // console.log('feedback:', feedback)
   }, [feedback]);
 
-  const userMCC = role === 'MCC';
-  const userPlanning = role === 'Planning Officer';
+  const userMCC = role === "MCC";
+  const userPlanning = role === "Planning Officer";
 
   // STATES
   const [openFeedbackModal, setOpenFeedbackModal] = useState(false);
@@ -85,11 +81,11 @@ export default function ManageAOP() {
         <PageTitle
           title={
             <Typography>
-              Manage
+              Manage{" "}
               <Typography textColor={"warning.400"}>{area_name}'s</Typography>{" "}
-              AOP
+              AOP{" "}
               {/* AOP <Typography textColor={"warning.400"}>#{id} </Typography> */}
-              for Fiscal Year
+              for Fiscal Year{" "}
               <Typography textColor={"warning.400"}>{fiscal_year}</Typography>
             </Typography>
           }
@@ -128,12 +124,13 @@ export default function ManageAOP() {
                   "Collapse an objective and select one of its activities to view more information."
                 }
                 footer={
-
                   <Stack direction={"row"} spacing={2}>
                     {isAllowedFeedbackViewing() && (
                       <ButtonComponent
                         variant={"outlined"}
-                        label={`Go to feedback (${!userPlanning ? commentCount : feedbackCount})`}
+                        label={`Go to feedback (${
+                          !userPlanning ? commentCount : feedbackCount
+                        })`}
                         endDecorator={<ExternalLink size={14} />}
                         onClick={handleViewFeedback}
                       />
@@ -147,36 +144,23 @@ export default function ManageAOP() {
                       aopId={aopId}
                       role={role}
                     />
-
                   </Stack>
                 }
                 scrollable
                 contentMaxHeight={"62vh"}
                 contentMinHeight={"62vh"}
               >
-                <ObjectivesList
-                  objectives={objectives}
-                />
-
+                <ObjectivesList objectives={objectives} />
               </ContainerComponent>
             </Grid>
 
             {/* ACTIVITY DETAILS  */}
-            <Grid
-              item="true"
-              xs={!userPlanning ? 8 : 4}
-              mt={3}
-            >
+            <Grid item="true" xs={!userPlanning ? 8 : 4} mt={3}>
               <ActivityDetails />
             </Grid>
 
             {/* COMMENTS  */}
-            <Grid
-              item="true"
-              xs={4}
-              mt={3}
-              display={!userPlanning && "none"}
-            >
+            <Grid item="true" xs={4} mt={3} display={!userPlanning && "none"}>
               <CommentsDetails />
             </Grid>
           </Grid>

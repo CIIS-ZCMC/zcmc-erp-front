@@ -9,7 +9,7 @@ const StepperComponent = ({ data = [] }) => {
 
   return (
     <Stepper orientation="vertical" sx={{ gap: 2 }} size="sm">
-      {data?.map(({ id, current_timeline }) => {
+      {/* {data?.map(({ id, current_timeline }) => {
         const {
           user,
           user_position,
@@ -35,9 +35,9 @@ const StepperComponent = ({ data = [] }) => {
             created_at={date_created}
           />
         );
-      })}
+      })} */}
 
-      {/* {data?.map(
+      {data?.map(
         (
           {
             approver_user = "Krizelle Mae Falcasantos",
@@ -94,9 +94,9 @@ const StepperComponent = ({ data = [] }) => {
             );
           }
         }
-      )} */}
-      {/* 
-      <Step
+      )}
+
+      {/* <Step
         indicator={
           <StepIndicator>
             <BiCircle />
@@ -117,9 +117,9 @@ const StepperComponent = ({ data = [] }) => {
             Office name
           </Typography>
         </Stack>
-      </Step> */}
+      </Step> 
 
-      {/* <Step
+       <Step
         indicator={
           <StepIndicator variant="solid">
             <BiCheck />

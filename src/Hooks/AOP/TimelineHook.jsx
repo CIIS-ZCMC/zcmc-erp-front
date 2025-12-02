@@ -46,7 +46,7 @@ const useTimelineHook = () => {
             status,
             data: { data, message },
           } = res;
-          setTimelines(data);
+          setApproverTimelines(data);
           setIsLoading(false);
           callBack(status, message);
         },
