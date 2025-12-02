@@ -90,9 +90,9 @@ const AOPApproval = () => {
   };
 
   const handleViewTimeline = (id) => {
-    setOpenTimelineModal(true);
-
-    getAOPApprovalTimeline(id, () => {});
+    getAOPApprovalTimeline(id, () => {
+      setOpenTimelineModal(true);
+    });
   };
 
   const yearsData = [2026, 2025];
@@ -279,6 +279,7 @@ const AOPApproval = () => {
       </Stack>
 
       {/* APPROVAL TIMELINE */}
+      {console.log(approvalTimeline)}
       <DrawerComponent
         open={openTimelineModal}
         setOpen={setOpenTimelineModal}

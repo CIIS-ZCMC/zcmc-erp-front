@@ -52,19 +52,16 @@ const useAOPApprovalHook = create((set) => ({
             status,
           } = response.data;
 
-          set(
-            () => (
-              console.log(approval_trail),
-              {
-                isLoading: false,
-                // approvalTimeline: data,
-                approvalTimeline: approval_trail,
-                approvalRoles: approval_roles,
-              }
-            )
-          );
+          set(() => ({
+            isLoading: false,
+            approvalTimeline: approval_trail,
+            // approvalRoles: approval_roles,
+          }));
 
-          callback(status, `Success fetching approval timeline for AOP ${id}`);
+          callback(
+            status,
+            `Success fetching approval timeline for AOP ${AOP_ID}`
+          );
         },
         failed: (response) => {
           callback(response);
