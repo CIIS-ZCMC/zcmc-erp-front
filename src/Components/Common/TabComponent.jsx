@@ -87,8 +87,8 @@ export default function TabComponent({
               </Tab>
             </>
           ) : (
-            tabs?.map(({ name, value, icon }, key) => (
-              <Tab key={key} value={value}>
+            tabs?.map(({ name, id, value, icon }, key) => (
+              <Tab key={key} value={id}>
                 {icon && <ListItemDecorator>{icon}</ListItemDecorator>}
 
                 {name}
