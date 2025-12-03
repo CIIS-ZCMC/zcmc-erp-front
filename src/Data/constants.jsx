@@ -349,8 +349,8 @@ export const API = {
   RETURNED_DIVISON_CHIEF: "returned-by-division-chief",
 
   //ITEM REQUESTS
-  REQUEST_ITEM: "item-requests",
-  APPROVAL_ITEM_REQUEST: "item-request-approval",
+  ITEM_REQUESTS: "item-requests-approver",
+  APPROVAL_ITEM_REQUEST: "item-requests-approval",
 
   // TIMELINE
   APPROVAL_TIMELINE: "user-application-timelines",

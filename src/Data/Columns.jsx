@@ -1546,7 +1546,8 @@ export const PPMP_HEADERS = (status, editingRows, handleComments) => [
   },
 ];
 
-export const ITEMS_REQUESTS = (handleOpen) => [
+export const ITEMS_REQUESTS = (handleOpen, pathName) => [
+
   {
     key: "item",
     label: "Item & Unit",
@@ -1601,31 +1602,42 @@ export const ITEMS_REQUESTS = (handleOpen) => [
     key: "actions",
     label: "Actions",
     render: (r) => (
-      <div style={{ display: "flex", gap: "8px" }}>
-        <ChipComponent
-          size="lg"
-          onClick={(e) => {
-            e.stopPropagation();
-            handleOpen(4, r); /* approve */
-          }}
-          color="success"
-          label={"Approve"}
-          variant={"soft"}
-          startDecorator={<CheckOutlined />}
-        />
 
-        <ChipComponent
-          size="lg"
-          color="danger"
-          variant={"soft"}
-          onClick={(e) => {
-            e.stopPropagation();
-            handleOpen(5, r); /* decline */
-          }}
-          label={"Decline"}
-          startDecorator={<Clear />}
-        />
-      </div>
+      <>
+        {pathName !== '/item-requests/pending' ?
+          <>
+            No action available
+          </>
+          :
+          <div style={{ display: "flex", gap: "8px" }}>
+            <ChipComponent
+              size="lg"
+              onClick={(e) => {
+                e.stopPropagation();
+                handleOpen(4, r); /* approve */
+              }}
+              color="success"
+              label={"Approve"}
+              variant={"soft"}
+              startDecorator={<CheckOutlined />}
+            />
+
+            <ChipComponent
+              size="lg"
+              color="danger"
+              variant={"soft"}
+              onClick={(e) => {
+                e.stopPropagation();
+                handleOpen(5, r); /* decline */
+              }}
+              label={"Decline"}
+              startDecorator={<Clear />}
+            />
+          </div >
+        }
+      </>
+
+
     ),
   },
 ];

@@ -25,12 +25,14 @@ const ObjectivesModal = ({
   const { OBJECTIVE_ALERT } = OBJECTIVES;
 
   const function_types = useFunctionTypes();
+
   const {
     setFunctionType,
     setObjective,
     setSuccessIndicator,
     setOtherSuccessIndicator
   } = useObjectivesActions();
+
   const { getFunctionType } = FunctionTypeHook();
 
   // useEffect(() => {
@@ -60,17 +62,23 @@ const ObjectivesModal = ({
 
       const selectedSuccessIndicatorId = applicationObjective.selected_success_indicator.id;
       const selectedSuccessIndicator = selectedObjective.flatMap(({ success_indicators }) =>
-        success_indicators.filter(({ id }) => id === selectedSuccessIndicatorId
+        success_indicators.filter(({ id }) => (id === selectedSuccessIndicatorId)
         ))
 
+      // console.log('application success indicator id', applicationObjective.selected_success_indicator.id)
+      // console.log('selected success indicator id', selectedSuccessIndicatorId)
       // console.log(selectedObjective)
       // console.log(selectedSuccessIndicator)
 
       setSuccessIndicator(selectedSuccessIndicator?.[0] || null)
-      setOtherSuccessIndicator(selectedSuccessIndicator?.[0].name || null)
+      setOtherSuccessIndicator(selectedSuccessIndicator?.[0]?.name || null)
 
     }
   }, [applicationObjective]);
+
+  // useEffect(() => {
+  //   console.log(functionType)
+  // }, [functionType])
 
   return (
     <>

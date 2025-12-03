@@ -8,6 +8,7 @@ export default function ExpandableTable({
   rows = [],
   renderExpanded, // (row) => JSX
   getRowId = (row) => row.id,
+  isLoading,
 }) {
   const [openId, setOpenId] = useState(null);
   const [heights, setHeights] = useState({}); // store row heights
@@ -24,14 +25,16 @@ export default function ExpandableTable({
   };
 
 
-  // useEffect(() => {
-  //   console.log(rows)
-  //   console.log(columns)
-  // }, [rows, columns])
+  useEffect(() => {
+    // console.log(isLoading)
+    // console.log(rows)
+    // console.log(columns)
+  }, [rows, columns, isLoading])
 
   return (
     <>
-      <Table borderAxis="xBetween" stickyHeader hoverRow>
+      <Table
+        borderAxis="xBetween" stickyHeader hoverRow>
         <thead>
           <tr>
             {columns.map((col) => (

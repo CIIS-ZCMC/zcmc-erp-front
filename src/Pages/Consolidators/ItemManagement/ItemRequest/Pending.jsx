@@ -1,23 +1,40 @@
 import ExpandableTable from "@Components/Common/Table/ExpandableTable";
 import { ITEMS_REQUESTS } from "../../../../Data/Columns";
 import React, { useEffect, useState } from "react";
-import useItemRequestHook from "../../../../Hooks/ItemRequest/ItemRequestHook";
+// import useItemRequestHook from "../../../../Hooks/ItemRequest/ItemRequestHook";
+import useItemRequestHook from "../../../../Hooks/ItemRequest/ItemRequestHookv2";
+import useItemRequestStore from '../../../../Store/ItemRequestStore';
+
 import { Box, Sheet, Typography } from "@mui/joy";
 import { ExtensionOutlined } from "@mui/icons-material";
 import { grey } from "@mui/material/colors";
+import { useLocation } from "react-router-dom";
+
 import ItemRequestModal from "./ItemRequestModal";
 
 export default function Pending() {
-  const { requests, getItemRequests } = useItemRequestHook();
+
+  const location = useLocation();
+  const pathName = location.pathname;
+
+  const { getItemRequests } = useItemRequestHook();
+  const { requests, isLoading } = useItemRequestStore();
+
   const [openApprove, setOpenApprove] = useState(false);
   const [status, setStatus] = useState();
   const [row, setRow] = useState({});
+  const [isDecline, setIsDecline] = useState(false);
 
   const handleOpen = (status, row) => {
     setStatus(status);
     setRow(row);
     setOpenApprove(true);
   };
+
+
+  const handleClose = () => {
+    setOpenApprove(false)
+  }
 
   const { data } = requests;
 
@@ -30,15 +47,15 @@ export default function Pending() {
   }, []);
 
   // useEffect(() => {
-  //   console.log(data)
-  // }, [data])
+  //   console.log('floading', isLoading)
+  // }, [isLoading])
 
   return (
     <div>
-
       <ExpandableTable
-        columns={ITEMS_REQUESTS(handleOpen)}
-        rows={data}
+        columns={ITEMS_REQUESTS(handleOpen, pathName)}
+        rows={requests}
+        isLoading={isLoading}
         renderExpanded={(row) => (
           <>
             <Typography

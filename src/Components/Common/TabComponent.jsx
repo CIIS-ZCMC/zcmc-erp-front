@@ -39,7 +39,7 @@ export default function TabComponent({
         aria-label="Pipeline"
         value={index}
         onChange={(event, value) => {
-          console.log(value);
+          // console.log(value);
           handleTabChange ? handleTabChange(value) : setIndex(value);
         }}
         sx={{ bgcolor: bgcolor }}

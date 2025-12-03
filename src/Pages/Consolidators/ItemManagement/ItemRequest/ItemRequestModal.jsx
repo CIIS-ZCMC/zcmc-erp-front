@@ -1,28 +1,62 @@
+import React, { useEffect, useState } from "react";
+import { grey } from "@mui/material/colors";
+import { TextSnippetOutlined, Today } from "@mui/icons-material";
+import { Checkbox, Divider, Stack, Typography, Box, Link } from "@mui/joy";
+import { MdAdd } from "react-icons/md";
+import { useNavigate } from "react-router-dom";
+
 import AuthorizationPinComponent from "@Components/AuthorizationPinComponent";
 import ModalComponent from "@Components/Common/Dialog/ModalComponent";
 import TabComponent from "@Components/Common/TabComponent";
 import InputComponent from "@Components/Form/InputComponent";
 import TextareaComponent from "@Components/Form/TextareaComponent";
-import useItemsHook from "../../../../Hooks/ItemsHook";
-import { TextSnippetOutlined, Today } from "@mui/icons-material";
-import { Checkbox, Divider, Stack, Typography, Box, Link } from "@mui/joy";
-import { grey } from "@mui/material/colors";
-import React, { useEffect, useState } from "react";
 import AutocompleteComponent from "@Components/Form/AutocompleteComponent";
-
-import { MdAdd } from "react-icons/md";
-
-import useItemRequestHook from "../../../../Hooks/ItemRequest/ItemRequestHookv2";
-
 import IconLessRadioButtonComponent from "@Components/IconLessRadioButtonComponent";
+
+import useModalHook from "../../../../Hooks/ModalHook";
+import useItemsHook from "../../../../Hooks/ItemsHook";
+// import useItemRequestHook from "..//ItemRequest/ItemRequestHook";
+import useItemRequestsHook from "../../../../Hooks/ItemRequest/ItemRequestHookv2";
+
+import useItemLibraryStore from "../../../../Store/Item/LibraryStore";
+import { useItemLibraryActions } from "../../../../Store/Item/LibraryStore";
 
 
 export default function ItemRequestModal({ open, handleClose, status, row }) {
 
+  const navigate = useNavigate();
+
+  const { setAlertDialog, setConfirmationModal, closeConfirmation } = useModalHook();
+  const { updateItemRequest } = useItemRequestsHook();
+
+  const {
+    itemName,
+    classification: classificationObj,
+    category,
+    variant,
+    unit,
+    marketResearched,
+    estimatedBudget,
+    specification,
+  } = useItemLibraryStore()
+
+  const {
+    setItemName,
+    setClassification,
+    setCategory,
+    setVariant,
+    setUnit,
+    setMarketResearched,
+    setEstimatedBudget,
+    setSpecification,
+  } = useItemLibraryActions()
+
   const [pin, setPin] = useState("");
   const [displayLoading, setDisplayLoading] = useState(false);
   const [index, setIndex] = useState("info");
-  const [selectedVariant, setSelectedVariant] = useState(null);
+  const [itemRequestId, setItemRequestId] = useState(null)
+  const [isLoading, setIsLoading] = useState(false)
+  const [remarks, setRemarks] = useState('')
 
   // Local editable state
   const [formData, setFormData] = useState({
@@ -34,6 +68,7 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
     item_specifications: [],
     market_research_done: false,
   });
+
   const {
     items,
     categories,
@@ -52,42 +87,53 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
   ];
 
   useEffect(() => {
+    console.log(row)
     if (row) {
-      setFormData({
-        name: row.name || "",
-        classification: row.item_classification || "",
-        category: row.item_category || "",
-        unit: row.item_unit || "",
-        estimated_budget: row.estimated_budget || "",
-        item_specifications:
-          row.item_specifications?.map((s) => ({ ...s })) || [],
-        market_research_done: row?.market_research_done || false,
-      });
+      setItemRequestId(row.id)
+      setItemName(row.name)
+      setClassification(row.item_classification || "")
+      setCategory(row.item_category || "")
+      setVariant(row.terminology_category || "")
+      setMarketResearched(row.market_researched || "")
+      setUnit(row.item_unit || "")
+      setEstimatedBudget(row.estimated_budget || "")
+      setSpecification(row.item_specifications || "")
     }
+
+    // old code setformdata approach
+    // if (row) {
+    //   setFormData({
+    //     name: row.name || "",
+    //     classification: row.item_classification || "",
+    //     category: row.item_category || "",
+    //     unit: row.item_unit || "",
+    //     estimated_budget: row.estimated_budget || "",
+    //     item_specifications:
+    //       row.item_specifications?.map((s) => ({ ...s })) || [],
+    //     market_research_done: row?.market_research_done || false,
+    //   });
+    // }
   }, [row]);
 
   // === SPEC HANDLERS ===
-  const addSpec = () =>
-    setFormData((prev) => ({
-      ...prev,
-      specs: [...prev.item_specifications, { id: Date.now(), description: "" }],
-    }));
+  const addSpec = () => {
+    setSpecification([...specification, { id: Date.now(), description: "" }]);
+  };
 
-  const removeSpec = (id) =>
-    setFormData((prev) => ({
-      ...prev,
-      specs: prev.item_specifications.filter((spec) => spec.id !== id),
-    }));
+  const removeSpec = (id) => {
+    setSpecification(specification.filter((spec) => spec.id !== id));
+  };
 
   const handleChange = (field, value) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
   const handleSpecChange = (index, value) => {
-    const newSpecs = [...formData.item_specifications];
+    const newSpecs = [...specification];
     newSpecs[index].description = value;
-    setFormData((prev) => ({ ...prev, item_specifications: newSpecs }));
+    setSpecification(newSpecs);
   };
+
   useEffect(() => {
     setDisplayLoading(true);
 
@@ -98,9 +144,9 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
     ];
 
     // Only fetch variants if category ID exists
-    if (formData.category?.id) {
+    if (category?.id) {
       apiCalls.push({
-        fn: (callback) => getVariantsByCategory(callback, formData.category.id),
+        fn: (callback) => getVariantsByCategory(callback, category.id),
         name: "variants",
       });
     }
@@ -119,34 +165,76 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
         checkDone();
       });
     });
-  }, [formData.category.id]); // Re-run if category changes
-
-  useEffect(() => {
-    console.log(variants)
-  }, [variants])
-
+  }, [category.id]); // Re-run if category changes
 
   const handleSubmitItemRequest = () => {
 
-    console.log(formData)
+    // setIsLoading(true);
 
-    const { name, estimated_budget, unit, classification, market_research_done, item_specifications } = formData;
-
-    const payload = {
-      status_id: 4,
+    const approvedPayload = {
+      status_id: status,
       authorization_pin: pin,
-      name,
-      estimated_budget,
+      name: itemName,
+      estimated_budget: estimatedBudget,
       item_unit_id: unit.id,
-      item_category_id: classification.id,
-      terminology_category_id: Number(selectedVariant),
-      market_research: market_research_done,
-      specifications: item_specifications.map(({ description }) => ({ description }))
-    };
+      item_classification_id: classificationObj.id,
+      item_category_id: category.id,
+      terminology_category_id: variant.id,
+      market_research: marketResearched,
+      specifications: specification.map(({ description }) => ({ description }))
+    }
+
+    const declinePayload = {
+      status_id: status,
+      authorization_pin: pin,
+      reason: remarks,
+    }
+
+    const payload = status === 4 ? approvedPayload : declinePayload
 
     console.log(payload)
 
-  }
+    try {
+      updateItemRequest(itemRequestId, payload, (status, message) => {
+        if (status === 200) {
+          setAlertDialog({
+            status: "success",
+            title: message,
+            description: "",
+          });
+          setIsLoading(false);
+          handleClose();
+          navigate('/item-requests/saved')
+        } else {
+          setAlertDialog({
+            status: "error",
+            title: message,
+            description: "Please try again later",
+          });
+          setIsLoading(false);
+          console.error(" Failed to update activity:", message);
+        }
+      });
+    } catch (error) {
+      console.error("Error creating objective:", error);
+      setAlertDialog({
+        status: "error",
+        title: "Unexpected Error",
+        description: error.message || "Something went wrong.",
+      });
+    }
+  };
+
+  useEffect(() => {
+    // console.log(variants)
+    // console.log('classifications', classification)
+    // console.log('classifications object', classificationObj)
+    // console.log('rows', row.item_classification)
+    // console.log('variants', variants)
+    // console.log('unit object', unit)
+    // console.log(marketResearched)
+    // console.log(itemRequestId)
+  }, [classificationObj, row, variants, items, itemRequestId])
 
   return (
     <div>
@@ -187,10 +275,11 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
               >
                 {index === "info" ? (
                   <Stack my={2} spacing={2}>
+
                     <InputComponent
                       label={"Item Name"}
-                      value={formData.name}
-                      handleInput={(e) => handleChange("name", e.target.value)}
+                      value={itemName}
+                      handleInput={(e) => setItemName(e.target.value)}
                       helperText={
                         "Use a specific and descriptive naming convention for best results."
                       }
@@ -201,83 +290,76 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
                         name="classification"
                         options={classification}
                         getOptionLabel={(option) => option.name || ""}
-                        value={
-                          classification?.find(
-                            (el) => el.id === formData?.classification?.id
-                          ) || null
-                        } // Match the full object in value
-                        handleSelect={(value) => {
-                          handleSingleChangeAutcomplete(
-                            value,
-                            setFormData,
-                            "classification",
-                            setError
-                          );
+                        value={classificationObj}
+                        setValue={(val) => {
+                          // console.log(val)
+                          setClassification(val)
                         }}
                       />
 
                       <AutocompleteComponent
                         label="Category"
                         name="category"
-                        value={
-                          categories?.find(
-                            (el) => el.id === formData?.category?.id
-                          ) || null
-                        }
                         options={categories}
                         getOptionLabel={(option) => option.name || ""}
-                        handleSelect={(value) => {
-                          handleSingleChangeAutcomplete(
-                            value,
-                            setFormData,
-                            "category",
-                            setError
-                          );
+                        value={category}
+                        setValue={(val) => {
+                          // console.log(val)
+                          setCategory(val)
                         }}
                       />
+
                     </Stack>
 
                     <Stack>
-                      <IconLessRadioButtonComponent
-                        data={variants}
-                        onChange={(id) => setSelectedVariant(id)}
+                      <AutocompleteComponent
+                        label="Variant"
+                        name="variant"
+                        options={variants}
+                        getOptionLabel={(option) => option.name || ""}
+                        value={variant}
+                        setValue={(val) => {
+                          // console.log(val)
+                          setVariant(val)
+                        }}
                       />
                     </Stack>
 
                     <Stack direction={"row"} spacing={1}>
+
                       <AutocompleteComponent
                         label="Unit of measure"
                         name="unit"
-                        value={
-                          units?.find((el) => el.id === formData?.unit?.id) ||
-                          null
-                        }
                         options={units}
                         getOptionLabel={(option) => option.name || ""}
-                        handleSelect={(value) => {
-                          handleSingleChangeAutcomplete(
-                            value,
-                            setFormData,
-                            "unit",
-                            setError
-                          );
+                        value={unit}
+                        setValue={(val) => {
+                          // console.log(val)
+                          setUnit(val)
                         }}
                       />
+
                       <InputComponent
                         label={"Estimated Budget"}
-                        value={formData.estimated_budget}
+                        value={estimatedBudget}
                         handleInput={(e) =>
-                          handleChange("estimated_budget", e.target.value)
+                          setEstimatedBudget(e.target.value)
                         }
                         startDecorator={"₱"}
                       />
                     </Stack>
+
                     <Checkbox
                       label="I have conducted a market research prior setting the budget estimates."
                       sx={{ color: grey[900], fontSize: 13, pt: 1 }}
                       size="sm"
-                      checked={1}
+                      checked={marketResearched}
+                      onChange={(e) => {
+                        console.log(e.target.checked)
+                        setMarketResearched(e.target.checked)
+                      }}
                     />
+
                   </Stack>
                 ) : (
                   <Stack>
@@ -286,7 +368,7 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
                       overflow="auto"
                     // ref={specsContainerRef}
                     >
-                      {formData?.specs?.map((spec, index) => (
+                      {specification?.map((spec, index) => (
                         <Box key={spec.id} sx={{ mb: 0.5 }}>
                           <Stack spacing={1}>
                             <TextareaComponent
@@ -295,11 +377,11 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
                               minRows={3}
                               value={spec.description}
                               onChange={(e) =>
-                                handleSpecChange(i, e.target.value)
+                                handleSpecChange(index, e.target.value)
                               }
                               size="sm"
                             />
-                            {formData?.specs?.length > 1 && (
+                            {specification?.length > 1 && (
                               <Link
                                 onClick={() => removeSpec(spec.id)}
                                 color="danger"
@@ -330,9 +412,18 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
               <AuthorizationPinComponent setPin={setPin} />
             </>
           ) : (
-            <Typography>Hello</Typography>
+            <>
+              <TextareaComponent
+                label={'Remarks'}
+                placeholder="Enter your remarks here"
+                value={remarks}
+                onChange={(e) => setRemarks(e.target.value)}
+              />
+              <AuthorizationPinComponent setPin={setPin} />
+            </>
           )
         }
+        isLoading={isLoading}
         hasActionButtons
         rightButtonLabel='Submit'
         rightButtonAction={() => handleSubmitItemRequest()}
