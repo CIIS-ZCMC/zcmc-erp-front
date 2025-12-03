@@ -1629,3 +1629,103 @@ export const ITEMS_REQUESTS = (handleOpen) => [
     ),
   },
 ];
+
+export const PPMP_APPROVER_HEADERS = () => [
+  {
+    id: "name",
+    label: "Item",
+    width: "300px",
+    render: (row) => (
+      <>
+        <Typography level="body-sm" fontWeight={600}>
+          {row?.item?.name}
+        </Typography>
+        <Typography sx={{ fontSize: 13, color: grey[600] }}>
+          Qty: {row?.quantity}
+        </Typography>
+      </>
+    ),
+  },
+  {
+    id: "category",
+    label: "Category",
+    width: "150px",
+    render: (row) => (
+      <>
+        <Typography level="body-sm" fontWeight={600}>
+          {row?.item?.item_category?.name}
+        </Typography>
+      </>
+    ),
+  },
+  {
+    id: "cost",
+    label: "Total Cost & Individual Cost",
+    width: "200px",
+
+    render: (row) => (
+      <>
+        <Typography level="body-sm" fontWeight={600}>
+          ₱{row?.total_amount?.toLocaleString()}
+        </Typography>
+        <Typography
+          sx={{ fontSize: 13, color: grey[600], textTransform: "lowercase" }}
+        >
+          ₱{" "}
+          {(row?.item?.estimated_budget).toLocaleString("en-PH", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}{" "}
+          per {row?.item?.item_unit?.name}
+        </Typography>
+      </>
+    ),
+  },
+  {
+    id: "procurement",
+    label: "Mode of Procurement",
+    align: "center",
+    width: "200px",
+
+    render: (row) => (
+      <Chip
+        sx={{
+          color: "#7008E7",
+          bgcolor: "#DDD6FF",
+          alignItems: "center",
+          maxWidth: 200, // limit width
+          "& .MuiChip-label": {
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+          },
+        }}
+        size="md"
+        variant="soft"
+      >
+        {row?.procurement_mode === null ? "-" : row?.procurement_mode.name}
+      </Chip>
+    ),
+  },
+  {
+    id: "actions",
+    label: "Actions",
+    align: "right",
+    width: "200px",
+    render: (row) => {
+      return (
+        <Stack direction={"row"} spacing={1} justifyContent={"right"}>
+          <ChipComponent
+            label={"6"}
+            startDecorator={<CommentOutlined />}
+            variant={"soft"}
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent row expand
+              // handleComments(row);
+              // Your comment click logic here
+            }}
+          />
+        </Stack>
+      );
+    },
+  },
+];

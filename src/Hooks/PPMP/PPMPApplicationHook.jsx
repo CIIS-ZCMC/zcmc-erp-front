@@ -25,12 +25,12 @@ const usePPMPApplicationHook = create((set) => ({
 
     getPPMPApplicationByID: (id, callback) => {
       read({
-        url: `${API.PPMP_APPLICATION}-view/${id}`,
+        url: `${API.PPMP_APPLICATION}/${id}`,
         success: (res) => {
           const { data, message } = res.data;
 
           set(() => ({
-            ppmpApplicationItems: data.items,
+            ppmpApplicationItems: data.data,
             ppmpApplication: data,
           }));
           callback(200, message);

@@ -18,6 +18,7 @@ import DrawerComponent from "../../../../Components/Common/DrawerComponent";
 import ButtonComponent from "../../../../Components/Common/ButtonComponent";
 import { useNavigate } from "react-router-dom";
 import { useAOPApplication } from "../../../../Hooks/AOP/AOPApplicationsHook";
+import { usePPMPApplicationActions } from "../../../../Hooks/PPMP/PPMPApplicationHook";
 
 export const ActivityDetails = () => {
   const navigate = useNavigate();
@@ -51,6 +52,7 @@ export const ActivityDetails = () => {
     textColor: "neutral.900",
     fontWeight: 400,
   };
+
   return (
     <Fragment>
       <ContainerComponent
@@ -62,8 +64,8 @@ export const ActivityDetails = () => {
         }
         isLoading={isLoading}
         scrollable
-        contentMaxHeight={!isPlanning ? "52vh" : "50vh"}
-        contentMinHeight={!isPlanning ? "52vh" : "50vh"}
+        contentMaxHeight={!isPlanning ? "55vh" : "50vh"}
+        contentMinHeight={!isPlanning ? "55vh" : "50vh"}
         footer={
           isPlanning && (
             <MarkReviewFooter
@@ -108,8 +110,8 @@ export const ActivityDetails = () => {
               <Grid container columns={2} spacing={1}>
                 {[q1, q2, q3, q4]?.map((element, index) => (
                   <Grid xs={1} key={index}>
-                    <BoxComponent>
-                      <Stack gap={1}>
+                    <BoxComponent p={1.5}>
+                      <Stack>
                         <Typography level={titleStyles.level}>
                           Q{index + 1}:
                         </Typography>
@@ -175,15 +177,39 @@ export const ActivityDetails = () => {
                 <Link
                   gap={0.5}
                   fontSize={13}
-                  onClick={() =>
-                    navigate(`/aop-approval/view-ppmp/${activity?.id}`)
-                  }
+                  onClick={setOpenResourcesModal}
+                  // onClick={() =>
+                  //   navigate(
+                  //     `/aop-approval/view-ppmp/${Application.ppmp_application_id}`
+                  //   )
+                  // }
                   fontWeight={600}
                 >
                   View resources <ExternalLink size={14} />
                 </Link>
               </Typography>
               <Divider />
+              <Typography
+                level={titleStyles.level}
+                display={"flex"}
+                justifyContent={"space-between"}
+                fontWeight={titleStyles.fontWeight}
+              >
+                PPMP{" "}
+                <Link
+                  gap={0.5}
+                  fontSize={13}
+                  // onClick={setOpenResourcesModal}
+                  onClick={() =>
+                    navigate(
+                      `/aop-approval/view-ppmp/${Application.ppmp_application_id}`
+                    )
+                  }
+                  fontWeight={600}
+                >
+                  View PPMP <ExternalLink size={14} />
+                </Link>
+              </Typography>
             </Stack>
           </Grid>
 

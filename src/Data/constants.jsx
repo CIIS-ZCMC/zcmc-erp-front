@@ -366,8 +366,10 @@ export const API = {
   ITEM_VARIANT: "variants",
   ITEM_TERMINOLOGY: "reference-terminologies",
   ITEMS_: "items",
+
   // PPMP
-  PPMP_APPLICATION: "ppmp-receiving-list",
+  // PPMP_APPLICATION: "ppmp-receiving-list",
+  PPMP_APPLICATION: "ppmp-items-approver",
 };
 
 export const expenseClassData = [

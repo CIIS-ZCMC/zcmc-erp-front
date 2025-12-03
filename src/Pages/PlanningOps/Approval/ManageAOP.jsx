@@ -111,7 +111,7 @@ export default function ManageAOP() {
             <Typography>
               Manage{" "}
               <Typography textColor={"warning.400"}>{AREA_CODE}'s</Typography>{" "}
-              AOP{" "}
+              Application{" "}
               {/* AOP <Typography textColor={"warning.400"}>#{id} </Typography> */}
               for Fiscal Year{" "}
               <Typography textColor={"warning.400"}>{FISCAL_YEAR}</Typography>
