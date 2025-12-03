@@ -96,7 +96,28 @@ export const ActivityDetails = () => {
               >
                 Target (by quarter)
               </Typography>
-              <Grid container columns={{ xs: 2, sm: 4 }} spacing={1}>
+              <Grid container columns={2} spacing={1}>
+                {[q1, q2, q3, q4]?.map((element, index) => (
+                  <Grid xs={1} key={index}>
+                    <BoxComponent>
+                      <Stack gap={1}>
+                        <Typography level={titleStyles.level}>
+                          Q{index + 1}:
+                        </Typography>
+
+                        <Typography
+                          level={valueStyles.level}
+                          textColor={valueStyles.textColor}
+                          fontWeight={valueStyles.fontWeight}
+                        >
+                          {element ?? "-"}
+                        </Typography>
+                      </Stack>
+                    </BoxComponent>
+                  </Grid>
+                ))}
+              </Grid>
+              {/* <Grid container columns={{ xs: 2, sm: 4 }} spacing={1}>
                 {[q1, q2, q3, q4]?.map((element, index) => (
                   <Grid xs={1} key={index}>
                     <BoxComponent>
@@ -116,7 +137,7 @@ export const ActivityDetails = () => {
                     </BoxComponent>
                   </Grid>
                 ))}
-              </Grid>
+              </Grid> */}
               <Divider />
               {/* TIMEFRAME */}
               <Typography
@@ -225,7 +246,7 @@ export const ActivityDetails = () => {
             data={resources}
           />
         }
-      // footer={<ButtonComponent label={"Close"} width={"auto"} />}
+        // footer={<ButtonComponent label={"Close"} width={"auto"} />}
       />
     </Fragment>
   );

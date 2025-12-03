@@ -17,10 +17,11 @@ const useTimelineHook = () => {
         failed: callBack,
         success: (res) => {
           const {
+            approval_trail,
+
             status,
-            data: { data, message },
-          } = res;
-          setTimelines(data);
+          } = res.data;
+          setTimelines(approval_trail);
           setIsLoading(false);
           callBack(status, message);
         },

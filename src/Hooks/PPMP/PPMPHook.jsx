@@ -84,8 +84,8 @@ const usePPMPHook = create((set) => ({
       url: `${PATH}-application-timelines/${id}`,
       failed: callBack,
       success: (res) => {
-        const { status, message, data } = res;
-        set({ timeline: data.data });
+        const { approval_trail, status } = res.data;
+        set({ timeline: approval_trail });
         callBack(status, message);
       },
     });

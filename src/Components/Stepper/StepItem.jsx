@@ -102,7 +102,7 @@ function StepItem({
         <Stack gap={1.5} ml={0.7}>
           <Typography fontWeight={400} level="body-xs">
             <Typography>
-              {status === "pending" ? "Updated " : "Approved"} by:{" "}
+              {status === "Pending" ? "Submitted " : "Approved"} by:{" "}
             </Typography>
 
             <Typography textColor={"neutral.900"}> {name}</Typography>
@@ -166,11 +166,9 @@ function StepItem({
         handleClose={() => setViewCommentModal(false)}
         leftButtonAction={() => setViewCommentModal(false)}
         content={
-          <Stack gap={4}>
+          <Stack spacing={1}>
             <Typography level="body-sm">Remarks:</Typography>
-            <Typography mt={1} fontSize={15}>
-              {remarks}
-            </Typography>
+            <Typography fontSize={15}>{remarks}</Typography>
           </Stack>
         }
       />

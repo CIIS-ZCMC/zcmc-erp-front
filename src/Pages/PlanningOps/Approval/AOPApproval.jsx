@@ -43,6 +43,16 @@ import useAOPHook from "../../../Hooks/AOP/AOPHook";
 
 const AOPApproval = () => {
   const navigate = useNavigate();
+
+  // HOOKS
+  const { getAOPApplications, getAOPApplicationById } =
+    useAOPApplicationsActions();
+  const AOPApplications = useAOPApplications();
+  const { getAOPApprovalTimeline } = useApprovalActions();
+  const approvalTimeline = useApprovalTimeline();
+  const isLoading = useApprovalLoading();
+
+  //ADDED HOOKS
   const { getAopYearList } = useAOPHook();
   const { getApproverTimeline, getTimelines } = useTimelineHook();
   const { timelines, approverTimelines } = useTimelinesStore();
@@ -50,21 +60,6 @@ const AOPApproval = () => {
   const { timelines: applicationTimelines, filters } = timelines;
   const { status_id, year: currentFiscalYear } = filters || {};
   const { next_year_included, years } = yearDetails || {};
-  const [isLoading, setIsLoading] = useState(false);
-
-  // HOOKS
-  const { getAOPApplications, getAOPApplicationById } =
-    useAOPApplicationsActions();
-  const AOPApplications = useAOPApplications();
-  const { getAOPApprovalTimeline } = useApprovalActions();
-
-  const approvalTimeline = useApprovalTimeline();
-
-  // const isLoading = useApprovalLoading();
-
-  useEffect(() => {
-    console.log(approverTimelines);
-  }, [approverTimelines]);
 
   // STATES
   const [openTimelineModal, setOpenTimelineModal] = useState(false);
@@ -73,7 +68,6 @@ const AOPApproval = () => {
   const [search, setSearch] = useState(null);
   const [pageLoading, setPageLoading] = useState("");
   const [isFetchLoading, setIsFetchLoading] = useState(false);
-  const [timeline, setTimeline] = useState([]);
 
   // FUNCTIONS
   const handleClickCard = (id, area_code) => {
@@ -100,22 +94,11 @@ const AOPApproval = () => {
   // console.log(yearsData)
 
   useEffect(() => {
-    console.log(applicationTimelines);
-    // console.log('year', currentFiscalYear);
-    // console.log('status id ', status_id);
-    // console.log('year details', yearDetails);
-  }, [yearDetails, applicationTimelines]);
-
-  useEffect(() => {
-    setIsLoading(true);
     getAopYearList((status, message) => {
       if (!(status >= 200 && status < 300)) {
         // if status not success
-        setIsLoading(false);
         return; //Toast error
       }
-
-      setIsLoading(false);
     });
   }, []);
 

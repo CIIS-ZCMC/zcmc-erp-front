@@ -1,17 +1,16 @@
-import { useParams, useLocation, useNavigate } from "react-router-dom";
+// useAOPBreadcrumbs.js
+import { useLocation } from "react-router-dom";
 import useAOPId from "./AOPIDHook";
 
 export default function useAOPBreadcrumbs() {
   const { aopId, objectiveId, activityId } = useAOPId();
 
   const location = useLocation();
-  const stateAopId = location.state?.aopId;
-  const stateObjectiveId = location.state?.objectiveId;
-  const navigate = useNavigate();
   const path = location.pathname;
 
   const crumbs = [];
 
+  // OBJECTIVES
   if (path.includes("/objectives/")) {
     crumbs.push({
       label: "Objectives",
@@ -24,7 +23,7 @@ export default function useAOPBreadcrumbs() {
     crumbs.push(
       {
         label: "Objectives",
-        path: () => navigate(`/aop/objectives/${aopId ?? stateAopId ?? ""}`),
+        to: `/aop/objectives/${aopId}`,
       },
       {
         label: "Activities",
@@ -38,12 +37,11 @@ export default function useAOPBreadcrumbs() {
     crumbs.push(
       {
         label: "Objectives",
-        path: () => navigate(`/aop/objectives/${aopId ?? stateAopId ?? ""}`),
+        to: `/aop/objectives/${aopId}`,
       },
       {
         label: "Activities",
-        path: () =>
-          navigate(`/aop/activities/${objectiveId ?? stateObjectiveId ?? ""}`),
+        to: `/aop/activities/${objectiveId}`,
       },
       {
         label: "Responsible Person",
@@ -52,21 +50,20 @@ export default function useAOPBreadcrumbs() {
     );
   }
 
-  // SELECT RESOURCES (must come before manage-resources)
+  // SELECT RESOURCES
   else if (path.includes("/select-resources/")) {
     crumbs.push(
       {
         label: "Objectives",
-        path: () => navigate(`/aop/objectives/${aopId ?? stateAopId ?? ""}`),
+        to: `/aop/objectives/${aopId}`,
       },
       {
         label: "Activities",
-        path: () =>
-          navigate(`/aop/activities/${objectiveId ?? stateObjectiveId ?? ""}`),
+        to: `/aop/activities/${objectiveId}`,
       },
       {
         label: "Manage Resources",
-        path: () => navigate(`/aop/manage-resources/${activityId ?? ""}`),
+        to: `/aop/manage-resources/${activityId}`,
       },
       {
         label: "Select Resources",
@@ -80,12 +77,11 @@ export default function useAOPBreadcrumbs() {
     crumbs.push(
       {
         label: "Objectives",
-        path: () => navigate(`/aop/objectives/${aopId ?? stateAopId ?? ""}`),
+        to: `/aop/objectives/${aopId}`,
       },
       {
         label: "Activities",
-        path: () =>
-          navigate(`/aop/activities/${objectiveId ?? stateObjectiveId ?? ""}`),
+        to: `/aop/activities/${objectiveId}`,
       },
       {
         label: "Manage Resources",

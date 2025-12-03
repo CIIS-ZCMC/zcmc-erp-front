@@ -7,13 +7,6 @@ import useAOPId from "../../../../../Hooks/AOP/AOPIDHook";
 
 const CardActions = ({ activityId, resourcesCount, responsibleCount }) => {
   const navigate = useNavigate();
-  const { setActivityId } = useAOPId();
-
-  useEffect(() => {
-    if (activityId) {
-      setActivityId(activityId);
-    }
-  }, [activityId]);
 
   return (
     <>
@@ -44,7 +37,7 @@ const CardActions = ({ activityId, resourcesCount, responsibleCount }) => {
           endDecorator={<ArrowRight size={18} />}
           onClick={() =>
             navigate(`/aop/manage-resources/${activityId}`, {
-              state: { activityId: activityId },
+              state: { activityId: activityId }, // do not change state name
             })
           }
         >

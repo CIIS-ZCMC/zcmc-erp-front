@@ -352,8 +352,8 @@ export const API = {
   REQUEST_ITEM: "item-requests",
 
   // TIMELINE
-  APPROVAL_TIMELINE: "user-application-timelines",
-  APPROVER_TIMELINE: 'ppmp-application-timelines-approver',
+  APPROVAL_TIMELINE: "approval-trail",
+  APPROVER_TIMELINE: "ppmp-application-timelines-approver",
 
   // OBJECTIVES
   EDIT_OBJECTIVE: "edit-objective-and-success-indicator",

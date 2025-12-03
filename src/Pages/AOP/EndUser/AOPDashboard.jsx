@@ -138,7 +138,7 @@ function DashboardEndUser(props) {
 
   const handleNavigateObjectives = () => {
     navigate(`/aop/objectives/${aop.id}`, {
-      state: { aopId: aop.id },
+      state: { aopId: aop.id }, // do not change state name
     });
   };
 

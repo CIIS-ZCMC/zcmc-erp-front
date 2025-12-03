@@ -1,17 +1,24 @@
-import { create } from "zustand";
+// Hooks/useAOPId.js
+import { useEffect } from "react";
+import { useParams } from "react-router-dom";
+import useAOPIdStore from "./AOPIdStore";
 
-const useAOPId = create((set) => ({
-  aopId: null,
-  objectiveId: null,
-  activityId: null,
+export default function useAOPId() {
+  const { aopId, objectiveId, activityId } = useParams();
+  const { setAopId, setObjectiveId, setActivityId } = useAOPIdStore();
 
-  // setters
-  setAopId: (id) => set({ aopId: id }),
-  setObjectiveId: (id) => set({ objectiveId: id }),
-  setActivityId: (id) => set({ activityId: id }),
+  useEffect(() => {
+    if (aopId) setAopId(aopId);
+    if (objectiveId) setObjectiveId(objectiveId);
+    if (activityId) setActivityId(activityId);
+  }, [aopId, objectiveId, activityId]);
 
-  // clear all when user exits AOP
-  clearAOP: () => set({ aopId: null, objectiveId: null, activityId: null }),
-}));
-
-export default useAOPId;
+  // return store + params for convenience
+  const store = useAOPIdStore();
+  return {
+    ...store,
+    aopId: store.aopId,
+    objectiveId: store.objectiveId,
+    activityId: store.activityId,
+  };
+}

@@ -51,8 +51,8 @@ function PageTitle({ title, description, items = [] }) {
             ) : (
               <Link
                 key={index}
-                component="button"
-                onClick={item.path}
+                component={RouterLink}
+                to={item.to}
                 color="neutral"
                 underline="hover"
                 level="body-sm"

@@ -58,6 +58,7 @@ const useAOPApplicationsHook = create((set) => ({
             data: { objectives, application },
             message,
           } = response.data;
+          console.log(objectives);
 
           set({
             aopApplicationObjectives: objectives,
