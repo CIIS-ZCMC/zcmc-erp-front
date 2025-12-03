@@ -63,7 +63,7 @@ export const ActivityContainerComponent = ({
         </Stack>
 
         <Typography
-          level="body-xs"
+          level="body-sm"
           sx={{
             fontWeight: 400,
             color: "neutral.500",

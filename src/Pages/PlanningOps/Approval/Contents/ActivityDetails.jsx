@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import {
   useActivity,
   useActivityLoadingState,
@@ -16,9 +16,18 @@ import { useUserTypes } from "../../../../Store/AuthStore";
 import { AOP_RESOURCES } from "../../../../Data/TestData";
 import DrawerComponent from "../../../../Components/Common/DrawerComponent";
 import ButtonComponent from "../../../../Components/Common/ButtonComponent";
+import { useNavigate } from "react-router-dom";
+import { useAOPApplication } from "../../../../Hooks/AOP/AOPApplicationsHook";
 
 export const ActivityDetails = () => {
+  const navigate = useNavigate();
   const { isPlanning } = useUserTypes();
+
+  const AOPApplication = useAOPApplication();
+  const Application = useMemo(
+    () => AOPApplication ?? localStorageGetter("aopApplication"),
+    [AOPApplication]
+  );
 
   const [openResourcesModal, setOpenResourcesModal] = useState(false);
   const [openMarkModal, setOpenMarkModal] = useState(false);
@@ -36,7 +45,7 @@ export const ActivityDetails = () => {
   } = activity || {};
 
   // STYLES
-  const titleStyles = { level: "body-xs", fontWeight: 400 };
+  const titleStyles = { level: "body-sm", fontWeight: 400 };
   const valueStyles = {
     level: "body-sm",
     textColor: "neutral.900",
@@ -165,8 +174,10 @@ export const ActivityDetails = () => {
                 Resources for this activity
                 <Link
                   gap={0.5}
-                  fontSize={12}
-                  onClick={setOpenResourcesModal}
+                  fontSize={13}
+                  onClick={() =>
+                    navigate(`/aop-approval/view-ppmp/${activity?.id}`)
+                  }
                   fontWeight={600}
                 >
                   View resources <ExternalLink size={14} />

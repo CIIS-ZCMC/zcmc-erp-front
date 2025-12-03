@@ -56,9 +56,9 @@ const ProcessAOPContent = () => {
     processData?.remarks === null;
 
   const getNextOffice = () => {
-    if (isPlanning) {
+    if (isDivisionHead) {
       return "Division Head";
-    } else if (isDivisionHead) {
+    } else if (isPlanning) {
       return "MCC";
     }
   };
@@ -141,7 +141,7 @@ const ProcessAOPContent = () => {
         content={
           <Stack gap={isDivisionHead && !isMCC && 1}>
             <Stack py={isPlanning ? 2 : 1}>
-              {isPlanning && (
+              {(isPlanning || isDivisionHead) && (
                 <Box mb={2}>
                   <Typography level="title-sm" mb={1}>
                     Select the action you would like to take:
