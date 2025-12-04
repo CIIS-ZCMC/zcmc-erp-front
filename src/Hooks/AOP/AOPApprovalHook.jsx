@@ -7,7 +7,6 @@ const useAOPApprovalHook = create((set) => ({
   approvalRoles: [],
   isLoading: false,
   actions: {
-
     // GET ALL AOP APPLICATIONS
     // processAOP: (form, callback) => {
     //   post({
@@ -24,15 +23,14 @@ const useAOPApprovalHook = create((set) => ({
     //   });
     // },
 
-    // 
+    //
     processPPMP: (payload, callback) => {
       post({
         url: `${API.APPROVAL_PPMP}`,
         form: payload,
         failed: callback,
         success: (response) => {
-
-          console.log(response)
+          console.log(response);
 
           const {
             data: { status_details, timeline, message },
@@ -46,30 +44,24 @@ const useAOPApprovalHook = create((set) => ({
     getAOPApprovalTimeline: (AOP_ID, callback) => {
       set(() => ({ isLoading: true }));
       read({
-        url: `${API.APPROVAL_TIMELINE}/${AOP_ID.aop_application_id}`,
+        url: `approval-trail/${AOP_ID}`,
         success: (response) => {
-
           const {
-            // data: {
-            //   id,
-            //   timelines,
-            //   data,
-            //   approval_roles
-            // },
-            data,
+            approval_trail,
+
             status,
           } = response.data;
 
-          set(() => (
-            console.log(data),
-            {
-              isLoading: false,
-              approvalTimeline: data,
-              // approvalTimeline: timelines,
-              approvalRoles: approval_roles,
-            }));
+          set(() => ({
+            isLoading: false,
+            approvalTimeline: approval_trail,
+            // approvalRoles: approval_roles,
+          }));
 
-          callback(status, `Success fetching approval timeline for AOP ${id}`);
+          callback(
+            status,
+            `Success fetching approval timeline for AOP ${AOP_ID}`
+          );
         },
         failed: (response) => {
           callback(response);

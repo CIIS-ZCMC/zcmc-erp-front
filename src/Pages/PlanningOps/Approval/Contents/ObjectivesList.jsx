@@ -18,15 +18,7 @@ import { useCommentActions } from "../../../../Hooks/CommentHook";
 import EditObjective from "./EditObjective";
 import { useUserTypes } from "../../../../Store/AuthStore";
 
-import useObjectivesStore from "../../../../Store/ObjectivesStore";
-
-const ObjectivesList = ({ objectives }) => {
-
-  // useEffect(() => {
-  //   console.log('objectives:', objectives)
-  // }, [objectives])
-
-
+const ObjectivesList = () => {
   // STATES
   const [objectiveData, setObjectiveData] = useState({
     success_indicator: "",
@@ -59,8 +51,8 @@ const ObjectivesList = ({ objectives }) => {
     if (id !== activeActivity) {
       setActiveActivity(id);
       Promise.all([
-        getCommentsByActivity(id, () => { }),
-        getActivityById(id, () => { }),
+        getCommentsByActivity(id, () => {}),
+        getActivityById(id, () => {}),
       ]).catch((error) => {
         console.error("Error fetching data:", error);
       });
@@ -68,8 +60,6 @@ const ObjectivesList = ({ objectives }) => {
   };
 
   const handeEditObjective = (id) => {
-    console.log(id)
-
     const { other_success_indicator, other_objective, function_description } =
       getObjectiveDetails(id);
 
@@ -106,87 +96,7 @@ const ObjectivesList = ({ objectives }) => {
   return (
     <Fragment>
       <Stack width={400} gap={2} sx={{ width: "100%" }}>
-
-        {objectives?.map(({
-          id,
-          objective,
-          activities,
-          other_objective,
-          success_indicator,
-          other_success_indicator,
-          is_editable,
-        },
-          objective_key
-        ) => {
-
-          return <>
-            <CustomAccordionComponent
-              key={objective_key}
-              id={objective_key + 1}
-              expanded={expandedParent}
-              title={
-                <Typography>
-                  Objective #{objective_key + 1} -
-                  <Typography textColor={"primary.700"} fontWeight={600}>
-                    {/* {toCapitalize(objective.description)} */}
-                  </Typography>
-                </Typography>
-              }
-              withEdit={is_editable}
-              name="parent"
-              onClickEdit={() => handeEditObjective(id)}
-            >
-              <Stack gap={3} px={0.5}>
-
-                <EllipsisComponent
-                  label={"Objective:"}
-                  // text={!is_editable ? other_objective : objective?.description}
-                  text={other_objective !== null ? other_objective : objective?.description}
-                />
-
-                <EllipsisComponent
-                  label={"Success indicators:"}
-                  // text={
-                  //   !is_editable ? other_success_indicator : success_indicator?.description
-                  // }
-                  text={
-                    other_success_indicator !== null ? other_success_indicator.description : success_indicator?.description
-                  }
-                />
-
-                <CustomAccordionComponent
-                  size={"sm"}
-                  expanded={expandedChild}
-                  title={`Activities (${activities?.length})`}
-                  id={objective_key + 1}
-                  name="child"
-                  withActivity={activities?.length > 0}
-                >
-                  <Stack gap={1}>
-                    {activities?.map(
-                      (
-                        { id, name, with_comments, is_reviewed },
-                        activity_key
-                      ) => (
-                        <ActivityContainerComponent
-                          key={activity_key}
-                          onClick={() => handleClickActivity(id)}
-                          active={id === activeActivity}
-                          label={`Activity #${activity_key + 1} `}
-                          text={name}
-                          withComment={with_comments}
-                          reviewed={isPlanning ? is_reviewed : false}
-                        />
-                      )
-                    )}
-                  </Stack>
-                </CustomAccordionComponent>
-              </Stack>
-            </CustomAccordionComponent>
-          </>
-        })}
-
-        {/* {applicationObjectives?.map(
+        {AppicationObjectives?.map(
           (
             {
               id,
@@ -258,7 +168,7 @@ const ObjectivesList = ({ objectives }) => {
               </Stack>
             </CustomAccordionComponent>
           )
-        )} */}
+        )}
 
         {/* EDIT OBJECTIVE */}
         <EditObjective

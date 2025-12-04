@@ -476,7 +476,7 @@ function ExpandableRow({
                               />
                             }
                           >
-                            Linked Activities ({row.activities.length})
+                            Linked Activities ({linkedActivities?.length})
                           </Typography>
                           <Stack
                             mt={2}

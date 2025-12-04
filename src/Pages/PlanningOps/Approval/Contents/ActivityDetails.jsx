@@ -1,4 +1,4 @@
-import { Fragment, useState } from "react";
+import { Fragment, useMemo, useState } from "react";
 import {
   useActivity,
   useActivityLoadingState,
@@ -16,9 +16,19 @@ import { useUserTypes } from "../../../../Store/AuthStore";
 import { AOP_RESOURCES } from "../../../../Data/TestData";
 import DrawerComponent from "../../../../Components/Common/DrawerComponent";
 import ButtonComponent from "../../../../Components/Common/ButtonComponent";
+import { useNavigate } from "react-router-dom";
+import { useAOPApplication } from "../../../../Hooks/AOP/AOPApplicationsHook";
+import { usePPMPApplicationActions } from "../../../../Hooks/PPMP/PPMPApplicationHook";
 
 export const ActivityDetails = () => {
+  const navigate = useNavigate();
   const { isPlanning } = useUserTypes();
+
+  const AOPApplication = useAOPApplication();
+  const Application = useMemo(
+    () => AOPApplication ?? localStorageGetter("aopApplication"),
+    [AOPApplication]
+  );
 
   const [openResourcesModal, setOpenResourcesModal] = useState(false);
   const [openMarkModal, setOpenMarkModal] = useState(false);
@@ -36,12 +46,13 @@ export const ActivityDetails = () => {
   } = activity || {};
 
   // STYLES
-  const titleStyles = { level: "body-xs", fontWeight: 400 };
+  const titleStyles = { level: "body-sm", fontWeight: 400 };
   const valueStyles = {
     level: "body-sm",
     textColor: "neutral.900",
     fontWeight: 400,
   };
+
   return (
     <Fragment>
       <ContainerComponent
@@ -53,8 +64,8 @@ export const ActivityDetails = () => {
         }
         isLoading={isLoading}
         scrollable
-        contentMaxHeight={!isPlanning ? "52vh" : "50vh"}
-        contentMinHeight={!isPlanning ? "52vh" : "50vh"}
+        contentMaxHeight={!isPlanning ? "55vh" : "50vh"}
+        contentMinHeight={!isPlanning ? "55vh" : "50vh"}
         footer={
           isPlanning && (
             <MarkReviewFooter
@@ -96,7 +107,28 @@ export const ActivityDetails = () => {
               >
                 Target (by quarter)
               </Typography>
-              <Grid container columns={{ xs: 2, sm: 4 }} spacing={1}>
+              <Grid container columns={2} spacing={1}>
+                {[q1, q2, q3, q4]?.map((element, index) => (
+                  <Grid xs={1} key={index}>
+                    <BoxComponent p={1.5}>
+                      <Stack>
+                        <Typography level={titleStyles.level}>
+                          Q{index + 1}:
+                        </Typography>
+
+                        <Typography
+                          level={valueStyles.level}
+                          textColor={valueStyles.textColor}
+                          fontWeight={valueStyles.fontWeight}
+                        >
+                          {element ?? "-"}
+                        </Typography>
+                      </Stack>
+                    </BoxComponent>
+                  </Grid>
+                ))}
+              </Grid>
+              {/* <Grid container columns={{ xs: 2, sm: 4 }} spacing={1}>
                 {[q1, q2, q3, q4]?.map((element, index) => (
                   <Grid xs={1} key={index}>
                     <BoxComponent>
@@ -116,7 +148,7 @@ export const ActivityDetails = () => {
                     </BoxComponent>
                   </Grid>
                 ))}
-              </Grid>
+              </Grid> */}
               <Divider />
               {/* TIMEFRAME */}
               <Typography
@@ -144,14 +176,40 @@ export const ActivityDetails = () => {
                 Resources for this activity
                 <Link
                   gap={0.5}
-                  fontSize={12}
+                  fontSize={13}
                   onClick={setOpenResourcesModal}
+                  // onClick={() =>
+                  //   navigate(
+                  //     `/aop-approval/view-ppmp/${Application.ppmp_application_id}`
+                  //   )
+                  // }
                   fontWeight={600}
                 >
                   View resources <ExternalLink size={14} />
                 </Link>
               </Typography>
               <Divider />
+              <Typography
+                level={titleStyles.level}
+                display={"flex"}
+                justifyContent={"space-between"}
+                fontWeight={titleStyles.fontWeight}
+              >
+                PPMP{" "}
+                <Link
+                  gap={0.5}
+                  fontSize={13}
+                  // onClick={setOpenResourcesModal}
+                  onClick={() =>
+                    navigate(
+                      `/aop-approval/view-ppmp/${Application.ppmp_application_id}`
+                    )
+                  }
+                  fontWeight={600}
+                >
+                  View PPMP <ExternalLink size={14} />
+                </Link>
+              </Typography>
             </Stack>
           </Grid>
 
@@ -225,7 +283,7 @@ export const ActivityDetails = () => {
             data={resources}
           />
         }
-      // footer={<ButtonComponent label={"Close"} width={"auto"} />}
+        // footer={<ButtonComponent label={"Close"} width={"auto"} />}
       />
     </Fragment>
   );

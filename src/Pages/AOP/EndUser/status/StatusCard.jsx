@@ -1,68 +1,57 @@
-import React from 'react'
+import React from "react";
 
-import { Stack, Typography, Divider } from '@mui/joy'
+import { Stack, Typography, Divider, Card, CardContent } from "@mui/joy";
 
-import BoxComponent from '@Components/Common/Card/BoxComponent'
+import BoxComponent from "@Components/Common/Card/BoxComponent";
 
 const StatusCard = ({
-    height,
-    hasFunction,
-    logo,
-    count,
-    title,
-    description,
-    functionHandler,
+  height,
+  hasFunction,
+  logo,
+  count,
+  title,
+  description,
+  functionHandler,
 }) => {
-    return (
-        <>
-            <BoxComponent
-                height={height}
+  return (
+    <>
+      <Card
+        variant="soft"
+        sx={{
+          border: "1px solid #F0F0F0",
+          borderRadius: 20,
+          bgcolor: "white",
+          pt: 3,
+        }}
+      >
+        <CardContent>
+          <Stack px={2} py={1} spacing={hasFunction ? 1 : 2}>
+            <img src={logo} alt="" width={60} />
+
+            <Typography
+              level="title-sm"
+              color="primary"
+              textTransform="uppercase"
             >
-                <Stack
-                    px={3}
-                    py={2}
-                    spacing={hasFunction ? 1 : 2}
-                >
-                    <img src={logo} alt="" width={60} />
+              {title}
+            </Typography>
 
-                    <Typography
-                        level="title-sm"
-                        color='primary'
-                        textTransform='uppercase'
-                    >
-                        {title}
-                    </Typography>
+            <Typography level="h3">{count}</Typography>
 
-                    <Typography
-                        level="title-lg"
-                        sx={{
-                            fontSize: '40px'
-                        }}
-                    >
-                        {count}
-                    </Typography>
+            <Typography level="body-sm">{description}</Typography>
 
-                    <Typography level="body-sm">
-                        {description}
-                    </Typography>
+            {hasFunction && (
+              <>
+                <Divider />
 
-                    {
-                        hasFunction &&
-                        <>
-                            <Divider />
+                {functionHandler}
+              </>
+            )}
+          </Stack>
+        </CardContent>
+      </Card>
+    </>
+  );
+};
 
-                            {functionHandler}
-                        </>
-                    }
-
-                </Stack>
-
-
-            </BoxComponent>
-
-
-        </>
-    )
-}
-
-export default StatusCard
+export default StatusCard;

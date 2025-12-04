@@ -1406,11 +1406,21 @@ export const PPMP_HEADERS = (status, editingRows, handleComments) => [
   },
   {
     id: "category",
-    label: "Category",
+    label: "Classification & Category",
     width: "150px",
     render: (row) => (
       <>
         <Typography level="body-sm" fontWeight={600}>
+          {row?.item?.item_classification?.name}
+        </Typography>
+        <Typography
+          level={row?.item?.item_category?.name && "body-sm"}
+          sx={{
+            fontSize: row?.item?.item_classification?.name && 13,
+            color: row?.item?.item_classification?.name && grey[600],
+          }}
+          fontWeight={600}
+        >
           {row?.item?.item_category?.name}
         </Typography>
       </>
@@ -1695,5 +1705,119 @@ export const ITEMS_REQUESTS = (handleOpen, pathName) => [
         }
       </>
     ),
+  },
+];
+
+export const PPMP_APPROVER_HEADERS = (handleComments) => [
+  {
+    id: "name",
+    label: "Item",
+    align: "left",
+    width: "250px",
+    render: (row) => (
+      <>
+        <Typography level="body-sm" fontWeight={600}>
+          {row?.item?.name}
+        </Typography>
+        <Typography sx={{ fontSize: 13, color: grey[600] }}>
+          Qty: {row?.quantity}
+        </Typography>
+      </>
+    ),
+    expandTrigger: true,
+  },
+  {
+    id: "category",
+    label: "Classification & Category",
+    width: "200px",
+    render: (row) => (
+      <>
+        <Typography level="body-sm" fontWeight={600}>
+          {row?.item?.item_classification?.name}
+        </Typography>
+        <Typography
+          level={row?.item?.item_category?.name && "body-sm"}
+          sx={{
+            fontSize: row?.item?.item_classification?.name && 13,
+            color: row?.item?.item_classification?.name && grey[600],
+          }}
+          fontWeight={600}
+        >
+          {row?.item?.item_category?.name}
+        </Typography>
+      </>
+    ),
+    expandTrigger: true,
+  },
+  {
+    id: "cost",
+    label: "Total Cost & Individual Cost",
+    width: "200px",
+
+    render: (row) => (
+      <>
+        <Typography level="body-sm" fontWeight={600}>
+          ₱{row?.total_amount?.toLocaleString()}
+        </Typography>
+        <Typography
+          sx={{ fontSize: 13, color: grey[600], textTransform: "lowercase" }}
+        >
+          ₱{" "}
+          {(row?.item?.estimated_budget).toLocaleString("en-PH", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}{" "}
+          per {row?.item?.item_unit?.name}
+        </Typography>
+      </>
+    ),
+    expandTrigger: true,
+  },
+  {
+    id: "procurement",
+    label: "Mode of Procurement",
+    align: "center",
+    width: "250px",
+    render: (row) => (
+      <Chip
+        sx={{
+          color: "#7008E7",
+          bgcolor: "#DDD6FF",
+          alignItems: "center",
+          maxWidth: 200, // limit width
+          "& .MuiChip-label": {
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+          },
+        }}
+        size="md"
+        variant="soft"
+      >
+        {row?.procurement_mode === null ? "-" : row?.procurement_mode.name}
+      </Chip>
+    ),
+    expandTrigger: true,
+  },
+  {
+    id: "actions",
+    label: "Actions",
+    align: "center",
+    width: "100px",
+    render: (row) => {
+      return (
+        <Stack direction={"row"} spacing={1} justifyContent={"center"}>
+          <ChipComponent
+            label={`${row?.comments_count}`}
+            startDecorator={<CommentOutlined />}
+            variant={"soft"}
+            onClick={(e) => {
+              e.stopPropagation(); // Prevent row expand
+              handleComments(row);
+              // Your comment click logic here
+            }}
+          />
+        </Stack>
+      );
+    },
   },
 ];

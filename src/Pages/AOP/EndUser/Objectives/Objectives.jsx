@@ -35,7 +35,6 @@ import {
 import useObjectivesHook from "../../../../Hooks/ObjectivesHook";
 import PageTitle from "@Components/Common/PageTitle";
 import useAOPBreadcrumbs from "../../../../Hooks/AOP/AOPBreadcrumbs";
-import useAOPId from "../../../../Hooks/AOP/AOPIDHook";
 
 const Objectives = () => {
   const location = useLocation();
@@ -105,8 +104,6 @@ const Objectives = () => {
     MANAGE_OBJECTIVES_HEADER,
     MANAGE_OBJECTIVES_SUBHEADER,
   } = OBJECTIVES;
-
-  const { setAopId, setObjectiveId, setActivityId } = useAOPId();
 
   const currentYear = new Date().getFullYear();
   const currentFiscalYear = currentYear + 1;
@@ -404,10 +401,9 @@ const Objectives = () => {
                       <CardActions
                         count={activities_count}
                         handleActivities={() => {
-                          setObjectiveId(id);
                           navigate(`/aop/activities/${id}`, {
                             state: {
-                              objectiveId: id,
+                              objectiveId: id, // do not change state name
                               aopId: aop_application_id,
                               objective: objective.description,
                             },

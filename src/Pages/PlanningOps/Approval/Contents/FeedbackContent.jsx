@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect, useMemo, useState } from "react";
+import React, { Fragment, useMemo, useState } from "react";
 import { useAllComments, useRemarks } from "../../../../Hooks/CommentHook";
 import { groupByDate } from "../../../../Utils/GroupData";
 import { feedbackTabOptions } from "../../../../Data/Options";
@@ -18,22 +18,28 @@ export const FeedbackContent = ({
   openFeedbackModal,
   setOpenFeedbackModal,
   isLoading,
-  comments,
-  remarks,
-  role,
 }) => {
-
   const [activeTab, setActiveTab] = useState(0);
-  const userDiviChief = role === 'Division Chief'
+  const { isDivisionHead } = useUserTypes();
 
-  // const feedbackCount = Array.isArray(allComments) ? allComments?.length : 0;
-  const commentCount = comments?.length || 0;
+  // COMMENTS HOOK
+  const remarks = useRemarks();
+  const allComments = localStorageGetter("all_comments");
 
-  useEffect(() => {
-    // console.log('comments', comments)
-    // console.log('remarks', remarks)
-    // console.log('activeTab', activeTab)
-  }, [comments, remarks])
+  // DATA
+  const feedbackDisplay = useMemo(() => {
+    let dataToDisplay;
+
+    if (isDivisionHead) {
+      dataToDisplay = remarks;
+    } else {
+      dataToDisplay = activeTab === 0 ? allComments : remarks;
+    }
+
+    return groupByDate(dataToDisplay ?? []);
+  }, [activeTab, allComments, isDivisionHead, remarks]);
+
+  const feedbackCount = Array.isArray(allComments) ? allComments?.length : 0;
 
   return (
     <DrawerComponent
@@ -45,7 +51,7 @@ export const FeedbackContent = ({
       }
       content={
         <Stack gap={2} mt={2}>
-          {/* {!isLoading && (
+          {isLoading ? (
             <Box
               display="flex"
               alignItems={"center"}
@@ -62,78 +68,81 @@ export const FeedbackContent = ({
                 wrapperClass=""
               />
             </Box>
-          )} */}
-
-          <>
-
-            {!userDiviChief && (
-              <>
-                <CustomTabComponent
-                  tabOptions={feedbackTabOptions}
-                  onChange={setActiveTab}
-                />
-                <Divider />
-              </>
-            )}
-
-            <Stack gap={1.8} maxHeight={"60vh"} overflow={"auto"} pr={1}>
-
-              {commentCount === 0 && (
-                <Box
-                  sx={{
-                    height: "73vh",
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                  }}
-                >
-                  <NoResultComponent />{" "}
-                </Box>
+          ) : (
+            <>
+              {!isDivisionHead && (
+                <>
+                  <CustomTabComponent
+                    tabOptions={feedbackTabOptions}
+                    onChange={setActiveTab}
+                  />
+                  <Divider />
+                </>
               )}
+              <Stack gap={1.8} maxHeight={"60vh"} overflow={"auto"} pr={1}>
+                {feedbackCount === 0 && (
+                  <Box
+                    sx={{
+                      height: "73vh",
+                      display: "flex",
+                      alignItems: "center",
+                      justifyContent: "center",
+                    }}
+                  >
+                    <NoResultComponent />{" "}
+                  </Box>
+                )}
+                {Object.entries(feedbackDisplay).map(
+                  ([date, messages], key) => (
+                    <Fragment key={`${date}-${key}`}>
+                      {date !== moment().format("dddd, MMMM D") && (
+                        <Divider sx={{ fontSize: "xs", mt: 0.5 }}>
+                          {date}
+                        </Divider>
+                      )}
 
-              {activeTab === 0 &&
-                comments?.map(({ comment_id, comment, created_at, user, activity_id }) => {
-                  const { name } = user
-                  return <>
-
-                    <CommentContainerComponent
-                      key={comment_id}
-                      name={name}
-                      comment={comment}
-                      // area_code={area_code}
-                      date={created_at}
-                      isActivity
-                      handleClick={() => navigate(`aop/activities/${activity_id}`)}
-                    />
-
-                  </>
-                })
-              }
-
-              {
-                activeTab !== 0 &&
-                remarks?.map(({ id, approver_user, remarks, created_at }) => {
-
-                  const { name, role } = approver_user || {};
-
-                  return <>
-                    <CommentContainerComponent
-                      key={id}
-                      name={name}
-                      comment={remarks}
-                      area_code={role}
-                      date={created_at}
-                    />
-                  </>
-                })
-
-              }
-
-            </Stack>
-          </>
-
-
-        </Stack >
+                      {/* COMMENTS */}
+                      {activeTab === 0
+                        ? messages?.map(
+                          ({ name, area_code, created_at, comment }, key) => (
+                            <CommentContainerComponent
+                              key={key}
+                              name={name}
+                              comment={comment}
+                              area_code={area_code}
+                              date={created_at}
+                              isActivity
+                            // handleClick={}
+                            />
+                          )
+                        )
+                        : messages?.map(
+                          (
+                            {
+                              division_chief_name,
+                              division_chief_area_code,
+                              created_at,
+                              remarks,
+                            },
+                            key
+                          ) => (
+                            <CommentContainerComponent
+                              key={key}
+                              name={division_chief_name}
+                              comment={remarks}
+                              area_code={division_chief_area_code}
+                              date={created_at}
+                            />
+                          )
+                        )}
+                      {/* REMARKS */}
+                    </Fragment>
+                  )
+                )}
+              </Stack>
+            </>
+          )}
+        </Stack>
       }
     />
   );

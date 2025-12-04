@@ -1,83 +1,109 @@
 import { Fragment, useEffect, useState } from "react";
-import { Box, Grid, Stack, Typography } from "@mui/joy";
-import { useParams, useLocation } from "react-router-dom";
-import { ExternalLink } from "lucide-react";
-
 import PageTitle from "../../../Components/Common/PageTitle";
+import { useNavigate, useParams } from "react-router-dom";
+import { Box, Grid, Stack, Typography } from "@mui/joy";
 import ContainerComponent from "../../../Components/Common/ContainerComponent";
 import ButtonComponent from "../../../Components/Common/ButtonComponent";
-;
-import useObjectivesStore from "../../../Store/ObjectivesStore";
-import useFeedbackStore from "../../../Store/FeedbackStore";
-
-import useObjectivesHook from "../../../Hooks/ObjectivesHook";
-
+import { ExternalLink } from "lucide-react";
+import {
+  useAOPApplication,
+  useAOPApplicationObjectives,
+} from "../../../Hooks/AOP/AOPApplicationsHook";
+import { useActivityActions } from "../../../Hooks/AOP/ActivityHook";
+import { localStorageGetter } from "../../../Utils/LocalStorage";
 import ObjectivesList from "./Contents/ObjectivesList";
+import {
+  useAllComments,
+  useCommentActions,
+  useRemarks,
+} from "../../../Hooks/CommentHook";
 import { ActivityDetails } from "./Contents/ActivityDetails";
 import { CommentsDetails } from "./Contents/CommentsDetails";
+
 import { FeedbackContent } from "./Contents/FeedbackContent";
+import { useUserTypes } from "../../../Store/AuthStore";
 import ProcessAOPContent from "./Contents/ProcessAOPContent";
+import { useApprovalActions } from "../../../Hooks/AOP/AOPApprovalHook";
+import BoxComponent from "@Components/Common/Card/BoxComponent";
 
 export default function ManageAOP() {
+  const { isPlanning, isMCC } = useUserTypes();
+  const { getAOPApprovalTimeline } = useApprovalActions();
+  const AOPApplication = useAOPApplication();
+  const navigate = useNavigate();
 
-  const params = useParams();
-  const aopId = params.id;
+  // AOP HOOK
+  const AOPApplicationObjectives =
+    useAOPApplicationObjectives() ??
+    localStorageGetter("aopApplicationObjectives");
 
-  const { getObjectives } = useObjectivesHook();
-  const { applicationObjectives } = useObjectivesStore();
-  const { feedback } = useFeedbackStore();
+  const AOP_APPLICATION_ID = localStorageGetter("aop_application_id");
 
+  // ACTIVITY HOOK
+  const defaultActivityId = AOPApplicationObjectives[0]?.activities[0]?.id;
+  const activityId = localStorageGetter("activeActivityId");
+  const { getActivityById } = useActivityActions();
 
-  useEffect(() => {
-
-    console.log(aopId)
-
-    getObjectives(aopId, (status, message) => {
-      return
-    })
-  }, [aopId])
-
+  // COMMENTS HOOK
   const {
-    current_user,
-    objectives,
-    processable,
-    fiscal_year,
-    status,
-    status_id,
-    latest_application_timeline,
-    activity_comments,
-    application_timelines,
-    ppmp_application,
-    latest_ppmp_application_timeline,
-  } = feedback;
+    getCommentsByActivity,
+    getCommentsByApplication,
+    getRemarksByApplication,
+  } = useCommentActions();
+  const allComments = useAllComments() ?? localStorageGetter("all_comments");
 
-  const { id: ppmpId } = latest_ppmp_application_timeline || {}
-  const { role, area_name } = current_user || {};
-  const { id } = latest_application_timeline || {};
-
-  useEffect(() => {
-    console.log('ppmp app timelines:', latest_ppmp_application_timeline)
-    // console.log('feedback:', feedback)
-  }, [feedback]);
-
-  const userMCC = role === 'MCC';
-  const userPlanning = role === 'Planning Officer';
+  const remarks = useRemarks();
 
   // STATES
+  const [isRemarksLoading, setIsRemarksLoading] = useState(true);
+
+  const AREA_CODE = localStorageGetter("aop_application_area_code");
+  const FISCAL_YEAR = new Date().getFullYear() + 1;
+
+  // MODAL
   const [openFeedbackModal, setOpenFeedbackModal] = useState(false);
 
   // FUNCTIONS
   const handleViewFeedback = () => {
     setOpenFeedbackModal(true);
+    setIsRemarksLoading(true);
+
+    const fetch = () => {
+      // if (!isDivisionHead || !isMCC) {
+      getCommentsByApplication(AOP_APPLICATION_ID, () => {});
+      // }
+
+      getRemarksByApplication(AOP_APPLICATION_ID, () => {
+        setTimeout(() => setIsRemarksLoading(false), 1000);
+      });
+    };
+
+    Promise.all(fetch())
+      .then(() => {
+        setIsRemarksLoading(false);
+      })
+      .catch((error) => {
+        console.error("Error fetching comments or remarks:", error);
+        setIsRemarksLoading(false);
+      });
   };
 
   const isAllowedFeedbackViewing = () => {
-    return !userMCC;
+    return !isMCC;
   };
 
-  const remarksCount = application_timelines?.length || 0;
-  const commentCount = activity_comments?.length || 0;
-  const feedbackCount = commentCount + remarksCount;
+  useEffect(() => {
+    if (activityId == defaultActivityId) return;
+
+    Promise.all([
+      getAOPApprovalTimeline(AOP_APPLICATION_ID, () => {}),
+      getActivityById(defaultActivityId, () => {}),
+      getCommentsByActivity(defaultActivityId, () => {}),
+      getCommentsByApplication(AOP_APPLICATION_ID, () => {}),
+    ]).catch((error) => {
+      console.error("Error fetching data:", error);
+    });
+  }, []);
 
   return (
     <Fragment>
@@ -85,12 +111,12 @@ export default function ManageAOP() {
         <PageTitle
           title={
             <Typography>
-              Manage
-              <Typography textColor={"warning.400"}>{area_name}'s</Typography>{" "}
-              AOP
+              Manage{" "}
+              <Typography textColor={"warning.400"}>{AREA_CODE}'s</Typography>{" "}
+              AOP{" "}
               {/* AOP <Typography textColor={"warning.400"}>#{id} </Typography> */}
-              for Fiscal Year
-              <Typography textColor={"warning.400"}>{fiscal_year}</Typography>
+              for Fiscal Year{" "}
+              <Typography textColor={"warning.400"}>{FISCAL_YEAR}</Typography>
             </Typography>
           }
           description={
@@ -105,7 +131,7 @@ export default function ManageAOP() {
             border: 1,
             borderColor: "neutral.100",
             padding: 0,
-            pr: 2.5,
+            pr: 1.5,
           }}
         >
           <Grid
@@ -122,61 +148,55 @@ export default function ManageAOP() {
           >
             {/* OBJECTIVES  */}
             <Grid item="true" xs={4} height={{ md: "auto", lg: "100%" }}>
+              <ContainerComponent sx={{ mb: 1 }}>
+                <Typography level="body-sm" mb={2}>
+                  To view the <b>Project Procurement Management Plan</b> of{" "}
+                  <b>{AREA_CODE}</b>, click the button below.
+                </Typography>
+                <ButtonComponent
+                  label="View PPMP"
+                  fullWidth={true}
+                  variant={"soft"}
+                  onClick={() =>
+                    navigate(`/aop-approval/view-ppmp/${AOP_APPLICATION_ID}`)
+                  }
+                />
+              </ContainerComponent>
               <ContainerComponent
                 title={"List of objectives and activities"}
                 description={
                   "Collapse an objective and select one of its activities to view more information."
                 }
                 footer={
-
                   <Stack direction={"row"} spacing={2}>
                     {isAllowedFeedbackViewing() && (
                       <ButtonComponent
                         variant={"outlined"}
-                        label={`Go to feedback (${!userPlanning ? commentCount : feedbackCount})`}
+                        label={`Go to feedback (${
+                          isPlanning ? allComments?.length : remarks?.length
+                        })`}
                         endDecorator={<ExternalLink size={14} />}
                         onClick={handleViewFeedback}
                       />
                     )}
-
-                    <ProcessAOPContent
-                      //insert ppmp id here
-                      ppmpId={ppmpId}
-                      processable={processable}
-                      timelineId={id}
-                      aopId={aopId}
-                      role={role}
-                    />
-
+                    <ProcessAOPContent />
                   </Stack>
                 }
                 scrollable
-                contentMaxHeight={"62vh"}
-                contentMinHeight={"62vh"}
+                contentMaxHeight={"46vh"}
+                contentMinHeight={"46vh"}
               >
-                <ObjectivesList
-                  objectives={objectives}
-                />
-
+                <ObjectivesList />
               </ContainerComponent>
             </Grid>
 
             {/* ACTIVITY DETAILS  */}
-            <Grid
-              item="true"
-              xs={!userPlanning ? 8 : 4}
-              mt={3}
-            >
+            <Grid item="true" xs={!isPlanning ? 8 : 4} mt={3}>
               <ActivityDetails />
             </Grid>
 
             {/* COMMENTS  */}
-            <Grid
-              item="true"
-              xs={4}
-              mt={3}
-              display={!userPlanning && "none"}
-            >
+            <Grid item="true" xs={4} mt={3} display={!isPlanning && "none"}>
               <CommentsDetails />
             </Grid>
           </Grid>
@@ -188,10 +208,7 @@ export default function ManageAOP() {
       <FeedbackContent
         openFeedbackModal={openFeedbackModal}
         setOpenFeedbackModal={setOpenFeedbackModal}
-        comments={activity_comments}
-        remarks={application_timelines}
-        feedbackCount={feedbackCount}
-        role={role}
+        isLoading={isRemarksLoading}
       />
     </Fragment>
   );

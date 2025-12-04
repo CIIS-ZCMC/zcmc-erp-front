@@ -343,7 +343,7 @@ export const API = {
   SHOW_OBJECTIVE: "show-objective-activity",
   PROCESS_AOP_REQUEST: "process-aop-request",
 
-  APPROVAL_PPMP: "ppmp-approve-or-return",
+  APPROVAL_PPMP: "requests-approve-or-return",
 
   APPROVAL_DIVISION_CHIEF: "approve-by-division-chief",
   RETURNED_DIVISON_CHIEF: "returned-by-division-chief",
@@ -353,8 +353,8 @@ export const API = {
   APPROVAL_ITEM_REQUEST: "item-requests-approval",
 
   // TIMELINE
-  APPROVAL_TIMELINE: "user-application-timelines",
-  APPROVER_TIMELINE: 'ppmp-application-timelines-approver',
+  APPROVAL_TIMELINE: "approval-trail",
+  APPROVER_TIMELINE: "ppmp-application-timelines-approver",
 
   // OBJECTIVES
   EDIT_OBJECTIVE: "edit-objective-and-success-indicator",
@@ -367,8 +367,14 @@ export const API = {
   ITEM_VARIANT: "variants",
   ITEM_TERMINOLOGY: "reference-terminologies",
   ITEMS_: "items",
+
   // PPMP
-  PPMP_APPLICATION: "ppmp-receiving-list",
+  // PPMP_APPLICATION: "ppmp-receiving-list",
+  PPMP_APPLICATION: "ppmp-items-approver",
+
+  //PPMP COMMENTS
+  PPMP_COMMENTS: "ppmp-item-comments",
+  POST_PPMP_COMMENTS: "ppmp-item-comments-store",
 };
 
 export const expenseClassData = [
@@ -380,4 +386,9 @@ export const expenseClassData = [
     label: "CO",
     value: "CO",
   },
+];
+
+export const PPMP_COLLAPSE = [
+  { label: "Item Information", value: "item" },
+  { label: "Procurement Schedule", value: "schedule" },
 ];

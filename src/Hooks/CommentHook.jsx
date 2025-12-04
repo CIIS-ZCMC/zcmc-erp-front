@@ -25,8 +25,7 @@ const useCommentHook = create((set, get) => ({
       read({
         url: `${COMMENT}/${id}`,
         success: (response) => {
-
-          console.log(response)
+          console.log(response);
 
           const {
             data: { comments },
@@ -45,10 +44,10 @@ const useCommentHook = create((set, get) => ({
 
     getCommentsByApplication: (id, callback) => {
       read({
-        url: `${COMMENT}`,
-        params: {
-          aop_application_id: id,
-        },
+        url: `${COMMENT}/${id}`,
+        // params: {
+        //   aop_application_id: id,
+        // },
         success: (response) => {
           const { data } = response.data;
 

@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect } from "react";
+import React, { act, Fragment, useEffect } from "react";
 import StepItem from "./StepItem";
 import { Stack, Step, StepIndicator, Stepper, Typography } from "@mui/joy";
 import { BiCheck, BiCircle } from "react-icons/bi";
@@ -9,7 +9,7 @@ const StepperComponent = ({ data = [] }) => {
 
   return (
     <Stepper orientation="vertical" sx={{ gap: 2 }} size="sm">
-      {data?.map(({ id, current_timeline }) => {
+      {/* {data?.map(({ id, current_timeline }) => {
         const {
           user,
           user_position,
@@ -19,6 +19,7 @@ const StepperComponent = ({ data = [] }) => {
           status,
           status_id,
           date_approved,
+          date_created,
         } = current_timeline;
 
         return (
@@ -31,19 +32,22 @@ const StepperComponent = ({ data = [] }) => {
             userPosition={user_position}
             statusId={status_id}
             approved_at={date_approved}
+            created_at={date_created}
           />
         );
-      })}
+      })} */}
 
-      {/* {data?.map(
+      {data?.map(
         (
           {
-            approver_user = "Krizelle Mae Falcasantos",
-            approver_user_position = null,
+            approver_user,
+            actor,
+            // approver_user = "Krizelle Mae Falcasantos",
+            // approver_user_position = null,
             user_position = "Department Head",
             area_code = "IISU",
             area = "Innovations",
-            status = status,
+            status,
             date_approved = null,
             remarks = null,
             activities_with_comments = null, // e.g 4 comments in 2 activities
@@ -58,10 +62,10 @@ const StepperComponent = ({ data = [] }) => {
               <StepItem
                 isLast={data?.length - 1 === key}
                 key={key}
-                position={user_position}
-                name={approver_user}
-                area_code={area_code}
-                area={area}
+                position={actor?.position || user_position}
+                name={actor?.name || approver_user}
+                area_code={actor?.area}
+                area={actor?.area}
                 status={status}
                 created_at={created_at}
                 date_submitted={updated_at}
@@ -76,10 +80,10 @@ const StepperComponent = ({ data = [] }) => {
               <StepItem
                 isLast={data?.length - 1 === key}
                 key={key}
-                position={approver_user_position}
-                name={approver_user}
-                area_code={area_code}
-                area={area}
+                position={approver_user?.position}
+                name={approver_user?.name}
+                area_code={approver_user?.area}
+                area={approver_user?.area}
                 status={status}
                 created_at={created_at}
                 date_submitted={created_at}
@@ -92,9 +96,9 @@ const StepperComponent = ({ data = [] }) => {
             );
           }
         }
-      )} */}
-      {/* 
-      <Step
+      )}
+
+      {/* <Step
         indicator={
           <StepIndicator>
             <BiCircle />
@@ -115,9 +119,9 @@ const StepperComponent = ({ data = [] }) => {
             Office name
           </Typography>
         </Stack>
-      </Step> */}
+      </Step> 
 
-      {/* <Step
+       <Step
         indicator={
           <StepIndicator variant="solid">
             <BiCheck />

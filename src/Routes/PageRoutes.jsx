@@ -56,6 +56,7 @@ import PPMPOutlet from "../Pages/PPMP/EndUser/PPMPOutlet";
 import All from "../Pages/Consolidators/ItemManagement/ItemRequest/All";
 import Pending from "../Pages/Consolidators/ItemManagement/ItemRequest/Pending";
 import Saved from "../Pages/Consolidators/ItemManagement/ItemRequest/Saved";
+import ViewPPMP from "../Pages/PPMP/Approval/ViewPPMP";
 // import ResponsiblePerson from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities/ResponsiblePerson";
 
 export const sidebarRoutes = [
@@ -157,6 +158,10 @@ export const sidebarRoutes = [
           {
             path: "objectives/:id",
             element: <ManageAOP />,
+          },
+          {
+            path: "view-ppmp/:id",
+            element: <ViewPPMP />,
           },
         ],
       },

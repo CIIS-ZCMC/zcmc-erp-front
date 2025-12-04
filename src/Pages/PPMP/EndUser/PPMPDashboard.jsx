@@ -156,7 +156,7 @@ function PPMPDashboard(props) {
         payload,
         (status, message, errors) => {
           if (status === 200) {
-            clearMission();
+            console.log("here");
             setOpenSave(false);
             setPin("");
             setAlertDialog({
@@ -165,28 +165,20 @@ function PPMPDashboard(props) {
               description:
                 "Your PPMP request has been sent to designated to the next approving body and notified them for approvals.",
             });
+            getPPMPTimeline(
+              dashboard?.ppmp_application?.id,
+              (status, message) => {
+                if (!(status >= 200 && status < 300)) {
+                  // show toast error
+                }
+              }
+            );
             return;
           } else {
-            const errorList = Array.isArray(errors) ? (
-              <Stack spacing={1} mt={1}>
-                {errors.map((err, i) => (
-                  <Typography
-                    key={i}
-                    fontSize={13}
-                    color="danger"
-                    sx={{ lineHeight: 1.3 }}
-                  >
-                    • {err}
-                  </Typography>
-                ))}
-              </Stack>
-            ) : (
-              ""
-            );
             setAlertDialog({
               status: "error",
-              title: message,
-              description: errorList,
+              title: "Submission Failed",
+              description: message,
             });
             return;
           }
@@ -197,7 +189,7 @@ function PPMPDashboard(props) {
       setAlertDialog({
         status: "error",
         title: "Something went wrong",
-        description: error.message ?? "",
+        description: "error",
       });
     }
   };
@@ -218,7 +210,9 @@ function PPMPDashboard(props) {
   }, [year]);
 
   useEffect(() => {
-    getPPMPTimeline(dashboard?.ppmp_application?.id, (status, message) => {
+    if (!dashboard?.ppmp_application?.id) return;
+
+    getPPMPTimeline(dashboard.ppmp_application.id, (status, message) => {
       if (!(status >= 200 && status < 300)) {
         // show toast error
       }
@@ -482,7 +476,7 @@ function PPMPDashboard(props) {
                       }
                       label={"Total Item Quantity"}
                       value={dashboard?.summary?.total_quantity}
-                      description={`With a total cost of (₱ ${(dashboard?.summary?.total_cost).toLocaleString(
+                      description={`With a total cost of (₱ ${dashboard?.summary?.total_cost?.toLocaleString(
                         "en-PH",
                         {
                           minimumFractionDigits: 2,
@@ -536,7 +530,7 @@ function PPMPDashboard(props) {
                       spacing={2}
                     >
                       <List size="lg" component="nav" variant="">
-                        {dashboard.checklist.map((list, key) => (
+                        {dashboard?.checklist?.map((list, key) => (
                           <>
                             <ListItem>
                               <ListItemDecorator>
@@ -547,21 +541,21 @@ function PPMPDashboard(props) {
                               </ListItemDecorator>
                               <Stack>
                                 <Typography
-                                  level={list.status ? "title-sm" : "body-sm"}
+                                  level={list?.status ? "title-sm" : "body-sm"}
                                   sx={{
-                                    color: list.status ? grey[900] : grey[400],
+                                    color: list?.status ? grey[900] : grey[400],
                                   }}
                                 >
-                                  {list.title}
+                                  {list?.title}
                                 </Typography>
                                 <Typography
                                   level="body-xs"
                                   fontWeight={400}
                                   sx={{
-                                    color: list.status ? grey[700] : grey[400],
+                                    color: list?.status ? grey[700] : grey[400],
                                   }}
                                 >
-                                  {list.description}
+                                  {list?.description}
                                 </Typography>
                               </Stack>
                             </ListItem>
@@ -623,7 +617,15 @@ function PPMPDashboard(props) {
               </Grid>
               <Grid xs={3.5}>
                 {/* Approval Timeline Here */}
-                <BoxComponent bgColor={"#FFFFFF"} p={2}>
+                <BoxComponent
+                  bgColor={"#FFFFFF"}
+                  p={2}
+                  sx={{
+                    display: "flex",
+                    flexDirection: "column",
+                    height: "100%",
+                  }}
+                >
                   <Typography level="title-lg">Approval Timeline</Typography>
                   <Typography
                     level="body-xs"
@@ -634,15 +636,18 @@ function PPMPDashboard(props) {
                     The list below shows the current status of the request.
                   </Typography>
                   <Divider sx={{ my: 1, color: "gray" }} />
-                  <Box
+                  <Stack
+                    Stack
                     sx={{
                       display: timeline?.length === 0 && "flex",
                       justifyContent: timeline?.length === 0 && "center",
                       alignItems: timeline?.length === 0 && "center",
-                      mt: timeline?.length > 0 && 2,
-                      p: timeline?.length > 0 && 1,
+                      flex: 1,
+                      pt: 2,
+                      overflowY: "auto",
+                      pr: 1, // avoid hiding content under scrollbar
+                      maxHeight: "55vh",
                     }}
-                    height={"55vh"}
                   >
                     {timeline?.length > 0 ? (
                       <StepperComponent data={timeline} />
@@ -654,7 +659,7 @@ function PPMPDashboard(props) {
                         No transactions done yet.
                       </Typography>
                     )}
-                  </Box>
+                  </Stack>
                 </BoxComponent>
               </Grid>
             </Grid>

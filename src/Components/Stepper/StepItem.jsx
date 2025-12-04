@@ -12,7 +12,7 @@ import { BiCheck, BiCircle } from "react-icons/bi";
 import moment from "moment";
 import PropTypes, { number } from "prop-types";
 import { getStatusColorScheme } from "../../Utils/ColorScheme";
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useState } from "react";
 import ModalComponent from "../Common/Dialog/ModalComponent";
 import ChipComponent from "../Common/ChipComponent";
 import { toCapitalize } from "../../Utils/Typography";
@@ -38,22 +38,13 @@ function StepItem({
   position,
   name,
   status,
-  statusId,
   approved_at,
   remarks,
   activities_with_comments,
   number_of_comments,
   isLast,
   date_approved,
-  user,
-  userPosition,
 }) {
-
-
-  // useEffect(() => {
-  //   console.log(remarks)
-  // }, [remarks])
-
   const theme = useTheme();
   const color = theme.palette.custom;
   const dividerStyles = {
@@ -74,8 +65,7 @@ function StepItem({
     <Fragment>
       <Step
         indicator={
-          //status id 3 = pending
-          statusId === 3 ? (
+          status === "Pending" ? (
             <StepIndicator sx={{ bgcolor: color.lighter }}>
               <BiCircle sx={{ bgcolor: color.active }} />
             </StepIndicator>
@@ -96,52 +86,28 @@ function StepItem({
             level={window.innerWidth < 1200 ? "body-xs" : "title-sm"}
             fontWeight={600}
           >
-            {position ? position : userPosition}
+            {position}
           </Typography>
-          {/* {isLast && (
-            
-          )} */}
-
-          <ChipComponent
-            sx={{ px: window.innerWidth >= 1200 ? 0.8 : 1, fontWeight: 400 }}
-            size={"sm"}
-            label={toCapitalize(status)}
-            color={getStatusColorScheme(status?.toLowerCase())}
-            variant={status === "Pending" ? "outlined" : "solid"}
-          />
-
+          {isLast && (
+            <ChipComponent
+              sx={{ px: window.innerWidth >= 1200 ? 0.8 : 1, fontWeight: 400 }}
+              size={"sm"}
+              label={toCapitalize(status) ?? "Pending"}
+              color={getStatusColorScheme(status?.toLowerCase())}
+              variant={status === "submitted" ? "outlined" : "solid"}
+            />
+          )}
         </Stack>
 
         <Stack gap={1.5} ml={0.7}>
           <Typography fontWeight={400} level="body-xs">
+            <Typography>
+              {status === "Pending" ? "Submitted " : "Approved"} by:{" "}
+            </Typography>
 
-            {name &&
-              <Typography>
-                {status === "Approved" && "Approved By: "}
-              </Typography>
-            }
-
-            {name ?
-              <Typography textColor={"neutral.900"}>{name}</Typography>
-              :
-              <Typography textColor={"neutral.900"}>{user}</Typography>
-            }
-
+            <Typography textColor={"neutral.900"}> {name}</Typography>
           </Typography>
-
-          <Stack gap={{ xs: 2, sm: 1 }}>
-            {remarks !== null && (
-              <Link
-                sx={{ fontSize: 12, textDecoration: "underline" }}
-                onClick={() => setViewCommentModal(true)}
-              >
-                See remarks
-              </Link>
-            )}
-          </Stack>
-
           <Divider sx={dividerStyles} />
-
           {approved_at && (
             <>
               <StepTextDisplay
@@ -159,10 +125,9 @@ function StepItem({
                 value={`${number_of_comments} comments in ${activities_with_comments} activities`}
               />
               <Divider sx={dividerStyles} />
-
             </>
           )}
-          {/* {remarks && (
+          {remarks && (
             <Typography
               level="body-xs"
               fontWeight={400}
@@ -170,12 +135,21 @@ function StepItem({
             >
               {remarks}
             </Typography>
-          )} */}
+          )}
         </Stack>
 
         {/* <Divider sx={{ my: 0.3 }} /> */}
         {/* BODY */}
-
+        <Stack my={1} gap={{ xs: 2, sm: 1 }}>
+          {remarks !== null && (
+            <Link
+              sx={{ fontSize: 12, textDecoration: "underline" }}
+              onClick={() => setViewCommentModal(true)}
+            >
+              See remarks
+            </Link>
+          )}
+        </Stack>
       </Step>
 
       {/* COMMENT */}
@@ -192,17 +166,13 @@ function StepItem({
         handleClose={() => setViewCommentModal(false)}
         leftButtonAction={() => setViewCommentModal(false)}
         content={
-          <Stack
-            gap={1}
-          >
+          <Stack spacing={1}>
             <Typography level="body-sm">Remarks:</Typography>
-            <Typography fontSize={15}>
-              {remarks}
-            </Typography>
+            <Typography fontSize={15}>{remarks}</Typography>
           </Stack>
         }
       />
-    </Fragment >
+    </Fragment>
   );
 }
 
