@@ -148,10 +148,10 @@ export default function ManageAOP() {
           >
             {/* OBJECTIVES  */}
             <Grid item="true" xs={4} height={{ md: "auto", lg: "100%" }}>
-              <BoxComponent mb={2}>
+              <ContainerComponent sx={{ mb: 1 }}>
                 <Typography level="body-sm" mb={2}>
-                  To view the Project Procurement Management Plan for this AOP,
-                  click the button below.
+                  To view the <b>Project Procurement Management Plan</b> of{" "}
+                  <b>{AREA_CODE}</b>, click the button below.
                 </Typography>
                 <ButtonComponent
                   label="View PPMP"
@@ -161,7 +161,7 @@ export default function ManageAOP() {
                     navigate(`/aop-approval/view-ppmp/${AOP_APPLICATION_ID}`)
                   }
                 />
-              </BoxComponent>
+              </ContainerComponent>
               <ContainerComponent
                 title={"List of objectives and activities"}
                 description={
@@ -183,8 +183,8 @@ export default function ManageAOP() {
                   </Stack>
                 }
                 scrollable
-                contentMaxHeight={"50vh"}
-                contentMinHeight={"50vh"}
+                contentMaxHeight={"46vh"}
+                contentMinHeight={"46vh"}
               >
                 <ObjectivesList />
               </ContainerComponent>

@@ -29,12 +29,18 @@ const usePPMPApplicationHook = create((set) => ({
       });
     },
 
-    getPPMPApplicationByID: (id, page = 1, per_page = 15, callback) => {
+    getPPMPApplicationByID: (
+      id,
+      search = "",
+      page = 1,
+      per_page = 15,
+      callback
+    ) => {
       set(() => ({ isLoading: true }));
 
       read({
         url: `${API.PPMP_APPLICATION}/${id}`,
-        params: { page, per_page },
+        params: { search, page, per_page },
         success: (res) => {
           const { data, message } = res.data;
 
@@ -88,5 +94,7 @@ export const usePPMP = () => {
     (state) => state.ppmpApplication
   );
 
-  return { ppmpApplications, ppmpApplicationItems, ppmpApplication };
+  const isLoading = usePPMPApplicationHook((state) => state.isLoading);
+
+  return { ppmpApplications, ppmpApplicationItems, ppmpApplication, isLoading };
 };
