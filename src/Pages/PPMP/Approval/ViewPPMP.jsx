@@ -50,6 +50,7 @@ function ViewPPMP() {
   const { getPPMPComments, postPPMPComment } = usePPMPCommentsActions();
   const { ppmpComments } = usePPMPComments();
 
+  const AOP_APPLICATION_ID = localStorageGetter("aop_application_id");
   const AREA_CODE = localStorageGetter("aop_application_area_code");
   const FISCAL_YEAR = new Date().getFullYear() + 1;
 
@@ -116,6 +117,16 @@ function ViewPPMP() {
         description={
           "Each objective has its own list of activities. Mark each activity as reviewed and process the request to continue."
         }
+        items={[
+          {
+            label: "AOP",
+            to: `/aop-approval/objectives/${AOP_APPLICATION_ID}`,
+          },
+          {
+            label: "PPMP",
+            current: true,
+          },
+        ]}
       />
 
       <BoxComponent my={2} bgColor={"#FAFAF9"} boxShadow="xs" p={2}>
@@ -456,7 +467,7 @@ function ViewPPMP() {
                     key={index}
                     name={c?.user?.name}
                     comment={c?.comment}
-                    area_code={"Planning Unit"}
+                    area_code={c?.user?.assigned_area?.area_name}
                     date={c.created_at}
                   />
                 ))}

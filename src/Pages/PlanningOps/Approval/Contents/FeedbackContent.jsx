@@ -17,8 +17,8 @@ export const FeedbackContent = ({
   setOpenFeedbackModal,
   isLoading,
 }) => {
-  const [activeTab, setActiveTab] = useState(0);
-  const { isDivisionHead } = useUserTypes();
+  const [activeTab, setActiveTab] = useState(1);
+  const { isDivisionHead, isPlanning } = useUserTypes();
 
   // COMMENTS HOOK
   const remarks = useRemarks();
@@ -68,7 +68,7 @@ export const FeedbackContent = ({
             </Box>
           ) : (
             <>
-              {!isDivisionHead && (
+              {!isPlanning && (
                 <>
                   <CustomTabComponent
                     tabOptions={feedbackTabOptions}
@@ -77,6 +77,7 @@ export const FeedbackContent = ({
                   <Divider />
                 </>
               )}
+
               <Stack gap={1.8} maxHeight={"60vh"} overflow={"auto"} pr={1}>
                 {feedbackCount === 0 && (
                   <Box
@@ -90,6 +91,7 @@ export const FeedbackContent = ({
                     <NoResultComponent />{" "}
                   </Box>
                 )}
+                {console.log(feedbackDisplay)}
                 {Object.entries(feedbackDisplay).map(
                   ([date, messages], key) => (
                     <Fragment key={`${date}-${key}`}>

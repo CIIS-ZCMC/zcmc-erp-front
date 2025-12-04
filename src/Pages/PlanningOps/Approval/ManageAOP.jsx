@@ -122,6 +122,12 @@ export default function ManageAOP() {
           description={
             "Each objective has its own list of activities. Mark each activity as reviewed and process the request to continue."
           }
+          items={[
+            {
+              label: "AOP",
+              current: true,
+            },
+          ]}
         />
         {/* CONTENT */}
         <Box
@@ -162,6 +168,7 @@ export default function ManageAOP() {
                   }
                 />
               </ContainerComponent>
+              {console.log(allComments, remarks)}
               <ContainerComponent
                 title={"List of objectives and activities"}
                 description={
@@ -173,7 +180,9 @@ export default function ManageAOP() {
                       <ButtonComponent
                         variant={"outlined"}
                         label={`Go to feedback (${
-                          isPlanning ? allComments?.length : remarks?.length
+                          isPlanning
+                            ? allComments?.comments?.length
+                            : remarks?.length
                         })`}
                         endDecorator={<ExternalLink size={14} />}
                         onClick={handleViewFeedback}

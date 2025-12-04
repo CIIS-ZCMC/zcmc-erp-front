@@ -148,6 +148,7 @@ export const AOP_CONFRIM_DATA = [
 ];
 
 export const AOP_CONSTANTS = {
+  APPLICATION_TITLE: "AOP with PPMP for Fiscal Year 2026",
   AOP_TITLE: "Annual Operations Planning",
   AOP_SUBHEADING:
     "This is a subheading. It should add more context to the interaction.",

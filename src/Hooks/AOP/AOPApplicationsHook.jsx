@@ -12,6 +12,7 @@ const useAOPApplicationsHook = create((set) => ({
   aopApplicationObjectives:
     localStorageGetter("aopApplicationObjectives") ?? null,
   aopApplication: localStorageGetter("aopApplication") ?? null,
+  timeline_id: "",
 
   // approvalTimeline: [],
   isLoading: false,
@@ -55,18 +56,20 @@ const useAOPApplicationsHook = create((set) => ({
         },
         success: (response) => {
           const {
-            data: { objectives, application },
+            data: { objectives, application, latest_timeline_id },
             message,
           } = response.data;
-          console.log(objectives);
 
           set({
+            timeline_id: latest_timeline_id,
             aopApplicationObjectives: objectives,
             aopApplication: application,
             isLoading: false,
           });
           localStorageSetter("aopApplication", application); // STORE TO LOCALSTORAGE
           localStorageSetter("aopApplicationObjectives", objectives); // STORE TO LOCALSTORAGE
+          localStorageSetter("timeline_id", latest_timeline_id); // STORE TO LOCALSTORAGE
+          // STORE TO LOCALSTORAGE
 
           callback(200, message);
         },
@@ -119,3 +122,6 @@ export const useAOPApplicationsActions = () =>
 
 export const useLoadingState = () =>
   useAOPApplicationsHook((state) => state.isLoading);
+
+export const useTimelineID = () =>
+  useAOPApplicationsHook((state) => state.timeline_id);
