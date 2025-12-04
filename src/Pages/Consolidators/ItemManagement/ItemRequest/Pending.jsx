@@ -31,19 +31,18 @@ export default function Pending() {
     setOpenApprove(true);
   };
 
-
   const handleClose = () => {
     setOpenApprove(false)
   }
 
-  const { data } = requests;
-
   useEffect(() => {
-    getItemRequests((status, message) => {
+    const params = { status_id: 3 }
+    getItemRequests(params, (status, message) => {
+      console.log(params)
       if (status !== 200) {
         console.error("Failed to fetch items:", message);
       }
-    }, 3);
+    });
   }, []);
 
   // useEffect(() => {

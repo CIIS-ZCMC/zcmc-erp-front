@@ -35,6 +35,7 @@ import {
   ModeEditOutlineOutlined,
   WarningAmberOutlined,
   WarningOutlined,
+  HourglassEmpty,
   X,
 } from "@mui/icons-material";
 import { grey, red } from "@mui/material/colors";
@@ -1604,40 +1605,95 @@ export const ITEMS_REQUESTS = (handleOpen, pathName) => [
     render: (r) => (
 
       <>
-        {pathName !== '/item-requests/pending' ?
-          <>
-            No action available
-          </>
-          :
-          <div style={{ display: "flex", gap: "8px" }}>
-            <ChipComponent
-              size="lg"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleOpen(4, r); /* approve */
-              }}
-              color="success"
-              label={"Approve"}
-              variant={"soft"}
-              startDecorator={<CheckOutlined />}
-            />
 
-            <ChipComponent
-              size="lg"
-              color="danger"
-              variant={"soft"}
-              onClick={(e) => {
-                e.stopPropagation();
-                handleOpen(5, r); /* decline */
-              }}
-              label={"Decline"}
-              startDecorator={<Clear />}
-            />
-          </div >
+        {
+          pathName === '/item-requests/' &&
+          <>
+            {r.status_id === 3 &&
+              <>
+                <ChipComponent
+                  size="lg"
+                  color="primary"
+                  variant={"soft"}
+                  label={"Pending"}
+                  startDecorator={<HourglassEmpty />}
+                />
+              </>
+            }
+
+            {r.status_id === 4 &&
+              <>
+                <ChipComponent
+                  size="lg"
+                  color="success"
+                  variant={"soft"}
+                  label={"Saved to Library"}
+                  startDecorator={<CheckOutlined />}
+                />
+              </>
+            }
+
+            {r.status_id === 5 &&
+              <>
+                <ChipComponent
+                  size="lg"
+                  color="danger"
+                  variant={"soft"}
+                  label={"Declined"}
+                  startDecorator={<Clear />}
+                />
+              </>
+            }
+          </>
+        }
+
+
+        {pathName === '/item-requests/pending' &&
+          <>
+            <div style={{ display: "flex", gap: "8px" }}>
+              <ChipComponent
+                size="lg"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleOpen(4, r); /* approve */
+                }}
+                color="success"
+                label={"Approve"}
+                variant={"soft"}
+                startDecorator={<CheckOutlined />}
+              />
+
+              <ChipComponent
+                size="lg"
+                color="danger"
+                variant={"soft"}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleOpen(5, r); /* decline */
+                }}
+                label={"Decline"}
+                startDecorator={<Clear />}
+              />
+            </div >
+          </>
+        }
+
+        {pathName === '/item-requests/saved' &&
+          <>
+            {r.status_id === 4 &&
+              <>
+                <ChipComponent
+                  size="lg"
+                  color="success"
+                  variant={"soft"}
+                  label={"Approved"}
+                  startDecorator={<CheckOutlined />}
+                />
+              </>
+            }
+          </>
         }
       </>
-
-
     ),
   },
 ];

@@ -169,7 +169,7 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
 
   const handleSubmitItemRequest = () => {
 
-    // setIsLoading(true);
+    setIsLoading(true);
 
     const approvedPayload = {
       status_id: status,
@@ -192,7 +192,7 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
 
     const payload = status === 4 ? approvedPayload : declinePayload
 
-    console.log(payload)
+    // console.log(payload)
 
     try {
       updateItemRequest(itemRequestId, payload, (status, message) => {

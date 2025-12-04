@@ -7,53 +7,58 @@ const useItemRequestsHook = () => {
 
     const { setRequests, setIsLoading } = useItemRequestActions();
 
-    const getItemRequests = (callBack, status) => {
+    const getItemRequests = (params, callBack,) => {
+
         setIsLoading(true)
-        try {
-            read({
-                url: API.ITEM_REQUESTS,
-                failed: callBack,
-                params: { status },
-                success: (res) => {
+        read({
+            url: API.ITEM_REQUESTS,
+            failed: (error) => {
+                setIsLoading(false)
+                callBack?.(false, error?.message || 'Request failed')
+            },
+            params: params,
+            success: (res) => {
+                try {
                     const {
                         status,
                         data: { data, message },
                     } = res;
-                    // console.log('from hook', data.data)
                     setRequests(data.data);
-                    setIsLoading(false)
                     callBack(status, message)
+                } catch (error) {
+                    console.error('Error processing Item Requests:', error);
+                    callBack?.(false, error.message)
+                } finally {
+                    setIsLoading(false)
                 }
-            });
-        } catch (error) {
-            console.error('Error fetching Item Requests:', error);
-            callBack?.(false, error.message)
-        }
-        finally {
-            setIsLoading(false)
-        }
+            }
+        });
     };
 
-    const updateItemRequest = async (item_request_id, body, callBack) => {
-        try {
-            await update({
-                url: `${API.APPROVAL_ITEM_REQUEST}/${item_request_id}`,
-                form: body,
-                failed: callBack,
-                success: (res) => {
-                    // console.log(res)
+    const updateItemRequest = (item_request_id, body, callBack) => {
+        setIsLoading(true)
+        update({
+            url: `${API.APPROVAL_ITEM_REQUEST}/${item_request_id}`,
+            form: body,
+            failed: (error) => {
+                setIsLoading(false)
+                callBack?.(false, error?.message || 'Update failed')
+            },
+            success: (res) => {
+                try {
                     const {
                         status,
                         data: { data, message },
                     } = res;
                     callBack?.(status, message);
-                },
-            })
-        }
-        catch (error) {
-            console.error("Error Update Item Requests:", error);
-            callBack(false, error.message);
-        }
+                } catch (error) {
+                    console.error("Error processing update response:", error);
+                    callBack?.(false, error.message);
+                } finally {
+                    setIsLoading(false)
+                }
+            },
+        })
     }
 
     return {

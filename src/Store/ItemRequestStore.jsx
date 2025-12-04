@@ -14,3 +14,6 @@ export default useItemRequestStore;
 
 export const useItemRequestActions = () =>
     useItemRequestStore((state) => state.actions);
+
+export const useItemRequestLoading = () =>
+    useItemRequestStore((state) => state.isLoading);

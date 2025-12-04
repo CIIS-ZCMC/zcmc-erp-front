@@ -2,6 +2,7 @@ import React, { useState, useEffect } from 'react'
 import { Typography, Box, Sheet } from '@mui/joy'
 import { ExtensionOutlined } from '@mui/icons-material'
 import { grey } from "@mui/material/colors";
+import { useLocation } from 'react-router-dom';
 
 import ExpandableTable from '@Components/Common/Table/ExpandableTable'
 
@@ -12,6 +13,9 @@ import useItemRequestsHook from '../../../../Hooks/ItemRequest/ItemRequestHookv2
 
 
 const Saved = () => {
+
+  const location = useLocation()
+  const pathName = location.pathname;
 
   const { requests, isLoading } = useItemRequestStore();
   const { getItemRequests } = useItemRequestsHook();
@@ -27,18 +31,19 @@ const Saved = () => {
   };
 
   useEffect(() => {
-    getItemRequests((status, message) => {
+    const params = { status_id: 4 }
+    getItemRequests(params, (status, message) => {
+      // console.log(params)
       if (status !== 200) {
         console.error("Failed to fetch items:", message);
       }
-    }, 4);
+    });
   }, []);
-
 
   return (
     <>
       <ExpandableTable
-        columns={ITEMS_REQUESTS(handleOpen)}
+        columns={ITEMS_REQUESTS(handleOpen, pathName)}
         rows={requests}
         isLoading={isLoading}
         renderExpanded={(row) => (
