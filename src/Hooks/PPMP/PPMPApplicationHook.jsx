@@ -6,37 +6,50 @@ const usePPMPApplicationHook = create((set) => ({
   ppmpApplications: [],
   ppmpApplication: null,
   ppmpApplicationItems: [],
+  isLoading: false,
 
   actions: {
     getPPMPApplications: (params, callback) => {
+      set(() => ({ isLoading: true }));
+
       read({
         url: API.PPMP_APPLICATION,
         params: params,
         success: (res) => {
           const { data, message } = res.data;
 
-          set(() => ({ ppmpApplications: data }));
+          set(() => ({ ppmpApplications: data, isLoading: false }));
           callback(200, message);
         },
 
-        failed: callback,
+        failed: () => {
+          callback();
+          set({ isLoading: false });
+        },
       });
     },
 
-    getPPMPApplicationByID: (id, callback) => {
+    getPPMPApplicationByID: (id, page = 1, per_page = 15, callback) => {
+      set(() => ({ isLoading: true }));
+
       read({
         url: `${API.PPMP_APPLICATION}/${id}`,
+        params: { page, per_page },
         success: (res) => {
           const { data, message } = res.data;
 
           set(() => ({
             ppmpApplicationItems: data.data,
             ppmpApplication: data,
+            isLoading: false,
           }));
           callback(200, message);
         },
 
-        failed: callback,
+        failed: () => {
+          callback();
+          set({ isLoading: false });
+        },
       });
     },
 

@@ -1405,11 +1405,21 @@ export const PPMP_HEADERS = (status, editingRows, handleComments) => [
   },
   {
     id: "category",
-    label: "Category",
+    label: "Classification & Category",
     width: "150px",
     render: (row) => (
       <>
         <Typography level="body-sm" fontWeight={600}>
+          {row?.item?.item_classification?.name}
+        </Typography>
+        <Typography
+          level={row?.item?.item_category?.name && "body-sm"}
+          sx={{
+            fontSize: row?.item?.item_classification?.name && 13,
+            color: row?.item?.item_classification?.name && grey[600],
+          }}
+          fontWeight={600}
+        >
           {row?.item?.item_category?.name}
         </Typography>
       </>
@@ -1630,11 +1640,12 @@ export const ITEMS_REQUESTS = (handleOpen) => [
   },
 ];
 
-export const PPMP_APPROVER_HEADERS = () => [
+export const PPMP_APPROVER_HEADERS = (handleComments) => [
   {
     id: "name",
     label: "Item",
-    width: "300px",
+    align: "left",
+    width: "250px",
     render: (row) => (
       <>
         <Typography level="body-sm" fontWeight={600}>
@@ -1645,18 +1656,30 @@ export const PPMP_APPROVER_HEADERS = () => [
         </Typography>
       </>
     ),
+    expandTrigger: true,
   },
   {
     id: "category",
-    label: "Category",
-    width: "150px",
+    label: "Classification & Category",
+    width: "200px",
     render: (row) => (
       <>
         <Typography level="body-sm" fontWeight={600}>
+          {row?.item?.item_classification?.name}
+        </Typography>
+        <Typography
+          level={row?.item?.item_category?.name && "body-sm"}
+          sx={{
+            fontSize: row?.item?.item_classification?.name && 13,
+            color: row?.item?.item_classification?.name && grey[600],
+          }}
+          fontWeight={600}
+        >
           {row?.item?.item_category?.name}
         </Typography>
       </>
     ),
+    expandTrigger: true,
   },
   {
     id: "cost",
@@ -1680,13 +1703,13 @@ export const PPMP_APPROVER_HEADERS = () => [
         </Typography>
       </>
     ),
+    expandTrigger: true,
   },
   {
     id: "procurement",
     label: "Mode of Procurement",
     align: "center",
-    width: "200px",
-
+    width: "250px",
     render: (row) => (
       <Chip
         sx={{
@@ -1705,22 +1728,23 @@ export const PPMP_APPROVER_HEADERS = () => [
         {row?.procurement_mode === null ? "-" : row?.procurement_mode.name}
       </Chip>
     ),
+    expandTrigger: true,
   },
   {
     id: "actions",
     label: "Actions",
-    align: "right",
-    width: "200px",
+    align: "center",
+    width: "100px",
     render: (row) => {
       return (
-        <Stack direction={"row"} spacing={1} justifyContent={"right"}>
+        <Stack direction={"row"} spacing={1} justifyContent={"center"}>
           <ChipComponent
-            label={"6"}
+            label={`${row?.comments_count}`}
             startDecorator={<CommentOutlined />}
             variant={"soft"}
             onClick={(e) => {
               e.stopPropagation(); // Prevent row expand
-              // handleComments(row);
+              handleComments(row);
               // Your comment click logic here
             }}
           />

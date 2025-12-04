@@ -1,6 +1,6 @@
 import { Fragment, useEffect, useState } from "react";
 import PageTitle from "../../../Components/Common/PageTitle";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { Box, Grid, Stack, Typography } from "@mui/joy";
 import ContainerComponent from "../../../Components/Common/ContainerComponent";
 import ButtonComponent from "../../../Components/Common/ButtonComponent";
@@ -24,11 +24,13 @@ import { FeedbackContent } from "./Contents/FeedbackContent";
 import { useUserTypes } from "../../../Store/AuthStore";
 import ProcessAOPContent from "./Contents/ProcessAOPContent";
 import { useApprovalActions } from "../../../Hooks/AOP/AOPApprovalHook";
+import BoxComponent from "@Components/Common/Card/BoxComponent";
 
 export default function ManageAOP() {
   const { isPlanning, isMCC } = useUserTypes();
   const { getAOPApprovalTimeline } = useApprovalActions();
   const AOPApplication = useAOPApplication();
+  const navigate = useNavigate();
 
   // AOP HOOK
   const AOPApplicationObjectives =
@@ -111,7 +113,7 @@ export default function ManageAOP() {
             <Typography>
               Manage{" "}
               <Typography textColor={"warning.400"}>{AREA_CODE}'s</Typography>{" "}
-              Application{" "}
+              AOP{" "}
               {/* AOP <Typography textColor={"warning.400"}>#{id} </Typography> */}
               for Fiscal Year{" "}
               <Typography textColor={"warning.400"}>{FISCAL_YEAR}</Typography>
@@ -129,7 +131,7 @@ export default function ManageAOP() {
             border: 1,
             borderColor: "neutral.100",
             padding: 0,
-            pr: 2.5,
+            pr: 1.5,
           }}
         >
           <Grid
@@ -146,6 +148,20 @@ export default function ManageAOP() {
           >
             {/* OBJECTIVES  */}
             <Grid item="true" xs={4} height={{ md: "auto", lg: "100%" }}>
+              <BoxComponent mb={2}>
+                <Typography level="body-sm" mb={2}>
+                  To view the Project Procurement Management Plan for this AOP,
+                  click the button below.
+                </Typography>
+                <ButtonComponent
+                  label="View PPMP"
+                  fullWidth={true}
+                  variant={"soft"}
+                  onClick={() =>
+                    navigate(`/aop-approval/view-ppmp/${AOP_APPLICATION_ID}`)
+                  }
+                />
+              </BoxComponent>
               <ContainerComponent
                 title={"List of objectives and activities"}
                 description={
@@ -167,8 +183,8 @@ export default function ManageAOP() {
                   </Stack>
                 }
                 scrollable
-                contentMaxHeight={"62vh"}
-                contentMinHeight={"62vh"}
+                contentMaxHeight={"50vh"}
+                contentMinHeight={"50vh"}
               >
                 <ObjectivesList />
               </ContainerComponent>

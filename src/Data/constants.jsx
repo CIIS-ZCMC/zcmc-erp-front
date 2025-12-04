@@ -370,6 +370,10 @@ export const API = {
   // PPMP
   // PPMP_APPLICATION: "ppmp-receiving-list",
   PPMP_APPLICATION: "ppmp-items-approver",
+
+  //PPMP COMMENTS
+  PPMP_COMMENTS: "ppmp-item-comments",
+  POST_PPMP_COMMENTS: "ppmp-item-comments-store",
 };
 
 export const expenseClassData = [
@@ -381,4 +385,9 @@ export const expenseClassData = [
     label: "CO",
     value: "CO",
   },
+];
+
+export const PPMP_COLLAPSE = [
+  { label: "Item Information", value: "item" },
+  { label: "Procurement Schedule", value: "schedule" },
 ];
