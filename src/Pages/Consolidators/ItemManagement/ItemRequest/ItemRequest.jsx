@@ -27,7 +27,7 @@ const ItemRequest = () => {
 
   // If nothing after the path → user is on index route → treat as view-all
   if (currentTab === "" || currentTab === parentPath) {
-    currentTab = "view-all";
+    currentTab = "";
   }
 
   const [activeTab, setActiveTab] = useState(currentTab);
@@ -37,6 +37,8 @@ const ItemRequest = () => {
     if (activeTab !== currentTab) {
       setActiveTab(currentTab);
     }
+
+    console.log(activeTab)
   }, [currentTab]);
 
   const handleTabChange = (tab) => {

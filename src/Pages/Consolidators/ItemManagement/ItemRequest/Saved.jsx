@@ -11,7 +11,6 @@ import { ITEMS_REQUESTS } from '../../../../Data/Columns'
 import useItemRequestStore from '../../../../Store/ItemRequestStore'
 import useItemRequestsHook from '../../../../Hooks/ItemRequest/ItemRequestHookv2'
 
-
 const Saved = () => {
 
   const location = useLocation()
@@ -23,6 +22,15 @@ const Saved = () => {
   const [openApprove, setOpenApprove] = useState(false);
   const [status, setStatus] = useState();
   const [row, setRow] = useState({});
+
+  const {
+    data,
+    current_page,
+    next_page_url,
+    per_page,
+    prev_page_url,
+    total
+  } = requests || {}
 
   const handleOpen = (status, row) => {
     setStatus(status);
@@ -44,8 +52,13 @@ const Saved = () => {
     <>
       <ExpandableTable
         columns={ITEMS_REQUESTS(handleOpen, pathName)}
-        rows={requests}
+        rows={data}
         isLoading={isLoading}
+        currentPage={current_page}
+        totalPages={total}
+        totalRows={per_page}
+        onNextPage={next_page_url}
+        onPrevPage={prev_page_url}
         renderExpanded={(row) => (
           <>
             <Typography

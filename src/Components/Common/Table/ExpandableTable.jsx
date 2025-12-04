@@ -93,7 +93,7 @@ export default function ExpandableTable({
               </thead>
 
               <tbody>
-                {loading ? (
+                {isLoading ? (
                   <tr>
                     <td
                       colSpan={columns.length}

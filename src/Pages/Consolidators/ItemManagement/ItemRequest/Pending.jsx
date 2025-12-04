@@ -25,6 +25,17 @@ export default function Pending() {
   const [row, setRow] = useState({});
   const [isDecline, setIsDecline] = useState(false);
 
+  // const data = requests?.data || []
+  const {
+    data,
+    current_page,
+    next_page_url,
+    per_page,
+    prev_page_url,
+    total
+  } = requests || {}
+
+
   const handleOpen = (status, row) => {
     setStatus(status);
     setRow(row);
@@ -45,16 +56,22 @@ export default function Pending() {
     });
   }, []);
 
-  // useEffect(() => {
-  //   console.log('floading', isLoading)
-  // }, [isLoading])
+  useEffect(() => {
+    console.log('request data', requests)
+    console.log('row', data)
+  }, [requests])
 
   return (
     <div>
       <ExpandableTable
         columns={ITEMS_REQUESTS(handleOpen, pathName)}
-        rows={requests}
+        rows={data}
         isLoading={isLoading}
+        currentPage={current_page}
+        totalPages={total}
+        totalRows={per_page}
+        onNextPage={next_page_url}
+        onPrevPage={prev_page_url}
         renderExpanded={(row) => (
           <>
             <Typography

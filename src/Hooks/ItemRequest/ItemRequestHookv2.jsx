@@ -23,7 +23,7 @@ const useItemRequestsHook = () => {
                         status,
                         data: { data, message },
                     } = res;
-                    setRequests(data.data);
+                    setRequests(data);
                     callBack(status, message)
                 } catch (error) {
                     console.error('Error processing Item Requests:', error);
