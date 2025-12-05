@@ -35,6 +35,7 @@ import {
   ModeEditOutlineOutlined,
   WarningAmberOutlined,
   WarningOutlined,
+  HourglassEmpty,
   X,
 } from "@mui/icons-material";
 import { grey, red } from "@mui/material/colors";
@@ -1556,7 +1557,8 @@ export const PPMP_HEADERS = (status, editingRows, handleComments) => [
   },
 ];
 
-export const ITEMS_REQUESTS = (handleOpen) => [
+export const ITEMS_REQUESTS = (handleOpen, pathName) => [
+
   {
     key: "item",
     label: "Item & Unit",
@@ -1576,9 +1578,9 @@ export const ITEMS_REQUESTS = (handleOpen) => [
     render: (r) => (
       <div>
         <Typography level="body-sm" fontWeight={600} sx={{ color: grey[800] }}>
-          {r.classification}
+          {r.item_category.name}
         </Typography>
-        <Typography level="body-xs">{r.category}</Typography>
+        <Typography level="body-xs">{r.item_category.name}</Typography>
       </div>
     ),
   },
@@ -1601,7 +1603,7 @@ export const ITEMS_REQUESTS = (handleOpen) => [
     render: (r) => (
       <ChipComponent
         size="md"
-        label={r.item_terminology?.name}
+        label={r.terminology_category.name}
         startDecorator={<Circle sx={{ fontSize: 10 }} />}
         color={"primary"}
       />
@@ -1611,31 +1613,97 @@ export const ITEMS_REQUESTS = (handleOpen) => [
     key: "actions",
     label: "Actions",
     render: (r) => (
-      <div style={{ display: "flex", gap: "8px" }}>
-        <ChipComponent
-          size="lg"
-          onClick={(e) => {
-            e.stopPropagation();
-            handleOpen(4, r); /* approve */
-          }}
-          color="success"
-          label={"Approve"}
-          variant={"soft"}
-          startDecorator={<CheckOutlined />}
-        />
 
-        <ChipComponent
-          size="lg"
-          color="danger"
-          variant={"soft"}
-          onClick={(e) => {
-            e.stopPropagation();
-            handleOpen(5, r); /* decline */
-          }}
-          label={"Decline"}
-          startDecorator={<Clear />}
-        />
-      </div>
+      <>
+
+        {
+          pathName === '/item-requests/' &&
+          <>
+            {r.status_id === 3 &&
+              <>
+                <ChipComponent
+                  size="lg"
+                  color="primary"
+                  variant={"soft"}
+                  label={"Pending"}
+                  startDecorator={<HourglassEmpty />}
+                />
+              </>
+            }
+
+            {r.status_id === 4 &&
+              <>
+                <ChipComponent
+                  size="lg"
+                  color="success"
+                  variant={"soft"}
+                  label={"Saved to Library"}
+                  startDecorator={<CheckOutlined />}
+                />
+              </>
+            }
+
+            {r.status_id === 5 &&
+              <>
+                <ChipComponent
+                  size="lg"
+                  color="danger"
+                  variant={"soft"}
+                  label={"Declined"}
+                  startDecorator={<Clear />}
+                />
+              </>
+            }
+          </>
+        }
+
+
+        {pathName === '/item-requests/pending' &&
+          <>
+            <div style={{ display: "flex", gap: "8px" }}>
+              <ChipComponent
+                size="lg"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleOpen(4, r); /* approve */
+                }}
+                color="success"
+                label={"Approve"}
+                variant={"soft"}
+                startDecorator={<CheckOutlined />}
+              />
+
+              <ChipComponent
+                size="lg"
+                color="danger"
+                variant={"soft"}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleOpen(5, r); /* decline */
+                }}
+                label={"Decline"}
+                startDecorator={<Clear />}
+              />
+            </div >
+          </>
+        }
+
+        {pathName === '/item-requests/saved' &&
+          <>
+            {r.status_id === 4 &&
+              <>
+                <ChipComponent
+                  size="lg"
+                  color="success"
+                  variant={"soft"}
+                  label={"Approved"}
+                  startDecorator={<CheckOutlined />}
+                />
+              </>
+            }
+          </>
+        }
+      </>
     ),
   },
 ];

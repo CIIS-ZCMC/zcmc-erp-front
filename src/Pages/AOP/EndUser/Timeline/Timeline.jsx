@@ -31,7 +31,7 @@ const Timeline = ({ aopId }) => {
   }, []);
 
   useEffect(() => {
-    console.log(isTimelineLoading);
+    // console.log(isTimelineLoading);
     // console.log('current timeline', timelines)
   }, [timelines, isTimelineLoading]);
 

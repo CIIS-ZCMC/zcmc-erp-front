@@ -15,11 +15,12 @@ import {
   Stack,
   Typography,
   useTheme,
+  Link,
 } from "@mui/joy";
 import { PhilippinePesoIcon, TargetIcon } from "lucide-react";
 import { TbTargetArrow } from "react-icons/tb";
 import ButtonComponent from "../../../Components/Common/ButtonComponent";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, } from "react-router-dom";
 import usePPMPHook from "../../../Hooks/PPMP/PPMPHook";
 import { MdOutlineShoppingCartCheckout } from "react-icons/md";
 import no_result from "../../../assets/empty-state-icon-base.png";
@@ -44,6 +45,11 @@ import InputComponent from "@Components/Form/InputComponent";
 import AuthorizationPinComponent from "@Components/AuthorizationPinComponent";
 import useModalHook from "../../../Hooks/ModalHook";
 import StepperComponent from "@Components/Stepper/StepperComponent";
+
+import useItemRequestHook from "../../../Hooks/ItemRequest/ItemRequestHookv2";
+
+import Content from "./Modal/ItemRequests/Content";
+import Footer from "./Modal/ItemRequests/Footer";
 
 const PPMPCard = ({
   bgColor = "#CCEEFF",
@@ -110,6 +116,10 @@ const PPMPCard = ({
 };
 
 function PPMPDashboard(props) {
+
+
+  const { getItemRequestByUser } = useItemRequestHook();
+
   const navigate = useNavigate();
   const {
     dashboard,
@@ -133,6 +143,8 @@ function PPMPDashboard(props) {
   const [openSave, setOpenSave] = useState(false);
   const [pin, setPin] = useState("");
   const [year, setYear] = useState(2026);
+
+  const [openViewItemRequest, setOpenItemRequest] = useState();
 
   const handleNavigate = () => {
     navigate("/ppmp/manage-items");
@@ -222,6 +234,21 @@ function PPMPDashboard(props) {
       area: assignedArea.name,
     });
   }, [assignedArea]);
+
+  const handleItemRequest = () => {
+
+    setOpenItemRequest(true)
+
+    const params = { status_id: 8 }
+
+    getItemRequestByUser(params), (status, message) => {
+      console.log(params)
+      if (status !== 200) {
+        console.error("Failed to fetch items:", message);
+      }
+    }
+  }
+
   return (
     <Fragment>
       <Stack>
@@ -440,6 +467,7 @@ function PPMPDashboard(props) {
                   flex={1} // <-- ALLOWS STRETCHING IN FLEX CONTEXT
                   minHeight={0}
                 >
+
                   <Box
                     sx={{
                       width: "100%",
@@ -502,6 +530,7 @@ function PPMPDashboard(props) {
                       description={`as found in (${dashboard?.summary?.items_with_comments_count}) items in total on this request`}
                     />
                   </Box>
+
                   <BoxComponent
                     width="100%"
                     padding={2}
@@ -558,6 +587,54 @@ function PPMPDashboard(props) {
                     </Stack>
                   </BoxComponent>
                 </BoxComponent>
+
+                <Stack
+                  p={2}
+                  direction={'row'}
+                  alignItems={'center'}
+                  justifyContent={'space-between'}
+                >
+
+                  <Link
+                    sx={{
+                      fontSize: 12,
+                      textDecoration: "underline"
+                    }}
+                  // onClick={() => setOpenItemRequest(true)}
+                  >
+                    Print as (.XLS)
+                  </Link>
+
+                  <Stack
+                    display={'flex'}
+                    flexDirection={'row'}
+                    gap={2}
+                    alignItems={'center'}
+                    justifyContent={'center'}
+                  >
+                    <Link
+                      sx={{
+                        fontSize: 12,
+                        textDecoration: "underline"
+                      }}
+                      onClick={() => setOpenItemRequest(true)}
+                    >
+                      Request  Item Request
+                    </Link>
+
+                    <Link
+                      sx={{
+                        fontSize: 12,
+                        textDecoration: "underline"
+                      }}
+                      onClick={() => handleItemRequest()}
+                    >
+                      View Item Request
+                    </Link>
+                  </Stack>
+
+                </Stack>
+
               </Grid>
               <Grid xs={3.5}>
                 {/* Approval Timeline Here */}
@@ -607,10 +684,27 @@ function PPMPDashboard(props) {
                 </BoxComponent>
               </Grid>
             </Grid>
+
+
           </>
         )}
       </BoxComponent>
       {/* <PageLoader isLoading={pageLoader} /> */}
+
+
+      <ModalComponent
+        isOpen={openViewItemRequest}
+        title={"Items Requested"}
+        description={
+          "Below are the items you’ve requested for this PPMP."
+        }
+        handleClose={() => setOpenItemRequest(false)}
+        content={<Content />}
+        hasActionButtons
+        customActionFooter={<Footer />}
+      />
+
+      {/* call api item request by user first */}
 
       <ModalComponent
         isOpen={openSave}

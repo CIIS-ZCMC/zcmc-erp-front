@@ -1,4 +1,4 @@
-import React, { Fragment, useMemo, useState } from "react";
+import React, { Fragment, useEffect, useMemo, useState } from "react";
 import { useAllComments, useRemarks } from "../../../../Hooks/CommentHook";
 import { groupByDate } from "../../../../Utils/GroupData";
 import { feedbackTabOptions } from "../../../../Data/Options";
@@ -12,6 +12,8 @@ import { ThreeDots } from "react-loader-spinner";
 import { useUserTypes } from "../../../../Store/AuthStore";
 import { localStorageGetter } from "../../../../Utils/LocalStorage";
 
+import { useNavigate } from "react-router-dom";
+
 export const FeedbackContent = ({
   openFeedbackModal,
   setOpenFeedbackModal,
@@ -19,6 +21,10 @@ export const FeedbackContent = ({
 }) => {
   const [activeTab, setActiveTab] = useState(1);
   const { isDivisionHead, isPlanning } = useUserTypes();
+
+  useEffect(() => {
+    console.log(isDivisionHead)
+  }, [isDivisionHead])
 
   // COMMENTS HOOK
   const remarks = useRemarks();
@@ -104,37 +110,37 @@ export const FeedbackContent = ({
                       {/* COMMENTS */}
                       {activeTab === 0
                         ? messages?.map(
-                            ({ name, area_code, created_at, comment }, key) => (
-                              <CommentContainerComponent
-                                key={key}
-                                name={name}
-                                comment={comment}
-                                area_code={area_code}
-                                date={created_at}
-                                isActivity
-                                // handleClick={}
-                              />
-                            )
+                          ({ name, area_code, created_at, comment }, key) => (
+                            <CommentContainerComponent
+                              key={key}
+                              name={name}
+                              comment={comment}
+                              area_code={area_code}
+                              date={created_at}
+                              isActivity
+                            // handleClick={}
+                            />
                           )
+                        )
                         : messages?.map(
-                            (
-                              {
-                                division_chief_name,
-                                division_chief_area_code,
-                                created_at,
-                                remarks,
-                              },
-                              key
-                            ) => (
-                              <CommentContainerComponent
-                                key={key}
-                                name={division_chief_name}
-                                comment={remarks}
-                                area_code={division_chief_area_code}
-                                date={created_at}
-                              />
-                            )
-                          )}
+                          (
+                            {
+                              division_chief_name,
+                              division_chief_area_code,
+                              created_at,
+                              remarks,
+                            },
+                            key
+                          ) => (
+                            <CommentContainerComponent
+                              key={key}
+                              name={division_chief_name}
+                              comment={remarks}
+                              area_code={division_chief_area_code}
+                              date={created_at}
+                            />
+                          )
+                        )}
                       {/* REMARKS */}
                     </Fragment>
                   )

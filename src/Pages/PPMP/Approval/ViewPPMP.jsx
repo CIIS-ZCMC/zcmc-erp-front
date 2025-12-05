@@ -87,15 +87,15 @@ function ViewPPMP() {
   const [debouncedSearch] = useDebounce(search, 500);
 
   useEffect(() => {
-    getPPMPApplicationByID(id, debouncedSearch, page, perPage, () => {});
+    getPPMPApplicationByID(id, debouncedSearch, page, perPage, () => { });
   }, [id, debouncedSearch, page, perPage]);
 
   useEffect(() => {
     let interval;
     if (openDrawer && selectedRow?.id) {
-      getPPMPComments(selectedRow.id, () => {});
+      getPPMPComments(selectedRow.id, () => { });
       interval = setInterval(() => {
-        getPPMPComments(selectedRow.id, () => {});
+        getPPMPComments(selectedRow.id, () => { });
       }, 3000); // fetch every 5 seconds
     }
 

@@ -22,7 +22,13 @@ const useObjectivesHook = () => {
             status,
             data: { data, message },
           } = res;
-          setFeedback(data); // get the objectives data and set to feedback so we can access the comments and remarks data
+          // Transform data structure: flatten comments from objectives
+          const transformedData = {
+            ...data,
+            activity_comments: data?.data?.flatMap(obj => obj.comments || []) || [],
+            application_timelines: data?.data || [],
+          };
+          setFeedback(transformedData); // get the objectives data and set to feedback so we can access the comments and remarks data
           callBack(status, message)
         }
       });

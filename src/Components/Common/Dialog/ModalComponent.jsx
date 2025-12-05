@@ -59,6 +59,7 @@ function ModalComponent({
   noDivider = false, // If set to true, the divider between the title and content is hidden
   hasActionButtons = false,
   padding = 3.5,
+  customActionFooter = false
 }) {
   const theme = useTheme();
   const custom = theme.palette.custom;
@@ -147,36 +148,40 @@ function ModalComponent({
           <>
             <Divider sx={{ mx: 0.2 }} />
 
-            <DialogActions>
-              <Box
-                sx={{
-                  width:
-                    minWidth > "70vw" || maxWidth > "70vw" ? "20%" : "100%",
-                  display: "flex",
-                  gap: 1,
-                  flexDirection: { xs: "column", sm: "row-reverse" },
-                }}
-              >
-                {!noRightButton && (
-                  <ButtonComponent
-                    label={rightButtonLabel}
-                    fullWidth
-                    isLoading={isLoading}
-                    onClick={rightButtonAction}
-                    disabled={rightButtonDisabled || isLoading}
-                  />
-                )}
+            {customActionFooter ?
+              customActionFooter
+              :
+              <DialogActions>
+                <Box
+                  sx={{
+                    width:
+                      minWidth > "70vw" || maxWidth > "70vw" ? "20%" : "100%",
+                    display: "flex",
+                    gap: 1,
+                    flexDirection: { xs: "column", sm: "row-reverse" },
+                  }}
+                >
+                  {!noRightButton && (
+                    <ButtonComponent
+                      label={rightButtonLabel}
+                      fullWidth
+                      isLoading={isLoading}
+                      onClick={rightButtonAction}
+                      disabled={rightButtonDisabled || isLoading}
+                    />
+                  )}
 
-                <ButtonComponent
-                  variant="outlined"
-                  color="primary"
-                  label={leftButtonLabel}
-                  fullWidth={!noRightButton}
-                  onClick={leftButtonAction ?? handleClose}
-                  disabled={isLoading}
-                />
-              </Box>
-            </DialogActions>
+                  <ButtonComponent
+                    variant="outlined"
+                    color="primary"
+                    label={leftButtonLabel}
+                    fullWidth={!noRightButton}
+                    onClick={leftButtonAction ?? handleClose}
+                    disabled={isLoading}
+                  />
+                </Box>
+              </DialogActions>
+            }
           </>
         )}
       </ModalDialog>
