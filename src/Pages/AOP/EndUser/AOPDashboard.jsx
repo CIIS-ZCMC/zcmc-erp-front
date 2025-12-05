@@ -31,6 +31,11 @@ import FiscalYearModal from "./Modal/FiscalYearModal";
 import AOPDataSummary from "./AOPDataSummary";
 
 import { ANNUAL_OPS } from "../../../Data/constants";
+import {
+  useCommentActions,
+  useComments,
+  useRemarks,
+} from "../../../Hooks/CommentHook";
 
 function DashboardEndUser(props) {
   const { header, description } = ANNUAL_OPS;
@@ -50,21 +55,22 @@ function DashboardEndUser(props) {
   const [isAopLoading, setIsAopLoading] = useState(false);
   const [openFeedbackModal, setOpenFeedbackModal] = useState(false);
 
-  useEffect(() => {
+  const {
+    getCommentsByActivity,
+    getCommentsByApplication,
+    getRemarksByApplication,
+  } = useCommentActions();
 
-    if (aop) {
-      getObjectives(aop?.id, (status, message) => {
-        return;
-      });
-    }
-  }, [aop]);
+  const allComments = useComments() ?? localStorageGetter("comments");
+
+  const remarks = useRemarks();
 
   const { activity_comments, application_timelines, current_user } = feedback;
 
   const { role } = current_user || {};
 
   useEffect(() => {
-    console.log('user aop applications data', aop)
+    console.log("user aop applications data", aop);
     // console.log('role', role);
     // console.log('feedback', feedback);
   }, [feedback, aop]);
@@ -155,12 +161,19 @@ function DashboardEndUser(props) {
   };
 
   const handleViewFeedback = () => {
-    setIsLoading(true)
+    setIsLoading(true);
     setOpenFeedbackModal(true);
-    getObjectives(aop.id, (status, message) => {
-      setIsLoading(false)
-      return
-    })
+
+    const id = aop?.id;
+    if (!id) return;
+
+    // Fetch both comments + remarks, then stop loading when both are done
+    Promise.all([
+      new Promise((resolve) => getCommentsByApplication(id, resolve)),
+      new Promise((resolve) => getRemarksByApplication(id, resolve)),
+    ]).finally(() => {
+      setIsLoading(false);
+    });
   };
 
   return (
@@ -222,12 +235,16 @@ function DashboardEndUser(props) {
                     <ButtonComponent
                       variant={"soft"}
                       label={"Feedback"}
-                      onClick={handleViewFeedback}
+                      onClick={() => handleViewFeedback()}
                       endDecorator={
                         <ChipComponent
                           variant={"soft"}
                           size={"sm"}
-                          label={feedbackCount}
+                          label={
+                            allComments?.length === 0
+                              ? remarks?.length
+                              : allComments?.length
+                          }
                         />
                       }
                       startDecorator={<MessageSquareText size={16} />}
@@ -312,6 +329,8 @@ function DashboardEndUser(props) {
         remarks={application_timelines}
         feedbackCount={feedbackCount}
         role={role}
+        isActivity={true}
+        // handleClick={() => navigate(`aop/activities/${activity_id}`)} // return objective id
       />
     </Fragment>
   );

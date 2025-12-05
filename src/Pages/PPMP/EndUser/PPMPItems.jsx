@@ -28,6 +28,9 @@ import { ArrowBack, Circle } from "@mui/icons-material";
 import CommentContainerComponent from "@Components/Comments/CommentContainerComponent";
 import TextareaComponent from "@Components/Form/TextareaComponent";
 import IconButtonComponent from "@Components/Common/IconButtonComponent";
+import CountUp from "react-countup";
+import { usePPMPApplicationActions } from "../../../Hooks/PPMP/PPMPApplicationHook";
+import { usePPMPCommentsActions } from "../../../Hooks/PPMP/PPMPCommentsHook";
 
 function PPMPItems(props) {
   const navigate = useNavigate();
@@ -53,6 +56,8 @@ function PPMPItems(props) {
     closeAlertDialog,
   } = useModalHook();
   const { errors, setError, clearErrors } = userErrorInputHook();
+  const { getPPMPComments, postPPMPComment } = usePPMPCommentsActions();
+
   const { showSnack } = useSnackbarHook();
   const [pageLoader, setPageLoader] = useState(false);
   const [dlLoader, setDlLoader] = useState(false);
@@ -66,7 +71,7 @@ function PPMPItems(props) {
   const [perPage, setPerPage] = useState(10);
   const [search, setSearch] = useState("");
   const updatedRowData = React.useRef({});
-  const [selecetdRow, setSelectedRow] = useState({});
+  const [selectedRow, setSelectedRow] = useState({});
 
   const location = useLocation();
   const { user } = useAuth();
@@ -253,6 +258,12 @@ function PPMPItems(props) {
     };
   }, []);
 
+  useEffect(() => {
+    if (openDrawer && selectedRow?.id) {
+      getPPMPComments(selectedRow.id); // fetch existing comments
+    }
+  }, [openDrawer, selectedRow?.id]);
+
   return (
     <Fragment>
       <PageTitle
@@ -316,16 +327,21 @@ function PPMPItems(props) {
             </Typography>
             <Typography
               textTransform={"uppercase"}
-              level="body-lg"
+              level="title-lg"
               color="primary"
               textAlign={"right"}
               fontWeight={600}
             >
               &#8369;{" "}
-              {ppmp_total.toLocaleString("en-PH", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}
+              <CountUp
+                start={0}
+                end={ppmp_total || 0}
+                duration={1.5} // duration in seconds
+                separator=","
+                decimals={2}
+                decimal="."
+                prefix=""
+              />
             </Typography>
           </BoxComponent>
         </Stack>
@@ -372,7 +388,7 @@ function PPMPItems(props) {
       <DrawerComponent
         open={openDrawer}
         setOpen={setOpenDrawer}
-        title={`${selecetdRow?.item?.name}`}
+        title={`${selectedRow?.item?.name}`}
         description={`The following comments were submitted by reviewing offices regarding this resource item.`}
         size="md"
         content={

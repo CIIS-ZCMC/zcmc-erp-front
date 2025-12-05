@@ -41,6 +41,7 @@ import {
 } from "../../../Hooks/PPMP/PPMPCommentsHook";
 import NoResultComponent from "@Components/Common/Table/NoResultComponent";
 import { useDebounce } from "use-debounce";
+import CountUp from "react-countup";
 
 function ViewPPMP() {
   const { id } = useParams();
@@ -61,6 +62,7 @@ function ViewPPMP() {
   const [newComment, setNewComment] = useState("");
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
+  const [isPostingComment, setIsPostingComment] = useState(false);
 
   // const filteredPPMPItems = useMemo(() => {
   //   if (!search) return ppmpApplicationItems;
@@ -74,33 +76,35 @@ function ViewPPMP() {
     setOpenDrawer(true);
   };
 
-  const handleAddComment = () => {
-    postPPMPComment(
-      {
-        ppmp_item_id: id,
-        comment: newComment, // your input state
-      },
-      () => {
-        setNewComment(""); // clear input
-      }
-    );
+  const handleAddComment = async () => {
+    if (!newComment.trim() || isPostingComment) return; // prevent empty or duplicate posts
+
+    setIsPostingComment(true); // disable button
+
+    try {
+      await postPPMPComment({
+        ppmp_item_id: selectedRow?.id,
+        comment: newComment,
+      });
+
+      setNewComment(""); // clear input
+      getPPMPComments(selectedRow?.id); // fetch latest comments
+    } catch (error) {
+      console.error("Failed to post comment:", error);
+    } finally {
+      setIsPostingComment(false); // enable button again
+    }
   };
   const [debouncedSearch] = useDebounce(search, 500);
 
   useEffect(() => {
     getPPMPApplicationByID(id, debouncedSearch, page, perPage, () => {});
-  }, [id, debouncedSearch, page, perPage]);
+  }, [id, debouncedSearch, page, perPage, newComment]);
 
   useEffect(() => {
-    let interval;
     if (openDrawer && selectedRow?.id) {
-      getPPMPComments(selectedRow.id, () => {});
-      interval = setInterval(() => {
-        getPPMPComments(selectedRow.id, () => {});
-      }, 3000); // fetch every 5 seconds
+      getPPMPComments(selectedRow.id); // fetch existing comments
     }
-
-    return () => clearInterval(interval);
   }, [openDrawer, selectedRow?.id]);
   return (
     <Fragment>
@@ -171,10 +175,15 @@ function ViewPPMP() {
               fontWeight={600}
             >
               &#8369;{" "}
-              {ppmpApplication?.ppmp_total?.toLocaleString("en-PH", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}
+              <CountUp
+                start={0}
+                end={ppmpApplication?.ppmp_total || 0}
+                duration={1.5} // duration in seconds
+                separator=","
+                decimals={2}
+                decimal="."
+                prefix=""
+              />
             </Typography>
           </BoxComponent>
         </Stack>
@@ -457,12 +466,12 @@ function ViewPPMP() {
           ppmpComments?.length > 0 ? (
             <Box
               sx={{
-                maxHeight: "485px", // adjust as needed
+                maxHeight: "480px", // adjust as needed
                 overflowY: "auto",
                 pr: 1, // optional: add padding for scrollbar
               }}
             >
-              <Stack width="100%" py={1.5} spacing={2}>
+              <Stack width="100%" py={1} spacing={1.5}>
                 {ppmpComments.map((c, index) => (
                   <CommentContainerComponent
                     key={index}
@@ -477,7 +486,7 @@ function ViewPPMP() {
           ) : (
             <Box
               sx={{
-                height: "52vh",
+                height: "50vh",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -492,7 +501,7 @@ function ViewPPMP() {
             <Stack width={"100%"} spacing={2}>
               <TextareaComponent
                 placeholder={"Comment here .. "}
-                maxRows={3}
+                maxRows={2}
                 label={"Add a comment"}
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
@@ -502,6 +511,8 @@ function ViewPPMP() {
                   label={"Post Comment"}
                   width="200px"
                   onClick={() => handleAddComment()}
+                  isLoading={isPostingComment}
+                  loadingLabel={"posting..."}
                 />
               </Stack>
             </Stack>
