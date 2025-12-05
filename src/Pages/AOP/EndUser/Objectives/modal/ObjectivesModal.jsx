@@ -19,6 +19,7 @@ const ObjectivesModal = ({
   functionType,
   objective,
   successIndicator,
+  otherObjective,
   otherSuccessIndicator,
   applicationObjective
 }) => {
@@ -30,6 +31,7 @@ const ObjectivesModal = ({
     setFunctionType,
     setObjective,
     setSuccessIndicator,
+    setOtherObjective,
     setOtherSuccessIndicator
   } = useObjectivesActions();
 
@@ -59,19 +61,20 @@ const ObjectivesModal = ({
       const selectedObjectiveId = applicationObjective.selected_objective.id;
       const selectedObjective = applicationObjective?.objectives?.filter(({ id }) => id === selectedObjectiveId);
       setObjective(selectedObjective?.[0] || null);
+      // setOtherObjective(selectedObjective?.[0]?.code || null)
 
       const selectedSuccessIndicatorId = applicationObjective.selected_success_indicator.id;
       const selectedSuccessIndicator = selectedObjective.flatMap(({ success_indicators }) =>
         success_indicators.filter(({ id }) => (id === selectedSuccessIndicatorId)
         ))
 
-      // console.log('application success indicator id', applicationObjective.selected_success_indicator.id)
-      // console.log('selected success indicator id', selectedSuccessIndicatorId)
-      // console.log(selectedObjective)
-      // console.log(selectedSuccessIndicator)
-
       setSuccessIndicator(selectedSuccessIndicator?.[0] || null)
       setOtherSuccessIndicator(selectedSuccessIndicator?.[0]?.name || null)
+
+      // console.log('application success indicator id', applicationObjective.selected_success_indicator.id)
+      // console.log('selected success indicator id', selectedSuccessIndicatorId)
+      console.log(selectedObjective)
+      // console.log('success indicator', selectedSuccessIndicator)
 
     }
   }, [applicationObjective]);
@@ -117,15 +120,23 @@ const ObjectivesModal = ({
         <Stack>
           <Typography level="body-xs">Description:</Typography>
           <Typography level="body-xs" fontWeight={600}>
-            {objective?.description}
+            {objective?.label}
           </Typography>
         </Stack>
 
 
         {objective?.id === 31 || objective?.id === 55 || objective?.id === 87 ?
           <>
+
             <TextareaComponent
-              label={'Others'}
+              label={'Other objective'}
+              placeholder={'Input other objective'}
+              value={otherObjective || ""}
+              onChange={(e) => setOtherObjective(e.target.value)}
+            />
+
+            <TextareaComponent
+              label={'Others success indicator'}
               placeholder={'Input other success indicator'}
               value={otherSuccessIndicator || ""}
               onChange={(e) => setOtherSuccessIndicator(e.target.value)}

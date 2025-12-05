@@ -10,6 +10,7 @@ const useObjectivesStore = create((set, get) => ({
   objective: null,
   successIndicator: null,
 
+  otherObjective: null,
   otherSuccessIndicator: null,
 
   actions: {
@@ -22,6 +23,7 @@ const useObjectivesStore = create((set, get) => ({
     setObjective: (objective) => set({ objective }),
     setSuccessIndicator: (successIndicator) => set({ successIndicator }),
 
+    setOtherObjective: (otherObjective) => set({ otherObjective }),
     setOtherSuccessIndicator: (otherSuccessIndicator) => set({ otherSuccessIndicator }),
 
     // clear individual fields
@@ -50,5 +52,6 @@ export const useApplicationObjective = () => useObjectivesStore((state) => state
 export const useFunctionType = () => useObjectivesStore((state) => state.functionType);
 export const useObjective = () => useObjectivesStore((state) => state.objective);
 export const useSuccessIndicator = () => useObjectivesStore((state) => state.successIndicator);
+export const useOtherObjective = () => useObjectivesStore((state) => state.otherObjective)
 export const useOtherSuccessIndicator = () => useObjectivesStore((state) => state.otherSuccessIndicator)
 export const useObjectivesActions = () => useObjectivesStore((state) => state.actions);

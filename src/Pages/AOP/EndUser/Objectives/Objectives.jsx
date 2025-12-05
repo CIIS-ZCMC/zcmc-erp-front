@@ -29,6 +29,7 @@ import {
   useObjectivesActions,
   useApplicationObjectives,
   useApplicationObjective,
+  useOtherObjective,
   useOtherSuccessIndicator,
 } from "../../../../Store/ObjectivesStore";
 
@@ -45,6 +46,7 @@ const Objectives = () => {
   const functionType = useFunctionType();
   const objective = useObjective();
   const successIndicator = useSuccessIndicator();
+  const otherObjective = useOtherObjective();
   const otherSuccessIndicator = useOtherSuccessIndicator();
   const applicationObjectives = useApplicationObjectives();
   const applicationObjective = useApplicationObjective();
@@ -140,8 +142,10 @@ const Objectives = () => {
       aop_application_id: aopId,
       objective_id: objective?.id,
       success_indicator_id: successIndicator?.id,
+      other_objective_description: otherObjective,
       other_success_indicator_description: otherSuccessIndicator,
     };
+
 
     try {
       await createObjective(payload, (status, message) => {
@@ -179,6 +183,7 @@ const Objectives = () => {
     const payload = {
       objective_id: objective?.id,
       success_indicator_id: successIndicator?.id,
+      other_objective_description: otherObjective,
       other_success_indicator_description: otherSuccessIndicator,
     };
 
@@ -432,6 +437,7 @@ const Objectives = () => {
             functionType={functionType}
             objective={objective}
             successIndicator={successIndicator}
+            otherObjective={otherObjective}
             otherSuccessIndicator={otherSuccessIndicator}
             applicationObjective={applicationObjective}
           />
