@@ -6,6 +6,8 @@ import { MessageSquareText } from "lucide-react";
 
 import ButtonComponent from "@Components/Common/ButtonComponent";
 import AlertDialogComponent from "@Components/Common/Dialog/AlertDialogComponent";
+import ConfirmationModalComponent from "@Components/Common/Dialog/ConfirmationModalComponent";
+
 import ModalComponent from "@Components/Common/Dialog/ModalComponent";
 import BoxComponent from "@Components/Common/Card/BoxComponent";
 import { ThreeDotsLoader } from "@Components/Common/Loading/ThreeDotsLoader";
@@ -39,7 +41,7 @@ function DashboardEndUser(props) {
 
   const { getObjectives } = useObjectivesHook();
   const { createAOP, getAopBySectorAndYear, getAopYearList } = useAOPHook();
-  const { setAlertDialog } = useModalHook();
+  const { setAlertDialog, closeAlertDialog } = useModalHook();
 
   const { aop, mission, fiscalYear, yearDetails } = useAOPStore();
   const { setMission, clearMission } = useAOPActions();
@@ -73,33 +75,52 @@ function DashboardEndUser(props) {
   const commentCount = activity_comments?.length || 0;
   const feedbackCount = commentCount + remarksCount;
 
+
+  const handleClose = () => {
+    setIsLoading(true)
+    setTimeout(() => {
+      // window.location.reload();
+      clearMission();
+      setOpenFiscalYearModal(false);
+      closeAlertDialog()
+      setIsLoading(false)
+      navigate(0)
+    }, 2000)
+  }
+
   const handleSaveAOP = async () => {
+
+    setIsLoading(true)
+
     const body = {
       mission,
       year: fiscalYear,
     };
 
-    await createAOP(body, (status, message) => {
-      if (status === 200) {
-        clearMission();
-        setOpenFiscalYearModal(false);
-        // console.log(`fiscal year: ${fiscalYear}, mission: ${mission}`);
-        setAlertDialog({
-          status: "success",
-          title: "Success",
-          description: `${message}`,
-        });
-        window.location.reload();
-        return;
-      } else {
-        setAlertDialog({
-          status: "error",
-          title: `${message}`,
-          description: "",
-        });
-        return;
-      }
-    });
+    try {
+      await createAOP(body, (status, message) => {
+        if (status === 200) {
+          // console.log(`fiscal year: ${fiscalYear}, mission: ${mission}`);
+          setIsLoading(false)
+          handleClose()
+        } else {
+          setAlertDialog({
+            status: "error",
+            title: `${message}`,
+            description: "Please try again later",
+          });
+          setIsLoading(false);
+          console.error(" Failed to create aop:", message);
+        }
+      });
+    } catch (error) {
+      console.error("Error creatinh aop:", error);
+      setAlertDialog({
+        status: "error",
+        title: "Unexpected Error",
+        description: error.message || "Something went wrong.",
+      });
+    }
   };
 
   useEffect(() => {
@@ -162,6 +183,8 @@ function DashboardEndUser(props) {
       return
     })
   };
+
+
 
   return (
     <Fragment>
@@ -301,9 +324,15 @@ function DashboardEndUser(props) {
         rightButtonLabel={"Save AOP"}
         rightButtonAction={() => handleSaveAOP()}
         maxWidth={500}
+        isLoading={isLoading}
       />
 
-      <AlertDialogComponent leftButtonAction={() => handleClose()} />
+      <AlertDialogComponent
+        leftButtonAction={() => handleClose()}
+        rightButtonAction={() => handleClose()}
+        noRightButton={false}
+        isLoading={isLoading}
+      />
 
       <FeedbackContent
         openFeedbackModal={openFeedbackModal}
@@ -313,7 +342,7 @@ function DashboardEndUser(props) {
         feedbackCount={feedbackCount}
         role={role}
       />
-    </Fragment>
+    </Fragment >
   );
 }
 
