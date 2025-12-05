@@ -18,23 +18,24 @@ export const FeedbackContent = ({
   openFeedbackModal,
   setOpenFeedbackModal,
   isLoading,
+  isActivity,
 }) => {
   const [activeTab, setActiveTab] = useState(1);
   const { isDivisionHead, isPlanning } = useUserTypes();
 
   useEffect(() => {
-    console.log(isDivisionHead)
-  }, [isDivisionHead])
+    console.log(isDivisionHead);
+  }, [isDivisionHead]);
 
   // COMMENTS HOOK
   const remarks = useRemarks();
-  const allComments = localStorageGetter("all_comments");
+  const allComments = localStorageGetter("comments");
 
   // DATA
   const feedbackDisplay = useMemo(() => {
     let dataToDisplay;
 
-    if (isDivisionHead) {
+    if (isPlanning) {
       dataToDisplay = remarks;
     } else {
       dataToDisplay = activeTab === 0 ? allComments : remarks;
@@ -43,7 +44,12 @@ export const FeedbackContent = ({
     return groupByDate(dataToDisplay ?? []);
   }, [activeTab, allComments, isDivisionHead, remarks]);
 
-  const feedbackCount = Array.isArray(allComments) ? allComments?.length : 0;
+  const feedbackCount =
+    activeTab === 0
+      ? Array.isArray(allComments)
+        ? allComments?.length
+        : 0
+      : remarks?.length;
 
   return (
     <DrawerComponent
@@ -97,7 +103,7 @@ export const FeedbackContent = ({
                     <NoResultComponent />{" "}
                   </Box>
                 )}
-                {console.log(feedbackDisplay)}
+
                 {Object.entries(feedbackDisplay).map(
                   ([date, messages], key) => (
                     <Fragment key={`${date}-${key}`}>
@@ -110,37 +116,37 @@ export const FeedbackContent = ({
                       {/* COMMENTS */}
                       {activeTab === 0
                         ? messages?.map(
-                          ({ name, area_code, created_at, comment }, key) => (
-                            <CommentContainerComponent
-                              key={key}
-                              name={name}
-                              comment={comment}
-                              area_code={area_code}
-                              date={created_at}
-                              isActivity
-                            // handleClick={}
-                            />
+                            ({ name, area_code, created_at, comment }, key) => (
+                              <CommentContainerComponent
+                                key={key}
+                                name={name}
+                                comment={comment}
+                                area_code={area_code}
+                                date={created_at}
+                                isActivity={isActivity}
+                                // handleClick={}
+                              />
+                            )
                           )
-                        )
                         : messages?.map(
-                          (
-                            {
-                              division_chief_name,
-                              division_chief_area_code,
-                              created_at,
-                              remarks,
-                            },
-                            key
-                          ) => (
-                            <CommentContainerComponent
-                              key={key}
-                              name={division_chief_name}
-                              comment={remarks}
-                              area_code={division_chief_area_code}
-                              date={created_at}
-                            />
-                          )
-                        )}
+                            (
+                              {
+                                division_chief_name,
+                                current_area_name,
+                                created_at,
+                                remark,
+                              },
+                              key
+                            ) => (
+                              <CommentContainerComponent
+                                key={key}
+                                name={division_chief_name}
+                                comment={remark}
+                                area_code={current_area_name}
+                                date={created_at}
+                              />
+                            )
+                          )}
                       {/* REMARKS */}
                     </Fragment>
                   )

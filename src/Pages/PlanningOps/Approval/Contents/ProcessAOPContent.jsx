@@ -53,7 +53,7 @@ const ProcessAOPContent = () => {
   const confirmButtonDisabled =
     !processData?.pin ||
     !processData?.action ||
-    processData?.pin?.length !== 4 ||
+    processData?.pin?.length !== 6 ||
     (isDivisionHead && (!processData?.remarks || processData?.remarks === ""));
 
   const getNextOffice = () => {

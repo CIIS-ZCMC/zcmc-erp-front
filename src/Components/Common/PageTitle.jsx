@@ -5,6 +5,8 @@ import { Link as RouterLink, useNavigate } from "react-router-dom";
 import { red } from "@mui/material/colors";
 import { Fragment } from "react";
 import path from "path";
+import IconButtonComponent from "./IconButtonComponent";
+import { ArrowBack } from "@mui/icons-material";
 
 PageTitle.propTypes = {
   title: PropTypes.oneOfType([PropTypes.string, PropTypes.element]),
@@ -13,7 +15,13 @@ PageTitle.propTypes = {
   subPath: PropTypes.string,
 };
 
-function PageTitle({ title, description, items = [] }) {
+function PageTitle({
+  title,
+  description,
+  items = [],
+  withArrowBack = false,
+  onClickArrow,
+}) {
   const theme = useTheme();
   const color = theme.palette.custom;
 
@@ -29,7 +37,13 @@ function PageTitle({ title, description, items = [] }) {
             "--Breadcrumbs-gap": "6px",
           }}
         >
-          <Box>
+          <Box display="flex" alignItems="center" gap={1}>
+            {withArrowBack && (
+              <IconButtonComponent
+                icon={<ArrowBack />}
+                onClick={onClickArrow ? onClickArrow : () => navigate(-1)}
+              />
+            )}
             <Typography fontSize={30} fontWeight={600}>
               {title}
             </Typography>
@@ -66,7 +80,7 @@ function PageTitle({ title, description, items = [] }) {
             )
           )}
         </Breadcrumbs>
-        <Typography level="body-sm" ml={1.5} mt={-2}>
+        <Typography level="body-sm" ml={1.5} mt={-2} width={"80%"}>
           {description}
         </Typography>
       </Stack>

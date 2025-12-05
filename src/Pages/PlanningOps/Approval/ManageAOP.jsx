@@ -15,6 +15,7 @@ import ObjectivesList from "./Contents/ObjectivesList";
 import {
   useAllComments,
   useCommentActions,
+  useComments,
   useRemarks,
 } from "../../../Hooks/CommentHook";
 import { ActivityDetails } from "./Contents/ActivityDetails";
@@ -50,7 +51,7 @@ export default function ManageAOP() {
     getCommentsByApplication,
     getRemarksByApplication,
   } = useCommentActions();
-  const allComments = useAllComments() ?? localStorageGetter("all_comments");
+  const allComments = useComments() ?? localStorageGetter("comments");
 
   const remarks = useRemarks();
 
@@ -100,6 +101,7 @@ export default function ManageAOP() {
       getActivityById(defaultActivityId, () => {}),
       getCommentsByActivity(defaultActivityId, () => {}),
       getCommentsByApplication(AOP_APPLICATION_ID, () => {}),
+      getRemarksByApplication(AOP_APPLICATION_ID, () => {}),
     ]).catch((error) => {
       console.error("Error fetching data:", error);
     });
@@ -128,6 +130,8 @@ export default function ManageAOP() {
               current: true,
             },
           ]}
+          withArrowBack
+          onClickArrow={() => navigate("/aop-approval")}
         />
         {/* CONTENT */}
         <Box
@@ -168,7 +172,6 @@ export default function ManageAOP() {
                   }
                 />
               </ContainerComponent>
-              {console.log(allComments, remarks)}
               <ContainerComponent
                 title={"List of objectives and activities"}
                 description={
@@ -180,9 +183,7 @@ export default function ManageAOP() {
                       <ButtonComponent
                         variant={"outlined"}
                         label={`Go to feedback (${
-                          isPlanning
-                            ? allComments?.comments?.length
-                            : remarks?.length
+                          isPlanning ? remarks?.length : allComments?.length
                         })`}
                         endDecorator={<ExternalLink size={14} />}
                         onClick={handleViewFeedback}
@@ -218,6 +219,7 @@ export default function ManageAOP() {
         openFeedbackModal={openFeedbackModal}
         setOpenFeedbackModal={setOpenFeedbackModal}
         isLoading={isRemarksLoading}
+        isActivity={false}
       />
     </Fragment>
   );

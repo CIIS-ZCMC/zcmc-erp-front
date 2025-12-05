@@ -10,6 +10,7 @@ import {
   Divider,
 } from "@mui/joy";
 import IconButtonComponent from "../IconButtonComponent";
+import { blue } from "@mui/material/colors";
 
 const CardComponent = ({
   statusColor,
@@ -20,22 +21,25 @@ const CardComponent = ({
   justifyContentHeader,
   justifyContentActions,
   direction,
+  bgcolor,
+  contentPadding,
+  withDividerStyle = false,
+  actionWidth,
 }) => {
   return (
     <>
       <Card
-        // variant=''
-        // color='primary'
         sx={{
           textAlign: "center",
           overflow: "auto",
-          // width: "459px",
           height: height,
-          borderLeft: `6px solid ${statusColor}`,
+          border: "none", // remove all borders
+          borderLeft: `6px solid ${statusColor}`, // keep ONLY left border
           borderRadius: "md",
+          bgcolor: bgcolor,
         }}
       >
-        <CardContent>
+        <CardContent sx={{ padding: contentPadding }}>
           <Stack
             direction={"row"}
             alignItems={"center"}
@@ -56,7 +60,13 @@ const CardComponent = ({
           </Stack>
         </CardContent>
 
-        <Divider inset="none" />
+        <Divider
+          inset="none"
+          sx={{
+            bgcolor: withDividerStyle && blue[100],
+            padding: withDividerStyle && 0.09,
+          }}
+        />
 
         <CardActions
           sx={{
@@ -66,6 +76,7 @@ const CardComponent = ({
           <Stack
             direction={direction ? direction : "column"}
             alignItems={"center"}
+            width={actionWidth}
           >
             {cardActions}
           </Stack>

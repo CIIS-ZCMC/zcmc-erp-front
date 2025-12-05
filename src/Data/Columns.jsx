@@ -1516,7 +1516,7 @@ export const PPMP_HEADERS = (status, editingRows, handleComments) => [
         <Stack direction={"row"} spacing={1} justifyContent={"right"}>
           {status?.name !== "draft" && (
             <ChipComponent
-              label={"6"}
+              label={row.comments_count}
               startDecorator={<CommentOutlined />}
               variant={"soft"}
               onClick={(e) => {
@@ -1558,7 +1558,6 @@ export const PPMP_HEADERS = (status, editingRows, handleComments) => [
 ];
 
 export const ITEMS_REQUESTS = (handleOpen, pathName) => [
-
   {
     key: "item",
     label: "Item & Unit",
@@ -1613,13 +1612,10 @@ export const ITEMS_REQUESTS = (handleOpen, pathName) => [
     key: "actions",
     label: "Actions",
     render: (r) => (
-
       <>
-
-        {
-          pathName === '/item-requests/' &&
+        {pathName === "/item-requests/" && (
           <>
-            {r.status_id === 3 &&
+            {r.status_id === 3 && (
               <>
                 <ChipComponent
                   size="lg"
@@ -1629,9 +1625,9 @@ export const ITEMS_REQUESTS = (handleOpen, pathName) => [
                   startDecorator={<HourglassEmpty />}
                 />
               </>
-            }
+            )}
 
-            {r.status_id === 4 &&
+            {r.status_id === 4 && (
               <>
                 <ChipComponent
                   size="lg"
@@ -1641,9 +1637,9 @@ export const ITEMS_REQUESTS = (handleOpen, pathName) => [
                   startDecorator={<CheckOutlined />}
                 />
               </>
-            }
+            )}
 
-            {r.status_id === 5 &&
+            {r.status_id === 5 && (
               <>
                 <ChipComponent
                   size="lg"
@@ -1653,12 +1649,11 @@ export const ITEMS_REQUESTS = (handleOpen, pathName) => [
                   startDecorator={<Clear />}
                 />
               </>
-            }
+            )}
           </>
-        }
+        )}
 
-
-        {pathName === '/item-requests/pending' &&
+        {pathName === "/item-requests/pending" && (
           <>
             <div style={{ display: "flex", gap: "8px" }}>
               <ChipComponent
@@ -1684,13 +1679,13 @@ export const ITEMS_REQUESTS = (handleOpen, pathName) => [
                 label={"Decline"}
                 startDecorator={<Clear />}
               />
-            </div >
+            </div>
           </>
-        }
+        )}
 
-        {pathName === '/item-requests/saved' &&
+        {pathName === "/item-requests/saved" && (
           <>
-            {r.status_id === 4 &&
+            {r.status_id === 4 && (
               <>
                 <ChipComponent
                   size="lg"
@@ -1700,9 +1695,9 @@ export const ITEMS_REQUESTS = (handleOpen, pathName) => [
                   startDecorator={<CheckOutlined />}
                 />
               </>
-            }
+            )}
           </>
-        }
+        )}
       </>
     ),
   },

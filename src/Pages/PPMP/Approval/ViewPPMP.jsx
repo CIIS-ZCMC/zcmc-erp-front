@@ -4,7 +4,7 @@ import {
   usePPMPApplicationActions,
 } from "../../../Hooks/PPMP/PPMPApplicationHook";
 import React, { Fragment, useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { PPMP_APPROVER_HEADERS } from "../../../Data/Columns";
 import {
   Box,
@@ -46,6 +46,7 @@ function ViewPPMP() {
   const { id } = useParams();
   const { getPPMPApplicationByID } = usePPMPApplicationActions();
   const { ppmpApplicationItems, ppmpApplication, isLoading } = usePPMP();
+  const navigate = useNavigate();
 
   const { getPPMPComments, postPPMPComment } = usePPMPCommentsActions();
   const { ppmpComments } = usePPMPComments();
@@ -87,15 +88,15 @@ function ViewPPMP() {
   const [debouncedSearch] = useDebounce(search, 500);
 
   useEffect(() => {
-    getPPMPApplicationByID(id, debouncedSearch, page, perPage, () => { });
+    getPPMPApplicationByID(id, debouncedSearch, page, perPage, () => {});
   }, [id, debouncedSearch, page, perPage]);
 
   useEffect(() => {
     let interval;
     if (openDrawer && selectedRow?.id) {
-      getPPMPComments(selectedRow.id, () => { });
+      getPPMPComments(selectedRow.id, () => {});
       interval = setInterval(() => {
-        getPPMPComments(selectedRow.id, () => { });
+        getPPMPComments(selectedRow.id, () => {});
       }, 3000); // fetch every 5 seconds
     }
 

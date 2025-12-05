@@ -25,12 +25,10 @@ const useCommentHook = create((set, get) => ({
       read({
         url: `${COMMENT}/${id}`,
         success: (response) => {
-          console.log(response);
-
           const {
             data: { comments },
           } = response.data;
-
+          console.log(comments);
           set({ comments: comments });
           localStorageSetter("comments", comments.length === 0 ? [] : comments);
           callback(response.status, comments);
@@ -70,8 +68,8 @@ const useCommentHook = create((set, get) => ({
         url: `${REMARKS}/${id}`,
         success: (response) => {
           const { data } = response.data;
-          set({ remarks: data });
-          localStorageSetter("remarks", [data]);
+          set({ remarks: data.remarks });
+          localStorageSetter("remarks", [data.remarks]);
           callback(response.status, data);
         },
         failed: (response) => {

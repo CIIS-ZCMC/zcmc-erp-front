@@ -33,6 +33,8 @@ import PaginationComponent from "@Components/Common/Table/PaginationComponent";
 import IconButtonComponent from "@Components/Common/IconButtonComponent";
 import useModalHook from "../../../Hooks/ModalHook";
 import useSnackbarHook from "../../../Hooks/SnackbarHook";
+import NoResultComponent from "@Components/Common/Table/NoResultComponent";
+import { ThreeDotsLoader } from "@Components/Common/Loading/ThreeDotsLoader";
 
 /**
  * ExpandableTable Component
@@ -56,6 +58,7 @@ export default function CollapsibleTable({
   onPrevPage,
   onRemoveActivity,
   onDeletePPMP,
+  isLoading,
 }) {
   const [openIndex, setOpenIndex] = React.useState(null);
 
@@ -93,24 +96,44 @@ export default function CollapsibleTable({
           </tr>
         </thead>
         <tbody>
-          {rows?.map((row, index) => (
-            <ExpandableRow
-              key={index}
-              row={row}
-              columns={columns}
-              editing={editingRows?.[row.id]}
-              onEditToggle={onEditToggle}
-              open={openIndex === index}
-              onToggle={(forceState) => {
-                if (forceState === true) setOpenIndex(index); // expand
-                else if (forceState === false) setOpenIndex(null); // collapse
-                else handleToggle(index); // normal click
-              }}
-              onGetUpdatedData={onGetUpdatedData}
-              onRemoveActivity={onRemoveActivity}
-              onDeletePPMP={onDeletePPMP}
-            />
-          ))}
+          {isLoading ? (
+            <tr>
+              <td
+                colSpan={columns.length}
+                style={{ textAlign: "center", padding: "40px 0" }}
+              >
+                <ThreeDotsLoader />
+              </td>
+            </tr>
+          ) : rows?.length === 0 ? (
+            <tr>
+              <td
+                colSpan={columns.length}
+                style={{ textAlign: "center", padding: "40px 0" }}
+              >
+                <NoResultComponent />
+              </td>
+            </tr>
+          ) : (
+            rows?.map((row, index) => (
+              <ExpandableRow
+                key={index}
+                row={row}
+                columns={columns}
+                editing={editingRows?.[row.id]}
+                onEditToggle={onEditToggle}
+                open={openIndex === index}
+                onToggle={(forceState) => {
+                  if (forceState === true) setOpenIndex(index); // expand
+                  else if (forceState === false) setOpenIndex(null); // collapse
+                  else handleToggle(index); // normal click
+                }}
+                onGetUpdatedData={onGetUpdatedData}
+                onRemoveActivity={onRemoveActivity}
+                onDeletePPMP={onDeletePPMP}
+              />
+            ))
+          )}
         </tbody>
       </Table>
       <PaginationComponent
@@ -206,7 +229,7 @@ function ExpandableRow({
       if (status === 200) {
         showSnack(200, message);
       } else {
-        console.error("❌ Failed to update resource:", message);
+        showSnack(500, message);
       }
     });
   };
@@ -466,7 +489,7 @@ function ExpandableRow({
                           </Stack>
                         </Stack>
                       </BoxComponent>
-                      <BoxComponent p={2} width={350} height={250}>
+                      <BoxComponent p={2} width={370} height={250}>
                         <Stack>
                           <Typography
                             fontWeight={600}
@@ -496,7 +519,11 @@ function ExpandableRow({
                                 color="danger"
                               />
                             )}
-                            <Box height={"300px"} sx={{ overflowY: "scroll" }}>
+                            <Box
+                              height={"300px"}
+                              sx={{ overflowY: "auto" }}
+                              pr={1}
+                            >
                               {linkedActivities?.length > 0 ? (
                                 linkedActivities?.map((act, index) => (
                                   <BoxComponent

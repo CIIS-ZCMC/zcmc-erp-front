@@ -289,6 +289,8 @@ const Objectives = () => {
           "The following below serves as the summary of your AOP request. You can open and update your request before the deadline as set by the administrators."
         }
         items={breadcrumbs}
+        withArrowBack
+        onClickArrow={() => navigate("/aop")}
       />
 
       <BoxComponent mt={2} p={2}>
@@ -317,8 +319,8 @@ const Objectives = () => {
           <ButtonComponent
             onClick={() => handleOpenObjectivesModal()}
             label={"Add an Objective"}
-          // endDecorator={<Plus size={16} />}
-          // disabled={!show || disabledEditMode(APPLICATION_OBJECTIVE_ID, remarks, comments, disabled)}
+            // endDecorator={<Plus size={16} />}
+            // disabled={!show || disabledEditMode(APPLICATION_OBJECTIVE_ID, remarks, comments, disabled)}
           />
         </Stack>
       </BoxComponent>
@@ -355,7 +357,7 @@ const Objectives = () => {
             <ButtonComponent
               onClick={() => handleOpenObjectivesModal()}
               label={"Add an Objective"}
-            // endDecorator={<Plus size={16} />}
+              // endDecorator={<Plus size={16} />}
             />
           </Stack>
         </>
@@ -425,6 +427,7 @@ const Objectives = () => {
         handleClose={handleCloseModal}
         title={isEditMode ? EDIT_OBJECTIVE : ADD_OBJECTIVE}
         description={ADD_OBJECTIVE_SUBHEADING}
+        maxWidth={500}
         minWidth={500}
         content={
           <ObjectivesModal
