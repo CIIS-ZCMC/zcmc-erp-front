@@ -51,17 +51,20 @@ function DashboardEndUser(props) {
   const [openFeedbackModal, setOpenFeedbackModal] = useState(false);
 
   useEffect(() => {
-    getObjectives(aop?.id, (status, message) => {
-      return;
-    });
-  }, []);
+
+    if (aop) {
+      getObjectives(aop?.id, (status, message) => {
+        return;
+      });
+    }
+  }, [aop]);
 
   const { activity_comments, application_timelines, current_user } = feedback;
 
   const { role } = current_user || {};
 
   useEffect(() => {
-    // console.log(aop)
+    console.log('user aop applications data', aop)
     // console.log('role', role);
     // console.log('feedback', feedback);
   }, [feedback, aop]);
@@ -86,8 +89,8 @@ function DashboardEndUser(props) {
           title: "Success",
           description: `${message}`,
         });
+        window.location.reload();
         return;
-        // navigate("/aop-management");
       } else {
         setAlertDialog({
           status: "error",
@@ -114,11 +117,6 @@ function DashboardEndUser(props) {
       setIsAopLoading(false); // always executed
     });
   }, []);
-
-  useEffect(() => {
-    // console.log('aop loading:', isAopLoading)
-    // console.log('loading :', isLoading)
-  }, [isAopLoading]);
 
   useEffect(() => {
     setIsLoading(true);

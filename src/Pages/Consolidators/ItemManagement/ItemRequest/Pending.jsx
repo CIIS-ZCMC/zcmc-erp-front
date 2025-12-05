@@ -49,7 +49,7 @@ export default function Pending() {
   useEffect(() => {
     const params = { status_id: 3 }
     getItemRequests(params, (status, message) => {
-      console.log(params)
+      // console.log(params)
       if (status !== 200) {
         console.error("Failed to fetch items:", message);
       }

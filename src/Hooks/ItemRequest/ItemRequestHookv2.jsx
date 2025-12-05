@@ -35,6 +35,35 @@ const useItemRequestsHook = () => {
         });
     };
 
+
+    const getItemRequestByUser = (params, callBack,) => {
+
+        setIsLoading(true)
+        read({
+            url: API.ITEM_REQUESTS_BY_USER,
+            failed: (error) => {
+                setIsLoading(false)
+                callBack?.(false, error?.message || 'Request failed')
+            },
+            params: params,
+            success: (res) => {
+                try {
+                    const {
+                        status,
+                        data: { data, message },
+                    } = res;
+                    setRequests(data);
+                    callBack(status, message)
+                } catch (error) {
+                    console.error('Error processing Item Requests:', error);
+                    callBack?.(false, error.message)
+                } finally {
+                    setIsLoading(false)
+                }
+            }
+        });
+    };
+
     const updateItemRequest = (item_request_id, body, callBack) => {
         setIsLoading(true)
         update({
@@ -63,6 +92,7 @@ const useItemRequestsHook = () => {
 
     return {
         getItemRequests,
+        getItemRequestByUser,
         updateItemRequest
     }
 }

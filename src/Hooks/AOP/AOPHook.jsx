@@ -51,7 +51,7 @@ const useAOPHook = () => {
     try {
       await read({
         url: `${API.AOP_BY_SECTOR_AND_YEAR}`,
-        params: params,
+        params,
         failed: callBack,
         success: (res) => {
           const {
@@ -100,7 +100,7 @@ const useAOPHook = () => {
             status,
             data: { data, message },
           } = res;
-          setAop(data);
+          // setAop(data);
           callBack(status, message);
         },
       });

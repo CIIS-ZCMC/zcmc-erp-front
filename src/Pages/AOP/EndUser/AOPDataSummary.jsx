@@ -20,7 +20,7 @@ const AOPDataSummary = ({ aop, handleNavigateObjectives }) => {
     total_cost,
     users_only,
     designations_only,
-  } = aop.counts;
+  } = aop?.counts || {};
 
   return (
     <Grid container spacing={2}>

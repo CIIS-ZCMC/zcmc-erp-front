@@ -46,6 +46,8 @@ import AuthorizationPinComponent from "@Components/AuthorizationPinComponent";
 import useModalHook from "../../../Hooks/ModalHook";
 import StepperComponent from "@Components/Stepper/StepperComponent";
 
+import useItemRequestHook from "../../../Hooks/ItemRequest/ItemRequestHookv2";
+
 import Content from "./Modal/ItemRequests/Content";
 import Footer from "./Modal/ItemRequests/Footer";
 
@@ -114,6 +116,10 @@ const PPMPCard = ({
 };
 
 function PPMPDashboard(props) {
+
+
+  const { getItemRequestByUser } = useItemRequestHook();
+
   const navigate = useNavigate();
   const {
     dashboard,
@@ -228,6 +234,21 @@ function PPMPDashboard(props) {
       area: assignedArea.name,
     });
   }, [assignedArea]);
+
+  const handleItemRequest = () => {
+
+    setOpenItemRequest(true)
+
+    const params = { status_id: 8 }
+
+    getItemRequestByUser(params), (status, message) => {
+      console.log(params)
+      if (status !== 200) {
+        console.error("Failed to fetch items:", message);
+      }
+    }
+  }
+
   return (
     <Fragment>
       <Stack>
@@ -606,7 +627,7 @@ function PPMPDashboard(props) {
                         fontSize: 12,
                         textDecoration: "underline"
                       }}
-                      onClick={() => setOpenItemRequest(true)}
+                      onClick={() => handleItemRequest()}
                     >
                       View Item Request
                     </Link>
