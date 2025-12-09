@@ -324,8 +324,8 @@ const Objectives = () => {
           <ButtonComponent
             onClick={() => handleOpenObjectivesModal()}
             label={"Add an Objective"}
-            // endDecorator={<Plus size={16} />}
-            // disabled={!show || disabledEditMode(APPLICATION_OBJECTIVE_ID, remarks, comments, disabled)}
+          // endDecorator={<Plus size={16} />}
+          // disabled={!show || disabledEditMode(APPLICATION_OBJECTIVE_ID, remarks, comments, disabled)}
           />
         </Stack>
       </BoxComponent>
@@ -362,7 +362,7 @@ const Objectives = () => {
             <ButtonComponent
               onClick={() => handleOpenObjectivesModal()}
               label={"Add an Objective"}
-              // endDecorator={<Plus size={16} />}
+            // endDecorator={<Plus size={16} />}
             />
           </Stack>
         </>

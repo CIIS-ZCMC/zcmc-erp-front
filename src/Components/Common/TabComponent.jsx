@@ -24,9 +24,9 @@ export default function TabComponent({
     (element) => element.seen === 0
   )?.length;
 
-  // useEffect(() => {
-  //   console.log('tabs', tabs)
-  // }, [tabs])
+  useEffect(() => {
+    console.log('tabs', tabs)
+  }, [tabs])
 
   return (
     <Box

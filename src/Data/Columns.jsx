@@ -1476,42 +1476,42 @@ export const PPMP_HEADERS = (status, editingRows, handleComments) => [
   },
   ...(status === "draft"
     ? [
-        {
-          id: "is_complete",
-          label: "",
-          width: "150px",
-          display: status === "draft" ? "table-cell" : "none",
-          render: (row) =>
-            row?.is_complete ? (
-              ""
-            ) : (
-              <Box
-                p={0.5}
-                bgcolor={red[50]}
-                display={"flex"}
-                justifyContent={"center"}
-                width="150px"
-                borderRadius={5}
+      {
+        id: "is_complete",
+        label: "",
+        width: "150px",
+        display: status === "draft" ? "table-cell" : "none",
+        render: (row) =>
+          row?.is_complete ? (
+            ""
+          ) : (
+            <Box
+              p={0.5}
+              bgcolor={red[50]}
+              display={"flex"}
+              justifyContent={"center"}
+              width="150px"
+              borderRadius={5}
+            >
+              <Typography
+                level="body-xs"
+                color="danger"
+                alignItems={"center"}
+                gap={1}
+                startDecorator={
+                  <WarningAmberOutlined
+                    color="danger"
+                    style={{ fontSize: 18 }}
+                  />
+                }
               >
-                <Typography
-                  level="body-xs"
-                  color="danger"
-                  alignItems={"center"}
-                  gap={1}
-                  startDecorator={
-                    <WarningAmberOutlined
-                      color="danger"
-                      style={{ fontSize: 18 }}
-                    />
-                  }
-                >
-                  {" "}
-                  Incomplete Details.
-                </Typography>
-              </Box>
-            ),
-        },
-      ]
+                {" "}
+                Incomplete Details.
+              </Typography>
+            </Box>
+          ),
+      },
+    ]
     : []),
   {
     id: "actions",
@@ -1607,20 +1607,66 @@ export const ITEMS_REQUESTS = (handleOpen, pathName) => [
   {
     key: "variant",
     label: "Variant",
-    render: (r) => (
-      <ChipComponent
-        size="md"
-        label={r.terminology_category.name}
-        startDecorator={<Circle sx={{ fontSize: 10 }} />}
-        color={"primary"}
-      />
-    ),
+    render: (r) => {
+      return (
+        r.terminology_category ?
+          <ChipComponent
+            size="md"
+            label={r.terminology_category?.name || ""}
+            startDecorator={<Circle sx={{ fontSize: 10 }} />}
+            color={"primary"}
+          />
+          :
+          <>No Variant Available</>
+      )
+    },
   },
+
   {
     key: "actions",
     label: "Actions",
     render: (r) => (
       <>
+        {pathName === '/ppmp' && (
+          <>
+            {r.status_id === 3 && (
+              <>
+                <ChipComponent
+                  size="lg"
+                  color="primary"
+                  variant={"soft"}
+                  label={"Pending"}
+                  startDecorator={<HourglassEmpty />}
+                />
+              </>
+            )}
+
+            {r.status_id === 4 && (
+              <>
+                <ChipComponent
+                  size="lg"
+                  color="success"
+                  variant={"soft"}
+                  label={"Saved to Library"}
+                  startDecorator={<CheckOutlined />}
+                />
+              </>
+            )}
+
+            {r.status_id === 5 && (
+              <>
+                <ChipComponent
+                  size="lg"
+                  color="danger"
+                  variant={"soft"}
+                  label={"Declined"}
+                  startDecorator={<Clear />}
+                />
+              </>
+            )}
+          </>
+        )}
+
         {pathName === "/item-requests/" && (
           <>
             {r.status_id === 3 && (

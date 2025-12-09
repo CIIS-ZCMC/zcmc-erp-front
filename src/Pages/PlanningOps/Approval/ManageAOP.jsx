@@ -71,7 +71,7 @@ export default function ManageAOP() {
 
     const fetch = () => {
       // if (!isDivisionHead || !isMCC) {
-      getCommentsByApplication(AOP_APPLICATION_ID, () => {});
+      getCommentsByApplication(AOP_APPLICATION_ID, () => { });
       // }
 
       getRemarksByApplication(AOP_APPLICATION_ID, () => {
@@ -97,11 +97,11 @@ export default function ManageAOP() {
     if (activityId == defaultActivityId) return;
 
     Promise.all([
-      getAOPApprovalTimeline(AOP_APPLICATION_ID, () => {}),
-      getActivityById(defaultActivityId, () => {}),
-      getCommentsByActivity(defaultActivityId, () => {}),
-      getCommentsByApplication(AOP_APPLICATION_ID, () => {}),
-      getRemarksByApplication(AOP_APPLICATION_ID, () => {}),
+      getAOPApprovalTimeline(AOP_APPLICATION_ID, () => { }),
+      getActivityById(defaultActivityId, () => { }),
+      getCommentsByActivity(defaultActivityId, () => { }),
+      getCommentsByApplication(AOP_APPLICATION_ID, () => { }),
+      getRemarksByApplication(AOP_APPLICATION_ID, () => { }),
     ]).catch((error) => {
       console.error("Error fetching data:", error);
     });
@@ -182,9 +182,8 @@ export default function ManageAOP() {
                     {isAllowedFeedbackViewing() && (
                       <ButtonComponent
                         variant={"outlined"}
-                        label={`Go to feedback (${
-                          isPlanning ? remarks?.length : allComments?.length
-                        })`}
+                        label={`Go to feedback (${isPlanning ? remarks?.length : allComments?.length
+                          })`}
                         endDecorator={<ExternalLink size={14} />}
                         onClick={handleViewFeedback}
                       />

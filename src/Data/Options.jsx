@@ -49,3 +49,9 @@ export const submittedRequestsTabs = [
   { id: 2, name: "Pending", value: "pending" },
   { id: 3, name: "Added to library", value: "saved" },
 ];
+
+export const itemRequestsTabs = [
+  { id: 1, name: "View all", value: 8 },
+  { id: 2, name: "Pending", value: 3 },
+  { id: 3, name: "Added to library", value: 4 },
+]

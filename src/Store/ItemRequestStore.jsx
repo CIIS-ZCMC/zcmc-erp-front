@@ -7,7 +7,7 @@ const useItemRequestStore = create((set) => ({
 
     actions: {
         setRequests: (requests) => set({ requests }),
-        setRequestsByUser: (requestsByUser) => ser({ requestsByUser }),
+        setRequestsByUser: (requestsByUser) => set({ requestsByUser }),
         setIsLoading: (isLoading) => set({ isLoading })
     }
 }))

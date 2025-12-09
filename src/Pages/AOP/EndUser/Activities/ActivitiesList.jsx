@@ -31,6 +31,7 @@ const ActivitiesList = ({
     end_month,
     resources_count,
     responsible_people_count,
+    comments,
   } = activity;
 
   const formattedStartMonth = moment(start_month, "YYYY-MM").format("MMMM");

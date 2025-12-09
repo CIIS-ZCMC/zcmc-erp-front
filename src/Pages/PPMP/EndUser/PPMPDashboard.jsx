@@ -21,7 +21,7 @@ import {
 import { PhilippinePesoIcon, ExternalLink, TargetIcon, CloudDownload } from "lucide-react";
 import { TbTargetArrow } from "react-icons/tb";
 import ButtonComponent from "../../../Components/Common/ButtonComponent";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
 import usePPMPHook from "../../../Hooks/PPMP/PPMPHook";
 import { MdOutlineShoppingCartCheckout } from "react-icons/md";
 import no_result from "../../../assets/empty-state-icon-base.png";
@@ -121,14 +121,25 @@ const PPMPCard = ({
 };
 
 function PPMPDashboard(props) {
+  const location = useLocation();
+  const pathName = location.pathname;
+
   const { requestsByUser } = useItemRequestStore();
 
   const { getItemRequestByUser } = useItemRequestHook();
 
-  useEffect(() => {
-    console.log(requestsByUser)
-  }, [requestsByUser])
+  const {
+    data,
+    current_page,
+    per_page,
+    next_page_url,
+    prev_page_url,
+    total
+  } = requestsByUser || {}
 
+  // useEffect(() => {
+  //   console.log(requestsByUser)
+  // }, [requestsByUser])
 
   const navigate = useNavigate();
   const {
@@ -630,9 +641,9 @@ function PPMPDashboard(props) {
                         gap: 0.5
                       }}
                       onClick={() => setOpenItemRequest(true)}
-                      endDecorator={<Launch />}
+                      endDecorator={<ExternalLink size={18} />}
                     >
-                      <ExternalLink size={18} />
+                      Request new item
                     </Link >
 
                     <Link
@@ -643,11 +654,11 @@ function PPMPDashboard(props) {
                         gap: 0.5
                       }}
                       onClick={() => handleItemRequest()}
-                      endDecorator={<Launch />}
+                      endDecorator={<ExternalLink size={18} />}
                     >
                       View Item Request
-                      <ExternalLink size={18} />
                     </Link>
+
                   </Stack >
                 </Stack >
               </Grid >
@@ -735,14 +746,17 @@ function PPMPDashboard(props) {
       </BoxComponent >
       {/* <PageLoader isLoading={pageLoader} /> */}
 
-      < ModalComponent
+      <ModalComponent
         isOpen={openViewItemRequest}
         title={"Items Requested"}
         description={"Below are the items you’ve requested for this PPMP."}
         handleClose={() => setOpenItemRequest(false)}
-        content={< Content />}
-        hasActionButtons
-        customActionFooter={< Footer />}
+        content={
+          <Content
+            data={requestsByUser}
+            path={pathName}
+          />
+        }
       />
 
       {/* call api item request by user first */}

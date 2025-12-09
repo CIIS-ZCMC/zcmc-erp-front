@@ -73,7 +73,7 @@ const AOPApproval = () => {
   const handleClickCard = (id, area_code) => {
     setPageLoading(true);
 
-    getAOPApprovalTimeline(id, () => {});
+    getAOPApprovalTimeline(id, () => { });
     getAOPApplicationById(id, () => {
       setPageLoading(false);
       navigate(`/aop-approval/objectives/${id}`);
@@ -192,7 +192,7 @@ const AOPApproval = () => {
                   alignItems={"center"}
                   justifyContent={"center"}
                   width="100%"
-                  // minHeight={contentMaxHeight}
+                // minHeight={contentMaxHeight}
                 >
                   <ThreeDots
                     visible={true}
