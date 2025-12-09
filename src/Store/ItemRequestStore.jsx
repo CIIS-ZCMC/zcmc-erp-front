@@ -2,10 +2,12 @@ import { create } from "zustand";
 
 const useItemRequestStore = create((set) => ({
     requests: [],
+    requestsByUser: [],
     isLoading: false,
 
     actions: {
         setRequests: (requests) => set({ requests }),
+        setRequestsByUser: (requestsByUser) => ser({ requestsByUser }),
         setIsLoading: (isLoading) => set({ isLoading })
     }
 }))

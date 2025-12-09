@@ -50,7 +50,7 @@ const ActivitiesList = ({
             activity={activity_name ? activity_name : activity_code}
             cost={total_cost}
             timeframe={`${start_month ? formattedStartMonth : ""} - ${end_month ? formattedEndMonth : ""
-              }  `}
+              }`}
           />
         }
         cardActions={

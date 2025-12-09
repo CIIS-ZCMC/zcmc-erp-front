@@ -5,7 +5,7 @@ import { useItemRequestActions } from '../../Store/ItemRequestStore';
 
 const useItemRequestsHook = () => {
 
-    const { setRequests, setIsLoading } = useItemRequestActions();
+    const { setRequests, setRequestsByUser, setIsLoading } = useItemRequestActions();
 
     const getItemRequests = (params, callBack,) => {
 
@@ -52,7 +52,7 @@ const useItemRequestsHook = () => {
                         status,
                         data: { data, message },
                     } = res;
-                    setRequests(data);
+                    setRequestsByUser(data);
                     callBack(status, message)
                 } catch (error) {
                     console.error('Error processing Item Requests:', error);

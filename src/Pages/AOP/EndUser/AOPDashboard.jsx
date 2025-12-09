@@ -72,7 +72,11 @@ function DashboardEndUser(props) {
   const { role } = current_user || {};
 
   useEffect(() => {
+<<<<<<< Updated upstream
     console.log("user aop applications data", aop);
+=======
+    // console.log('user aop applications data', aop)
+>>>>>>> Stashed changes
     // console.log('role', role);
     // console.log('feedback', feedback);
   }, [feedback, aop]);
@@ -80,7 +84,6 @@ function DashboardEndUser(props) {
   const remarksCount = application_timelines?.length || 0;
   const commentCount = activity_comments?.length || 0;
   const feedbackCount = commentCount + remarksCount;
-
 
   const handleClose = () => {
     setIsLoading(true)
@@ -196,8 +199,6 @@ function DashboardEndUser(props) {
       setIsLoading(false);
     });
   };
-
-
 
   return (
     <Fragment>

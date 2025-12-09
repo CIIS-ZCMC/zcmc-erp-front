@@ -23,10 +23,13 @@ export const FeedbackContent = ({
   const [activeTab, setActiveTab] = useState(0);
   const { isDivisionHead, isPlanning } = useUserTypes();
 
+<<<<<<< Updated upstream
   useEffect(() => {
     console.log(isDivisionHead);
   }, [isDivisionHead]);
 
+=======
+>>>>>>> Stashed changes
   // COMMENTS HOOK
   const remarks = useRemarks();
   const allComments = localStorageGetter("comments");
@@ -56,10 +59,17 @@ export const FeedbackContent = ({
       : remarks?.length;
 
   useEffect(() => {
+<<<<<<< Updated upstream
     if (isPlanning) {
       setActiveTab(1); // Switch to Remarks tab
     }
   }, [isPlanning]);
+=======
+    console.log(isDivisionHead)
+    console.log(feedbackDisplay)
+  }, [isDivisionHead, feedbackDisplay])
+
+>>>>>>> Stashed changes
   return (
     <DrawerComponent
       open={openFeedbackModal}

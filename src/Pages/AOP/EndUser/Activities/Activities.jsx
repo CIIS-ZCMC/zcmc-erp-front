@@ -41,7 +41,7 @@ const Activities = () => {
   const { objectiveId } = useParams();
   const location = useLocation();
 
-  // const { state } = location;
+  const { state } = location;
 
   const {
     applicationActivities,
@@ -110,8 +110,8 @@ const Activities = () => {
     // console.log('current end month:', endMonth)
     // console.log('current is gad related', isGadRelated)
     // console.log('current is gad target', target)
-    // console.log(state.objective)
-    // console.log(applicationActivities)
+    // console.log('from location:', state.objective)
+    // console.log('from application activities:', applicationActivities?.[0]?.objective_code)
   }, [
     activity,
     startMonth,
@@ -121,7 +121,7 @@ const Activities = () => {
     applicationActivities,
   ]);
 
-  const objectiveName = applicationActivities?.[0]?.objective_code
+  const objectiveName = applicationActivities?.[0]?.objective_code || state.objective
 
   const filteredActivities = useMemo(() => {
     if (!search) return applicationActivities;

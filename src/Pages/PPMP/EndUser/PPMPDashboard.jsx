@@ -17,7 +17,8 @@ import {
   useTheme,
   Link,
 } from "@mui/joy";
-import { PhilippinePesoIcon, TargetIcon } from "lucide-react";
+
+import { PhilippinePesoIcon, ExternalLink, TargetIcon, CloudDownload } from "lucide-react";
 import { TbTargetArrow } from "react-icons/tb";
 import ButtonComponent from "../../../Components/Common/ButtonComponent";
 import { useNavigate } from "react-router-dom";
@@ -49,6 +50,8 @@ import useModalHook from "../../../Hooks/ModalHook";
 import StepperComponent from "@Components/Stepper/StepperComponent";
 
 import useItemRequestHook from "../../../Hooks/ItemRequest/ItemRequestHookv2";
+import useItemRequestStore from "../../../Store/ItemRequestStore";
+
 
 import Content from "./Modal/ItemRequests/Content";
 import Footer from "./Modal/ItemRequests/Footer";
@@ -118,7 +121,18 @@ const PPMPCard = ({
 };
 
 function PPMPDashboard(props) {
+<<<<<<< Updated upstream
+=======
+
+
+  const { requestsByUser } = useItemRequestStore();
+>>>>>>> Stashed changes
   const { getItemRequestByUser } = useItemRequestHook();
+
+  useEffect(() => {
+    console.log(requestsByUser)
+  }, [requestsByUser])
+
 
   const navigate = useNavigate();
   const {
@@ -594,12 +608,18 @@ function PPMPDashboard(props) {
                   <Link
                     sx={{
                       fontSize: 12,
+<<<<<<< Updated upstream
                       textDecoration: "none",
+=======
+                      textDecoration: "underline",
+                      gap: 0.5
+>>>>>>> Stashed changes
                     }}
                     endDecorator={<CloudDownloadOutlined />}
                     // onClick={() => setOpenItemRequest(true)}
                   >
                     Print as (.XLS)
+                    <CloudDownload size={18} />
                   </Link>
 
                   <Stack
@@ -612,23 +632,39 @@ function PPMPDashboard(props) {
                     <Link
                       sx={{
                         fontSize: 12,
+<<<<<<< Updated upstream
                         textDecoration: "none",
+=======
+                        textDecoration: "underline",
+                        gap: 0.5
+>>>>>>> Stashed changes
                       }}
                       onClick={() => setOpenItemRequest(true)}
                       endDecorator={<Launch />}
                     >
+<<<<<<< Updated upstream
                       Request new item
+=======
+                      Request new Item
+                      <ExternalLink size={18} />
+>>>>>>> Stashed changes
                     </Link>
 
                     <Link
                       sx={{
                         fontSize: 12,
+<<<<<<< Updated upstream
                         textDecoration: "none",
+=======
+                        textDecoration: "underline",
+                        gap: 0.5
+>>>>>>> Stashed changes
                       }}
                       onClick={() => handleItemRequest()}
                       endDecorator={<Launch />}
                     >
                       View Item Request
+                      <ExternalLink size={18} />
                     </Link>
                   </Stack>
                 </Stack>
