@@ -72,11 +72,9 @@ function DashboardEndUser(props) {
   const { role } = current_user || {};
 
   useEffect(() => {
-<<<<<<< Updated upstream
     console.log("user aop applications data", aop);
-=======
     // console.log('user aop applications data', aop)
->>>>>>> Stashed changes
+    // console.log('user aop applications data', aop)
     // console.log('role', role);
     // console.log('feedback', feedback);
   }, [feedback, aop]);
@@ -360,7 +358,7 @@ function DashboardEndUser(props) {
         feedbackCount={feedbackCount}
         role={role}
         isActivity={true}
-        // handleClick={() => navigate(`aop/activities/${activity_id}`)} // return objective id
+      // handleClick={() => navigate(`aop/activities/${activity_id}`)} // return objective id
       />
     </Fragment >
   );

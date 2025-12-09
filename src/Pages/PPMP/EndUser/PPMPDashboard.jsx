@@ -121,12 +121,8 @@ const PPMPCard = ({
 };
 
 function PPMPDashboard(props) {
-<<<<<<< Updated upstream
-=======
-
-
   const { requestsByUser } = useItemRequestStore();
->>>>>>> Stashed changes
+
   const { getItemRequestByUser } = useItemRequestHook();
 
   useEffect(() => {
@@ -608,15 +604,12 @@ function PPMPDashboard(props) {
                   <Link
                     sx={{
                       fontSize: 12,
-<<<<<<< Updated upstream
-                      textDecoration: "none",
-=======
+                      // textDecoration: "none",
                       textDecoration: "underline",
                       gap: 0.5
->>>>>>> Stashed changes
                     }}
                     endDecorator={<CloudDownloadOutlined />}
-                    // onClick={() => setOpenItemRequest(true)}
+                  // onClick={() => setOpenItemRequest(true)}
                   >
                     Print as (.XLS)
                     <CloudDownload size={18} />
@@ -632,33 +625,22 @@ function PPMPDashboard(props) {
                     <Link
                       sx={{
                         fontSize: 12,
-<<<<<<< Updated upstream
-                        textDecoration: "none",
-=======
+                        // textDecoration: "none",
                         textDecoration: "underline",
                         gap: 0.5
->>>>>>> Stashed changes
                       }}
                       onClick={() => setOpenItemRequest(true)}
                       endDecorator={<Launch />}
                     >
-<<<<<<< Updated upstream
-                      Request new item
-=======
-                      Request new Item
                       <ExternalLink size={18} />
->>>>>>> Stashed changes
-                    </Link>
+                    </Link >
 
                     <Link
                       sx={{
                         fontSize: 12,
-<<<<<<< Updated upstream
-                        textDecoration: "none",
-=======
+                        // textDecoration: "none",
                         textDecoration: "underline",
                         gap: 0.5
->>>>>>> Stashed changes
                       }}
                       onClick={() => handleItemRequest()}
                       endDecorator={<Launch />}
@@ -666,9 +648,9 @@ function PPMPDashboard(props) {
                       View Item Request
                       <ExternalLink size={18} />
                     </Link>
-                  </Stack>
-                </Stack>
-              </Grid>
+                  </Stack >
+                </Stack >
+              </Grid >
               <Grid
                 xs={3.5}
                 sx={{
@@ -746,20 +728,21 @@ function PPMPDashboard(props) {
                   </BoxComponent>
                 )}
               </Grid>
-            </Grid>
+            </Grid >
           </>
-        )}
-      </BoxComponent>
+        )
+        }
+      </BoxComponent >
       {/* <PageLoader isLoading={pageLoader} /> */}
 
-      <ModalComponent
+      < ModalComponent
         isOpen={openViewItemRequest}
         title={"Items Requested"}
         description={"Below are the items you’ve requested for this PPMP."}
         handleClose={() => setOpenItemRequest(false)}
-        content={<Content />}
+        content={< Content />}
         hasActionButtons
-        customActionFooter={<Footer />}
+        customActionFooter={< Footer />}
       />
 
       {/* call api item request by user first */}
@@ -809,7 +792,7 @@ function PPMPDashboard(props) {
         leftButtonLabel="Submit"
         leftButtonAction={() => handleSubmit()}
       />
-    </Fragment>
+    </Fragment >
   );
 }
 
