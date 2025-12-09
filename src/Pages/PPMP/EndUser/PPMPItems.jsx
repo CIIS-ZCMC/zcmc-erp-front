@@ -72,6 +72,7 @@ function PPMPItems(props) {
   const [search, setSearch] = useState("");
   const updatedRowData = React.useRef({});
   const [selectedRow, setSelectedRow] = useState({});
+  const [localRows, setLocalRows] = useState([]);
 
   const location = useLocation();
   const { user } = useAuth();
@@ -84,11 +85,11 @@ function PPMPItems(props) {
 
   // Filter results when search changes
   const filteredPPMPItems = useMemo(() => {
-    if (!search) return ppmp;
-    return ppmp?.filter((item) =>
+    if (!search) return localRows;
+    return localRows?.filter((item) =>
       item.item.name.toLowerCase().includes(search.toLowerCase())
     );
-  }, [search, ppmp]);
+  }, [search, localRows]);
 
   //SNACKBAR
   const notify = () => setOpenNotify(true);
@@ -257,6 +258,12 @@ function PPMPItems(props) {
       // socket.disconnect();
     };
   }, []);
+
+  useEffect(() => {
+    if (ppmp) {
+      setLocalRows(ppmp);
+    }
+  }, [ppmp]);
 
   useEffect(() => {
     if (openDrawer && selectedRow?.id) {

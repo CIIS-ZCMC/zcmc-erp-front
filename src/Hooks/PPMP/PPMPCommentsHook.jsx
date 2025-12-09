@@ -41,7 +41,7 @@ const usePPMPCommentsHook = create((set) => ({
           console.log(data);
           // Append new comment
           set(() => ({
-            ppmpComments: [...ppmpComments, data], // ⬅️ append
+            ppmpComments: [...usePPMPComments, data], // ⬅️ append
           }));
 
           callback?.(200, message);

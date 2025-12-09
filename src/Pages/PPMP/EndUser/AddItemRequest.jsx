@@ -114,6 +114,7 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
       hasError = true;
     }
 
+    console.log(hasError);
     if (hasError) return;
 
     try {
@@ -208,7 +209,7 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
       setError("pin", true, "Authorization PIN is required.");
       hasError = true;
     }
-
+    console.log(hasError);
     if (hasError) return;
 
     try {
@@ -216,16 +217,16 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
       const payload = {
         activity_id: selectedActivities.map((a) => a.activity_id),
         name: itemReq.item_name || "",
-        item_classification_id: itemReq.classification.id,
-        item_category_id: itemReq.category.id,
+        item_classification_id: itemReq.classification?.id ?? null,
+        item_category_id: itemReq.category?.id ?? null,
         quantity: itemReq.quantity,
-        item_unit_id: itemReq.unit.id,
-        variant: itemReq.variant.id,
-        estimated_budget: itemReq.estimated_budget || 0,
-        authorization_pin: itemReq.pin || "",
-        market_research: itemReq.market_research, // boolean
-        specifications: itemReq.specs.map((spec) => ({
-          description: spec.value,
+        item_unit_id: itemReq.unit?.id ?? null,
+        variant: itemReq?.variant?.id ?? null, // not required
+        estimated_budget: itemReq?.estimated_budget ?? 0,
+        authorization_pin: itemReq?.pin ?? "",
+        market_research: itemReq?.market_research, // boolean
+        specifications: itemReq?.specs?.map((spec) => ({
+          description: spec?.value ?? "",
         })),
       };
 
@@ -317,19 +318,19 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
           step === 1
             ? "On what activity shall we assign the resources you’ll add?"
             : step === 2
-              ? "General information"
-              : step === 3
-                ? "Specifications"
-                : ""
+            ? "General information"
+            : step === 3
+            ? "Specifications"
+            : ""
         }
         description={
           step === 1
             ? "Select a request status and reasons (if returned) to continue. You may add remarks if necessary."
             : step === 2
-              ? "Fill in the item information to create it."
-              : step === 3
-                ? "List down details for the item you want to cretae to specify it."
-                : ""
+            ? "Fill in the item information to create it."
+            : step === 3
+            ? "List down details for the item you want to cretae to specify it."
+            : ""
         }
         maxWidth={"500px"}
         height={step === 1 ? "auto" : step === 2 ? "680px" : "65s0px"}

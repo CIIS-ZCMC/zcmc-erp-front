@@ -63,6 +63,7 @@ function ViewPPMP() {
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
   const [isPostingComment, setIsPostingComment] = useState(false);
+  const [localRows, setLocalRows] = useState([]);
 
   // const filteredPPMPItems = useMemo(() => {
   //   if (!search) return ppmpApplicationItems;
@@ -77,9 +78,9 @@ function ViewPPMP() {
   };
 
   const handleAddComment = async () => {
-    if (!newComment.trim() || isPostingComment) return; // prevent empty or duplicate posts
+    if (!newComment.trim() || isPostingComment) return;
 
-    setIsPostingComment(true); // disable button
+    setIsPostingComment(true);
 
     try {
       await postPPMPComment({
@@ -87,19 +88,37 @@ function ViewPPMP() {
         comment: newComment,
       });
 
-      setNewComment(""); // clear input
-      getPPMPComments(selectedRow?.id); // fetch latest comments
+      // Fetch drawer comments only
+      getPPMPComments(selectedRow?.id);
+
+      // 🔥 Update local comment count instantly
+      setLocalRows((prev) =>
+        prev.map((item) =>
+          item.id === selectedRow.id
+            ? { ...item, comment_count: (item.comment_count || 0) + 1 }
+            : item
+        )
+      );
+
+      setNewComment("");
     } catch (error) {
       console.error("Failed to post comment:", error);
     } finally {
-      setIsPostingComment(false); // enable button again
+      setIsPostingComment(false);
     }
   };
+
   const [debouncedSearch] = useDebounce(search, 500);
 
   useEffect(() => {
     getPPMPApplicationByID(id, debouncedSearch, page, perPage, () => {});
   }, [id, debouncedSearch, page, perPage, newComment]);
+
+  useEffect(() => {
+    if (ppmpApplicationItems) {
+      setLocalRows(ppmpApplicationItems);
+    }
+  }, [ppmpApplicationItems]);
 
   useEffect(() => {
     if (openDrawer && selectedRow?.id) {
@@ -190,7 +209,7 @@ function ViewPPMP() {
       </BoxComponent>
       <ExpandableTable
         columns={PPMP_APPROVER_HEADERS(handleComments)}
-        rows={ppmpApplicationItems}
+        rows={localRows}
         loading={isLoading}
         renderExpanded={(row) => {
           const totalQuantity = row?.activities?.reduce(
