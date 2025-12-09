@@ -267,7 +267,6 @@ function PPMPDashboard(props) {
         boxShadow={"xs"}
         borderRadius={10}
         sx={{
-          height: "85vh",
           display: "flex",
           flexDirection: "column",
         }}
@@ -308,7 +307,8 @@ function PPMPDashboard(props) {
                 as long as two sentences if necessary.
               </Typography>
             </Stack>
-            {dashboard?.ppmp_application?.status_id === 1 ? (
+            {dashboard?.ppmp_application?.status_id === 1 ||
+            dashboard?.ppmp_application?.status_id === 6 ? (
               <Stack
                 bgcolor={"#FFF4E5"}
                 borderRadius={5}
@@ -336,7 +336,11 @@ function PPMPDashboard(props) {
                 </Box>
                 <Box>
                   <ButtonComponent
-                    label={"Submit AOP and PPMP for Review"}
+                    label={
+                      dashboard?.ppmp_application?.status_id === 1
+                        ? "Submit AOP and PPMP for Review"
+                        : "Resubmit AOP and PPMP for Review"
+                    }
                     width="250px"
                     onClick={() => setOpenSave(true)}
                   />
@@ -463,7 +467,7 @@ function PPMPDashboard(props) {
                   display={"flex"}
                   gap={2}
                   padding={2}
-                  height="55vh" // <-- FULL HEIGHT
+                  height="59vh" // <-- FULL HEIGHT
                   flex={1} // <-- ALLOWS STRETCHING IN FLEX CONTEXT
                   minHeight={0}
                 >
