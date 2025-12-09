@@ -13,7 +13,7 @@ import {
   usePPMP,
   usePPMPApplicationActions,
 } from "../../../Hooks/PPMP/PPMPApplicationHook";
-import { useLocation } from "react-router-dom";
+import { useLocation, useNavigate } from "react-router-dom";
 
 function ManagePPMP() {
   // HOOKS
@@ -21,6 +21,7 @@ function ManagePPMP() {
   const { ppmpApplicationItems, ppmpApplication } = usePPMP();
   const { receivePPMP, getPPMPApplicationByID } = usePPMPApplicationActions();
   const location = useLocation();
+  const navigate = useNavigate();
   const PPMP_ID = location?.pathname?.split("/")[3];
 
   // STATES

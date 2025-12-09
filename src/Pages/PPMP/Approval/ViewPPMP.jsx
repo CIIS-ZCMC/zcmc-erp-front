@@ -4,7 +4,7 @@ import {
   usePPMPApplicationActions,
 } from "../../../Hooks/PPMP/PPMPApplicationHook";
 import React, { Fragment, useEffect, useMemo, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { PPMP_APPROVER_HEADERS } from "../../../Data/Columns";
 import {
   Box,
@@ -41,15 +41,18 @@ import {
 } from "../../../Hooks/PPMP/PPMPCommentsHook";
 import NoResultComponent from "@Components/Common/Table/NoResultComponent";
 import { useDebounce } from "use-debounce";
+import CountUp from "react-countup";
 
 function ViewPPMP() {
   const { id } = useParams();
   const { getPPMPApplicationByID } = usePPMPApplicationActions();
   const { ppmpApplicationItems, ppmpApplication, isLoading } = usePPMP();
+  const navigate = useNavigate();
 
   const { getPPMPComments, postPPMPComment } = usePPMPCommentsActions();
   const { ppmpComments } = usePPMPComments();
 
+  const AOP_APPLICATION_ID = localStorageGetter("aop_application_id");
   const AREA_CODE = localStorageGetter("aop_application_area_code");
   const FISCAL_YEAR = new Date().getFullYear() + 1;
 
@@ -59,6 +62,7 @@ function ViewPPMP() {
   const [newComment, setNewComment] = useState("");
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
+  const [isPostingComment, setIsPostingComment] = useState(false);
 
   // const filteredPPMPItems = useMemo(() => {
   //   if (!search) return ppmpApplicationItems;
@@ -72,33 +76,35 @@ function ViewPPMP() {
     setOpenDrawer(true);
   };
 
-  const handleAddComment = () => {
-    postPPMPComment(
-      {
-        ppmp_item_id: id,
-        comment: newComment, // your input state
-      },
-      () => {
-        setNewComment(""); // clear input
-      }
-    );
+  const handleAddComment = async () => {
+    if (!newComment.trim() || isPostingComment) return; // prevent empty or duplicate posts
+
+    setIsPostingComment(true); // disable button
+
+    try {
+      await postPPMPComment({
+        ppmp_item_id: selectedRow?.id,
+        comment: newComment,
+      });
+
+      setNewComment(""); // clear input
+      getPPMPComments(selectedRow?.id); // fetch latest comments
+    } catch (error) {
+      console.error("Failed to post comment:", error);
+    } finally {
+      setIsPostingComment(false); // enable button again
+    }
   };
   const [debouncedSearch] = useDebounce(search, 500);
 
   useEffect(() => {
-    getPPMPApplicationByID(id, debouncedSearch, page, perPage, () => { });
-  }, [id, debouncedSearch, page, perPage]);
+    getPPMPApplicationByID(id, debouncedSearch, page, perPage, () => {});
+  }, [id, debouncedSearch, page, perPage, newComment]);
 
   useEffect(() => {
-    let interval;
     if (openDrawer && selectedRow?.id) {
-      getPPMPComments(selectedRow.id, () => { });
-      interval = setInterval(() => {
-        getPPMPComments(selectedRow.id, () => { });
-      }, 3000); // fetch every 5 seconds
+      getPPMPComments(selectedRow.id); // fetch existing comments
     }
-
-    return () => clearInterval(interval);
   }, [openDrawer, selectedRow?.id]);
   return (
     <Fragment>
@@ -116,6 +122,16 @@ function ViewPPMP() {
         description={
           "Each objective has its own list of activities. Mark each activity as reviewed and process the request to continue."
         }
+        items={[
+          {
+            label: "AOP",
+            to: `/aop-approval/objectives/${AOP_APPLICATION_ID}`,
+          },
+          {
+            label: "PPMP",
+            current: true,
+          },
+        ]}
       />
 
       <BoxComponent my={2} bgColor={"#FAFAF9"} boxShadow="xs" p={2}>
@@ -159,10 +175,15 @@ function ViewPPMP() {
               fontWeight={600}
             >
               &#8369;{" "}
-              {ppmpApplication?.ppmp_total?.toLocaleString("en-PH", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })}
+              <CountUp
+                start={0}
+                end={ppmpApplication?.ppmp_total || 0}
+                duration={1.5} // duration in seconds
+                separator=","
+                decimals={2}
+                decimal="."
+                prefix=""
+              />
             </Typography>
           </BoxComponent>
         </Stack>
@@ -445,18 +466,18 @@ function ViewPPMP() {
           ppmpComments?.length > 0 ? (
             <Box
               sx={{
-                maxHeight: "485px", // adjust as needed
+                maxHeight: "480px", // adjust as needed
                 overflowY: "auto",
                 pr: 1, // optional: add padding for scrollbar
               }}
             >
-              <Stack width="100%" py={1.5} spacing={2}>
+              <Stack width="100%" py={1} spacing={1.5}>
                 {ppmpComments.map((c, index) => (
                   <CommentContainerComponent
                     key={index}
                     name={c?.user?.name}
                     comment={c?.comment}
-                    area_code={"Planning Unit"}
+                    area_code={c?.user?.assigned_area?.area_name}
                     date={c.created_at}
                   />
                 ))}
@@ -465,7 +486,7 @@ function ViewPPMP() {
           ) : (
             <Box
               sx={{
-                height: "52vh",
+                height: "50vh",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",
@@ -480,7 +501,7 @@ function ViewPPMP() {
             <Stack width={"100%"} spacing={2}>
               <TextareaComponent
                 placeholder={"Comment here .. "}
-                maxRows={3}
+                maxRows={2}
                 label={"Add a comment"}
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}
@@ -490,6 +511,8 @@ function ViewPPMP() {
                   label={"Post Comment"}
                   width="200px"
                   onClick={() => handleAddComment()}
+                  isLoading={isPostingComment}
+                  loadingLabel={"posting..."}
                 />
               </Stack>
             </Stack>

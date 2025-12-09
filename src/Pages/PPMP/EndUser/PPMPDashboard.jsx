@@ -20,7 +20,7 @@ import {
 import { PhilippinePesoIcon, TargetIcon } from "lucide-react";
 import { TbTargetArrow } from "react-icons/tb";
 import ButtonComponent from "../../../Components/Common/ButtonComponent";
-import { useNavigate, } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 import usePPMPHook from "../../../Hooks/PPMP/PPMPHook";
 import { MdOutlineShoppingCartCheckout } from "react-icons/md";
 import no_result from "../../../assets/empty-state-icon-base.png";
@@ -31,10 +31,12 @@ import { nextYear } from "../../../Utils/Functions";
 import SelectComponent from "@Components/Form/YearSelectComponent";
 import {
   Check,
+  CloudDownloadOutlined,
   Comment,
   East,
   FormatListNumbered,
   Handyman,
+  Launch,
   Warning,
   WarningAmber,
 } from "@mui/icons-material";
@@ -116,8 +118,6 @@ const PPMPCard = ({
 };
 
 function PPMPDashboard(props) {
-
-
   const { getItemRequestByUser } = useItemRequestHook();
 
   const navigate = useNavigate();
@@ -236,18 +236,18 @@ function PPMPDashboard(props) {
   }, [assignedArea]);
 
   const handleItemRequest = () => {
+    setOpenItemRequest(true);
 
-    setOpenItemRequest(true)
+    const params = { status_id: 8 };
 
-    const params = { status_id: 8 }
-
-    getItemRequestByUser(params), (status, message) => {
-      console.log(params)
-      if (status !== 200) {
-        console.error("Failed to fetch items:", message);
-      }
-    }
-  }
+    getItemRequestByUser(params),
+      (status, message) => {
+        console.log(params);
+        if (status !== 200) {
+          console.error("Failed to fetch items:", message);
+        }
+      };
+  };
 
   return (
     <Fragment>
@@ -263,7 +263,7 @@ function PPMPDashboard(props) {
       </Stack>
       <BoxComponent
         mt={3}
-        height={"84vh"}
+        height={"82vh"}
         boxShadow={"xs"}
         borderRadius={10}
         sx={{
@@ -463,11 +463,10 @@ function PPMPDashboard(props) {
                   display={"flex"}
                   gap={2}
                   padding={2}
-                  height="62vh" // <-- FULL HEIGHT
+                  height="55vh" // <-- FULL HEIGHT
                   flex={1} // <-- ALLOWS STRETCHING IN FLEX CONTEXT
                   minHeight={0}
                 >
-
                   <Box
                     sx={{
                       width: "100%",
@@ -532,23 +531,21 @@ function PPMPDashboard(props) {
                   </Box>
 
                   <BoxComponent
-                    width="100%"
-                    padding={2}
                     sx={{
                       display: "flex",
                       flexDirection: "column",
                       height: "100%",
+                      p: 2,
                     }}
                   >
                     <Typography level="title-lg">PPMP Checklist</Typography>
-                    <Stack
+                    <Box
                       sx={{
-                        flex: 1,
-                        overflowY: "auto",
-                        pr: 1, // avoid hiding content under scrollbar
-                        maxHeight: "55vh", // choose what fits your layout
+                        flex: 1, // take remaining height
+                        overflowY: "auto", // scroll if content exceeds
+                        maxHeight: "47vh", // important for flex scroll
+                        pr: 1, // padding to avoid scrollbar overlapping content
                       }}
-                      spacing={2}
                     >
                       <List size="lg" component="nav" variant="">
                         {dashboard?.checklist?.map((list, key) => (
@@ -584,120 +581,145 @@ function PPMPDashboard(props) {
                           </>
                         ))}
                       </List>
-                    </Stack>
+                    </Box>
                   </BoxComponent>
                 </BoxComponent>
 
                 <Stack
                   p={2}
-                  direction={'row'}
-                  alignItems={'center'}
-                  justifyContent={'space-between'}
+                  direction={"row"}
+                  alignItems={"center"}
+                  justifyContent={"space-between"}
                 >
-
                   <Link
                     sx={{
                       fontSize: 12,
-                      textDecoration: "underline"
+                      textDecoration: "none",
                     }}
-                  // onClick={() => setOpenItemRequest(true)}
+                    endDecorator={<CloudDownloadOutlined />}
+                    // onClick={() => setOpenItemRequest(true)}
                   >
                     Print as (.XLS)
                   </Link>
 
                   <Stack
-                    display={'flex'}
-                    flexDirection={'row'}
+                    display={"flex"}
+                    flexDirection={"row"}
                     gap={2}
-                    alignItems={'center'}
-                    justifyContent={'center'}
+                    alignItems={"center"}
+                    justifyContent={"center"}
                   >
                     <Link
                       sx={{
                         fontSize: 12,
-                        textDecoration: "underline"
+                        textDecoration: "none",
                       }}
                       onClick={() => setOpenItemRequest(true)}
+                      endDecorator={<Launch />}
                     >
-                      Request  Item Request
+                      Request new item
                     </Link>
 
                     <Link
                       sx={{
                         fontSize: 12,
-                        textDecoration: "underline"
+                        textDecoration: "none",
                       }}
                       onClick={() => handleItemRequest()}
+                      endDecorator={<Launch />}
                     >
                       View Item Request
                     </Link>
                   </Stack>
-
                 </Stack>
-
               </Grid>
-              <Grid xs={3.5}>
+              <Grid
+                xs={3.5}
+                sx={{
+                  display: "flex",
+                  flexDirection: "column",
+                  height: "100%", // make the grid occupy full available height
+                }}
+              >
                 {/* Approval Timeline Here */}
-                <BoxComponent
-                  bgColor={"#FFFFFF"}
-                  p={2}
-                  sx={{
-                    display: "flex",
-                    flexDirection: "column",
-                    height: "100%",
-                  }}
-                >
-                  <Typography level="title-lg">Approval Timeline</Typography>
-                  <Typography
-                    level="body-xs"
-                    mt={0.5}
-                    sx={{ color: color.fontLight }}
-                  >
-                    {" "}
-                    The list below shows the current status of the request.
-                  </Typography>
-                  <Divider sx={{ my: 1, color: "gray" }} />
-                  <Stack
-                    Stack
+
+                {timeline?.length > 0 ? (
+                  <BoxComponent
+                    bgColor={"#FFFFFF"}
+                    p={2}
                     sx={{
-                      display: timeline?.length === 0 && "flex",
-                      justifyContent: timeline?.length === 0 && "center",
-                      alignItems: timeline?.length === 0 && "center",
-                      flex: 1,
-                      pt: 2,
-                      overflowY: "auto",
-                      pr: 1, // avoid hiding content under scrollbar
-                      maxHeight: "55vh",
+                      display: "flex",
+                      flexDirection: "column",
+                      height: "100%",
                     }}
                   >
-                    {timeline?.length > 0 ? (
+                    <Typography level="title-lg">Approval Timeline</Typography>
+                    <Typography
+                      level="body-xs"
+                      mt={0.5}
+                      sx={{ color: color.fontLight }}
+                    >
+                      {" "}
+                      The list below shows the current status of the request.
+                    </Typography>
+                    <Divider sx={{ my: 1, color: "gray" }} />
+                    <Stack
+                      Stack
+                      sx={{
+                        flex: 1, // take remaining space
+                        pt: 2,
+                        overflowY: "auto", // scroll if content exceeds
+                        pr: 1,
+                        justifyContent:
+                          timeline?.length === 0 ? "center" : "flex-start",
+                        alignItems:
+                          timeline?.length === 0 ? "center" : "stretch",
+                        minHeight: 0, // important for scroll to work in flex
+                      }}
+                    >
                       <StepperComponent data={timeline} />
-                    ) : (
+                    </Stack>
+                  </BoxComponent>
+                ) : (
+                  <BoxComponent height="60vh" padding={2}>
+                    <Typography level="title-lg">Approval Timeline</Typography>
+                    <Typography
+                      level="body-xs"
+                      mt={0.5}
+                      sx={{ color: color.fontLight }}
+                    >
+                      {" "}
+                      The list below shows the current status of the request.
+                    </Typography>
+                    <Divider sx={{ my: 1, color: "gray" }} />
+                    <Box
+                      sx={{
+                        display: "flex",
+                        justifyContent: "center",
+                        alignItems: "center",
+                      }}
+                      height={"50vh"}
+                    >
                       <Typography
                         level="body-sm"
                         sx={{ color: color.fontLight }}
                       >
                         No transactions done yet.
                       </Typography>
-                    )}
-                  </Stack>
-                </BoxComponent>
+                    </Box>
+                  </BoxComponent>
+                )}
               </Grid>
             </Grid>
-
-
           </>
         )}
       </BoxComponent>
       {/* <PageLoader isLoading={pageLoader} /> */}
 
-
       <ModalComponent
         isOpen={openViewItemRequest}
         title={"Items Requested"}
-        description={
-          "Below are the items you’ve requested for this PPMP."
-        }
+        description={"Below are the items you’ve requested for this PPMP."}
         handleClose={() => setOpenItemRequest(false)}
         content={<Content />}
         hasActionButtons

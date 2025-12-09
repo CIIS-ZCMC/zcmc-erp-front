@@ -81,7 +81,7 @@ const usePPMPHook = create((set) => ({
 
   getPPMPTimeline: async (id, callBack) => {
     read({
-      url: `${PATH}-application-timelines/${id}`,
+      url: `approval-trail/${id}`,
       failed: callBack,
       success: (res) => {
         const { approval_trail, status } = res.data;
@@ -168,11 +168,14 @@ const usePPMPHook = create((set) => ({
     update({
       url: `${PATH}-items-update/${id}`,
       form,
-      failed: callBack,
+
+      failed: (err) => {
+        // err is the raw error — pass everything to callback
+        callBack(500, err);
+      },
       success: ({ status, data }) => {
         // Correct destructure for "data.data"
         const { message, data: updatedItem, ppmp_total } = data;
-
         // Update store
         set((state) => ({
           ppmp: state.ppmp.map((res) =>
@@ -181,7 +184,7 @@ const usePPMPHook = create((set) => ({
           ppmp_total: ppmp_total,
         }));
 
-        callBack(status, message);
+        callBack(status, data);
       },
     });
   },

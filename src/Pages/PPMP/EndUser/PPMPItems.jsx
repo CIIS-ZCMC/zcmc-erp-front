@@ -24,9 +24,13 @@ import useSnackbarHook from "../../../Hooks/SnackbarHook";
 import DrawerComponent from "@Components/Common/DrawerComponent";
 import { blue, grey } from "@mui/material/colors";
 import moment from "moment";
-import { Circle } from "@mui/icons-material";
+import { ArrowBack, Circle } from "@mui/icons-material";
 import CommentContainerComponent from "@Components/Comments/CommentContainerComponent";
 import TextareaComponent from "@Components/Form/TextareaComponent";
+import IconButtonComponent from "@Components/Common/IconButtonComponent";
+import CountUp from "react-countup";
+import { usePPMPApplicationActions } from "../../../Hooks/PPMP/PPMPApplicationHook";
+import { usePPMPCommentsActions } from "../../../Hooks/PPMP/PPMPCommentsHook";
 
 function PPMPItems(props) {
   const navigate = useNavigate();
@@ -52,6 +56,8 @@ function PPMPItems(props) {
     closeAlertDialog,
   } = useModalHook();
   const { errors, setError, clearErrors } = userErrorInputHook();
+  const { getPPMPComments, postPPMPComment } = usePPMPCommentsActions();
+
   const { showSnack } = useSnackbarHook();
   const [pageLoader, setPageLoader] = useState(false);
   const [dlLoader, setDlLoader] = useState(false);
@@ -65,7 +71,7 @@ function PPMPItems(props) {
   const [perPage, setPerPage] = useState(10);
   const [search, setSearch] = useState("");
   const updatedRowData = React.useRef({});
-  const [selecetdRow, setSelectedRow] = useState({});
+  const [selectedRow, setSelectedRow] = useState({});
 
   const location = useLocation();
   const { user } = useAuth();
@@ -134,9 +140,9 @@ function PPMPItems(props) {
       const updatedData = getDataFunc();
 
       try {
-        updatePPMP(rowId, updatedData, (status, message) => {
+        updatePPMP(rowId, updatedData, (status, body) => {
           if (status === 200) {
-            showSnack(200, message);
+            showSnack(200, body.message);
 
             // collapse row only on success
             onToggle(false);
@@ -146,10 +152,11 @@ function PPMPItems(props) {
               [rowId]: false,
             }));
           } else {
+            console.log(body);
             setAlertDialog({
               status: "danger",
               title: "Failed to save.",
-              description: message,
+              description: "",
             });
             // do nothing — keep row open
           }
@@ -251,6 +258,12 @@ function PPMPItems(props) {
     };
   }, []);
 
+  useEffect(() => {
+    if (openDrawer && selectedRow?.id) {
+      getPPMPComments(selectedRow.id); // fetch existing comments
+    }
+  }, [openDrawer, selectedRow?.id]);
+
   return (
     <Fragment>
       <PageTitle
@@ -262,99 +275,99 @@ function PPMPItems(props) {
             current: true,
           },
         ]}
+        withArrowBack
+        onClickArrow={() => navigate("/ppmp")}
       />
-      {pageLoader ? (
-        <Stack height="70vh" alignItems="center" justifyContent="center">
-          <ThreeDotsLoader />
-        </Stack>
-      ) : (
-        <>
-          <BoxComponent my={2} bgColor={"#FAFAF9"} boxShadow="xs" p={2}>
-            <Stack direction={"row"} justifyContent={"space-between"} mb={2}>
-              <Stack spacing={1}>
-                <Stack direction={"row"} gap={1.5}>
-                  <Typography level="body-md" sx={{ fontWeight: 600 }}>
-                    Manage Resources for{" "}
-                  </Typography>
-                  <ChipComponent
-                    label={`PPMP Fiscal Year ${currentFiscalYear}`} // change to dynamic activity name
-                    color={"success"}
-                    variant={"outlined"}
-                    fontSize={12}
-                    size={"sm"}
-                  />
-                </Stack>
-                <Typography level="body-xs">
-                  The below contains a list of resources synced from your
-                  submitted AOP request. Click a row to expand and view more
-                  details.
-                </Typography>
-              </Stack>
-              <ButtonComponent
-                label={"Add an Item"}
-                startDecorator={<PlusIcon />}
-                onClick={() => navigate("/ppmp/add-item")}
+
+      <BoxComponent my={2} bgColor={"#FAFAF9"} boxShadow="xs" p={2}>
+        <Stack direction={"row"} justifyContent={"space-between"} mb={2}>
+          <Stack spacing={1}>
+            <Stack direction={"row"} gap={1.5}>
+              <Typography level="body-md" sx={{ fontWeight: 600 }}>
+                Manage Resources for{" "}
+              </Typography>
+              <ChipComponent
+                label={`PPMP Fiscal Year ${currentFiscalYear}`} // change to dynamic activity name
+                color={"success"}
+                variant={"outlined"}
+                fontSize={12}
+                size={"sm"}
               />
             </Stack>
-            <Stack
-              direction={"row"}
-              justifyContent={"space-between"}
-              alignItems={"center"}
-            >
-              <SearchBarComponentv2
-                value={search}
-                setValue={setSearch}
-                placeholder="Search resources..."
-                fullWidth
-              />
-              <BoxComponent px={2} py={0.5} bgColor={"white"} borderRadius={10}>
-                <Typography
-                  textTransform={"uppercase"}
-                  level="body-xs"
-                  color="primary"
-                  textAlign={"right"}
-                >
-                  Total Cost
-                </Typography>
-                <Typography
-                  textTransform={"uppercase"}
-                  level="body-lg"
-                  color="primary"
-                  textAlign={"right"}
-                  fontWeight={600}
-                >
-                  &#8369;{" "}
-                  {ppmp_total.toLocaleString("en-PH", {
-                    minimumFractionDigits: 2,
-                    maximumFractionDigits: 2,
-                  })}
-                </Typography>
-              </BoxComponent>
-            </Stack>
-          </BoxComponent>
-          <CollapsibleTable
-            columns={PPMP_HEADERS(status, editingRows, handleComments)}
-            rows={filteredPPMPItems}
-            editingRows={editingRows}
-            onEditToggle={handleEditToggle}
-            onGetUpdatedData={(rowId, getDataFunc) => {
-              updatedRowData.current[rowId] = getDataFunc;
-            }}
-            onRemoveActivity={removeActivity}
-            ppmpId={ppmp_id}
-            currentPage={pagination?.current_page}
-            totalPages={pagination?.last_page}
-            totalRows={pagination?.total}
-            onNextPage={() => {
-              if (page < pagination?.last_page) setPage(page + 1);
-            }}
-            onPrevPage={() => {
-              if (page > 1) setPage(page - 1);
-            }}
-            onDeletePPMP={handleDeleteItem}
+            <Typography level="body-xs">
+              The below contains a list of resources synced from your submitted
+              AOP request. Click a row to expand and view more details.
+            </Typography>
+          </Stack>
+          <ButtonComponent
+            label={"Add an Item"}
+            startDecorator={<PlusIcon />}
+            onClick={() => navigate("/ppmp/add-item")}
           />
-        </>
-      )}
+        </Stack>
+        <Stack
+          direction={"row"}
+          justifyContent={"space-between"}
+          alignItems={"center"}
+        >
+          <SearchBarComponentv2
+            value={search}
+            setValue={setSearch}
+            placeholder="Search resources..."
+            fullWidth
+          />
+          <BoxComponent px={2} py={0.5} bgColor={"white"} borderRadius={10}>
+            <Typography
+              textTransform={"uppercase"}
+              level="body-xs"
+              color="primary"
+              textAlign={"right"}
+            >
+              Total Cost
+            </Typography>
+            <Typography
+              textTransform={"uppercase"}
+              level="title-lg"
+              color="primary"
+              textAlign={"right"}
+              fontWeight={600}
+            >
+              &#8369;{" "}
+              <CountUp
+                start={0}
+                end={ppmp_total || 0}
+                duration={1.5} // duration in seconds
+                separator=","
+                decimals={2}
+                decimal="."
+                prefix=""
+              />
+            </Typography>
+          </BoxComponent>
+        </Stack>
+      </BoxComponent>
+      <CollapsibleTable
+        isLoading={pageLoader}
+        columns={PPMP_HEADERS(status, editingRows, handleComments)}
+        rows={filteredPPMPItems}
+        editingRows={editingRows}
+        onEditToggle={handleEditToggle}
+        onGetUpdatedData={(rowId, getDataFunc) => {
+          updatedRowData.current[rowId] = getDataFunc;
+        }}
+        onRemoveActivity={removeActivity}
+        ppmpId={ppmp_id}
+        currentPage={pagination?.current_page}
+        totalPages={pagination?.last_page}
+        totalRows={pagination?.total}
+        onNextPage={() => {
+          if (page < pagination?.last_page) setPage(page + 1);
+        }}
+        onPrevPage={() => {
+          if (page > 1) setPage(page - 1);
+        }}
+        onDeletePPMP={handleDeleteItem}
+      />
 
       <AlertDialogComponent leftButtonAction={() => handleClose()} />
       <Snackbar
@@ -372,11 +385,10 @@ function PPMPItems(props) {
           {editor?.editorName} is currently editing
         </Alert>
       </Snackbar>
-      {console.log(selecetdRow)}
       <DrawerComponent
         open={openDrawer}
         setOpen={setOpenDrawer}
-        title={`${selecetdRow?.item?.name}`}
+        title={`${selectedRow?.item?.name}`}
         description={`The following comments were submitted by reviewing offices regarding this resource item.`}
         size="md"
         content={

@@ -28,7 +28,7 @@ const ObjectivesList = () => {
   // HOOKS
   const { isPlanning } = useUserTypes();
   const AOPApplicationObjectives = useAOPApplicationObjectives();
-  const AppicationObjectives = useMemo(
+  const ApplicationObjectives = useMemo(
     () =>
       AOPApplicationObjectives ??
       localStorageGetter("aopApplicationObjectives"),
@@ -96,7 +96,7 @@ const ObjectivesList = () => {
   return (
     <Fragment>
       <Stack width={400} gap={2} sx={{ width: "100%" }}>
-        {AppicationObjectives?.map(
+        {ApplicationObjectives?.map(
           (
             {
               id,

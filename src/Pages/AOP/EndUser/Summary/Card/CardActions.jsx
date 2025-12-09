@@ -1,56 +1,39 @@
-import React from 'react'
+import React from "react";
 
-import { Stack, Typography } from '@mui/joy'
-import { formattedDate } from '../../../../../Utils/formattedLongDate'
+import { Stack, Typography } from "@mui/joy";
+import { formattedDate } from "../../../../../Utils/formattedLongDate";
 
-const CardActions = ({
-    datePrepared,
-    dateToday,
-    PreparedBySector
-}) => {
-    return (
+const CardActions = ({ datePrepared, dateToday, PreparedBySector }) => {
+  return (
+    <Stack
+      ml={4}
+      direction="row"
+      justifyContent="space-between"
+      width="100%"
+      flex={1} // ⬅️ makes it fill available space
+    >
+      <Stack direction="column" textAlign="start">
+        <Typography level="body-sm">Prepared by:</Typography>
+        <Typography level="title-md" color="primary">
+          {PreparedBySector}
+        </Typography>
+      </Stack>
 
-        <>
-            <Stack
-                direction={'column'}
-                textAlign={'start'}
-                mr={10}
-            >
-                <Typography level='body-sm'>
-                    Prepared by:
-                </Typography>
-                <Typography level='title-md'>
-                    {PreparedBySector}
-                </Typography>
-            </Stack>
+      <Stack textAlign="start">
+        <Typography level="body-sm">Date Prepared:</Typography>
+        <Typography level="title-md" color="primary">
+          {formattedDate(datePrepared)}
+        </Typography>
+      </Stack>
 
-            <Stack
-                textAlign={'start'}
-                mr={10}
-            >
-                <Typography level='body-sm'>
-                    Date Prepared:
-                </Typography>
-                <Typography level='title-md'>
-                    {formattedDate(datePrepared)}
-                </Typography>
-            </Stack>
+      <Stack textAlign="start">
+        <Typography level="body-sm">Date Today:</Typography>
+        <Typography level="title-md" color="primary">
+          {formattedDate(dateToday)}
+        </Typography>
+      </Stack>
+    </Stack>
+  );
+};
 
-            <Stack
-                textAlign={'start'}
-                mr={10}
-            >
-                <Typography level='body-sm'>
-                    Date Today:
-                </Typography>
-                <Typography level='title-md'>
-                    {formattedDate(dateToday)}
-                </Typography>
-            </Stack>
-
-        </>
-
-    )
-}
-
-export default CardActions
+export default CardActions;

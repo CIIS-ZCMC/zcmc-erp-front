@@ -100,10 +100,10 @@ function AOPCardComponent({
             status={statusLabel?.toLowerCase()}
             variant={"soft"}
             label={
-              statusLabel === "Approved"
-                ? // toCapitalize(statusLabel === "Approved"
-                  "Approved"
-                : statusLabel
+              statusLabel === "approved"
+                ? toCapitalize(statusLabel)
+                : // "Approved"
+                  statusLabel
             }
             color={getStatusColorScheme((statusLabel || "").toLowerCase())}
             endDecorator

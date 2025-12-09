@@ -6,6 +6,7 @@ const useAOPApprovalHook = create((set) => ({
   approvalTimeline: [],
   approvalRoles: [],
   isLoading: false,
+
   actions: {
     // GET ALL AOP APPLICATIONS
     // processAOP: (form, callback) => {
@@ -24,10 +25,10 @@ const useAOPApprovalHook = create((set) => ({
     // },
 
     //
-    processPPMP: (payload, callback) => {
+    processApplication: (form, callback) => {
       post({
         url: `${API.APPROVAL_PPMP}`,
-        form: payload,
+        form: form,
         failed: callback,
         success: (response) => {
           console.log(response);

@@ -18,21 +18,23 @@ import ModalComponent from "../../../../Components/Common/Dialog/ModalComponent"
 import AlertDialogComponent from "../../../../Components/Common/Dialog/AlertDialogComponent";
 import { TEST_MODE } from "../../../../Services/Config";
 import { APPROVAL_TIMELINE } from "../../../../Data/TestData";
+import { useTimelineID } from "../../../../Hooks/AOP/AOPApplicationsHook";
 
 const ProcessAOPContent = () => {
   // HOOKS
   const { isDivisionHead, isPlanning, isMCC } = useUserTypes();
-  const { processAOP } = useApprovalActions();
+  const { processApplication } = useApprovalActions();
   const {
     setAlertDialog,
     closeAlertDialog,
     alertDialogState: { status },
   } = useModalHook();
   const approvalTimeline = useApprovalTimeline();
+  const timeline_id = localStorageGetter("timeline_id");
   const { user } = useAuth();
 
   const timeline = approvalTimeline?.some(
-    (item) => item.approver_user_id === user?.id && item.status === "approved"
+    (item) => item?.approver_user?.id === user?.id && item.status === "approved"
   );
 
   // STATE
@@ -52,12 +54,11 @@ const ProcessAOPContent = () => {
     !processData?.pin ||
     !processData?.action ||
     processData?.pin?.length !== 6 ||
-    processData?.remarks === "" ||
-    processData?.remarks === null;
+    (isDivisionHead && (!processData?.remarks || processData?.remarks === ""));
 
   const getNextOffice = () => {
     if (isDivisionHead) {
-      return "Division Head";
+      return "Planning Unit";
     } else if (isPlanning) {
       return "MCC";
     }
@@ -67,17 +68,22 @@ const ProcessAOPContent = () => {
   const handleProcessAOP = () => {
     setBtnLoading(true);
     const form = {
-      aop_application_id: AOP_APPLICATION_ID,
-      status: processData?.action,
+      //       "action": 4, // 4 for approve, 6 for return
+      // "application_timeline_id": 21,
+      // "remarks": "i am planning unit lol.", //nullable
+      // "authorization_pin": "123456"
+
+      application_timeline_id: timeline_id,
+      action: processData?.action === "approved" ? 4 : 6,
       remarks: processData?.remarks ?? null,
       authorization_pin: processData?.pin,
     };
 
-    processAOP(form, (status, message) => {
+    processApplication(form, (status, message) => {
       setBtnLoading(false);
 
       let data = {};
-
+      console.log(status);
       if (status === 200) {
         data = {
           status: 200,
@@ -118,6 +124,7 @@ const ProcessAOPContent = () => {
   }, [timeline]);
   return (
     <Fragment>
+      {console.log(isDivisionHead)}
       <ButtonComponent
         label={"Process request"}
         disabled={disabledProcessRequest ?? true}
@@ -167,7 +174,7 @@ const ProcessAOPContent = () => {
                   minRows={3}
                   label={"Remarks"}
                   isRequired
-                  setValue={(e) =>
+                  onChange={(e) =>
                     handleChangeInput("remarks", setProcessData, e.target.value)
                   }
                   value={processData?.remarks}
@@ -188,6 +195,7 @@ const ProcessAOPContent = () => {
                 handleChangeInput("pin", setProcessData, e.target.value)
               }
               value={processData?.pin}
+              isRequired={true}
             />
           </Stack>
         }

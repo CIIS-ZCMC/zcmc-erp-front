@@ -1,37 +1,30 @@
-import React from 'react'
+import React from "react";
 
 import {
-    AccordionGroup,
-    Accordion,
-    AccordionSummary,
-    AccordionDetails,
-} from '@mui/joy'
+  AccordionGroup,
+  Accordion,
+  AccordionSummary,
+  AccordionDetails,
+} from "@mui/joy";
 
 const AccordionComponent = ({
-    accordionSummary,
-    accordionDetails,
-    defaultExpanded
+  accordionSummary,
+  accordionDetails,
+  defaultExpanded,
 }) => {
-    return (
-        <>
-            <AccordionGroup
-                // variant='soft'
-                transition="0.2s"
-            >
-                <Accordion
-                    defaultExpanded={defaultExpanded}
-                >
-                    <AccordionSummary>
-                        {accordionSummary}
-                    </AccordionSummary>
-                    <AccordionDetails>
-                        {accordionDetails}
-                    </AccordionDetails>
-                </Accordion>
+  return (
+    <>
+      <AccordionGroup
+        // variant='soft'
+        transition="0.2s"
+      >
+        <Accordion defaultExpanded={defaultExpanded}>
+          <AccordionSummary>{accordionSummary}</AccordionSummary>
+          <AccordionDetails>{accordionDetails}</AccordionDetails>
+        </Accordion>
+      </AccordionGroup>
+    </>
+  );
+};
 
-            </AccordionGroup>
-        </ >
-    )
-}
-
-export default AccordionComponent
+export default AccordionComponent;

@@ -108,12 +108,13 @@ export const useUserTypes = () => {
   // const user = useAuthStore((state) => state.user);
 
   const area = useAuthStore((state) => state.area);
-
+  console.log(area);
   const { type, is_head } = area || {};
 
   if (area) {
     return {
-      isDivisionHead: type === "division" && is_head,
+      isDivisionHead:
+        type === "division" && is_head && area.area_id !== AREA_ID.OMCC,
       isPlanning:
         area.area_id === AREA_ID.PLANNING_UNIT || area.name === "Planning Unit",
       isDepartmentHead: area.area_id === AREA_ID.OMCC || false,

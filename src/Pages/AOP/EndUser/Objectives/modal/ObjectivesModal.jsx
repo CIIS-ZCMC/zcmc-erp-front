@@ -21,7 +21,7 @@ const ObjectivesModal = ({
   successIndicator,
   otherObjective,
   otherSuccessIndicator,
-  applicationObjective
+  applicationObjective,
 }) => {
   const { OBJECTIVE_ALERT } = OBJECTIVES;
 
@@ -55,18 +55,23 @@ const ObjectivesModal = ({
 
   useEffect(() => {
     if (applicationObjective) {
-
       setFunctionType(applicationObjective);
 
       const selectedObjectiveId = applicationObjective.selected_objective.id;
-      const selectedObjective = applicationObjective?.objectives?.filter(({ id }) => id === selectedObjectiveId);
+      const selectedObjective = applicationObjective?.objectives?.filter(
+        ({ id }) => id === selectedObjectiveId
+      );
       setObjective(selectedObjective?.[0] || null);
       // setOtherObjective(selectedObjective?.[0]?.code || null)
 
-      const selectedSuccessIndicatorId = applicationObjective.selected_success_indicator.id;
-      const selectedSuccessIndicator = selectedObjective.flatMap(({ success_indicators }) =>
-        success_indicators.filter(({ id }) => (id === selectedSuccessIndicatorId)
-        ))
+      const selectedSuccessIndicatorId =
+        applicationObjective.selected_success_indicator.id;
+      const selectedSuccessIndicator = selectedObjective.flatMap(
+        ({ success_indicators }) =>
+          success_indicators.filter(
+            ({ id }) => id === selectedSuccessIndicatorId
+          )
+      );
 
       setSuccessIndicator(selectedSuccessIndicator?.[0] || null)
       setOtherSuccessIndicator(selectedSuccessIndicator?.[0]?.name || null)
@@ -75,7 +80,6 @@ const ObjectivesModal = ({
       // console.log('selected success indicator id', selectedSuccessIndicatorId)
       console.log(selectedObjective)
       // console.log('success indicator', selectedSuccessIndicator)
-
     }
   }, [applicationObjective]);
 
@@ -85,17 +89,17 @@ const ObjectivesModal = ({
 
   return (
     <>
-      <Stack spacing={2}>
+      <Stack spacing={2} width={"100%"}>
         <AutocompleteComponent
           placeholder="Select function type"
           label={"Function type"}
           size="md"
           value={functionType}
           setValue={(val) => {
-            setFunctionType(val)
+            setFunctionType(val);
             setObjective(null);
-            setSuccessIndicator(null)
-            setOtherSuccessIndicator(null)
+            setSuccessIndicator(null);
+            setOtherSuccessIndicator(null);
           }}
           options={function_types}
         />
@@ -108,24 +112,25 @@ const ObjectivesModal = ({
           setValue={(val) => {
             // console.log(val)
             setObjective(val);
-            setSuccessIndicator(null)
-            setOtherSuccessIndicator(null)
+            setSuccessIndicator(null);
+            setOtherSuccessIndicator(null);
           }}
           options={functionType?.objectives ?? []}
+          width="100%"
         />
-
 
         {/* 31, 87, 55*/}
 
-        <Stack>
+        <Stack width={"100%"}>
           <Typography level="body-xs">Description:</Typography>
           <Typography level="body-xs" fontWeight={600}>
             {objective?.label}
           </Typography>
         </Stack>
 
-
-        {objective?.id === 31 || objective?.id === 55 || objective?.id === 87 ?
+        {objective?.id === 31 ||
+          objective?.id === 55 ||
+          objective?.id === 87 ? (
           <>
 
             <TextareaComponent
@@ -142,7 +147,7 @@ const ObjectivesModal = ({
               onChange={(e) => setOtherSuccessIndicator(e.target.value)}
             />
           </>
-          :
+        ) : (
           <>
             <AutocompleteComponent
               placeholder="Select success indicators"
@@ -166,9 +171,7 @@ const ObjectivesModal = ({
               {OBJECTIVE_ALERT}
             </Alert>
           </>
-        }
-
-
+        )}
       </Stack>
     </>
   );

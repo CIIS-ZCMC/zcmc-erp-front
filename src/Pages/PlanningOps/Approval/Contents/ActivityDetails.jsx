@@ -189,27 +189,6 @@ export const ActivityDetails = () => {
                 </Link>
               </Typography>
               <Divider />
-              <Typography
-                level={titleStyles.level}
-                display={"flex"}
-                justifyContent={"space-between"}
-                fontWeight={titleStyles.fontWeight}
-              >
-                PPMP{" "}
-                <Link
-                  gap={0.5}
-                  fontSize={13}
-                  // onClick={setOpenResourcesModal}
-                  onClick={() =>
-                    navigate(
-                      `/aop-approval/view-ppmp/${Application.ppmp_application_id}`
-                    )
-                  }
-                  fontWeight={600}
-                >
-                  View PPMP <ExternalLink size={14} />
-                </Link>
-              </Typography>
             </Stack>
           </Grid>
 

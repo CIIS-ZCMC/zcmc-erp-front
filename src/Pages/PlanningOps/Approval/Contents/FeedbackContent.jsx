@@ -18,33 +18,48 @@ export const FeedbackContent = ({
   openFeedbackModal,
   setOpenFeedbackModal,
   isLoading,
+  isActivity = false,
 }) => {
   const [activeTab, setActiveTab] = useState(0);
-  const { isDivisionHead } = useUserTypes();
+  const { isDivisionHead, isPlanning } = useUserTypes();
 
   useEffect(() => {
-    console.log(isDivisionHead)
-  }, [isDivisionHead])
+    console.log(isDivisionHead);
+  }, [isDivisionHead]);
 
   // COMMENTS HOOK
   const remarks = useRemarks();
-  const allComments = localStorageGetter("all_comments");
+  const allComments = localStorageGetter("comments");
 
   // DATA
   const feedbackDisplay = useMemo(() => {
     let dataToDisplay;
 
-    if (isDivisionHead) {
-      dataToDisplay = remarks;
+    if (isPlanning) {
+      dataToDisplay = remarks?.map((r) => ({ ...r, __type: "remark" }));
     } else {
-      dataToDisplay = activeTab === 0 ? allComments : remarks;
+      if (activeTab === 0) {
+        dataToDisplay = allComments?.map((c) => ({ ...c, __type: "comment" }));
+      } else {
+        dataToDisplay = remarks?.map((r) => ({ ...r, __type: "remark" }));
+      }
     }
 
     return groupByDate(dataToDisplay ?? []);
-  }, [activeTab, allComments, isDivisionHead, remarks]);
+  }, [activeTab, allComments, isPlanning, remarks]);
 
-  const feedbackCount = Array.isArray(allComments) ? allComments?.length : 0;
+  const feedbackCount =
+    activeTab === 0
+      ? Array.isArray(allComments)
+        ? allComments?.length
+        : 0
+      : remarks?.length;
 
+  useEffect(() => {
+    if (isPlanning) {
+      setActiveTab(1); // Switch to Remarks tab
+    }
+  }, [isPlanning]);
   return (
     <DrawerComponent
       open={openFeedbackModal}
@@ -74,7 +89,7 @@ export const FeedbackContent = ({
             </Box>
           ) : (
             <>
-              {!isDivisionHead && (
+              {!isPlanning && (
                 <>
                   <CustomTabComponent
                     tabOptions={feedbackTabOptions}
@@ -83,6 +98,7 @@ export const FeedbackContent = ({
                   <Divider />
                 </>
               )}
+
               <Stack gap={1.8} maxHeight={"60vh"} overflow={"auto"} pr={1}>
                 {feedbackCount === 0 && (
                   <Box
@@ -96,6 +112,7 @@ export const FeedbackContent = ({
                     <NoResultComponent />{" "}
                   </Box>
                 )}
+
                 {Object.entries(feedbackDisplay).map(
                   ([date, messages], key) => (
                     <Fragment key={`${date}-${key}`}>
@@ -105,41 +122,46 @@ export const FeedbackContent = ({
                         </Divider>
                       )}
 
-                      {/* COMMENTS */}
-                      {activeTab === 0
-                        ? messages?.map(
-                          ({ name, area_code, created_at, comment }, key) => (
-                            <CommentContainerComponent
-                              key={key}
-                              name={name}
-                              comment={comment}
-                              area_code={area_code}
-                              date={created_at}
-                              isActivity
-                            // handleClick={}
-                            />
-                          )
-                        )
-                        : messages?.map(
-                          (
-                            {
-                              division_chief_name,
-                              division_chief_area_code,
-                              created_at,
-                              remarks,
-                            },
-                            key
-                          ) => (
-                            <CommentContainerComponent
-                              key={key}
-                              name={division_chief_name}
-                              comment={remarks}
-                              area_code={division_chief_area_code}
-                              date={created_at}
-                            />
-                          )
-                        )}
-                      {/* REMARKS */}
+                      {/* COMMENTS TAB */}
+                      {activeTab === 0 &&
+                        messages
+                          ?.filter((m) => m.__type === "comment")
+                          .map(
+                            ({ name, area_code, created_at, comment }, idx) => (
+                              <CommentContainerComponent
+                                key={idx}
+                                name={name}
+                                comment={comment}
+                                area_code={area_code}
+                                date={created_at}
+                                isActivity={isActivity}
+                              />
+                            )
+                          )}
+
+                      {/* REMARKS TAB */}
+                      {activeTab === 1 &&
+                        messages
+                          ?.filter((m) => m.__type === "remark")
+                          .map(
+                            (
+                              {
+                                division_chief_name,
+                                current_area_name,
+                                created_at,
+                                remark,
+                              },
+                              idx
+                            ) => (
+                              <CommentContainerComponent
+                                key={idx}
+                                name={division_chief_name}
+                                comment={remark}
+                                area_code={current_area_name}
+                                date={created_at}
+                              />
+                            )
+                          )}
                     </Fragment>
                   )
                 )}

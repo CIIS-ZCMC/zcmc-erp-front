@@ -130,12 +130,12 @@ const AOPApproval = () => {
     <Fragment>
       <Stack gap={3}>
         <PageTitle
-          title={AOP_CONSTANTS?.AOP_TITLE}
+          title={AOP_CONSTANTS?.APPLICATION_TITLE}
           description={AOP_CONSTANTS?.AOP_REQUEST_SUBHEADING}
         />
 
         <ContainerComponent
-          title={"List of AOP requests"}
+          title={"List of AOP with PPMP requests"}
           description={
             "Each area can have only one request per year. Open a request to begin processing."
           }
@@ -206,7 +206,13 @@ const AOPApproval = () => {
                   />
                 </Box>
               ) : AOPApplications?.length === 0 ? (
-                <Box width="100%">
+                <Box
+                  display="flex"
+                  alignItems={"center"}
+                  justifyContent={"center"}
+                  width="100%"
+                  height="55vh"
+                >
                   <NoResultComponent />
                 </Box>
               ) : (
