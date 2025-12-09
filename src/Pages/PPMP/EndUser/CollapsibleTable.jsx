@@ -88,7 +88,11 @@ export default function CollapsibleTable({
             {columns.map((col) => (
               <th
                 key={col.id}
-                style={{ textAlign: col.align || "left", width: col.width }}
+                style={{
+                  textAlign: col.align || "left",
+                  width: col.width,
+                  display: col.display && col.display,
+                }}
               >
                 {col.label}
               </th>
@@ -303,6 +307,7 @@ function ExpandableRow({
               textAlign: col.align || "left",
               width: col.width,
               backgroundColor: open ? grey[100] : "",
+              display: col.display && col.display,
             }}
           >
             {col.render

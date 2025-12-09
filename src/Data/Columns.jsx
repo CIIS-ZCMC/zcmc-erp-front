@@ -1392,7 +1392,7 @@ export const PPMP_HEADERS = (status, editingRows, handleComments) => [
   {
     id: "name",
     label: "Item",
-    width: "300px",
+    width: status === "draft" ? "300px" : "auto",
     render: (row) => (
       <>
         <Typography level="body-sm" fontWeight={600}>
@@ -1407,7 +1407,7 @@ export const PPMP_HEADERS = (status, editingRows, handleComments) => [
   {
     id: "category",
     label: "Classification & Category",
-    width: "150px",
+    width: status === "draft" ? "150px" : "auto",
     render: (row) => (
       <>
         <Typography level="body-sm" fontWeight={600}>
@@ -1429,7 +1429,7 @@ export const PPMP_HEADERS = (status, editingRows, handleComments) => [
   {
     id: "cost",
     label: "Total Cost & Individual Cost",
-    width: "200px",
+    width: status === "draft" ? "200px" : "auto",
 
     render: (row) => (
       <>
@@ -1453,7 +1453,7 @@ export const PPMP_HEADERS = (status, editingRows, handleComments) => [
     id: "procurement",
     label: "Mode of Procurement",
     align: "center",
-    width: "200px",
+    width: status === "draft" ? "200px" : "auto",
 
     render: (row) => (
       <Chip
@@ -1474,42 +1474,50 @@ export const PPMP_HEADERS = (status, editingRows, handleComments) => [
       </Chip>
     ),
   },
-  {
-    id: "is_complete",
-    label: "",
-    width: "150px",
-    render: (row) =>
-      row?.is_complete ? (
-        ""
-      ) : (
-        <Box
-          p={0.5}
-          bgcolor={red[50]}
-          display={"flex"}
-          justifyContent={"center"}
-          width="150px"
-          borderRadius={5}
-        >
-          <Typography
-            level="body-xs"
-            color="danger"
-            alignItems={"center"}
-            gap={1}
-            startDecorator={
-              <WarningAmberOutlined color="danger" style={{ fontSize: 18 }} />
-            }
-          >
-            {" "}
-            Incomplete Details.
-          </Typography>
-        </Box>
-      ),
-  },
+  ...(status === "draft"
+    ? [
+        {
+          id: "is_complete",
+          label: "",
+          width: "150px",
+          display: status === "draft" ? "table-cell" : "none",
+          render: (row) =>
+            row?.is_complete ? (
+              ""
+            ) : (
+              <Box
+                p={0.5}
+                bgcolor={red[50]}
+                display={"flex"}
+                justifyContent={"center"}
+                width="150px"
+                borderRadius={5}
+              >
+                <Typography
+                  level="body-xs"
+                  color="danger"
+                  alignItems={"center"}
+                  gap={1}
+                  startDecorator={
+                    <WarningAmberOutlined
+                      color="danger"
+                      style={{ fontSize: 18 }}
+                    />
+                  }
+                >
+                  {" "}
+                  Incomplete Details.
+                </Typography>
+              </Box>
+            ),
+        },
+      ]
+    : []),
   {
     id: "actions",
     label: "Actions",
     align: "right",
-    width: "200px",
+    width: status === "draft" ? "200px" : "auto",
     render: (row, open, onToggle, handleEditToggle, handleDeletePPMP) => {
       const isEditing = editingRows[row.id];
       return (
