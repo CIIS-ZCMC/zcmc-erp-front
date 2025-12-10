@@ -34,6 +34,7 @@ import {
   usePPMPComments,
   usePPMPCommentsActions,
 } from "../../../Hooks/PPMP/PPMPCommentsHook";
+import NoResultComponent from "@Components/Common/Table/NoResultComponent";
 
 function PPMPItems(props) {
   const navigate = useNavigate();

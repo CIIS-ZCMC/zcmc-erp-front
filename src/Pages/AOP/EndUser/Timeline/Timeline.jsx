@@ -22,7 +22,7 @@ const Timeline = ({ aopId }) => {
   const { getTimelines } = useTimelineHook();
 
   useEffect(() => {
-    getTimelines(aopId, (status, message) => {
+    getTimelines(aopId, "aop", (status, message) => {
       // console.log(status)
       if (!(status >= 200 && status < 300)) {
         return; //Toast error
@@ -63,6 +63,7 @@ const Timeline = ({ aopId }) => {
             overflowY: "auto",
             overflowX: "hidden", // prevent horizontal overflow
             pr: 1, // optional padding for scrollbar
+            mt: 3,
           }}
         >
           {isTimelineLoading ? (

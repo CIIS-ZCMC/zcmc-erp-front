@@ -218,11 +218,15 @@ function PPMPDashboard(props) {
   useEffect(() => {
     if (!dashboard?.ppmp_application?.id) return;
 
-    getPPMPTimeline(dashboard.ppmp_application.id, (status, message) => {
-      if (!(status >= 200 && status < 300)) {
-        // show toast error
+    getPPMPTimeline(
+      dashboard.ppmp_application.id,
+      "ppmp",
+      (status, message) => {
+        if (!(status >= 200 && status < 300)) {
+          // show toast error
+        }
       }
-    });
+    );
   }, [dashboard?.ppmp_application?.id]);
 
   useEffect(() => {
@@ -467,7 +471,7 @@ function PPMPDashboard(props) {
                   display={"flex"}
                   gap={2}
                   padding={2}
-                  height="59vh" // <-- FULL HEIGHT
+                  height="62vh" // <-- FULL HEIGHT
                   flex={1} // <-- ALLOWS STRETCHING IN FLEX CONTEXT
                   minHeight={0}
                 >
@@ -547,8 +551,9 @@ function PPMPDashboard(props) {
                       sx={{
                         flex: 1, // take remaining height
                         overflowY: "auto", // scroll if content exceeds
-                        maxHeight: "47vh", // important for flex scroll
+                        maxHeight: "51vh", // important for flex scroll
                         pr: 1, // padding to avoid scrollbar overlapping content
+                        mt: 2,
                       }}
                     >
                       <List size="lg" component="nav" variant="">
@@ -576,6 +581,7 @@ function PPMPDashboard(props) {
                                   sx={{
                                     color: list?.status ? grey[700] : grey[400],
                                   }}
+                                  textAlign={"justify"}
                                 >
                                   {list?.description}
                                 </Typography>
@@ -590,10 +596,10 @@ function PPMPDashboard(props) {
                 </BoxComponent>
 
                 <Stack
-                  p={2}
                   direction={"row"}
-                  alignItems={"center"}
+                  alignItems={"flex-end"}
                   justifyContent={"space-between"}
+                  pt={1}
                 >
                   <Link
                     sx={{
@@ -685,7 +691,7 @@ function PPMPDashboard(props) {
                     </Stack>
                   </BoxComponent>
                 ) : (
-                  <BoxComponent height="60vh" padding={2}>
+                  <BoxComponent height="62vh" padding={2}>
                     <Typography level="title-lg">Approval Timeline</Typography>
                     <Typography
                       level="body-xs"
