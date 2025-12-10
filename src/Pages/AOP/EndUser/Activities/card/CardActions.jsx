@@ -1,6 +1,8 @@
-import React, { useState, useEffect } from "react";
+import React, { Fragment, useState, useEffect } from "react";
 
 import { Avatar, Chip, Stack, Tooltip, IconButton, Typography } from "@mui/joy";
+import { Comment } from "@mui/icons-material";
+
 import { ArrowRight, Info } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
@@ -16,16 +18,14 @@ const Content = ({ comments }) => {
   //   console.log(comments)
   // }, [comments])
 
-
-
   return (
     <>
-      {comments.map(({ id, comment, user_name, created_at }, index) => {
+      {comments?.map(({ id, comment, user_name, created_at }, index) => {
 
         const formattedDate = moment(created_at).format("MMMM D, YYYY")
 
         return (
-          <>
+          <Fragment key={id}>
             <Stack
               display={'flex'}
               flexDirection={'row'}
@@ -52,11 +52,15 @@ const Content = ({ comments }) => {
                 bgcolor: "#F2F2F2",
                 padding: 1,
                 borderRadius: 10,
+                mt: 0.5,
+                mb: 1
               }}
             >
               {comment}
             </Stack>
-          </>
+          </Fragment>
+
+
         )
       })}
     </>
@@ -85,17 +89,32 @@ const CardActions = ({ activityId, resourcesCount, responsibleCount, comments })
       >
 
         {comments.length !== 0 &&
-          <IconButton
-            variant="text"
-            sx={{
-              gap: 0.5
-            }}
-            size="xs"
-            onClick={() => handleOpenModal()}
-          >
-            <Info size={16} />
-            Comments
-          </IconButton>
+          <>
+            <Chip
+              variant="soft"
+              color="primary"
+              size="md"
+              p={2}
+              startDecorator={
+                <Avatar
+                  size="sm" // small avatar for chip
+                  variant="solid"
+                  color="primary"
+                  sx={{
+                    fontSize: 13,
+                    fontWeight: 600,
+                  }}
+                >
+                  {comments.length}
+                </Avatar>
+              }
+              endDecorator={<Comment />}
+              onClick={() => handleOpenModal()}
+            >
+              Comments
+            </Chip>
+          </>
+
         }
 
         <Chip
