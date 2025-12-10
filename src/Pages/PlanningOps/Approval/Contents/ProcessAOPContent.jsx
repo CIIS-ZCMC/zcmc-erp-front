@@ -22,7 +22,7 @@ import { useTimelineID } from "../../../../Hooks/AOP/AOPApplicationsHook";
 
 const ProcessAOPContent = () => {
   // HOOKS
-  const { isDivisionHead, isPlanning, isMCC } = useUserTypes();
+  const { isDivisionHead, isPlanning, isMCC, isBudget } = useUserTypes();
   const { processApplication } = useApprovalActions();
   const {
     setAlertDialog,
@@ -60,7 +60,7 @@ const ProcessAOPContent = () => {
     if (isDivisionHead) {
       return "Planning Unit";
     } else if (isPlanning) {
-      return "MCC";
+      return "MCC/Budget";
     }
   };
 
@@ -124,7 +124,6 @@ const ProcessAOPContent = () => {
   }, [timeline]);
   return (
     <Fragment>
-      {console.log(isDivisionHead)}
       <ButtonComponent
         label={"Process request"}
         disabled={disabledProcessRequest ?? true}
