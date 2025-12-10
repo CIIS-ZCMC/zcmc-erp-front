@@ -48,6 +48,7 @@ const ActivitiesList = ({
         cardBody={
           <CardBody
             // objective={objective_code}
+            comments={comments}
             activity={activity_name ? activity_name : activity_code}
             cost={total_cost}
             timeframe={`${start_month ? formattedStartMonth : ""} - ${end_month ? formattedEndMonth : ""
@@ -56,6 +57,7 @@ const ActivitiesList = ({
         }
         cardActions={
           <CardActions
+            comments={comments}
             activityId={id}
             resourcesCount={resources_count}
             responsibleCount={responsible_people_count}

@@ -2,7 +2,7 @@ import React from "react";
 
 import { Typography, Stack } from "@mui/joy";
 
-const CardBody = ({ objective, activity, timeframe, cost }) => {
+const CardBody = ({ objective, activity, timeframe, cost, comments }) => {
   return (
     <>
       <Stack direction={"column"} textAlign={"left"} width={"80%"} gap={.5}>
@@ -23,10 +23,22 @@ const CardBody = ({ objective, activity, timeframe, cost }) => {
           }}
           width={"100%"}
         >
-          <Typography level={"body-xs"}>
-            Comments: <br />
-            here kase why not
-          </Typography>
+          {comments.length !== 0 ?
+            <>
+              <Typography level={"body-xs"}>
+                Latest Comment: <br />
+              </Typography>
+              <Typography level={"body-sm"} fontWeight={600}>
+                "{comments[0]?.comment}""
+              </Typography>
+            </>
+            :
+
+            <Typography level={"body-sm"}>
+              No Comments  <br />
+            </Typography>
+          }
+
         </Stack>
 
       </Stack>

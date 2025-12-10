@@ -1,6 +1,6 @@
 import React, { useEffect, useState, useMemo } from "react";
 
-import { Stack, Typography, Breadcrumbs, Divider, Grid } from "@mui/joy";
+import { Stack, Typography, Breadcrumbs, Divider, Grid, Tooltip } from "@mui/joy";
 
 import { useParams, useLocation } from "react-router-dom";
 
@@ -388,6 +388,7 @@ const Activities = () => {
         </Grid>
       )}
 
+      {/* set count empty activities */}
       <ModalComponent
         isOpen={isCountModal}
         handleClose={() => setIsCountModal(false)}
@@ -417,6 +418,7 @@ const Activities = () => {
         isLoading={isLoading}
       />
 
+      {/* Edit exisitng empty activities */}
       <ModalComponent
         isOpen={isOpenActivitiesModal}
         handleClose={handleCloseModal}

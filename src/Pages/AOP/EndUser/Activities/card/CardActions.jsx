@@ -1,21 +1,103 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 
-import { Avatar, Chip, Stack } from "@mui/joy";
-import { ArrowRight } from "lucide-react";
+import { Avatar, Chip, Stack, Tooltip, IconButton, Typography } from "@mui/joy";
+import { ArrowRight, Info } from "lucide-react";
 import { useNavigate } from "react-router-dom";
+import moment from "moment";
+
+import ModalComponent from "@Components/Common/Dialog/ModalComponent";
+
 import useAOPId from "../../../../../Hooks/AOP/AOPIDHook";
 
-const CardActions = ({ activityId, resourcesCount, responsibleCount }) => {
-  const navigate = useNavigate();
+
+const Content = ({ comments }) => {
+
+  // useEffect(() => {
+  //   console.log(comments)
+  // }, [comments])
+
+
 
   return (
     <>
+      {comments.map(({ id, comment, user_name, created_at }, index) => {
+
+        const formattedDate = moment(created_at).format("MMMM D, YYYY")
+
+        return (
+          <>
+            <Stack
+              display={'flex'}
+              flexDirection={'row'}
+              alignItems={'center'}
+              justifyContent={'space-between'}
+            >
+              <Typography
+                level="body-md"
+                fontWeight={600}
+              >
+                {user_name}
+              </Typography>
+
+              <Typography
+                level="body-xs"
+              >
+                {formattedDate}
+              </Typography>
+
+            </Stack>
+
+            <Stack
+              sx={{
+                bgcolor: "#F2F2F2",
+                padding: 1,
+                borderRadius: 10,
+              }}
+            >
+              {comment}
+            </Stack>
+          </>
+        )
+      })}
+    </>
+  )
+}
+
+
+const CardActions = ({ activityId, resourcesCount, responsibleCount, comments }) => {
+  const navigate = useNavigate();
+
+  const [isOpenCommentsModal, setIsOpenCommentsModal] = useState(false);
+
+
+  const handleOpenModal = () => {
+    setIsOpenCommentsModal(true)
+  }
+
+  return (
+    <>
+
       <Stack
         gap={1}
         direction={"row"}
         alignItems={"center"}
         justifyContent={"end"}
       >
+
+        {comments.length !== 0 &&
+          <IconButton
+            variant="text"
+            sx={{
+              gap: 0.5
+            }}
+            size="xs"
+            onClick={() => handleOpenModal()}
+          >
+            <Info size={16} />
+            Comments
+          </IconButton>
+        }
+
         <Chip
           variant="soft"
           color="primary"
@@ -72,6 +154,21 @@ const CardActions = ({ activityId, resourcesCount, responsibleCount }) => {
           Responsible Person
         </Chip>
       </Stack>
+
+      <ModalComponent
+        isOpen={isOpenCommentsModal}
+        handleClose={() => setIsOpenCommentsModal(false)}
+        title={"Comments List"}
+        minWidth={500}
+        content={
+          <Content
+            comments={comments}
+          />
+        }
+        hasActionButtons
+        noRightButton={true}
+      />
+
     </>
   );
 };

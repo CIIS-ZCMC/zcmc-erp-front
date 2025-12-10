@@ -750,6 +750,7 @@ function PPMPDashboard(props) {
         isOpen={openViewItemRequest}
         title={"Items Requested"}
         description={"Below are the items you’ve requested for this PPMP."}
+        minWidth={"85%"}
         handleClose={() => setOpenItemRequest(false)}
         content={
           <Content
