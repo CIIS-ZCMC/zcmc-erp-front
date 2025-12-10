@@ -150,6 +150,8 @@ function PPMPDashboard(props) {
     navigate("/ppmp/manage-items");
   };
 
+  const AOP_ID = dashboard?.ppmp_application?.aop_application?.id;
+
   const handleSubmit = async () => {
     try {
       const payload = {
@@ -216,18 +218,14 @@ function PPMPDashboard(props) {
   }, [year]);
 
   useEffect(() => {
-    if (!dashboard?.ppmp_application?.id) return;
+    if (!AOP_ID) return;
 
-    getPPMPTimeline(
-      dashboard.ppmp_application.id,
-      "ppmp",
-      (status, message) => {
-        if (!(status >= 200 && status < 300)) {
-          // show toast error
-        }
+    getPPMPTimeline(AOP_ID, "ppmp", (status, message) => {
+      if (!(status >= 200 && status < 300)) {
+        // show toast error
       }
-    );
-  }, [dashboard?.ppmp_application?.id]);
+    });
+  }, [AOP_ID]);
 
   useEffect(() => {
     if (!assignedArea?.name) return;

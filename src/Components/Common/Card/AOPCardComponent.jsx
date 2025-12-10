@@ -144,7 +144,7 @@ function AOPCardComponent({
             </BoxComponent>
 
             {date_returned && (
-              <BoxComponent width={{ xs: "auto", md: "60%" }}>
+              <BoxComponent width={{ xs: "auto", md: "100%" }}>
                 <CardInfoDisplay
                   label={"Date returned:"}
                   value={
@@ -157,7 +157,7 @@ function AOPCardComponent({
             )}
 
             {date_approved && (
-              <BoxComponent width={{ xs: "auto", md: "60%" }}>
+              <BoxComponent width={{ xs: "auto", md: "100%" }}>
                 <CardInfoDisplay
                   label={"Date approved:"}
                   value={
