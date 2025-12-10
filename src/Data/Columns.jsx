@@ -1392,7 +1392,7 @@ export const PPMP_HEADERS = (status, editingRows, handleComments) => [
   {
     id: "name",
     label: "Item",
-    width: status === "draft" ? "300px" : "auto",
+    width: status?.name === "draft" ? "300px" : "400PX",
     render: (row) => (
       <>
         <Typography level="body-sm" fontWeight={600}>
@@ -1407,7 +1407,7 @@ export const PPMP_HEADERS = (status, editingRows, handleComments) => [
   {
     id: "category",
     label: "Classification & Category",
-    width: status === "draft" ? "150px" : "auto",
+    width: status?.name === "draft" ? "150px" : "auto",
     render: (row) => (
       <>
         <Typography level="body-sm" fontWeight={600}>
@@ -1429,7 +1429,7 @@ export const PPMP_HEADERS = (status, editingRows, handleComments) => [
   {
     id: "cost",
     label: "Total Cost & Individual Cost",
-    width: status === "draft" ? "200px" : "auto",
+    width: status?.name === "draft" ? "200px" : "auto",
 
     render: (row) => (
       <>
@@ -1453,7 +1453,7 @@ export const PPMP_HEADERS = (status, editingRows, handleComments) => [
     id: "procurement",
     label: "Mode of Procurement",
     align: "center",
-    width: status === "draft" ? "200px" : "auto",
+    width: status?.name === "draft" ? "200px" : "auto",
 
     render: (row) => (
       <Chip
@@ -1474,13 +1474,14 @@ export const PPMP_HEADERS = (status, editingRows, handleComments) => [
       </Chip>
     ),
   },
-  ...(status === "draft"
+  ...(status?.name === "draft"
     ? [
+
       {
         id: "is_complete",
         label: "",
         width: "150px",
-        display: status === "draft" ? "table-cell" : "none",
+        display: status?.name === "draft" ? "table-cell" : "none",
         render: (row) =>
           row?.is_complete ? (
             ""
@@ -1503,8 +1504,7 @@ export const PPMP_HEADERS = (status, editingRows, handleComments) => [
                     color="danger"
                     style={{ fontSize: 18 }}
                   />
-                }
-              >
+                }>
                 {" "}
                 Incomplete Details.
               </Typography>
@@ -1516,12 +1516,20 @@ export const PPMP_HEADERS = (status, editingRows, handleComments) => [
   {
     id: "actions",
     label: "Actions",
-    align: "right",
-    width: status === "draft" ? "200px" : "auto",
+    align: status?.name === "draft" ? "right" : "center",
+    width: status?.name === "draft" ? "200px" : "auto",
     render: (row, open, onToggle, handleEditToggle, handleDeletePPMP) => {
       const isEditing = editingRows[row.id];
       return (
-        <Stack direction={"row"} spacing={1} justifyContent={"right"}>
+        <Stack
+          direction={"row"}
+          spacing={1}
+          justifyContent={
+            status?.name === "draft" || status?.name === "returned"
+              ? "right"
+              : "center"
+          }
+        >
           {status?.name !== "draft" && (
             <ChipComponent
               label={row.comments_count}

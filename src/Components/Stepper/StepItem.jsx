@@ -39,11 +39,14 @@ function StepItem({
   name,
   status,
   approved_at,
+  submitted_at,
   remarks,
   activities_with_comments,
   number_of_comments,
   isLast,
   date_approved,
+  returned_at,
+  role,
 }) {
   const theme = useTheme();
   const color = theme.palette.custom;
@@ -85,34 +88,59 @@ function StepItem({
           <Typography
             level={window.innerWidth < 1200 ? "body-xs" : "title-sm"}
             fontWeight={600}
+            sx={{ textTransform: "uppercase" }}
           >
-            {position}
+            {role ? role : position}
           </Typography>
-          {isLast && (
-            <ChipComponent
-              sx={{ px: window.innerWidth >= 1200 ? 0.8 : 1, fontWeight: 400 }}
-              size={"sm"}
-              label={toCapitalize(status) ?? "Pending"}
-              color={getStatusColorScheme(status?.toLowerCase())}
-              variant={status === "submitted" ? "outlined" : "solid"}
-            />
-          )}
+
+          <ChipComponent
+            sx={{ px: window.innerWidth >= 1200 ? 0.8 : 1, fontWeight: 400 }}
+            size={"sm"}
+            label={toCapitalize(status) ?? "pending"}
+            color={getStatusColorScheme(status?.toLowerCase())}
+            variant={status === "submitted" ? "outlined" : "solid"}
+          />
         </Stack>
 
         <Stack gap={1.5} ml={0.7}>
           <Typography fontWeight={400} level="body-xs">
             <Typography>
-              {status === "Pending" ? "Submitted " : "Approved"} by:{" "}
+              {status === "submitted"
+                ? "Submitted "
+                : status === "approved"
+                ? "Approved"
+                : status === "pending"
+                ? "To be approved"
+                : "Returned"}{" "}
+              by:{" "}
             </Typography>
 
             <Typography textColor={"neutral.900"}> {name}</Typography>
           </Typography>
           <Divider sx={dividerStyles} />
+          {status === "submitted" && (
+            <>
+              <StepTextDisplay
+                label={"Submitted on:"}
+                value={moment(submitted_at).format("LLL")}
+              />
+              {/* <Divider sx={dividerStyles} /> */}
+            </>
+          )}
           {approved_at && (
             <>
               <StepTextDisplay
                 label={"Approved on:"}
-                value={moment(date_approved).format("LLL")}
+                value={moment(approved_at).format("LLL")}
+              />
+              {/* <Divider sx={dividerStyles} /> */}
+            </>
+          )}
+          {returned_at && (
+            <>
+              <StepTextDisplay
+                label={"Returned on:"}
+                value={moment(returned_at).format("LLL")}
               />
               {/* <Divider sx={dividerStyles} /> */}
             </>
@@ -127,7 +155,7 @@ function StepItem({
               <Divider sx={dividerStyles} />
             </>
           )}
-          {remarks && (
+          {/* {remarks && (
             <Typography
               level="body-xs"
               fontWeight={400}
@@ -135,7 +163,7 @@ function StepItem({
             >
               {remarks}
             </Typography>
-          )}
+          )} */}
         </Stack>
 
         {/* <Divider sx={{ my: 0.3 }} /> */}

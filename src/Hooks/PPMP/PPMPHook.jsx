@@ -79,12 +79,13 @@ const usePPMPHook = create((set) => ({
     });
   },
 
-  getPPMPTimeline: async (id, callBack) => {
+  getPPMPTimeline: async (id, type = "ppmp", callBack) => {
     read({
       url: `approval-trail/${id}`,
+      params: { type },
       failed: callBack,
       success: (res) => {
-        const { approval_trail, status } = res.data;
+        const { approval_trail, status, message } = res.data;
         set({ timeline: approval_trail });
         callBack(status, message);
       },

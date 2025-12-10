@@ -203,6 +203,8 @@ function PPMPDashboard(props) {
     navigate("/ppmp/manage-items");
   };
 
+  const AOP_ID = dashboard?.ppmp_application?.aop_application?.id;
+
   const handleSubmit = async () => {
     try {
       const payload = {
@@ -269,14 +271,14 @@ function PPMPDashboard(props) {
   }, [year]);
 
   useEffect(() => {
-    if (!dashboard?.ppmp_application?.id) return;
+    if (!AOP_ID) return;
 
-    getPPMPTimeline(dashboard.ppmp_application.id, (status, message) => {
+    getPPMPTimeline(AOP_ID, "ppmp", (status, message) => {
       if (!(status >= 200 && status < 300)) {
         // show toast error
       }
     });
-  }, [dashboard?.ppmp_application?.id]);
+  }, [AOP_ID]);
 
   useEffect(() => {
     if (!assignedArea?.name) return;
@@ -394,23 +396,19 @@ function PPMPDashboard(props) {
 
   return (
     <Fragment>
-      <Stack>
-        <Typography level="h2">
-          Project Procurement Management Planning
-        </Typography>
-        <Typography level="body-xs">
-          The following below serves as the summary of your AOP request. You can
-          open and update your request before the deadline as set by the
-          administrators.
-        </Typography>
-      </Stack>
+      <PageTitle
+        title={"Project Procurement Management Planning"}
+        description={
+          " The following below serves as the summary of your AOP request. You can open and update your request before the deadline as set by the administrators."
+        }
+      />
+
       <BoxComponent
         mt={3}
         height={"82vh"}
         boxShadow={"xs"}
         borderRadius={10}
         sx={{
-          height: "85vh",
           display: "flex",
           flexDirection: "column",
         }}
@@ -451,7 +449,8 @@ function PPMPDashboard(props) {
                 as long as two sentences if necessary.
               </Typography>
             </Stack>
-            {dashboard?.ppmp_application?.status_id === 1 ? (
+            {dashboard?.ppmp_application?.status_id === 1 ||
+            dashboard?.ppmp_application?.status_id === 6 ? (
               <Stack
                 bgcolor={"#FFF4E5"}
                 borderRadius={5}
@@ -479,7 +478,11 @@ function PPMPDashboard(props) {
                 </Box>
                 <Box>
                   <ButtonComponent
-                    label={"Submit AOP and PPMP for Review"}
+                    label={
+                      dashboard?.ppmp_application?.status_id === 1
+                        ? "Submit AOP and PPMP for Review"
+                        : "Resubmit AOP and PPMP for Review"
+                    }
                     width="250px"
                     onClick={() => setOpenSave(true)}
                   />
@@ -606,7 +609,7 @@ function PPMPDashboard(props) {
                   display={"flex"}
                   gap={2}
                   padding={2}
-                  height="55vh" // <-- FULL HEIGHT
+                  height="62vh" // <-- FULL HEIGHT
                   flex={1} // <-- ALLOWS STRETCHING IN FLEX CONTEXT
                   minHeight={0}
                 >
@@ -686,8 +689,9 @@ function PPMPDashboard(props) {
                       sx={{
                         flex: 1, // take remaining height
                         overflowY: "auto", // scroll if content exceeds
-                        maxHeight: "47vh", // important for flex scroll
+                        maxHeight: "51vh", // important for flex scroll
                         pr: 1, // padding to avoid scrollbar overlapping content
+                        mt: 2,
                       }}
                     >
                       <List size="lg" component="nav" variant="">
@@ -715,6 +719,7 @@ function PPMPDashboard(props) {
                                   sx={{
                                     color: list?.status ? grey[700] : grey[400],
                                   }}
+                                  textAlign={"justify"}
                                 >
                                   {list?.description}
                                 </Typography>
@@ -729,10 +734,10 @@ function PPMPDashboard(props) {
                 </BoxComponent>
 
                 <Stack
-                  p={2}
                   direction={"row"}
-                  alignItems={"center"}
+                  alignItems={"flex-end"}
                   justifyContent={"space-between"}
+                  pt={1}
                 >
                   <Link
                     sx={{
@@ -832,7 +837,7 @@ function PPMPDashboard(props) {
                     </Stack>
                   </BoxComponent>
                 ) : (
-                  <BoxComponent height="60vh" padding={2}>
+                  <BoxComponent height="62vh" padding={2}>
                     <Typography level="title-lg">Approval Timeline</Typography>
                     <Typography
                       level="body-xs"

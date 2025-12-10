@@ -14,6 +14,7 @@ import BoxComponent from "@Components/Common/Card/BoxComponent";
 
 import useAOPHook from "../../../../Hooks/AOP/AOPHook";
 import useAOPStore from "../../../../Store/AOPStore";
+import { grey } from "@mui/material/colors";
 
 const Checklist = ({ fiscalYear }) => {
   const { getAopChecklist } = useAOPHook();
@@ -45,7 +46,7 @@ const Checklist = ({ fiscalYear }) => {
         <Typography level="title-lg">AOP Submission Checklist</Typography>
 
         <Stack
-          mt={3}
+          mt={2}
           sx={{
             height: "calc(65vh - 56px)", // subtract the height of the title + margin
             overflowY: "auto",
@@ -62,10 +63,23 @@ const Checklist = ({ fiscalYear }) => {
                     />
                   </ListItemDecorator>
                   <Stack>
-                    <Typography level={status ? "title-sm" : "body-sm"}>
+                    <Typography
+                      level={status ? "title-sm" : "body-sm"}
+                      sx={{
+                        color: status ? grey[900] : grey[400],
+                      }}
+                    >
                       {title}
                     </Typography>
-                    <Typography level="body-xs">{description}</Typography>
+                    <Typography
+                      level="body-xs"
+                      textAlign={"justify"}
+                      sx={{
+                        color: status ? grey[700] : grey[400],
+                      }}
+                    >
+                      {description}
+                    </Typography>
                   </Stack>
                 </ListItem>
                 <ListDivider inset={"gutter"} />

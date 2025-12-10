@@ -30,7 +30,11 @@ import TextareaComponent from "@Components/Form/TextareaComponent";
 import IconButtonComponent from "@Components/Common/IconButtonComponent";
 import CountUp from "react-countup";
 import { usePPMPApplicationActions } from "../../../Hooks/PPMP/PPMPApplicationHook";
-import { usePPMPCommentsActions } from "../../../Hooks/PPMP/PPMPCommentsHook";
+import {
+  usePPMPComments,
+  usePPMPCommentsActions,
+} from "../../../Hooks/PPMP/PPMPCommentsHook";
+import NoResultComponent from "@Components/Common/Table/NoResultComponent";
 
 function PPMPItems(props) {
   const navigate = useNavigate();
@@ -57,6 +61,7 @@ function PPMPItems(props) {
   } = useModalHook();
   const { errors, setError, clearErrors } = userErrorInputHook();
   const { getPPMPComments, postPPMPComment } = usePPMPCommentsActions();
+  const { ppmpComments } = usePPMPComments();
 
   const { showSnack } = useSnackbarHook();
   const [pageLoader, setPageLoader] = useState(false);
@@ -306,11 +311,13 @@ function PPMPItems(props) {
               AOP request. Click a row to expand and view more details.
             </Typography>
           </Stack>
-          <ButtonComponent
-            label={"Add an Item"}
-            startDecorator={<PlusIcon />}
-            onClick={() => navigate("/ppmp/add-item")}
-          />
+          {status === "draft" && (
+            <ButtonComponent
+              label={"Add an Item"}
+              startDecorator={<PlusIcon />}
+              onClick={() => navigate("/ppmp/add-item")}
+            />
+          )}
         </Stack>
         <Stack
           direction={"row"}
@@ -399,33 +406,55 @@ function PPMPItems(props) {
         description={`The following comments were submitted by reviewing offices regarding this resource item.`}
         size="md"
         content={
-          <Stack width="100%" py={1.5} spacing={2}>
-            <CommentContainerComponent
-              name={"Maria Santos"}
-              comment={"Ok Noted"}
-              area_code={"Planning Unit"}
-            />
-            <CommentContainerComponent
-              name={"Maria Santos"}
-              comment={"Ok Noted"}
-              area_code={"Planning Unit"}
-            />
-          </Stack>
-        }
-        footer={
-          <>
-            <Stack width={"100%"} spacing={2}>
-              <TextareaComponent
-                placeholder={"Comment here .. "}
-                maxRows={3}
-                label={"Add a comment"}
-              />
-              <Stack direction={"row"} justifyContent={"right"}>
-                <ButtonComponent label={"Post Comment"} width="200px" />
+          ppmpComments?.length > 0 ? (
+            <Box
+              sx={{
+                maxHeight: "595px", // adjust as needed
+                overflowY: "auto",
+                pr: 1, // optional: add padding for scrollbar
+              }}
+            >
+              <Stack width="100%" py={1} spacing={1.5}>
+                {ppmpComments.map((c, index) => (
+                  <CommentContainerComponent
+                    key={index}
+                    name={c?.user?.name}
+                    comment={c?.comment}
+                    area_code={c?.user?.assigned_area?.area_name}
+                    date={c.created_at}
+                  />
+                ))}
               </Stack>
-            </Stack>
-          </>
+            </Box>
+          ) : (
+            <Box
+              sx={{
+                height: "50vh",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <NoResultComponent />{" "}
+            </Box>
+          )
         }
+
+        //no post for END - USER
+        // footer={
+        //   <>
+        //     <Stack width={"100%"} spacing={2}>
+        //       <TextareaComponent
+        //         placeholder={"Comment here .. "}
+        //         maxRows={3}
+        //         label={"Add a comment"}
+        //       />
+        //       <Stack direction={"row"} justifyContent={"right"}>
+        //         <ButtonComponent label={"Post Comment"} width="200px" />
+        //       </Stack>
+        //     </Stack>
+        //   </>
+        // }
       />
     </Fragment>
   );

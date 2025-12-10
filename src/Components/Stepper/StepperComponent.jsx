@@ -42,59 +42,40 @@ const StepperComponent = ({ data = [] }) => {
           {
             approver_user,
             actor,
-            // approver_user = "Krizelle Mae Falcasantos",
-            // approver_user_position = null,
             user_position = "Department Head",
             area_code = "IISU",
             area = "Innovations",
             status,
             date_approved = null,
             remarks = null,
-            activities_with_comments = null, // e.g 4 comments in 2 activities
-            number_of_comments = null, // e.g 4 comments in 2 activities
+            activities_with_comments = null,
+            number_of_comments = null,
             created_at,
-            updated_at,
+            date_returned,
           },
           key
         ) => {
-          if (key === 0) {
-            return (
-              <StepItem
-                isLast={data?.length - 1 === key}
-                key={key}
-                position={actor?.position || user_position}
-                name={actor?.name || approver_user}
-                area_code={actor?.area}
-                area={actor?.area}
-                status={status}
-                created_at={created_at}
-                date_submitted={updated_at}
-                approved_at={date_approved}
-                remarks={remarks}
-                activities_with_comments={activities_with_comments} // e.g 4 comments in 2 activities
-                number_of_comments={number_of_comments} // e.g 4 comments in 2 activities
-              />
-            );
-          } else {
-            return (
-              <StepItem
-                isLast={data?.length - 1 === key}
-                key={key}
-                position={approver_user?.position}
-                name={approver_user?.name}
-                area_code={approver_user?.area}
-                area={approver_user?.area}
-                status={status}
-                created_at={created_at}
-                date_submitted={created_at}
-                approved_at={date_approved}
-                remarks={remarks}
-                date_approved={date_approved}
-                activities_with_comments={activities_with_comments} // e.g 4 comments in 2 activities
-                number_of_comments={number_of_comments} // e.g 4 comments in 2 activities
-              />
-            );
-          }
+          const isActor = status === "submitted"; // actor exists → it's the creator submission
+
+          return (
+            <StepItem
+              key={key}
+              isLast={key === data.length - 1}
+              role={!isActor && approver_user.role}
+              position={isActor ? actor?.position : approver_user?.position}
+              name={isActor ? actor?.name : approver_user?.name}
+              area_code={isActor ? actor?.area : approver_user?.area}
+              area={isActor ? actor?.area : approver_user?.area}
+              status={status}
+              submitted_at={created_at}
+              date_submitted={created_at}
+              approved_at={date_approved}
+              returned_at={date_returned}
+              remarks={remarks}
+              activities_with_comments={activities_with_comments}
+              number_of_comments={number_of_comments}
+            />
+          );
         }
       )}
 

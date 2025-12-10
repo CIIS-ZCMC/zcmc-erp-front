@@ -8,12 +8,13 @@ const useTimelineHook = () => {
   const { setTimelines, setApproverTimelines, setIsLoading } =
     useTimelinesActions();
 
-  const getTimelines = (aopId, callBack) => {
+  const getTimelines = (aopId, type = "aop", callBack) => {
     setIsLoading(true);
 
     try {
       read({
         url: `${API.APPROVAL_TIMELINE}/${aopId}`,
+        params: { type },
         failed: callBack,
         success: (res) => {
           const {

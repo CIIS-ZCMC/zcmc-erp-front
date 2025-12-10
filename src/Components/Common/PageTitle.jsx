@@ -44,7 +44,7 @@ function PageTitle({
                 onClick={onClickArrow ? onClickArrow : () => navigate(-1)}
               />
             )}
-            <Typography fontSize={30} fontWeight={600}>
+            <Typography fontSize={30} fontWeight={600} sx={{ color: "black" }}>
               {title}
             </Typography>
           </Box>
