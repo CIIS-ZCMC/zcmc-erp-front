@@ -253,16 +253,13 @@ function PPMPDashboard(props) {
 
   return (
     <Fragment>
-      <Stack>
-        <Typography level="h2">
-          Project Procurement Management Planning
-        </Typography>
-        <Typography level="body-xs">
-          The following below serves as the summary of your AOP request. You can
-          open and update your request before the deadline as set by the
-          administrators.
-        </Typography>
-      </Stack>
+      <PageTitle
+        title={"Project Procurement Management Planning"}
+        description={
+          " The following below serves as the summary of your AOP request. You can open and update your request before the deadline as set by the administrators."
+        }
+      />
+
       <BoxComponent
         mt={3}
         height={"82vh"}

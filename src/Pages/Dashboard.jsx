@@ -10,13 +10,9 @@ function Dashboard() {
     <div>
       <Stack gap={3}>
         <PageTitle
-          title={
-            <Typography>
-              Hi {user?.name.split(" ")[0]}, welcome to the dashboard!
-            </Typography>
-          }
+          title={<Typography>Enterprise Resource Planning </Typography>}
           description={
-            "Oversee how resource planning-related information has changed over time."
+            "The following below serves as the summary of your AOP request. You can open and update your request before the deadline as set by the administrators."
           }
         />
       </Stack>

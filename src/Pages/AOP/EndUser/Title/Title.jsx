@@ -1,21 +1,14 @@
-import React from 'react';
+import React from "react";
 
-import { Stack, Typography } from '@mui/joy';
+import { Stack, Typography } from "@mui/joy";
 
-import { AOP } from '../../../../Data/constants';
+import { AOP } from "../../../../Data/constants";
+import PageTitle from "@Components/Common/PageTitle";
 
 const Title = () => {
+  const { PAGE_TITLE, PAGE_DESCRIPTION } = AOP;
 
-    const { PAGE_TITLE, PAGE_DESCRIPTION } = AOP
+  return <PageTitle title={PAGE_TITLE} description={PAGE_DESCRIPTION} />;
+};
 
-    return (
-        <Stack>
-            <Typography level="h2">{PAGE_TITLE}</Typography>
-            <Typography level="body-xs">
-                {PAGE_DESCRIPTION}
-            </Typography>
-        </Stack>
-    )
-}
-
-export default Title
+export default Title;
