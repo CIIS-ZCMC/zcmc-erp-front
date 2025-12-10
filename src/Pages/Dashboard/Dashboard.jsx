@@ -147,6 +147,7 @@ function Dashboard() {
                   level="body-xs"
                   color="success"
                   fontStyle={"italic"}
+                  fontWeight={400}
                 >
                   20 out of 35 offices have submitted
                 </Typography>
@@ -169,6 +170,7 @@ function Dashboard() {
                   level="body-xs"
                   color="primary"
                   fontStyle={"italic"}
+                  fontWeight={400}
                 >
                   Average number of days from submission to approval{" "}
                 </Typography>
