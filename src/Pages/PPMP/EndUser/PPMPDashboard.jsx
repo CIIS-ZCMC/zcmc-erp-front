@@ -51,8 +51,13 @@ import StepperComponent from "@Components/Stepper/StepperComponent";
 
 import useItemRequestHook from "../../../Hooks/ItemRequest/ItemRequestHookv2";
 import useItemRequestStore from "../../../Store/ItemRequestStore";
+import userErrorInputHook from "../../../Hooks/ErrorInputHook";
 
 
+// Add New Item Request Components
+import NewRequestContent from './Modal/AddItemRequest/Content';
+
+// View Item Requests Modal Components
 import Content from "./Modal/ItemRequests/Content";
 import Footer from "./Modal/ItemRequests/Footer";
 
@@ -127,6 +132,8 @@ function PPMPDashboard(props) {
   const { requestsByUser } = useItemRequestStore();
 
   const { getItemRequestByUser } = useItemRequestHook();
+  const { setError, clearErrors } = userErrorInputHook();
+
 
   const {
     data,
@@ -150,6 +157,8 @@ function PPMPDashboard(props) {
     getYearList,
     postPPMP,
     getPPMPTimeline,
+    postItemRequest,
+    itemRequestStore
   } = usePPMPHook();
   const { setAlertDialog } = useModalHook();
 
@@ -166,6 +175,29 @@ function PPMPDashboard(props) {
   const [year, setYear] = useState(2026);
 
   const [openViewItemRequest, setOpenItemRequest] = useState();
+  const [openNewRequest, setOpenNewRequest] = useState();
+  const [step, setStep] = useState(1)
+
+  const [selectedActivities, setSelectedActivities] = useState([]);
+  const [buttonLoader, setButtonLoader] = useState(false);
+  const [activity, setActivity] = useState(null);
+
+  const [itemReq, setItemReq] = useState({
+    classification: null,
+    category: null,
+    item_name: "",
+    unit: null,
+    quantity: 0,
+    estimated_budget: "",
+    variant: null,
+    market_research: false,
+    specs: [
+      { id: 1, value: "" },
+      { id: 2, value: "" },
+    ],
+    pin: "",
+  });
+
 
   const handleNavigate = () => {
     navigate("/ppmp/manage-items");
@@ -268,6 +300,96 @@ function PPMPDashboard(props) {
           console.error("Failed to fetch items:", message);
         }
       };
+  };
+
+  const handleNextStep = () => setStep((prev) => Math.min(prev + 1, 3));
+  const handlePreviousStep = () => setStep((prev) => Math.max(prev - 1, 1));
+
+  useEffect(() => {
+    console.log('step tracker:', step)
+  }, [step])
+
+  const submit = async () => {
+    clearErrors();
+    let hasError = false;
+
+    itemReq.specs.forEach((spec, index) => {
+      if (!spec.value.trim()) {
+        setError(
+          `specs[${index}]`,
+          true,
+          `Specification ${index + 1} is required.`
+        );
+        hasError = true;
+      }
+    });
+    if (!itemReq?.pin?.trim()) {
+      setError("pin", true, "Authorization PIN is required.");
+      hasError = true;
+    }
+    console.log(hasError);
+    if (hasError) return;
+
+    try {
+      setButtonLoader(true);
+      const payload = {
+        name: itemReq.item_name || "",
+        estimated_budget: itemReq?.estimated_budget ?? 0,
+        item_unit_id: itemReq.unit?.id ?? null,
+        item_category_id: itemReq.category?.id ?? null,
+        item_classification_id: itemReq.classification?.id ?? null,
+        market_research: itemReq?.market_research, // boolean
+        specifications: itemReq?.specs?.map((spec) => ({
+          description: spec?.value ?? "",
+        })),
+        authorization_pin: itemReq?.pin ?? "",
+        terminology_category_id: itemReq?.variant?.id ?? null, // not required
+      };
+
+      console.log(payload)
+
+      await itemRequestStore(payload, (status, message, data) => {
+
+        const alertData = {
+          status: status === 201 ? "success" : "error",
+          title: "Request for new item successfully submitted.",
+          description: message,
+        };
+
+        setAlertDialog(alertData);
+
+        if (status === 201) {
+          setItemReq({
+            classification: null,
+            category: null,
+            item_name: "",
+            unit: null,
+            estimated_budget: "",
+            variant: null,
+            market_research: false,
+            specs: [
+              { id: 1, value: "" },
+              { id: 2, value: "" }, // initial two specs
+            ],
+            pin: "",
+          });
+          setButtonLoader(false);
+          setActivity(null);
+          setSelectedActivities([]);
+          setOpenNewRequest(false); // close modal
+          setStep(1); // reset to step 1 if using a stepper
+        }
+      });
+
+    } catch (error) {
+      console.log(error)
+      setButtonLoader(false);
+      setAlertDialog({
+        status: "error",
+        title: "Request Failed",
+        description: "An unexpected error occurred. Please try again.",
+      });
+    }
   };
 
   return (
@@ -640,7 +762,7 @@ function PPMPDashboard(props) {
                         textDecoration: "underline",
                         gap: 0.5
                       }}
-                      onClick={() => setOpenItemRequest(true)}
+                      onClick={() => setOpenNewRequest(true)}
                       endDecorator={<ExternalLink size={18} />}
                     >
                       Request new item
@@ -746,6 +868,8 @@ function PPMPDashboard(props) {
       </BoxComponent >
       {/* <PageLoader isLoading={pageLoader} /> */}
 
+
+      {/* View Item Requests Modal */}
       <ModalComponent
         isOpen={openViewItemRequest}
         title={"Items Requested"}
@@ -758,6 +882,43 @@ function PPMPDashboard(props) {
             path={pathName}
           />
         }
+      />
+
+      <ModalComponent
+        isOpen={openNewRequest}
+        handleClose={() => setOpenNewRequest(false)}
+        title={step === 1 ? 'General information' : 'Specifications'}
+        description={step === 1 ? 'Fill in the item information to create it' : 'List down details for the item you want to cretae to specify it.'}
+        maxWidth={"500px"}
+        height={step === 1 ? "auto" : step === 2 ? "680px" : "650px"}
+        content={
+          <NewRequestContent
+            step={step}
+            itemReq={itemReq}
+            setItemReq={setItemReq}
+          />
+        }
+        leftButtonLabel={
+          step > 1 ? "Back to previous" : "Cancel"}
+        leftButtonAction={() => {
+          if (step > 1) {
+            handlePreviousStep();
+          } else {
+            setOpenNewRequest(false);
+          }
+        }}
+        rightButtonLabel={
+          step < 2 ? "Next step" : "Confirm and save"
+        }
+        rightButtonAction={() => {
+          if (step < 2) {
+            handleNextStep();
+          } else {
+            submit();
+          }
+        }}
+        isLoading={buttonLoader}
+        hasActionButtons
       />
 
       {/* call api item request by user first */}

@@ -118,6 +118,20 @@ const usePPMPHook = create((set) => ({
     });
   },
 
+  // this function is used on the request new item function on ppmp dashboard
+  itemRequestStore: async (body, callback) => {
+    post({
+      url: `item-request-store`,
+      form: body,
+      success: (response) => {
+        const { message, data } = response.data;
+        callback(response.status, message, data);
+      },
+      failed: callback,
+    });
+  },
+
+
   removeItem: async (id, callBack) => {
     remove({
       url: `${PATH}-items-delete/${id}`,
