@@ -9,6 +9,7 @@ const IconButtonComponent = ({
   icon,
   size,
   color,
+  withBorderRadius = false,
 }) => {
   return (
     <div>
@@ -18,6 +19,7 @@ const IconButtonComponent = ({
         onClick={onClick}
         size={size}
         color={color}
+        sx={{ borderRadius: withBorderRadius && "50%" }}
       >
         {icon}
       </IconButton>

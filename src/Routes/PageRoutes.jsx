@@ -1,6 +1,6 @@
 import { Navigate } from "react-router-dom";
 
-import Dashboard from "../Pages/Dashboard";
+import Dashboard from "../Pages/Dashboard/Dashboard";
 
 // import AOP from "../Pages/AOP/EndUser/AOP";
 import AOP from "../Pages/AOP/EndUser/AOPDashboard";
