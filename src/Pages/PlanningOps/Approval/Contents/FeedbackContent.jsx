@@ -139,7 +139,7 @@ export const FeedbackContent = ({
                                 key={idx}
                                 name={name}
                                 comment={comment}
-                                area_code={area_code}
+                                area_code={area}
                                 date={created_at}
                                 isActivity={isActivity}
                               />

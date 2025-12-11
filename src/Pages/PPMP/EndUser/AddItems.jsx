@@ -27,7 +27,7 @@ function AddItems(props) {
   const { activity } = location.state || {};
   const isPPMP = true;
 
-  const { activities, getActivities, postPPMP } = usePPMPHook();
+  const { activities, getActivities, postPPMP, postItems, updatePPMP } = usePPMPHook();
   const { items, getItems, getSearchResults } = useItemsHook();
   const { getSearchSuggestions, suggestions } = useSearchHook();
   const { setAlertDialog, setConfirmationModal, closeAlertDialog } =
@@ -80,7 +80,7 @@ function AddItems(props) {
       });
     });
 
-    await postPPMP(formData, (status, message) => {
+    await postItems(formData, (status, message) => {
       if (status === 201) {
         setAlertDialog({
           status: "success",

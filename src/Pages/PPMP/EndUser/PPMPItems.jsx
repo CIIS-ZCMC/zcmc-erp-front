@@ -311,7 +311,8 @@ function PPMPItems(props) {
               AOP request. Click a row to expand and view more details.
             </Typography>
           </Stack>
-          {status === "draft" && (
+
+          {(status?.name === "draft" || status?.name === 'returned') && (
             <ButtonComponent
               label={"Add an Item"}
               startDecorator={<PlusIcon />}
@@ -440,21 +441,21 @@ function PPMPItems(props) {
           )
         }
 
-        //no post for END - USER
-        // footer={
-        //   <>
-        //     <Stack width={"100%"} spacing={2}>
-        //       <TextareaComponent
-        //         placeholder={"Comment here .. "}
-        //         maxRows={3}
-        //         label={"Add a comment"}
-        //       />
-        //       <Stack direction={"row"} justifyContent={"right"}>
-        //         <ButtonComponent label={"Post Comment"} width="200px" />
-        //       </Stack>
-        //     </Stack>
-        //   </>
-        // }
+      //no post for END - USER
+      // footer={
+      //   <>
+      //     <Stack width={"100%"} spacing={2}>
+      //       <TextareaComponent
+      //         placeholder={"Comment here .. "}
+      //         maxRows={3}
+      //         label={"Add a comment"}
+      //       />
+      //       <Stack direction={"row"} justifyContent={"right"}>
+      //         <ButtonComponent label={"Post Comment"} width="200px" />
+      //       </Stack>
+      //     </Stack>
+      //   </>
+      // }
       />
     </Fragment>
   );

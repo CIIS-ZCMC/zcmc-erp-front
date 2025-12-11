@@ -1530,7 +1530,7 @@ export const PPMP_HEADERS = (status, editingRows, handleComments) => [
               : "center"
           }
         >
-          {status?.name !== "draft" && (
+          {(status?.name !== "draft" || status?.name !== "returned") && (
             <ChipComponent
               label={row.comments_count}
               startDecorator={<CommentOutlined />}

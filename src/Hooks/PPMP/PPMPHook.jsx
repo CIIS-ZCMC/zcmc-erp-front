@@ -79,13 +79,12 @@ const usePPMPHook = create((set) => ({
     });
   },
 
-  getPPMPTimeline: async (id, type = "ppmp", callBack) => {
+  getPPMPTimeline: async (id, callBack) => {
     read({
       url: `approval-trail/${id}`,
-      params: { type },
       failed: callBack,
       success: (res) => {
-        const { approval_trail, status, message } = res.data;
+        const { approval_trail, status } = res.data;
         set({ timeline: approval_trail });
         callBack(status, message);
       },
@@ -101,6 +100,21 @@ const usePPMPHook = create((set) => ({
         console.log(data);
         console.log(response.message);
         set({ dashboard: data });
+        callback(response.status, response.message, errors);
+      },
+      failed: callback,
+    });
+  },
+
+  postItems: async (body, callback) => {
+    post({
+      url: `${PATH}-items-store`,
+      form: body,
+      success: (response) => {
+        const { message, data, errors } = response.data;
+        console.log(data);
+        console.log(response.message);
+        // set({ dashboard: data });
         callback(response.status, response.message, errors);
       },
       failed: callback,
@@ -179,6 +193,7 @@ const usePPMPHook = create((set) => ({
       },
     });
   },
+
   updatePPMP: async (id, form, callBack) => {
     update({
       url: `${PATH}-items-update/${id}`,

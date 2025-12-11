@@ -108,10 +108,10 @@ function StepItem({
               {status === "submitted"
                 ? "Submitted "
                 : status === "approved"
-                ? "Approved"
-                : status === "pending"
-                ? "To be approved"
-                : "Returned"}{" "}
+                  ? "Approved"
+                  : status === "pending"
+                    ? "To be approved"
+                    : "Returned"}{" "}
               by:{" "}
             </Typography>
 
