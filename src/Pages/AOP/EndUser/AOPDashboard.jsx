@@ -72,7 +72,7 @@ function DashboardEndUser(props) {
   const { role } = current_user || {};
 
   useEffect(() => {
-    console.log("user aop applications data", aop);
+    // console.log("user aop applications data", aop);
     // console.log('user aop applications data', aop)
     // console.log('user aop applications data', aop)
     // console.log('role', role);
@@ -239,6 +239,7 @@ function DashboardEndUser(props) {
                 direction={"row"}
                 justifyContent={"space-between"}
                 alignItems={"flex-start"}
+                gap={2}
               >
                 {/* Header here */}
                 <Header
@@ -248,12 +249,13 @@ function DashboardEndUser(props) {
                   handleChange={handleChangeFiscalYear}
                 />
 
-                {aop?.status?.id !== 2 && aop?.status?.id !== 4 && (
+                {(aop?.status?.id !== 2 && aop?.status?.id !== 4) && (
                   <Draft status={aop?.status.id} />
                 )}
 
-                {aop?.status?.id === 2 && (
+                {(aop?.status?.id !== 1) && (
                   <>
+                    {/* {aop.status.id} */}
                     <ButtonComponent
                       variant={"soft"}
                       label={"Feedback"}

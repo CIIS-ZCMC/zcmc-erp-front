@@ -20,7 +20,7 @@ const Content = ({ comments }) => {
 
   return (
     <>
-      {comments?.map(({ id, comment, user_name, created_at }, index) => {
+      {comments?.map(({ id, comment, user_name, user_area, created_at }, index) => {
 
         const formattedDate = moment(created_at).format("MMMM D, YYYY")
 
@@ -29,15 +29,24 @@ const Content = ({ comments }) => {
             <Stack
               display={'flex'}
               flexDirection={'row'}
-              alignItems={'center'}
+              alignItems={'start'}
               justifyContent={'space-between'}
             >
-              <Typography
-                level="body-md"
-                fontWeight={600}
-              >
-                {user_name}
-              </Typography>
+
+              <Stack>
+                <Typography
+                  level="body-md"
+                  fontWeight={600}
+                >
+                  {user_name}
+                </Typography>
+
+                <Typography
+                  level="body-xs"
+                >
+                  {user_area}
+                </Typography>
+              </Stack>
 
               <Typography
                 level="body-xs"

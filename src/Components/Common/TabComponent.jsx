@@ -25,7 +25,7 @@ export default function TabComponent({
   )?.length;
 
   useEffect(() => {
-    console.log('tabs', tabs)
+    // console.log('tabs', tabs)
   }, [tabs])
 
   return (

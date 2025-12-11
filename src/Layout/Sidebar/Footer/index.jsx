@@ -51,7 +51,7 @@ const Footer = () => {
 
     localStorage.removeItem("ppmp-items");
     localStorage.removeItem("ppmp-edits");
-    window.location.href = BASE_URL.test_landing_page;
+    window.location.href = BASE_URL.umis_landing_page;
   };
 
   return (

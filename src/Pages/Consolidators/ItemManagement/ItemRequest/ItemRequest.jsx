@@ -73,18 +73,18 @@ const ItemRequest = () => {
           <Typography level="body-md" sx={{ fontWeight: 600 }}>
             {ITEM_SUBMITTED_LIST_CONSTANTS.ITEM_SUBMITTED_LIST_HEADER}
           </Typography>
-          <Typography level="body-sx">
+          <Typography level="body-xs">
             {ITEM_SUBMITTED_LIST_CONSTANTS.ITEM_SUBMITTED_LIST_SUBHEADER}
           </Typography>
         </Stack>
-
+        {/* 
         <ButtonComponent
           label={"Go to Library"}
           variant={"outlined"}
           startDecorator={<ArrowOutwardOutlined />}
           size={"sm"}
           color="primary"
-        />
+        /> */}
       </BoxComponent>
 
       <TabComponent

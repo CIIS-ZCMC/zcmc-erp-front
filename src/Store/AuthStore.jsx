@@ -108,7 +108,7 @@ export const useUserTypes = () => {
   // const user = useAuthStore((state) => state.user);
 
   const area = useAuthStore((state) => state.area);
-  console.log(area);
+  // console.log(area);
   const { type, is_head } = area || {};
 
   if (area) {

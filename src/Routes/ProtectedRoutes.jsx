@@ -23,7 +23,7 @@ function ProtectedRoutes({ children }) {
 
     sessionValidation(token, (status) => {
       if (!(status >= 200 && status < 300)) {
-        window.location.href = BASE_URL.test_landing_page;
+        window.location.href = BASE_URL.umis_landing_page;
 
         // setLoading(false);
         return;

@@ -30,7 +30,7 @@ export const FeedbackContent = ({
 
   // COMMENTS HOOK
   const remarks = useRemarks();
-  const allComments = localStorageGetter("comments");
+  const allComments = localStorageGetter("all_comments");
 
   // DATA
   const feedbackDisplay = useMemo(() => {
@@ -64,8 +64,9 @@ export const FeedbackContent = ({
 
   useEffect(() => {
     console.log(isDivisionHead)
+    // console.log(allComments)
     console.log(feedbackDisplay)
-  }, [isDivisionHead, feedbackDisplay])
+  }, [isDivisionHead, feedbackDisplay, allComments])
 
   return (
     <DrawerComponent
@@ -134,7 +135,7 @@ export const FeedbackContent = ({
                         messages
                           ?.filter((m) => m.__type === "comment")
                           .map(
-                            ({ name, area_code, created_at, comment }, idx) => (
+                            ({ name, area, area_code, created_at, comment }, idx) => (
                               <CommentContainerComponent
                                 key={idx}
                                 name={name}
@@ -155,8 +156,10 @@ export const FeedbackContent = ({
                               {
                                 division_chief_name,
                                 current_area_name,
+                                area_name,
                                 created_at,
                                 remark,
+                                role
                               },
                               idx
                             ) => (
@@ -164,7 +167,7 @@ export const FeedbackContent = ({
                                 key={idx}
                                 name={division_chief_name}
                                 comment={remark}
-                                area_code={current_area_name}
+                                area_code={area_name}
                                 date={created_at}
                               />
                             )

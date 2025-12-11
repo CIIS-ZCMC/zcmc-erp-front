@@ -10,4 +10,8 @@ export default defineConfig({
       '@Components': path.resolve(__dirname, './src/Components'),
     },
   },
+  server: {
+    host: "192.168.36.164", //arts api
+    port: 5173,
+  },
 })

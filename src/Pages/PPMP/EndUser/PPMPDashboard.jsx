@@ -144,9 +144,6 @@ function PPMPDashboard(props) {
     total
   } = requestsByUser || {}
 
-  // useEffect(() => {
-  //   console.log(requestsByUser)
-  // }, [requestsByUser])
 
   const navigate = useNavigate();
   const {
@@ -161,6 +158,11 @@ function PPMPDashboard(props) {
     itemRequestStore
   } = usePPMPHook();
   const { setAlertDialog } = useModalHook();
+
+  useEffect(() => {
+    console.log(dashboard)
+  }, [dashboard])
+
 
   const [pageLoader, setPageLoader] = useState(false);
   const { user } = useAuth();
@@ -307,9 +309,6 @@ function PPMPDashboard(props) {
   const handleNextStep = () => setStep((prev) => Math.min(prev + 1, 3));
   const handlePreviousStep = () => setStep((prev) => Math.max(prev - 1, 1));
 
-  useEffect(() => {
-    console.log('step tracker:', step)
-  }, [step])
 
   const submit = async () => {
     clearErrors();
@@ -347,8 +346,6 @@ function PPMPDashboard(props) {
         authorization_pin: itemReq?.pin ?? "",
         terminology_category_id: itemReq?.variant?.id ?? null, // not required
       };
-
-      console.log(payload)
 
       await itemRequestStore(payload, (status, message, data) => {
 
@@ -444,13 +441,13 @@ function PPMPDashboard(props) {
                 />
               </Box>
               <Typography level="body-sm" sx={{ color: "white" }}>
-                Mission: This is a sample mission written by the requesting
+                {/* Mission: This is a sample mission written by the requesting
                 body. This could be as short as a single sentence but could be
-                as long as two sentences if necessary.
+                as long as two sentences if necessary. */}
               </Typography>
             </Stack>
             {dashboard?.ppmp_application?.status_id === 1 ||
-            dashboard?.ppmp_application?.status_id === 6 ? (
+              dashboard?.ppmp_application?.status_id === 6 ? (
               <Stack
                 bgcolor={"#FFF4E5"}
                 borderRadius={5}
