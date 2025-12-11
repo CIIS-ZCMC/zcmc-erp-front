@@ -20,11 +20,6 @@ const CardBody = ({ objective, activity, timeframe, cost, comments }) => {
 
         <Stack
           textAlign={"left"}
-          sx={{
-            bgcolor: "#F2F2F2",
-            padding: 1,
-            borderRadius: 10,
-          }}
           width={"151%"}
         >
           {comments.length !== 0 ?
@@ -34,6 +29,11 @@ const CardBody = ({ objective, activity, timeframe, cost, comments }) => {
                 flexDirection={'row'}
                 alignItems={'start'}
                 justifyContent={'space-between'}
+                sx={{
+                  bgcolor: "#F2F2F2",
+                  padding: 1,
+                  borderRadius: 10,
+                }}
               >
                 <Stack
                   display={'flex'}
