@@ -63,7 +63,7 @@ function AlertDialogComponent({
                 sx={{ alignItems: "start", justifyContent: "space-between" }}
               >
                 <Stack gap={1}>
-                  <Box mb={2}>{getStatusIcon(status)}test</Box>
+                  <Box mb={2}>{getStatusIcon(status)}</Box>
                   <Typography
                     fontSize={{ xs: 15, lg: 18 }}
                     fontWeight={600}
