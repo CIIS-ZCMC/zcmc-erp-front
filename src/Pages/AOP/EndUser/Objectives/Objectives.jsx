@@ -146,7 +146,6 @@ const Objectives = () => {
       other_success_indicator_description: otherSuccessIndicator,
     };
 
-
     try {
       await createObjective(payload, (status, message) => {
         if (status === 201) {

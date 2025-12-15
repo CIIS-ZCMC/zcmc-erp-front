@@ -3,6 +3,7 @@ import { read, post, update, remove } from "../Services/RequestMethods";
 
 import { useApplicationObjectives, useObjectivesActions } from "../Store/ObjectivesStore";
 import { useFeedbackStoreActions } from "../Store/FeedbackStore";
+// import { GetUserObjectives } from "@Services/ObjectiveServices";
 
 const useObjectivesHook = () => {
 
@@ -39,6 +40,15 @@ const useObjectivesHook = () => {
   };
 
   const getObjectivesBySector = async (callBack) => {
+    // const response = await GetUserObjectives();
+
+    // // Validate Status
+    // if (!response.status) {
+    //   // Failed display
+    // }
+
+    // // Success
+
     try {
       await read({
         url: API.OBJECTIVE_BY_SECTOR,
