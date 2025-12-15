@@ -12,6 +12,8 @@ import ButtonComponent from '@Components/Common/ButtonComponent';
 
 import { RESPONSIBLE } from '../../../../Data/constants';
 
+import formattedPrice from '../../../../Utils/formattedPrice';
+
 const ResponsibleStatus = ({
     activity,
     openResponsibleModal
@@ -95,7 +97,7 @@ const ResponsibleStatus = ({
                                 </Box>
                                 <Stack>
                                     <Typography level="body-sm">Total Cost</Typography>
-                                    <Typography level="title-md">₱ {cost}</Typography>
+                                    <Typography level="title-md">{formattedPrice(cost)}</Typography>
                                 </Stack>
                             </Stack>
 

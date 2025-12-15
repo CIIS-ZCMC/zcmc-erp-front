@@ -16,6 +16,7 @@ import SearchBarComponent from "@Components/SearchBarComponent";
 import ConfirmationModalComponent from "@Components/Common/Dialog/ConfirmationModalComponent";
 import SearchBarComponentv2 from "@Components/SearchBarWithdeBounce";
 
+
 import ActivitiesModal from "./modal/ActivitiesModal";
 import ActivitiesList from "./ActivitiesList";
 
@@ -121,7 +122,7 @@ const Activities = () => {
     applicationActivities,
   ]);
 
-  const objectiveName = applicationActivities?.[0]?.objective_code || state.objective
+  const objectiveName = applicationActivities?.[0]?.objective_code || state?.objective
 
   const filteredActivities = useMemo(() => {
     if (!search) return applicationActivities;
@@ -309,6 +310,7 @@ const Activities = () => {
       />
       <BoxComponent mt={2} p={2}>
         <Stack direction={"column"} spacing={1}>
+
           <Stack direction={"row"} spacing={1} alignItems={"center"}>
             <Typography fontWeight={600}>{MANAGE_ACTIVITIES_HEADER}</Typography>
             <ChipComponent
@@ -321,9 +323,61 @@ const Activities = () => {
             />
           </Stack>
 
-          <Typography level="body-xs" fontWeight={400}>
-            {MANAGE_ACTIVITIES_SUBHEADER}
-          </Typography>
+          <Stack
+            display={'flex'}
+            flexDirection={'row'}
+            gap={2}
+            alignItems={'start'}
+            justifyContent={'space-between'}
+          >
+
+            <Typography level="body-xs" fontWeight={400}>
+              {MANAGE_ACTIVITIES_SUBHEADER}
+            </Typography>
+
+            <Stack
+              display={'flex'}
+              flexDirection={'col'}
+              alignItems={'center'}
+              gap={.5}
+
+            >
+              <Stack
+                display={'flex'}
+                flexDirection={'row'}
+                gap={1}
+              >
+                <ChipComponent
+                  size={'sm'}
+                  variant={'solid'}
+                  color={'success'}
+                />
+
+                <Typography level="body-xs" fontWeight={400}>
+                  Completed Activity Details
+                </Typography>
+              </Stack>
+
+              <Stack
+                display={'flex'}
+                flexDirection={'row'}
+                gap={1}
+              >
+                <ChipComponent
+                  size={'sm'}
+                  variant={'solid'}
+                  color={'danger'}
+                />
+
+                <Typography level="body-xs" fontWeight={400}>
+                  Incomplete Activity Details
+                </Typography>
+              </Stack>
+            </Stack>
+
+          </Stack>
+
+
         </Stack>
 
         <Divider sx={{ my: 1 }} />

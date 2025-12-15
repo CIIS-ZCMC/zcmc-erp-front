@@ -13,6 +13,10 @@ const Draft = ({ status }) => {
 
     const navigate = useNavigate()
 
+    const renderStatus = {
+        // status === 6 return Review PPMP
+        // status === 4 return view PPMP 
+    }
 
     return (
         <>

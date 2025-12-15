@@ -103,57 +103,60 @@ const ActivitiesModal = ({
                         </FormControl>
                     </Stack>
 
-
-                    {/* <Typography>Target</Typography> */}
                     <Stack
-                        mt={3}
-                        gap={1}
-                        direction={'row'}
-                        alignItems={'center'}
-                        justifyContent={'space-between'}
+                        mt={2}
                     >
+                        <Typography>Target by</Typography>
+                        <Stack
+                            // mt={3}
+                            gap={1}
+                            direction={'row'}
+                            alignItems={'center'}
+                            justifyContent={'space-between'}
+                        >
+                            <InputComponent
+                                type={'text'}
+                                label={'Quarter 1'}
+                                width={100}
+                                min={0}
+                                max={100}
+                                value={firstQuarter || ""}
+                                onChange={handleQuarterChange("firstQuarter")}
+                            />
 
-                        <InputComponent
-                            type={'text'}
-                            label={'Quarter 1'}
-                            width={100}
-                            min={0}
-                            max={100}
-                            value={firstQuarter || ""}
-                            onChange={handleQuarterChange("firstQuarter")}
-                        />
+                            <InputComponent
+                                type={'text'}
+                                label={'Quarter 2'}
+                                width={100}
+                                min={0}
+                                max={100}
+                                value={secondQuarter || ""}
+                                onChange={handleQuarterChange("secondQuarter")}
 
-                        <InputComponent
-                            type={'text'}
-                            label={'Quarter 2'}
-                            width={100}
-                            min={0}
-                            max={100}
-                            value={secondQuarter || ""}
-                            onChange={handleQuarterChange("secondQuarter")}
+                            />
 
-                        />
+                            <InputComponent
+                                type={'text'}
+                                label={'Quarter 3'}
+                                width={100}
+                                min={0}
+                                max={100}
+                                value={thirdQuarter || ""}
+                                onChange={handleQuarterChange("thirdQuarter")}
+                            />
 
-                        <InputComponent
-                            type={'text'}
-                            label={'Quarter 3'}
-                            width={100}
-                            min={0}
-                            max={100}
-                            value={thirdQuarter || ""}
-                            onChange={handleQuarterChange("thirdQuarter")}
-                        />
-
-                        <InputComponent
-                            type={'text'}
-                            label={'Quarter 4'}
-                            width={100}
-                            min={0}
-                            max={100}
-                            value={fourthQuarter || ""}
-                            onChange={handleQuarterChange("fourthQuarter")}
-                        />
+                            <InputComponent
+                                type={'text'}
+                                label={'Quarter 4'}
+                                width={100}
+                                min={0}
+                                max={100}
+                                value={fourthQuarter || ""}
+                                onChange={handleQuarterChange("fourthQuarter")}
+                            />
+                        </Stack>
                     </Stack>
+
 
                 </Stack>
 

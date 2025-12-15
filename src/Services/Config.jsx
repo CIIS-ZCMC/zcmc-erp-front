@@ -21,6 +21,7 @@ export const BASE_URL = {
   socket_development: "http://localhost:3025/",
   test_landing_page: "http://192.168.36.164:5173/",
   umis_landing_page: 'http://192.168.36.150/'
+
 };
 
 export const TEST_MODE = false;

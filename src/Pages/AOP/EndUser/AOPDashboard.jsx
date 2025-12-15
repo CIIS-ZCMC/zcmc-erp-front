@@ -249,9 +249,11 @@ function DashboardEndUser(props) {
                   handleChange={handleChangeFiscalYear}
                 />
 
-                {(aop?.status?.id !== 2 && aop?.status?.id !== 4) && (
-                  <Draft status={aop?.status.id} />
-                )}
+                {/* {aop?.status?.id !== 4 && (
+                  
+                )} */}
+
+                <Draft status={aop?.status.id} />
 
                 {(aop?.status?.id !== 1) && (
                   <>
