@@ -77,7 +77,7 @@ export const AOP_SUMMARY = {
   PAGE_TITLE: "AOP #2025-0031 for Fiscal Year 2026",
   PAGE_REVIEW:
     "Please carefully review the complete summary of your AOP request below. Verify all details are correct before submitting. Once submitted, your AOP will be forwarded to the the approving bodies for review and approval.",
-  SUMMARY_CARD_HEADER: "Document Status: Ready for Submission",
+  SUMMARY_CARD_HEADER: "Document Status:",
   SUMMARY_CARD_BODY:
     "All required sections contain at least one item and have been validated. Your Annual Operations Plan has successfully passed preliminary compliance checks and meets the minimum requirements for official submission. The document will undergo comprehensive review by the Planning Office, Division Chief, and Medical Center Chief. The complete review process typically takes 7-10 business days. You will receive official notification via email and system alert upon completion of each review stage.",
   SUMMARY_TITLE:
@@ -395,3 +395,25 @@ export const PPMP_COLLAPSE = [
   { label: "Item Information", value: "item" },
   { label: "Procurement Schedule", value: "schedule" },
 ];
+
+
+export const STATUS_LABELS = {
+  1: "Draft",
+  2: "Submitted",
+  4: "Approved",
+  6: "Review",
+};
+
+export const STATUS_MESSAGES = {
+  1: "This AOP is currently in draft mode. You may click this button and confirm to submit this AOP for review.",
+  2: "This AOP has been submitted and is pending review.",
+  4: "This AOP has been approved.",
+  6: "AOP Returned for review.",
+};
+
+export const PPMP_BUTTON_LABEL = {
+  1: "Create PPMP",
+  2: "View PPMP",
+  4: "View PPMP",
+  6: "Review PPMP",
+};

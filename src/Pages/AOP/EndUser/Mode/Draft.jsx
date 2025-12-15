@@ -6,17 +6,18 @@ import { Warning } from '@mui/icons-material';
 
 import ButtonComponent from '@Components/Common/ButtonComponent';
 
+import {
+    STATUS_LABELS,
+    STATUS_MESSAGES,
+    PPMP_BUTTON_LABEL
+} from '../../../../Data/constants';
+
 const Draft = ({ status }) => {
 
     const theme = useTheme();
     const color = theme.palette.custom;
 
     const navigate = useNavigate()
-
-    const renderStatus = {
-        // status === 6 return Review PPMP
-        // status === 4 return view PPMP 
-    }
 
     return (
         <>
@@ -36,16 +37,16 @@ const Draft = ({ status }) => {
                         color="warning"
                         sx={{ fontWeight: 600 }}
                     >
-                        Status:  {`${status === 6 ? 'Review' : 'Draft'}`}
+                        Status: {STATUS_LABELS[status] ?? ""}
                     </Typography>
                     <Typography level="body-xs" color="warning">
-                        {`${status === 6 ? 'AOP Returned for review' : 'This AOP is currently in draft mode. You may click this button and confirm to submit this AOP for review.'}`}
-
+                        {STATUS_MESSAGES[status] ?? "Unknown AOP status."}
                     </Typography>
                 </Box>
+
                 <Box width={"450px"}>
                     <ButtonComponent
-                        label={status === 6 ? 'Review PPMP' : "Create PPMP"}
+                        label={PPMP_BUTTON_LABEL[status] ?? "Create PPMP"}
                         onClick={() => navigate("/aop/summary")}
                         fullWidth={"true"}
                     />

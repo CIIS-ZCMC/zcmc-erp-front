@@ -262,8 +262,8 @@ const AOPSummary = () => {
           justifyContentHeader={"flex-start"}
           justifyContentActions={"flex-start"}
           direction={"row"}
-          cardHeader={<CardHeader />}
-          cardBody={<CardBody />}
+          cardHeader={<CardHeader status={status.id} />}
+          cardBody={status.id !== 4 && <CardBody />}
           withDividerStyle
           actionWidth={"80%"}
           cardActions={
@@ -351,31 +351,36 @@ const AOPSummary = () => {
           </Grid>
         </BoxComponent>
 
-        <BoxComponent>
-          <Stack p={2} mb={2}>
-            <Stack>
-              <Typography level="title-md">{SUMMARY_FOOTER_TITLE}</Typography>
+        {status.id !== 4 &&
+          <BoxComponent>
+            <Stack p={2} mb={2}>
+              <Stack>
+                <Typography level="title-md">{SUMMARY_FOOTER_TITLE}</Typography>
 
-              <Stack
-                mt={2}
-                direction={"row"}
-                alignItems={"center"}
-                justifyContent={"space-between"}
-              >
-                <Typography level="body-sm" width={1000}>
-                  {SUMMARY_FOOTER_CONTENT}
-                </Typography>
+                <Stack
+                  mt={2}
+                  direction={"row"}
+                  alignItems={"center"}
+                  justifyContent={"space-between"}
+                >
+                  <Typography level="body-sm" width={1000}>
+                    {SUMMARY_FOOTER_CONTENT}
+                  </Typography>
 
-                <ButtonComponent
-                  label={status.id === 6 ? "Resubmit PPMP" : "Create PPMP"}
-                  size={"lg"}
-                  onClick={() => handleOpenSubmitAopModal()}
-                  color="primary"
-                />
+                  {status.id}
+
+                  <ButtonComponent
+                    label={status.id === 6 ? "Resubmit PPMP" : "Create PPMP"}
+                    size={"lg"}
+                    onClick={() => handleOpenSubmitAopModal()}
+                    color="primary"
+                  />
+                </Stack>
               </Stack>
             </Stack>
-          </Stack>
-        </BoxComponent>
+          </BoxComponent>
+        }
+
       </Stack>
 
       <ConfirmationModalComponent

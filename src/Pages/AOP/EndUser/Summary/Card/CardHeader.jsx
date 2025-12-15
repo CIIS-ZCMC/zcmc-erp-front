@@ -6,8 +6,11 @@ import { TriangleAlert } from "lucide-react";
 import { AOP_SUMMARY } from "../../../../../Data/constants";
 import { blue } from "@mui/material/colors";
 
-const CardHeader = () => {
+import { STATUS_LABELS } from "../../../../../Data/constants";
+
+const CardHeader = ({ status }) => {
   const { SUMMARY_CARD_HEADER } = AOP_SUMMARY;
+
 
   return (
     <>
@@ -21,7 +24,7 @@ const CardHeader = () => {
             <TriangleAlert size={20} style={{ color: blue[800] }} />
           }
         >
-          {SUMMARY_CARD_HEADER}
+          {SUMMARY_CARD_HEADER} {STATUS_LABELS[status]}
         </Typography>
       </Stack>
     </>
