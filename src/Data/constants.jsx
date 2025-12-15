@@ -406,7 +406,7 @@ export const STATUS_LABELS = {
 
 export const STATUS_MESSAGES = {
   1: "This AOP is currently in draft mode. You may click this button and confirm to submit this AOP for review.",
-  2: "This AOP has been submitted and is pending review.",
+  2: "This AOP has been submitted and is pending for review.",
   4: "This AOP has been approved.",
   6: "AOP Returned for review.",
 };

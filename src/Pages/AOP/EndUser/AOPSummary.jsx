@@ -88,11 +88,21 @@ const AOPSummary = () => {
 
   const applicationsObjectives = application_objectives;
 
+  const SUBMIT_ALERT_MESSAGES = {
+    2: 'Official Submission Confirmation',
+    6: 'Official Resubmission Confirmation'
+  }
+
+  const SUBMIT_ALERT_DESC = {
+    2: `You are about to officially create PMMP for Fiscal Year ${year}.`,
+    6: `You are about to resubmit PMMP for Fiscal Year ${year}.`,
+  }
+
   const handleOpenSubmitAopModal = () => {
     const data = {
       status: "success",
-      title: `Official Submission Confirmation`,
-      description: `You are about to officially create PMMP for Fiscal Year ${year}.`,
+      title: `${SUBMIT_ALERT_MESSAGES[status.id]}`,
+      description: `${SUBMIT_ALERT_DESC[status.id]}`,
     };
     setConfirmationModal(data);
   };
@@ -207,7 +217,7 @@ const AOPSummary = () => {
                                   whiteSpace: "nowrap",
                                 }}
                               >
-                                {activity},
+                                {activity}
                               </Typography>
                             ))}
                             <Typography level="body-xs">
@@ -233,7 +243,7 @@ const AOPSummary = () => {
           setIsLoading(false);
         } else {
           setAlertDialog({
-            status: "error",
+            status: 422,
             title: message,
             description: "",
           });
@@ -250,6 +260,7 @@ const AOPSummary = () => {
       });
     }
   };
+
 
   return (
     <>
@@ -289,69 +300,72 @@ const AOPSummary = () => {
           designationCount={designations_only}
         />
 
-        <BoxComponent>
-          <Grid
-            xs={12}
-            bgcolor="#006599"
-            sx={{ borderTopRightRadius: 10, borderTopLeftRadius: 10 }}
-            p={2}
-            mb={1}
-          >
-            <Grid xs={12}>
-              <Typography textColor={"white"}>{SUMMARY_TITLE}</Typography>
+        {applicationsObjectives.length !== 0 &&
+          <BoxComponent>
+            <Grid
+              xs={12}
+              bgcolor="#006599"
+              sx={{ borderTopRightRadius: 10, borderTopLeftRadius: 10 }}
+              p={2}
+              mb={1}
+            >
+              <Grid xs={12}>
+                <Typography textColor={"white"}>{SUMMARY_TITLE}</Typography>
+              </Grid>
             </Grid>
-          </Grid>
 
-          <Grid container>
-            <Grid xs={12}>
-              <BoxComponent>
-                {/* map here */}
-                {applicationsObjectives?.map(
-                  ({ objective, counts, activities }, index) => {
-                    const { code } = objective;
-                    const { activities_count, total_cost } = counts;
+            <Grid container>
+              <Grid xs={12}>
+                <BoxComponent>
+                  {/* map here */}
+                  {applicationsObjectives?.map(
+                    ({ objective, counts, activities }, index) => {
+                      const { code } = objective;
+                      const { activities_count, total_cost } = counts;
 
-                    const objectiveIndex = index + 1;
+                      const objectiveIndex = index + 1;
 
-                    return (
-                      <>
-                        <AccordionComponent
-                          defaultExpanded={false}
-                          accordionSummary={
-                            <>
-                              <AccordionSummary
-                                index={objectiveIndex}
-                                objectiveName={code}
-                                activitiesCount={activities_count}
-                                cost={total_cost}
-                              />
-                            </>
-                          }
-                          accordionDetails={
-                            <>
-                              {activities.length === 0 && (
-                                <Typography
-                                  p={4}
-                                  textAlign={"center"}
-                                  level="title-md"
-                                >
-                                  There are no activities on this objective
-                                </Typography>
-                              )}
-                              <AccordionDetails activities={activities} />
-                            </>
-                          }
-                        />
-                      </>
-                    );
-                  }
-                )}
-              </BoxComponent>
+                      return (
+                        <>
+                          <AccordionComponent
+                            defaultExpanded={false}
+                            accordionSummary={
+                              <>
+                                <AccordionSummary
+                                  index={objectiveIndex}
+                                  objectiveName={code}
+                                  activitiesCount={activities_count}
+                                  cost={total_cost}
+                                />
+                              </>
+                            }
+                            accordionDetails={
+                              <>
+                                {activities.length === 0 && (
+                                  <Typography
+                                    p={4}
+                                    textAlign={"center"}
+                                    level="title-md"
+                                  >
+                                    There are no activities on this objective
+                                  </Typography>
+                                )}
+                                <AccordionDetails activities={activities} />
+                              </>
+                            }
+                          />
+                        </>
+                      );
+                    }
+                  )}
+                </BoxComponent>
+              </Grid>
             </Grid>
-          </Grid>
-        </BoxComponent>
+          </BoxComponent>
 
-        {status.id !== 4 &&
+        }
+
+        {(status.id === 2 || status.id === 6) &&
           <BoxComponent>
             <Stack p={2} mb={2}>
               <Stack>
@@ -366,14 +380,12 @@ const AOPSummary = () => {
                   <Typography level="body-sm" width={1000}>
                     {SUMMARY_FOOTER_CONTENT}
                   </Typography>
-
-                  {status.id}
-
                   <ButtonComponent
                     label={status.id === 6 ? "Resubmit PPMP" : "Create PPMP"}
                     size={"lg"}
                     onClick={() => handleOpenSubmitAopModal()}
                     color="primary"
+                    disabled={applicationsObjectives.length === 0}
                   />
                 </Stack>
               </Stack>
