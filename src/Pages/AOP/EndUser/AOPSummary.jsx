@@ -43,9 +43,6 @@ const AOPSummary = () => {
     closeAlertDialog,
   } = useModalHook();
 
-  // useEffect(() => {
-  //     console.log(aop)
-  // }, [aop])
 
   const {
     PAGE_TITLE,
@@ -261,6 +258,9 @@ const AOPSummary = () => {
     }
   };
 
+  useEffect(() => {
+    console.log(status.id)
+  }, [status])
 
   return (
     <>
@@ -362,10 +362,9 @@ const AOPSummary = () => {
               </Grid>
             </Grid>
           </BoxComponent>
-
         }
 
-        {(status.id === 2 || status.id === 6) &&
+        {status.id !== 2 && // do not display if status is 2 = submitted
           <BoxComponent>
             <Stack p={2} mb={2}>
               <Stack>
@@ -380,19 +379,19 @@ const AOPSummary = () => {
                   <Typography level="body-sm" width={1000}>
                     {SUMMARY_FOOTER_CONTENT}
                   </Typography>
+
                   <ButtonComponent
-                    label={status.id === 6 ? "Resubmit PPMP" : "Create PPMP"}
+                    label={status.id === 6 ? "Resubmit AOP" : "Create AOP"}
                     size={"lg"}
                     onClick={() => handleOpenSubmitAopModal()}
                     color="primary"
-                    disabled={applicationsObjectives.length === 0}
                   />
+
                 </Stack>
               </Stack>
             </Stack>
           </BoxComponent>
         }
-
       </Stack>
 
       <ConfirmationModalComponent

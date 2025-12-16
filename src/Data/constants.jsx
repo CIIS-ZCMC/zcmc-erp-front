@@ -411,9 +411,9 @@ export const STATUS_MESSAGES = {
   6: "AOP Returned for review.",
 };
 
-export const PPMP_BUTTON_LABEL = {
-  1: "Create PPMP",
-  2: "View PPMP",
-  4: "View PPMP",
-  6: "Review PPMP",
+export const AOP_BUTTON_LABEL = {
+  1: "Create AOP",
+  2: "View AOP",
+  4: "View AOP",
+  6: "Review AOP",
 };
