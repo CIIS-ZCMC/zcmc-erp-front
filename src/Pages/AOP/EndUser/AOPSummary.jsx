@@ -364,7 +364,7 @@ const AOPSummary = () => {
           </BoxComponent>
         }
 
-        {status.id !== 2 && // do not display if status is 2 = submitted
+        {status.id !== 2 || status === 4 && // do not display if status is 2 = submitted or 6 = approved
           <BoxComponent>
             <Stack p={2} mb={2}>
               <Stack>

@@ -97,7 +97,7 @@ const ProcessAOPContent = () => {
             ? `The AOP request has been successfully ${processData.action}. All parties involved will be notified of this update.`
             : processData.action === "returned"
               ? `The request has been returned to the requesting party for necessary revisions. They will be notified of your remarks and required changes.`
-              : `Everyone can now see the changes you’ve made. The request is now ready for processing of the next approving body (${getNextOffice()}).`,
+              : `Everyone can now see the changes you’ve made. The request is now ready for processing of the next approving body (${getNextOffice()}).`, //CHECK THIS IT DISPLAYS UNDEFINED ONCE THE BUDGET AND MCC APPPROVES
         };
       } else {
         data = {
