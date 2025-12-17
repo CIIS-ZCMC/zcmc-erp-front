@@ -24,7 +24,7 @@ export const FeedbackContent = ({
   const { isDivisionHead, isPlanning } = useUserTypes();
 
   useEffect(() => {
-    console.log(isDivisionHead);
+    // console.log(isDivisionHead);
   }, [isDivisionHead]);
 
 
@@ -63,9 +63,9 @@ export const FeedbackContent = ({
   }, [isPlanning]);
 
   useEffect(() => {
-    console.log(isDivisionHead)
+    // console.log(isDivisionHead)
     // console.log(allComments)
-    console.log(feedbackDisplay)
+    // console.log(feedbackDisplay)
   }, [isDivisionHead, feedbackDisplay, allComments])
 
   return (

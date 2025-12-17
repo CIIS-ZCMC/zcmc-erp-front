@@ -8,11 +8,13 @@ import { Check, Pencil, Trash } from 'lucide-react'
 
 const CardHeader = (
     {
+        status,
         handleSave,
         handleEdit,
         handleDelete
     }
 ) => {
+
     return (
         <>
             {/* <IconButtonComponent
@@ -25,12 +27,14 @@ const CardHeader = (
                 size={'sm'}
                 icon={<Pencil size={18} />}
                 onClick={handleEdit}
+                disabled={status === 4 || status === 2}
             />
 
             <IconButtonComponent
                 size={'sm'}
                 icon={<Trash size={18} />}
                 onClick={handleDelete}
+                disabled={status === 4 || status === 2}
             />
         </>
     )

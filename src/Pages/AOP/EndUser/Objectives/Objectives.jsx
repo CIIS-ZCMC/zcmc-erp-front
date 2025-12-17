@@ -23,6 +23,7 @@ import CardActions from "./card/CardActions";
 import { OBJECTIVES } from "../../../../Data/constants";
 
 import {
+  useAopApplication,
   useFunctionType,
   useObjective,
   useSuccessIndicator,
@@ -31,6 +32,7 @@ import {
   useApplicationObjective,
   useOtherObjective,
   useOtherSuccessIndicator,
+  useIsLoading,
 } from "../../../../Store/ObjectivesStore";
 
 import useObjectivesHook from "../../../../Hooks/ObjectivesHook";
@@ -43,6 +45,7 @@ const Objectives = () => {
 
   const { aopId } = useParams();
 
+  const aopApplication = useAopApplication()
   const functionType = useFunctionType();
   const objective = useObjective();
   const successIndicator = useSuccessIndicator();
@@ -50,6 +53,7 @@ const Objectives = () => {
   const otherSuccessIndicator = useOtherSuccessIndicator();
   const applicationObjectives = useApplicationObjectives();
   const applicationObjective = useApplicationObjective();
+  const isLoading = useIsLoading();
 
   const { clearFields } = useObjectivesActions();
 
@@ -62,9 +66,10 @@ const Objectives = () => {
     updateObjective,
     removeObjective,
   } = useObjectivesHook();
+
   const breadcrumbs = useAOPBreadcrumbs();
 
-  const [isLoading, setIsLoading] = useState(false);
+  // const [isLoading, setIsLoading] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [isOpenObjectivesModal, setIsOpenObjectivesModal] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
@@ -72,30 +77,28 @@ const Objectives = () => {
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    setIsLoading(true);
-    getObjectivesBySector((status, message) => {
-      if (!(status >= 200 && status < 300)) {
-        // if status not success
-        setIsLoading(false);
-        return; //Toast error
-      }
-    });
-  }, []);
+    getObjectivesBySector()
+  }, [])
 
   useEffect(() => {
+    // console.log('aop application object', aopApplication)
     // console.log('selected objective', functionType)
     // console.log(objectiveState)
     // console.log('selected objective :', objective)
     // console.log('succeses indicator id:', successIndicator?.id)
     // console.log('objective:', applicationObjective)
     // console.log('application objectives:', applicationObjectives)
+    // console.log(isLoading)
   }, [
+    aopApplication,
     functionType,
     objective,
     successIndicator,
     applicationObjectives,
     isLoading,
   ]);
+
+  const { status_id } = aopApplication //get status id on aop application object
 
   const {
     OBJECTIVES_EMPTY_STATE_TITLE,
@@ -122,19 +125,6 @@ const Objectives = () => {
     );
   }, [search, applicationObjectives]);
 
-  // useEffect(() => {
-  //   // console.log("aopId", aopId);
-  //   // if (aopId) {
-  //   //   setAopId(aopId);
-  //   // }
-  //   console.log("applicationObjectives:", applicationObjectives);
-  //   console.log("filteredObjectives:", filteredObjectives);
-  //   console.log("types:", {
-  //     appObj: typeof applicationObjectives,
-  //     filtered: typeof filteredObjectives,
-  //   });
-  // }, [aopId, filteredObjectives, applicationObjectives]);
-
   const handleSaveObjectives = async () => {
     setIsLoading(true);
 
@@ -145,7 +135,6 @@ const Objectives = () => {
       other_objective_description: otherObjective,
       other_success_indicator_description: otherSuccessIndicator,
     };
-
 
     try {
       await createObjective(payload, (status, message) => {
@@ -324,11 +313,27 @@ const Objectives = () => {
           <ButtonComponent
             onClick={() => handleOpenObjectivesModal()}
             label={"Add an Objective"}
+            disabled={status_id === 4 || status_id === 2}
+            isLoading={isLoading}
           // endDecorator={<Plus size={16} />}
-          // disabled={!show || disabledEditMode(APPLICATION_OBJECTIVE_ID, remarks, comments, disabled)}
+          // disabled={
+          //   isApproved
+          //   // !show || disabledEditMode(APPLICATION_OBJECTIVE_ID, remarks, comments, disabled) for socket
+          // }
           />
         </Stack>
       </BoxComponent>
+
+      {isLoading && <Stack
+        direction={"column"}
+        alignItems={"center"}
+        justifyContent={"center"}
+        textAlign={"center"}
+        my={2}
+        height={"65vh"}
+      >
+        <ThreeDotsLoader />
+      </Stack>}
 
       {isLoading ? (
         <Stack
@@ -368,61 +373,65 @@ const Objectives = () => {
         </>
       ) : (
         <>
-          {filteredObjectives.length === 0 && <NoResultComponent />}
-
-          <Grid
-            mt={2}
-            container
-            direction="row"
-            spacing={2}
-            sx={{ flexGrow: 1 }}
-          >
-            {applicationObjectives?.map(
-              ({
-                id,
-                aop_application_id,
-                success_indicator,
-                objective,
-                activities_count,
-                other_success_indicator,
-              }) => (
-                <Grid key={id} size={4} lg={4} md={6} sm={12}>
-                  <CardComponent
-                    statusColor={null}
-                    cardHeader={
-                      <CardHeader
-                        handleSave={() => console.log("save")}
-                        handleEdit={() => handleOpenEditModal(id)}
-                        handleDelete={() => handleOpenDeleteModal(id)}
-                      />
-                    }
-                    cardBody={
-                      <CardBody
-                        success_indicator={success_indicator}
-                        objective={objective}
-                        other_success_indicator={other_success_indicator}
-                        status={false}
-                      />
-                    }
-                    cardActions={
-                      <CardActions
-                        count={activities_count}
-                        handleActivities={() => {
-                          navigate(`/aop/activities/${id}`, {
-                            state: {
-                              objectiveId: id, // do not change state name
-                              aopId: aop_application_id,
-                              objective: objective.description,
-                            },
-                          });
-                        }}
-                      />
-                    }
-                  />
-                </Grid>
-              )
-            )}
-          </Grid>
+          {filteredObjectives.length === 0
+            ?
+            <NoResultComponent />
+            :
+            <Grid
+              mt={2}
+              container
+              direction="row"
+              spacing={2}
+              sx={{ flexGrow: 1 }}
+            >
+              {filteredObjectives?.map(
+                ({
+                  id,
+                  aop_application_id,
+                  success_indicator,
+                  objective,
+                  activities_count,
+                  other_success_indicator,
+                }) => (
+                  <Grid key={id} size={4} lg={4} md={6} sm={12}>
+                    <CardComponent
+                      statusColor={null}
+                      cardHeader={
+                        <CardHeader
+                          status={status_id}
+                          handleSave={() => console.log("save")}
+                          handleEdit={() => handleOpenEditModal(id)}
+                          handleDelete={() => handleOpenDeleteModal(id)}
+                        />
+                      }
+                      cardBody={
+                        <CardBody
+                          success_indicator={success_indicator}
+                          objective={objective}
+                          other_success_indicator={other_success_indicator}
+                          status={false}
+                        />
+                      }
+                      cardActions={
+                        <CardActions
+                          count={activities_count}
+                          handleActivities={() => {
+                            navigate(`/aop/activities/${id}`, {
+                              state: {
+                                objectiveId: id, // do not change state name
+                                aopId: aop_application_id,
+                                objective: objective.description,
+                              },
+                            });
+                          }}
+                        />
+                      }
+                    />
+                  </Grid>
+                )
+              )}
+            </Grid>
+          }
         </>
       )}
 

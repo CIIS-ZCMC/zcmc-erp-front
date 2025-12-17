@@ -4,6 +4,7 @@ const useActivitiesStore = create((set, get) => ({
 
     applicationActivities: [],
     applicationActivity: null,
+    aopApplication: {},
 
     activity: null,
     cost: null,
