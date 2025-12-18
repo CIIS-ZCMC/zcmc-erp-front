@@ -27,6 +27,8 @@ import { AOP_SUMMARY, AOP_CONFRIM_DATA } from "../../../Data/constants";
 import { blue } from "@mui/material/colors";
 import PageTitle from "@Components/Common/PageTitle";
 
+import { isAopDisabled } from "../../../Utils/AopStatus";
+
 const AOPSummary = () => {
   const navigate = useNavigate();
 
@@ -360,12 +362,14 @@ const AOPSummary = () => {
                   )}
                 </BoxComponent>
               </Grid>
+
             </Grid>
           </BoxComponent>
         }
 
-        {status.id !== 2 || status === 4 && // do not display if status is 2 = submitted or 6 = approved
-          <BoxComponent>
+        {/* do not display if status is 2 = submitted or 4 = approved */}
+        {(status.id === 1 || status.id === 6) && (
+          < BoxComponent >
             <Stack p={2} mb={2}>
               <Stack>
                 <Typography level="title-md">{SUMMARY_FOOTER_TITLE}</Typography>
@@ -391,8 +395,8 @@ const AOPSummary = () => {
               </Stack>
             </Stack>
           </BoxComponent>
-        }
-      </Stack>
+        )}
+      </Stack >
 
       <ConfirmationModalComponent
         withAuthPin

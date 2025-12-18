@@ -31,6 +31,8 @@ import PageTitle from "@Components/Common/PageTitle";
 import useAOPBreadcrumbs from "../../../../Hooks/AOP/AOPBreadcrumbs";
 import ChipComponent from "@Components/Common/ChipComponent";
 
+import { isAopDisabled } from "../../../../Utils/AopStatus";
+
 const centeredStyle = {
   direction: "column",
   alignItems: "center",
@@ -407,7 +409,7 @@ const Activities = () => {
           <ButtonComponent
             onClick={() => setIsCountModal(true)}
             label={"Add Activity"}
-            disabled={status === 2 || status === 4}
+            disabled={isAopDisabled(status)}
           // endDecorator={<Plus size={16} />}
           // disabled={!show || disabledEditMode(APPLICATION_OBJECTIVE_ID, remarks, comments, disabled)}
           />

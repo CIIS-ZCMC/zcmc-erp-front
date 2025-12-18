@@ -126,7 +126,7 @@ const Objectives = () => {
   }, [search, applicationObjectives]);
 
   const handleSaveObjectives = async () => {
-    setIsLoading(true);
+    // setIsLoading(true);
 
     const payload = {
       aop_application_id: aopId,
@@ -144,7 +144,7 @@ const Objectives = () => {
             title: `${message}`,
             description: "",
           });
-          setIsLoading(false);
+          // setIsLoading(false);
           handleCloseModal();
         } else {
           setAlertDialog({
@@ -152,7 +152,7 @@ const Objectives = () => {
             title: message,
             description: "Please try again later",
           });
-          setIsLoading(false);
+          // setIsLoading(false);
           console.error(" Failed to create objectives:", message);
         }
       });
@@ -167,7 +167,7 @@ const Objectives = () => {
   };
 
   const handleUpdateObjectives = async () => {
-    setIsLoading(true);
+    // setIsLoading(true);
 
     const payload = {
       objective_id: objective?.id,
@@ -186,7 +186,7 @@ const Objectives = () => {
             title: `${message}`,
             description: "",
           });
-          setIsLoading(false);
+          // setIsLoading(false);
           handleCloseModal();
         } else {
           setAlertDialog({
@@ -194,7 +194,7 @@ const Objectives = () => {
             title: message,
             description: "Please try again later",
           });
-          setIsLoading(false);
+          // setIsLoading(false);
           console.error(" Failed to update objectives:", message);
         }
       });
@@ -229,7 +229,7 @@ const Objectives = () => {
   const handleConfirmDelete = async () => {
     if (!selectedObjectiveId) return;
 
-    setIsLoading(true);
+    // setIsLoading(true);
 
     const params = { id: selectedObjectiveId };
 
@@ -246,7 +246,7 @@ const Objectives = () => {
         console.error("Failed to delete objective:", message);
       }
 
-      setIsLoading(false);
+      // setIsLoading(false);
       setOpenDeleteModal(false);
       setSelectedObjectiveId(null);
     });

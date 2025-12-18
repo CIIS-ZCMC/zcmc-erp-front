@@ -46,6 +46,9 @@ const useObjectivesHook = () => {
         url: API.OBJECTIVE_BY_SECTOR,
         failed: callBack,
         success: (res) => {
+
+          // console.log(res)
+
           const { data: { data, message } } = res;
           const { aop_application, application_objectives } = data
           // console.log(application_objectives)
@@ -83,19 +86,20 @@ const useObjectivesHook = () => {
   }
 
   const createObjective = async (body, callBack) => {
+    setIsLoading(true)
     try {
       await post({
         url: API.OBJECTIVE_STORE,
         form: body,
         failed: callBack,
         success: async (res) => {
-
           const {
             status,
             data: { data, message },
           } = res;
           if (status === 201) {
             getObjectivesBySector()
+            setIsLoading(false)
           }
           callBack?.(status, message);
         },
@@ -108,6 +112,7 @@ const useObjectivesHook = () => {
   }
 
   const updateObjective = async (params, body, callBack) => {
+    setIsLoading(true)
     try {
       await update({
         url: `${API.OBJECTIVE_EDIT}/${params.id}`,
@@ -120,6 +125,7 @@ const useObjectivesHook = () => {
           } = res;
           if (status === 200) {
             getObjectivesBySector()
+            setIsLoading(false)
           }
           callBack?.(status, message);
         },
@@ -132,6 +138,7 @@ const useObjectivesHook = () => {
   }
 
   const removeObjective = async (params, callBack) => {
+    setIsLoading(true)
     try {
       await remove({
         url: `${API.OBJECTIVE_DELETE}/${params.id}`,
@@ -146,6 +153,7 @@ const useObjectivesHook = () => {
           if (status === 200) {
             const updatedObjectives = applicationObjectives.filter((obj) => obj.id !== params.id)
             // console.log(updatedObjectives)
+            setIsLoading(false)
             setApplicationObjectives(updatedObjectives);
           }
           callBack?.(status, message);

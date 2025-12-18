@@ -38,6 +38,9 @@ import moment from "moment";
 import SearchBarComponentv2 from "@Components/SearchBarWithdeBounce";
 import useAOPBreadcrumbs from "../../../../Hooks/AOP/AOpBreadcrumbs";
 
+import useAOPStore from "../../../../Store/AOPStore";
+import { isAopDisabled } from "../../../../Utils/AopStatus";
+
 const QuarterTarget = ({ label = "Q1", value }) => (
   <>
     <Stack
@@ -74,6 +77,13 @@ function ManageResources(props) {
   const theme = useTheme();
   const navigate = useNavigate();
   const breadcrumbs = useAOPBreadcrumbs();
+
+  const { aop } = useAOPStore()
+  const status = aop.status.id;
+
+  // useEffect(() => {
+  //   console.log(status)
+  // }, [aop])
 
   const color = theme.palette;
   const currentYear = new Date().getFullYear();
@@ -190,6 +200,7 @@ function ManageResources(props) {
                   state: { activityId: activityId },
                 })
               }
+              disabled={isAopDisabled(status)}
             />
           </Stack>
         </Stack>
@@ -291,6 +302,7 @@ function ManageResources(props) {
           {filteredResources.map((item, index) => (
             <Grid xs={12} sm={6} md={3} key={index}>
               <ResourceCardComponent
+                status={status}
                 category={item.item.category}
                 name={item.item.name}
                 resource_id={item.id}

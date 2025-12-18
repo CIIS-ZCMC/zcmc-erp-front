@@ -6,6 +6,8 @@ import IconButtonComponent from '@Components/Common/IconButtonComponent'
 
 import { Check, Pencil, Trash } from 'lucide-react'
 
+import { isAopDisabled } from '../../../../../Utils/AopStatus'
+
 const CardHeader = (
     {
         status,
@@ -27,14 +29,14 @@ const CardHeader = (
                 size={'sm'}
                 icon={<Pencil size={18} />}
                 onClick={handleEdit}
-                disabled={status === 4 || status === 2}
+                disabled={isAopDisabled(status)}
             />
 
             <IconButtonComponent
                 size={'sm'}
                 icon={<Trash size={18} />}
                 onClick={handleDelete}
-                disabled={status === 4 || status === 2}
+                disabled={isAopDisabled(status)}
             />
         </>
     )

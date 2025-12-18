@@ -14,6 +14,7 @@ import ResponsibleList from './ResponsibleList';
 import ResponsibleModal from './modal/ResponsibleModal';
 
 import useResponsibleStore, { useResponsiblePeopleActions } from '../../../../Store/ResponsibleStore';
+import useAOPStore from '../../../../Store/AOPStore';
 
 import useResponsibleHook from '../../../../Hooks/ResponsiblePeopleHook';
 import useModalHook from '../../../../Hooks/ModalHook';
@@ -42,12 +43,16 @@ const ResponsiblePerson = () => {
 
     const { clearSelectedPeople } = useResponsiblePeopleActions()
 
+    const { aop } = useAOPStore();
+    const status = aop.status.id
+
     const { selectedPeople, responsiblePeople } = useResponsibleStore()
     const { activity, responsible_people, users_only, designations_only } = responsiblePeople;
 
-    // useEffect(() => {
-    //     console.log('responsible people data:', users_only)
-    // }, [users_only])
+    useEffect(() => {
+        // console.log('responsible people data:', users_only)
+        // console.log('aop', status)
+    }, [users_only, aop])
 
     const {
         setAlertDialog,
@@ -194,6 +199,7 @@ const ResponsiblePerson = () => {
                 <ResponsibleStatus
                     activity={activity}
                     openResponsibleModal={handleOpenResponsibleModal}
+                    status={status}
                 />
 
 
@@ -212,6 +218,7 @@ const ResponsiblePerson = () => {
                         handleDelete={handleOpenDeleteModal}
                         responsible_people={responsible_people}
                         openResponsibleModal={handleOpenResponsibleModal}
+                        status={status}
                     />
                 }
             </Stack>

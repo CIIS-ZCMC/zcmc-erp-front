@@ -13,10 +13,12 @@ import ButtonComponent from '@Components/Common/ButtonComponent';
 import { RESPONSIBLE } from '../../../../Data/constants';
 
 import formattedPrice from '../../../../Utils/formattedPrice';
+import { isAopDisabled } from '../../../../Utils/AopStatus';
 
 const ResponsibleStatus = ({
     activity,
-    openResponsibleModal
+    openResponsibleModal,
+    status
 }) => {
 
     const {
@@ -63,6 +65,7 @@ const ResponsibleStatus = ({
                             label={"Assign Responsible Person"}
                             startDecorator={<PlusIcon />}
                             onClick={openResponsibleModal}
+                            disabled={isAopDisabled(status)}
                         />
                     </Stack>
                 </Stack>
