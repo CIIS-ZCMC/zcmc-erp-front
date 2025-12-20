@@ -18,7 +18,12 @@ import {
   Link,
 } from "@mui/joy";
 
-import { PhilippinePesoIcon, ExternalLink, TargetIcon, CloudDownload } from "lucide-react";
+import {
+  PhilippinePesoIcon,
+  ExternalLink,
+  TargetIcon,
+  CloudDownload,
+} from "lucide-react";
 import { TbTargetArrow } from "react-icons/tb";
 import ButtonComponent from "../../../Components/Common/ButtonComponent";
 import { useNavigate, useLocation } from "react-router-dom";
@@ -53,9 +58,8 @@ import useItemRequestHook from "../../../Hooks/ItemRequest/ItemRequestHookv2";
 import useItemRequestStore from "../../../Store/ItemRequestStore";
 import userErrorInputHook from "../../../Hooks/ErrorInputHook";
 
-
 // Add New Item Request Components
-import NewRequestContent from './Modal/AddItemRequest/Content';
+import NewRequestContent from "./Modal/AddItemRequest/Content";
 
 // View Item Requests Modal Components
 import Content from "./Modal/ItemRequests/Content";
@@ -134,16 +138,8 @@ function PPMPDashboard(props) {
   const { getItemRequestByUser } = useItemRequestHook();
   const { setError, clearErrors } = userErrorInputHook();
 
-
-  const {
-    data,
-    current_page,
-    per_page,
-    next_page_url,
-    prev_page_url,
-    total
-  } = requestsByUser || {}
-
+  const { data, current_page, per_page, next_page_url, prev_page_url, total } =
+    requestsByUser || {};
 
   const navigate = useNavigate();
   const {
@@ -155,14 +151,13 @@ function PPMPDashboard(props) {
     postPPMP,
     getPPMPTimeline,
     postItemRequest,
-    itemRequestStore
+    itemRequestStore,
   } = usePPMPHook();
   const { setAlertDialog } = useModalHook();
 
   useEffect(() => {
-    console.log(dashboard)
-  }, [dashboard])
-
+    console.log(dashboard);
+  }, [dashboard]);
 
   const [pageLoader, setPageLoader] = useState(false);
   const { user } = useAuth();
@@ -178,7 +173,7 @@ function PPMPDashboard(props) {
 
   const [openViewItemRequest, setOpenItemRequest] = useState();
   const [openNewRequest, setOpenNewRequest] = useState();
-  const [step, setStep] = useState(1)
+  const [step, setStep] = useState(1);
 
   const [selectedActivities, setSelectedActivities] = useState([]);
   const [buttonLoader, setButtonLoader] = useState(false);
@@ -199,7 +194,6 @@ function PPMPDashboard(props) {
     ],
     pin: "",
   });
-
 
   const handleNavigate = () => {
     navigate("/ppmp/manage-items");
@@ -224,9 +218,10 @@ function PPMPDashboard(props) {
             setPin("");
             setAlertDialog({
               status: "success",
-              title: "PPMP for F.Y. 2026 successfully submitted for review.",
+              title:
+                "AOP and PPMP for F.Y. 2026 successfully submitted for review.",
               description:
-                "Your PPMP request has been sent to designated to the next approving body and notified them for approvals.",
+                "Your AOP and PPMP applications have been forwarded to the designated next approving body, and the concerned parties have been notified for approval.",
             });
             getPPMPTimeline(
               dashboard?.ppmp_application?.id,
@@ -309,7 +304,6 @@ function PPMPDashboard(props) {
   const handleNextStep = () => setStep((prev) => Math.min(prev + 1, 3));
   const handlePreviousStep = () => setStep((prev) => Math.max(prev - 1, 1));
 
-
   const submit = async () => {
     clearErrors();
     let hasError = false;
@@ -348,7 +342,6 @@ function PPMPDashboard(props) {
       };
 
       await itemRequestStore(payload, (status, message, data) => {
-
         const alertData = {
           status: status === 201 ? "success" : "error",
           title: "Request for new item successfully submitted.",
@@ -379,9 +372,8 @@ function PPMPDashboard(props) {
           setStep(1); // reset to step 1 if using a stepper
         }
       });
-
     } catch (error) {
-      console.log(error)
+      console.log(error);
       setButtonLoader(false);
       setAlertDialog({
         status: "error",
@@ -441,13 +433,12 @@ function PPMPDashboard(props) {
                 />
               </Box>
               <Typography level="body-sm" sx={{ color: "white" }}>
-                {/* Mission: This is a sample mission written by the requesting
-                body. This could be as short as a single sentence but could be
-                as long as two sentences if necessary. */}
+                Mission :{" "}
+                {dashboard?.mission ? dashboard?.mission : "No mission yet"}
               </Typography>
             </Stack>
             {dashboard?.ppmp_application?.status_id === 1 ||
-              dashboard?.ppmp_application?.status_id === 6 ? (
+            dashboard?.ppmp_application?.status_id === 6 ? (
               <Stack
                 bgcolor={"#FFF4E5"}
                 borderRadius={5}
@@ -741,10 +732,10 @@ function PPMPDashboard(props) {
                       fontSize: 12,
                       // textDecoration: "none",
                       textDecoration: "underline",
-                      gap: 0.5
+                      gap: 0.5,
                     }}
                     endDecorator={<CloudDownloadOutlined />}
-                  // onClick={() => setOpenItemRequest(true)}
+                    // onClick={() => setOpenItemRequest(true)}
                   >
                     Print as (.XLS)
                     <CloudDownload size={18} />
@@ -762,30 +753,29 @@ function PPMPDashboard(props) {
                         fontSize: 12,
                         // textDecoration: "none",
                         textDecoration: "underline",
-                        gap: 0.5
+                        gap: 0.5,
                       }}
                       onClick={() => setOpenNewRequest(true)}
                       endDecorator={<ExternalLink size={18} />}
                     >
                       Request new item
-                    </Link >
+                    </Link>
 
                     <Link
                       sx={{
                         fontSize: 12,
                         // textDecoration: "none",
                         textDecoration: "underline",
-                        gap: 0.5
+                        gap: 0.5,
                       }}
                       onClick={() => handleItemRequest()}
                       endDecorator={<ExternalLink size={18} />}
                     >
                       View Item Request
                     </Link>
-
-                  </Stack >
-                </Stack >
-              </Grid >
+                  </Stack>
+                </Stack>
+              </Grid>
               <Grid
                 xs={3.5}
                 sx={{
@@ -863,13 +853,11 @@ function PPMPDashboard(props) {
                   </BoxComponent>
                 )}
               </Grid>
-            </Grid >
+            </Grid>
           </>
-        )
-        }
-      </BoxComponent >
+        )}
+      </BoxComponent>
       {/* <PageLoader isLoading={pageLoader} /> */}
-
 
       {/* View Item Requests Modal */}
       <ModalComponent
@@ -878,19 +866,18 @@ function PPMPDashboard(props) {
         description={"Below are the items you’ve requested for this PPMP."}
         minWidth={"85%"}
         handleClose={() => setOpenItemRequest(false)}
-        content={
-          <Content
-            data={requestsByUser}
-            path={pathName}
-          />
-        }
+        content={<Content data={requestsByUser} path={pathName} />}
       />
 
       <ModalComponent
         isOpen={openNewRequest}
         handleClose={() => setOpenNewRequest(false)}
-        title={step === 1 ? 'General information' : 'Specifications'}
-        description={step === 1 ? 'Fill in the item information to create it' : 'List down details for the item you want to cretae to specify it.'}
+        title={step === 1 ? "General information" : "Specifications"}
+        description={
+          step === 1
+            ? "Fill in the item information to create it"
+            : "List down details for the item you want to cretae to specify it."
+        }
         maxWidth={"500px"}
         height={step === 1 ? "auto" : step === 2 ? "680px" : "650px"}
         content={
@@ -900,8 +887,7 @@ function PPMPDashboard(props) {
             setItemReq={setItemReq}
           />
         }
-        leftButtonLabel={
-          step > 1 ? "Back to previous" : "Cancel"}
+        leftButtonLabel={step > 1 ? "Back to previous" : "Cancel"}
         leftButtonAction={() => {
           if (step > 1) {
             handlePreviousStep();
@@ -909,9 +895,7 @@ function PPMPDashboard(props) {
             setOpenNewRequest(false);
           }
         }}
-        rightButtonLabel={
-          step < 2 ? "Next step" : "Confirm and save"
-        }
+        rightButtonLabel={step < 2 ? "Next step" : "Confirm and save"}
         rightButtonAction={() => {
           if (step < 2) {
             handleNextStep();
@@ -970,7 +954,7 @@ function PPMPDashboard(props) {
         leftButtonLabel="Submit"
         leftButtonAction={() => handleSubmit()}
       />
-    </Fragment >
+    </Fragment>
   );
 }
 

@@ -1398,7 +1398,7 @@ export const PPMP_HEADERS = (status, editingRows, handleComments) => [
         <Typography level="body-sm" fontWeight={600}>
           {row?.item?.name}
         </Typography>
-        <Typography sx={{ fontSize: 13, color: grey[600] }}>
+        <Typography sx={{ fontSize: 14, fontWeight: 600, color: grey[600] }}>
           Qty: {row?.quantity}
         </Typography>
       </>
@@ -1437,7 +1437,12 @@ export const PPMP_HEADERS = (status, editingRows, handleComments) => [
           ₱{row?.total_amount?.toLocaleString()}
         </Typography>
         <Typography
-          sx={{ fontSize: 13, color: grey[600], textTransform: "lowercase" }}
+          sx={{
+            fontSize: 14,
+            fontWeight: 600,
+            color: grey[600],
+            textTransform: "lowercase",
+          }}
         >
           ₱{" "}
           {(row?.item?.estimated_budget).toLocaleString("en-PH", {
@@ -1476,42 +1481,42 @@ export const PPMP_HEADERS = (status, editingRows, handleComments) => [
   },
   ...(status?.name === "draft"
     ? [
-
-      {
-        id: "is_complete",
-        label: "",
-        width: "150px",
-        display: status?.name === "draft" ? "table-cell" : "none",
-        render: (row) =>
-          row?.is_complete ? (
-            ""
-          ) : (
-            <Box
-              p={0.5}
-              bgcolor={red[50]}
-              display={"flex"}
-              justifyContent={"center"}
-              width="150px"
-              borderRadius={5}
-            >
-              <Typography
-                level="body-xs"
-                color="danger"
-                alignItems={"center"}
-                gap={1}
-                startDecorator={
-                  <WarningAmberOutlined
-                    color="danger"
-                    style={{ fontSize: 18 }}
-                  />
-                }>
-                {" "}
-                Incomplete Details.
-              </Typography>
-            </Box>
-          ),
-      },
-    ]
+        {
+          id: "is_complete",
+          label: "",
+          width: "150px",
+          display: status?.name === "draft" ? "table-cell" : "none",
+          render: (row) =>
+            row?.is_complete ? (
+              ""
+            ) : (
+              <Box
+                p={0.5}
+                bgcolor={red[50]}
+                display={"flex"}
+                justifyContent={"center"}
+                width="150px"
+                borderRadius={5}
+              >
+                <Typography
+                  level="body-xs"
+                  color="danger"
+                  alignItems={"center"}
+                  gap={1}
+                  startDecorator={
+                    <WarningAmberOutlined
+                      color="danger"
+                      style={{ fontSize: 18 }}
+                    />
+                  }
+                >
+                  {" "}
+                  Incomplete Details.
+                </Typography>
+              </Box>
+            ),
+        },
+      ]
     : []),
   {
     id: "actions",
@@ -1616,17 +1621,16 @@ export const ITEMS_REQUESTS = (handleOpen, pathName) => [
     key: "variant",
     label: "Variant",
     render: (r) => {
-      return (
-        r.terminology_category ?
-          <ChipComponent
-            size="md"
-            label={r.terminology_category?.name || ""}
-            startDecorator={<Circle sx={{ fontSize: 10 }} />}
-            color={"primary"}
-          />
-          :
-          <>No Variant Available</>
-      )
+      return r.terminology_category ? (
+        <ChipComponent
+          size="md"
+          label={r.terminology_category?.name || ""}
+          startDecorator={<Circle sx={{ fontSize: 10 }} />}
+          color={"primary"}
+        />
+      ) : (
+        <>No Variant Available</>
+      );
     },
   },
 
@@ -1635,7 +1639,7 @@ export const ITEMS_REQUESTS = (handleOpen, pathName) => [
     label: "Actions",
     render: (r) => (
       <>
-        {pathName === '/ppmp' && (
+        {pathName === "/ppmp" && (
           <>
             {r.status_id === 3 && (
               <>

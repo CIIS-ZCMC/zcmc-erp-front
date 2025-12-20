@@ -312,7 +312,7 @@ function PPMPItems(props) {
             </Typography>
           </Stack>
 
-          {(status?.name === "draft" || status?.name === 'returned') && (
+          {(status?.name === "draft" || status?.name === "returned") && (
             <ButtonComponent
               label={"Add an Item"}
               startDecorator={<PlusIcon />}
@@ -331,7 +331,7 @@ function PPMPItems(props) {
             placeholder="Search resources..."
             fullWidth
           />
-          <BoxComponent px={2} py={0.5} bgColor={"white"} borderRadius={10}>
+          <BoxComponent px={2} py={1} bgColor={"white"} borderRadius={10}>
             <Typography
               textTransform={"uppercase"}
               level="body-xs"
@@ -342,7 +342,7 @@ function PPMPItems(props) {
             </Typography>
             <Typography
               textTransform={"uppercase"}
-              level="title-lg"
+              fontSize={25}
               color="primary"
               textAlign={"right"}
               fontWeight={600}
@@ -441,21 +441,21 @@ function PPMPItems(props) {
           )
         }
 
-      //no post for END - USER
-      // footer={
-      //   <>
-      //     <Stack width={"100%"} spacing={2}>
-      //       <TextareaComponent
-      //         placeholder={"Comment here .. "}
-      //         maxRows={3}
-      //         label={"Add a comment"}
-      //       />
-      //       <Stack direction={"row"} justifyContent={"right"}>
-      //         <ButtonComponent label={"Post Comment"} width="200px" />
-      //       </Stack>
-      //     </Stack>
-      //   </>
-      // }
+        //no post for END - USER
+        // footer={
+        //   <>
+        //     <Stack width={"100%"} spacing={2}>
+        //       <TextareaComponent
+        //         placeholder={"Comment here .. "}
+        //         maxRows={3}
+        //         label={"Add a comment"}
+        //       />
+        //       <Stack direction={"row"} justifyContent={"right"}>
+        //         <ButtonComponent label={"Post Comment"} width="200px" />
+        //       </Stack>
+        //     </Stack>
+        //   </>
+        // }
       />
     </Fragment>
   );

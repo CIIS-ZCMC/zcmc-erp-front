@@ -65,7 +65,13 @@ const ItemsCart = ({
             ) : (
               ""
             )}{" "}
-            {item?.category}
+            {item?.category}{" "}
+            {item?.unit && (
+              <>
+                <LucideDot />
+                {item?.unit}
+              </>
+            )}
           </Typography>
           <Typography fontSize={12} fontWeight={600} textColor={"primary.500"}>
             &#8369; {item?.estimated_budget?.toLocaleString()}
@@ -82,6 +88,7 @@ const ItemsCart = ({
               quantity={item.qty}
               onDecrease={() => onQuantityChange(item.id, item.qty - 1)}
               onIncrease={() => onQuantityChange(item.id, item.qty + 1)}
+              onChange={(value) => onQuantityChange(item.id, value)}
             />
 
             <ButtonComponent
