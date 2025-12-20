@@ -16,6 +16,10 @@ import {
   WarningAmberOutlined,
   WarningOutlined,
 } from "@mui/icons-material";
+import HorizontalBars from "@Components/Charts/HorizontalBarChart";
+import VerticalBars from "@Components/Charts/VerticalBarChart";
+import SubmissionWatchlist from "./SubmissionWatchlist";
+import ContainerComponent from "@Components/Common/ContainerComponent";
 
 function Dashboard() {
   const { user } = useAuth();
@@ -178,6 +182,35 @@ function Dashboard() {
               withBorderLeft
             />
           </Stack>
+        </Grid>
+      </Grid>
+      <Grid container spacing={2} sx={{ flexGrow: 1, mt: 3 }}>
+        <Grid xs={12} md={4} lg={4}>
+          <ContainerComponent
+            title={"Total Cost by Area"}
+            description={
+              "Total Budget Cost for each section/division/unit (in PHP)"
+            }
+          >
+            <HorizontalBars />
+          </ContainerComponent>
+        </Grid>
+        <Grid xs={12} md={4} lg={4}>
+          <ContainerComponent
+            title={"Approval Turnaround Time"}
+            description={"Average processing days per approval level"}
+          >
+            <VerticalBars />
+          </ContainerComponent>
+        </Grid>
+        <Grid xs={12} md={4} lg={4}>
+          <ContainerComponent
+            title={"Approval Turnaround Time"}
+            description={"Average processing days per approval level"}
+          >
+            {" "}
+            <SubmissionWatchlist />
+          </ContainerComponent>
         </Grid>
       </Grid>
     </Fragment>

@@ -390,3 +390,30 @@ export const AOP_RESOURCES = [
     type_of_resource: "Book, Journal, Publication",
   },
 ];
+
+export const SUBMISSION_STATUS = {
+  NOT_STARTED: "NOT_STARTED",
+  AOP_IN_PROGRESS: "AOP_IN_PROGRESS",
+  PPMP_IN_PROGRESS: "PPMP_IN_PROGRESS",
+};
+
+export const statusConfig = {
+  NOT_STARTED: {
+    label: "Not Started",
+    bg: "#FDECEC",
+    border: "#D32F2F",
+    iconBg: "#F28B82",
+  },
+  AOP_IN_PROGRESS: {
+    label: "AOP In Progress",
+    bg: "#FFF5E6",
+    border: "#F9A825",
+    iconBg: "#FFD54F",
+  },
+  PPMP_IN_PROGRESS: {
+    label: "PPMP In Progress",
+    bg: "#FFF5E6",
+    border: "#F9A825",
+    iconBg: "#FFD54F",
+  },
+};
