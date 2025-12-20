@@ -205,8 +205,8 @@ function Dashboard() {
         </Grid>
         <Grid xs={12} md={4} lg={4}>
           <ContainerComponent
-            title={"Approval Turnaround Time"}
-            description={"Average processing days per approval level"}
+            title={"Submission Watchlist"}
+            description={"12 departments pending"}
           >
             {" "}
             <SubmissionWatchlist />

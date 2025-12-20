@@ -40,10 +40,10 @@ const SubmissionItem = ({ department, status }) => {
       </Box>
 
       <Stack spacing={0}>
-        <Typography level="body-sm" fontWeight={600}>
+        <Typography level="body-sm" fontWeight={600} sx={{ color: "black" }}>
           {department}
         </Typography>
-        <Typography level="body-xs" textColor="neutral.500">
+        <Typography level="body-xs" fontWeight={400} textColor="neutral.500">
           {config.label}
         </Typography>
       </Stack>
