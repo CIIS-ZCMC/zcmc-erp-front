@@ -1882,3 +1882,70 @@ export const PPMP_APPROVER_HEADERS = (handleComments) => [
     },
   },
 ];
+
+export const SUMMARY_RESOURCES = () => [
+  {
+    id: "name",
+    label: "Item",
+    align: "left",
+    width: "250px",
+    render: (row) => (
+      <>
+        <Typography level="body-sm" fontWeight={600}>
+          {row?.item?.name}
+        </Typography>
+        <Typography sx={{ fontSize: 13, color: grey[600] }}>
+          Qty: {row?.quantity}
+        </Typography>
+      </>
+    ),
+    expandTrigger: true,
+  },
+  {
+    id: "category",
+    label: "Classification & Category",
+    width: "200px",
+    render: (row) => (
+      <>
+        <Typography level="body-sm" fontWeight={600}>
+          {row?.item?.item_classification?.name}
+        </Typography>
+        <Typography
+          level={row?.item?.item_category?.name && "body-sm"}
+          sx={{
+            fontSize: row?.item?.item_classification?.name && 13,
+            color: row?.item?.item_classification?.name && grey[600],
+          }}
+          fontWeight={600}
+        >
+          {row?.item?.item_category?.name}
+        </Typography>
+      </>
+    ),
+    expandTrigger: true,
+  },
+  {
+    id: "cost",
+    label: "Total Cost & Individual Cost",
+    width: "200px",
+
+    render: (row) => (
+      <>
+        <Typography level="body-sm" fontWeight={600}>
+          ₱{row?.total_amount?.toLocaleString()}
+        </Typography>
+        <Typography
+          sx={{ fontSize: 13, color: grey[600], textTransform: "lowercase" }}
+        >
+          ₱{" "}
+          {(row?.item?.estimated_budget).toLocaleString("en-PH", {
+            minimumFractionDigits: 2,
+            maximumFractionDigits: 2,
+          })}{" "}
+          per {row?.item?.item_unit?.name}
+        </Typography>
+      </>
+    ),
+    expandTrigger: true,
+  },
+];

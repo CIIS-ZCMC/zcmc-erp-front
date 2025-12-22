@@ -264,7 +264,7 @@ const AOPSummary = () => {
   return (
     <>
       <PageTitle title={PAGE_TITLE} description={PAGE_REVIEW} />
-      <Stack spacing={1} pb={5} mt={3}>
+      <Stack spacing={2} pb={5} mt={3}>
         <CardComponent
           statusColor={blue[600]}
           bgcolor={blue[50]}
@@ -300,7 +300,7 @@ const AOPSummary = () => {
         />
 
         {applicationsObjectives.length !== 0 && (
-          <BoxComponent>
+          <BoxComponent p={0}>
             <Grid
               xs={12}
               bgcolor="#004366"

@@ -1,109 +1,56 @@
-import React, { useState } from 'react'
-import { List, ListItem, ListItemContent, Stack, Typography, Avatar } from '@mui/joy'
+import React, { useState } from "react";
+import {
+  List,
+  ListItem,
+  ListItemContent,
+  Stack,
+  Typography,
+  Avatar,
+} from "@mui/joy";
 
-import BoxComponent from '@Components/Common/Card/BoxComponent'
+import BoxComponent from "@Components/Common/Card/BoxComponent";
 
-import ResourcesIcon from '../../../../../../assets/dashboard/Resources.svg'
+import ResourcesIcon from "../../../../../../assets/dashboard/Resources.svg";
 
-import formattedPrice from '../../../../../../Utils/formattedPrice'
+import formattedPrice from "../../../../../../Utils/formattedPrice";
+import PeopleIcon from "@mui/icons-material/People";
+import { Handyman } from "@mui/icons-material";
+import TableComponent from "@Components/Common/Table/TableComponent";
+import { SUMMARY_RESOURCES } from "../../../../../../Data/Columns";
+import BasicTableComponent from "@Components/Common/Table/BasicTableComponent";
+const ResourcesList = ({ resources, resourcesCount }) => {
+  return (
+    <>
+      <BoxComponent>
+        <Stack
+          direction={"row"}
+          alignItems={"center"}
+          justifyContent={"space-between"}
+          my={1}
+        >
+          <Stack direction={"row"} gap={2}>
+            <Avatar size="lg" color="primary">
+              <Handyman />
+            </Avatar>
+            <Stack>
+              <Typography level="title-md">Resources</Typography>
+              <Typography level="body-xs">
+                Resources used for this activity
+              </Typography>
+            </Stack>
+          </Stack>
 
-const ResourcesList = ({
-    resources,
-    resourcesCount,
-}) => {
+          <Avatar variant="soft" color="primary" size="lg">
+            <Typography level="body-md" color="violet">
+              {/* {usersCount} */} {resourcesCount}
+            </Typography>
+          </Avatar>
+        </Stack>
+        {console.log(resources)}
+        <BasicTableComponent columns={SUMMARY_RESOURCES()} rows={resources} />
+      </BoxComponent>
+    </>
+  );
+};
 
-    return (
-        <>
-            <BoxComponent >
-                <ListItemContent
-                    sx={{
-                        padding: 2
-                    }}
-                >
-                    <Stack
-                        direction={'row'}
-                        alignItems={'center'}
-                        justifyContent={'space-between'}
-                    >
-
-                        <Stack
-                            direction={'row'}
-                            gap={2}
-                        >
-                            <img src={ResourcesIcon} alt="people-icon" width={50} />
-                            <Stack>
-                                <Typography level="title-md">Resources</Typography>
-                                <Typography level="body-sm">
-                                    Resources used for this activity
-                                </Typography>
-                            </Stack>
-                        </Stack>
-
-                        <Avatar
-                            variant='soft'
-                            color=''
-                            size='lg'
-                        >
-                            <Typography level="title-lg" color='violet'>
-                                {/* {usersCount} */} {resourcesCount}
-                            </Typography>
-                        </Avatar>
-                    </Stack>
-                </ListItemContent>
-
-                <List
-                    sx={{
-                        padding: 2
-                    }}
-                >
-                    {resources.map(({ id, item, quantity, item_cost, total_resource_cost, item_category }) => {
-
-                        const { name } = item;
-
-                        return (
-                            <ListItem
-                                key={id}
-                                sx={{
-                                    display: 'flex',
-                                    alignItems: 'start',
-                                    justifyContent: 'space-between',
-                                    mt: 2
-                                }}
-                            >
-                                <Stack>
-                                    <Typography level="title-sm">{name}</Typography>
-                                    <Typography level="body-sm">
-                                        Qty: {quantity}
-                                    </Typography>
-                                </Stack>
-
-                                <Stack>
-                                    <Typography level="title-sm">{item_category.name}</Typography>
-                                    {/* <Typography level="body-sm">
-
-                                    </Typography> */}
-                                </Stack>
-
-                                <Stack
-                                    alignItems={'end'}
-                                >
-                                    <Typography level="title-sm">
-                                        {formattedPrice(total_resource_cost)}
-                                    </Typography>
-                                    <Typography level="body-sm">
-                                        {formattedPrice(item_cost)} per pc
-                                    </Typography>
-                                </Stack>
-                            </ListItem>
-                        )
-                    })}
-
-
-                </List>
-            </BoxComponent>
-
-        </>
-    )
-}
-
-export default ResourcesList
+export default ResourcesList;
