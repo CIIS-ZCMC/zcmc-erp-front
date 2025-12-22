@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useEffect } from "react";
 import { Box, Grid, Stack, Typography } from "@mui/joy";
 import PageTitle from "../../Components/Common/PageTitle";
 import { useAuth } from "../../Store/AuthStore";
@@ -20,9 +20,23 @@ import HorizontalBars from "@Components/Charts/HorizontalBarChart";
 import VerticalBars from "@Components/Charts/VerticalBarChart";
 import SubmissionWatchlist from "./SubmissionWatchlist";
 import ContainerComponent from "@Components/Common/ContainerComponent";
+import {
+  useERPDashboard,
+  useERPDashboardActions,
+} from "../../Hooks/AOP/ERPDashboardHook";
+import { formatPeso } from "../../Utils/FormatPeso";
 
 function Dashboard() {
   const { user } = useAuth();
+
+  const { getERPDashboard } = useERPDashboardActions();
+  const approverDashboard = useERPDashboard();
+
+  useEffect(() => {
+    Promise.all([getERPDashboard(() => {})]).catch((error) => {
+      console.error("Error fetching data:", error);
+    });
+  }, []);
 
   return (
     <Fragment>
@@ -53,12 +67,12 @@ function Dashboard() {
                 fontWeight={500}
                 sx={{ color: "white" }}
               >
-                2026
+                {approverDashboard.fiscal_year}
               </Typography>
 
               <Stack>
                 <Typography level="title-lg" sx={{ color: "white" }}>
-                  ₱220,000,000
+                  {formatPeso(approverDashboard.total_estimated_cost)}{" "}
                 </Typography>
                 <Typography
                   level="body-xs"
@@ -88,8 +102,8 @@ function Dashboard() {
           >
             <DashboardStatCard
               icon={<Check />}
-              value={3}
-              label="Pending Review"
+              value={approverDashboard?.approved_applications}
+              label="Approved"
               subLabel={
                 <Typography
                   level="body-xs"
@@ -104,7 +118,7 @@ function Dashboard() {
             />
             <DashboardStatCard
               icon={<PendingActions />}
-              value={3}
+              value={approverDashboard?.pending_applications}
               label="Pending Review"
               subLabel={
                 <Typography
@@ -119,13 +133,13 @@ function Dashboard() {
             />
             <DashboardStatCard
               icon={<KeyboardReturn />}
-              value={3}
+              value={approverDashboard?.returned_applications}
               label="Returned"
               iconColor={"warning"}
             />
             <DashboardStatCard
               icon={<WarningAmberOutlined />}
-              value={15}
+              value={approverDashboard?.not_submitted_applications}
               label="Not Submitted"
               iconColor={"danger"}
             />

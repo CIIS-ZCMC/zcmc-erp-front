@@ -1,5 +1,4 @@
-import React from "react";
-
+import React, { useState } from "react";
 import {
   AccordionGroup,
   Accordion,
@@ -10,20 +9,36 @@ import {
 const AccordionComponent = ({
   accordionSummary,
   accordionDetails,
-  defaultExpanded,
+  defaultExpanded = false,
+  expandedStyles = {},
+  summaryStyles = (expanded) => ({}), // function returning object
+  detailsStyles = {},
 }) => {
+  const [expanded, setExpanded] = useState(defaultExpanded);
+
   return (
-    <>
-      <AccordionGroup
-        // variant='soft'
-        transition="0.2s"
+    <AccordionGroup transition="0.2s">
+      <Accordion
+        expanded={expanded}
+        onChange={(event, isExpanded) => setExpanded(isExpanded)}
+        sx={{
+          transition: "all 0.2s",
+          ...expandedStyles, // merge custom expanded styles
+        }}
       >
-        <Accordion defaultExpanded={defaultExpanded}>
-          <AccordionSummary>{accordionSummary}</AccordionSummary>
-          <AccordionDetails>{accordionDetails}</AccordionDetails>
-        </Accordion>
-      </AccordionGroup>
-    </>
+        <AccordionSummary
+          sx={{
+            transition: "all 0.2s",
+            ...summaryStyles(expanded), // call the function here
+          }}
+        >
+          {accordionSummary}
+        </AccordionSummary>
+        <AccordionDetails sx={{ ...detailsStyles }}>
+          {accordionDetails}
+        </AccordionDetails>
+      </Accordion>
+    </AccordionGroup>
   );
 };
 

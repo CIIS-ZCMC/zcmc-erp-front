@@ -34,10 +34,15 @@ const AccordionSummary = ({
         direction={"row"}
         justifyContent={"space-between"}
         alignItems={"center"}
-        p={2}
         width={"100%"}
       >
-        <Stack flex={1} minWidth={0} direction={"row"} spacing={1}>
+        <Stack
+          flex={1}
+          minWidth={0}
+          direction={"row"}
+          alignItems={"center"}
+          spacing={1}
+        >
           <Avatar color="neutral" size={"lg"}>
             <ExtensionOutlined />
           </Avatar>

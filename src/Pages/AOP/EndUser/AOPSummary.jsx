@@ -89,14 +89,14 @@ const AOPSummary = () => {
   const applicationsObjectives = application_objectives;
 
   const SUBMIT_ALERT_MESSAGES = {
-    2: 'Official Submission Confirmation',
-    6: 'Official Resubmission Confirmation'
-  }
+    2: "Official Submission Confirmation",
+    6: "Official Resubmission Confirmation",
+  };
 
   const SUBMIT_ALERT_DESC = {
     2: `You are about to officially create PMMP for Fiscal Year ${year}.`,
     6: `You are about to resubmit PMMP for Fiscal Year ${year}.`,
-  }
+  };
 
   const handleOpenSubmitAopModal = () => {
     const data = {
@@ -261,7 +261,6 @@ const AOPSummary = () => {
     }
   };
 
-
   return (
     <>
       <PageTitle title={PAGE_TITLE} description={PAGE_REVIEW} />
@@ -300,14 +299,13 @@ const AOPSummary = () => {
           designationCount={designations_only}
         />
 
-        {applicationsObjectives.length !== 0 &&
+        {applicationsObjectives.length !== 0 && (
           <BoxComponent>
             <Grid
               xs={12}
-              bgcolor="#006599"
+              bgcolor="#004366"
               sx={{ borderTopRightRadius: 10, borderTopLeftRadius: 10 }}
               p={2}
-              mb={1}
             >
               <Grid xs={12}>
                 <Typography textColor={"white"}>{SUMMARY_TITLE}</Typography>
@@ -316,56 +314,56 @@ const AOPSummary = () => {
 
             <Grid container>
               <Grid xs={12}>
-                <BoxComponent>
-                  {/* map here */}
-                  {applicationsObjectives?.map(
-                    ({ objective, counts, activities }, index) => {
-                      const { code } = objective;
-                      const { activities_count, total_cost } = counts;
+                {/* map here */}
+                {applicationsObjectives?.map(
+                  ({ objective, counts, activities }, index) => {
+                    const { code } = objective;
+                    const { activities_count, total_cost } = counts;
 
-                      const objectiveIndex = index + 1;
+                    const objectiveIndex = index + 1;
 
-                      return (
-                        <>
-                          <AccordionComponent
-                            defaultExpanded={false}
-                            accordionSummary={
-                              <>
-                                <AccordionSummary
-                                  index={objectiveIndex}
-                                  objectiveName={code}
-                                  activitiesCount={activities_count}
-                                  cost={total_cost}
-                                />
-                              </>
-                            }
-                            accordionDetails={
-                              <>
-                                {activities.length === 0 && (
-                                  <Typography
-                                    p={4}
-                                    textAlign={"center"}
-                                    level="title-md"
-                                  >
-                                    There are no activities on this objective
-                                  </Typography>
-                                )}
-                                <AccordionDetails activities={activities} />
-                              </>
-                            }
-                          />
-                        </>
-                      );
-                    }
-                  )}
-                </BoxComponent>
+                    return (
+                      <>
+                        <AccordionComponent
+                          defaultExpanded={false}
+                          summaryStyles={(expanded) => ({
+                            bgcolor: expanded ? "#E0F5FF" : "background.body",
+                          })}
+                          accordionSummary={
+                            <>
+                              <AccordionSummary
+                                index={objectiveIndex}
+                                objectiveName={code}
+                                activitiesCount={activities_count}
+                                cost={total_cost}
+                              />
+                            </>
+                          }
+                          accordionDetails={
+                            <>
+                              {activities.length === 0 && (
+                                <Typography
+                                  p={4}
+                                  textAlign={"center"}
+                                  level="title-md"
+                                >
+                                  There are no activities on this objective
+                                </Typography>
+                              )}
+                              <AccordionDetails activities={activities} />
+                            </>
+                          }
+                        />
+                      </>
+                    );
+                  }
+                )}
               </Grid>
             </Grid>
           </BoxComponent>
+        )}
 
-        }
-
-        {(status.id === 2 || status.id === 6) &&
+        {(status.id === 2 || status.id === 6) && (
           <BoxComponent>
             <Stack p={2} mb={2}>
               <Stack>
@@ -391,8 +389,7 @@ const AOPSummary = () => {
               </Stack>
             </Stack>
           </BoxComponent>
-        }
-
+        )}
       </Stack>
 
       <ConfirmationModalComponent

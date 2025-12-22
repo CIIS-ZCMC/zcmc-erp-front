@@ -1,11 +1,24 @@
 import { BarChart } from "@mui/x-charts/BarChart";
+import { wrapLabel } from "../../Utils/WrapLabel";
 
 const chartSetting = {
   xAxis: [
     {
       disableLine: true,
       disableTicks: true,
+      scaleType: "linear",
+
       //   label: "rainfall (mm)",
+    },
+  ],
+  yAxis: [
+    {
+      scaleType: "band",
+      dataKey: "unit",
+      width: 150,
+      disableTicks: true,
+
+      valueFormatter: (value) => wrapLabel(value),
     },
   ],
   height: 350,
@@ -13,12 +26,12 @@ const chartSetting = {
 };
 
 export const totalCostByUnitDataset = [
-  { unit: "OMCC", totalCost: 1200000 },
-  { unit: "MS", totalCost: 420000 },
-  { unit: "HOPSS", totalCost: 800000 },
-  { unit: "NS", totalCost: 1200000 },
+  { unit: "Office of Medical Center Chief", totalCost: 1200000 },
+  { unit: "Nursing Service", totalCost: 420000 },
+  { unit: "Human Resource Management", totalCost: 800000 },
+  { unit: "Innovations and Information Systems Unit", totalCost: 1200000 },
   { unit: "Finance", totalCost: 2000000 },
-  { unit: "APHS", totalCost: 600000 },
+  { unit: "Allied Health Professionals Section", totalCost: 600000 },
 ];
 
 export const pesoFormatter = (value) => `₱${value.toLocaleString()}`;

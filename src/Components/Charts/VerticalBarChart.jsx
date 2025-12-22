@@ -8,6 +8,7 @@ const chartSetting = {
       //   label: "rainfall (mm)",
     },
   ],
+
   height: 350,
   margin: { left: 0 },
 };
@@ -27,7 +28,6 @@ export default function VerticalBars({ orientation = "vertical" }) {
     <BarChart
       dataset={approvalTurnaroundDataset}
       borderRadius={20}
-      xAxis={[{ scaleType: "band", dataKey: "level" }]}
       series={[
         {
           dataKey: "avgDays",

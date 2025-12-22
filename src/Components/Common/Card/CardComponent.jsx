@@ -35,7 +35,7 @@ const CardComponent = ({
           height: height,
           border: "none", // remove all borders
           borderLeft: `6px solid ${statusColor}`, // keep ONLY left border
-          borderRadius: "md",
+          borderRadius: 20,
           bgcolor: bgcolor,
         }}
       >
