@@ -265,7 +265,12 @@ const AOPSummary = () => {
 
   return (
     <>
-      <PageTitle title={PAGE_TITLE} description={PAGE_REVIEW} />
+      <PageTitle
+        title={PAGE_TITLE}
+        description={PAGE_REVIEW}
+        withArrowBack
+        onClickArrow={() => navigate("/aop")}
+      />
       <Stack spacing={2} pb={5} mt={3}>
         <CardComponent
           statusColor={blue[600]}
