@@ -220,10 +220,13 @@ function Dashboard() {
         <Grid xs={12} md={4} lg={4}>
           <ContainerComponent
             title={"Submission Watchlist"}
-            description={"12 departments pending"}
+            description={`${approverDashboard?.submission_watchlist?.length} departments pending`}
           >
             {" "}
-            <SubmissionWatchlist />
+            {/* {console.log(approverDashboard?.submission_watchlist)} */}
+            <SubmissionWatchlist
+              data={approverDashboard?.submission_watchlist}
+            />
           </ContainerComponent>
         </Grid>
       </Grid>

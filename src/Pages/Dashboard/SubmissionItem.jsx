@@ -1,15 +1,16 @@
+import { Create, Warning, WarningAmberOutlined } from "@mui/icons-material";
 import { statusConfig, SUBMISSION_STATUS } from "../../Data/TestData";
-import { Box, Stack, Typography } from "@mui/joy";
+import { Avatar, Box, Stack, Typography } from "@mui/joy";
 import { AlertTriangle, Pencil } from "lucide-react";
 
 const StatusIcon = ({ status }) => {
   if (status === SUBMISSION_STATUS.NOT_STARTED) {
-    return <AlertTriangle size={18} />;
+    return <Warning sx={{ fontSize: 20 }} color="danger" />;
   }
-  return <Pencil size={18} />;
+  return <Create sx={{ fontSize: 20 }} color="warning" />;
 };
 
-const SubmissionItem = ({ department, status }) => {
+const SubmissionItem = ({ name, status }) => {
   const config = statusConfig[status];
 
   return (
@@ -25,23 +26,13 @@ const SubmissionItem = ({ department, status }) => {
         borderLeft: `4px solid ${config.border}`,
       }}
     >
-      <Box
-        sx={{
-          width: 36,
-          height: 36,
-          borderRadius: "50%",
-          backgroundColor: config.iconBg,
-          display: "flex",
-          alignItems: "center",
-          justifyContent: "center",
-        }}
-      >
+      <Avatar sx={{ bgcolor: config.iconBg }}>
         <StatusIcon status={status} />
-      </Box>
+      </Avatar>
 
       <Stack spacing={0}>
-        <Typography level="body-sm" fontWeight={600} sx={{ color: "black" }}>
-          {department}
+        <Typography level="body-sm" fontWeight={400} sx={{ color: "black" }}>
+          {name}
         </Typography>
         <Typography level="body-xs" fontWeight={400} textColor="neutral.500">
           {config.label}

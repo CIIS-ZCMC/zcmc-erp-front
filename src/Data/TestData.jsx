@@ -400,20 +400,20 @@ export const SUBMISSION_STATUS = {
 export const statusConfig = {
   NOT_STARTED: {
     label: "Not Started",
-    bg: "#FDECEC",
+    bg: "#FEF2F2",
     border: "#D32F2F",
-    iconBg: "#F28B82",
+    iconBg: "#EFA9A9",
   },
   AOP_IN_PROGRESS: {
     label: "AOP In Progress",
-    bg: "#FFF5E6",
+    bg: "#FFF4E1",
     border: "#F9A825",
-    iconBg: "#FFD54F",
+    iconBg: "#FDDC9B",
   },
   PPMP_IN_PROGRESS: {
     label: "PPMP In Progress",
-    bg: "#FFF5E6",
+    bg: "#FFF4E1",
     border: "#F9A825",
-    iconBg: "#FFD54F",
+    iconBg: "#FDDC9B",
   },
 };
