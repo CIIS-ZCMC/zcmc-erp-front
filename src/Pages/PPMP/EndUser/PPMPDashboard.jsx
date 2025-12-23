@@ -743,7 +743,6 @@ function PPMPDashboard(props) {
                     // onClick={() => setOpenItemRequest(true)}
                   >
                     Print as (.XLS)
-                    <CloudDownload size={18} />
                   </Link>
 
                   <Stack

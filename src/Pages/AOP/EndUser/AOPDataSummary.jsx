@@ -1,5 +1,5 @@
 import React from "react";
-import { Grid } from "@mui/joy";
+import { Box } from "@mui/joy";
 
 // Status Cards
 import ObjectivesCard from "./Status/ObjectivesCard";
@@ -22,47 +22,41 @@ const AOPDataSummary = ({ aop, handleNavigateObjectives }) => {
   } = aop?.counts || {};
 
   return (
-    <Grid container spacing={2}>
+    <Box
+      sx={{
+        display: "grid",
+        gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)",
+        gridTemplateRows: "repeat(2, 1fr)",
+        gap: 1,
+        width: "100%",
+        height: "100%",
+      }}
+    >
       {/* 1 */}
-      <Grid xs={12} md={6}>
-        <ObjectivesCard
-          height={302}
-          hasFunction
-          handleNavigate={handleNavigateObjectives}
-          successIndicatorCount={unified_success_indicators_count}
-          objectiveCount={objectives_count}
-        />
-      </Grid>
+      <ObjectivesCard
+        hasFunction
+        handleNavigate={handleNavigateObjectives}
+        successIndicatorCount={unified_success_indicators_count}
+        objectiveCount={objectives_count}
+      />
 
       {/* 2 */}
-      <Grid xs={12} md={6}>
-        <ActivitiesCard
-          height={302}
-          activitiesCount={activities_count}
-          gadActivitiesCount={gad_activities_count}
-          nonGadActivitiesCount={non_gad_activities_count}
-        />
-      </Grid>
+      <ActivitiesCard
+        activitiesCount={activities_count}
+        gadActivitiesCount={gad_activities_count}
+        nonGadActivitiesCount={non_gad_activities_count}
+      />
 
       {/* 3 */}
-      <Grid xs={12} md={6}>
-        <ResourcesCard
-          height={302}
-          totalCost={total_cost}
-          resourcesCount={resources_count}
-        />
-      </Grid>
+      <ResourcesCard totalCost={total_cost} resourcesCount={resources_count} />
 
       {/* 4 */}
-      <Grid xs={12} md={6}>
-        <ResponsiblePersonCard
-          height={302}
-          usersCount={users_only}
-          designationCount={designations_only}
-          PersonsCount={responsible_people_count}
-        />
-      </Grid>
-    </Grid>
+      <ResponsiblePersonCard
+        usersCount={users_only}
+        designationCount={designations_only}
+        PersonsCount={responsible_people_count}
+      />
+    </Box>
   );
 };
 

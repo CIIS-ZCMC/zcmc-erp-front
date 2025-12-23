@@ -396,7 +396,6 @@ export const PPMP_COLLAPSE = [
   { label: "Procurement Schedule", value: "schedule" },
 ];
 
-
 export const STATUS_LABELS = {
   1: "Draft",
   2: "Submitted",
@@ -413,7 +412,7 @@ export const STATUS_MESSAGES = {
 
 export const AOP_BUTTON_LABEL = {
   1: "Create AOP",
-  2: "View AOP",
-  4: "View AOP",
+  2: "View AOP Summary",
+  4: "View AOP Summary",
   6: "Review AOP",
 };

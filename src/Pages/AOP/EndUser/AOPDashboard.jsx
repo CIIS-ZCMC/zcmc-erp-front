@@ -1,4 +1,4 @@
-import { Button, Grid, Stack } from "@mui/joy";
+import { Box, Button, Grid, Stack } from "@mui/joy";
 
 import React, { Fragment, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -221,11 +221,7 @@ function DashboardEndUser(props) {
             mt={3}
             boxShadow={"xs"}
             borderRadius={10}
-            sx={{
-              height: "85vh",
-              display: "flex",
-              flexDirection: "column",
-            }}
+            height={"80vh"}
           >
             <Grid
               xs={12}
@@ -253,10 +249,10 @@ function DashboardEndUser(props) {
                 )} */}
 
                 <Draft status={aop?.status.id} />
-
+                {/* 
                 {aop?.status?.id !== 1 && (
                   <>
-                    {/* {aop.status.id} */}
+      
                     <ButtonComponent
                       variant={"soft"}
                       label={"Feedback"}
@@ -275,24 +271,27 @@ function DashboardEndUser(props) {
                       startDecorator={<MessageSquareText size={16} />}
                     />
                   </>
-                )}
+                )} */}
               </Stack>
             </Grid>
 
             <Grid
               container
-              bgcolor={"#FAFAFA"}
-              padding={0.5}
-              spacing={1.5}
+              bgcolor="#FAFAFA"
+              spacing={1}
               sx={{
                 flexGrow: 1,
-                marginTop: 1,
+                mt: 1,
+                px: 1,
+                pb: 1,
                 borderBottomLeftRadius: 10,
                 borderBottomRightRadius: 10,
+                overflow: "hidden",
               }}
+              height={"66vh"}
             >
               {aop?.application_objectives.length === 0 ? (
-                <Grid item xs={12} sm={8}>
+                <Grid xs={12}>
                   <AOPEmptyObjectives
                     isLoading={isLoading}
                     handleNavigate={handleNavigateObjectives}
@@ -300,25 +299,33 @@ function DashboardEndUser(props) {
                 </Grid>
               ) : (
                 <>
-                  {/* LEFT – AOP Data Summary (big) */}
-                  <Grid item xs={12} sm={12} md={6} lg={6} xl={5}>
-                    <AOPDataSummary
-                      aop={aop}
-                      handleNavigateObjectives={handleNavigateObjectives}
-                    />
+                  {/* LEFT – AOP DATA SUMMARY */}
+                  <Grid xs={12} md={5} sx={{ alignSelf: "flex-start" }}>
+                    <Box
+                      sx={{
+                        width: "100%",
+                        maxWidth: "100%",
+                        overflow: "hidden", // critical
+                      }}
+                    >
+                      <AOPDataSummary
+                        aop={aop}
+                        handleNavigateObjectives={handleNavigateObjectives}
+                      />
+                    </Box>
                   </Grid>
 
-                  {/* MIDDLE – Checklist (medium) */}
-                  <Grid item xs={12} sm={12} md={4} lg={4} xl={3.2}>
+                  {/* MIDDLE – CHECKLIST */}
+                  <Grid xs={12} md={3.5}>
                     <Checklist fiscalYear={fiscalYear} />
+                  </Grid>
+
+                  {/* RIGHT – TIMELINE */}
+                  <Grid xs={12} md={3.5}>
+                    <Timeline aopId={aop.id} />
                   </Grid>
                 </>
               )}
-
-              {/* RIGHT – Timeline (small) */}
-              <Grid item xs={12} sm={12} md={2} lg={2} xl={3.5}>
-                <Timeline aopId={aop.id} />
-              </Grid>
             </Grid>
           </BoxComponent>
         </Fragment>

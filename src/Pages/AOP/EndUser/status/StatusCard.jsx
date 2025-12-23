@@ -14,12 +14,9 @@ const StatusCard = ({
       variant="soft"
       sx={{
         border: "1px solid #F0F0F0",
-        borderRadius: 10,
+        borderRadius: 20,
         bgcolor: "white",
-        width: "100%",
-        height: "100%", // <-- make card fill the grid cell
-        display: "flex", // <-- flex to stretch content
-        flexDirection: "column",
+        pt: 3,
       }}
     >
       <CardContent

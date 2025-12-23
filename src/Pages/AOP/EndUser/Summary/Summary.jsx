@@ -55,7 +55,7 @@ const Summary = ({
   return (
     <Grid container spacing={1} pb={4}>
       {cards.map((card, idx) => (
-        <Grid key={idx} xs display="flex">
+        <Grid key={idx} xs>
           {card}
         </Grid>
       ))}
