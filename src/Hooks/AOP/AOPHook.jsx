@@ -12,6 +12,7 @@ const useAOPHook = () => {
         url: API.AOP_APPLICATIONS,
         failed: callBack,
         success: (res) => {
+          console.log(res)
           const {
             status,
             data: { data, message },

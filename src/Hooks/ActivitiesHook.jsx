@@ -15,7 +15,7 @@ const useActivitiesHook = () => {
                 failed: callBack,
                 params,
                 success: (res) => {
-                    // console.log(res.data.activities)
+                    console.log(res)
                     const {
                         status,
                         data: { activities, message },

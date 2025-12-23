@@ -40,7 +40,7 @@ const StatusCard = ({
             {count}
           </Typography>
 
-          <Typography level="body-sm">{description}</Typography>
+          <Typography level="body-xs">{description}</Typography>
 
           {hasFunction && (
             <>

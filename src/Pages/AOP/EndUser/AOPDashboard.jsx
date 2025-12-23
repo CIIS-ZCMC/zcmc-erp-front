@@ -84,20 +84,19 @@ function DashboardEndUser(props) {
   const feedbackCount = commentCount + remarksCount;
 
   const handleClose = () => {
-    setIsLoading(true)
+    setIsLoading(true);
     setTimeout(() => {
       // window.location.reload();
       clearMission();
       setOpenFiscalYearModal(false);
-      closeAlertDialog()
-      setIsLoading(false)
-      navigate(0)
-    }, 2000)
-  }
+      closeAlertDialog();
+      setIsLoading(false);
+      navigate(0);
+    }, 2000);
+  };
 
   const handleSaveAOP = async () => {
-
-    setIsLoading(true)
+    setIsLoading(true);
 
     const body = {
       mission,
@@ -108,8 +107,8 @@ function DashboardEndUser(props) {
       await createAOP(body, (status, message) => {
         if (status === 200) {
           // console.log(`fiscal year: ${fiscalYear}, mission: ${mission}`);
-          setIsLoading(false)
-          handleClose()
+          setIsLoading(false);
+          handleClose();
         } else {
           setAlertDialog({
             status: "error",
@@ -255,7 +254,7 @@ function DashboardEndUser(props) {
 
                 <Draft status={aop?.status.id} />
 
-                {(aop?.status?.id !== 1) && (
+                {aop?.status?.id !== 1 && (
                   <>
                     {/* {aop.status.id} */}
                     <ButtonComponent
@@ -302,7 +301,7 @@ function DashboardEndUser(props) {
               ) : (
                 <>
                   {/* LEFT – AOP Data Summary (big) */}
-                  <Grid item xs={12} sm={12} md={6} lg={6} xl={5.3}>
+                  <Grid item xs={12} sm={12} md={6} lg={6} xl={5}>
                     <AOPDataSummary
                       aop={aop}
                       handleNavigateObjectives={handleNavigateObjectives}
@@ -362,9 +361,9 @@ function DashboardEndUser(props) {
         feedbackCount={feedbackCount}
         role={role}
         isActivity={true}
-      // handleClick={() => navigate(`aop/activities/${activity_id}`)} // return objective id
+        // handleClick={() => navigate(`aop/activities/${activity_id}`)} // return objective id
       />
-    </Fragment >
+    </Fragment>
   );
 }
 

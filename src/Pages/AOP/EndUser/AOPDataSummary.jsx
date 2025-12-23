@@ -1,5 +1,4 @@
-import React, { useEffect } from "react";
-
+import React from "react";
 import { Grid } from "@mui/joy";
 
 // Status Cards
@@ -24,17 +23,19 @@ const AOPDataSummary = ({ aop, handleNavigateObjectives }) => {
 
   return (
     <Grid container spacing={2}>
-      <Grid xs={12} sm={6}>
+      {/* 1 */}
+      <Grid xs={12} md={6}>
         <ObjectivesCard
           height={302}
-          hasFunction={true}
+          hasFunction
           handleNavigate={handleNavigateObjectives}
           successIndicatorCount={unified_success_indicators_count}
           objectiveCount={objectives_count}
         />
       </Grid>
 
-      <Grid xs={12} sm={6}>
+      {/* 2 */}
+      <Grid xs={12} md={6}>
         <ActivitiesCard
           height={302}
           activitiesCount={activities_count}
@@ -43,15 +44,17 @@ const AOPDataSummary = ({ aop, handleNavigateObjectives }) => {
         />
       </Grid>
 
-      <Grid xs={12} sm={6}>
+      {/* 3 */}
+      <Grid xs={12} md={6}>
         <ResourcesCard
-          totalCost={total_cost}
           height={302}
+          totalCost={total_cost}
           resourcesCount={resources_count}
         />
       </Grid>
 
-      <Grid xs={12} sm={6}>
+      {/* 4 */}
+      <Grid xs={12} md={6}>
         <ResponsiblePersonCard
           height={302}
           usersCount={users_only}

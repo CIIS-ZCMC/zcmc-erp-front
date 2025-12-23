@@ -11,7 +11,10 @@ import {
 
 import { X } from 'lucide-react'
 
+import { isAopDisabled } from '../../../../../../Utils/AopStatus'
+
 const AccordionDetails = ({
+    status,
     setSelectedId,
     handleOpenDeleteModal,
     responsible_people
@@ -42,6 +45,7 @@ const AccordionDetails = ({
                                                 onClick={() => handleDelete(responsible_person_id)}
                                                 aria-label="Delete"
                                                 size="sm"
+                                                disabled={isAopDisabled(status)}
                                             >
                                                 <X />
                                             </IconButton>

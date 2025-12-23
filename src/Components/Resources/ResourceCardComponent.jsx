@@ -17,7 +17,10 @@ import { ArrowUpRightIcon } from "lucide-react";
 import React, { Fragment, useState } from "react";
 import CartPreviewComponent from "./CartPreviewComponent";
 
+import { isAopDisabled } from "../../Utils/AopStatus";
+
 export default function ResourceCardComponent({
+  status,
   image = "https://images.unsplash.com/photo-1532614338840-ab30cf10ed36?auto=format&fit=crop&w=318",
   resource_id,
   category,
@@ -76,6 +79,7 @@ export default function ResourceCardComponent({
               transform: "translateY(50%)",
             }}
             onClick={() => onDelete(resource_id)}
+            disabled={isAopDisabled(status)}
           >
             <Delete />
           </IconButton>
@@ -127,13 +131,17 @@ export default function ResourceCardComponent({
             </Box>
 
             {/* Quantity Controls */}
-            <Box>
-              <QuantityControlComponent
-                quantity={quantity}
-                onDecrease={() => onQtyChange(resource_id, quantity - 1)}
-                onIncrease={() => onQtyChange(resource_id, quantity + 1)}
-              />
-            </Box>
+            {
+              status !== 2 || status !== 4 &&
+              <Box>
+                <QuantityControlComponent
+                  quantity={quantity}
+                  onDecrease={() => onQtyChange(resource_id, quantity - 1)}
+                  onIncrease={() => onQtyChange(resource_id, quantity + 1)}
+                />
+              </Box>
+            }
+
           </Stack>
 
           <Box>
@@ -147,6 +155,7 @@ export default function ResourceCardComponent({
               }}
               getOptionLabel={(opt) => opt?.description || ""}
               placeholder="Select type"
+              disabled={isAopDisabled(status)}
             />
           </Box>
 

@@ -20,7 +20,7 @@ const CardBody = ({ objective, activity, timeframe, cost, comments }) => {
 
         <Stack
           textAlign={"left"}
-          width={"151%"}
+          width={"156%"}
         >
           {comments.length !== 0 ?
             <>
@@ -33,6 +33,7 @@ const CardBody = ({ objective, activity, timeframe, cost, comments }) => {
                   bgcolor: "#F2F2F2",
                   padding: 1,
                   borderRadius: 10,
+                  mt: 1
                 }}
               >
                 <Stack

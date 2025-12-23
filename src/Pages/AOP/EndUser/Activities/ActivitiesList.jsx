@@ -11,6 +11,7 @@ import CardActions from "./card/CardActions";
 import { ACTIVITIES } from "../../../../Data/constants";
 
 const ActivitiesList = ({
+  status,
   activity,
   isLoading,
   activities,
@@ -43,7 +44,11 @@ const ActivitiesList = ({
         height={"auto"}
         statusColor={is_draft ? "red" : "green"}
         cardHeader={
-          <CardHeader handleEdit={handleEdit} handleDelete={handleDelete} />
+          <CardHeader
+            status={status}
+            handleEdit={handleEdit}
+            handleDelete={handleDelete}
+          />
         }
         cardBody={
           <CardBody

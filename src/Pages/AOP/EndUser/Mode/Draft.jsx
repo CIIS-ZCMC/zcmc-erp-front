@@ -9,7 +9,7 @@ import ButtonComponent from '@Components/Common/ButtonComponent';
 import {
     STATUS_LABELS,
     STATUS_MESSAGES,
-    PPMP_BUTTON_LABEL
+    AOP_BUTTON_LABEL
 } from '../../../../Data/constants';
 
 const Draft = ({ status }) => {
@@ -46,7 +46,7 @@ const Draft = ({ status }) => {
 
                 <Box width={"450px"}>
                     <ButtonComponent
-                        label={PPMP_BUTTON_LABEL[status] ?? "Create PPMP"}
+                        label={AOP_BUTTON_LABEL[status] ?? "Create PPMP"}
                         onClick={() => navigate("/aop/summary")}
                         fullWidth={"true"}
                     />

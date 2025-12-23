@@ -9,7 +9,7 @@ const useObjectivesHook = () => {
 
   const applicationObjectives = useApplicationObjectives();
 
-  const { setApplicationObjectives, setApplicationObjective } = useObjectivesActions();
+  const { setApplicationObjectives, setApplicationObjective, setAopApplication, setIsLoading, } = useObjectivesActions();
   const { setFeedback } = useFeedbackStoreActions()
 
   const getObjectives = async (id, callBack) => {
@@ -40,24 +40,22 @@ const useObjectivesHook = () => {
   };
 
   const getObjectivesBySector = async (callBack) => {
-    // const response = await GetUserObjectives();
-
-    // // Validate Status
-    // if (!response.status) {
-    //   // Failed display
-    // }
-
-    // // Success
-
+    setIsLoading(true)
     try {
       await read({
         url: API.OBJECTIVE_BY_SECTOR,
         failed: callBack,
         success: (res) => {
-          const { data: { data, message },
-          } = res;
-          // console.log('response data', Array.isArray(data))
-          setApplicationObjectives(Array.isArray(data) ? data : []);
+
+          // console.log(res)
+
+          const { data: { data, message } } = res;
+          const { aop_application, application_objectives } = data
+          // console.log(application_objectives)
+          // setApplicationObjectives(Array.isArray(data) ? data : []);
+          setIsLoading(false)
+          setAopApplication(aop_application)
+          setApplicationObjectives(application_objectives)
           callBack(status, message)
         }
       });
@@ -88,19 +86,20 @@ const useObjectivesHook = () => {
   }
 
   const createObjective = async (body, callBack) => {
+    setIsLoading(true)
     try {
       await post({
         url: API.OBJECTIVE_STORE,
         form: body,
         failed: callBack,
         success: async (res) => {
-
           const {
             status,
             data: { data, message },
           } = res;
           if (status === 201) {
             getObjectivesBySector()
+            setIsLoading(false)
           }
           callBack?.(status, message);
         },
@@ -113,6 +112,7 @@ const useObjectivesHook = () => {
   }
 
   const updateObjective = async (params, body, callBack) => {
+    setIsLoading(true)
     try {
       await update({
         url: `${API.OBJECTIVE_EDIT}/${params.id}`,
@@ -125,6 +125,7 @@ const useObjectivesHook = () => {
           } = res;
           if (status === 200) {
             getObjectivesBySector()
+            setIsLoading(false)
           }
           callBack?.(status, message);
         },
@@ -137,6 +138,7 @@ const useObjectivesHook = () => {
   }
 
   const removeObjective = async (params, callBack) => {
+    setIsLoading(true)
     try {
       await remove({
         url: `${API.OBJECTIVE_DELETE}/${params.id}`,
@@ -149,9 +151,9 @@ const useObjectivesHook = () => {
           } = res;
 
           if (status === 200) {
-            const updatedObjectives = applicationObjectives.filter(
-              (obj) => obj.id !== params.id
-            );
+            const updatedObjectives = applicationObjectives.filter((obj) => obj.id !== params.id)
+            // console.log(updatedObjectives)
+            setIsLoading(false)
             setApplicationObjectives(updatedObjectives);
           }
           callBack?.(status, message);

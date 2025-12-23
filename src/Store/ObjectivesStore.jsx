@@ -2,6 +2,8 @@ import { create } from "zustand";
 
 const useObjectivesStore = create((set, get) => ({
   objectives: [],
+  isLoading: false,
+  aopApplication: {},
 
   applicationObjectives: [], //application objectives
   applicationObjective: null, //single application objective
@@ -15,6 +17,8 @@ const useObjectivesStore = create((set, get) => ({
 
   actions: {
     setObjectives: (objectives) => set({ objectives }),
+    setIsLoading: (isLoading) => set({ isLoading }),
+    setAopApplication: (aopApplication) => set({ aopApplication }),
 
     setApplicationObjectives: (applicationObjectives) => set({ applicationObjectives }),
     setApplicationObjective: (applicationObjective) => set({ applicationObjective }),
@@ -45,6 +49,8 @@ const useObjectivesStore = create((set, get) => ({
 export default useObjectivesStore
 
 export const useObjectives = () => useObjectivesStore((state) => state.objectives);
+export const useIsLoading = () => useObjectivesStore((state) => state.isLoading);
+export const useAopApplication = () => useObjectivesStore((state) => state.aopApplication);
 
 export const useApplicationObjectives = () => useObjectivesStore((state) => state.applicationObjectives);
 export const useApplicationObjective = () => useObjectivesStore((state) => state.applicationObjective);

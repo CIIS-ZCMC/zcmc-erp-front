@@ -27,6 +27,8 @@ import { AOP_SUMMARY, AOP_CONFRIM_DATA } from "../../../Data/constants";
 import { blue } from "@mui/material/colors";
 import PageTitle from "@Components/Common/PageTitle";
 
+import { isAopDisabled } from "../../../Utils/AopStatus";
+
 const AOPSummary = () => {
   const navigate = useNavigate();
 
@@ -42,10 +44,6 @@ const AOPSummary = () => {
     closeConfirmation,
     closeAlertDialog,
   } = useModalHook();
-
-  // useEffect(() => {
-  //     console.log(aop)
-  // }, [aop])
 
   const {
     PAGE_TITLE,
@@ -261,6 +259,10 @@ const AOPSummary = () => {
     }
   };
 
+  useEffect(() => {
+    console.log(status.id);
+  }, [status]);
+
   return (
     <>
       <PageTitle title={PAGE_TITLE} description={PAGE_REVIEW} />
@@ -363,7 +365,8 @@ const AOPSummary = () => {
           </BoxComponent>
         )}
 
-        {(status.id === 2 || status.id === 6) && (
+        {/* do not display if status is 2 = submitted or 4 = approved */}
+        {(status.id === 1 || status.id === 6) && (
           <BoxComponent>
             <Stack p={2} mb={2}>
               <Stack>
@@ -378,12 +381,12 @@ const AOPSummary = () => {
                   <Typography level="body-sm" width={1000}>
                     {SUMMARY_FOOTER_CONTENT}
                   </Typography>
+
                   <ButtonComponent
-                    label={status.id === 6 ? "Resubmit PPMP" : "Create PPMP"}
+                    label={status.id === 6 ? "Resubmit AOP" : "Create AOP"}
                     size={"lg"}
                     onClick={() => handleOpenSubmitAopModal()}
                     color="primary"
-                    disabled={applicationsObjectives.length === 0}
                   />
                 </Stack>
               </Stack>

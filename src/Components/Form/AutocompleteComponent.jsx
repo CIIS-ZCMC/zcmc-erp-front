@@ -12,6 +12,7 @@ import { getFontSize } from "../../Utils/Typography";
 import userErrorInputHook from "../../Hooks/ErrorInputHook";
 
 function AutocompleteComponent({
+  disabled = false,
   multiple = false,
   label,
   options = [],
@@ -40,6 +41,7 @@ function AutocompleteComponent({
     <FormControl sx={{ width: width }} {...props}>
       {label && <FormLabel>{label}</FormLabel>}
       <Autocomplete
+        disabled={disabled}
         clearOnBlur
         clearOnEscape
         multiple={multiple}

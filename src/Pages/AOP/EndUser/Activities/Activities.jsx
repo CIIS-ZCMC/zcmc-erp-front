@@ -24,10 +24,14 @@ import useActivitiesStore, {
   useActivitiesActions,
 } from "../../../../Store/ActivitiesStore";
 
+import useAOPStore from "../../../../Store/AOPStore";
+
 import { ACTIVITIES } from "../../../../Data/constants";
 import PageTitle from "@Components/Common/PageTitle";
 import useAOPBreadcrumbs from "../../../../Hooks/AOP/AOPBreadcrumbs";
 import ChipComponent from "@Components/Common/ChipComponent";
+
+import { isAopDisabled } from "../../../../Utils/AopStatus";
 
 const centeredStyle = {
   direction: "column",
@@ -43,6 +47,8 @@ const Activities = () => {
   const location = useLocation();
 
   const { state } = location;
+
+  const { aop } = useAOPStore()
 
   const {
     applicationActivities,
@@ -105,7 +111,12 @@ const Activities = () => {
     });
   }, []);
 
+
+  const status = aop.status.id
+  const objectiveName = applicationActivities?.[0]?.objective_code || state?.objective
+
   useEffect(() => {
+    console.log(aop)
     // console.log('current activity value:', activity)
     // console.log('current start month', startMonth)
     // console.log('current end month:', endMonth)
@@ -114,6 +125,7 @@ const Activities = () => {
     // console.log('from location:', state.objective)
     // console.log('from application activities:', applicationActivities?.[0]?.objective_code)
   }, [
+    aop,
     activity,
     startMonth,
     endMonth,
@@ -122,7 +134,6 @@ const Activities = () => {
     applicationActivities,
   ]);
 
-  const objectiveName = applicationActivities?.[0]?.objective_code || state?.objective
 
   const filteredActivities = useMemo(() => {
     if (!search) return applicationActivities;
@@ -398,6 +409,7 @@ const Activities = () => {
           <ButtonComponent
             onClick={() => setIsCountModal(true)}
             label={"Add Activity"}
+            disabled={isAopDisabled(status)}
           // endDecorator={<Plus size={16} />}
           // disabled={!show || disabledEditMode(APPLICATION_OBJECTIVE_ID, remarks, comments, disabled)}
           />
@@ -431,6 +443,7 @@ const Activities = () => {
           {filteredActivities.map((activity) => (
             <Grid key={activity.id} size={4} lg={4} md={6} sm={12}>
               <ActivitiesList
+                status={status}
                 isLoading={isLoading}
                 activity={activity}
                 handleAdd={() => handleOpenCountModal()}

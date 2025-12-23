@@ -57,6 +57,7 @@ import StepperComponent from "@Components/Stepper/StepperComponent";
 import useItemRequestHook from "../../../Hooks/ItemRequest/ItemRequestHookv2";
 import useItemRequestStore from "../../../Store/ItemRequestStore";
 import userErrorInputHook from "../../../Hooks/ErrorInputHook";
+import useAOPStore from "../../../Store/AOPStore";
 
 // Add New Item Request Components
 import NewRequestContent from "./Modal/AddItemRequest/Content";
@@ -134,6 +135,7 @@ function PPMPDashboard(props) {
   const pathName = location.pathname;
 
   const { requestsByUser } = useItemRequestStore();
+  const { aop } = useAOPStore();
 
   const { getItemRequestByUser } = useItemRequestHook();
   const { setError, clearErrors } = userErrorInputHook();
@@ -433,6 +435,9 @@ function PPMPDashboard(props) {
                 />
               </Box>
               <Typography level="body-sm" sx={{ color: "white" }}>
+                {/* Mission: This is a sample mission written by the requesting
+                body. This could be as short as a single sentence but could be
+                as long as two sentences if necessary. */}
                 Mission :{" "}
                 {dashboard?.mission ? dashboard?.mission : "No mission yet"}
               </Typography>
@@ -748,18 +753,21 @@ function PPMPDashboard(props) {
                     alignItems={"center"}
                     justifyContent={"center"}
                   >
-                    <Link
-                      sx={{
-                        fontSize: 12,
-                        // textDecoration: "none",
-                        textDecoration: "underline",
-                        gap: 0.5,
-                      }}
-                      onClick={() => setOpenNewRequest(true)}
-                      endDecorator={<ExternalLink size={18} />}
-                    >
-                      Request new item
-                    </Link>
+                    {dashboard.ppmp_application.status_id === 1 ||
+                      (dashboard.ppmp_application.status_id === 6 && (
+                        <Link
+                          sx={{
+                            fontSize: 12,
+                            // textDecoration: "none",
+                            textDecoration: "underline",
+                            gap: 0.5,
+                          }}
+                          onClick={() => setOpenNewRequest(true)}
+                          endDecorator={<ExternalLink size={18} />}
+                        >
+                          Request new item
+                        </Link>
+                      ))}
 
                     <Link
                       sx={{

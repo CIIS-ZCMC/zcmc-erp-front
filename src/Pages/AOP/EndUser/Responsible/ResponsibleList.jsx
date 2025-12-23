@@ -24,6 +24,7 @@ const ResponsibleList = ({
   handleDelete,
   openResponsibleModal,
   responsible_people,
+  status
 }) => {
   const { EMPTY_STATE_TITLE, EMPTY_STATE_DESCRIPTION } = RESPONSIBLE;
 
@@ -60,6 +61,7 @@ const ResponsibleList = ({
                 }
                 accordionDetails={
                   <UserAccordionDetails
+                    status={status}
                     setSelectedId={setSelectedId}
                     handleOpenDeleteModal={handleDelete}
                     responsible_people={responsible_people}
@@ -78,6 +80,7 @@ const ResponsibleList = ({
                 }
                 accordionDetails={
                   <PositionAccordionDetails
+                    status={status}
                     setSelectedId={setSelectedId}
                     handleOpenDeleteModal={handleDelete}
                     responsible_people={responsible_people}
