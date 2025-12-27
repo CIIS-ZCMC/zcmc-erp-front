@@ -281,7 +281,7 @@ function DashboardEndUser(props) {
               spacing={1}
               sx={{
                 flexGrow: 1,
-                mt: 1,
+                mt: 2,
                 px: 1,
                 pb: 1,
                 borderBottomLeftRadius: 10,

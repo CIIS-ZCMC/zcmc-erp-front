@@ -1,5 +1,12 @@
 import React from "react";
-import { Stack, Typography, Divider, Card, CardContent } from "@mui/joy";
+import {
+  Stack,
+  Typography,
+  Divider,
+  Card,
+  CardContent,
+  useTheme,
+} from "@mui/joy";
 
 const StatusCard = ({
   logo,
@@ -9,6 +16,8 @@ const StatusCard = ({
   hasFunction,
   functionHandler,
 }) => {
+  const theme = useTheme();
+  const color = theme.palette.custom;
   return (
     <Card
       variant="soft"
@@ -27,13 +36,13 @@ const StatusCard = ({
 
           <Typography
             level="title-sm"
-            color="primary"
             textTransform="uppercase"
+            sx={{ color: color.main }}
           >
             {title}
           </Typography>
 
-          <Typography level="h2" fontWeight={600} color="primary">
+          <Typography level="h2" fontWeight={600} sx={{ color: color.main }}>
             {count}
           </Typography>
 

@@ -609,6 +609,7 @@ function PPMPDashboard(props) {
                   <Box
                     sx={{
                       width: "100%",
+                      height: "100%",
                       maxWidth: 800,
                       display: "grid",
                       gridTemplateColumns:
@@ -792,39 +793,27 @@ function PPMPDashboard(props) {
                 }}
               >
                 {/* Approval Timeline Here */}
-
                 {timeline?.length > 0 ? (
-                  <BoxComponent
-                    bgColor={"#FFFFFF"}
-                    p={2}
-                    sx={{
-                      display: "flex",
-                      flexDirection: "column",
-                      height: "100%",
-                    }}
-                  >
+                  <BoxComponent bgColor="#FFFFFF" p={2} height={"62vh"}>
                     <Typography level="title-lg">Approval Timeline</Typography>
+
                     <Typography
                       level="body-xs"
                       mt={0.5}
                       sx={{ color: color.fontLight }}
                     >
-                      {" "}
                       The list below shows the current status of the request.
                     </Typography>
-                    <Divider sx={{ my: 1, color: "gray" }} />
+
+                    <Divider sx={{ my: 1 }} />
+
                     <Stack
-                      Stack
                       sx={{
-                        flex: 1, // take remaining space
-                        pt: 2,
-                        overflowY: "auto", // scroll if content exceeds
-                        pr: 1,
-                        justifyContent:
-                          timeline?.length === 0 ? "center" : "flex-start",
-                        alignItems:
-                          timeline?.length === 0 ? "center" : "stretch",
-                        minHeight: 0, // important for scroll to work in flex
+                        height: "calc(60vh - 80px)", // adjust for title, subtitle, divider
+                        overflowY: "auto",
+                        overflowX: "hidden", // prevent horizontal overflow
+                        pr: 1, // optional padding for scrollbar
+                        mt: 3,
                       }}
                     >
                       <StepperComponent data={timeline} />

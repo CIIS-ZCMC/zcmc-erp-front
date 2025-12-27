@@ -400,7 +400,7 @@ export const STATUS_LABELS = {
   1: "Draft",
   2: "Submitted",
   4: "Approved",
-  6: "Review",
+  6: "Returned",
 };
 
 export const STATUS_MESSAGES = {
