@@ -27,7 +27,7 @@ const AOPDataSummary = ({ aop, handleNavigateObjectives }) => {
         display: "grid",
         gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)",
         gridTemplateRows: "repeat(2, 1fr)",
-        gap: 1,
+        gap: 2,
         width: "100%",
         height: "100%",
       }}

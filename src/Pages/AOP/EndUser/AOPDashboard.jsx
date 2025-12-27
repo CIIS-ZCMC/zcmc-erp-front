@@ -278,7 +278,7 @@ function DashboardEndUser(props) {
             <Grid
               container
               bgcolor="#FAFAFA"
-              spacing={1}
+              spacing={2}
               sx={{
                 flexGrow: 1,
                 mt: 2,

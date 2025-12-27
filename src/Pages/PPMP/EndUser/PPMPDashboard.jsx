@@ -612,8 +612,8 @@ function PPMPDashboard(props) {
                       height: "100%",
                       maxWidth: 800,
                       display: "grid",
-                      gridTemplateColumns:
-                        "repeat(auto-fill, minmax(300px, 1fr))",
+                      gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)",
+                      gridTemplateRows: "repeat(2, 1fr)",
                       gap: 2,
                     }}
                   >
@@ -670,14 +670,7 @@ function PPMPDashboard(props) {
                     />
                   </Box>
 
-                  <BoxComponent
-                    sx={{
-                      display: "flex",
-                      flexDirection: "column",
-                      height: "100%",
-                      p: 2,
-                    }}
-                  >
+                  <BoxComponent width="60%">
                     <Typography level="title-lg">PPMP Checklist</Typography>
                     <Box
                       sx={{
