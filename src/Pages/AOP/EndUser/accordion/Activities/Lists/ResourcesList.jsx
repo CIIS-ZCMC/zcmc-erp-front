@@ -26,7 +26,7 @@ const ResourcesList = ({ resources, resourcesCount }) => {
           direction={"row"}
           alignItems={"center"}
           justifyContent={"space-between"}
-          my={1}
+          mb={2}
         >
           <Stack direction={"row"} gap={2}>
             <Avatar size="lg" color="primary">

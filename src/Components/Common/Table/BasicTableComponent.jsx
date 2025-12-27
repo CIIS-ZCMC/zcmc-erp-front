@@ -1,5 +1,6 @@
 import React from "react";
 import { Table, Sheet, Typography } from "@mui/joy";
+import { grey } from "@mui/material/colors";
 
 const BasicTableComponent = ({
   columns = [],
@@ -8,30 +9,22 @@ const BasicTableComponent = ({
 }) => {
   return (
     <Sheet
-      variant="outlined"
       sx={{
-        width: "100%",
-        borderRadius: "sm",
-        overflow: "auto",
+        borderRadius: "md",
+        display: "flex",
+        flexDirection: "column",
+        height: "100%", // 🔑 fill available space
+        minHeight: 0, // 🔑 allow flex scrolling
       }}
     >
       <Table
-        hoverRow
-        stickyHeader
-        size="sm"
+        aria-label="collapsible table"
         sx={{
-          width: "100%",
-          tableLayout: "fixed",
-          "--TableCell-paddingX": "0.5rem",
-          "--TableCell-paddingY": "0.375rem",
-          "& th": {
-            fontSize: "0.75rem",
-            fontWeight: "lg",
-          },
-          "& td": {
-            fontSize: "0.75rem",
-          },
+          "--TableCell-headBackground": "#E5E5E5",
+
+          "--TableCell-borderColor": grey[200],
         }}
+        hoverRow
       >
         <thead>
           <tr>

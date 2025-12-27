@@ -40,6 +40,8 @@ import {
 } from "@mui/icons-material";
 import { grey, red } from "@mui/material/colors";
 import ButtonComponent from "@Components/Common/ButtonComponent";
+import { formatPeso } from "../Utils/FormatPeso";
+import formattedPrice from "../Utils/formattedPrice";
 
 export const objHeaders = ({ onUpdate, onDelete, onViewIndicators }) => [
   { field: "id", name: "Row #", align: "center", width: "50px" },
@@ -1932,20 +1934,42 @@ export const SUMMARY_RESOURCES = () => [
     render: (row) => (
       <>
         <Typography level="body-sm" fontWeight={600}>
-          ₱{row?.total_amount?.toLocaleString()}
+          {formattedPrice(row?.total_resource_cost)}
         </Typography>
         <Typography
           sx={{ fontSize: 13, color: grey[600], textTransform: "lowercase" }}
         >
-          ₱{" "}
-          {(row?.item?.estimated_budget).toLocaleString("en-PH", {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          })}{" "}
-          per {row?.item?.item_unit?.name}
+          {formattedPrice(row?.total_resource_cost)} per{" "}
+          {row?.item?.item_unit?.name}
         </Typography>
       </>
     ),
+    expandTrigger: true,
+  },
+];
+
+export const SUMMARY_PEOPLE = () => [
+  {
+    id: "name",
+    label: "Employee Name and Job Position",
+    align: "left",
+    width: "250px",
+    render: (row) => {
+      const { user, designation } = row;
+      const employeeName = user?.name || "-";
+      const jobPosition = designation?.name || user?.designation_name || "-";
+
+      return (
+        <>
+          <Typography level="title-sm">
+            {employeeName || "-"} {/* show name or '-' if missing */}
+          </Typography>
+          <Typography level="body-sm" sx={{ color: grey[600] }}>
+            {jobPosition || "Position"} {/* show job position or 'Position' */}
+          </Typography>
+        </>
+      );
+    },
     expandTrigger: true,
   },
 ];

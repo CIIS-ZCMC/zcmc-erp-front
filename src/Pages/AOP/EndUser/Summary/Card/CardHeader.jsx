@@ -1,7 +1,7 @@
 import React from "react";
 
 import { Stack, Typography } from "@mui/joy";
-import { TriangleAlert } from "lucide-react";
+import { InfoIcon, TriangleAlert } from "lucide-react";
 
 import { AOP_SUMMARY } from "../../../../../Data/constants";
 import { blue } from "@mui/material/colors";
@@ -10,7 +10,6 @@ import { STATUS_LABELS } from "../../../../../Data/constants";
 
 const CardHeader = ({ status }) => {
   const { SUMMARY_CARD_HEADER } = AOP_SUMMARY;
-
 
   return (
     <>
@@ -21,7 +20,11 @@ const CardHeader = ({ status }) => {
           fontWeight={600}
           alignItems={"center"}
           startDecorator={
-            <TriangleAlert size={20} style={{ color: blue[800] }} />
+            status !== 4 ? (
+              <TriangleAlert size={20} style={{ color: blue[800] }} />
+            ) : (
+              <InfoIcon size={20} style={{ color: blue[800] }} />
+            )
           }
         >
           {SUMMARY_CARD_HEADER} {STATUS_LABELS[status]}
