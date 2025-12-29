@@ -36,6 +36,7 @@ const AOPSummary = () => {
 
   const [pin, setPin] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
+  const [openModal, setOpenModal] = useState(false);
 
   const { updateAOP } = useAOPHook();
   const {
@@ -103,6 +104,7 @@ const AOPSummary = () => {
       description: `${SUBMIT_ALERT_DESC[status.id]}`,
     };
     setConfirmationModal(data);
+    setOpenModal(true);
   };
 
   const handleConfirm = () => {
@@ -402,33 +404,35 @@ const AOPSummary = () => {
         )}
       </Stack>
 
-      <ConfirmationModalComponent
-        withAuthPin
-        content={
-          <>
-            <BoxComponent>
-              <Stack p={2} spacing={1}>
-                <Typography level="title-md">
-                  Please confirm the following:
-                </Typography>
+      {openModal && (
+        <ConfirmationModalComponent
+          withAuthPin
+          content={
+            <>
+              <BoxComponent>
+                <Stack p={2} spacing={1}>
+                  <Typography level="title-md">
+                    Please confirm the following:
+                  </Typography>
 
-                {AOP_CONFRIM_DATA.map(({ title, icon }) => (
-                  <Stack direction={"row"} alignItems={"center"} spacing={1}>
-                    {icon}
-                    <Typography level="body-sm">{title}</Typography>
-                  </Stack>
-                ))}
-              </Stack>
-            </BoxComponent>
-          </>
-        }
-        leftButtonLabel="Cancel"
-        leftButtonAction={() => closeConfirmation()}
-        rightButtonLabel={status.id === 6 ? "Resubmit" : "Submit"}
-        rightButtonAction={() => handleSubmitAop()}
-        setAuthPin={setPin}
-        isLoading={isLoading}
-      />
+                  {AOP_CONFRIM_DATA.map(({ title, icon }) => (
+                    <Stack direction={"row"} alignItems={"center"} spacing={1}>
+                      {icon}
+                      <Typography level="body-sm">{title}</Typography>
+                    </Stack>
+                  ))}
+                </Stack>
+              </BoxComponent>
+            </>
+          }
+          leftButtonLabel="Cancel"
+          leftButtonAction={() => closeConfirmation()}
+          rightButtonLabel={status.id === 6 ? "Resubmit" : "Submit"}
+          rightButtonAction={() => handleSubmitAop()}
+          setAuthPin={setPin}
+          isLoading={isLoading}
+        />
+      )}
 
       <AlertDialogComponent
         leftButtonAction={() => handleConfirm()}
