@@ -1,5 +1,6 @@
 import { BarChart } from "@mui/x-charts/BarChart";
 import { wrapLabel } from "../../Utils/WrapLabel";
+import { ChartSkeleton } from "@Components/Common/Loading/SkeletonLoader";
 
 const chartSetting = {
   xAxis: [
@@ -36,21 +37,30 @@ export const totalCostByUnitDataset = [
 
 export const pesoFormatter = (value) => `₱${value.toLocaleString()}`;
 
-export default function HorizontalBars({ orientation = "horizontal" }) {
+export default function HorizontalBars({
+  orientation = "horizontal",
+  isLoading,
+}) {
   return (
-    <BarChart
-      dataset={totalCostByUnitDataset}
-      borderRadius={20}
-      yAxis={[{ scaleType: "band", dataKey: "unit" }]}
-      series={[
-        {
-          dataKey: "totalCost",
-          color: "#006599",
-          valueFormatter: pesoFormatter,
-        },
-      ]}
-      layout={orientation}
-      {...chartSetting}
-    />
+    <>
+      {isLoading ? (
+        <ChartSkeleton />
+      ) : (
+        <BarChart
+          dataset={totalCostByUnitDataset}
+          borderRadius={20}
+          yAxis={[{ scaleType: "band", dataKey: "unit" }]}
+          series={[
+            {
+              dataKey: "totalCost",
+              color: "#006599",
+              valueFormatter: pesoFormatter,
+            },
+          ]}
+          layout={orientation}
+          {...chartSetting}
+        />
+      )}
+    </>
   );
 }

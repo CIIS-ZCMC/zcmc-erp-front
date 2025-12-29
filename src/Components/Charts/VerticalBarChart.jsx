@@ -1,3 +1,4 @@
+import { ChartSkeleton } from "@Components/Common/Loading/SkeletonLoader";
 import { BarChart } from "@mui/x-charts/BarChart";
 
 const chartSetting = {
@@ -23,20 +24,26 @@ export const daysFormatter = (value) => `${value} days`;
 
 const BAR_COLORS = ["#003F5C", "#2F4B7C", "#00A0E3"];
 
-export default function VerticalBars({ orientation = "vertical" }) {
+export default function VerticalBars({ orientation = "vertical", isLoading }) {
   return (
-    <BarChart
-      dataset={approvalTurnaroundDataset}
-      borderRadius={20}
-      series={[
-        {
-          dataKey: "avgDays",
-          color: "#003F5C",
-          valueFormatter: daysFormatter,
-        },
-      ]}
-      height={400}
-      {...chartSetting}
-    />
+    <>
+      {isLoading ? (
+        <ChartSkeleton />
+      ) : (
+        <BarChart
+          dataset={approvalTurnaroundDataset}
+          borderRadius={20}
+          series={[
+            {
+              dataKey: "avgDays",
+              color: "#003F5C",
+              valueFormatter: daysFormatter,
+            },
+          ]}
+          height={400}
+          {...chartSetting}
+        />
+      )}
+    </>
   );
 }
