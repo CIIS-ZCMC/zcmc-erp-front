@@ -1,6 +1,6 @@
 import React from "react";
 
-import { Stack, Typography, Box, Avatar } from "@mui/joy";
+import { Stack, Typography, Box, Avatar, useTheme } from "@mui/joy";
 import { formatPeso } from "../../../../../Utils/FormatPeso";
 import {
   EmojiObjectsOutlined,
@@ -9,6 +9,8 @@ import {
 } from "@mui/icons-material";
 
 const AccordionSummary = ({ objectiveName, activitiesCount, cost, index }) => {
+  const theme = useTheme();
+  const color = theme.palette.custom;
   return (
     <>
       <Stack
@@ -17,7 +19,7 @@ const AccordionSummary = ({ objectiveName, activitiesCount, cost, index }) => {
         width={"100%"}
         padding={1}
       >
-        <Stack direction={"row"} spacing={2} flex={1} minWidth={0}>
+        <Stack direction={"row"} spacing={2} width={"100%"}>
           <Avatar color="primary">
             <EmojiObjectsOutlined />
           </Avatar>
@@ -25,27 +27,35 @@ const AccordionSummary = ({ objectiveName, activitiesCount, cost, index }) => {
             <Typography level="body-xs" textTransform={"uppercase"}>
               #objective {index}
             </Typography>
-            <Typography level="title-md" color={"primary"}>
+            <Typography level="title-md" sx={{ color: color.main }}>
               {objectiveName}
             </Typography>
           </Stack>
         </Stack>
 
-        <Stack direction={"row"} spacing={10}>
-          <Stack textAlign={"right"} width="120px">
+        <Stack direction={"row"} width={"40%"}>
+          <Stack textAlign={"right"} width="50%">
             <Typography level="body-sm" textTransform={"capitalize"}>
               Activities
             </Typography>
-            <Typography level="title-md" color={"primary"} fontWeight={"600"}>
+            <Typography
+              level="title-md"
+              sx={{ color: color.main }}
+              fontWeight={"600"}
+            >
               {activitiesCount}
             </Typography>
           </Stack>
 
-          <Stack textAlign={"right"}>
+          <Stack textAlign={"right"} width={"50%"}>
             <Typography level="body-sm" textTransform={"capitalize"}>
               Cost
             </Typography>
-            <Typography level="title-md" color={"primary"} fontWeight={"600"}>
+            <Typography
+              level="title-md"
+              sx={{ color: color.main }}
+              fontWeight={"600"}
+            >
               {formatPeso(cost)}
             </Typography>
           </Stack>

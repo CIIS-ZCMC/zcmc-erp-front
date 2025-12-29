@@ -39,7 +39,7 @@ const PeopleList = ({ responsiblePeople, peopleCount }) => {
             </Stack>
           </Stack>
 
-          <Avatar variant="soft" sx={{ bgcolor: deepPurple[50] }} size="lg">
+          <Avatar variant="soft" sx={{ bgcolor: deepPurple[50] }} size="md">
             <Typography level="body-md" sx={{ color: deepPurple[800] }}>
               {peopleCount}
             </Typography>

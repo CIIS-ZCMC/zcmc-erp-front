@@ -29,7 +29,7 @@ const AccordionDetails = ({
         justifyContent="center"
         my={2}
       >
-        <Typography level="body-xs" sx={{ fontWeight: 600 }}>
+        <Typography level="body-xs" sx={{ fontWeight: 400, color: "black" }}>
           Target (by quarter)
         </Typography>
 
@@ -45,7 +45,7 @@ const AccordionDetails = ({
           >
             <Typography level="body-sm">{q.label}</Typography>
             <Typography
-              level="body-md"
+              level="body-sm"
               sx={{ fontWeight: 600, color: "black" }}
             >
               {q.value || "0"}

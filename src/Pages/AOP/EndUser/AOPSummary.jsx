@@ -24,7 +24,7 @@ import useModalHook from "../../../Hooks/ModalHook";
 import useAOPHook from "../../../Hooks/AOP/AOPHook";
 
 import { AOP_SUMMARY, AOP_CONFRIM_DATA } from "../../../Data/constants";
-import { blue } from "@mui/material/colors";
+import { blue, common } from "@mui/material/colors";
 import PageTitle from "@Components/Common/PageTitle";
 
 import { isAopDisabled } from "../../../Utils/AopStatus";
@@ -325,7 +325,8 @@ const AOPSummary = () => {
                 {applicationsObjectives?.map(
                   ({ objective, counts, activities }, index) => {
                     const { code } = objective;
-                    const { activities_count, total_cost } = counts;
+                    const { activities_count, total_cost, comments_count } =
+                      counts;
 
                     const objectiveIndex = index + 1;
 
@@ -333,6 +334,7 @@ const AOPSummary = () => {
                       <>
                         <AccordionComponent
                           defaultExpanded={false}
+                          expandedStyles={{ mb: 2 }}
                           summaryStyles={(expanded) => ({
                             bgcolor: expanded ? "#E0F5FF" : "background.body",
                           })}
@@ -354,7 +356,7 @@ const AOPSummary = () => {
                                   textAlign={"center"}
                                   level="title-md"
                                 >
-                                  There are no activities on this objective
+                                  There are no activities for this objective.{" "}
                                 </Typography>
                               )}
                               <AccordionDetails activities={activities} />

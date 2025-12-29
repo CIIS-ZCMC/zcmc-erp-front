@@ -23,7 +23,7 @@ const AccordionComponent = ({
         onChange={(event, isExpanded) => setExpanded(isExpanded)}
         sx={{
           transition: "all 0.2s",
-          ...expandedStyles, // merge custom expanded styles
+          ...(expanded ? expandedStyles : {}), // apply ONLY when expanded
         }}
       >
         <AccordionSummary

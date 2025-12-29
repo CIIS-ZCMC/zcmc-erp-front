@@ -293,7 +293,7 @@ function PPMPItems(props) {
 
       <BoxComponent my={2} bgColor={"#FAFAF9"} boxShadow="xs" p={2}>
         <Stack direction={"row"} justifyContent={"space-between"} mb={2}>
-          <Stack spacing={1}>
+          <Stack>
             <Stack direction={"row"} gap={1.5}>
               <Typography level="body-md" sx={{ fontWeight: 600 }}>
                 Manage Resources for{" "}
@@ -323,7 +323,7 @@ function PPMPItems(props) {
         <Stack
           direction={"row"}
           justifyContent={"space-between"}
-          alignItems={"center"}
+          alignItems={"flex-end"}
         >
           <SearchBarComponentv2
             value={search}

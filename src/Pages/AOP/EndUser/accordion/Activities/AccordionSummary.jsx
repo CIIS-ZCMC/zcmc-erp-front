@@ -1,6 +1,6 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 
-import { Avatar, Stack, Typography } from "@mui/joy";
+import { Avatar, Box, Stack, Typography, useTheme } from "@mui/joy";
 
 import { formattedLongDate } from "../../../../../Utils/formattedLongDate";
 import formattedPrice from "../../../../../Utils/formattedPrice";
@@ -9,11 +9,22 @@ import {
   Cancel,
   CheckCircle,
   Circle,
+  Comment,
+  CommentOutlined,
   ExtensionOutlined,
 } from "@mui/icons-material";
 import { grey } from "@mui/material/colors";
+import ButtonComponent from "@Components/Common/ButtonComponent";
+import DrawerComponent from "@Components/Common/DrawerComponent";
+import {
+  useCommentActions,
+  useComments,
+} from "../../../../../Hooks/CommentHook";
+import NoResultComponent from "@Components/Common/Table/NoResultComponent";
+import CommentContainerComponent from "@Components/Comments/CommentContainerComponent";
 
 const AccordionSummary = ({
+  id,
   activityIndex,
   name,
   startMonth,
@@ -22,14 +33,26 @@ const AccordionSummary = ({
   totalCost,
   resourcesCount,
   peopleCount,
+  commentsCount,
 }) => {
+  const { getCommentsByActivity } = useCommentActions();
+  const comments = useComments();
+
+  const [openDrawer, setOpenDrawer] = useState(false);
   // useEffect(() => {
   //     console.log(startMonth)
   //     console.log(endMonth)
   // }, [startMonth, endMonth])
+  const theme = useTheme();
+  const color = theme.palette.custom;
+
+  const showComments = () => {
+    getCommentsByActivity(id, () => {}), setOpenDrawer(true);
+  };
 
   return (
     <>
+      {console.log(comments)}
       <Stack
         direction={"row"}
         justifyContent={"space-between"}
@@ -84,15 +107,15 @@ const AccordionSummary = ({
           </Typography>
         </Stack>
         {/* Resources */}
-        <Circle sx={{ fontSize: 10, color: grey[300], pr: 5 }} />
+        <Circle sx={{ fontSize: 6, color: grey[400], pr: 5 }} />
 
         <Stack direction="row" alignItems="center" width="120px">
           <Typography level="body-xs" color="neutral">
-            {resourcesCount} Resources
+            {resourcesCount} Resource{resourcesCount > 1 ? "s" : ""}
           </Typography>
         </Stack>
         {/* Personnel */}
-        <Circle sx={{ fontSize: 10, color: grey[300], pr: 5 }} />
+        <Circle sx={{ fontSize: 6, color: grey[400], pr: 5 }} />
 
         <Stack direction="row" alignItems="center" width="120px">
           <Typography level="body-xs" color="neutral">
@@ -100,16 +123,95 @@ const AccordionSummary = ({
           </Typography>
         </Stack>
 
+        <ButtonComponent
+          width="200px"
+          onClick={() => showComments()}
+          label={
+            <Stack direction="row" alignItems="center" spacing={1}>
+              <CommentOutlined color="warning" />
+              <Avatar size="sm" color="warning">
+                {commentsCount}
+              </Avatar>
+              <Typography level="body-xs" color="warning">
+                View Comments
+              </Typography>
+            </Stack>
+          }
+          variant={"plain"}
+          color="warning"
+        />
+
         {/* Cost */}
         <Stack width="140px" alignItems="flex-end">
           <Typography level="body-sm" color="neutral">
             Cost
           </Typography>
-          <Typography level="title-md" fontWeight={600} color="primary">
+          <Typography
+            level="title-md"
+            fontWeight={600}
+            sx={{ color: color.main }}
+          >
             {formattedPrice(totalCost)}
           </Typography>
         </Stack>
       </Stack>
+      <DrawerComponent
+        open={openDrawer}
+        setOpen={setOpenDrawer}
+        title={"sample"}
+        description={`The following comments were submitted by reviewing offices regarding this resource item.`}
+        size="md"
+        content={
+          comments?.length > 0 ? (
+            <Box
+              sx={{
+                maxHeight: "595px", // adjust as needed
+                overflowY: "auto",
+                pr: 1, // optional: add padding for scrollbar
+              }}
+            >
+              <Stack width="100%" py={1} spacing={1.5}>
+                {comments.map((c, index) => (
+                  <CommentContainerComponent
+                    key={index}
+                    name={c?.name}
+                    comment={c?.comment}
+                    area_code={c?.area}
+                    date={c.created_at}
+                  />
+                ))}
+              </Stack>
+            </Box>
+          ) : (
+            <Box
+              sx={{
+                height: "50vh",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <NoResultComponent />{" "}
+            </Box>
+          )
+        }
+
+        //no post for END - USER
+        // footer={
+        //   <>
+        //     <Stack width={"100%"} spacing={2}>
+        //       <TextareaComponent
+        //         placeholder={"Comment here .. "}
+        //         maxRows={3}
+        //         label={"Add a comment"}
+        //       />
+        //       <Stack direction={"row"} justifyContent={"right"}>
+        //         <ButtonComponent label={"Post Comment"} width="200px" />
+        //       </Stack>
+        //     </Stack>
+        //   </>
+        // }
+      />
     </>
   );
 };

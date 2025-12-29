@@ -24,8 +24,12 @@ const ActivityAccordion = ({ activities }) => {
           },
           index
         ) => {
-          const { total_cost, resources_count, responsible_people_count } =
-            counts;
+          const {
+            total_cost,
+            resources_count,
+            responsible_people_count,
+            comments_count,
+          } = counts;
 
           const {
             first_quarter,
@@ -47,6 +51,7 @@ const ActivityAccordion = ({ activities }) => {
                 accordionSummary={
                   <Fragment key={id}>
                     <AccordionSummary
+                      id={id}
                       activityIndex={activityIndex}
                       name={name}
                       startMonth={start_month}
@@ -55,6 +60,7 @@ const ActivityAccordion = ({ activities }) => {
                       totalCost={total_cost}
                       resourcesCount={resources_count}
                       peopleCount={responsible_people_count}
+                      commentsCount={comments_count}
                     />
                   </Fragment>
                 }

@@ -40,7 +40,7 @@ const ResourcesList = ({ resources, resourcesCount }) => {
             </Stack>
           </Stack>
 
-          <Avatar variant="soft" color="primary" size="lg">
+          <Avatar variant="soft" color="primary" size="md">
             <Typography level="body-md" color="violet">
               {/* {usersCount} */} {resourcesCount}
             </Typography>

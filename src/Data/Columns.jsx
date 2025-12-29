@@ -1951,21 +1951,22 @@ export const SUMMARY_RESOURCES = () => [
 export const SUMMARY_PEOPLE = () => [
   {
     id: "name",
-    label: "Employee Name and Job Position",
+    label: "Employee Name/Job Position",
     align: "left",
     width: "250px",
     render: (row) => {
       const { user, designation } = row;
-      const employeeName = user?.name || "-";
-      const jobPosition = designation?.name || user?.designation_name || "-";
+      const employeeName = user?.name;
+      const jobPosition = designation?.name || user?.designation_name;
 
       return (
         <>
           <Typography level="title-sm">
-            {employeeName || "-"} {/* show name or '-' if missing */}
+            {employeeName ? employeeName : jobPosition}{" "}
           </Typography>
           <Typography level="body-sm" sx={{ color: grey[600] }}>
-            {jobPosition || "Position"} {/* show job position or 'Position' */}
+            {employeeName ? jobPosition : ""}{" "}
+            {/* show job position or 'Position' */}
           </Typography>
         </>
       );
