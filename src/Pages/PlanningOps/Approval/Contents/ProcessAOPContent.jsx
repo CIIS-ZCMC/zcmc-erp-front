@@ -34,10 +34,9 @@ const ProcessAOPContent = () => {
 
   const { user } = useAuth();
 
-  const timeline = approvalTimeline?.some(
-    (item) => item[0]?.approver_user?.id === user?.id && item.status === "approved"
+  const canProcess = approvalTimeline?.some(
+    (item) => item.approver_user?.id === user?.id && item.status === "submitted"
   );
-
   // STATE
   const [processData, setProcessData] = useState({ action: "approved" });
   const [disabledProcessRequest, setDisabledProcessRequest] = useState(true);
@@ -96,8 +95,8 @@ const ProcessAOPContent = () => {
           description: isMCC
             ? `The AOP request has been successfully ${processData.action}. All parties involved will be notified of this update.`
             : processData.action === "returned"
-              ? `The request has been returned to the requesting party for necessary revisions. They will be notified of your remarks and required changes.`
-              : `Everyone can now see the changes you’ve made. The request is now ready for processing of the next approving body (${getNextOffice()}).`, //CHECK THIS IT DISPLAYS UNDEFINED ONCE THE BUDGET AND MCC APPPROVES
+            ? `The request has been returned to the requesting party for necessary revisions. They will be notified of your remarks and required changes.`
+            : `Everyone can now see the changes you’ve made. The request is now ready for processing of the next approving body (${getNextOffice()}).`, //CHECK THIS IT DISPLAYS UNDEFINED ONCE THE BUDGET AND MCC APPPROVES
         };
       } else {
         data = {
@@ -121,8 +120,8 @@ const ProcessAOPContent = () => {
   };
 
   useEffect(() => {
-    setDisabledProcessRequest(timeline);
-  }, [timeline]);
+    setDisabledProcessRequest(!canProcess);
+  }, [canProcess]);
   return (
     <Fragment>
       <ButtonComponent
