@@ -14,32 +14,30 @@ const chartSetting = {
   margin: { left: 0 },
 };
 
-export const approvalTurnaroundDataset = [
-  { level: "Planning Office", avgDays: 12 },
-  { level: "Division Chief", avgDays: 7 },
-  { level: "Medical Center Chief", avgDays: 14 },
-];
-
 export const daysFormatter = (value) => `${value} days`;
 
-const BAR_COLORS = ["#003F5C", "#2F4B7C", "#00A0E3"];
-
-export default function VerticalBars({ orientation = "vertical", isLoading }) {
+export default function VerticalBars({
+  orientation = "vertical",
+  isLoading,
+  dataset = [],
+  dataKey = "avgDays",
+}) {
   return (
     <>
       {isLoading ? (
         <ChartSkeleton />
       ) : (
         <BarChart
-          dataset={approvalTurnaroundDataset}
+          dataset={dataset}
           borderRadius={20}
           series={[
             {
-              dataKey: "avgDays",
+              dataKey: dataKey,
               color: "#003F5C",
               valueFormatter: daysFormatter,
             },
           ]}
+          xAxis={[{ dataKey: "approver" }]}
           height={400}
           {...chartSetting}
         />

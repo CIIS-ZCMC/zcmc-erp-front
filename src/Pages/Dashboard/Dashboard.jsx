@@ -188,7 +188,7 @@ function Dashboard() {
               />
               <DashboardStatCard
                 icon={<AccessTime />}
-                value={"7 Days"}
+                value={approverDashboard?.average_turnaround_time + " days"}
                 gradient={`linear-gradient(to right, #99DCFF , #CCEEFF)`}
                 textColor={blue[800]}
                 iconColor={"primary"}
@@ -229,7 +229,11 @@ function Dashboard() {
               title={"Approval Turnaround Time"}
               description={"Average processing days per approval level"}
             >
-              <VerticalBars isLoading={isLoading} />
+              <VerticalBars
+                isLoading={isLoading}
+                dataset={approverDashboard?.average_turnaround_approver}
+                dataKey="avr_turnaround"
+              />
             </ContainerComponent>
           </Grid>
           <Grid xs={12} md={4} lg={4}>
