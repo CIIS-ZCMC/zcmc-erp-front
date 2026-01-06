@@ -30,7 +30,7 @@ export const StatCardSkeleton = () => (
 export const ChartSkeleton = () => (
   <Card variant="soft" sx={{ p: 2 }}>
     <Skeleton width="40%" />
-    <Skeleton variant="rectangular" height={220} sx={{ mt: 2 }} />
+    <Skeleton variant="rectangular" height={300} sx={{ mt: 2 }} />
   </Card>
 );
 

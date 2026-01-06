@@ -112,13 +112,16 @@ function Dashboard() {
                 value={approverDashboard?.approved_applications}
                 label="Approved"
                 subLabel={
-                  <Typography
-                    level="body-xs"
-                    color={"success"}
-                    sx={{ opacity: 0.8, mt: 0.5 }}
-                  >
-                    ↑ +5 since yesterday
-                  </Typography>
+                  approverDashboard?.approved_since_yesterday > 0 && (
+                    <Typography
+                      level="body-xs"
+                      color={"success"}
+                      sx={{ opacity: 0.8, mt: 0.5 }}
+                    >
+                      ↑ {approverDashboard?.approved_since_yesterday} since
+                      yesterday
+                    </Typography>
+                  )
                 }
                 iconColor="success"
                 subTxtcolor={"success"}
@@ -130,13 +133,16 @@ function Dashboard() {
                 value={approverDashboard?.pending_applications}
                 label="Pending Review"
                 subLabel={
-                  <Typography
-                    level="body-xs"
-                    color={"danger"}
-                    sx={{ opacity: 0.8, mt: 0.5 }}
-                  >
-                    ↑ +5 since yesterday
-                  </Typography>
+                  approverDashboard?.pending_since_yesterday > 0 && (
+                    <Typography
+                      level="body-xs"
+                      color={"danger"}
+                      sx={{ opacity: 0.8, mt: 0.5 }}
+                    >
+                      ↑ {approverDashboard?.pending_since_yesterday} since
+                      yesterday
+                    </Typography>
+                  )
                 }
                 iconColor="primary"
                 isLoading={isLoading}
@@ -164,7 +170,7 @@ function Dashboard() {
             <Stack spacing={2}>
               <DashboardStatCard
                 icon={<TrendingUp />}
-                value={"60%"}
+                value={approverDashboard?.completion_rate + "%"}
                 gradient={`linear-gradient(to right, #C7EBC9 , #E2FFE3 )`}
                 iconColor={"success"}
                 textColor={green[800]}

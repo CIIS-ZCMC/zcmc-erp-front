@@ -40,6 +40,7 @@ import SelectComponent from "@Components/Form/YearSelectComponent";
 
 import useAOPStore from "../../../Store/AOPStore";
 import useAOPHook from "../../../Hooks/AOP/AOPHook";
+import { nextYear } from "../../../Utils/Functions";
 
 const AOPApproval = () => {
   const navigate = useNavigate();
@@ -64,7 +65,7 @@ const AOPApproval = () => {
   // STATES
   const [openTimelineModal, setOpenTimelineModal] = useState(false);
   const [index, setIndex] = useState(8);
-  const [year, setYear] = useState(new Date().getFullYear()?.toString());
+  const [year, setYear] = useState(nextYear);
   const [search, setSearch] = useState(null);
   const [pageLoading, setPageLoading] = useState("");
   const [isFetchLoading, setIsFetchLoading] = useState(false);
@@ -73,7 +74,7 @@ const AOPApproval = () => {
   const handleClickCard = (id, area_code) => {
     setPageLoading(true);
 
-    getAOPApprovalTimeline(id, () => { });
+    getAOPApprovalTimeline(id, () => {});
     getAOPApplicationById(id, () => {
       setPageLoading(false);
       navigate(`/aop-approval/objectives/${id}`);
@@ -112,7 +113,7 @@ const AOPApproval = () => {
 
     const params = {
       search: search,
-      year: next_year_included,
+      year: year,
       status_id: index,
     };
 
@@ -130,7 +131,7 @@ const AOPApproval = () => {
     <Fragment>
       <Stack gap={3}>
         <PageTitle
-          title={AOP_CONSTANTS?.APPLICATION_TITLE}
+          title={AOP_CONSTANTS?.APPLICATION_TITLE + " " + year}
           description={AOP_CONSTANTS?.AOP_REQUEST_SUBHEADING}
         />
 
@@ -159,13 +160,13 @@ const AOPApproval = () => {
                 value={search}
               />
               <Stack direction={"row"} gap={2} alignItems={"center"}>
-                {next_year_included && (
+                {years?.length > 0 && (
                   <YearSelectorComponent
                     width="auto"
                     label={"Select year"}
                     setValue={setYear}
                     options={years}
-                    value={{ year: next_year_included }}
+                    value={{ year }}
                   />
                 )}
 
@@ -192,7 +193,7 @@ const AOPApproval = () => {
                   alignItems={"center"}
                   justifyContent={"center"}
                   width="100%"
-                // minHeight={contentMaxHeight}
+                  // minHeight={contentMaxHeight}
                 >
                   <ThreeDots
                     visible={true}
