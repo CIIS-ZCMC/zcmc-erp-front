@@ -28,11 +28,11 @@ const useCategoryHooks = create((set, get) => ({
     set({ currentPage: page });
   },
 
-  getPaginatedCategories: async ({ per_page = 15, callBack } = {}) => {
+  getPaginatedCategories: async ({ page, per_page = 15, callBack } = {}) => {
     const { currentPage, search_Query } = get();
 
     const params = {
-      page: currentPage,
+      page,
       per_page,
     };
 

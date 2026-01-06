@@ -21,11 +21,11 @@ const useLibItemHook = create((set, get) => ({
     specifications: [],
   },
 
-  getItems: async ({ per_page = 15, callBack } = {}) => {
+  getItems: async ({ page = 1, per_page = 10, callBack } = {}) => {
     const { currentPage, search_Query } = get();
 
     const params = {
-      page: currentPage,
+      page: page,
       per_page,
     };
 

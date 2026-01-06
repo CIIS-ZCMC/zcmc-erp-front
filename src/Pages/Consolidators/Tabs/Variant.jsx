@@ -9,6 +9,7 @@ import SearchBarComponentv2 from "../../../Components/SearchBarWithdeBounce";
 import { Stack } from "@mui/material";
 import ConfirmationModalComponent from "../../../Components/Common/Dialog/ConfirmationModalComponent";
 import usePinHook from "../../../Hooks/PinHook";
+import ExpandableTable from "@Components/Common/Table/ExpandableTable";
 
 export const Variant = () => {
   const {
@@ -78,13 +79,10 @@ export const Variant = () => {
         <SearchBarComponentv2 value={search} setValue={setSearch} />
       </Stack>
 
-      <ScrollableTableComponent
+      <ExpandableTable
         isLoading={loading}
-        data={transformData(terminology)}
+        rows={transformData(terminology)}
         columns={variantCols(setUpdateType, setDeleteType)}
-        pageSize={15}
-        search={search}
-        fieldsToSearch={["name", "code", "description"]}
       />
 
       {/* {openUpdate && (

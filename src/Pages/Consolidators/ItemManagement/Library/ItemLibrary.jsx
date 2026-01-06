@@ -16,6 +16,7 @@ import ModalComponent from "../../../../Components/Common/Dialog/ModalComponent"
 import InputComponent from "../../../../Components/Form/InputComponent";
 import AutocompleteComponent from "../../../../Components/Form/AutocompleteComponent";
 import TextareaComponent from "../../../../Components/Form/TextareaComponent";
+import BoxComponent from "@Components/Common/Card/BoxComponent";
 
 const ItemLibrary = () => {
   const location = useLocation();
@@ -216,10 +217,9 @@ const ItemLibrary = () => {
   const { openModal, setOpenModal, successDialog, setSuccessDialog } =
     useModalHook();
 
-
   useEffect(() => {
-    console.log('index:', index)
-  }, [index])
+    console.log("index:", index);
+  }, [index]);
 
   return (
     <Fragment>
@@ -230,40 +230,41 @@ const ItemLibrary = () => {
         description={LIBRARY_CONSTANTS.LIBRARY_SUBTITLE}
       />
 
-      <Box sx={{ marginTop: "40px" }}>
-        <ContainerComponent
-          title={LIBRARY_CONSTANTS.LIBRARY_HEADER}
-          description={LIBRARY_CONSTANTS.LIBRARY_SUBHEADER}
-          // sx={{ mt: 3 }}
-          actions={
-            <Stack direction={"row"} gap={2}>
-              <ButtonComponent
-                label={"Go to requests"}
-                variant={"outlined"}
-                endDecorator={<ExternalLink />}
-                size={"sm"}
-              />
-              <ButtonComponent
-                label={"New record"}
-                variant={"solid"}
-                size={"sm"}
-                onClick={() => {
-                  setOpenNew(true);
-                }}
-              />
-            </Stack>
-          }
-        >
-          <TabComponent
-            tabs={libaryTabs}
-            index={index}
-            handleTabChange={handleTabChange}
-          />
+      <BoxComponent
+        bgColor={"#F9FAFB"}
+        my={2}
+        display={"flex"}
+        justifyContent={"space-between"}
+        alignItems={"flex-start"}
+      >
+        <Stack>
+          <Typography level="body-md" sx={{ fontWeight: 600 }}>
+            Item Information Library
+          </Typography>
+          <Typography level="body-xs">
+            Manage the master library for procurement items, classifications,
+            categories, and variants. This serves as the central repository for
+            all item-related information used across the AOP and PPMP.{" "}
+          </Typography>
+        </Stack>
+        {/* 
+        <ButtonComponent
+          label={"Go to Library"}
+          variant={"outlined"}
+          startDecorator={<ArrowOutwardOutlined />}
+          size={"sm"}
+          color="primary"
+        /> */}
+      </BoxComponent>
+      <Stack spacing={2}>
+        <TabComponent
+          tabs={libaryTabs}
+          index={index}
+          handleTabChange={handleTabChange}
+        />
 
-          <br />
-          <Outlet />
-        </ContainerComponent>
-      </Box>
+        <Outlet />
+      </Stack>
 
       {openNew && (
         <ModalComponent
@@ -275,19 +276,19 @@ const ItemLibrary = () => {
             index === ""
               ? "Create New Item"
               : index === "classification"
-                ? "Add New Classification"
-                : index === "category"
-                  ? "Add New Category"
-                  : "Add New Variant"
+              ? "Add New Classification"
+              : index === "category"
+              ? "Add New Category"
+              : "Add New Variant"
           }
           description={
             index === ""
               ? "Fill-in basic identification of the item you wish to add to the item library."
               : index === "classification"
-                ? "Add a new classification to the library."
-                : index === "category"
-                  ? "Add a new category to the library."
-                  : "Add a new variant to the library."
+              ? "Add a new classification to the library."
+              : index === "category"
+              ? "Add a new category to the library."
+              : "Add a new variant to the library."
           }
           handleClose={() => {
             setOpenNew(false);

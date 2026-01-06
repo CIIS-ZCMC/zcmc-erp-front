@@ -37,6 +37,8 @@ import {
   WarningOutlined,
   HourglassEmpty,
   X,
+  EditOutlined,
+  ArchiveOutlined,
 } from "@mui/icons-material";
 import { grey, red } from "@mui/material/colors";
 import ButtonComponent from "@Components/Common/ButtonComponent";
@@ -917,63 +919,55 @@ export const PPMP_VIEW_HEADER = [
 ];
 
 export const variantCols = (updateCallBack, delCallback) => [
-  { field: "id", name: "Row #", align: "center", width: "30px" },
-  { field: "name", name: "System", width: 200, align: "left" },
-  { field: "code", name: "Code", width: 200, align: "left" },
+  { key: "name", label: "System", align: "left" },
+  { key: "code", label: "Code", align: "left" },
   {
-    field: "created_at",
-    name: "Created at",
-    width: 100,
+    key: "created_at",
+    label: "Created on",
     align: "left",
     render: (params) => {
-      return moment(params.created_at).format("L");
+      return moment(params.created_at).format("LL");
     },
   },
   {
-    field: "updated_at",
-    name: "Updated at",
-    width: 100,
+    key: "updated_at",
+    label: "Updated on",
     align: "left",
     render: (params) => {
-      return moment(params.created_at).format("L");
+      return moment(params.created_at).format("LL");
     },
   },
   {
-    field: "action",
-    name: "Actions",
-    position: "sticky",
-    width: "100px",
-    right: 0,
+    key: "action",
+    label: "Actions",
+
     align: "center",
     render: (params) => {
       return (
         <>
           <Stack
             direction="row"
-            sx={{ justifyContent: "space-around", alignItems: "center" }}
+            spacing={2}
+            sx={{ justifyContent: "center", alignItems: "center" }}
           >
-            <Link
+            <Chip
               onClick={() => updateCallBack(params)}
               size="md"
-              variant="plain"
-              color="primary"
-              underline="hover"
-              fontSize={14}
-              endDecorator={<IoOpenOutline />}
+              variant="soft"
+              color="neutral"
+              startDecorator={<EditOutlined />}
             >
-              Update
-            </Link>
-            <Link
+              Edit
+            </Chip>
+            <Chip
               onClick={() => delCallback(params)}
               size="md"
-              variant="plain"
-              color="danger"
-              underline="hover"
-              fontSize={14}
-              endDecorator={<IoOpenOutline />}
+              variant="soft"
+              color="neutral"
+              startDecorator={<ArchiveOutlined />}
             >
-              Delete
-            </Link>
+              Archive
+            </Chip>
           </Stack>
         </>
       );
@@ -982,64 +976,56 @@ export const variantCols = (updateCallBack, delCallback) => [
 ];
 
 export const categoryCols = (updateCallBack, delCallback) => [
-  { field: "id", name: "Row #", align: "center", width: "30px" },
-  { field: "code", name: "Code", width: 80, align: "left" },
-  { field: "name", name: "Category", width: 150, align: "left" },
-  { field: "description", name: "Description", width: 200, align: "left" },
+  { key: "name", label: "Category", align: "left" },
   {
-    field: "created_at",
-    name: "Created at",
-    width: 80,
+    key: "created_at",
+    label: "Created at",
+
     align: "left",
     render: (params) => {
-      return moment(params.created_at).format("L");
+      return moment(params.created_at).format("LL");
     },
   },
   {
-    field: "updated_at",
-    name: "Updated at",
-    width: 80,
+    key: "updated_at",
+    label: "Updated at",
+
     align: "left",
     render: (params) => {
-      return moment(params.created_at).format("L");
+      return moment(params.created_at).format("LL");
     },
   },
   {
-    field: "action",
-    name: "Actions",
-    position: "sticky",
-    width: "100px",
-    right: 0,
+    key: "action",
+    label: "Actions",
+
     align: "center",
     render: (params) => {
       return (
         <>
           <Stack
             direction="row"
-            sx={{ justifyContent: "space-around", alignItems: "center" }}
+            spacing={2}
+            sx={{ justifyContent: "center", alignItems: "center" }}
           >
-            <Link
+            <Chip
               onClick={() => updateCallBack(params)}
               size="md"
-              variant="plain"
-              color="primary"
-              underline="hover"
-              fontSize={14}
-              endDecorator={<IoOpenOutline />}
+              variant="soft"
+              color="neutral"
+              startDecorator={<EditOutlined />}
             >
-              Update
-            </Link>
-            <Link
+              Edit
+            </Chip>
+            <Chip
               onClick={() => delCallback(params)}
               size="md"
-              variant="plain"
-              color="danger"
-              underline="hover"
-              fontSize={14}
-              endDecorator={<IoOpenOutline />}
+              variant="soft"
+              color="neutral"
+              startDecorator={<ArchiveOutlined />}
             >
-              Delete
-            </Link>
+              Archive
+            </Chip>
           </Stack>
         </>
       );
@@ -1114,81 +1100,128 @@ export const classificationCols = (updateCallBack, delCallback) => [
 ];
 
 export const itemCols = (handleUpdate, handleDelete) => [
-  { field: "id", name: "Row #", align: "center", width: "20px" },
-  { field: "name", name: "Item name", width: 200, align: "left" },
   {
-    field: "classification",
-    name: "Classification",
-    width: 80,
+    key: "name",
+    label: "Item name",
     align: "left",
-  },
-  { field: "item_category", name: "Category", width: 60, align: "left" },
-  { field: "variant", name: "Variant", width: 90, align: "left" },
-  {
-    field: "unit",
-    name: "Unit of Measurement",
-    width: 60,
-    align: "left",
-  },
-  {
-    field: "estimated_budget",
-    name: "Estimated Budget",
-    width: 70,
-    align: "left",
+    width: "250px",
     render: (params) => {
       return (
         <>
-          <Typography>
-            {"\u20B1"} {params.estimated_budget.toLocaleString()}
+          <Typography
+            level="body-sm"
+            fontWeight={600}
+            sx={{ color: grey[800] }}
+          >
+            {params.name}
+          </Typography>
+          <Typography level="body-sm">{params.unit}</Typography>
+        </>
+      );
+    },
+  },
+  {
+    key: "classification",
+    label: "Classification & Category",
+    align: "left",
+    width: "150px",
+    render: (row) => (
+      <>
+        <Typography level="body-sm" fontWeight={600}>
+          {row?.classification}
+        </Typography>
+        <Typography
+          level={row?.category && "body-sm"}
+          sx={{
+            fontSize: row?.classification && 13,
+            color: row?.classification ? grey[600] : grey[800],
+          }}
+          fontWeight={600}
+        >
+          {row?.category}
+        </Typography>
+      </>
+    ),
+  },
+  {
+    key: "estimated_budget",
+    label: "Estimated Budget",
+    width: "100px",
+    render: (params) => {
+      return (
+        <>
+          <Typography level="body-sm">
+            {formatPeso(params.estimated_budget)}
           </Typography>
         </>
       );
     },
   },
   {
-    field: "action",
-    name: "Actions",
-    position: "sticky",
+    key: "created_on",
+    label: "Created on",
     width: "100px",
-    right: 0,
+    align: "left",
+    render: (row) => (
+      <>
+        <Typography level="body-xs">
+          {moment(row.created_at).format("LL")}
+        </Typography>
+      </>
+    ),
+  },
+  {
+    key: "terminology",
+    label: "Variant",
+    width: "100px",
+    align: "left",
+    render: (row) => (
+      <>
+        <Chip
+          color="primary"
+          size="md"
+          startDecorator={<Circle sx={{ fontSize: 8 }} />}
+        >
+          {row.terminology}
+        </Chip>
+      </>
+    ),
+  },
+  {
+    key: "action",
+    label: "Actions",
     align: "center",
     render: (params) => {
       return (
         <>
           <Stack
             direction="row"
-            sx={{
-              justifyContent: "space-between",
-              alignItems: "center",
-              px: 1,
-            }}
+            spacing={2}
+            alignItems="center"
+            justifyContent={"center"}
           >
-            <Link
+            <Chip
               onClick={() => {
                 handleUpdate(params);
               }}
               size="md"
-              variant="plain"
-              color="primary"
-              underline="hover"
-              fontSize={14}
-              endDecorator={<IoOpenOutline />}
+              variant="soft"
+              color="neutral"
+              startDecorator={<EditOutlined />}
             >
               Update
-            </Link>
-            <Link
+            </Chip>
+            <Chip
               onClick={() => {
                 handleDelete(params);
               }}
               size="md"
-              variant="plain"
-              color="danger"
-              underline="hover"
-              fontSize={14}
-              endDecorator={<IoOpenOutline />}
+              variant="soft"
+              color="neutral"
+              startDecorator={<DeleteOutlineOutlined />}
             >
               Delete
-            </Link>
+            </Chip>
           </Stack>
         </>
       );

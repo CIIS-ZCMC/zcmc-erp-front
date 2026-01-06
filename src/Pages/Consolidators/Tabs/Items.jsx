@@ -13,6 +13,10 @@ import InputComponent from "../../../Components/Form/InputComponent";
 import { handleChangeInput } from "../../../Utils/HandleInput";
 import ConfirmationModalComponent from "../../../Components/Common/Dialog/ConfirmationModalComponent";
 import usePinHook from "../../../Hooks/PinHook";
+import ExpandableTable from "@Components/Common/Table/ExpandableTable";
+import SearchWithSuggestions from "@Components/SearchWithSuggestions";
+import ButtonComponent from "@Components/Common/ButtonComponent";
+import { Add } from "@mui/icons-material";
 
 export const Items = () => {
   const { openModal, setOpenModal, setConfirmationModal, closeConfirmation } =
@@ -40,6 +44,7 @@ export const Items = () => {
     name: "",
     estimated_budget: "",
   });
+  const [page, setPage] = useState(1);
 
   const handleUpdate = (data) => {
     resetPin;
@@ -75,28 +80,18 @@ export const Items = () => {
     setOpenDel(false);
   };
 
-  const data =
-    Items.map((row) => ({
-      id: row.id,
-      name: row.name,
-      classification: row.classification,
-      item_category: row.category,
-      variant: row.variant,
-      unit: row.item_unit.name,
-      estimated_budget: row.estimated_budget,
-    })) || [];
-
   useEffect(() => {
     setLoading(true);
     getItems({
-      per_page: 15,
+      page: page,
+      per_page: 10,
       search: search_Query, // Pass the current search query
       callBack: (status, message) => {
         setLoading(false);
         console.log("Response:", status, message);
       },
     });
-  }, [currentPage, search_Query]);
+  }, [page, search_Query]);
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -117,21 +112,39 @@ export const Items = () => {
 
   return (
     <Fragment>
-      <ServerTableComponent
-        data={data}
+      <Stack
+        direction={"row"}
+        alignItems={"center"}
+        justifyContent={"space-between"}
+      >
+        <Stack>
+          <Typography level="body-md" fontWeight={600}>
+            Items
+          </Typography>
+          <Typography level="body-sm">
+            Manage all procurement items in your system
+          </Typography>
+        </Stack>
+        <Stack direction={"row"} gap={1}>
+          <SearchWithSuggestions />
+          <ButtonComponent label={"Add New Item"} startDecorator={<Add />} />
+        </Stack>
+      </Stack>
+      <ExpandableTable
+        rows={Items}
         isLoading={loading}
         columns={itemCols(handleUpdate, handleDelete)}
-        pageSize={pagination?.per_page}
-        onPageChange={setCurrentPage}
-        paginationMeta={pagination}
-        stripe="even"
-        withCount={pagination?.total}
-        fieldsToSearch={["name", "classification", "item_category"]}
-        search={search_Query}
-        setSearch={setSearchQuery}
-        bordered
-        hoverRow
-        stickLast
+        currentPage={pagination.current_page}
+        totalPages={pagination.last_page}
+        onNextPage={() => {
+          if (page < pagination?.last_page) setPage(page + 1);
+        }}
+        onPrevPage={() => {
+          if (page > 1) setPage(page - 1);
+        }}
+        totalRows={pagination.total}
+        stickyFooter
+        height="60vh"
       />
       {openUpdate && (
         <ModalComponent
@@ -176,8 +189,8 @@ export const Items = () => {
                   label={"Authorization PIN"}
                   type="password"
                   placeholder={"Enter your authorization PIN"}
-                  value={pin} 
-                  setValue={setPin}                  
+                  value={pin}
+                  setValue={setPin}
                   helperText={
                     "Confirm you action by typing-in your authorization PIN."
                   }

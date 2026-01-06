@@ -169,7 +169,6 @@ const AOPApproval = () => {
                     value={{ year }}
                   />
                 )}
-
                 <Link fontSize={13} mt={3} mr={1}>
                   Clear filters
                 </Link>

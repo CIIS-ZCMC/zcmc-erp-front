@@ -15,6 +15,7 @@ import { ThreeDots } from "react-loader-spinner";
 import get from "lodash.get";
 import InputComponent from "../../Form/InputComponent";
 import SearchBarComponentv2 from "../../SearchBarWithdeBounce";
+import { grey } from "@mui/material/colors";
 
 function ServerTableComponent({
   data = [],
@@ -42,43 +43,21 @@ function ServerTableComponent({
         </Box>
       </Stack>
       <Sheet
-        variant="outlined"
         sx={() => ({
-          "--TableCell-height": "40px",
-          "--TableHeader-height": "calc(1 * var(--TableCell-height))",
-          "--Table-firstColumnWidth": columns[0]?.width, //set the width of the first column in px
-          "--Table-lastColumnWidth": lastColumnWidth, //set the width of the first column in px
-          "--TableRow-stripeBackground": "rgba(0 0 0 / 0.04)",
           "--TableRow-hoverBackground": "rgba(0 0 0 / 0.08)",
-          overflow: "auto",
-          backgroundRepeat: "no-repeat",
-          backgroundAttachment: "local, local, scroll, scroll",
-          backgroundPosition:
-            "var(--Table-firstColumnWidth) var(--TableCell-height), calc(100% - var(--Table-lastColumnWidth)) var(--TableCell-height), var(--Table-firstColumnWidth) var(--TableCell-height), calc(100% - var(--Table-lastColumnWidth)) var(--TableCell-height)",
-          backgroundColor: "background.surface",
+          borderRadius: "md",
+          display: "flex",
+          flexDirection: "column",
+          height: "100%", // 🔑 fill available space
+          minHeight: 0, // 🔑 allow flex scrolling
         })}
       >
         <Table
-          borderAxis="bothBetween"
-          stripe={stripe}
           hoverRow
           sx={{
-            tableLayout: "fixed",
-            "& tr > *:first-child": {
-              position: "sticky",
-              zIndex: 10,
-              left: 0,
-              boxShadow: "1px 0 var(--TableCell-borderColor)",
-              bgcolor: "background.surface",
-            },
-            ...(stickLast && {
-              "& tr > *:last-child": {
-                position: "sticky",
-                zIndex: 10,
-                right: 0,
-                bgcolor: "var(--TableCell-headBackground)",
-              },
-            }),
+            "--TableCell-headBackground": "#E5E5E5",
+
+            "--TableCell-borderColor": grey[200],
           }}
         >
           {data?.length !== 0 ? (

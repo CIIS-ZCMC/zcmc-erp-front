@@ -9,13 +9,7 @@ const PaginationComponent = ({
   totalRows,
 }) => {
   return (
-    <Box
-      mt={4}
-      display="flex"
-      alignItems="center"
-      gap={1}
-      justifyContent={"end"}
-    >
+    <Box display="flex" alignItems="center" gap={1} justifyContent={"end"}>
       <Box mr={2}>
         Page <b>{currentPage}</b> - <b>{totalPages}</b> of <b>{totalRows}</b>{" "}
         items

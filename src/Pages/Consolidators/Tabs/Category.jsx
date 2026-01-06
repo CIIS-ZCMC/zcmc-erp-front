@@ -1,7 +1,7 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { categoryCols, classificationCols } from "../../../Data/Columns";
 import ScrollableTableComponent from "../../../Components/Common/Table/ScrollableTableComponent";
-import { Divider, Stack, Typography } from "@mui/joy";
+import { Divider, Stack, Switch, Typography } from "@mui/joy";
 import useModalHook from "../../../Hooks/ModalHook";
 import useCategoryHooks from "../../../Hooks/Libraries/LibCategoryHooks";
 import ServerTableComponent from "../../../Components/Common/Table/ServerTableComponent";
@@ -10,6 +10,8 @@ import InputComponent from "../../../Components/Form/InputComponent";
 import TextareaComponent from "../../../Components/Form/TextareaComponent";
 import ConfirmationModalComponent from "../../../Components/Common/Dialog/ConfirmationModalComponent";
 import usePinHook from "../../../Hooks/PinHook";
+import ExpandableTable from "@Components/Common/Table/ExpandableTable";
+import StatusSwitch from "@Components/StatusSwitchComponent";
 
 export const Category = () => {
   const {
@@ -34,6 +36,8 @@ export const Category = () => {
     name: "",
     description: "",
   });
+  const [page, setPage] = useState(1);
+  const [active, setActive] = useState(true);
 
   const setUpdateType = (data) => {
     setOpenUpdate(true);
@@ -69,6 +73,7 @@ export const Category = () => {
   useEffect(() => {
     setLoading(true);
     getPaginatedCategories({
+      page,
       per_page: 15,
       search: search_Query, // Pass the current search query
       callBack: (status, message) => {
@@ -76,7 +81,7 @@ export const Category = () => {
         console.log("Response:", status, message);
       },
     });
-  }, [currentPage, search_Query]);
+  }, [page, search_Query]);
 
   useEffect(() => {
     const handler = setTimeout(() => {
@@ -97,23 +102,30 @@ export const Category = () => {
 
   return (
     <Fragment>
-      <ServerTableComponent
-        data={transformData(categories)}
+      <Stack
+        direction={"row"}
+        spacing={2}
+        alignItems={"center"}
+        justifyContent={"flex-start"}
+      >
+        <Typography level="body-sm">View:</Typography>
+        <StatusSwitch checked={active} onChange={setActive} />
+      </Stack>
+      <ExpandableTable
+        rows={transformData(categories)}
         isLoading={loading}
         columns={categoryCols(setUpdateType, setDeleteType)}
-        pageSize={pagination?.pagination?.per_page || 20}
-        currentPage={pagination?.current_page}
-        totalPages={pagination?.total}
-        onPageChange={setCurrentPage}
-        paginationMeta={pagination}
-        search={search_Query}
-        setSearch={setSearchQuery}
-        stripe="even"
-        withCount={pagination?.total}
-        fieldsToSearch={["name", "code", "description"]}
-        bordered
-        hoverRow
-        stickLast
+        currentPage={pagination.current_page}
+        totalPages={pagination.last_page}
+        onNextPage={() => {
+          if (page < pagination?.last_page) setPage(page + 1);
+        }}
+        onPrevPage={() => {
+          if (page > 1) setPage(page - 1);
+        }}
+        totalRows={pagination.total}
+        stickyFooter
+        height="62vh"
       />
       {openUpdate && (
         <ModalComponent
