@@ -4,7 +4,7 @@ import { API } from "../../Data/constants";
 import { Typography } from "@mui/joy";
 
 const useClassificationHook = create((set, get) => ({
-  classi_dataTable: [],
+  classification_data: [],
   search_dataTable: [],
   search_Query: "",
   pagination: null,
@@ -24,37 +24,40 @@ const useClassificationHook = create((set, get) => ({
   setSelectedData: (data) => {
     set({ selectedData: data });
   },
-  getClassifications: ({ per_page = 15, callBack } = {}) => {
-    const { currentPage: page, search_Query: search } = get(); // 🔥 correctly access the current state
+  getClassifications: async ({ page = 1, per_page = 10, callBack } = {}) => {
+    const { currentPage, search_Query } = get();
 
     const params = {
       page: page,
-      per_page: 15, // Set the number of items per page
+      per_page,
     };
 
-    if (search && search.length > 1) {
-      params.search = search; // do NOT force page = 1 here
+    if (search_Query && search_Query.length > 1) {
+      params.search = search_Query;
     }
 
     read({
       url: API.ClASSIFICATION,
       params,
       success: (res) => {
-        const {
-          data: { data, meta, links, message, status },
-        } = res;
-
+        const { status, message, data, meta } = res;
+        console.log("Response:", data);
         set({
-          classi_dataTable: data,
-          pagination: meta,
-          links: links,
-          currentPage: meta.current_page,
-          totalPages: meta.last_page,
+          classification_data: data.data,
+          pagination: {
+            total: data?.meta?.pagination?.total,
+            per_page: data?.meta?.pagination?.per_page,
+            current_page: data?.meta?.pagination?.current_page,
+            last_page: data?.meta?.pagination?.last_page,
+          },
+          error: null,
         });
+
         if (callBack) callBack(status, message);
       },
     });
   },
+
   addClassification: (
     form,
     setLoading,

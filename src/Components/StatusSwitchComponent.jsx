@@ -53,7 +53,7 @@ export default function StatusSwitch({
       }}
       sx={{
         "--Switch-thumbSize": "17px",
-        "--Switch-trackWidth": "110px",
+        "--Switch-trackWidth": "100px",
         "--Switch-trackHeight": "26px",
 
         // Smooth thumb + track motion

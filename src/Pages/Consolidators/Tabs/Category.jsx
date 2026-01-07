@@ -12,6 +12,10 @@ import ConfirmationModalComponent from "../../../Components/Common/Dialog/Confir
 import usePinHook from "../../../Hooks/PinHook";
 import ExpandableTable from "@Components/Common/Table/ExpandableTable";
 import StatusSwitch from "@Components/StatusSwitchComponent";
+import SearchWithSuggestions from "@Components/SearchWithSuggestions";
+import ButtonComponent from "@Components/Common/ButtonComponent";
+import { AddOutlined } from "@mui/icons-material";
+import AuthorizationPinComponent from "@Components/AuthorizationPinComponent";
 
 export const Category = () => {
   const {
@@ -30,6 +34,7 @@ export const Category = () => {
   const { pin, setPin } = usePinHook();
   const { setOpenModal, setConfirmationModal } = useModalHook();
   const [loading, setLoading] = useState(false);
+  const [openNew, setOpenNew] = useState(false);
   const [openUpdate, setOpenUpdate] = useState(false);
   const [openDel, setOpenDel] = useState(false);
   const [updateData, setUpdateData] = useState({
@@ -104,29 +109,70 @@ export const Category = () => {
     <Fragment>
       <Stack
         direction={"row"}
-        spacing={2}
+        justifyContent={"space-between"}
         alignItems={"center"}
-        justifyContent={"flex-start"}
       >
-        <Typography level="body-sm">View:</Typography>
-        <StatusSwitch checked={active} onChange={setActive} />
+        <Stack
+          direction={"row"}
+          spacing={2}
+          alignItems={"center"}
+          justifyContent={"flex-start"}
+        >
+          <Typography level="body-sm">View:</Typography>
+          <StatusSwitch checked={active} onChange={setActive} />
+        </Stack>
+        <Stack direction={"row"} spacing={2} alignItems={"center"}>
+          <SearchWithSuggestions />
+          <ButtonComponent
+            label={"Add New Category"}
+            startDecorator={<AddOutlined />}
+            onClick={() => setOpenNew(true)}
+          />
+        </Stack>
       </Stack>
+
       <ExpandableTable
         rows={transformData(categories)}
         isLoading={loading}
         columns={categoryCols(setUpdateType, setDeleteType)}
-        currentPage={pagination.current_page}
-        totalPages={pagination.last_page}
+        currentPage={pagination?.current_page}
+        totalPages={pagination?.last_page}
         onNextPage={() => {
           if (page < pagination?.last_page) setPage(page + 1);
         }}
         onPrevPage={() => {
           if (page > 1) setPage(page - 1);
         }}
-        totalRows={pagination.total}
+        totalRows={pagination?.total}
         stickyFooter
         height="62vh"
       />
+      {openNew && (
+        <ModalComponent
+          title="Create a new category"
+          description={"Name your category to create it."}
+          isOpen={openNew}
+          handleClose={() => setOpenNew(false)}
+          content={
+            <>
+              <Stack mt={2}>
+                <InputComponent
+                  name={"category"}
+                  label={"Category Name"}
+                  helperText={
+                    "Use a specific and descriptive naming convention for best results."
+                  }
+                />
+                <Divider sx={{ mt: 3 }} />
+              </Stack>
+
+              <AuthorizationPinComponent />
+            </>
+          }
+          hasActionButtons
+          rightButtonLabel="Confirm and Save"
+        />
+      )}
       {openUpdate && (
         <ModalComponent
           title={`Update category: ${selectedData?.name}`}

@@ -1034,64 +1034,56 @@ export const categoryCols = (updateCallBack, delCallback) => [
 ];
 
 export const classificationCols = (updateCallBack, delCallback) => [
-  { field: "id", name: "Row #", align: "center", width: "30px" },
-  { field: "code", name: "Code", width: 100, align: "left" },
-  { field: "clName", name: "Classification", width: 200, align: "left" },
-  { field: "description", name: "Description", width: 250, align: "left" },
+  { key: "name", label: "Classification", align: "left" },
+  { key: "description", label: "Description", align: "left" },
   {
-    field: "created_at",
-    name: "Created at",
-    width: 80,
+    key: "created_at",
+    label: "Created at",
+
     align: "left",
     render: (params) => {
-      return moment(params.created_at).format("L");
+      return moment(params.created_at).format("LL");
     },
   },
   {
-    field: "updated_at",
-    name: "Updated at",
-    width: 80,
+    key: "updated_at",
+    label: "Updated at",
+
     align: "left",
     render: (params) => {
-      return moment(params.updated_at).format("L");
+      return moment(params.updated_at).format("LL");
     },
   },
   {
-    field: "action",
-    name: "Actions",
-    position: "sticky",
-    width: "100px",
-    right: 0,
+    key: "action",
+    label: "Actions",
     align: "center",
     render: (params) => {
       return (
         <>
           <Stack
             direction="row"
-            sx={{ justifyContent: "space-around", alignItems: "center" }}
+            spacing={2}
+            sx={{ justifyContent: "center", alignItems: "center" }}
           >
-            <Link
+            <Chip
               onClick={() => updateCallBack(params)}
               size="md"
-              variant="plain"
-              color="primary"
-              underline="hover"
-              fontSize={14}
-              endDecorator={<IoOpenOutline />}
+              variant="soft"
+              color="neutral"
+              startDecorator={<EditOutlined />}
             >
               Update
-            </Link>
-            <Link
+            </Chip>
+            <Chip
               onClick={() => delCallback(params)}
               size="md"
-              variant="plain"
-              color="danger"
-              underline="hover"
-              fontSize={14}
-              endDecorator={<IoOpenOutline />}
+              variant="soft"
+              color="neutral"
+              startDecorator={<ArchiveOutlined />}
             >
               Delete
-            </Link>
+            </Chip>
           </Stack>
         </>
       );

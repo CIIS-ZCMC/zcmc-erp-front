@@ -10,6 +10,11 @@ import { Stack } from "@mui/material";
 import ConfirmationModalComponent from "../../../Components/Common/Dialog/ConfirmationModalComponent";
 import usePinHook from "../../../Hooks/PinHook";
 import ExpandableTable from "@Components/Common/Table/ExpandableTable";
+import StatusSwitch from "@Components/StatusSwitchComponent";
+import SearchWithSuggestions from "@Components/SearchWithSuggestions";
+import ButtonComponent from "@Components/Common/ButtonComponent";
+import { AddOutlined } from "@mui/icons-material";
+import { Typography } from "@mui/joy";
 
 export const Variant = () => {
   const {
@@ -29,6 +34,8 @@ export const Variant = () => {
   const [loading, setLoading] = useState(false);
   const [openUpdate, setOpenUpdate] = useState(false);
   const [openDel, setOpenDel] = useState(false);
+  const [active, setActive] = useState(true);
+  const [page, setPage] = useState(1);
 
   const setUpdateType = (data) => {
     setOpenUpdate(true);
@@ -66,6 +73,7 @@ export const Variant = () => {
     setLoading(true);
     getTerminology({
       page: pagination.current_page,
+      per_page: 10,
       callBack: (status, message) => {
         console.log("Callback received:", status, message);
         setLoading(false);
@@ -75,14 +83,44 @@ export const Variant = () => {
 
   return (
     <Fragment>
-      <Stack mb={2} width="30%">
-        <SearchBarComponentv2 value={search} setValue={setSearch} />
+      <Stack
+        direction={"row"}
+        justifyContent={"space-between"}
+        alignItems={"center"}
+      >
+        <Stack
+          direction={"row"}
+          spacing={2}
+          alignItems={"center"}
+          justifyContent={"flex-start"}
+        >
+          <Typography level="body-sm">View:</Typography>
+          <StatusSwitch checked={active} onChange={setActive} />
+        </Stack>
+        <Stack direction={"row"} spacing={2} alignItems={"center"}>
+          <SearchWithSuggestions />
+          <ButtonComponent
+            label={"Add New Category"}
+            startDecorator={<AddOutlined />}
+          />
+        </Stack>
       </Stack>
 
       <ExpandableTable
         isLoading={loading}
         rows={transformData(terminology)}
         columns={variantCols(setUpdateType, setDeleteType)}
+        currentPage={pagination?.current_page}
+        totalPages={pagination?.last_page}
+        onNextPage={() => {
+          if (page < pagination?.last_page) setPage(page + 1);
+        }}
+        onPrevPage={() => {
+          if (page > 1) setPage(page - 1);
+        }}
+        totalRows={pagination?.total}
+        stickyFooter
+        height="60vh"
       />
 
       {/* {openUpdate && (
