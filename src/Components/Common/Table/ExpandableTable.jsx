@@ -20,6 +20,7 @@ export default function ExpandableTable({
   loading,
   stickyFooter = false,
   height,
+  newItemId,
 }) {
   const [openId, setOpenId] = useState(null);
   const [heights, setHeights] = useState({}); // store row heights
@@ -95,13 +96,14 @@ export default function ExpandableTable({
                   colSpan={columns.length}
                   style={{ textAlign: "center", padding: "40px 0" }}
                 >
-                  <NoResultComponent />
+                  <NoResultComponent size={"xs"} />
                 </td>
               </tr>
             ) : (
               rows?.map((row) => {
                 const id = getRowId(row);
                 const expanded = openId === id;
+                const isNew = id === newItemId;
 
                 return (
                   <React.Fragment key={id}>
@@ -116,8 +118,17 @@ export default function ExpandableTable({
                             width: col.width ?? "200px",
                             textAlign: col.align ?? "left",
                             cursor: col.expandTrigger ? "pointer" : "default",
-                            background: expanded && grey[100],
-                            borderBottom: expanded && "none",
+
+                            background: isNew
+                              ? "var(--joy-palette-primary-softBg)"
+                              : expanded
+                              ? grey[100]
+                              : undefined,
+
+                            borderBottom:
+                              expanded || isNew ? "none" : undefined,
+
+                            transition: "background-color 0.6s ease",
                           }}
                           onClick={() => col.expandTrigger && toggle(id)}
                         >

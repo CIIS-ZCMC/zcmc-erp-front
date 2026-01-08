@@ -10,11 +10,11 @@ import ConfirmationModalComponent from "../../Components/Common/Dialog/Confirmat
 import AlertDialogComponent from "../../Components/Common/Dialog/AlertDialogComponent";
 
 import ItemSummaryHeader from "./Item/ItemSummaryHeader";
-import ItemList from './Item/ItemList';
+import ItemList from "./Item/ItemList";
 import ItemCart from "./Item/ItemCart";
 import ItemModalContent from "./Item/ItemModalContent";
 
-import useItemsHook from "../../Hooks/ItemsHook";
+import useItemsHook from "../../Hooks/ItemManagementHook";
 import useResourceHook from "../../Hooks/ResourceHook";
 
 import { AOP_CONSTANTS } from "../../Data/constants";
@@ -46,7 +46,8 @@ const Items = () => {
     cancelResources,
   } = useResourceHook();
 
-  const { resources, setTotalCost, isItemSelectedInOtherActivity } = useResourceHook();
+  const { resources, setTotalCost, isItemSelectedInOtherActivity } =
+    useResourceHook();
   const { updateCost } = useActivitiesHook();
   const [displayedItems, setDisplayedItems] = useState([]);
 
@@ -63,15 +64,15 @@ const Items = () => {
   const [selectedItem, setSelectedItem] = useState(null);
   const [itemTotal, setItemTotal] = useState(null);
   const [quantity, setQuantity] = useState(1);
-  const [isLoading, setIsLoading] = useState(false)
+  const [isLoading, setIsLoading] = useState(false);
 
   const filteredCart =
     cart?.filter((item) => item.parentId === activityId) || [];
 
   useEffect(() => {
-    console.log('filtered cart', filteredCart)
+    console.log("filtered cart", filteredCart);
     // console.log('activity parent id', activityId)
-  }, [filteredCart])
+  }, [filteredCart]);
 
   const totalQty = filteredCart.reduce(
     (sum, item) => sum + item.aop_quantity,
@@ -84,32 +85,34 @@ const Items = () => {
   );
 
   useEffect(() => {
-    setTotalCost(totalPrice)
-  }, [totalPrice])
+    setTotalCost(totalPrice);
+  }, [totalPrice]);
 
   useEffect(() => {
-    setIsLoading(true)
+    setIsLoading(true);
     getItems((status, message, data) => {
-      setIsLoading(false)
+      setIsLoading(false);
       if (status !== 200) {
         console.error("Failed to fetch items:", message);
       }
     });
   }, []);
 
-  const filteredResources = resources.filter((item) => item.parentId === activityId)
+  const filteredResources = resources.filter(
+    (item) => item.parentId === activityId
+  );
 
   useEffect(() => {
     if (resources.length > 0) {
       filteredResources.map((resource) => {
         const exist = cart.find((item) => item.id === resource.item_id);
         if (!exist) {
-          const item = items.find((item) => item.id === resource.item_id)
+          const item = items.find((item) => item.id === resource.item_id);
           addResourceToCart(item, activityId, resource.quantity);
         }
-      })
+      });
     }
-  }, [resources])
+  }, [resources]);
 
   const handleOpenItemDialog = (item) => {
     setSelectedItem(item);
@@ -141,7 +144,6 @@ const Items = () => {
         state: {
           parentId: activityId,
           objectiveRowId: objectiveRowId,
-
         },
       }
     ); //navigate with activity row id
@@ -245,10 +247,7 @@ const Items = () => {
           </Box>
         }
       />
-
     </Fragment>
-
-
   );
 };
 

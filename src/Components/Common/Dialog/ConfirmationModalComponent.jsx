@@ -126,7 +126,7 @@ function ConfirmationModalComponent({
           <DialogActions>
             <Box
               sx={{
-                width: rightButtonAction ? "auto" : "100%",
+                width: rightButtonAction ? "100%" : "100%",
                 display: "flex",
                 gap: 1,
                 flexDirection: { xs: "column", sm: "row" },
@@ -137,7 +137,7 @@ function ConfirmationModalComponent({
                 label={leftButtonLabel}
                 onClick={leftButtonAction ?? closeConfirmation}
                 disabled={isLoading}
-                fullWidth={!rightButtonAction}
+                fullWidth={true}
                 color={btnColor}
               />
               {rightButtonAction && (
@@ -148,6 +148,7 @@ function ConfirmationModalComponent({
                   loadingLabel={rightButtonLoadingLabel}
                   disabled={rightButtonDisabled || isLoading}
                   color={btnColor}
+                  fullWidth={true}
                 />
               )}
             </Box>

@@ -1033,7 +1033,11 @@ export const categoryCols = (updateCallBack, delCallback) => [
   },
 ];
 
-export const classificationCols = (updateCallBack, delCallback) => [
+export const classificationCols = (
+  setSelectedData,
+  updateCallBack,
+  delCallback
+) => [
   { key: "name", label: "Classification", align: "left" },
   { key: "description", label: "Description", align: "left" },
   {
@@ -1067,7 +1071,10 @@ export const classificationCols = (updateCallBack, delCallback) => [
             sx={{ justifyContent: "center", alignItems: "center" }}
           >
             <Chip
-              onClick={() => updateCallBack(params)}
+              onClick={() => {
+                setSelectedData(params);
+                updateCallBack(params);
+              }}
               size="md"
               variant="soft"
               color="neutral"
@@ -1076,13 +1083,16 @@ export const classificationCols = (updateCallBack, delCallback) => [
               Update
             </Chip>
             <Chip
-              onClick={() => delCallback(params)}
+              onClick={() => {
+                setSelectedData(params);
+                delCallback(params);
+              }}
               size="md"
               variant="soft"
               color="neutral"
               startDecorator={<ArchiveOutlined />}
             >
-              Delete
+              Archive
             </Chip>
           </Stack>
         </>
@@ -1091,7 +1101,7 @@ export const classificationCols = (updateCallBack, delCallback) => [
   },
 ];
 
-export const itemCols = (handleUpdate, handleDelete) => [
+export const itemCols = (handleUpdate = () => {}, handleDelete = () => {}) => [
   {
     key: "name",
     label: "Item name",
@@ -1119,7 +1129,7 @@ export const itemCols = (handleUpdate, handleDelete) => [
     width: "150px",
     render: (row) => (
       <>
-        <Typography level="body-sm" fontWeight={600}>
+        <Typography level="body-sm" fontWeight={600} sx={{ color: grey[800] }}>
           {row?.classification}
         </Typography>
         <Typography
@@ -1128,7 +1138,7 @@ export const itemCols = (handleUpdate, handleDelete) => [
             fontSize: row?.classification && 13,
             color: row?.classification ? grey[600] : grey[800],
           }}
-          fontWeight={600}
+          fontWeight={row?.classification ? 500 : 600}
         >
           {row?.category}
         </Typography>

@@ -5,7 +5,7 @@ import ContainerComponent from "../../../Components/Common/ContainerComponent";
 import IconButtonComponent from "../../../Components/Common/IconButtonComponent";
 import { X } from "lucide-react";
 import ButtonComponent from "../../../Components/Common/ButtonComponent";
-import useItemsHook from "../../../Hooks/ItemsHook";
+import useItemsHook from "../../../Hooks/ItemManagementHook";
 import useModalHook from "../../../Hooks/ModalHook";
 import PageTitle from "@Components/Common/PageTitle";
 import AddToCartLayout from "@Components/Resources/AddToCartLayout";
@@ -27,7 +27,8 @@ function AddItems(props) {
   const { activity } = location.state || {};
   const isPPMP = true;
 
-  const { activities, getActivities, postPPMP, postItems, updatePPMP } = usePPMPHook();
+  const { activities, getActivities, postPPMP, postItems, updatePPMP } =
+    usePPMPHook();
   const { items, getItems, getSearchResults } = useItemsHook();
   const { getSearchSuggestions, suggestions } = useSearchHook();
   const { setAlertDialog, setConfirmationModal, closeAlertDialog } =

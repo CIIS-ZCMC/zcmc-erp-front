@@ -25,41 +25,42 @@ import {
 import AutocompleteComponent from "@Components/Form/AutocompleteComponent";
 import { Plus } from "lucide-react";
 import TabComponent from "@Components/Common/TabComponent";
-import useItemsHook from "../../../Hooks/ItemsHook";
+import useItemsHook from "../../../Hooks/ItemManagementHook";
 import handleSingleChangeAutcomplete from "../../../Utils/HandleAutocomplete";
 import { grey } from "@mui/material/colors";
 import AuthorizationPinComponent from "@Components/AuthorizationPinComponent";
+import useSearchHook from "../../../Hooks/SearchHook";
+import useSnackbarHook from "../../../Hooks/SnackbarHook";
 
 export const Items = () => {
-  const { openModal, setOpenModal, setConfirmationModal, closeConfirmation } =
-    useModalHook();
-  const { pin, setPin, resetPin } = usePinHook;
   const {
-    resetInput,
-    setUpdateData,
-    Items,
-    getItems,
-    pagination,
-    navLinks,
-    currentPage,
-    setCurrentPage,
-    setSearchQuery,
-    search_Query,
-    updateData,
-    updateItem,
-  } = useLibItemHook();
+    openModal,
+    setOpenModal,
+    setConfirmationModal,
+    closeConfirmation,
+    setAlertDialog,
+  } = useModalHook();
+  const { pin, setPin, resetPin } = usePinHook();
+  const { showSnack } = useSnackbarHook();
 
   const {
-    items,
     categories,
     classification,
     units,
     variants,
+    items,
+    newItemId,
+    pagination,
+    getItemsPaginated,
+    getSearchResults,
     getItemCategories,
     getItemClassification,
     getItemUnits,
     getVariantsByCategory,
+    postNewItem,
   } = useItemsHook();
+
+  const { getSearchSuggestions, suggestions } = useSearchHook();
 
   const [loading, setLoading] = useState(false);
   const [openUpdate, setOpenUpdate] = useState(false);
@@ -87,12 +88,6 @@ export const Items = () => {
     { name: "Specifications", value: "specs", icon: <Today /> },
   ];
 
-  const handleUpdate = (data) => {
-    resetPin;
-    setOpenUpdate(true);
-    setUpdateData(data);
-  };
-
   const update = () => {
     const formData = new FormData();
     formData.append("id", updatedData.id);
@@ -108,7 +103,6 @@ export const Items = () => {
   const handleDelete = (params) => {
     resetPin;
     setOpenDel(true);
-    setUpdateData(params);
     const data = {
       status: "error",
       title: `Delete item (${params?.name}) ?`,
@@ -121,6 +115,44 @@ export const Items = () => {
     setOpenDel(false);
   };
 
+  const addItem = () => {
+    const body = {
+      name: newItem.name,
+      estimated_budget: newItem.estimatedBudget,
+      item_unit_id: newItem.unitOfMeasurement.id,
+      item_category_id: newItem.category.id,
+      item_classification_id: newItem.classification.id,
+      terminology_category_id: newItem.variant.id ?? null, // depends on category
+      authorization_pin: pin,
+      market_researched: newItem.market_research_done,
+      specifications: newItem.specs
+        .filter((spec) => spec?.trim())
+        .map((spec) => ({
+          description: spec,
+        })),
+    };
+
+    postNewItem(body, (status, message, data) => {
+      if (status === 201) {
+        showSnack(200, "New item successfully added to library.");
+
+        setNewItem({
+          name: "",
+          classification: "",
+          category: "",
+          variant: "",
+          unitOfMeasurement: "",
+          estimatedBudget: "",
+          specs: ["", "", ""],
+          market_research_done: false,
+        });
+        setIndex("info");
+        setOpenNew(false);
+      } else {
+        showSnack(500, "Failed to add new item.");
+      }
+    });
+  };
   const addSpec = () => {
     setNewItem((prev) => ({
       ...prev,
@@ -180,25 +212,15 @@ export const Items = () => {
 
   useEffect(() => {
     setLoading(true);
-    getItems({
+    getItemsPaginated({
       page: page,
       per_page: 10,
-      search: search_Query, // Pass the current search query
       callBack: (status, message) => {
         setLoading(false);
         console.log("Response:", status, message);
       },
     });
-  }, [page, search_Query]);
-
-  useEffect(() => {
-    if (openUpdate && updateData) {
-      setUpdatedData({
-        name: updateData.name || "",
-        estimated_budget: updateData.estimated_budget || "",
-      });
-    }
-  }, [updateData, openUpdate]);
+  }, [page]);
 
   return (
     <Fragment>
@@ -216,7 +238,13 @@ export const Items = () => {
           </Typography>
         </Stack>
         <Stack direction={"row"} gap={1}>
-          <SearchWithSuggestions />
+          <SearchWithSuggestions
+            getSearchSuggestions={getSearchSuggestions}
+            getSearchResults={getSearchResults}
+            suggestions={suggestions}
+            getItems={getItemsPaginated}
+            onSelect={(item) => console.log("Selected item:", item)}
+          />
           <ButtonComponent
             label={"Add New Item"}
             startDecorator={<Add />}
@@ -225,9 +253,10 @@ export const Items = () => {
         </Stack>
       </Stack>
       <ExpandableTable
-        rows={Items}
+        rows={items}
         isLoading={loading}
-        columns={itemCols(handleUpdate, handleDelete)}
+        columns={itemCols()}
+        newItemId={newItemId} // 👈 ADD THIS
         currentPage={pagination?.current_page}
         totalPages={pagination?.last_page}
         onNextPage={() => {
@@ -246,6 +275,7 @@ export const Items = () => {
           isOpen={openNew}
           handleClose={() => setOpenNew(false)}
           minWidth={"500px"}
+          rightButtonAction={() => addItem()}
           content={
             <>
               <TabComponent
@@ -338,8 +368,8 @@ export const Items = () => {
                         value={newItem.estimatedBudget}
                         handleInput={(e) =>
                           handleChangeInput(
-                            "estimated_budget",
-                            setUpdatedData,
+                            "estimatedBudget",
+                            setNewItem,
                             e.target.value
                           )
                         }
@@ -413,7 +443,7 @@ export const Items = () => {
           rightButtonLabel="Confirm and Save"
         />
       )}
-      {openUpdate && (
+      {/* {openUpdate && (
         <ModalComponent
           title={
             <Typography>
@@ -479,7 +509,7 @@ export const Items = () => {
           withAuthPin
           setAuthPin={setPin}
         />
-      )}
+      )} */}
     </Fragment>
   );
 };

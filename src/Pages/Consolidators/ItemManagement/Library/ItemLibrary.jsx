@@ -60,6 +60,12 @@ const ItemLibrary = () => {
       <PageTitle
         title={LIBRARY_CONSTANTS.LIBRARY_TITLE}
         description={LIBRARY_CONSTANTS.LIBRARY_SUBTITLE}
+        items={[
+          {
+            label: "Item Information Library",
+            current: true,
+          },
+        ]}
       />
 
       <BoxComponent

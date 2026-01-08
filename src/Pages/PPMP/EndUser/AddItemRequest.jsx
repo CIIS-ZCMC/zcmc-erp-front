@@ -14,7 +14,7 @@ import {
   Typography,
 } from "@mui/joy";
 import React, { Fragment, useEffect, useRef, useState } from "react";
-import useItemsHook from "../../../Hooks/ItemsHook";
+import useItemsHook from "../../../Hooks/ItemManagementHook";
 import { grey } from "@mui/material/colors";
 import usePPMPHook from "../../../Hooks/PPMP/PPMPHook";
 import { MdAdd } from "react-icons/md";
@@ -320,19 +320,19 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
           step === 1
             ? "On what activity shall we assign the resources you’ll add?"
             : step === 2
-              ? "General information"
-              : step === 3
-                ? "Specifications"
-                : ""
+            ? "General information"
+            : step === 3
+            ? "Specifications"
+            : ""
         }
         description={
           step === 1
             ? "Select a request status and reasons (if returned) to continue. You may add remarks if necessary."
             : step === 2
-              ? "Fill in the item information to create it."
-              : step === 3
-                ? "List down details for the item you want to cretae to specify it."
-                : ""
+            ? "Fill in the item information to create it."
+            : step === 3
+            ? "List down details for the item you want to cretae to specify it."
+            : ""
         }
         maxWidth={"500px"}
         height={step === 1 ? "auto" : step === 2 ? "680px" : "650px"}

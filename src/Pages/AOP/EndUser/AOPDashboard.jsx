@@ -12,7 +12,7 @@ import ModalComponent from "@Components/Common/Dialog/ModalComponent";
 import BoxComponent from "@Components/Common/Card/BoxComponent";
 import { ThreeDotsLoader } from "@Components/Common/Loading/ThreeDotsLoader";
 import ChipComponent from "@Components/Common/ChipComponent";
-import { FeedbackContent } from "../../../Pages/PlanningOps/Approval/Contents/FeedbackContent";
+import { FeedbackContent } from "../Approval/Contents/FeedbackContent";
 
 import useAOPHook from "../../../Hooks/AOP/AOPHook";
 import useModalHook from "../../../Hooks/ModalHook";

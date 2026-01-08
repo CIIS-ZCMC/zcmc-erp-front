@@ -11,7 +11,6 @@ import BoxComponent from "@Components/Common/Card/BoxComponent";
 import useModalHook from "../../../../Hooks/ModalHook";
 import { ITEM_SUBMITTED_LIST_CONSTANTS } from "../../../../Data/constants";
 
-
 import { submittedRequestsTabs } from "../../../../Data/Options";
 
 const ItemRequest = () => {
@@ -38,11 +37,10 @@ const ItemRequest = () => {
       setActiveTab(currentTab);
     }
 
-    console.log(activeTab)
+    console.log(activeTab);
   }, [currentTab]);
 
   const handleTabChange = (tab) => {
-
     // console.log(tab)
     // { console.log(activeTab) }
 
@@ -58,8 +56,10 @@ const ItemRequest = () => {
   return (
     <Fragment>
       <PageTitle
-        title={ITEM_SUBMITTED_LIST_CONSTANTS.ITEM_SUBMITTED_LIST_TITLE}
-        description={ITEM_SUBMITTED_LIST_CONSTANTS.ITEM_SUBMITTED_LIST_SUBTITLE}
+        title={"Item Information Management"}
+        description={
+          "This is a centralized control for all item-related data and requests. Manage item libraries, classifications, categories, and variants to ensure accurate and organized resource information across the system."
+        }
       />
 
       <BoxComponent
@@ -96,8 +96,6 @@ const ItemRequest = () => {
       <Box mt={2}>
         <Outlet />
       </Box>
-
-
     </Fragment>
   );
 };

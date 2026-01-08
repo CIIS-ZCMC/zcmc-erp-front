@@ -14,19 +14,18 @@ import AutocompleteComponent from "@Components/Form/AutocompleteComponent";
 import IconLessRadioButtonComponent from "@Components/IconLessRadioButtonComponent";
 
 import useModalHook from "../../../../Hooks/ModalHook";
-import useItemsHook from "../../../../Hooks/ItemsHook";
+import useItemsHook from "../../../../Hooks/ItemManagementHook";
 // import useItemRequestHook from "..//ItemRequest/ItemRequestHook";
 import useItemRequestsHook from "../../../../Hooks/ItemRequest/ItemRequestHookv2";
 
 import useItemLibraryStore from "../../../../Store/Item/LibraryStore";
 import { useItemLibraryActions } from "../../../../Store/Item/LibraryStore";
 
-
 export default function ItemRequestModal({ open, handleClose, status, row }) {
-
   const navigate = useNavigate();
 
-  const { setAlertDialog, setConfirmationModal, closeConfirmation } = useModalHook();
+  const { setAlertDialog, setConfirmationModal, closeConfirmation } =
+    useModalHook();
   const { updateItemRequest } = useItemRequestsHook();
 
   const {
@@ -38,7 +37,7 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
     marketResearched,
     estimatedBudget,
     specification,
-  } = useItemLibraryStore()
+  } = useItemLibraryStore();
 
   const {
     setItemName,
@@ -49,14 +48,14 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
     setMarketResearched,
     setEstimatedBudget,
     setSpecification,
-  } = useItemLibraryActions()
+  } = useItemLibraryActions();
 
   const [pin, setPin] = useState("");
   const [displayLoading, setDisplayLoading] = useState(false);
   const [index, setIndex] = useState("info");
-  const [itemRequestId, setItemRequestId] = useState(null)
-  const [isLoading, setIsLoading] = useState(false)
-  const [remarks, setRemarks] = useState('')
+  const [itemRequestId, setItemRequestId] = useState(null);
+  const [isLoading, setIsLoading] = useState(false);
+  const [remarks, setRemarks] = useState("");
 
   // Local editable state
   const [formData, setFormData] = useState({
@@ -87,17 +86,17 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
   ];
 
   useEffect(() => {
-    console.log(row)
+    console.log(row);
     if (row) {
-      setItemRequestId(row.id)
-      setItemName(row.name)
-      setClassification(row.item_classification || "")
-      setCategory(row.item_category || "")
-      setVariant(row.terminology_category || "")
-      setMarketResearched(row.market_researched || "")
-      setUnit(row.item_unit || "")
-      setEstimatedBudget(row.estimated_budget || "")
-      setSpecification(row.item_specifications || "")
+      setItemRequestId(row.id);
+      setItemName(row.name);
+      setClassification(row.item_classification || "");
+      setCategory(row.item_category || "");
+      setVariant(row.terminology_category || "");
+      setMarketResearched(row.market_researched || "");
+      setUnit(row.item_unit || "");
+      setEstimatedBudget(row.estimated_budget || "");
+      setSpecification(row.item_specifications || "");
     }
 
     // old code setformdata approach
@@ -168,7 +167,6 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
   }, [category.id]); // Re-run if category changes
 
   const handleSubmitItemRequest = () => {
-
     setIsLoading(true);
 
     const approvedPayload = {
@@ -181,16 +179,16 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
       item_category_id: category.id,
       terminology_category_id: variant.id,
       market_research: marketResearched,
-      specifications: specification.map(({ description }) => ({ description }))
-    }
+      specifications: specification.map(({ description }) => ({ description })),
+    };
 
     const declinePayload = {
       status_id: status,
       authorization_pin: pin,
       reason: remarks,
-    }
+    };
 
-    const payload = status === 4 ? approvedPayload : declinePayload
+    const payload = status === 4 ? approvedPayload : declinePayload;
 
     // console.log(payload)
 
@@ -204,7 +202,7 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
           });
           setIsLoading(false);
           handleClose();
-          navigate('/item-requests/saved')
+          navigate("/item-requests/saved");
         } else {
           setAlertDialog({
             status: "error",
@@ -234,7 +232,7 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
     // console.log('unit object', unit)
     // console.log(marketResearched)
     // console.log(itemRequestId)
-  }, [classificationObj, row, variants, items, itemRequestId])
+  }, [classificationObj, row, variants, items, itemRequestId]);
 
   return (
     <div>
@@ -275,7 +273,6 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
               >
                 {index === "info" ? (
                   <Stack my={2} spacing={2}>
-
                     <InputComponent
                       label={"Item Name"}
                       value={itemName}
@@ -293,7 +290,7 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
                         value={classificationObj}
                         setValue={(val) => {
                           // console.log(val)
-                          setClassification(val)
+                          setClassification(val);
                         }}
                       />
 
@@ -305,10 +302,9 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
                         value={category}
                         setValue={(val) => {
                           // console.log(val)
-                          setCategory(val)
+                          setCategory(val);
                         }}
                       />
-
                     </Stack>
 
                     <Stack>
@@ -320,13 +316,12 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
                         value={variant}
                         setValue={(val) => {
                           // console.log(val)
-                          setVariant(val)
+                          setVariant(val);
                         }}
                       />
                     </Stack>
 
                     <Stack direction={"row"} spacing={1}>
-
                       <AutocompleteComponent
                         label="Unit of measure"
                         name="unit"
@@ -335,16 +330,14 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
                         value={unit}
                         setValue={(val) => {
                           // console.log(val)
-                          setUnit(val)
+                          setUnit(val);
                         }}
                       />
 
                       <InputComponent
                         label={"Estimated Budget"}
                         value={estimatedBudget}
-                        handleInput={(e) =>
-                          setEstimatedBudget(e.target.value)
-                        }
+                        handleInput={(e) => setEstimatedBudget(e.target.value)}
                         startDecorator={"₱"}
                       />
                     </Stack>
@@ -355,18 +348,17 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
                       size="sm"
                       checked={marketResearched}
                       onChange={(e) => {
-                        console.log(e.target.checked)
-                        setMarketResearched(e.target.checked)
+                        console.log(e.target.checked);
+                        setMarketResearched(e.target.checked);
                       }}
                     />
-
                   </Stack>
                 ) : (
                   <Stack>
                     <Box
                       height={"280px"}
                       overflow="auto"
-                    // ref={specsContainerRef}
+                      // ref={specsContainerRef}
                     >
                       {specification?.map((spec, index) => (
                         <Box key={spec.id} sx={{ mb: 0.5 }}>
@@ -414,7 +406,7 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
           ) : (
             <>
               <TextareaComponent
-                label={'Remarks'}
+                label={"Remarks"}
                 placeholder="Enter your remarks here"
                 value={remarks}
                 onChange={(e) => setRemarks(e.target.value)}
@@ -425,10 +417,9 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
         }
         isLoading={isLoading}
         hasActionButtons
-        rightButtonLabel='Submit'
+        rightButtonLabel="Submit"
         rightButtonAction={() => handleSubmitItemRequest()}
         noRightButton={false}
-
       />
     </div>
   );

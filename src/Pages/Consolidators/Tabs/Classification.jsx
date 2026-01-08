@@ -15,22 +15,25 @@ import ButtonComponent from "@Components/Common/ButtonComponent";
 import { AddOutlined } from "@mui/icons-material";
 import ExpandableTable from "@Components/Common/Table/ExpandableTable";
 import AuthorizationPinComponent from "@Components/AuthorizationPinComponent";
+import { handleChangeInput } from "../../../Utils/HandleInput";
+import useItemsHook from "../../../Hooks/ItemManagementHook";
+import useSnackbarHook from "../../../Hooks/SnackbarHook";
 
 export const Classification = () => {
   const { pin, setPin } = usePinHook();
   const { setConfirmationModal, closeConfirmation } = useModalHook();
+  const { showSnack } = useSnackbarHook();
   const {
-    classification_data,
+    classification,
     pagination,
-    currentPage,
-    totalPages,
-    setSearchQuery,
     search_Query,
-    setCurrentPage,
-    getClassifications,
+    getClassificationsPaginated,
     selectedData,
     setSelectedData,
-  } = useClassificationHook();
+    setSearchQuery,
+    getArchivedClassification,
+    archiveClassification,
+  } = useItemsHook();
   const [loading, setLoading] = useState(false);
   const [openNew, setOpenNew] = useState(false);
   const [openUpdate, setOpenUpdate] = useState(false);
@@ -41,6 +44,10 @@ export const Classification = () => {
   });
   const [active, setActive] = useState(true);
   const [page, setPage] = useState(1);
+  const [newClassification, setNewClassification] = useState({
+    name: "",
+    description: "",
+  });
 
   function transformData(data) {
     console.log(data);
@@ -56,36 +63,66 @@ export const Classification = () => {
 
   const handleUpdate = (data) => {
     setOpenUpdate(true);
-    setSelectedData(data);
   };
 
   const handleDelete = (params) => {
     setOpenDel(true);
-    setSelectedData(params);
     const data = {
       status: "error",
-      title: `Delete classification (${params?.clName}) ?`,
-      description: "This action cannot be undone.",
+      title: `Archive this classification (${params?.name}) ?`,
+      description:
+        "This action cannot be undone. However, you may still restore the item anytime from the Archived view.",
     };
     setConfirmationModal(data);
   };
 
-  const deleteItem = (selected) => {
-    setOpenDel(false);
+  const deleteClassification = async (id) => {
+    const form = {
+      authorization_pin: pin,
+    };
+    await archiveClassification(selectedData.id, form, (status, message) => {
+      // setLoading(false);
+
+      if (status === 200) {
+        setOpenDel(false);
+        showSnack(200, message);
+      } else {
+        showSnack(500, message);
+      }
+    });
   };
 
   useEffect(() => {
-    setLoading(true);
-    getClassifications({
-      page,
-      per_page: 10,
-      search: search_Query, // Pass the current search query
-      callBack: (status, message) => {
-        setLoading(false);
-        console.log("Response:", status, message);
-      },
-    });
-  }, [page, search_Query]);
+    if (active) {
+      setLoading(true);
+      getClassificationsPaginated({
+        page,
+        per_page: 10,
+        search: search_Query,
+        callBack: (status, message) => {
+          setLoading(false);
+          console.log("Response:", status, message);
+        },
+      });
+    }
+  }, [page, search_Query, active]); // only triggers if view is active
+
+  // Watch for active/archived switch
+  useEffect(() => {
+    if (!active) {
+      // When switching to archived, fetch page 1 of archived classifications
+      setPage(1); // optional: reset page to first page for archived
+      setLoading(true);
+      getArchivedClassification({
+        page: page,
+        per_page: 10,
+        callBack: (status, message) => {
+          setLoading(false);
+          console.log("Archived classifications fetched:", status, message);
+        },
+      });
+    }
+  }, [page, active]);
 
   useEffect(() => {
     if (openUpdate && selectedData) {
@@ -121,11 +158,14 @@ export const Classification = () => {
           />
         </Stack>
       </Stack>
-      {console.log(pagination)}
       <ExpandableTable
         isLoading={loading}
-        rows={transformData(classification_data)}
-        columns={classificationCols(handleUpdate, handleDelete)}
+        rows={transformData(classification)}
+        columns={classificationCols(
+          setSelectedData,
+          handleUpdate,
+          handleDelete
+        )}
         currentPage={pagination?.current_page}
         totalPages={pagination?.last_page}
         onNextPage={() => {
@@ -147,12 +187,32 @@ export const Classification = () => {
           handleClose={() => setOpenNew(false)}
           content={
             <>
-              <Stack mt={2}>
+              <Stack mt={2} spacing={2}>
                 <InputComponent
-                  name={"classification"}
+                  name={"name"}
                   label={"Classification Name"}
                   helperText={
                     "Use a specific and descriptive naming convention for best results."
+                  }
+                  value={newClassification.name}
+                  handleInput={(e) =>
+                    handleChangeInput(
+                      "name",
+                      setNewClassification,
+                      e.target.value
+                    )
+                  }
+                />
+                <TextareaComponent
+                  name={"description"}
+                  label={"Description"}
+                  value={newClassification.description}
+                  handleInput={(e) =>
+                    handleChangeInput(
+                      "description",
+                      setNewClassification,
+                      e.target.value
+                    )
                   }
                 />
                 <Divider sx={{ mt: 3 }} />
@@ -213,7 +273,7 @@ export const Classification = () => {
             closeConfirmation();
             setOpenDel(false);
           }}
-          rightButtonAction={() => deleteItem(updateData.id)}
+          rightButtonAction={() => deleteClassification()}
           withAuthPin
           setAuthPin={setPin}
         />

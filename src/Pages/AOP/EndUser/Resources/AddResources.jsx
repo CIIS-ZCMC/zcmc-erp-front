@@ -1,7 +1,7 @@
 import ButtonComponent from "@Components/Common/ButtonComponent";
 import IconButtonComponent from "@Components/Common/IconButtonComponent";
 import PageTitle from "@Components/Common/PageTitle";
-import useItemsHook from "../../../../Hooks/ItemsHook";
+import useItemsHook from "../../../../Hooks/ItemManagementHook";
 import { Divider, Grid, Skeleton, Stack, Typography, useTheme } from "@mui/joy";
 import { X } from "lucide-react";
 import React, { Fragment, useEffect, useState } from "react";

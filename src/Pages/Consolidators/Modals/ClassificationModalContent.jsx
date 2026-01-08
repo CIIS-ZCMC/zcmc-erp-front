@@ -14,7 +14,7 @@ import { MdInfoOutline } from "react-icons/md";
 import useLibrariesHook from "../../../Hooks/Libraries/LibHooks";
 import useModalHook from "../../../Hooks/ModalHook";
 import useClassificationHooks from "../../../Hooks/Libraries/LibClassificationHooks";
-import useItemsHook from "../../../Hooks/ItemsHook";
+import useItemsHook from "../../../Hooks/ItemManagementHook";
 import useClassificationDataTable from "../../../Hooks/Libraries/dataTable/dataClassification";
 
 // ['create', 'update', 'delete']

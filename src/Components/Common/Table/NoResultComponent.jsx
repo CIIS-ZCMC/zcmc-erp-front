@@ -4,20 +4,22 @@ import PropTypes from "prop-types";
 
 NoResultComponent.propTypes = {
   isSearch: PropTypes.bool,
+  size: PropTypes.string,
 };
 
 function NoResultComponent({ isSearch = false, size }) {
   return (
     <Stack
-      direction={"row"}
-      alignItems={"center"}
-      justifyContent={"center"}
+      direction="row"
+      alignItems="center"
+      justifyContent="center"
+      flex={1} // Take all available vertical space
+      width="100%" // Take all available horizontal space
       my={size === "xs" ? 0 : 2}
-      height={'60vh'}
     >
       <Stack
-        alignItems={"center"}
-        justifyContent={"center"}
+        alignItems="center"
+        justifyContent="center"
         my={size === "xs" ? 0 : 2}
       >
         <img
@@ -28,7 +30,12 @@ function NoResultComponent({ isSearch = false, size }) {
         <Typography fontSize={size === "xs" ? 15 : 17} fontWeight={600}>
           {!isSearch ? "Nothing to show" : "No result found"}
         </Typography>
-        <Typography color={"gray"} fontSize={13} fontWeight={300}>
+        <Typography
+          color="gray"
+          fontSize={13}
+          fontWeight={300}
+          textAlign="center"
+        >
           {!isSearch
             ? "No data available to display"
             : "We can't find any item matching your search"}

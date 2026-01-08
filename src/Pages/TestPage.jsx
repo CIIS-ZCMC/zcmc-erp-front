@@ -1,5 +1,5 @@
 import React from "react";
-import ObjectivesList from "./PlanningOps/Approval/Contents/ObjectivesList";
+import ObjectivesList from "./AOP/Approval/Contents/ObjectivesList";
 import { Grid } from "@mui/joy";
 import ContainerComponent from "../Components/Common/ContainerComponent";
 

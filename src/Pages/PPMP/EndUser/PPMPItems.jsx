@@ -4,7 +4,7 @@ import ButtonComponent from "../../../Components/Common/ButtonComponent";
 import { Stack, Typography, Snackbar, Alert, Box, Card } from "@mui/joy";
 import { useLocation, useNavigate } from "react-router-dom";
 import usePPMPHook from "../../../Hooks/PPMP/PPMPHook";
-import useItemsHook from "../../../Hooks/ItemsHook";
+import useItemsHook from "../../../Hooks/ItemManagementHook";
 import ConfirmationModalComponent from "../../../Components/Common/Dialog/ConfirmationModalComponent";
 import useModalHook from "../../../Hooks/ModalHook";
 import userErrorInputHook from "../../../Hooks/ErrorInputHook";

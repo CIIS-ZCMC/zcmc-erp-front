@@ -17,8 +17,8 @@ import Items from "../Pages/Items";
 import ItemRequest from "../Pages/Consolidators/ItemManagement/ItemRequest/ItemRequest";
 import ItemLibrary from "../Pages/Consolidators/ItemManagement/Library/ItemLibrary";
 // import Objectives from "../Pages/PlanningOps/ObjectiveManagement/Objectives";
-import ManageAOP from "../Pages/PlanningOps/Approval/ManageAOP";
-import AOPApproval from "../Pages/PlanningOps/Approval/AOPApproval";
+import ManageAOP from "../Pages/AOP/Approval/ManageAOP";
+import AOPApproval from "../Pages/AOP/Approval/AOPApproval";
 import PPMPApproval from "../Pages/PPMP/Approval/PPMPApproval";
 import ManagePPMP from "../Pages/PPMP/Approval/ManagePPMP";
 
@@ -43,12 +43,6 @@ import { ItemRequestDatatable } from "../Pages/Consolidators/ItemManagement/Item
 
 import { element } from "prop-types";
 
-// import AOPOutlet from "../Pages/AOP/EndUser/AOPOutlet";
-// import AddResources from "../Pages/AOP/EndUser/Resources/AddResources";
-
-// import EditPPMP from "../Pages/PPMP/EndUser/PPMPOutlet";
-// import EditPPMP from "../Pages/PPMP/EndUser/EditPPMP";
-
 import PPMPDashboard from "../Pages/PPMP/EndUser/PPMPDashboard";
 import PPMPItems from "../Pages/PPMP/EndUser/PPMPItems";
 import AddItems from "../Pages/PPMP/EndUser/AddItems";
@@ -57,7 +51,6 @@ import All from "../Pages/Consolidators/ItemManagement/ItemRequest/All";
 import Pending from "../Pages/Consolidators/ItemManagement/ItemRequest/Pending";
 import Saved from "../Pages/Consolidators/ItemManagement/ItemRequest/Saved";
 import ViewPPMP from "../Pages/PPMP/Approval/ViewPPMP";
-// import ResponsiblePerson from "../Pages/DeptHead/AnnualOps/CreateAOP/MainLayout/Objectives/Activities/ResponsiblePerson";
 
 export const sidebarRoutes = [
   // DASHBOARD ROUTE

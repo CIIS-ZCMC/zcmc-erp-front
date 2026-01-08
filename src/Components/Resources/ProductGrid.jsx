@@ -2,7 +2,7 @@ import BoxComponent from "@Components/Common/Card/BoxComponent";
 import { Box, Grid, Skeleton, Typography } from "@mui/joy";
 import React, { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import ItemCardComponent from "./ItemCardComponent";
-import useItemsHook from "../../Hooks/ItemsHook";
+import useItemsHook from "../../Hooks/ItemManagementHook";
 import { useVirtualizer } from "@tanstack/react-virtual";
 
 export default function ProductGrid({
