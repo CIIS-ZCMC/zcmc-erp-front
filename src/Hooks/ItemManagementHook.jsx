@@ -110,7 +110,7 @@ const useItemsHook = create((set) => ({
     });
   },
 
-  updateItem: async (id, body, param, callback) => {
+  updateItem: async (id, body, callback) => {
     update({
       url: `${PATH}s/${id}`,
       // param: { id: param },
@@ -123,7 +123,7 @@ const useItemsHook = create((set) => ({
           ),
         }));
 
-        callback(response.status, message, data);
+        callback(response.status, message);
       },
       failed: callback,
     });
@@ -148,10 +148,34 @@ const useItemsHook = create((set) => ({
     });
   },
 
-  getArchivedItems: async ({ page = 1, per_page = 10, callBack } = {}) => {
+  unarchiveItem: async (id, body, callBack) => {
+    update({
+      url: `${PATH}s/${id}/restore`,
+      form: body, // { authorization_pin }
+      success: ({ status, data }) => {
+        const { message } = data;
+        set((state) => ({
+          items: state.items.filter((res) => res.id !== id),
+        }));
+
+        callBack(status, message);
+      },
+      failed: (status, message) => {
+        callBack(status, message);
+      },
+    });
+  },
+
+  getArchivedItems: async ({
+    page = 1,
+    per_page = 10,
+    search,
+    callBack,
+  } = {}) => {
     const params = {
       page: page,
       per_page,
+      search,
     };
 
     read({
@@ -236,10 +260,9 @@ const useItemsHook = create((set) => ({
     });
   },
 
-  updateClassification: async (id, body, param, callback) => {
+  updateClassification: async (id, body, callback) => {
     update({
       url: `${PATH}-classifications/${id}`,
-      // param: { id: param },
       form: body,
       success: (response) => {
         const { message, data } = response.data;
@@ -249,9 +272,11 @@ const useItemsHook = create((set) => ({
           ),
         }));
 
-        callback(response.status, message, data);
+        callback(response.status, message);
       },
-      failed: callback,
+      failed: (status, message) => {
+        callback(status, message);
+      },
     });
   },
 

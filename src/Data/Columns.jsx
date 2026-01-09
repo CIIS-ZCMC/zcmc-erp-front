@@ -1034,6 +1034,7 @@ export const categoryCols = (updateCallBack, delCallback) => [
 ];
 
 export const classificationCols = (
+  active,
   setSelectedData,
   updateCallBack,
   delCallback
@@ -1102,6 +1103,7 @@ export const classificationCols = (
 ];
 
 export const itemCols = (
+  active,
   setSelectedData,
   handleUpdate = () => {},
   handleDelete = () => {}
@@ -1215,6 +1217,7 @@ export const itemCols = (
               variant="soft"
               color="neutral"
               startDecorator={<EditOutlined />}
+              sx={{ display: !active && "none" }}
             >
               Update
             </Chip>
@@ -1228,7 +1231,7 @@ export const itemCols = (
               color="neutral"
               startDecorator={<DeleteOutlineOutlined />}
             >
-              Archive
+              {active ? "Archive" : "Unarchive"}
             </Chip>
           </Stack>
         </>

@@ -81,10 +81,10 @@ export const Classification = () => {
 
     updateClassification(selectedData.id, body, (status, message) => {
       if (status === 200) {
-        showSnack(200, "Item successfully updated.");
         setOpenUpdate(false);
+
+        showSnack(200, "Item successfully updated.");
         resetPin();
-        getItemsPaginated({ page, per_page: 10 });
       } else {
         showSnack(500, message || "Failed to update item.");
       }
@@ -151,15 +151,6 @@ export const Classification = () => {
     }
   }, [page, active, search_Query]);
 
-  useEffect(() => {
-    if (openUpdate && selectedData) {
-      setUpdateData({
-        name: selectedData?.clName || "",
-        description: selectedData?.description || "",
-      });
-    }
-  }, [selectedData, openUpdate]);
-
   return (
     <Fragment>
       <Stack
@@ -193,6 +184,7 @@ export const Classification = () => {
         isLoading={loading}
         rows={transformData(classification)}
         columns={classificationCols(
+          active,
           setSelectedData,
           handleUpdate,
           handleDelete
@@ -258,18 +250,21 @@ export const Classification = () => {
       )}
       {openUpdate && (
         <ModalComponent
-          title={`Update ${selectedData.clName}`}
+          title={`Update classification (${selectedData.name})`}
+          description={"Keep the classification up-to-date"}
           isOpen={openUpdate}
           handleClose={() => setOpenUpdate(false)}
+          rightButtonAction={() => update()}
           hasActionButtons
           content={
             <>
               <Stack gap={2}>
                 <InputComponent
                   label={"Classification Name"}
-                  value={updateData.name}
-                  onChange={(e) =>
-                    setUpdateData({ ...updateData, name: e.target.value })
+                  name={"name"}
+                  value={updatedData.name}
+                  handleInput={(e) =>
+                    handleChangeInput("name", setUpdatedData, e.target.value)
                   }
                   helperText={
                     "Use a specific and descriptive naming convention for best results."
@@ -277,21 +272,18 @@ export const Classification = () => {
                 />
                 <TextareaComponent
                   label={"Description"}
-                  value={updateData.description}
+                  name={"description"}
+                  value={updatedData.description}
                   onChange={(e) =>
-                    setUpdateData({
-                      ...updateData,
-                      description: e.target.value,
-                    })
+                    handleChangeInput(
+                      "description",
+                      setUpdatedData,
+                      e.target.value
+                    )
                   }
                 />
                 <Divider />
-                <InputComponent
-                  label={"Authorization PIN"}
-                  helperText={
-                    "Confirm your action by typing-in your authorization PIN."
-                  }
-                />
+                <AuthorizationPinComponent setPin={setPin} />
               </Stack>
             </>
           }

@@ -32,6 +32,7 @@ import AuthorizationPinComponent from "@Components/AuthorizationPinComponent";
 import useSearchHook from "../../../Hooks/SearchHook";
 import useSnackbarHook from "../../../Hooks/SnackbarHook";
 import StatusSwitch from "@Components/StatusSwitchComponent";
+import SearchBarComponentv2 from "@Components/SearchBarWithdeBounce";
 
 export const Items = () => {
   const {
@@ -53,6 +54,7 @@ export const Items = () => {
     newItemId,
     pagination,
     selectedData,
+    search_Query,
     getItemsPaginated,
     getSearchResults,
     getItemCategories,
@@ -63,7 +65,9 @@ export const Items = () => {
     setSelectedData,
     updateItem,
     archiveItem,
+    unarchiveItem,
     getArchivedItems,
+    setSearchQuery,
   } = useItemsHook();
 
   const { getSearchSuggestions, suggestions } = useSearchHook();
@@ -156,7 +160,9 @@ export const Items = () => {
     setOpenDel(true);
     const data = {
       status: "error",
-      title: `Archive this item (${params?.name}) ?`,
+      title: active
+        ? `Archive this item (${params?.name}) ?`
+        : `Unarchive this item (${params?.name}) ?`,
       description: "This action cannot be undone.",
     };
     setConfirmationModal(data);
@@ -166,16 +172,29 @@ export const Items = () => {
     const form = {
       authorization_pin: pin,
     };
-    await archiveItem(selectedData.id, form, (status, message) => {
-      // setLoading(false);
+    if (!active) {
+      await unarchiveItem(selectedData.id, form, (status, message) => {
+        // setLoading(false);
 
-      if (status === 200) {
-        setOpenDel(false);
-        showSnack(200, message);
-      } else {
-        showSnack(500, message);
-      }
-    });
+        if (status === 200) {
+          setOpenDel(false);
+          showSnack(200, message);
+        } else {
+          showSnack(500, message);
+        }
+      });
+    } else {
+      await archiveItem(selectedData.id, form, (status, message) => {
+        // setLoading(false);
+
+        if (status === 200) {
+          setOpenDel(false);
+          showSnack(200, message);
+        } else {
+          showSnack(500, message);
+        }
+      });
+    }
   };
 
   const addItem = () => {
@@ -308,13 +327,14 @@ export const Items = () => {
       getItemsPaginated({
         page,
         per_page: 10,
+        search: search_Query,
         callBack: (status, message) => {
           setLoading(false);
           console.log("Response:", status, message);
         },
       });
     }
-  }, [page, active]); // only triggers if view is active
+  }, [page, search_Query, active]); // only triggers if view is active
 
   // Watch for active/archived switch
   useEffect(() => {
@@ -322,16 +342,18 @@ export const Items = () => {
       // When switching to archived, fetch page 1 of archived classifications
       setPage(1); // optional: reset page to first page for archived
       setLoading(true);
+
       getArchivedItems({
         page: page,
         per_page: 10,
+        search: search_Query,
         callBack: (status, message) => {
           setLoading(false);
           console.log("Archived classifications fetched:", status, message);
         },
       });
     }
-  }, [page, active]);
+  }, [page, search_Query, active]);
 
   useEffect(() => {
     if (!updatedData?.category?.id) {
@@ -362,12 +384,18 @@ export const Items = () => {
           <StatusSwitch checked={active} onChange={setActive} />
         </Stack>
         <Stack direction={"row"} gap={1}>
-          <SearchWithSuggestions
+          {/* <SearchWithSuggestions
             getSearchSuggestions={getSearchSuggestions}
             getSearchResults={getSearchResults}
             suggestions={suggestions}
-            getItems={getItemsPaginated}
+            getItems={active ? getItemsPaginated : getArchivedItems}
             onSelect={(item) => console.log("Selected item:", item)}
+          /> */}
+
+          <SearchBarComponentv2
+            placeholder="Search items"
+            setValue={setSearchQuery}
+            value={search_Query}
           />
           <ButtonComponent
             label={"Add New Item"}
@@ -379,7 +407,7 @@ export const Items = () => {
       <ExpandableTable
         rows={items}
         isLoading={loading}
-        columns={itemCols(setSelectedData, handleUpdate, handleDelete)}
+        columns={itemCols(active, setSelectedData, handleUpdate, handleDelete)}
         newItemId={newItemId} // 👈 ADD THIS
         currentPage={pagination?.current_page}
         totalPages={pagination?.last_page}
