@@ -1,6 +1,6 @@
 import { create } from "zustand";
 import erp_api from "../Services/ERP_API";
-import { post, read, remove } from "../Services/RequestMethods";
+import { post, read, remove, update } from "../Services/RequestMethods";
 
 const PATH = "item";
 
@@ -39,10 +39,16 @@ const useItemsHook = create((set) => ({
     });
   },
 
-  getItemsPaginated: async ({ page = 1, per_page = 10, callBack } = {}) => {
+  getItemsPaginated: async ({
+    page = 1,
+    per_page = 10,
+    search,
+    callBack,
+  } = {}) => {
     const params = {
       page: page,
       per_page,
+      search,
     };
 
     read({
@@ -104,6 +110,72 @@ const useItemsHook = create((set) => ({
     });
   },
 
+  updateItem: async (id, body, param, callback) => {
+    update({
+      url: `${PATH}s/${id}`,
+      // param: { id: param },
+      form: body,
+      success: (response) => {
+        const { message, data } = response.data;
+        set((state) => ({
+          items: state.items.map((itm) =>
+            itm.id === data.id ? { ...itm, ...data } : itm
+          ),
+        }));
+
+        callback(response.status, message, data);
+      },
+      failed: callback,
+    });
+  },
+
+  archiveItem: async (id, body, callBack) => {
+    remove({
+      url: `${PATH}s/${id}`,
+      form: body, // { authorization_pin }
+      success: ({ status, data }) => {
+        const { message } = data;
+
+        set((state) => ({
+          items: state.items.filter((res) => res.id !== id),
+        }));
+
+        callBack(status, message);
+      },
+      failed: (status, message) => {
+        callBack(status, message);
+      },
+    });
+  },
+
+  getArchivedItems: async ({ page = 1, per_page = 10, callBack } = {}) => {
+    const params = {
+      page: page,
+      per_page,
+    };
+
+    read({
+      url: `${PATH}s/trashbin`,
+      params,
+      success: (res) => {
+        const { status, message, data, meta } = res;
+        console.log("Response:", data);
+        set({
+          items: data.data,
+          pagination: {
+            total: data?.meta?.pagination?.total,
+            per_page: data?.meta?.pagination?.per_page,
+            current_page: data?.meta?.pagination?.current_page,
+            last_page: data?.meta?.pagination?.last_page,
+          },
+          error: null,
+        });
+
+        if (callBack) callBack(status, message);
+      },
+    });
+  },
+
   getItemCategories: async (callBack) => {
     read({
       url: `${PATH}-categories`,
@@ -133,11 +205,13 @@ const useItemsHook = create((set) => ({
   getClassificationsPaginated: async ({
     page = 1,
     per_page = 10,
+    search,
     callBack,
   } = {}) => {
     const params = {
       page: page,
       per_page,
+      search,
     };
 
     read({
@@ -184,11 +258,13 @@ const useItemsHook = create((set) => ({
   getArchivedClassification: async ({
     page = 1,
     per_page = 10,
+    search,
     callBack,
   } = {}) => {
     const params = {
       page: page,
       per_page,
+      search,
     };
 
     read({

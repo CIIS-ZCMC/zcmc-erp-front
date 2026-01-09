@@ -18,6 +18,7 @@ import AuthorizationPinComponent from "@Components/AuthorizationPinComponent";
 import { handleChangeInput } from "../../../Utils/HandleInput";
 import useItemsHook from "../../../Hooks/ItemManagementHook";
 import useSnackbarHook from "../../../Hooks/SnackbarHook";
+import SearchBarComponentv2 from "@Components/SearchBarWithdeBounce";
 
 export const Classification = () => {
   const { pin, setPin } = usePinHook();
@@ -116,13 +117,14 @@ export const Classification = () => {
       getArchivedClassification({
         page: page,
         per_page: 10,
+        search: search_Query,
         callBack: (status, message) => {
           setLoading(false);
           console.log("Archived classifications fetched:", status, message);
         },
       });
     }
-  }, [page, active]);
+  }, [page, active, search_Query]);
 
   useEffect(() => {
     if (openUpdate && selectedData) {
@@ -150,7 +152,11 @@ export const Classification = () => {
           <StatusSwitch checked={active} onChange={setActive} />
         </Stack>
         <Stack direction={"row"} spacing={2} alignItems={"center"}>
-          <SearchWithSuggestions />
+          <SearchBarComponentv2
+            placeholder="Search classification"
+            setValue={setSearchQuery}
+            value={search_Query}
+          />
           <ButtonComponent
             label={"Add New Category"}
             startDecorator={<AddOutlined />}

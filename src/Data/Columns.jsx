@@ -1101,7 +1101,11 @@ export const classificationCols = (
   },
 ];
 
-export const itemCols = (handleUpdate = () => {}, handleDelete = () => {}) => [
+export const itemCols = (
+  setSelectedData,
+  handleUpdate = () => {},
+  handleDelete = () => {}
+) => [
   {
     key: "name",
     label: "Item name",
@@ -1204,6 +1208,7 @@ export const itemCols = (handleUpdate = () => {}, handleDelete = () => {}) => [
           >
             <Chip
               onClick={() => {
+                setSelectedData(params);
                 handleUpdate(params);
               }}
               size="md"
@@ -1215,6 +1220,7 @@ export const itemCols = (handleUpdate = () => {}, handleDelete = () => {}) => [
             </Chip>
             <Chip
               onClick={() => {
+                setSelectedData(params);
                 handleDelete(params);
               }}
               size="md"
@@ -1222,7 +1228,7 @@ export const itemCols = (handleUpdate = () => {}, handleDelete = () => {}) => [
               color="neutral"
               startDecorator={<DeleteOutlineOutlined />}
             >
-              Delete
+              Archive
             </Chip>
           </Stack>
         </>

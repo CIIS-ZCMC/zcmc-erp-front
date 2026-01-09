@@ -1,6 +1,6 @@
 import React, { Fragment, useEffect, useState } from "react";
 import ScrollableTableComponent from "../../../Components/Common/Table/ScrollableTableComponent";
-import { Box, Checkbox, Divider, Textarea, Typography } from "@mui/joy";
+import { Box, Checkbox, Chip, Divider, Textarea, Typography } from "@mui/joy";
 import { Stack, Link } from "@mui/joy";
 import { IoInformationOutline, IoOpen, IoOpenOutline } from "react-icons/io5";
 import useLibItemHook from "../../../Hooks/Libraries/LibItemHooks";
@@ -31,6 +31,7 @@ import { grey } from "@mui/material/colors";
 import AuthorizationPinComponent from "@Components/AuthorizationPinComponent";
 import useSearchHook from "../../../Hooks/SearchHook";
 import useSnackbarHook from "../../../Hooks/SnackbarHook";
+import StatusSwitch from "@Components/StatusSwitchComponent";
 
 export const Items = () => {
   const {
@@ -51,6 +52,7 @@ export const Items = () => {
     items,
     newItemId,
     pagination,
+    selectedData,
     getItemsPaginated,
     getSearchResults,
     getItemCategories,
@@ -58,6 +60,10 @@ export const Items = () => {
     getItemUnits,
     getVariantsByCategory,
     postNewItem,
+    setSelectedData,
+    updateItem,
+    archiveItem,
+    getArchivedItems,
   } = useItemsHook();
 
   const { getSearchSuggestions, suggestions } = useSearchHook();
@@ -67,8 +73,15 @@ export const Items = () => {
   const [openDel, setOpenDel] = useState(false);
   const [openNew, setOpenNew] = useState(false);
   const [updatedData, setUpdatedData] = useState({
+    id: null,
     name: "",
-    estimated_budget: "",
+    classification: "",
+    category: "",
+    variant: "",
+    unitOfMeasurement: "",
+    estimatedBudget: "",
+    specs: [],
+    market_research_done: false,
   });
   const [newItem, setNewItem] = useState({
     name: "",
@@ -82,37 +95,87 @@ export const Items = () => {
   });
   const [page, setPage] = useState(1);
   const [index, setIndex] = useState("info");
+  const [active, setActive] = useState(true);
 
   const tabs = [
     { name: "General info", value: "info", icon: <TextSnippetOutlined /> },
     { name: "Specifications", value: "specs", icon: <Today /> },
   ];
 
-  const update = () => {
-    const formData = new FormData();
-    formData.append("id", updatedData.id);
-    formData.append("name", updatedData.name);
-    formData.append("price", updatedData.estimated_budget);
-    formData.append("pin", pin);
+  const handleUpdate = (row) => {
+    resetPin();
 
-    updateItem(formData, updatedData.id, (status, message) => {
-      console.log(status, message);
+    setUpdatedData({
+      id: row.id,
+      name: row.name,
+      classification: row.item_classification,
+      category: row.item_category,
+      variant: row.terminologies_category,
+      unitOfMeasurement: row.item_unit,
+      estimatedBudget: row.estimated_budget,
+      market_research_done: row.market_researched || false,
+      specs: row.item_specifications?.map((s) => s.description) || [""],
+    });
+
+    if (row.category?.id) {
+      getVariantsByCategory(() => {}, row.category.id);
+    }
+
+    setOpenUpdate(true);
+  };
+
+  const update = () => {
+    const body = {
+      name: updatedData.name,
+      estimated_budget: updatedData.estimatedBudget,
+      item_unit_id: updatedData.unitOfMeasurement?.id,
+      item_category_id: updatedData.category?.id,
+      item_classification_id: updatedData.classification?.id,
+      terminology_category_id: updatedData.variant?.id ?? null,
+      authorization_pin: pin,
+      market_researched: updatedData.market_research_done,
+      specifications: updatedData.specs
+        .filter((spec) => spec?.trim())
+        .map((spec) => ({ description: spec })),
+    };
+
+    updateItem(updatedData.id, body, (status, message) => {
+      if (status === 200) {
+        showSnack(200, "Item successfully updated.");
+        setOpenUpdate(false);
+        resetPin();
+        getItemsPaginated({ page, per_page: 10 });
+      } else {
+        showSnack(500, message || "Failed to update item.");
+      }
     });
   };
 
   const handleDelete = (params) => {
-    resetPin;
+    resetPin();
     setOpenDel(true);
     const data = {
       status: "error",
-      title: `Delete item (${params?.name}) ?`,
+      title: `Archive this item (${params?.name}) ?`,
       description: "This action cannot be undone.",
     };
     setConfirmationModal(data);
   };
 
-  const deleteItem = (selected) => {
-    setOpenDel(false);
+  const deleteItem = async () => {
+    const form = {
+      authorization_pin: pin,
+    };
+    await archiveItem(selectedData.id, form, (status, message) => {
+      // setLoading(false);
+
+      if (status === 200) {
+        setOpenDel(false);
+        showSnack(200, message);
+      } else {
+        showSnack(500, message);
+      }
+    });
   };
 
   const addItem = () => {
@@ -146,6 +209,7 @@ export const Items = () => {
           specs: ["", "", ""],
           market_research_done: false,
         });
+        resetPin();
         setIndex("info");
         setOpenNew(false);
       } else {
@@ -153,12 +217,14 @@ export const Items = () => {
       }
     });
   };
+
   const addSpec = () => {
     setNewItem((prev) => ({
       ...prev,
       specs: [...prev.specs, ""],
     }));
   };
+
   const handleSpecChange = (index, value) => {
     setNewItem((prev) => {
       const updatedSpecs = [...prev.specs];
@@ -170,10 +236,36 @@ export const Items = () => {
       };
     });
   };
+
   const removeSpec = (index) => {
     setNewItem((prev) => {
       if (prev.specs.length <= 1) return prev;
 
+      return {
+        ...prev,
+        specs: prev.specs.filter((_, i) => i !== index),
+      };
+    });
+  };
+
+  const addUpdateSpec = () => {
+    setUpdatedData((prev) => ({
+      ...prev,
+      specs: [...(prev.specs?.length ? prev.specs : [""]), ""],
+    }));
+  };
+
+  const handleUpdateSpecChange = (index, value) => {
+    setUpdatedData((prev) => {
+      const specs = prev.specs?.length > 0 ? [...prev.specs] : [""];
+      specs[index] = value;
+      return { ...prev, specs };
+    });
+  };
+
+  const removeUpdateSpec = (index) => {
+    setUpdatedData((prev) => {
+      if (prev.specs.length <= 1) return prev;
       return {
         ...prev,
         specs: prev.specs.filter((_, i) => i !== index),
@@ -211,16 +303,35 @@ export const Items = () => {
   // Re-run if category changes
 
   useEffect(() => {
-    setLoading(true);
-    getItemsPaginated({
-      page: page,
-      per_page: 10,
-      callBack: (status, message) => {
-        setLoading(false);
-        console.log("Response:", status, message);
-      },
-    });
-  }, [page]);
+    if (active) {
+      setLoading(true);
+      getItemsPaginated({
+        page,
+        per_page: 10,
+        callBack: (status, message) => {
+          setLoading(false);
+          console.log("Response:", status, message);
+        },
+      });
+    }
+  }, [page, active]); // only triggers if view is active
+
+  // Watch for active/archived switch
+  useEffect(() => {
+    if (!active) {
+      // When switching to archived, fetch page 1 of archived classifications
+      setPage(1); // optional: reset page to first page for archived
+      setLoading(true);
+      getArchivedItems({
+        page: page,
+        per_page: 10,
+        callBack: (status, message) => {
+          setLoading(false);
+          console.log("Archived classifications fetched:", status, message);
+        },
+      });
+    }
+  }, [page, active]);
 
   return (
     <Fragment>
@@ -229,13 +340,14 @@ export const Items = () => {
         alignItems={"center"}
         justifyContent={"space-between"}
       >
-        <Stack>
-          <Typography level="body-md" fontWeight={600}>
-            Items
-          </Typography>
-          <Typography level="body-sm">
-            Manage all procurement items in your system
-          </Typography>
+        <Stack
+          direction={"row"}
+          spacing={2}
+          alignItems={"center"}
+          justifyContent={"flex-start"}
+        >
+          <Typography level="body-sm">View:</Typography>
+          <StatusSwitch checked={active} onChange={setActive} />
         </Stack>
         <Stack direction={"row"} gap={1}>
           <SearchWithSuggestions
@@ -255,7 +367,7 @@ export const Items = () => {
       <ExpandableTable
         rows={items}
         isLoading={loading}
-        columns={itemCols()}
+        columns={itemCols(setSelectedData, handleUpdate, handleDelete)}
         newItemId={newItemId} // 👈 ADD THIS
         currentPage={pagination?.current_page}
         totalPages={pagination?.last_page}
@@ -443,56 +555,211 @@ export const Items = () => {
           rightButtonLabel="Confirm and Save"
         />
       )}
-      {/* {openUpdate && (
+      {openUpdate && (
         <ModalComponent
           title={
-            <Typography>
-              Update item{" "}
-              <Typography sx={{ color: "#C98503" }}>
-                ({updateData.name})
-              </Typography>
-            </Typography>
+            <Stack direction={"row"} spacing={1}>
+              <Typography>Edit item </Typography>
+              <Chip
+                sx={{
+                  maxWidth: 200, // adjust as needed
+                  "& .MuiChip-label": {
+                    overflow: "hidden",
+                    textOverflow: "ellipsis",
+                    whiteSpace: "nowrap",
+                  },
+                }}
+                variant="outlined"
+                color="success"
+              >
+                {updatedData.name}
+              </Chip>
+            </Stack>
           }
           height="auto"
+          minWidth={"480px"}
           maxWidth={"480px"}
           isOpen={openUpdate}
           handleClose={() => setOpenUpdate(false)}
           rightButtonAction={() => update()}
           content={
             <>
-              <Stack gap={2}>
-                <TextareaComponent
-                  name={"name"}
-                  label={"Item Name"}
-                  value={updatedData.name}
-                  onChange={(e) =>
-                    handleChangeInput("name", setUpdatedData, e.target.value)
-                  }
-                />
-                <InputComponent
-                  label={"Estimated budget"}
-                  name={"estimated_budget"}
-                  value={updatedData.estimated_budget}
-                  handleInput={(e) =>
-                    handleChangeInput(
-                      "estimated_budget",
-                      setUpdatedData,
-                      e.target.value
-                    )
-                  }
-                  type="number"
-                />
-                <InputComponent
-                  label={"Authorization PIN"}
-                  type="password"
-                  placeholder={"Enter your authorization PIN"}
-                  value={pin}
-                  setValue={setPin}
-                  helperText={
-                    "Confirm you action by typing-in your authorization PIN."
-                  }
-                />
-              </Stack>
+              <TabComponent
+                tabs={tabs}
+                index={index}
+                setIndex={setIndex}
+                bgcolor="inherit"
+              >
+                {index === "info" ? (
+                  <Stack my={2} spacing={2}>
+                    <InputComponent
+                      label={"Item Name"}
+                      name={"name"}
+                      value={updatedData.name}
+                      handleInput={(e) =>
+                        handleChangeInput(
+                          "name",
+                          setUpdatedData,
+                          e.target.value
+                        )
+                      }
+                      helperText={
+                        "Use a specific and descriptive naming convention for best results."
+                      }
+                    />
+                    <Stack direction={"row"} spacing={1}>
+                      <AutocompleteComponent
+                        label="Classification"
+                        name="classification"
+                        options={classification}
+                        getOptionLabel={(option) => option.name || ""}
+                        value={updatedData.classification}
+                        setValue={(val) =>
+                          handleSingleChangeAutcomplete(
+                            val,
+                            setUpdatedData,
+                            "classification"
+                          )
+                        }
+                      />
+
+                      <AutocompleteComponent
+                        label="Category"
+                        name="category"
+                        options={categories}
+                        getOptionLabel={(option) => option.name || ""}
+                        value={updatedData.category}
+                        setValue={(val) =>
+                          handleSingleChangeAutcomplete(
+                            val,
+                            setUpdatedData,
+                            "category"
+                          )
+                        }
+                      />
+                    </Stack>
+
+                    <Stack>
+                      <AutocompleteComponent
+                        label="Variant"
+                        name="variant"
+                        options={variants}
+                        getOptionLabel={(option) => option.name || ""}
+                        value={updatedData.variant}
+                        setValue={(val) =>
+                          handleSingleChangeAutcomplete(
+                            val,
+                            setUpdatedData,
+                            "variant"
+                          )
+                        }
+                      />
+                    </Stack>
+
+                    <Stack direction={"row"} spacing={1}>
+                      <AutocompleteComponent
+                        label="Unit of measure"
+                        name="unitOfMeasurement"
+                        options={units}
+                        getOptionLabel={(option) => option.name || ""}
+                        value={updatedData.unitOfMeasurement}
+                        setValue={(val) =>
+                          handleSingleChangeAutcomplete(
+                            val,
+                            setUpdatedData,
+                            "unitOfMeasurement"
+                          )
+                        }
+                      />
+
+                      <InputComponent
+                        name={"estimated_budget"}
+                        label={"Estimated Budget"}
+                        value={updatedData.estimatedBudget}
+                        handleInput={(e) =>
+                          handleChangeInput(
+                            "estimatedBudget",
+                            setUpdatedData,
+                            e.target.value
+                          )
+                        }
+                        startDecorator={"₱"}
+                      />
+                    </Stack>
+
+                    <Checkbox
+                      label="I have conducted a market research prior setting the budget estimates."
+                      sx={{ color: grey[900], fontSize: 13, pt: 1 }}
+                      size="sm"
+                      name="market_research_done"
+                      checked={updatedData.market_research_done}
+                      onChange={(e) =>
+                        handleChangeInput(
+                          "market_research_done",
+                          setUpdatedData,
+                          e.target.checked
+                        )
+                      }
+                    />
+                  </Stack>
+                ) : (
+                  <Stack>
+                    <Box
+                      height={"280px"}
+                      overflow="auto"
+                      // ref={specsContainerRef}
+                    >
+                      {(updatedData.specs.length > 0
+                        ? updatedData.specs
+                        : [""]
+                      ).map((spec, index) => (
+                        <Stack key={index} spacing={1} my={2}>
+                          <TextareaComponent
+                            label={`Specification ${index + 1}`}
+                            minRows={3}
+                            value={spec}
+                            onChange={(e) =>
+                              handleUpdateSpecChange(index, e.target.value)
+                            }
+                          />
+
+                          {updatedData.specs.length > 1 && (
+                            <Link
+                              color="danger"
+                              fontSize={12}
+                              justifyContent="right"
+                              onClick={() => removeUpdateSpec(index)}
+                            >
+                              Remove
+                            </Link>
+                          )}
+                        </Stack>
+                      ))}
+
+                      {updatedData.specs.length === 0 && (
+                        <Typography
+                          level="body-sm"
+                          textAlign="center"
+                          sx={{ mt: 1, color: "text.secondary" }}
+                        >
+                          No specifications yet. Start by adding one.
+                        </Typography>
+                      )}
+                    </Box>
+                    <Link
+                      onClick={addUpdateSpec}
+                      fontSize={13}
+                      color="success"
+                      endDecorator={<AddOutlined />}
+                      sx={{ my: 1 }}
+                    >
+                      Add another
+                    </Link>
+                  </Stack>
+                )}
+              </TabComponent>
+              <Divider />
+              <AuthorizationPinComponent setPin={setPin} />
             </>
           }
           hasActionButtons
@@ -505,11 +772,11 @@ export const Items = () => {
             closeConfirmation();
             setOpenDel(false);
           }}
-          rightButtonAction={() => deleteItem(updateData.id)}
+          rightButtonAction={() => deleteItem()}
           withAuthPin
           setAuthPin={setPin}
         />
-      )} */}
+      )}
     </Fragment>
   );
 };
