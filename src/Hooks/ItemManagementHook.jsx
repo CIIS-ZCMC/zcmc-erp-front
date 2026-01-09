@@ -236,6 +236,25 @@ const useItemsHook = create((set) => ({
     });
   },
 
+  updateClassification: async (id, body, param, callback) => {
+    update({
+      url: `${PATH}-classifications/${id}`,
+      // param: { id: param },
+      form: body,
+      success: (response) => {
+        const { message, data } = response.data;
+        set((state) => ({
+          classification: state.classification.map((itm) =>
+            itm.id === data.id ? { ...itm, ...data } : itm
+          ),
+        }));
+
+        callback(response.status, message, data);
+      },
+      failed: callback,
+    });
+  },
+
   archiveClassification: async (id, body, callBack) => {
     remove({
       url: `${PATH}-classifications/${id}`,

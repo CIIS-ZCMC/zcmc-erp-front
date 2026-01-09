@@ -21,7 +21,7 @@ import useSnackbarHook from "../../../Hooks/SnackbarHook";
 import SearchBarComponentv2 from "@Components/SearchBarWithdeBounce";
 
 export const Classification = () => {
-  const { pin, setPin } = usePinHook();
+  const { pin, setPin, resetPin } = usePinHook();
   const { setConfirmationModal, closeConfirmation } = useModalHook();
   const { showSnack } = useSnackbarHook();
   const {
@@ -34,12 +34,13 @@ export const Classification = () => {
     setSearchQuery,
     getArchivedClassification,
     archiveClassification,
+    updateClassification,
   } = useItemsHook();
   const [loading, setLoading] = useState(false);
   const [openNew, setOpenNew] = useState(false);
   const [openUpdate, setOpenUpdate] = useState(false);
   const [openDel, setOpenDel] = useState(false);
-  const [updateData, setUpdateData] = useState({
+  const [updatedData, setUpdatedData] = useState({
     name: "",
     description: "",
   });
@@ -62,8 +63,32 @@ export const Classification = () => {
     }));
   }
 
-  const handleUpdate = (data) => {
+  const handleUpdate = (row) => {
+    resetPin();
+    setUpdatedData({
+      name: row?.name || "",
+      description: row?.description || "",
+    });
     setOpenUpdate(true);
+  };
+
+  const update = () => {
+    const body = {
+      name: updatedData.name,
+      description: updatedData.description,
+      authorization_pin: pin,
+    };
+
+    updateClassification(selectedData.id, body, (status, message) => {
+      if (status === 200) {
+        showSnack(200, "Item successfully updated.");
+        setOpenUpdate(false);
+        resetPin();
+        getItemsPaginated({ page, per_page: 10 });
+      } else {
+        showSnack(500, message || "Failed to update item.");
+      }
+    });
   };
 
   const handleDelete = (params) => {

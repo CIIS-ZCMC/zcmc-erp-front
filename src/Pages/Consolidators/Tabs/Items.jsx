@@ -117,8 +117,8 @@ export const Items = () => {
       specs: row.item_specifications?.map((s) => s.description) || [""],
     });
 
-    if (row.category?.id) {
-      getVariantsByCategory(() => {}, row.category.id);
+    if (row.item_category?.id) {
+      getVariantsByCategory(() => {}, row.item_category.id);
     }
 
     setOpenUpdate(true);
@@ -332,6 +332,18 @@ export const Items = () => {
       });
     }
   }, [page, active]);
+
+  useEffect(() => {
+    if (!updatedData?.category?.id) {
+      return;
+    }
+
+    getVariantsByCategory((status, message) => {
+      if (status !== 200) {
+        console.error("Failed to fetch variants:", message);
+      }
+    }, updatedData.category.id);
+  }, [updatedData?.category?.id]);
 
   return (
     <Fragment>
