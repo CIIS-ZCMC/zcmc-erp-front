@@ -918,7 +918,12 @@ export const PPMP_VIEW_HEADER = [
   // },
 ];
 
-export const variantCols = (updateCallBack, delCallback) => [
+export const variantCols = (
+  active,
+  setSelectedData,
+  updateCallBack,
+  delCallback
+) => [
   { key: "name", label: "System", align: "left" },
   { key: "code", label: "Code", align: "left" },
   {
@@ -951,22 +956,29 @@ export const variantCols = (updateCallBack, delCallback) => [
             sx={{ justifyContent: "center", alignItems: "center" }}
           >
             <Chip
-              onClick={() => updateCallBack(params)}
+              onClick={() => {
+                setSelectedData(params);
+                updateCallBack(params);
+              }}
               size="md"
               variant="soft"
               color="neutral"
               startDecorator={<EditOutlined />}
+              sx={{ display: !active && "none" }}
             >
               Edit
             </Chip>
             <Chip
-              onClick={() => delCallback(params)}
+              onClick={() => {
+                setSelectedData(params);
+                delCallback(params);
+              }}
               size="md"
               variant="soft"
               color="neutral"
               startDecorator={<ArchiveOutlined />}
             >
-              Archive
+              {active ? "Archive" : "Unarchive"}
             </Chip>
           </Stack>
         </>
@@ -975,7 +987,12 @@ export const variantCols = (updateCallBack, delCallback) => [
   },
 ];
 
-export const categoryCols = (updateCallBack, delCallback) => [
+export const categoryCols = (
+  active,
+  setSelectedData,
+  updateCallBack,
+  delCallback
+) => [
   { key: "name", label: "Category", align: "left" },
   {
     key: "created_at",
@@ -1009,22 +1026,29 @@ export const categoryCols = (updateCallBack, delCallback) => [
             sx={{ justifyContent: "center", alignItems: "center" }}
           >
             <Chip
-              onClick={() => updateCallBack(params)}
+              onClick={() => {
+                setSelectedData(params);
+                updateCallBack(params);
+              }}
               size="md"
               variant="soft"
               color="neutral"
               startDecorator={<EditOutlined />}
+              sx={{ display: !active && "none" }}
             >
               Edit
             </Chip>
             <Chip
-              onClick={() => delCallback(params)}
+              onClick={() => {
+                setSelectedData(params);
+                delCallback(params);
+              }}
               size="md"
               variant="soft"
               color="neutral"
               startDecorator={<ArchiveOutlined />}
             >
-              Archive
+              {active ? "Archive" : "Unarchive"}
             </Chip>
           </Stack>
         </>
@@ -1080,8 +1104,9 @@ export const classificationCols = (
               variant="soft"
               color="neutral"
               startDecorator={<EditOutlined />}
+              sx={{ display: !active && "none" }}
             >
-              Update
+              Edit
             </Chip>
             <Chip
               onClick={() => {
@@ -1093,7 +1118,7 @@ export const classificationCols = (
               color="neutral"
               startDecorator={<ArchiveOutlined />}
             >
-              Archive
+              {active ? "Archive" : "Unarchive"}
             </Chip>
           </Stack>
         </>
@@ -1219,7 +1244,7 @@ export const itemCols = (
               startDecorator={<EditOutlined />}
               sx={{ display: !active && "none" }}
             >
-              Update
+              Edit
             </Chip>
             <Chip
               onClick={() => {

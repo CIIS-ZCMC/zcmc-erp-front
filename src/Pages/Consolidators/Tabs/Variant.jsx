@@ -15,19 +15,25 @@ import SearchWithSuggestions from "@Components/SearchWithSuggestions";
 import ButtonComponent from "@Components/Common/ButtonComponent";
 import { AddOutlined } from "@mui/icons-material";
 import { Typography } from "@mui/joy";
+import useItemsHook from "../../../Hooks/ItemManagementHook";
+import useSnackbarHook from "../../../Hooks/SnackbarHook";
 
 export const Variant = () => {
   const {
-    setType,
-    selectedData,
-    setSelectedData,
     terminology,
     pagination,
-    getPaginatedCategories,
-    setCurrentPage,
-    getTerminology,
-  } = useTerminologyHooks();
-
+    search_Query,
+    selectedData,
+    setSelectedData,
+    setSearchQuery,
+    getPaginatedTerminology,
+    getArchivedTerminology,
+    postNewTerminology,
+    updateTerminology,
+    archiveTerminology,
+    unarchiveTerminology,
+  } = useItemsHook();
+  const { showSnack } = useSnackbarHook();
   const { setOpenModal, setConfirmationModal } = useModalHook();
   const { pin, setPin } = usePinHook();
   const [search, setSearch] = useState("");
@@ -36,26 +42,6 @@ export const Variant = () => {
   const [openDel, setOpenDel] = useState(false);
   const [active, setActive] = useState(true);
   const [page, setPage] = useState(1);
-
-  const setUpdateType = (data) => {
-    setOpenUpdate(true);
-    setSelectedData(data);
-  };
-
-  const setDeleteType = (params) => {
-    setOpenDel(true);
-    setSelectedData(params);
-    const data = {
-      status: "error",
-      title: `Delete classification (${params?.name}) ?`,
-      description: "This action cannot be undone.",
-    };
-    setConfirmationModal(data);
-  };
-
-  const deleteItem = (selected) => {
-    setOpenDel(false);
-  };
 
   function transformData(data) {
     console.log("Transforming category data:", data);
@@ -69,17 +55,82 @@ export const Variant = () => {
     }));
   }
 
+  const handleUpdate = (params) => {
+    setOpenUpdate(true);
+  };
+
+  const handleDelete = (params) => {
+    setOpenDel(true);
+    const data = {
+      status: "error",
+      title: `Archive this terminology (${params?.name}) ?`,
+      description:
+        "This action cannot be undone. However, you may still restore the item anytime from the Archived view.",
+    };
+    setConfirmationModal(data);
+  };
+
+  const deleteTerminology = async (id) => {
+    const form = {
+      authorization_pin: pin,
+    };
+    if (!active) {
+      await unarchiveTerminology(selectedData.id, form, (status, message) => {
+        // setLoading(false);
+
+        if (status === 200) {
+          setOpenDel(false);
+          showSnack(200, message);
+        } else {
+          showSnack(500, message);
+        }
+      });
+    } else {
+      await archiveTerminology(selectedData.id, form, (status, message) => {
+        // setLoading(false);
+
+        if (status === 200) {
+          setOpenDel(false);
+          showSnack(200, message);
+        } else {
+          showSnack(500, message);
+        }
+      });
+    }
+  };
+
   useEffect(() => {
-    setLoading(true);
-    getTerminology({
-      page: pagination.current_page,
-      per_page: 10,
-      callBack: (status, message) => {
-        console.log("Callback received:", status, message);
-        setLoading(false);
-      },
-    });
-  }, []);
+    if (active) {
+      setLoading(true);
+      getPaginatedTerminology({
+        page,
+        per_page: 10,
+        search: search_Query,
+        callBack: (status, message) => {
+          setLoading(false);
+          console.log("Response:", status, message);
+        },
+      });
+    }
+  }, [page, search_Query, active]);
+
+  useEffect(() => {
+    if (!active) {
+      // When switching to archived, fetch page 1 of archived classifications
+      setPage(1); // optional: reset page to first page for archived
+      setLoading(true);
+
+      getArchivedTerminology({
+        page: page,
+        per_page: 10,
+        search: search_Query,
+        callBack: (status, message) => {
+          setLoading(false);
+          console.log("Archived classifications fetched:", status, message);
+        },
+      });
+    }
+  }, [page, search_Query, active]);
 
   return (
     <Fragment>
@@ -98,9 +149,13 @@ export const Variant = () => {
           <StatusSwitch checked={active} onChange={setActive} />
         </Stack>
         <Stack direction={"row"} spacing={2} alignItems={"center"}>
-          <SearchWithSuggestions />
+          <SearchBarComponentv2
+            placeholder="Search categories"
+            setValue={setSearchQuery}
+            value={search_Query}
+          />{" "}
           <ButtonComponent
-            label={"Add New Category"}
+            label={"Add New Terminology"}
             startDecorator={<AddOutlined />}
           />
         </Stack>
@@ -109,7 +164,12 @@ export const Variant = () => {
       <ExpandableTable
         isLoading={loading}
         rows={transformData(terminology)}
-        columns={variantCols(setUpdateType, setDeleteType)}
+        columns={variantCols(
+          active,
+          setSelectedData,
+          handleUpdate,
+          handleDelete
+        )}
         currentPage={pagination?.current_page}
         totalPages={pagination?.last_page}
         onNextPage={() => {
@@ -120,7 +180,7 @@ export const Variant = () => {
         }}
         totalRows={pagination?.total}
         stickyFooter
-        height="60vh"
+        height="62vh"
       />
 
       {/* {openUpdate && (
@@ -129,7 +189,7 @@ export const Variant = () => {
       {openDel && (
         <ConfirmationModalComponent
           status="error"
-          rightButtonAction={() => deleteItem(selectedData.id)}
+          rightButtonAction={() => deleteTerminology()}
           withAuthPin
           setAuthPin={setPin}
         />

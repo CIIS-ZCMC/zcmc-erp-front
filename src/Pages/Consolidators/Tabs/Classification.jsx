@@ -29,11 +29,13 @@ export const Classification = () => {
     pagination,
     search_Query,
     getClassificationsPaginated,
+    postNewClassification,
     selectedData,
     setSelectedData,
     setSearchQuery,
     getArchivedClassification,
     archiveClassification,
+    unarchiveClassification,
     updateClassification,
   } = useItemsHook();
   const [loading, setLoading] = useState(false);
@@ -62,6 +64,30 @@ export const Classification = () => {
       updated_at: item.meta.updated_at.split("T")[0],
     }));
   }
+
+  const addClassification = () => {
+    const body = {
+      name: newClassification.name,
+      description: newClassification.description,
+      authorization_pin: pin,
+    };
+
+    postNewClassification(body, (status, message, data) => {
+      console.log(status, message, data);
+      if (status === 201) {
+        showSnack(200, "New item successfully added to library.");
+
+        setNewClassification({
+          name: "",
+          description: "",
+        });
+        setOpenNew(false);
+        resetPin();
+      } else {
+        showSnack(500, "Failed to add new item.");
+      }
+    });
+  };
 
   const handleUpdate = (row) => {
     resetPin();
@@ -106,16 +132,33 @@ export const Classification = () => {
     const form = {
       authorization_pin: pin,
     };
-    await archiveClassification(selectedData.id, form, (status, message) => {
-      // setLoading(false);
+    if (!active) {
+      await unarchiveClassification(
+        selectedData.id,
+        form,
+        (status, message) => {
+          // setLoading(false);
 
-      if (status === 200) {
-        setOpenDel(false);
-        showSnack(200, message);
-      } else {
-        showSnack(500, message);
-      }
-    });
+          if (status === 200) {
+            setOpenDel(false);
+            showSnack(200, message);
+          } else {
+            showSnack(500, message);
+          }
+        }
+      );
+    } else {
+      await archiveClassification(selectedData.id, form, (status, message) => {
+        // setLoading(false);
+
+        if (status === 200) {
+          setOpenDel(false);
+          showSnack(200, message);
+        } else {
+          showSnack(500, message);
+        }
+      });
+    }
   };
 
   useEffect(() => {
@@ -174,7 +217,7 @@ export const Classification = () => {
             value={search_Query}
           />
           <ButtonComponent
-            label={"Add New Category"}
+            label={"Add New Classification"}
             startDecorator={<AddOutlined />}
             onClick={() => setOpenNew(true)}
           />
@@ -208,6 +251,9 @@ export const Classification = () => {
           description={"Name your classification to create it."}
           isOpen={openNew}
           handleClose={() => setOpenNew(false)}
+          hasActionButtons
+          rightButtonLabel="Confirm and Save"
+          rightButtonAction={() => addClassification()}
           content={
             <>
               <Stack mt={2} spacing={2}>
@@ -230,7 +276,7 @@ export const Classification = () => {
                   name={"description"}
                   label={"Description"}
                   value={newClassification.description}
-                  handleInput={(e) =>
+                  onChange={(e) =>
                     handleChangeInput(
                       "description",
                       setNewClassification,
@@ -241,11 +287,9 @@ export const Classification = () => {
                 <Divider sx={{ mt: 3 }} />
               </Stack>
 
-              <AuthorizationPinComponent />
+              <AuthorizationPinComponent setPin={setPin} />
             </>
           }
-          hasActionButtons
-          rightButtonLabel="Confirm and Save"
         />
       )}
       {openUpdate && (

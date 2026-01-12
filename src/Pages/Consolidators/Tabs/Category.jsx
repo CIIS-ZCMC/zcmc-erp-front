@@ -16,52 +16,135 @@ import SearchWithSuggestions from "@Components/SearchWithSuggestions";
 import ButtonComponent from "@Components/Common/ButtonComponent";
 import { AddOutlined } from "@mui/icons-material";
 import AuthorizationPinComponent from "@Components/AuthorizationPinComponent";
+import useItemsHook from "../../../Hooks/ItemManagementHook";
+import SearchBarComponentv2 from "@Components/SearchBarWithdeBounce";
+import { handleChangeInput } from "../../../Utils/HandleInput";
+import useSnackbarHook from "../../../Hooks/SnackbarHook";
 
 export const Category = () => {
   const {
-    setType,
-    setSelectedData,
     categories,
     pagination,
-    getPaginatedCategories,
-    setCurrentPage,
-    isLoading,
     search_Query,
-    setSearchQuery,
-    currentPage,
+    getPaginatedCategories,
     selectedData,
-  } = useCategoryHooks();
-  const { pin, setPin } = usePinHook();
+    setSelectedData,
+    setSearchQuery,
+    getArchivedCategories,
+    postNewCategory,
+    updateCategory,
+    archiveCategory,
+    unarchiveCategory,
+  } = useItemsHook();
+  const { pin, setPin, resetPin } = usePinHook();
+  const { showSnack } = useSnackbarHook();
+
   const { setOpenModal, setConfirmationModal } = useModalHook();
   const [loading, setLoading] = useState(false);
   const [openNew, setOpenNew] = useState(false);
   const [openUpdate, setOpenUpdate] = useState(false);
   const [openDel, setOpenDel] = useState(false);
-  const [updateData, setUpdateData] = useState({
+  const [newCategory, setNewCategory] = useState({
+    name: "",
+    description: "",
+  });
+  const [updatedData, setUpdatedData] = useState({
     name: "",
     description: "",
   });
   const [page, setPage] = useState(1);
   const [active, setActive] = useState(true);
 
-  const setUpdateType = (data) => {
-    setOpenUpdate(true);
-    setSelectedData(data);
+  const addCategory = () => {
+    const body = {
+      name: newCategory.name,
+      description: newCategory.description,
+      authorization_pin: pin,
+    };
+
+    postNewCategory(body, (status, message, data) => {
+      console.log(status, message, data);
+      if (status === 201) {
+        showSnack(200, "New item successfully added to library.");
+
+        setNewCategory({
+          name: "",
+          description: "",
+        });
+        setOpenNew(false);
+        resetPin();
+      } else {
+        showSnack(500, "Failed to add new item.");
+      }
+    });
   };
 
-  const setDeleteType = (params) => {
+  const handleUpdate = (row) => {
+    resetPin();
+    setUpdatedData({
+      name: row?.name || "",
+      description: row?.description || "",
+    });
+    setOpenUpdate(true);
+  };
+
+  const update = () => {
+    const body = {
+      name: updatedData.name,
+      description: updatedData.description,
+      authorization_pin: pin,
+    };
+
+    updateCategory(selectedData.id, body, (status, message) => {
+      if (status === 200) {
+        setOpenUpdate(false);
+
+        showSnack(200, "Item successfully updated.");
+        resetPin();
+      } else {
+        showSnack(500, message || "Failed to update item.");
+      }
+    });
+  };
+
+  const handleDelete = (params) => {
     setOpenDel(true);
-    setSelectedData(params);
     const data = {
       status: "error",
-      title: `Delete classification (${params?.name}) ?`,
-      description: "This action cannot be undone.",
+      title: `Archive this category (${params?.name}) ?`,
+      description:
+        "This action cannot be undone. However, you may still restore the item anytime from the Archived view.",
     };
     setConfirmationModal(data);
   };
 
-  const deleteItem = (selected) => {
-    setOpenDel(false);
+  const deleteCategory = async (id) => {
+    const form = {
+      authorization_pin: pin,
+    };
+    if (!active) {
+      await unarchiveCategory(selectedData.id, form, (status, message) => {
+        // setLoading(false);
+
+        if (status === 200) {
+          setOpenDel(false);
+          showSnack(200, message);
+        } else {
+          showSnack(500, message);
+        }
+      });
+    } else {
+      await archiveCategory(selectedData.id, form, (status, message) => {
+        // setLoading(false);
+
+        if (status === 200) {
+          setOpenDel(false);
+          showSnack(200, message);
+        } else {
+          showSnack(500, message);
+        }
+      });
+    }
   };
 
   function transformData(data) {
@@ -76,34 +159,38 @@ export const Category = () => {
   }
 
   useEffect(() => {
-    setLoading(true);
-    getPaginatedCategories({
-      page,
-      per_page: 15,
-      search: search_Query, // Pass the current search query
-      callBack: (status, message) => {
-        setLoading(false);
-        console.log("Response:", status, message);
-      },
-    });
-  }, [page, search_Query]);
-
-  useEffect(() => {
-    const handler = setTimeout(() => {
-      setCurrentPage(1); // 👈 Only change the page, let the other useEffect handle loading & fetching
-    }, 500);
-
-    return () => clearTimeout(handler);
-  }, [search_Query]);
-
-  useEffect(() => {
-    if (openUpdate && selectedData) {
-      setUpdateData({
-        name: selectedData?.name || "",
-        description: selectedData?.description || "",
+    if (active) {
+      setLoading(true);
+      getPaginatedCategories({
+        page,
+        per_page: 10,
+        search: search_Query,
+        callBack: (status, message) => {
+          setLoading(false);
+          console.log("Response:", status, message);
+        },
       });
     }
-  }, [selectedData, openUpdate]);
+  }, [page, search_Query, active]); // only triggers if view is active
+
+  // Watch for active/archived switch
+  useEffect(() => {
+    if (!active) {
+      // When switching to archived, fetch page 1 of archived classifications
+      setPage(1); // optional: reset page to first page for archived
+      setLoading(true);
+
+      getArchivedCategories({
+        page: page,
+        per_page: 10,
+        search: search_Query,
+        callBack: (status, message) => {
+          setLoading(false);
+          console.log("Archived classifications fetched:", status, message);
+        },
+      });
+    }
+  }, [page, search_Query, active]);
 
   return (
     <Fragment>
@@ -122,7 +209,11 @@ export const Category = () => {
           <StatusSwitch checked={active} onChange={setActive} />
         </Stack>
         <Stack direction={"row"} spacing={2} alignItems={"center"}>
-          <SearchWithSuggestions />
+          <SearchBarComponentv2
+            placeholder="Search categories"
+            setValue={setSearchQuery}
+            value={search_Query}
+          />
           <ButtonComponent
             label={"Add New Category"}
             startDecorator={<AddOutlined />}
@@ -134,7 +225,12 @@ export const Category = () => {
       <ExpandableTable
         rows={transformData(categories)}
         isLoading={loading}
-        columns={categoryCols(setUpdateType, setDeleteType)}
+        columns={categoryCols(
+          active,
+          setSelectedData,
+          handleUpdate,
+          handleDelete
+        )}
         currentPage={pagination?.current_page}
         totalPages={pagination?.last_page}
         onNextPage={() => {
@@ -153,24 +249,44 @@ export const Category = () => {
           description={"Name your category to create it."}
           isOpen={openNew}
           handleClose={() => setOpenNew(false)}
+          hasActionButtons
+          rightButtonLabel="Confirm and Save"
+          rightButtonAction={() => addCategory()}
           content={
             <>
-              <Stack mt={2}>
+              <Stack mt={2} spacing={2}>
                 <InputComponent
-                  name={"category"}
+                  name={"name"}
                   label={"Category Name"}
                   helperText={
                     "Use a specific and descriptive naming convention for best results."
+                  }
+                  value={newCategory.name}
+                  handleInput={(e) =>
+                    handleChangeInput("name", setNewCategory, e.target.value)
+                  }
+                />
+                <TextareaComponent
+                  name={"description"}
+                  label={"Description"}
+                  helperText={
+                    "Use a specific and descriptive naming convention for best results."
+                  }
+                  value={newCategory.description}
+                  onChange={(e) =>
+                    handleChangeInput(
+                      "description",
+                      setNewCategory,
+                      e.target.value
+                    )
                   }
                 />
                 <Divider sx={{ mt: 3 }} />
               </Stack>
 
-              <AuthorizationPinComponent />
+              <AuthorizationPinComponent setPin={setPin} />
             </>
           }
-          hasActionButtons
-          rightButtonLabel="Confirm and Save"
         />
       )}
       {openUpdate && (
@@ -178,15 +294,18 @@ export const Category = () => {
           title={`Update category: ${selectedData?.name}`}
           isOpen={openUpdate}
           handleClose={() => setOpenUpdate(false)}
+          rightButtonAction={() => update()}
+          rightButtonLabel="Confirm and Save"
           hasActionButtons
           content={
             <>
               <Stack gap={2}>
                 <InputComponent
-                  label={"Category Name"}
-                  value={updateData.name}
-                  onChange={(e) =>
-                    setUpdateData({ ...updateData, name: e.target.value })
+                  label={"Classification Name"}
+                  name={"name"}
+                  value={updatedData.name}
+                  handleInput={(e) =>
+                    handleChangeInput("name", setUpdatedData, e.target.value)
                   }
                   helperText={
                     "Use a specific and descriptive naming convention for best results."
@@ -194,21 +313,18 @@ export const Category = () => {
                 />
                 <TextareaComponent
                   label={"Description"}
-                  value={updateData.description}
+                  name={"description"}
+                  value={updatedData.description}
                   onChange={(e) =>
-                    setUpdateData({
-                      ...updateData,
-                      description: e.target.value,
-                    })
+                    handleChangeInput(
+                      "description",
+                      setUpdatedData,
+                      e.target.value
+                    )
                   }
                 />
                 <Divider />
-                <InputComponent
-                  label={"Authorization PIN"}
-                  helperText={
-                    "Confirm your action by typing-in your authorization PIN."
-                  }
-                />
+                <AuthorizationPinComponent setPin={setPin} />
               </Stack>
             </>
           }
@@ -217,7 +333,7 @@ export const Category = () => {
       {openDel && (
         <ConfirmationModalComponent
           status="error"
-          rightButtonAction={() => deleteItem(updateData.id)}
+          rightButtonAction={() => deleteCategory()}
           withAuthPin
           setAuthPin={setPin}
         />

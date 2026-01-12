@@ -28,7 +28,7 @@ function TextareaComponent({
     <FormControl>
       {label && (
         <FormLabel
-          sx={{ fontSize: 14, fontWeight: 500, color: darkMode && "white" }}
+          sx={{ fontSize: 14, fontWeight: 400, color: darkMode && "white" }}
         >
           {label}
           {isRequired && <span style={{ color: "red", fontSize: 18 }}>*</span>}

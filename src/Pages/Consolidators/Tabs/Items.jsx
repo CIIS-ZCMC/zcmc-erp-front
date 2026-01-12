@@ -419,7 +419,7 @@ export const Items = () => {
         }}
         totalRows={pagination?.total}
         stickyFooter
-        height="60vh"
+        height="62vh"
       />
       {openNew && (
         <ModalComponent
@@ -427,6 +427,7 @@ export const Items = () => {
           isOpen={openNew}
           handleClose={() => setOpenNew(false)}
           minWidth={"500px"}
+          maxWidth={"500px"}
           rightButtonAction={() => addItem()}
           content={
             <>
