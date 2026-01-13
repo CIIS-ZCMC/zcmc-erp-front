@@ -14,9 +14,16 @@ import StatusSwitch from "@Components/StatusSwitchComponent";
 import SearchWithSuggestions from "@Components/SearchWithSuggestions";
 import ButtonComponent from "@Components/Common/ButtonComponent";
 import { AddOutlined } from "@mui/icons-material";
-import { Typography } from "@mui/joy";
+import { Chip, ChipDelete, Divider, IconButton, Typography } from "@mui/joy";
 import useItemsHook from "../../../Hooks/ItemManagementHook";
 import useSnackbarHook from "../../../Hooks/SnackbarHook";
+import ModalComponent from "@Components/Common/Dialog/ModalComponent";
+import InputComponent from "@Components/Form/InputComponent";
+import TextareaComponent from "@Components/Form/TextareaComponent";
+import AuthorizationPinComponent from "@Components/AuthorizationPinComponent";
+import { handleChangeInput } from "../../../Utils/HandleInput";
+import { grey } from "@mui/material/colors";
+import MultipleAutocompleteComponent from "@Components/Form/MultipleAutcompleteComponent";
 
 export const Variant = () => {
   const {
@@ -36,24 +43,20 @@ export const Variant = () => {
   const { showSnack } = useSnackbarHook();
   const { setOpenModal, setConfirmationModal } = useModalHook();
   const { pin, setPin } = usePinHook();
+
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
+  const [openNew, setOpenNew] = useState(false);
   const [openUpdate, setOpenUpdate] = useState(false);
   const [openDel, setOpenDel] = useState(false);
   const [active, setActive] = useState(true);
   const [page, setPage] = useState(1);
-
-  function transformData(data) {
-    console.log("Transforming category data:", data);
-    return data.map((item) => ({
-      id: item.id,
-      name: item.system,
-      code: item.code,
-      description: item.description,
-      created_at: item.meta.created_at.split("T")[0],
-      updated_at: item.meta.updated_at.split("T")[0],
-    }));
-  }
+  const [newTerm, setNewTerm] = useState({
+    name: "",
+    code: [],
+    item_category: [],
+    description: "",
+  });
 
   const handleUpdate = (params) => {
     setOpenUpdate(true);
@@ -97,6 +100,25 @@ export const Variant = () => {
         }
       });
     }
+  };
+
+  const addCode = () => {
+    if (!newTerm.tempCode?.trim()) return;
+
+    if (!newTerm.code.includes(newTerm.tempCode.trim())) {
+      setNewTerm((prev) => ({
+        ...prev,
+        code: [...prev.code, prev.tempCode.trim()],
+        tempCode: "",
+      }));
+    }
+  };
+
+  const removeCode = (code) => {
+    setNewTerm((prev) => ({
+      ...prev,
+      code: prev.code.filter((c) => c !== code),
+    }));
   };
 
   useEffect(() => {
@@ -157,13 +179,14 @@ export const Variant = () => {
           <ButtonComponent
             label={"Add New Terminology"}
             startDecorator={<AddOutlined />}
+            onClick={() => setOpenNew(true)}
           />
         </Stack>
       </Stack>
 
       <ExpandableTable
         isLoading={loading}
-        rows={transformData(terminology)}
+        rows={terminology}
         columns={variantCols(
           active,
           setSelectedData,
@@ -182,8 +205,96 @@ export const Variant = () => {
         stickyFooter
         height="62vh"
       />
+      {openNew && (
+        <ModalComponent
+          title="Create a new terminology"
+          description={"Name your terminology to create it."}
+          isOpen={openNew}
+          handleClose={() => setOpenNew(false)}
+          hasActionButtons
+          rightButtonLabel="Confirm and Save"
+          // rightButtonAction={() => addCategory()}
+          content={
+            <>
+              <Stack mt={2} spacing={2}>
+                <InputComponent
+                  name={"name"}
+                  label={"System Label"}
+                  placeholder={"Enter system label"}
+                  helperText={
+                    "Use a specific and descriptive naming convention for best results."
+                  }
+                  value={newTerm.name}
+                  handleInput={(e) =>
+                    handleChangeInput("name", setNewTerm, e.target.value)
+                  }
+                />
+                <TextareaComponent
+                  name={"description"}
+                  label={"Description"}
+                  placeholder={"Enter description"}
+                  helperText={
+                    "Use a specific and descriptive naming convention for best results."
+                  }
+                  value={newTerm.description}
+                  onChange={(e) =>
+                    handleChangeInput("description", setNewTerm, e.target.value)
+                  }
+                />
+
+                <InputComponent
+                  name="code"
+                  label="Code"
+                  placeholder={"Enter code"}
+                  value={newTerm.tempCode || ""}
+                  handleInput={(e) =>
+                    setNewTerm((prev) => ({
+                      ...prev,
+                      tempCode: e.target.value,
+                    }))
+                  }
+                  endDecorator={
+                    <IconButton onClick={addCode}>
+                      <AddOutlined />
+                    </IconButton>
+                  }
+                />
+                <Stack
+                  direction="row"
+                  spacing={1}
+                  flexWrap="wrap"
+                  sx={{
+                    border:
+                      newTerm.code.length > 0 && `1px dashed ${grey[400]}`,
+                    borderRadius: 10,
+                    padding: newTerm.code.length > 0 && 1,
+                  }}
+                >
+                  {newTerm.code.map((code) => (
+                    <Chip
+                      key={code}
+                      variant="soft"
+                      color="primary"
+                      endDecorator={
+                        <ChipDelete onClick={() => removeCode(code)} />
+                      }
+                    >
+                      {code}
+                    </Chip>
+                  ))}
+                </Stack>
+                <MultipleAutocompleteComponent label={"Category "} />
+                <Divider sx={{ mt: 3 }} />
+              </Stack>
+
+              <AuthorizationPinComponent setPin={setPin} />
+            </>
+          }
+        />
+      )}
 
       {/* {openUpdate && (
+
 
       )} */}
       {openDel && (

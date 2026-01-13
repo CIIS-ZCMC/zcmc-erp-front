@@ -147,17 +147,6 @@ export const Category = () => {
     }
   };
 
-  function transformData(data) {
-    return data.map((item) => ({
-      id: item.id,
-      name: item.name,
-      code: item.code,
-      description: item.description,
-      created_at: item.meta.created_at.split("T")[0],
-      updated_at: item.meta.updated_at.split("T")[0],
-    }));
-  }
-
   useEffect(() => {
     if (active) {
       setLoading(true);
@@ -223,7 +212,7 @@ export const Category = () => {
       </Stack>
 
       <ExpandableTable
-        rows={transformData(categories)}
+        rows={categories}
         isLoading={loading}
         columns={categoryCols(
           active,

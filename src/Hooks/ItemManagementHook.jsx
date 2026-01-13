@@ -595,11 +595,12 @@ const useItemsHook = create((set) => ({
   getPaginatedTerminology: async ({
     page = 1,
     per_page = 15,
+    search,
     callBack,
   } = {}) => {
     read({
       url: `${PATH}-reference-terminologies`,
-      params: { page, per_page },
+      params: { page, per_page, search },
       failed: (err) => {
         set({ isLoading: false, error: err });
         if (callBack)

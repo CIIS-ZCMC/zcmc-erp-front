@@ -924,14 +924,14 @@ export const variantCols = (
   updateCallBack,
   delCallback
 ) => [
-  { key: "name", label: "System", align: "left" },
+  { key: "system", label: "System", align: "left" },
   { key: "code", label: "Code", align: "left" },
   {
     key: "created_at",
     label: "Created on",
     align: "left",
     render: (params) => {
-      return moment(params.created_at).format("LL");
+      return moment(params.meta.created_at).format("LL");
     },
   },
   {
@@ -939,7 +939,7 @@ export const variantCols = (
     label: "Updated on",
     align: "left",
     render: (params) => {
-      return moment(params.created_at).format("LL");
+      return moment(params.meta.created_at).format("LL");
     },
   },
   {
@@ -1000,7 +1000,7 @@ export const categoryCols = (
 
     align: "left",
     render: (params) => {
-      return moment(params.created_at).format("LL");
+      return moment(params.meta.created_at).format("LL");
     },
   },
   {
@@ -1009,7 +1009,7 @@ export const categoryCols = (
 
     align: "left",
     render: (params) => {
-      return moment(params.created_at).format("LL");
+      return moment(params.meta.created_at).format("LL");
     },
   },
   {
@@ -1071,7 +1071,7 @@ export const classificationCols = (
 
     align: "left",
     render: (params) => {
-      return moment(params.created_at).format("LL");
+      return moment(params.meta.created_at).format("LL");
     },
   },
   {
@@ -1080,7 +1080,7 @@ export const classificationCols = (
 
     align: "left",
     render: (params) => {
-      return moment(params.updated_at).format("LL");
+      return moment(params.meta.updated_at).format("LL");
     },
   },
   {

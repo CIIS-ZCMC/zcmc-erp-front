@@ -225,7 +225,7 @@ export const Classification = () => {
       </Stack>
       <ExpandableTable
         isLoading={loading}
-        rows={transformData(classification)}
+        rows={classification}
         columns={classificationCols(
           active,
           setSelectedData,
