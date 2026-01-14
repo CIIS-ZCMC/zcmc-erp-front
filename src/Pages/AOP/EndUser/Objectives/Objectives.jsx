@@ -45,7 +45,7 @@ const Objectives = () => {
 
   const { aopId } = useParams();
 
-  const aopApplication = useAopApplication()
+  const aopApplication = useAopApplication();
   const functionType = useFunctionType();
   const objective = useObjective();
   const successIndicator = useSuccessIndicator();
@@ -77,8 +77,8 @@ const Objectives = () => {
   const [search, setSearch] = useState("");
 
   useEffect(() => {
-    getObjectivesBySector()
-  }, [])
+    getObjectivesBySector();
+  }, []);
 
   useEffect(() => {
     // console.log('aop application object', aopApplication)
@@ -98,7 +98,7 @@ const Objectives = () => {
     isLoading,
   ]);
 
-  const { status_id } = aopApplication //get status id on aop application object
+  const { status_id } = aopApplication; //get status id on aop application object
 
   const {
     OBJECTIVES_EMPTY_STATE_TITLE,
@@ -315,25 +315,27 @@ const Objectives = () => {
             label={"Add an Objective"}
             disabled={status_id === 4 || status_id === 2}
             isLoading={isLoading}
-          // endDecorator={<Plus size={16} />}
-          // disabled={
-          //   isApproved
-          //   // !show || disabledEditMode(APPLICATION_OBJECTIVE_ID, remarks, comments, disabled) for socket
-          // }
+            // endDecorator={<Plus size={16} />}
+            // disabled={
+            //   isApproved
+            //   // !show || disabledEditMode(APPLICATION_OBJECTIVE_ID, remarks, comments, disabled) for socket
+            // }
           />
         </Stack>
       </BoxComponent>
 
-      {isLoading && <Stack
-        direction={"column"}
-        alignItems={"center"}
-        justifyContent={"center"}
-        textAlign={"center"}
-        my={2}
-        height={"65vh"}
-      >
-        <ThreeDotsLoader />
-      </Stack>}
+      {isLoading && (
+        <Stack
+          direction={"column"}
+          alignItems={"center"}
+          justifyContent={"center"}
+          textAlign={"center"}
+          my={2}
+          height={"65vh"}
+        >
+          <ThreeDotsLoader />
+        </Stack>
+      )}
 
       {isLoading ? (
         <Stack
@@ -367,16 +369,15 @@ const Objectives = () => {
             <ButtonComponent
               onClick={() => handleOpenObjectivesModal()}
               label={"Add an Objective"}
-            // endDecorator={<Plus size={16} />}
+              // endDecorator={<Plus size={16} />}
             />
           </Stack>
         </>
       ) : (
         <>
-          {filteredObjectives.length === 0
-            ?
+          {filteredObjectives.length === 0 ? (
             <NoResultComponent />
-            :
+          ) : (
             <Grid
               mt={2}
               container
@@ -392,6 +393,8 @@ const Objectives = () => {
                   objective,
                   activities_count,
                   other_success_indicator,
+                  other_objective,
+                  type_of_function,
                 }) => (
                   <Grid key={id} size={4} lg={4} md={6} sm={12}>
                     <CardComponent
@@ -409,7 +412,9 @@ const Objectives = () => {
                           success_indicator={success_indicator}
                           objective={objective}
                           other_success_indicator={other_success_indicator}
+                          other_objective={other_objective}
                           status={false}
+                          type_of_function={type_of_function}
                         />
                       }
                       cardActions={
@@ -420,7 +425,9 @@ const Objectives = () => {
                               state: {
                                 objectiveId: id, // do not change state name
                                 aopId: aop_application_id,
-                                objective: objective.description,
+                                objective:
+                                  objective?.description ||
+                                  other_objective?.description,
                               },
                             });
                           }}
@@ -431,7 +438,7 @@ const Objectives = () => {
                 )
               )}
             </Grid>
-          }
+          )}
         </>
       )}
 

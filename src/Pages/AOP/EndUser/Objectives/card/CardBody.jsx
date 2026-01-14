@@ -7,12 +7,20 @@ import InputComponent from "@Components/Form/InputComponent";
 
 import { ThreeDotsLoader } from "@Components/Common/Loading/ThreeDotsLoader";
 
-const CardBody = ({ status, success_indicator, objective, other_success_indicator, activities }) => {
-  if (!objective) {
+const CardBody = ({
+  status,
+  success_indicator,
+  other_objective,
+  objective,
+  other_success_indicator,
+  activities,
+  type_of_function,
+}) => {
+  if (!objective && !other_objective) {
     return <ThreeDotsLoader />; // Still loading or not yet selected
   }
 
-  const { description, type_of_function } = objective;
+  // const { description, type_of_function } = objective;
 
   return (
     <Stack direction={"row"} alignItems={"flex-start"} gap={2}>
@@ -21,7 +29,7 @@ const CardBody = ({ status, success_indicator, objective, other_success_indicato
           <Typography
             level={"body-sm"}
             textAlign={"left"}
-          // sx={{ flex: 1 }}
+            // sx={{ flex: 1 }}
           >
             {type_of_function?.type}
           </Typography>
@@ -37,7 +45,9 @@ const CardBody = ({ status, success_indicator, objective, other_success_indicato
               textAlign: "left",
             }}
           >
-            {description}
+            {objective !== null
+              ? objective?.description
+              : other_objective?.description}
           </Typography>
         ) : (
           <InputComponent placeholder={"Objective Name"} />
@@ -60,7 +70,9 @@ const CardBody = ({ status, success_indicator, objective, other_success_indicato
               textOverflow: "ellipsis", // show "..." at the end
             }}
           >
-            {success_indicator ? success_indicator?.description : other_success_indicator.description}
+            {success_indicator !== null
+              ? success_indicator?.description
+              : other_success_indicator?.description}
           </Typography>
         ) : (
           <TextareaComponent placeholder={"Success indicator"} />

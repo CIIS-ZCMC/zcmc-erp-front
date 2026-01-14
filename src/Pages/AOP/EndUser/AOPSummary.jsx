@@ -88,12 +88,12 @@ const AOPSummary = () => {
   const applicationsObjectives = application_objectives;
 
   const SUBMIT_ALERT_MESSAGES = {
-    2: "Official Submission Confirmation",
+    1: "Official Submission Confirmation",
     6: "Official Resubmission Confirmation",
   };
 
   const SUBMIT_ALERT_DESC = {
-    2: `You are about to officially create PMMP for Fiscal Year ${year}.`,
+    1: `You are about to officially create PMMP for Fiscal Year ${year}.`,
     6: `You are about to resubmit PMMP for Fiscal Year ${year}.`,
   };
 

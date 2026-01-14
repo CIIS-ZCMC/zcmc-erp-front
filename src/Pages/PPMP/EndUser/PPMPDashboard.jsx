@@ -901,9 +901,7 @@ function PPMPDashboard(props) {
       <ModalComponent
         isOpen={openSave}
         title={"Official Submission Confirmation"}
-        description={
-          "You are about to officially submit your Project Procurement Management Plan for Fiscal Year 2026 to the approving bodies for review and approval."
-        }
+        description={`You are about to officially submit your Annual Operational Plan and Project Procurement Management Plan for Fiscal Year ${nextYear} to the approving bodies for review and approval.`}
         maxWidth={"571px"}
         handleClose={() => setOpenSave(false)}
         content={

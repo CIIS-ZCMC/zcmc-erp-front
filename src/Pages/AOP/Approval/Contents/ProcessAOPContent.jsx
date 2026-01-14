@@ -35,7 +35,7 @@ const ProcessAOPContent = () => {
   const { user } = useAuth();
 
   const canProcess = approvalTimeline?.some(
-    (item) => item.approver_user?.id === user?.id && item.status === "submitted"
+    (item) => item.approver_user?.id === user?.id && item.status === "pending"
   );
   // STATE
   const [processData, setProcessData] = useState({ action: "approved" });

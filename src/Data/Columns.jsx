@@ -1592,7 +1592,7 @@ export const PPMP_HEADERS = (status, editingRows, handleComments) => [
   {
     id: "actions",
     label: "Actions",
-    align: status?.name === "draft" ? "right" : "center",
+    align: status?.name === "draft" ? "center" : "right",
     width: status?.name === "draft" ? "200px" : "auto",
     render: (row, open, onToggle, handleEditToggle, handleDeletePPMP) => {
       const isEditing = editingRows[row.id];
@@ -1601,12 +1601,14 @@ export const PPMP_HEADERS = (status, editingRows, handleComments) => [
           direction={"row"}
           spacing={1}
           justifyContent={
-            status?.name === "draft" || status?.name === "returned"
+            status?.name === "draft"
+              ? "center"
+              : status?.name === "returned"
               ? "right"
               : "center"
           }
         >
-          {(status?.name !== "draft" || status?.name !== "returned") && (
+          {status?.name !== "draft" && (
             <ChipComponent
               label={row.comments_count}
               startDecorator={<CommentOutlined />}
