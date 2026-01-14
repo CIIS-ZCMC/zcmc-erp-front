@@ -21,13 +21,16 @@ const Draft = ({ status }) => {
   return (
     <>
       <Stack
-        bgcolor={"#FFF4E5"}
+        bgcolor={STATUS_LABELS[status] !== "Approved" ? "#FFF4E5" : ""}
         borderRadius={5}
         direction={"row"}
         alignItems="center"
         padding={2}
         spacing={STATUS_LABELS[status] !== "Approved" ? 1.5 : 0}
         width={"75%"}
+        justifyContent={
+          STATUS_LABELS[status] !== "Approved" ? "space-between" : "right"
+        }
       >
         <Warning
           sx={{
@@ -36,7 +39,10 @@ const Draft = ({ status }) => {
             display: STATUS_LABELS[status] !== "Approved" ? "flex" : "none",
           }}
         />
-        <Box width={"100%"}>
+        <Box
+          width={"100%"}
+          display={STATUS_LABELS[status] !== "Approved" ? "flex" : "none"}
+        >
           <Typography level="body-sm" color="warning" sx={{ fontWeight: 600 }}>
             Status: {STATUS_LABELS[status] ?? ""}
           </Typography>
@@ -45,13 +51,10 @@ const Draft = ({ status }) => {
           </Typography>
         </Box>
 
-        <Box width={"450px"}>
-          <ButtonComponent
-            label={AOP_BUTTON_LABEL[status] ?? "Create PPMP"}
-            onClick={() => navigate("/aop/summary")}
-            fullWidth={"true"}
-          />
-        </Box>
+        <ButtonComponent
+          label={AOP_BUTTON_LABEL[status] ?? "Create PPMP"}
+          onClick={() => navigate("/aop/summary")}
+        />
       </Stack>
     </>
   );

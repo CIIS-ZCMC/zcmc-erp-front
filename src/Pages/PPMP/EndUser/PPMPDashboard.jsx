@@ -171,7 +171,7 @@ function PPMPDashboard(props) {
 
   const [openSave, setOpenSave] = useState(false);
   const [pin, setPin] = useState("");
-  const [year, setYear] = useState(2026);
+  const [year, setYear] = useState(nextYear);
 
   const [openViewItemRequest, setOpenItemRequest] = useState();
   const [openNewRequest, setOpenNewRequest] = useState();
