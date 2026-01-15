@@ -9,7 +9,7 @@ const BASE_URL = {
 };
 
 const erp_api = new axios.create({
-  baseURL: BASE_URL.development,
+  baseURL: BASE_URL.local, //CHANGE TO DEVELOPMENT WHEN IN PRODUCTION
   withCredentials: true,
   headers: {
     Accept: "application/json",

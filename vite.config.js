@@ -10,8 +10,8 @@ export default defineConfig({
       "@Components": path.resolve(__dirname, "./src/Components"),
     },
   },
-  server: {
-    host: "192.168.36.163", // alyans
-    port: 5173,
-  },
+  // server: {
+  //   host: "192.168.36.163", // alyans
+  //   port: 5173,
+  // },
 });
