@@ -2,7 +2,7 @@ import React from "react";
 
 import { Stack, Box, Typography, useTheme } from "@mui/joy";
 import { useNavigate } from "react-router-dom";
-import { Warning } from "@mui/icons-material";
+import { Warning, WarningAmber, WarningOutlined } from "@mui/icons-material";
 
 import ButtonComponent from "@Components/Common/ButtonComponent";
 
@@ -30,7 +30,7 @@ const Draft = ({ status }) => {
         width={"75%"}
         justifyContent={STATUS_LABELS[status] === "Approved" && "right"}
       >
-        <Warning
+        <WarningAmber
           sx={{
             color: color.warning,
             fontSize: 20,

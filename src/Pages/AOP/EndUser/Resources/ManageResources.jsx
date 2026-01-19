@@ -78,7 +78,7 @@ function ManageResources(props) {
   const navigate = useNavigate();
   const breadcrumbs = useAOPBreadcrumbs();
 
-  const { aop } = useAOPStore()
+  const { aop } = useAOPStore();
   const status = aop.status.id;
 
   // useEffect(() => {
@@ -215,12 +215,17 @@ function ManageResources(props) {
           <Stack width={"100%"}>
             <Stack direction={"row"} justifyContent={"space-between"}>
               <Stack direction={"row"} spacing={1} width="100%">
-                <CalendarToday sx={{ fontSize: 30, color: blue[800] }} />{" "}
+                <CalendarToday sx={{ fontSize: 20, color: blue[800] }} />{" "}
                 <Stack>
                   <Typography level="body-xs">Timeframe</Typography>
                   <Typography level="title-sm">
-                    {moment(activity.start_month).format("MMMM")}-{" "}
-                    {moment(activity.end_month).format("MMMM")}
+                    {activity?.start_month
+                      ? moment(activity.start_month).format("MMMM")
+                      : ""}
+                    -{" "}
+                    {activity?.end_month
+                      ? moment(activity.end_month).format("MMMM")
+                      : ""}
                   </Typography>
                 </Stack>
               </Stack>
@@ -228,8 +233,8 @@ function ManageResources(props) {
               <Stack direction={"row"} spacing={1} width="100%">
                 <Box
                   sx={{ bgcolor: blue[800] }}
-                  width={15}
-                  height={15}
+                  width={10}
+                  height={10}
                   borderRadius={50}
                   display="flex"
                   justifyContent="center"
@@ -251,7 +256,7 @@ function ManageResources(props) {
               </Stack>
 
               <Stack direction={"row"} spacing={1} width="100%">
-                <CheckCircle sx={{ fontSize: 30, color: blue[800] }} />{" "}
+                <CheckCircle sx={{ fontSize: 26, color: blue[800] }} />{" "}
                 <Stack>
                   <Typography level="body-xs">GAD-related activity</Typography>
                   <Typography level="title-sm">
@@ -324,7 +329,7 @@ function ManageResources(props) {
       ) : (
         <BoxComponent
           borderColor={grey[300]}
-          height={"60vh"}
+          height={"55vh"}
           borderRadius={10}
           justifyContent={"center"}
           alignItems={"center"}

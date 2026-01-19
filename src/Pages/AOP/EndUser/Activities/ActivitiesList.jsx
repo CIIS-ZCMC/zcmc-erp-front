@@ -43,6 +43,8 @@ const ActivitiesList = ({
       <CardComponent
         height={"auto"}
         statusColor={is_draft ? "red" : "green"}
+        boxShadow={"sm"}
+        bgcolor={"#F9FAFB"}
         cardHeader={
           <CardHeader
             status={status}
@@ -56,8 +58,9 @@ const ActivitiesList = ({
             comments={comments}
             activity={activity_name ? activity_name : activity_code}
             cost={total_cost}
-            timeframe={`${start_month ? formattedStartMonth : ""} - ${end_month ? formattedEndMonth : ""
-              }`}
+            timeframe={`${start_month ? formattedStartMonth : ""} - ${
+              end_month ? formattedEndMonth : ""
+            }`}
           />
         }
         cardActions={

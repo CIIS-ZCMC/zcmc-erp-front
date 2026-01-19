@@ -288,7 +288,7 @@ function DashboardEndUser(props) {
                 borderBottomRightRadius: 10,
                 overflow: "hidden",
               }}
-              height={"66vh"}
+              height={"65vh"}
             >
               {aop?.application_objectives.length === 0 ? (
                 <Grid xs={12}>

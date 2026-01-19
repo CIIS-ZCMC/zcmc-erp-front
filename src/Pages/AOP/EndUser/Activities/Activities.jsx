@@ -1,6 +1,13 @@
 import React, { useEffect, useState, useMemo } from "react";
 
-import { Stack, Typography, Breadcrumbs, Divider, Grid, Tooltip } from "@mui/joy";
+import {
+  Stack,
+  Typography,
+  Breadcrumbs,
+  Divider,
+  Grid,
+  Tooltip,
+} from "@mui/joy";
 
 import { useParams, useLocation } from "react-router-dom";
 
@@ -15,7 +22,6 @@ import InputComponent from "@Components/Form/InputComponent";
 import SearchBarComponent from "@Components/SearchBarComponent";
 import ConfirmationModalComponent from "@Components/Common/Dialog/ConfirmationModalComponent";
 import SearchBarComponentv2 from "@Components/SearchBarWithdeBounce";
-
 
 import ActivitiesModal from "./modal/ActivitiesModal";
 import ActivitiesList from "./ActivitiesList";
@@ -32,13 +38,15 @@ import useAOPBreadcrumbs from "../../../../Hooks/AOP/AOPBreadcrumbs";
 import ChipComponent from "@Components/Common/ChipComponent";
 
 import { isAopDisabled } from "../../../../Utils/AopStatus";
+import { CheckCircle, Circle } from "@mui/icons-material";
+import useSnackbarHook from "../../../../Hooks/SnackbarHook";
 
 const centeredStyle = {
   direction: "column",
   alignItems: "center",
   justifyContent: "center",
   textAlign: "center",
-  height: "65vh",
+  height: "60vh",
   my: 2,
 };
 
@@ -48,7 +56,7 @@ const Activities = () => {
 
   const { state } = location;
 
-  const { aop } = useAOPStore()
+  const { aop } = useAOPStore();
 
   const {
     applicationActivities,
@@ -73,6 +81,7 @@ const Activities = () => {
 
   const { setAlertDialog, setConfirmationModal, closeConfirmation } =
     useModalHook();
+  const { showSnack } = useSnackbarHook();
   const breadcrumbs = useAOPBreadcrumbs();
 
   const {
@@ -111,12 +120,12 @@ const Activities = () => {
     });
   }, []);
 
-
-  const status = aop.status.id
-  const objectiveName = applicationActivities?.[0]?.objective_code || state?.objective
+  const status = aop.status.id;
+  const objectiveName =
+    applicationActivities?.[0]?.objective_code || state?.objective;
 
   useEffect(() => {
-    console.log(aop)
+    console.log(aop);
     // console.log('current activity value:', activity)
     // console.log('current start month', startMonth)
     // console.log('current end month:', endMonth)
@@ -133,7 +142,6 @@ const Activities = () => {
     target,
     applicationActivities,
   ]);
-
 
   const filteredActivities = useMemo(() => {
     if (!search) return applicationActivities;
@@ -282,11 +290,8 @@ const Activities = () => {
     try {
       await createActivity(payload, (status, message) => {
         if (status === 201) {
-          setAlertDialog({
-            status: "success",
-            title: `${message}`,
-            description: "",
-          });
+          showSnack(200, message);
+
           setIsLoading(false);
           // handleCloseModal()
           setIsCountModal(false);
@@ -319,100 +324,75 @@ const Activities = () => {
         }
         items={breadcrumbs}
       />
-      <BoxComponent mt={2} p={2}>
-        <Stack direction={"column"} spacing={1}>
-
-          <Stack direction={"row"} spacing={1} alignItems={"center"}>
-            <Typography fontWeight={600}>{MANAGE_ACTIVITIES_HEADER}</Typography>
-            <ChipComponent
-              //change this
-              label={objectiveName}
-              color={"success"}
-              variant={"outlined"}
-              fontSize={13}
-              size={"lg"}
-            />
-          </Stack>
-
-          <Stack
-            display={'flex'}
-            flexDirection={'row'}
-            gap={2}
-            alignItems={'start'}
-            justifyContent={'space-between'}
-          >
-
+      <BoxComponent mt={2} p={2} bgColor={"#F9FAFB"} boxShadow="xs">
+        <Stack
+          display={"flex"}
+          flexDirection={"row"}
+          gap={2}
+          alignItems={"flex-end"}
+          justifyContent={"space-between"}
+        >
+          <Stack>
+            <Typography
+              fontWeight={600}
+              endDecorator={
+                <ChipComponent
+                  //change this
+                  label={"Objective: " + objectiveName}
+                  color={"success"}
+                  variant={"outlined"}
+                  fontSize={13}
+                  size={"lg"}
+                />
+              }
+            >
+              {MANAGE_ACTIVITIES_HEADER}
+            </Typography>
             <Typography level="body-xs" fontWeight={400}>
               {MANAGE_ACTIVITIES_SUBHEADER}
             </Typography>
-
-            <Stack
-              display={'flex'}
-              flexDirection={'col'}
-              alignItems={'center'}
-              gap={.5}
-
-            >
-              <Stack
-                display={'flex'}
-                flexDirection={'row'}
-                gap={1}
-              >
-                <ChipComponent
-                  size={'sm'}
-                  variant={'solid'}
-                  color={'success'}
-                />
-
-                <Typography level="body-xs" fontWeight={400}>
-                  Completed Activity Details
-                </Typography>
-              </Stack>
-
-              <Stack
-                display={'flex'}
-                flexDirection={'row'}
-                gap={1}
-              >
-                <ChipComponent
-                  size={'sm'}
-                  variant={'solid'}
-                  color={'danger'}
-                />
-
-                <Typography level="body-xs" fontWeight={400}>
-                  Incomplete Activity Details
-                </Typography>
-              </Stack>
-            </Stack>
-
           </Stack>
-
-
-        </Stack>
-
-        <Divider sx={{ my: 1 }} />
-
-        <Stack
-          direction={"row"}
-          spacing={1}
-          alignItems={"center"}
-          justifyContent={"space-between"}
-        >
-          <SearchBarComponentv2
-            value={search}
-            setValue={setSearch}
-            placeholder="search activities..."
-            fullWidth
-          />
 
           <ButtonComponent
             onClick={() => setIsCountModal(true)}
             label={"Add Activity"}
             disabled={isAopDisabled(status)}
-          // endDecorator={<Plus size={16} />}
-          // disabled={!show || disabledEditMode(APPLICATION_OBJECTIVE_ID, remarks, comments, disabled)}
+            startDecorator={<CheckCircle />}
+            // endDecorator={<Plus size={16} />}
+            // disabled={!show || disabledEditMode(APPLICATION_OBJECTIVE_ID, remarks, comments, disabled)}
           />
+        </Stack>
+
+        <Stack
+          direction={"row"}
+          spacing={1}
+          alignItems={"flex-end"}
+          justifyContent={"space-between"}
+          marginTop={3}
+        >
+          <SearchBarComponentv2
+            value={search}
+            setValue={setSearch}
+            placeholder="Search activities..."
+            fullWidth
+          />
+          <Stack display={"flex"} flexDirection={"col"} alignItems={"center"}>
+            <Stack display={"flex"} flexDirection={"row"} gap={1}>
+              <Circle size={12} color={"success"} />
+
+              <Typography level="body-xs" fontWeight={400}>
+                Completed Activity Details
+              </Typography>
+            </Stack>
+
+            <Stack display={"flex"} flexDirection={"row"} gap={1}>
+              <Circle size={12} color={"danger"} />
+
+              <Typography level="body-xs" fontWeight={400}>
+                Incomplete Activity Details
+              </Typography>
+            </Stack>
+          </Stack>
         </Stack>
       </BoxComponent>
 
@@ -422,21 +402,23 @@ const Activities = () => {
         </Stack>
       ) : applicationActivities.length === 0 ? (
         <>
-          <Stack sx={centeredStyle}>
-            <Typography sx={{ fontSize: 20, fontWeight: 600 }}>
-              {EMPTY_STATE_TITLE}
-            </Typography>
+          <BoxComponent mt={2}>
+            <Stack sx={centeredStyle}>
+              <Typography sx={{ fontSize: 20, fontWeight: 600 }}>
+                {EMPTY_STATE_TITLE}
+              </Typography>
 
-            <Typography mb={2} sx={{ fontSize: 20, fontWeight: 400 }}>
-              {ACTIVITY_CREATE_NEW}
-            </Typography>
+              <Typography mb={2} sx={{ fontSize: 20, fontWeight: 400 }}>
+                {ACTIVITY_CREATE_NEW}
+              </Typography>
 
-            <ButtonComponent
-              onClick={() => handleOpenCountModal()}
-              label={"Add Activity"}
-            // endDecorator={<Plus size={16} />}
-            />
-          </Stack>
+              <ButtonComponent
+                onClick={() => handleOpenCountModal()}
+                label={"Add Activity"}
+                // endDecorator={<Plus size={16} />}
+              />
+            </Stack>
+          </BoxComponent>
         </>
       ) : (
         <Grid mt={2} container direction="row" spacing={2} sx={{ flexGrow: 1 }}>
@@ -456,58 +438,69 @@ const Activities = () => {
       )}
 
       {/* set count empty activities */}
-      <ModalComponent
-        isOpen={isCountModal}
-        handleClose={() => setIsCountModal(false)}
-        title={MODAL_TITLE}
-        description={MODAL_DESCRIPTION}
-        minWidth={500}
-        content={
-          <>
-            <Stack
-              direction={"column"}
-              alignItems={"start"}
-              justifyContent={"center"}
-            >
-              {COUNT_LABEL}
-              <InputComponent
-                type={"number"}
-                width={80}
-                value={countActivities}
-                setValue={(val) => setCountActivities(val)}
-              />
-            </Stack>
-          </>
-        }
-        hasActionButtons={true}
-        rightButtonLabel={`Save`}
-        rightButtonAction={() => handleCountActivities()}
-        isLoading={isLoading}
-      />
+      {isCountModal && (
+        <ModalComponent
+          isOpen={isCountModal}
+          handleClose={() => setIsCountModal(false)}
+          title={MODAL_TITLE}
+          description={MODAL_DESCRIPTION}
+          minWidth={500}
+          maxWidth={512}
+          content={
+            <>
+              <Stack
+                direction={"column"}
+                alignItems={"start"}
+                justifyContent={"center"}
+              >
+                <Typography
+                  level="body-sm"
+                  fontWeight={500}
+                  sx={{ color: "black" }}
+                >
+                  {COUNT_LABEL}
+                </Typography>
+                <InputComponent
+                  type={"number"}
+                  width={80}
+                  value={countActivities}
+                  setValue={(val) => setCountActivities(val)}
+                />
+              </Stack>
+            </>
+          }
+          hasActionButtons={true}
+          rightButtonLabel={`Save`}
+          rightButtonAction={() => handleCountActivities()}
+          isLoading={isLoading}
+        />
+      )}
 
       {/* Edit exisitng empty activities */}
-      <ModalComponent
-        isOpen={isOpenActivitiesModal}
-        handleClose={handleCloseModal}
-        title={"Edit Activity"}
-        description={
-          "Add or modify the details of this activity to align with its objective."
-        }
-        height={670}
-        minWidth={550}
-        content={
-          <>
-            <ActivitiesModal
-              isEditMode={isEditMode}
-              selectedActivity={applicationActivity}
-            />
-          </>
-        }
-        hasActionButtons={true}
-        rightButtonLabel={`Save activity`}
-        rightButtonAction={() => handleSaveActivity()}
-        isLoading={isLoading}
-      />
+      {isOpenActivitiesModal && (
+        <ModalComponent
+          isOpen={isOpenActivitiesModal}
+          handleClose={handleCloseModal}
+          title={"Edit Activity"}
+          description={
+            "Add or modify the details of this activity to align with its objective."
+          }
+          height={670}
+          minWidth={550}
+          content={
+            <>
+              <ActivitiesModal
+                isEditMode={isEditMode}
+                selectedActivity={applicationActivity}
+              />
+            </>
+          }
+          hasActionButtons={true}
+          rightButtonLabel={`Save activity`}
+          rightButtonAction={() => handleSaveActivity()}
+          isLoading={isLoading}
+        />
+      )}
 
       {openDeleteModal && (
         <ConfirmationModalComponent

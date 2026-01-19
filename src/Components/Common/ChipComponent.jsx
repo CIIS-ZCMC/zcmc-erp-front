@@ -27,9 +27,9 @@ function ChipComponent({
     ...(variant || color
       ? { color: color }
       : {
-        fontWeight: 600,
-        border: 1,
-      }),
+          fontWeight: 600,
+          border: 1,
+        }),
   };
 
   return (

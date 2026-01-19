@@ -1,6 +1,14 @@
 import React, { useEffect, useMemo } from "react";
 
-import { Tabs, TabList, Tab, TabPanel, Stack, Typography } from "@mui/joy";
+import {
+  Tabs,
+  TabList,
+  Tab,
+  TabPanel,
+  Stack,
+  Typography,
+  ListItemDecorator,
+} from "@mui/joy";
 
 import { X } from "lucide-react";
 
@@ -16,6 +24,7 @@ import useResponsibleStore, {
 import useUsersStore from "../../../../../Store/UsersStore";
 import useJobPositionStore from "../../../../../Store/JobPositionsStore";
 import { grey } from "@mui/material/colors";
+import { People, Work } from "@mui/icons-material";
 
 const ResponsibleModal = () => {
   const { selectedPeople } = useResponsibleStore();
@@ -72,16 +81,28 @@ const ResponsibleModal = () => {
 
   return (
     <>
-      <Tabs aria-label="Basic tabs" defaultValue={0}>
+      <Tabs aria-label="Basic tabs" defaultValue={0} color="primary" size="md">
         <TabList tabFlex={1}>
-          <Tab>People ({userCount})</Tab>
-          <Tab>Job Position({jobPositionCount})</Tab>
+          <Tab>
+            {" "}
+            <ListItemDecorator>
+              <People />
+            </ListItemDecorator>{" "}
+            People ({userCount})
+          </Tab>
+          <Tab>
+            {" "}
+            <ListItemDecorator>
+              <Work />
+            </ListItemDecorator>{" "}
+            Job Position({jobPositionCount})
+          </Tab>
         </TabList>
 
         <TabPanel value={0}>
           <AutocompleteComponent
             label={"Select Person/People"}
-            size={"lg"}
+            size={"md"}
             placeholder="Search by name or department"
             setValue={(value) => setSelectedPeople(value)}
             options={availableUsers}
@@ -91,9 +112,9 @@ const ResponsibleModal = () => {
 
         <TabPanel value={1}>
           <AutocompleteComponent
-            label={"Select job position"}
+            label={"Select Job Position"}
             placeholder="Search by position or department"
-            size={"lg"}
+            size={"md"}
             setValue={(value) => setSelectedPeople(value)}
             options={availableJobPositions}
             // disabled={!isEditing}
@@ -112,6 +133,7 @@ const ResponsibleModal = () => {
           borderRadius: 10,
           mx: 2,
         }}
+        display={selectedPeople.length > 0 ? "flex" : "none"}
       >
         {selectedPeople.map(({ id, label, sector_id }) => (
           <ChipComponent

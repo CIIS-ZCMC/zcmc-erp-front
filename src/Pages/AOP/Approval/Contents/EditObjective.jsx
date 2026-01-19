@@ -57,6 +57,7 @@ const EditObjective = ({ onOpen, data, handleClose }) => {
             <TextareaComponent
               minRows={4}
               label={"Objective"}
+              name={"other_objective"}
               value={objectiveData?.other_objective}
               setValue={(value) =>
                 handleChangeInput("other_objective", setObjectiveData, value)
@@ -65,6 +66,7 @@ const EditObjective = ({ onOpen, data, handleClose }) => {
             <TextareaComponent
               minRows={4}
               label={"Success indicators"}
+              name={"other_success_indicator"}
               value={objectiveData?.other_success_indicator}
               setValue={(value) =>
                 handleChangeInput(

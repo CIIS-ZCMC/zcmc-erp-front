@@ -171,11 +171,13 @@ const ObjectivesList = () => {
         )}
 
         {/* EDIT OBJECTIVE */}
-        <EditObjective
-          onOpen={openModal}
-          data={objectiveData}
-          handleClose={handleCloseModal}
-        />
+        {openModal && (
+          <EditObjective
+            onOpen={openModal}
+            data={objectiveData}
+            handleClose={handleCloseModal}
+          />
+        )}
       </Stack>
     </Fragment>
   );

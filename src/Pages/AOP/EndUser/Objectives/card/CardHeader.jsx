@@ -1,45 +1,38 @@
-import React from 'react'
+import React from "react";
 
-import { Stack } from '@mui/joy'
+import { Stack } from "@mui/joy";
 
-import IconButtonComponent from '@Components/Common/IconButtonComponent'
+import IconButtonComponent from "@Components/Common/IconButtonComponent";
 
-import { Check, Pencil, Trash } from 'lucide-react'
+import { Check, Pencil, Trash } from "lucide-react";
 
-import { isAopDisabled } from '../../../../../Utils/AopStatus'
+import { isAopDisabled } from "../../../../../Utils/AopStatus";
+import { DeleteOutline, EditOutlined } from "@mui/icons-material";
 
-const CardHeader = (
-    {
-        status,
-        handleSave,
-        handleEdit,
-        handleDelete
-    }
-) => {
-
-    return (
-        <>
-            {/* <IconButtonComponent
+const CardHeader = ({ status, handleSave, handleEdit, handleDelete }) => {
+  return (
+    <>
+      {/* <IconButtonComponent
                 size={'sm'}
                 icon={<Check size={18} />}
                 onClick={handleSave}
             /> */}
 
-            <IconButtonComponent
-                size={'sm'}
-                icon={<Pencil size={18} />}
-                onClick={handleEdit}
-                disabled={isAopDisabled(status)}
-            />
+      <IconButtonComponent
+        size={"sm"}
+        icon={<EditOutlined size={18} sx={{ color: "black" }} />}
+        onClick={handleEdit}
+        disabled={isAopDisabled(status)}
+      />
 
-            <IconButtonComponent
-                size={'sm'}
-                icon={<Trash size={18} />}
-                onClick={handleDelete}
-                disabled={isAopDisabled(status)}
-            />
-        </>
-    )
-}
+      <IconButtonComponent
+        size={"sm"}
+        icon={<DeleteOutline size={18} sx={{ color: "black" }} />}
+        onClick={handleDelete}
+        disabled={isAopDisabled(status)}
+      />
+    </>
+  );
+};
 
-export default CardHeader
+export default CardHeader;

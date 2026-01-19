@@ -77,16 +77,16 @@ const useAOPApplicationsHook = create((set) => ({
     },
 
     // EDIT SUCCESS INDICATORS AND OBJECTIVE
-    updateObjectiveSuccessIndicator: (id, body, callback) => {
+    updateObjectiveSuccessIndicator: (body, callback) => {
       try {
-        const { other_success_indicator, other_objective } = body;
+        const { other_success_indicator, other_objective, index } = body;
 
         const dataToSubmit = new FormData();
 
-        dataToSubmit.append("aop_application_id", id);
-        dataToSubmit.append("objective_description", other_objective);
+        dataToSubmit.append("application_objective_id", index);
+        dataToSubmit.append("other_objective_description", other_objective);
         dataToSubmit.append(
-          "success_indicator_description",
+          "other_success_indicator_description",
           other_success_indicator
         );
 

@@ -25,6 +25,7 @@ const CardComponent = ({
   contentPadding,
   withDividerStyle = false,
   actionWidth,
+  boxShadow,
 }) => {
   return (
     <>
@@ -37,6 +38,7 @@ const CardComponent = ({
           borderLeft: `6px solid ${statusColor}`, // keep ONLY left border
           borderRadius: 20,
           bgcolor: bgcolor,
+          boxShadow: boxShadow,
         }}
       >
         <CardContent sx={{ padding: contentPadding }}>

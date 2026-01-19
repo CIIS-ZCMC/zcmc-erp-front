@@ -24,7 +24,7 @@ const ResponsibleList = ({
   handleDelete,
   openResponsibleModal,
   responsible_people,
-  status
+  status,
 }) => {
   const { EMPTY_STATE_TITLE, EMPTY_STATE_DESCRIPTION } = RESPONSIBLE;
 
@@ -33,16 +33,17 @@ const ResponsibleList = ({
       {responsible_people?.length === 0 ? (
         <BoxComponent
           borderColor={grey[300]}
-          height={"60vh"}
+          height={"63vh"}
           borderRadius={10}
           justifyContent={"center"}
           alignItems={"center"}
           display={"flex"}
           flexDirection={"column"}
-          gap={2}
         >
           <Typography level="title-md">{EMPTY_STATE_TITLE}</Typography>
-          <Typography level="body-sm">{EMPTY_STATE_DESCRIPTION}</Typography>
+          <Typography level="body-sm" mb={1}>
+            {EMPTY_STATE_DESCRIPTION}
+          </Typography>
 
           <ButtonComponent
             startDecorator={<PlusIcon />}

@@ -38,6 +38,8 @@ import {
 import useObjectivesHook from "../../../../Hooks/ObjectivesHook";
 import PageTitle from "@Components/Common/PageTitle";
 import useAOPBreadcrumbs from "../../../../Hooks/AOP/AOPBreadcrumbs";
+import { CheckCircle } from "@mui/icons-material";
+import useSnackbarHook from "../../../../Hooks/SnackbarHook";
 
 const Objectives = () => {
   const location = useLocation();
@@ -66,7 +68,7 @@ const Objectives = () => {
     updateObjective,
     removeObjective,
   } = useObjectivesHook();
-
+  const { showSnack } = useSnackbarHook();
   const breadcrumbs = useAOPBreadcrumbs();
 
   // const [isLoading, setIsLoading] = useState(false);
@@ -120,9 +122,19 @@ const Objectives = () => {
 
   const filteredObjectives = useMemo(() => {
     if (!search) return applicationObjectives;
-    return applicationObjectives.filter((obj) =>
-      obj.objective.code.toLowerCase().includes(search.toLowerCase())
-    );
+
+    const keyword = search.toLowerCase();
+
+    return applicationObjectives.filter((obj) => {
+      const textsToSearch = [
+        obj.objective?.description,
+        obj.other_objective?.description,
+        obj.success_indicator?.description,
+        obj.other_success_indicator?.description,
+      ].filter(Boolean);
+
+      return textsToSearch.some((text) => text.toLowerCase().includes(keyword));
+    });
   }, [search, applicationObjectives]);
 
   const handleSaveObjectives = async () => {
@@ -139,11 +151,12 @@ const Objectives = () => {
     try {
       await createObjective(payload, (status, message) => {
         if (status === 201) {
-          setAlertDialog({
-            status: "success",
-            title: `${message}`,
-            description: "",
-          });
+          showSnack(200, message);
+          // setAlertDialog({
+          //   status: "success",
+          //   title: `${message}`,
+          //   description: "",
+          // });
           // setIsLoading(false);
           handleCloseModal();
         } else {
@@ -287,8 +300,8 @@ const Objectives = () => {
         onClickArrow={() => navigate("/aop")}
       />
 
-      <BoxComponent mt={2} p={2}>
-        <Stack direction={"column"} spacing={1}>
+      <BoxComponent p={2} bgColor={"#F9FAFB"} boxShadow="xs" mt={2}>
+        <Stack direction={"column"}>
           <Typography fontWeight={600}>{MANAGE_OBJECTIVES_HEADER}</Typography>
 
           <Typography level="body-xs" fontWeight={400}>
@@ -296,18 +309,16 @@ const Objectives = () => {
           </Typography>
         </Stack>
 
-        <Divider sx={{ my: 1 }} />
-
         <Stack
           direction={"row"}
-          spacing={1}
           alignItems={"center"}
           justifyContent={"space-between"}
+          paddingTop={2}
         >
           <SearchBarComponentv2
             value={search}
             setValue={setSearch}
-            placeholder="search objectives..."
+            placeholder="Search objectives..."
             fullWidth
           />
           <ButtonComponent
@@ -315,6 +326,7 @@ const Objectives = () => {
             label={"Add an Objective"}
             disabled={status_id === 4 || status_id === 2}
             isLoading={isLoading}
+            startDecorator={<CheckCircle />}
             // endDecorator={<Plus size={16} />}
             // disabled={
             //   isApproved
@@ -349,14 +361,13 @@ const Objectives = () => {
           <ThreeDotsLoader />
         </Stack>
       ) : applicationObjectives.length === 0 ? (
-        <>
+        <BoxComponent mt={2}>
           <Stack
             direction={"column"}
             alignItems={"center"}
             justifyContent={"center"}
             textAlign={"center"}
-            my={2}
-            height={"65vh"}
+            height={"64vh"}
           >
             <Typography sx={{ fontSize: 20, fontWeight: 600 }}>
               {OBJECTIVES_EMPTY_STATE_TITLE}
@@ -372,7 +383,7 @@ const Objectives = () => {
               // endDecorator={<Plus size={16} />}
             />
           </Stack>
-        </>
+        </BoxComponent>
       ) : (
         <>
           {filteredObjectives.length === 0 ? (
@@ -399,6 +410,8 @@ const Objectives = () => {
                   <Grid key={id} size={4} lg={4} md={6} sm={12}>
                     <CardComponent
                       statusColor={null}
+                      bgcolor={"#F9FAFB"}
+                      boxShadow="sm"
                       cardHeader={
                         <CardHeader
                           status={status_id}
