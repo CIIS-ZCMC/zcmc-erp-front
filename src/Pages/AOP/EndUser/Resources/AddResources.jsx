@@ -43,6 +43,11 @@ export default function AddResources() {
 
   const [displayLoading, setDisplayLoading] = useState(false);
   const [openPreview, setOpenPreview] = useState(false);
+  const [filterValues, setFilterValues] = useState({
+    classification: null,
+    category: null,
+    system: null,
+  });
 
   const handleOpenItemDialog = (item) => {
     console.log(item);
@@ -89,14 +94,22 @@ export default function AddResources() {
 
   useEffect(() => {
     setDisplayLoading(true);
-
-    getItems((status, message, data) => {
+    const params = {
+      item_classification_id: filterValues?.classification?.id,
+      item_category_id: filterValues?.category?.id,
+      system_id: filterValues?.system?.id,
+    };
+    getItems(params, (status, message, data) => {
       if (status !== 200) {
         console.error("Failed to fetch items:", message);
       }
       setDisplayLoading(false);
     });
-  }, []);
+  }, [
+    filterValues?.classification?.id,
+    filterValues?.category?.id,
+    filterValues?.system?.id,
+  ]);
   return (
     <Fragment>
       <PageTitle
@@ -150,6 +163,8 @@ export default function AddResources() {
             suggestions={suggestions}
             loading={displayLoading}
             items={items}
+            filterValues={filterValues}
+            setFilterValues={setFilterValues}
           />
         </ContainerComponent>
       </Stack>

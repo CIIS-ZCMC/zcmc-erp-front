@@ -96,7 +96,7 @@ function ManageResources(props) {
   const filteredResources = useMemo(() => {
     if (!search) return resources;
     return resources.filter((item) =>
-      item.item.name.toLowerCase().includes(search.toLowerCase())
+      item.item.name.toLowerCase().includes(search.toLowerCase()),
     );
   }, [search, resources]);
 
@@ -168,7 +168,12 @@ function ManageResources(props) {
         items={breadcrumbs}
       />
 
-      <BoxComponent bgColor={"#FAFAF9"} boxShadow="xs" my={2} padding={2}>
+      <BoxComponent
+        bgColor={color.background.surface}
+        boxShadow="xs"
+        my={2}
+        padding={2}
+      >
         <Stack direction={"row"} justifyContent={"space-between"}>
           <Stack>
             <Stack direction={"row"} spacing={1} alignItems={"center"}>

@@ -18,6 +18,7 @@ import AutocompleteComponent from "@Components/Form/AutocompleteComponent";
 import ChipComponent from "@Components/Common/ChipComponent";
 import { CancelOutlined } from "@mui/icons-material";
 import useSnackbarHook from "../../Hooks/SnackbarHook";
+import defaultItem from "../../assets/item.jpg";
 
 const ItemsCart = ({
   item,
@@ -38,7 +39,7 @@ const ItemsCart = ({
       <Box display={"flex"} gap={1}>
         <Box
           component="img"
-          src={image}
+          src={defaultItem}
           alt={name}
           loading="lazy"
           sx={{
@@ -114,7 +115,7 @@ const ItemsCart = ({
               if (!val) return;
 
               const alreadySelected = item.activities?.some(
-                (a) => a.code === val.activity_code
+                (a) => a.code === val.activity_code,
               );
 
               if (alreadySelected) {

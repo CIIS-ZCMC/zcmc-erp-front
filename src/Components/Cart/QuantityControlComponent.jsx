@@ -22,20 +22,36 @@ const QuantityControlComponent = ({
   onChange,
   withLabel = false,
 }) => {
+  // Local input state
+  const [inputValue, setInputValue] = React.useState(String(quantity));
+
+  // Sync store → local input whenever parent changes quantity
+  React.useEffect(() => {
+    setInputValue(String(quantity));
+  }, [quantity]);
+
+  // Handle typing in input
   const handleChange = (e) => {
     const value = e.target.value;
 
     // Allow empty while typing
-    if (value === "") {
-      onChange?.(1);
-      return;
+    if (value === "" || /^\d+$/.test(value)) {
+      setInputValue(value);
     }
-
-    // Only allow numbers
-    if (!/^\d+$/.test(value)) return;
-
-    onChange?.(Number(value));
   };
+
+  // Commit value to parent/store on blur
+  const handleBlur = () => {
+    const numericValue = Number(inputValue);
+
+    if (!numericValue || numericValue < 1) {
+      setInputValue("1");
+      onChange?.(1); // commit minimum value
+    } else {
+      onChange?.(numericValue); // commit typed value
+    }
+  };
+
   return (
     <Stack>
       {withLabel && (
@@ -50,10 +66,10 @@ const QuantityControlComponent = ({
         </IconButton>
         {/* <Button>{quantity}</Button> */}
         <Input
-          value={quantity}
+          value={inputValue}
           size="sm"
           onChange={handleChange}
-          onBlur={() => onChange?.(Math.max(quantity, 1))}
+          onBlur={handleBlur}
           variant="soft"
           sx={{
             width: 50,

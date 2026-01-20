@@ -9,6 +9,7 @@ import {
   Chip,
   IconButton,
   Stack,
+  Tooltip,
   Typography,
   useTheme,
 } from "@mui/joy";
@@ -22,6 +23,7 @@ import ChipComponent from "../Common/ChipComponent";
 import ModalComponent from "@Components/Common/Dialog/ModalComponent";
 import { Circle, RemoveCircle, ZoomOutMap } from "@mui/icons-material";
 import { blue } from "@mui/material/colors";
+import defaultItem from "../../assets/item.jpg";
 
 const ItemCardComponent = ({
   item,
@@ -54,7 +56,7 @@ const ItemCardComponent = ({
         <CardOverflow>
           <AspectRatio minHeight={120} maxHeight={200}>
             <img
-              src={item?.image ?? image}
+              src={defaultItem}
               role="button"
               loading="lazy"
               alt={item?.name}
@@ -101,7 +103,11 @@ const ItemCardComponent = ({
             {item?.item_unit?.name}
           </Typography>
 
-          <Typography level="title-sm">{item?.name}</Typography>
+          <Tooltip title={item?.name}>
+            <Typography level="title-sm" noWrap sx={{ cursor: "default" }}>
+              {item?.name}
+            </Typography>
+          </Tooltip>
           <Stack
             direction={"row"}
             justifyContent={"space-between"}

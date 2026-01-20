@@ -146,7 +146,7 @@ const Activities = () => {
   const filteredActivities = useMemo(() => {
     if (!search) return applicationActivities;
     return applicationActivities.filter((act) =>
-      act.activity_name.toLowerCase().includes(search.toLowerCase())
+      act?.activity_name?.toLowerCase().includes(search.toLowerCase()),
     );
   }, [search, applicationActivities]);
 

@@ -18,6 +18,7 @@ import React, { Fragment, useState } from "react";
 import CartPreviewComponent from "./CartPreviewComponent";
 
 import { isAopDisabled } from "../../Utils/AopStatus";
+import defaultItem from "../../assets/item.jpg";
 
 export default function ResourceCardComponent({
   status,
@@ -59,7 +60,7 @@ export default function ResourceCardComponent({
         <CardOverflow>
           <AspectRatio sx={{ minWidth: 200 }}>
             <img
-              src="https://images.unsplash.com/photo-1593121925328-369cc8459c08?auto=format&fit=crop&w=286"
+              src={defaultItem}
               srcSet="https://images.unsplash.com/photo-1593121925328-369cc8459c08?auto=format&fit=crop&w=286&dpr=2 2x"
               loading="lazy"
               alt=""
@@ -131,17 +132,16 @@ export default function ResourceCardComponent({
             </Box>
 
             {/* Quantity Controls */}
-            {
-              status !== 2 || status !== 4 &&
-              <Box>
-                <QuantityControlComponent
-                  quantity={quantity}
-                  onDecrease={() => onQtyChange(resource_id, quantity - 1)}
-                  onIncrease={() => onQtyChange(resource_id, quantity + 1)}
-                />
-              </Box>
-            }
-
+            {status !== 2 ||
+              (status !== 4 && (
+                <Box>
+                  <QuantityControlComponent
+                    quantity={quantity}
+                    onDecrease={() => onQtyChange(resource_id, quantity - 1)}
+                    onIncrease={() => onQtyChange(resource_id, quantity + 1)}
+                  />
+                </Box>
+              ))}
           </Stack>
 
           <Box>

@@ -31,7 +31,7 @@ export default function ProductGrid({
       <BoxComponent mt={2} boxShadow="sm" height={height}>
         {loading && items.length === 0 ? (
           <Grid container spacing={2}>
-            {[...Array(6)].map((_, index) => (
+            {[...Array(9)].map((_, index) => (
               <Grid xs={12} sm={6} md={4} key={index}>
                 <Skeleton
                   variant="rectangular"

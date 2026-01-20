@@ -22,6 +22,7 @@ import useResponsibleHook from "../../../../Hooks/ResponsiblePeopleHook";
 import useModalHook from "../../../../Hooks/ModalHook";
 
 import { RESPONSIBLE } from "../../../../Data/constants";
+import useSnackbarHook from "../../../../Hooks/SnackbarHook";
 
 const centeredStyle = {
   direction: "column",
@@ -54,7 +55,7 @@ const ResponsiblePerson = () => {
 
   const { setAlertDialog, setConfirmationModal, closeConfirmation } =
     useModalHook();
-
+  const { showSnack } = useSnackbarHook();
   const { getPeople, createResponsible, removeResponsible } =
     useResponsibleHook();
 
@@ -107,11 +108,12 @@ const ResponsiblePerson = () => {
     try {
       await createResponsible(payload, (status, message) => {
         if (status === 201) {
-          setAlertDialog({
-            status: "success",
-            title: `${message}`,
-            description: "",
-          });
+          showSnack(200, message);
+          // setAlertDialog({
+          //   status: "success",
+          //   title: `${message}`,
+          //   description: "",
+          // });
           setIsLoading(false);
           handleCloseModal();
         } else {
@@ -134,12 +136,13 @@ const ResponsiblePerson = () => {
     }
   };
 
-  const handleOpenDeleteModal = () => {
+  const handleOpenDeleteModal = (id) => {
+    setSelectedId(id);
     setOpenDeleteModal(true);
     const data = {
       status: "warning",
-      title: ` Are you sure you want to delete this activity ? `,
-      description: "The selected activity will be removed",
+      title: ` Are you sure you want to remove this assigned person/position? `,
+      description: "The assigned person/position will be removed",
     };
     setConfirmationModal(data);
   };

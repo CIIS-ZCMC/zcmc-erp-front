@@ -27,10 +27,10 @@ const useItemsHook = create((set) => ({
     set({ search_Query: query });
   },
 
-  getItems: async (callBack) => {
+  getItems: async (params = {}, callBack) => {
     read({
       url: `${PATH}s`,
-      params: { mode: "selection" },
+      params: { ...params },
       failed: callBack,
       success: (res) => {
         const { status, message, data } = res;
@@ -120,7 +120,7 @@ const useItemsHook = create((set) => ({
         const { message, data } = response.data;
         set((state) => ({
           items: state.items.map((itm) =>
-            itm.id === data.id ? { ...itm, ...data } : itm
+            itm.id === data.id ? { ...itm, ...data } : itm,
           ),
         }));
 
@@ -336,7 +336,7 @@ const useItemsHook = create((set) => ({
         const { message, data } = response.data;
         set((state) => ({
           categories: state.categories.map((itm) =>
-            itm.id === data.id ? { ...itm, ...data } : itm
+            itm.id === data.id ? { ...itm, ...data } : itm,
           ),
         }));
 
@@ -480,7 +480,7 @@ const useItemsHook = create((set) => ({
         const { message, data } = response.data;
         set((state) => ({
           classification: state.classification.map((itm) =>
-            itm.id === data.id ? { ...itm, ...data } : itm
+            itm.id === data.id ? { ...itm, ...data } : itm,
           ),
         }));
 
@@ -582,6 +582,19 @@ const useItemsHook = create((set) => ({
   getVariants: async (callBack) => {
     read({
       url: `terminologies`,
+      params: { mode: "selection" },
+      failed: callBack,
+      success: (res) => {
+        const { status, message, data } = res;
+        set({ variants: data.data });
+        callBack(status, message);
+      },
+    });
+  },
+
+  getSystems: async (callBack) => {
+    read({
+      url: `system`,
       params: { mode: "selection" },
       failed: callBack,
       success: (res) => {
@@ -705,7 +718,7 @@ const useItemsHook = create((set) => ({
         const { message, data } = response.data;
         set((state) => ({
           terminology: state.terminology.map((itm) =>
-            itm.id === data.id ? { ...itm, ...data } : itm
+            itm.id === data.id ? { ...itm, ...data } : itm,
           ),
         }));
 

@@ -29,7 +29,7 @@ const theme = extendTheme({
           solidActiveBg: "#004366",
           neutralBg: "#F9FAFB",
 
-          plainColor: "#DFF2FF",
+          plainColor: "#004366",
 
           outlinedBorder: "#004366",
           outlinedColor: "#004366",
