@@ -109,16 +109,20 @@ const Activities = () => {
   useEffect(() => {
     setIsLoading(true);
 
-    const params = { application_objective_id: objectiveId };
+    const params = {
+      application_objective_id: objectiveId,
+      ...(search && { search }),
+    };
 
     getActivities(params, (status, message) => {
-      if (!(status >= 200 && status < 300)) {
-        // if status not success
-        return; //Toast error
-      }
       setIsLoading(false);
+
+      if (status < 200 || status >= 300) {
+        // handle error (toast, snackbar, etc.)
+        return;
+      }
     });
-  }, []);
+  }, [search, objectiveId]);
 
   const status = aop.status.id;
   const objectiveName =
@@ -143,12 +147,12 @@ const Activities = () => {
     applicationActivities,
   ]);
 
-  const filteredActivities = useMemo(() => {
-    if (!search) return applicationActivities;
-    return applicationActivities.filter((act) =>
-      act?.activity_name?.toLowerCase().includes(search.toLowerCase()),
-    );
-  }, [search, applicationActivities]);
+  // const filteredActivities = useMemo(() => {
+  //   if (!search) return applicationActivities;
+  //   return applicationActivities.filter((act) =>
+  //     act?.activity_name?.toLowerCase().includes(search.toLowerCase()),
+  //   );
+  // }, [search, applicationActivities]);
 
   const handleOpenActivitiesModal = () => {
     setIsOpenActivitiesModal(true);
@@ -422,7 +426,7 @@ const Activities = () => {
         </>
       ) : (
         <Grid mt={2} container direction="row" spacing={2} sx={{ flexGrow: 1 }}>
-          {filteredActivities.map((activity) => (
+          {applicationActivities.map((activity) => (
             <Grid key={activity.id} size={4} lg={4} md={6} sm={12}>
               <ActivitiesList
                 status={status}

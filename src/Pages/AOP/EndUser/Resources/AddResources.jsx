@@ -28,7 +28,6 @@ export default function AddResources() {
 
   const { items, getItems, getSearchResults } = useItemsHook();
   const { postAOPResources } = useResourcesHook();
-  const { getSearchSuggestions, suggestions } = useSearchHook();
   const cartStore = useCartStore(user?.id || "guest");
   const { cart, clearCart } = cartStore();
   const {
@@ -43,11 +42,6 @@ export default function AddResources() {
 
   const [displayLoading, setDisplayLoading] = useState(false);
   const [openPreview, setOpenPreview] = useState(false);
-  const [filterValues, setFilterValues] = useState({
-    classification: null,
-    category: null,
-    system: null,
-  });
 
   const handleOpenItemDialog = (item) => {
     console.log(item);
@@ -92,24 +86,6 @@ export default function AddResources() {
     });
   };
 
-  useEffect(() => {
-    setDisplayLoading(true);
-    const params = {
-      item_classification_id: filterValues?.classification?.id,
-      item_category_id: filterValues?.category?.id,
-      system_id: filterValues?.system?.id,
-    };
-    getItems(params, (status, message, data) => {
-      if (status !== 200) {
-        console.error("Failed to fetch items:", message);
-      }
-      setDisplayLoading(false);
-    });
-  }, [
-    filterValues?.classification?.id,
-    filterValues?.category?.id,
-    filterValues?.system?.id,
-  ]);
   return (
     <Fragment>
       <PageTitle
@@ -156,16 +132,7 @@ export default function AddResources() {
             </Stack>
           </Stack>
           <Divider sx={{ my: 2, bgcolor: color.primary.fontLight }} />
-          <AddToCartLayout
-            getSearchResults={getSearchResults}
-            getSearchSuggestions={getSearchSuggestions}
-            getItems={getItems}
-            suggestions={suggestions}
-            loading={displayLoading}
-            items={items}
-            filterValues={filterValues}
-            setFilterValues={setFilterValues}
-          />
+          <AddToCartLayout loading={displayLoading} />
         </ContainerComponent>
       </Stack>
     </Fragment>

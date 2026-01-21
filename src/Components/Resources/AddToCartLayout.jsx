@@ -20,38 +20,43 @@ import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import AutocompleteComponent from "@Components/Form/AutocompleteComponent";
 import ButtonComponent from "@Components/Common/ButtonComponent";
 import useItemsHook from "../../Hooks/ItemManagementHook";
+import useSearchHook from "../../Hooks/SearchHook";
 
 export default function AddToCartLayout({
-  getSearchSuggestions,
-  getSearchResults,
-  suggestions,
   results,
   loading = false,
-  items = [],
-  getItems,
   isPPMP = false,
   options = [],
   addActivityToItem,
   removeActivityFromItem,
-  filterValues,
-  setFilterValues,
 }) {
   const { user } = useAuth();
   const cartStore = useCartStore(user?.id || "guest", isPPMP);
   const { cart, addToCart, removeFromCart, updateQty, clearCart } = cartStore();
   const {
+    items,
     classification,
     categories,
     variants,
+    getItems,
     getItemCategories,
     getItemClassification,
     getSystems,
   } = useItemsHook();
+  const { getSearchSuggestions, suggestions } = useSearchHook();
 
   // const [cart, setCart] = useState([]);
   const [selectedProduct, setSelectedProduct] = useState(null);
   const [openPreview, setOpenPreview] = useState(false);
   const [openFilter, setOpenFilter] = useState(false);
+  const [filterValues, setFilterValues] = useState({
+    classification: null,
+    category: null,
+    system: null,
+  });
+  const [search, setSearch] = useState("");
+  const [displayLoading, setDisplayLoading] = useState(false);
+
   // Filter values
 
   const totalCost = cart.reduce(
@@ -60,10 +65,35 @@ export default function AddToCartLayout({
   );
   const totalQty = cart.reduce((sum, i) => sum + i.qty, 0);
 
+  const handleSearch = (searchValue = search, filters = filterValues) => {
+    setDisplayLoading(true);
+    console.log(searchValue);
+    const params = {
+      ...(searchValue && { search: searchValue }),
+      ...(filters?.classification?.id && {
+        item_classification_id: filters.classification.id,
+      }),
+      ...(filters?.category?.id && { item_category_id: filters.category.id }),
+      ...(filters?.system?.id && { system_id: filters.system.id }),
+    };
+
+    getItems(params, (status, message) => {
+      setDisplayLoading(false);
+      if (status !== 200) {
+        console.error("Failed to fetch items:", message);
+      }
+    });
+  };
+
   useEffect(() => {
+    setDisplayLoading(true);
+
     getItemCategories(() => {});
     getItemClassification(() => {});
     getSystems(() => {});
+    getItems(() => {
+      setDisplayLoading(false);
+    });
   }, []);
 
   return (
@@ -80,10 +110,13 @@ export default function AddToCartLayout({
               <SearchWithSuggestions
                 placeholder="Search items..."
                 getSearchSuggestions={getSearchSuggestions}
-                getSearchResults={getSearchResults}
                 suggestions={suggestions}
+                onSelect={(item) => handleSearch(item.name)}
+                onEnter={(value) => handleSearch(value)}
+                onClear={() => handleSearch(undefined)}
+                search={search}
+                setSearch={setSearch}
                 getItems={getItems}
-                onSelect={(item) => console.log("Selected item:", item)}
               />
               <Typography
                 level="body-sm"
@@ -119,10 +152,9 @@ export default function AddToCartLayout({
                   options={classification}
                   value={filterValues?.classification}
                   setValue={(val) => {
-                    setFilterValues((prev) => ({
-                      ...prev,
-                      classification: val,
-                    }));
+                    const newFilters = { ...filterValues, classification: val };
+                    setFilterValues(newFilters);
+                    handleSearch(search.name, newFilters); // trigger search
                   }}
                   getOptionLabel={(opt) => opt?.name || ""}
                   placeholder="Select classification"
@@ -132,10 +164,9 @@ export default function AddToCartLayout({
                   options={categories}
                   value={filterValues?.category}
                   setValue={(val) => {
-                    setFilterValues((prev) => ({
-                      ...prev,
-                      category: val,
-                    }));
+                    const newFilters = { ...filterValues, category: val };
+                    setFilterValues(newFilters);
+                    handleSearch(search.name, newFilters); // trigger search
                   }}
                   getOptionLabel={(opt) => opt?.name || ""}
                   placeholder="Select category"
@@ -146,10 +177,9 @@ export default function AddToCartLayout({
                   options={variants}
                   value={filterValues?.system}
                   setValue={(val) => {
-                    setFilterValues((prev) => ({
-                      ...prev,
-                      system: val,
-                    }));
+                    const newFilters = { ...filterValues, system: val };
+                    setFilterValues(newFilters);
+                    handleSearch(search.name, newFilters); // trigger search
                   }}
                   getOptionLabel={(opt) => opt?.name || ""}
                 />
@@ -175,7 +205,7 @@ export default function AddToCartLayout({
               setOpenPreview(true);
             }}
             onAddToCart={addToCart}
-            loading={loading}
+            loading={displayLoading}
             items={items}
           />
         </Grid>

@@ -36,15 +36,15 @@ export default function SearchWithSuggestions({
   debounceDelay = 400,
   modalWidth = 600,
   getSearchSuggestions,
-  getSearchResults,
   onSelect,
   suggestions = [],
-  results = [],
+  onClear,
+  onEnter,
+  search,
+  setSearch,
   getItems,
 }) {
-  const [query, setQuery] = useState("");
   const [loading, setLoading] = useState(false);
-  const [openModal, setOpenModal] = useState(false);
 
   // Debounced suggestion fetch
   const debouncedFetchSuggestions = useMemo(
@@ -56,25 +56,16 @@ export default function SearchWithSuggestions({
           setLoading(false);
         }, text);
       }, debounceDelay),
-    [getSearchSuggestions, debounceDelay]
+    [getSearchSuggestions, debounceDelay],
   );
-
-  // Full search
-  const handleFullSearch = async (text) => {
-    if (!text.trim()) return;
-    setLoading(true);
-    await getSearchResults((status, message) => {
-      setLoading(false);
-      // setOpenModal(true);
-    }, text);
-  };
 
   // Input change
   const handleInputChange = (e, value, reason) => {
-    setQuery(value);
-
+    setSearch(value);
     if (reason === "clear" || !value.trim()) {
-      // User clicked the X or cleared the input
+      debouncedFetchSuggestions.cancel?.(); // cancel pending calls
+      setLoading(false);
+
       getItems();
       return;
     }
@@ -85,8 +76,7 @@ export default function SearchWithSuggestions({
   // Suggestion select
   const handleSelect = (e, value) => {
     if (value) {
-      setQuery(value.name);
-      handleFullSearch(value.name);
+      setSearch(value);
       onSelect?.(value);
     }
   };
@@ -95,7 +85,7 @@ export default function SearchWithSuggestions({
   const handleKeyDown = (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
-      handleFullSearch(query);
+      onEnter?.(search);
     }
   };
 
