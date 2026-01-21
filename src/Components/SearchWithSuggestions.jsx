@@ -66,7 +66,7 @@ export default function SearchWithSuggestions({
       debouncedFetchSuggestions.cancel?.(); // cancel pending calls
       setLoading(false);
 
-      getItems();
+      getItems({ mode: "selection" }, () => {});
       return;
     }
 

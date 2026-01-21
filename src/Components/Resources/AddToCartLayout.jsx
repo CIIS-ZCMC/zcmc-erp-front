@@ -67,21 +67,29 @@ export default function AddToCartLayout({
 
   const handleSearch = (searchValue = search, filters = filterValues) => {
     setDisplayLoading(true);
-    console.log(searchValue);
+
+    // Extract filter IDs if they exist
+    const { classification, category, system } = filters || {};
+    const filterParams = {
+      ...(classification?.id && { item_classification_id: classification.id }),
+      ...(category?.id && { item_category_id: category.id }),
+      ...(system?.id && { system_id: system.id }),
+    };
+
+    // Build main params
     const params = {
       ...(searchValue && { search: searchValue }),
-      ...(filters?.classification?.id && {
-        item_classification_id: filters.classification.id,
-      }),
-      ...(filters?.category?.id && { item_category_id: filters.category.id }),
-      ...(filters?.system?.id && { system_id: filters.system.id }),
+      ...filterParams,
     };
+
+    // If nothing is selected, add mode: 'selection'
+    if (!searchValue && Object.keys(filterParams).length === 0) {
+      params.mode = "selection";
+    }
 
     getItems(params, (status, message) => {
       setDisplayLoading(false);
-      if (status !== 200) {
-        console.error("Failed to fetch items:", message);
-      }
+      if (status !== 200) console.error("Failed to fetch items:", message);
     });
   };
 
@@ -91,7 +99,7 @@ export default function AddToCartLayout({
     getItemCategories(() => {});
     getItemClassification(() => {});
     getSystems(() => {});
-    getItems(() => {
+    getItems({ mode: "selection" }, () => {
       setDisplayLoading(false);
     });
   }, []);
@@ -186,15 +194,20 @@ export default function AddToCartLayout({
                 <ButtonComponent
                   label="Clear Filters"
                   width="400px"
-                  variant={"plain"}
+                  variant="plain"
                   color="primary"
-                  onClick={() =>
-                    setFilterValues({
+                  onClick={() => {
+                    // Reset all filters
+                    const newFilters = {
                       classification: null,
                       category: null,
                       system: null,
-                    })
-                  }
+                    };
+                    setFilterValues(newFilters);
+
+                    // Trigger search with current input (search string)
+                    handleSearch(search || "", newFilters);
+                  }}
                 />
               </Stack>
             </Stack>

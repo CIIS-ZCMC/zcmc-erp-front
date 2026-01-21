@@ -35,8 +35,10 @@ const ActivitiesList = ({
     comments,
   } = activity;
 
-  const formattedStartMonth = moment(start_month, "YYYY-MM").format("MMMM");
-  const formattedEndMonth = moment(end_month, "YYYY-MM").format("MMMM");
+  const formattedStartMonth = moment(start_month, "YYYY-MM").format(
+    "MMMM YYYY",
+  );
+  const formattedEndMonth = moment(end_month, "YYYY-MM").format("MMMM YYYY");
 
   return (
     <>

@@ -115,7 +115,7 @@ function AddItems(props) {
         if (activitiesResult.status !== 200) {
           console.error(
             "Failed to fetch activities:",
-            activitiesResult.message
+            activitiesResult.message,
           );
           return;
         }
@@ -186,12 +186,6 @@ function AddItems(props) {
           </Stack>
           <Divider sx={{ my: 2, bgcolor: color.primary.fontLight }} />
           <AddToCartLayout
-            getSearchResults={getSearchResults}
-            getSearchSuggestions={getSearchSuggestions}
-            getItems={getItems}
-            suggestions={suggestions}
-            loading={displayLoading}
-            items={items}
             isPPMP={isPPMP}
             options={activities}
             removeActivityFromItem={removeActivityFromItem}

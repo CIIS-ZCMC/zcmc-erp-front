@@ -17,6 +17,7 @@ import InputComponent from "@Components/Form/InputComponent";
 import useActivitiesStore, {
   useActivitiesActions,
 } from "../../../../../Store/ActivitiesStore";
+import { Warning } from "@mui/icons-material";
 
 const ActivitiesModal = ({ selectedActivity }) => {
   const { activity, startMonth, endMonth, isGadRelated, target } =
@@ -79,57 +80,37 @@ const ActivitiesModal = ({ selectedActivity }) => {
           onChange={(e) => setActivity(e.target.value)}
         />
 
-        <Stack mt={2} gap={1}>
+        <Stack>
           <Typography>Timeframe</Typography>
 
-          <Stack
-            direction={"row"}
-            alignItems={"center"}
-            justifyContent={"space-between"}
-          >
-            <FormControl>
-              <FormLabel>FROM</FormLabel>
-              <Input
-                size="sm"
-                type="month"
-                fullWidth={true}
-                sx={{
-                  width: 225,
-                }}
-                value={startMonth || ""}
-                onChange={(e) => setStartMonth(e.target.value)}
-              />
-            </FormControl>
+          <Stack direction={"row"} alignItems={"center"} spacing={2}>
+            <InputComponent
+              label="FROM"
+              type="month"
+              value={startMonth || ""}
+              setValue={setStartMonth}
+            />
 
-            <FormControl>
-              <FormLabel>TO</FormLabel>
-              <Input
-                size="sm"
-                type="month"
-                fullWidth
-                sx={{
-                  width: 225,
-                }}
-                value={endMonth || ""}
-                onChange={(e) => setEndMonth(e.target.value)}
-                // onBlur={() => setEditRowId(null)}
-              />
-            </FormControl>
+            <InputComponent
+              label="TO"
+              type="month"
+              value={endMonth || ""}
+              setValue={setEndMonth}
+            />
           </Stack>
 
           <Stack mt={2}>
-            <Typography>Target by</Typography>
+            <Typography>Target</Typography>
             <Stack
               // mt={3}
-              gap={1}
+
               direction={"row"}
               alignItems={"center"}
-              justifyContent={"space-between"}
+              spacing={2}
             >
               <InputComponent
                 type={"text"}
                 label={"Quarter 1"}
-                width={100}
                 min={0}
                 max={100}
                 value={firstQuarter || ""}
@@ -139,17 +120,22 @@ const ActivitiesModal = ({ selectedActivity }) => {
               <InputComponent
                 type={"text"}
                 label={"Quarter 2"}
-                width={100}
                 min={0}
                 max={100}
                 value={secondQuarter || ""}
                 onChange={handleQuarterChange("secondQuarter")}
               />
-
+            </Stack>
+            <Stack
+              // mt={3}
+              pt={1}
+              spacing={2}
+              direction={"row"}
+              alignItems={"center"}
+            >
               <InputComponent
                 type={"text"}
                 label={"Quarter 3"}
-                width={100}
                 min={0}
                 max={100}
                 value={thirdQuarter || ""}
@@ -159,7 +145,6 @@ const ActivitiesModal = ({ selectedActivity }) => {
               <InputComponent
                 type={"text"}
                 label={"Quarter 4"}
-                width={100}
                 min={0}
                 max={100}
                 value={fourthQuarter || ""}
@@ -180,7 +165,7 @@ const ActivitiesModal = ({ selectedActivity }) => {
         <Alert
           size="sm"
           color="warning"
-          startDecorator={<TriangleAlert />}
+          startDecorator={<Warning color="warning" />}
           sx={{
             mt: 5,
             p: 1,

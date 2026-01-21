@@ -489,7 +489,6 @@ const Activities = () => {
           description={
             "Add or modify the details of this activity to align with its objective."
           }
-          height={670}
           minWidth={550}
           content={
             <>
