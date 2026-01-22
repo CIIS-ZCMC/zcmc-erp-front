@@ -922,16 +922,66 @@ export const variantCols = (
   active,
   setSelectedData,
   updateCallBack,
-  delCallback
+  delCallback,
+  expandedCategories,
+  expandCategory,
 ) => [
-  { key: "system", label: "System", align: "left" },
+  {
+    key: "system",
+    label: "System",
+    align: "left",
+    render: (params) => {
+      return <Typography fontWeight={500}>{params.system}</Typography>;
+    },
+  },
   { key: "code", label: "Code", align: "left" },
+  {
+    key: "category",
+    label: "Category",
+    align: "left",
+    width: 250,
+    render: (params) => {
+      const categories = params?.categories || [];
+      const isExpanded = expandedCategories[params.id];
+
+      if (!categories.length) return "-";
+
+      // Collapsed: first 2 categories
+      const collapsedCount = 2;
+      const visible = isExpanded
+        ? categories
+        : categories.slice(0, collapsedCount);
+
+      const remaining = categories.length - collapsedCount;
+
+      return (
+        <div
+          style={{ cursor: "pointer" }}
+          onClick={() => expandCategory(params.id)}
+        >
+          {isExpanded ? (
+            // Expanded view: multiline
+
+            categories.map((cat, index) => (
+              <div key={cat.id || index}>{cat.name}</div>
+            ))
+          ) : (
+            // Collapsed view: single line
+            <span>
+              {visible.map((cat) => cat.name).join(", ")}
+              {remaining > 0 && `, +${remaining} more`}
+            </span>
+          )}
+        </div>
+      );
+    },
+  },
   {
     key: "created_at",
     label: "Created on",
     align: "left",
     render: (params) => {
-      return moment(params.meta.created_at).format("LL");
+      return moment(params?.meta?.created_at).format("LL");
     },
   },
   {
@@ -939,7 +989,7 @@ export const variantCols = (
     label: "Updated on",
     align: "left",
     render: (params) => {
-      return moment(params.meta.created_at).format("LL");
+      return moment(params?.meta?.updated_at).format("LL");
     },
   },
   {
@@ -991,7 +1041,7 @@ export const categoryCols = (
   active,
   setSelectedData,
   updateCallBack,
-  delCallback
+  delCallback,
 ) => [
   { key: "name", label: "Category", align: "left" },
   {
@@ -1061,7 +1111,7 @@ export const classificationCols = (
   active,
   setSelectedData,
   updateCallBack,
-  delCallback
+  delCallback,
 ) => [
   { key: "name", label: "Classification", align: "left" },
   { key: "description", label: "Description", align: "left" },
@@ -1131,7 +1181,7 @@ export const itemCols = (
   active,
   setSelectedData,
   handleUpdate = () => {},
-  handleDelete = () => {}
+  handleDelete = () => {},
 ) => [
   {
     key: "name",
@@ -1604,8 +1654,8 @@ export const PPMP_HEADERS = (status, editingRows, handleComments) => [
             status?.name === "draft"
               ? "center"
               : status?.name === "returned"
-              ? "right"
-              : "center"
+                ? "right"
+                : "center"
           }
         >
           {status?.name !== "draft" && (

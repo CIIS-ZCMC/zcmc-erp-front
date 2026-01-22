@@ -28,6 +28,7 @@ import MultipleAutocompleteComponent from "@Components/Form/MultipleAutcompleteC
 export const Variant = () => {
   const {
     terminology,
+    categories,
     pagination,
     search_Query,
     selectedData,
@@ -39,10 +40,11 @@ export const Variant = () => {
     updateTerminology,
     archiveTerminology,
     unarchiveTerminology,
+    getItemCategories,
   } = useItemsHook();
   const { showSnack } = useSnackbarHook();
   const { setOpenModal, setConfirmationModal } = useModalHook();
-  const { pin, setPin } = usePinHook();
+  const { pin, setPin, resetPin } = usePinHook();
 
   const [search, setSearch] = useState("");
   const [loading, setLoading] = useState(false);
@@ -57,9 +59,56 @@ export const Variant = () => {
     item_category: [],
     description: "",
   });
+  const [updateTerm, setUpdateTerm] = useState({
+    name: "",
+    code: "",
+    item_category: [],
+    description: "",
+  });
+  const [expandedCategories, setExpandedCategories] = useState({});
 
+  const expandCategory = (id) => {
+    setExpandedCategories((prev) => ({
+      ...prev,
+      [id]: !prev[id], // toggle
+    }));
+  };
   const handleUpdate = (params) => {
+    // 1. Store selected row
+    setSelectedData(params);
+
+    // 2. Normalize + hydrate form state
+    setUpdateTerm({
+      name: params.system ?? "",
+      code: params.code,
+      item_category: Array.isArray(params.categories) ? params.categories : [],
+      description: params.description ?? "",
+    });
+
+    // 3. Open modal
     setOpenUpdate(true);
+  };
+
+  const updateTerminologyHandler = () => {
+    if (!selectedData?.id) return;
+
+    const payload = {
+      system: updateTerm.name,
+      code: updateTerm.code,
+      item_category: updateTerm.item_category.map((cat) => cat.id),
+      description: updateTerm.description,
+      authorization_pin: pin,
+    };
+
+    updateTerminology(selectedData.id, payload, (status, message) => {
+      if (status === 200) {
+        showSnack(200, "Terminology successfully updated.");
+        resetPin();
+        setOpenUpdate(false);
+      } else {
+        showSnack(500, message || "Failed to update terminology.");
+      }
+    });
   };
 
   const handleDelete = (params) => {
@@ -100,6 +149,33 @@ export const Variant = () => {
         }
       });
     }
+  };
+
+  const addTerminology = () => {
+    const payload = {
+      system: newTerm.name,
+      code: newTerm.code,
+      item_category: newTerm.item_category.map((cat) => cat.id),
+      description: newTerm.description,
+      authorization_pin: pin,
+    };
+
+    postNewTerminology(payload, (status, message, data) => {
+      if (status === 201) {
+        showSnack(200, "New item successfully added to library.");
+
+        setNewTerm({
+          name: "",
+          code: [],
+          item_category: [],
+          description: "",
+        });
+        resetPin();
+        setOpenNew(false);
+      } else {
+        showSnack(500, "Failed to add new item.");
+      }
+    });
   };
 
   const addCode = () => {
@@ -154,6 +230,14 @@ export const Variant = () => {
     }
   }, [page, search_Query, active]);
 
+  useEffect(() => {
+    getItemCategories((status, message) => {
+      if (status !== 200) {
+        console.error("Failed to fetch categories:", message);
+      }
+    });
+  }, []);
+
   return (
     <Fragment>
       <Stack
@@ -172,7 +256,7 @@ export const Variant = () => {
         </Stack>
         <Stack direction={"row"} spacing={2} alignItems={"center"}>
           <SearchBarComponentv2
-            placeholder="Search categories"
+            placeholder="Search terminology"
             setValue={setSearchQuery}
             value={search_Query}
           />{" "}
@@ -191,7 +275,9 @@ export const Variant = () => {
           active,
           setSelectedData,
           handleUpdate,
-          handleDelete
+          handleDelete,
+          expandedCategories,
+          expandCategory,
         )}
         currentPage={pagination?.current_page}
         totalPages={pagination?.last_page}
@@ -210,9 +296,11 @@ export const Variant = () => {
           title="Create a new terminology"
           description={"Name your terminology to create it."}
           isOpen={openNew}
+          maxWidth={"500px"}
           handleClose={() => setOpenNew(false)}
           hasActionButtons
           rightButtonLabel="Confirm and Save"
+          rightButtonAction={() => addTerminology()}
           // rightButtonAction={() => addCategory()}
           content={
             <>
@@ -283,7 +371,19 @@ export const Variant = () => {
                     </Chip>
                   ))}
                 </Stack>
-                <MultipleAutocompleteComponent label={"Category "} />
+                <MultipleAutocompleteComponent
+                  label="Category"
+                  placeholder="Select categories"
+                  name="name" // or whatever field you want to display
+                  options={categories}
+                  value={newTerm.item_category}
+                  setValue={(val) =>
+                    setNewTerm((prev) => ({
+                      ...prev,
+                      item_category: val,
+                    }))
+                  }
+                />
                 <Divider sx={{ mt: 3 }} />
               </Stack>
 
@@ -293,10 +393,80 @@ export const Variant = () => {
         />
       )}
 
-      {/* {openUpdate && (
+      {openUpdate && (
+        <ModalComponent
+          title="Update a terminology"
+          description={"Keep the terminology up-to-date"}
+          isOpen={openUpdate}
+          maxWidth={"500px"}
+          handleClose={() => setOpenUpdate(false)}
+          hasActionButtons
+          rightButtonLabel="Confirm and Save"
+          rightButtonAction={() => updateTerminologyHandler()}
+          // rightButtonAction={() => addCategory()}
+          content={
+            <>
+              <Stack mt={2} spacing={2}>
+                <InputComponent
+                  name={"name"}
+                  label={"System Label"}
+                  placeholder={"Enter system label"}
+                  helperText={
+                    "Use a specific and descriptive naming convention for best results."
+                  }
+                  value={updateTerm.name}
+                  handleInput={(e) =>
+                    handleChangeInput("name", setUpdateTerm, e.target.value)
+                  }
+                />
+                <TextareaComponent
+                  name={"description"}
+                  label={"Description"}
+                  placeholder={"Enter description"}
+                  helperText={
+                    "Use a specific and descriptive naming convention for best results."
+                  }
+                  value={updateTerm.description}
+                  onChange={(e) =>
+                    handleChangeInput(
+                      "description",
+                      setUpdateTerm,
+                      e.target.value,
+                    )
+                  }
+                />
 
+                <InputComponent
+                  name="code"
+                  label="Code"
+                  placeholder={"Enter code"}
+                  value={updateTerm.code}
+                  handleInput={(e) =>
+                    handleChangeInput("code", setUpdateTerm, e.target.value)
+                  }
+                />
 
-      )} */}
+                <MultipleAutocompleteComponent
+                  label="Category"
+                  placeholder="Select categories"
+                  name="name" // or whatever field you want to display
+                  options={categories}
+                  value={updateTerm.item_category}
+                  setValue={(val) =>
+                    setUpdateTerm((prev) => ({
+                      ...prev,
+                      item_category: val,
+                    }))
+                  }
+                />
+                <Divider sx={{ mt: 3 }} />
+              </Stack>
+
+              <AuthorizationPinComponent setPin={setPin} />
+            </>
+          }
+        />
+      )}
       {openDel && (
         <ConfirmationModalComponent
           status="error"

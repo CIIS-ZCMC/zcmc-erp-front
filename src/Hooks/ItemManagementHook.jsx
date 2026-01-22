@@ -679,14 +679,18 @@ const useItemsHook = create((set) => ({
       success: (response) => {
         const { message, data } = response.data;
 
+        // Normalize response to array
+        const newItems = Array.isArray(data) ? data : [data];
+        const newCount = newItems.length;
+
         set((state) => {
-          const total = (state.pagination?.total || 0) + 1;
+          const total = (state.pagination?.total || 0) + newCount;
           const perPage = state.pagination?.per_page || 10;
 
           return {
             terminology:
               state.pagination?.current_page === 1
-                ? [data, ...state.terminology]
+                ? [...newItems, ...state.terminology]
                 : state.terminology,
 
             pagination: state.pagination
@@ -696,14 +700,9 @@ const useItemsHook = create((set) => ({
                   last_page: Math.ceil(total / perPage),
                 }
               : state.pagination,
-
-            // newItemId: data.id,
           };
         });
-        // Remove highlight after 3 seconds
-        // setTimeout(() => {
-        //   set((state) => ({ ...state, newItemId: null }));
-        // }, 3000);
+
         callback(response.status, message, data);
       },
       failed: callback,
