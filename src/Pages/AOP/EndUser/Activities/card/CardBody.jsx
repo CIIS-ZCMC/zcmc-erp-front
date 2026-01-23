@@ -3,10 +3,14 @@ import React from "react";
 import { Typography, Stack } from "@mui/joy";
 import moment from "moment";
 
-const CardBody = ({ objective, activity, timeframe, cost, comments }) => {
-
-
-
+const CardBody = ({
+  objective,
+  activity,
+  timeframe,
+  cost,
+  comments,
+  status,
+}) => {
   return (
     <>
       <Stack direction={"column"} textAlign={"left"} width={"80%"} gap={1}>
@@ -18,56 +22,50 @@ const CardBody = ({ objective, activity, timeframe, cost, comments }) => {
 
         <Typography level={"body-md"}>{timeframe}</Typography>
 
-        <Stack
-          textAlign={"left"}
-          width={"156%"}
-        >
-          {comments.length !== 0 ?
-            <>
-              <Stack
-                display={'flex'}
-                flexDirection={'row'}
-                alignItems={'start'}
-                justifyContent={'space-between'}
-                sx={{
-                  bgcolor: "#F2F2F2",
-                  padding: 1,
-                  borderRadius: 10,
-                  mt: 1
-                }}
-              >
+        {status !== 1 && (
+          <Stack textAlign={"left"} width={"156%"}>
+            {comments.length !== 0 ? (
+              <>
                 <Stack
-                  display={'flex'}
-                  flexDirection={'column'}
-                  alignItems={'start'}
-                  justifyContent={'start'}
-                  gap={.5}
+                  display={"flex"}
+                  flexDirection={"row"}
+                  alignItems={"start"}
+                  justifyContent={"space-between"}
+                  sx={{
+                    bgcolor: "#F2F2F2",
+                    padding: 1,
+                    borderRadius: 10,
+                    mt: 1,
+                  }}
                 >
-                  <Typography level={"body-xs"}>
-                    {comments[0]?.user_name} - {comments[0]?.user_area}
-                  </Typography>
+                  <Stack
+                    display={"flex"}
+                    flexDirection={"column"}
+                    alignItems={"start"}
+                    justifyContent={"start"}
+                    gap={0.5}
+                  >
+                    <Typography level={"body-xs"}>
+                      {comments[0]?.user_name} - {comments[0]?.user_area}
+                    </Typography>
 
-                  <Typography level={"body-sm"} fontWeight={600}>
-                    {/* Latest Comment: <br /> */}
-                    "{comments[0]?.comment}"
+                    <Typography level={"body-sm"} fontWeight={600}>
+                      {/* Latest Comment: <br /> */}"{comments[0]?.comment}"
+                    </Typography>
+                  </Stack>
+
+                  <Typography level={"body-xs"} fontWeight={400}>
+                    {moment(comments[0]?.created_at).format("MMMM D, YYYY")}
                   </Typography>
                 </Stack>
-
-                <Typography level={"body-xs"} fontWeight={400}>
-                  {moment(comments[0]?.created_at).format("MMMM D, YYYY")}
-                </Typography>
-              </Stack>
-
-            </>
-            :
-
-            <Typography level={"body-sm"}>
-              No Comments  <br />
-            </Typography>
-          }
-
-        </Stack>
-
+              </>
+            ) : (
+              <Typography level={"body-sm"}>
+                No Comments <br />
+              </Typography>
+            )}
+          </Stack>
+        )}
       </Stack>
 
       <Stack
@@ -95,13 +93,12 @@ const CardBody = ({ objective, activity, timeframe, cost, comments }) => {
           ₱{" "}
           {cost
             ? cost?.toLocaleString("en-PH", {
-              minimumFractionDigits: 2,
-              maximumFractionDigits: 2,
-            })
+                minimumFractionDigits: 2,
+                maximumFractionDigits: 2,
+              })
             : "0.00"}
         </Typography>
       </Stack>
-
     </>
   );
 };

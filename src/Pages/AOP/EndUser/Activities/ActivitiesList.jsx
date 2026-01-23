@@ -57,6 +57,7 @@ const ActivitiesList = ({
         cardBody={
           <CardBody
             // objective={objective_code}
+            status={status}
             comments={comments}
             activity={activity_name ? activity_name : activity_code}
             cost={total_cost}

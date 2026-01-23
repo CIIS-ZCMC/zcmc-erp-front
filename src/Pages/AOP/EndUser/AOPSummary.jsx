@@ -24,7 +24,7 @@ import useModalHook from "../../../Hooks/ModalHook";
 import useAOPHook from "../../../Hooks/AOP/AOPHook";
 
 import { AOP_SUMMARY, AOP_CONFRIM_DATA } from "../../../Data/constants";
-import { blue, common } from "@mui/material/colors";
+import { blue, common, grey } from "@mui/material/colors";
 import PageTitle from "@Components/Common/PageTitle";
 
 import { isAopDisabled } from "../../../Utils/AopStatus";
@@ -233,7 +233,7 @@ const AOPSummary = () => {
                         }}
                       />
                     </Fragment>
-                  ) : null
+                  ) : null,
                 )}
               </>
             ),
@@ -358,7 +358,8 @@ const AOPSummary = () => {
                                   textAlign={"center"}
                                   level="title-md"
                                 >
-                                  There are no activities for this objective.{" "}
+                                  There are no activities for this
+                                  objective.{" "}
                                 </Typography>
                               )}
                               <AccordionDetails activities={activities} />
@@ -367,7 +368,7 @@ const AOPSummary = () => {
                         />
                       </>
                     );
-                  }
+                  },
                 )}
               </Grid>
             </Grid>
@@ -409,7 +410,7 @@ const AOPSummary = () => {
           withAuthPin
           content={
             <>
-              <BoxComponent>
+              <BoxComponent bgColor={"#F5F5F5"}>
                 <Stack p={2} spacing={1}>
                   <Typography level="title-md">
                     Please confirm the following:
@@ -417,8 +418,13 @@ const AOPSummary = () => {
 
                   {AOP_CONFRIM_DATA.map(({ title, icon }) => (
                     <Stack direction={"row"} alignItems={"center"} spacing={1}>
-                      {icon}
-                      <Typography level="body-sm">{title}</Typography>
+                      <Typography
+                        level="body-sm"
+                        startDecorator={"✓"}
+                        sx={{ color: grey[900] }}
+                      >
+                        {title}
+                      </Typography>
                     </Stack>
                   ))}
                 </Stack>

@@ -189,7 +189,7 @@ export default function AddToCartLayout({
                     setFilterValues(newFilters);
                     handleSearch(search.name, newFilters); // trigger search
                   }}
-                  getOptionLabel={(opt) => opt?.name || ""}
+                  getOptionLabel={(opt) => opt?.system || ""}
                 />
                 <ButtonComponent
                   label="Clear Filters"

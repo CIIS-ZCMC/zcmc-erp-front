@@ -62,27 +62,31 @@ const CardComponent = ({
           </Stack>
         </CardContent>
 
-        <Divider
-          inset="none"
-          sx={{
-            bgcolor: withDividerStyle && blue[100],
-            padding: withDividerStyle && 0.09,
-          }}
-        />
+        {cardActions && (
+          <>
+            <Divider
+              inset="none"
+              sx={{
+                bgcolor: withDividerStyle && blue[100],
+                padding: withDividerStyle && 0.09,
+              }}
+            />
 
-        <CardActions
-          sx={{
-            justifyContent: justifyContentActions ? "" : "flex-end",
-          }}
-        >
-          <Stack
-            direction={direction ? direction : "column"}
-            alignItems={"center"}
-            width={actionWidth}
-          >
-            {cardActions}
-          </Stack>
-        </CardActions>
+            <CardActions
+              sx={{
+                justifyContent: justifyContentActions ? "" : "flex-end",
+              }}
+            >
+              <Stack
+                direction={direction ? direction : "column"}
+                alignItems={"center"}
+                width={actionWidth}
+              >
+                {cardActions}
+              </Stack>
+            </CardActions>
+          </>
+        )}
       </Card>
     </>
   );

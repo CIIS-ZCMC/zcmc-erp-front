@@ -929,17 +929,18 @@ export const variantCols = (
   {
     key: "system",
     label: "System",
+    width: 150,
     align: "left",
     render: (params) => {
-      return <Typography fontWeight={500}>{params.system}</Typography>;
+      return <Typography fontWeight={600}>{params.system}</Typography>;
     },
   },
-  { key: "code", label: "Code", align: "left" },
+  { key: "code", label: "Code", align: "left", width: 100 },
   {
     key: "category",
     label: "Category",
     align: "left",
-    width: 250,
+    width: 300,
     render: (params) => {
       const categories = params?.categories || [];
       const isExpanded = expandedCategories[params.id];
@@ -963,14 +964,16 @@ export const variantCols = (
             // Expanded view: multiline
 
             categories.map((cat, index) => (
-              <div key={cat.id || index}>{cat.name}</div>
+              <Typography key={cat.id || index} level="body-xs">
+                {cat.name}
+              </Typography>
             ))
           ) : (
             // Collapsed view: single line
-            <span>
+            <Typography level="body-xs">
               {visible.map((cat) => cat.name).join(", ")}
               {remaining > 0 && `, +${remaining} more`}
-            </span>
+            </Typography>
           )}
         </div>
       );
@@ -979,6 +982,7 @@ export const variantCols = (
   {
     key: "created_at",
     label: "Created on",
+    width: 100,
     align: "left",
     render: (params) => {
       return moment(params?.meta?.created_at).format("LL");
@@ -987,6 +991,7 @@ export const variantCols = (
   {
     key: "updated_at",
     label: "Updated on",
+    width: 100,
     align: "left",
     render: (params) => {
       return moment(params?.meta?.updated_at).format("LL");
@@ -995,7 +1000,6 @@ export const variantCols = (
   {
     key: "action",
     label: "Actions",
-
     align: "center",
     render: (params) => {
       return (
@@ -1043,7 +1047,16 @@ export const categoryCols = (
   updateCallBack,
   delCallback,
 ) => [
-  { key: "name", label: "Category", align: "left" },
+  {
+    key: "name",
+    label: "Category",
+    align: "left",
+    render: (params) => (
+      <Typography level="body-sm" fontWeight={600} sx={{ color: grey[800] }}>
+        {params.name}
+      </Typography>
+    ),
+  },
   {
     key: "created_at",
     label: "Created at",
@@ -1113,8 +1126,22 @@ export const classificationCols = (
   updateCallBack,
   delCallback,
 ) => [
-  { key: "name", label: "Classification", align: "left" },
-  { key: "description", label: "Description", align: "left" },
+  {
+    key: "name",
+    label: "Classification",
+    align: "left",
+    render: (params) => (
+      <Typography level="body-sm" fontWeight={600} sx={{ color: grey[800] }}>
+        {params.name}
+      </Typography>
+    ),
+  },
+  {
+    key: "description",
+    label: "Description",
+    align: "left",
+    render: (params) => params.description,
+  },
   {
     key: "created_at",
     label: "Created at",
