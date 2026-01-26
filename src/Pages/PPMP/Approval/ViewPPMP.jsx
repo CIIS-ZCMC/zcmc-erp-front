@@ -28,6 +28,8 @@ import TabComponent from "@Components/Common/TabComponent";
 import { PPMP_COLLAPSE } from "../../../Data/constants";
 import ProcurementSchedule from "../EndUser/ProcurementSchedule";
 import {
+  ExpandLess,
+  ExpandMore,
   ExtensionOutlined,
   TextSnippetOutlined,
   TodayOutlined,
@@ -42,11 +44,15 @@ import {
 import NoResultComponent from "@Components/Common/Table/NoResultComponent";
 import { useDebounce } from "use-debounce";
 import CountUp from "react-countup";
+import IconButtonComponent from "@Components/Common/IconButtonComponent";
+import TableComponent from "@Components/Common/Table/TableComponent";
+import { useUserTypes } from "../../../Store/AuthStore";
 
 function ViewPPMP() {
   const { id } = useParams();
   const { getPPMPApplicationByID } = usePPMPApplicationActions();
-  const { ppmpApplicationItems, ppmpApplication, isLoading } = usePPMP();
+  const { ppmpApplicationItems, ppmpApplication, isLoading, pagination } =
+    usePPMP();
   const navigate = useNavigate();
 
   const { getPPMPComments, postPPMPComment } = usePPMPCommentsActions();
@@ -64,6 +70,11 @@ function ViewPPMP() {
   const [perPage, setPerPage] = useState(10);
   const [isPostingComment, setIsPostingComment] = useState(false);
   const [localRows, setLocalRows] = useState([]);
+  const [activeTab, setActiveTab] = useState("all");
+  const [tabCache, setTabCache] = useState({});
+  const { isBudget } = useUserTypes();
+
+  const effectiveTab = isBudget ? activeTab : "proc";
 
   // const filteredPPMPItems = useMemo(() => {
   //   if (!search) return ppmpApplicationItems;
@@ -96,8 +107,8 @@ function ViewPPMP() {
         prev.map((item) =>
           item.id === selectedRow.id
             ? { ...item, comment_count: (item.comment_count || 0) + 1 }
-            : item
-        )
+            : item,
+        ),
       );
 
       setNewComment("");
@@ -110,15 +121,44 @@ function ViewPPMP() {
 
   const [debouncedSearch] = useDebounce(search, 500);
 
-  useEffect(() => {
-    getPPMPApplicationByID(id, debouncedSearch, page, perPage, () => {});
-  }, [id, debouncedSearch, page, perPage, newComment]);
+  const tabs = [
+    { name: "All items", value: "all" },
+    { name: "Procurable", value: "proc" },
+    { name: "Non-procurable", value: "non-proc" },
+  ];
 
   useEffect(() => {
-    if (ppmpApplicationItems) {
-      setLocalRows(ppmpApplicationItems);
+    const cacheKey = `${effectiveTab}-${page}-${debouncedSearch}`;
+
+    // ✅ cache hit → reuse
+    if (tabCache[cacheKey]) {
+      setLocalRows(tabCache[cacheKey]);
+      return;
     }
-  }, [ppmpApplicationItems]);
+
+    // ❌ cache miss → fetch
+    getPPMPApplicationByID(
+      id,
+      debouncedSearch, // search
+      page, // page
+      perPage, // per_page
+      effectiveTab, // tab
+      () => {}, // callback
+    );
+  }, [id, effectiveTab, debouncedSearch, page, perPage]);
+
+  useEffect(() => {
+    if (!ppmpApplicationItems) return;
+
+    const cacheKey = `${effectiveTab}-${page}-${debouncedSearch}`;
+
+    setTabCache((prev) => ({
+      ...prev,
+      [cacheKey]: ppmpApplicationItems,
+    }));
+
+    setLocalRows(ppmpApplicationItems);
+  }, [ppmpApplicationItems, effectiveTab, page, debouncedSearch]);
 
   useEffect(() => {
     if (openDrawer && selectedRow?.id) {
@@ -154,12 +194,8 @@ function ViewPPMP() {
       />
 
       <BoxComponent my={2} bgColor={"#FAFAF9"} boxShadow="xs" p={2}>
-        <Stack
-          direction={"row"}
-          justifyContent={"space-between"}
-          alignItems={"flex-end"}
-        >
-          <Stack>
+        <Stack direction={"row"} alignItems={"flex-end"} spacing={5}>
+          <Stack width={"100%"}>
             <Stack direction={"row"} gap={1.5}>
               <Typography level="body-md" sx={{ fontWeight: 600 }}>
                 List of PPMP Resources
@@ -169,6 +205,7 @@ function ViewPPMP() {
               The below contains a list of resources submitted by the requester
               for PPMP.
             </Typography>
+
             <SearchBarComponentv2
               value={search}
               setValue={setSearch}
@@ -177,7 +214,13 @@ function ViewPPMP() {
               sx={{ width: "300px" }}
             />
           </Stack>
-          <BoxComponent px={2} py={2} bgColor={"white"} borderRadius={10}>
+          <BoxComponent
+            px={2}
+            py={2}
+            bgColor={"white"}
+            borderRadius={10}
+            width={"250px"}
+          >
             <Typography
               textTransform={"uppercase"}
               level="body-xs"
@@ -207,14 +250,38 @@ function ViewPPMP() {
           </BoxComponent>
         </Stack>
       </BoxComponent>
+      {isBudget && (
+        <>
+          <TabComponent
+            tabs={tabs}
+            handleTabChange={(e, val) => {
+              setActiveTab(val);
+              setPage(1); // reset pagination when switching tabs
+            }}
+            index={activeTab}
+          />
+          <br />
+        </>
+      )}
+
       <ExpandableTable
         columns={PPMP_APPROVER_HEADERS(handleComments)}
         rows={localRows}
         loading={isLoading}
+        currentPage={pagination?.current_page}
+        totalPages={pagination?.last_page}
+        onNextPage={() => {
+          if (page < pagination?.last_page) setPage(page + 1);
+        }}
+        onPrevPage={() => {
+          if (page > 1) setPage(page - 1);
+        }}
+        totalRows={pagination?.total}
+        stickyFooter
         renderExpanded={(row) => {
           const totalQuantity = row?.activities?.reduce(
             (sum, act) => sum + (Number(act.resources_quantity) || 0),
-            0
+            0,
           );
 
           const unit = row?.unit || row?.item?.unit || ""; // fallback
@@ -344,7 +411,7 @@ function ViewPPMP() {
                                   >
                                     ● {spec.description}
                                   </Typography>
-                                )
+                                ),
                               )
                             ) : (
                               <Typography level="body-md">

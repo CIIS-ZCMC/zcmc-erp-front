@@ -1927,10 +1927,10 @@ export const PPMP_APPROVER_HEADERS = (handleComments) => [
     width: "250px",
     render: (row) => (
       <>
-        <Typography level="body-sm" fontWeight={600}>
+        <Typography level="body-sm" fontWeight={600} sx={{ color: "black" }}>
           {row?.item?.name}
         </Typography>
-        <Typography sx={{ fontSize: 13, color: grey[600] }}>
+        <Typography sx={{ fontSize: 14, color: grey[800] }}>
           Qty: {row?.quantity}
         </Typography>
       </>
@@ -1943,16 +1943,16 @@ export const PPMP_APPROVER_HEADERS = (handleComments) => [
     width: "200px",
     render: (row) => (
       <>
-        <Typography level="body-sm" fontWeight={600}>
+        <Typography level="body-sm" fontWeight={600} sx={{ color: "black" }}>
           {row?.item?.item_classification?.name}
         </Typography>
         <Typography
-          level={row?.item?.item_category?.name && "body-sm"}
+          level={"body-sm"}
           sx={{
-            fontSize: row?.item?.item_classification?.name && 13,
-            color: row?.item?.item_classification?.name && grey[600],
+            fontSize: row?.item?.item_classification?.name && 14,
+            color: row?.item?.item_classification?.name ? grey[800] : "black",
           }}
-          fontWeight={600}
+          fontWeight={row?.item?.item_category?.name ? 400 : 600}
         >
           {row?.item?.item_category?.name}
         </Typography>
@@ -1967,11 +1967,11 @@ export const PPMP_APPROVER_HEADERS = (handleComments) => [
 
     render: (row) => (
       <>
-        <Typography level="body-sm" fontWeight={600}>
+        <Typography level="body-sm" fontWeight={600} sx={{ color: "black" }}>
           ₱{row?.total_amount?.toLocaleString()}
         </Typography>
         <Typography
-          sx={{ fontSize: 13, color: grey[600], textTransform: "lowercase" }}
+          sx={{ fontSize: 14, color: grey[600], textTransform: "lowercase" }}
         >
           ₱{" "}
           {(row?.item?.estimated_budget).toLocaleString("en-PH", {

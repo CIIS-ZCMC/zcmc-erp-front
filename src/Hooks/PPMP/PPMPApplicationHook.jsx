@@ -1,12 +1,14 @@
 import { create } from "zustand";
 import { post, read } from "../../Services/RequestMethods";
 import { API } from "../../Data/constants";
+import { paginationClasses } from "@mui/material";
 
 const usePPMPApplicationHook = create((set) => ({
   ppmpApplications: [],
   ppmpApplication: null,
   ppmpApplicationItems: [],
   isLoading: false,
+  pagination: {},
 
   actions: {
     getPPMPApplications: (params, callback) => {
@@ -34,19 +36,21 @@ const usePPMPApplicationHook = create((set) => ({
       search = "",
       page = 1,
       per_page = 15,
-      callback
+      tab,
+      callback,
     ) => {
       set(() => ({ isLoading: true }));
 
       read({
         url: `${API.PPMP_APPLICATION}/${id}`,
-        params: { search, page, per_page },
+        params: { search: search, page, per_page, tab: tab },
         success: (res) => {
           const { data, message } = res.data;
 
           set(() => ({
             ppmpApplicationItems: data.data,
             ppmpApplication: data,
+            pagination: data.pagination,
             isLoading: false,
           }));
           callback(200, message);
@@ -85,16 +89,24 @@ export const usePPMPApplicationActions = () =>
 
 export const usePPMP = () => {
   const ppmpApplications = usePPMPApplicationHook(
-    (state) => state.ppmpApplications
+    (state) => state.ppmpApplications,
   );
   const ppmpApplicationItems = usePPMPApplicationHook(
-    (state) => state.ppmpApplicationItems
+    (state) => state.ppmpApplicationItems,
   );
   const ppmpApplication = usePPMPApplicationHook(
-    (state) => state.ppmpApplication
+    (state) => state.ppmpApplication,
   );
+
+  const pagination = usePPMPApplicationHook((state) => state.pagination);
 
   const isLoading = usePPMPApplicationHook((state) => state.isLoading);
 
-  return { ppmpApplications, ppmpApplicationItems, ppmpApplication, isLoading };
+  return {
+    ppmpApplications,
+    ppmpApplicationItems,
+    ppmpApplication,
+    isLoading,
+    pagination,
+  };
 };
