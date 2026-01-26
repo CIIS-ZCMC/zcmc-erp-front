@@ -36,7 +36,7 @@ function AlertDialogComponent({
   noRightButton = true,
 }) {
   const {
-    alertDialogState: { isOpen, status, title, description },
+    alertDialogState: { isOpen, status, title, subtitle, description },
     closeAlertDialog,
   } = useModalHook();
 
@@ -71,6 +71,7 @@ function AlertDialogComponent({
                   >
                     {title}
                   </Typography>
+
                   {/* <Typography
                     fontWeight={400}
                     fontSize={{ xs: 12, lg: 13 }}
@@ -90,7 +91,6 @@ function AlertDialogComponent({
                     flexDirection: { xs: "column", sm: "row" },
                   }}
                 >
-
                   {!isLoading && (
                     <ButtonComponent
                       label={leftButtonLabel}
@@ -101,7 +101,6 @@ function AlertDialogComponent({
                       variant={"outlined"}
                     />
                   )}
-
 
                   {!noRightButton && (
                     <ButtonComponent

@@ -83,11 +83,12 @@ function AddItems(props) {
 
     await postItems(formData, (status, message) => {
       if (status === 201) {
-        setAlertDialog({
-          status: "success",
-          title: "New resource item successfully added.",
-          description: message,
-        });
+        showSnack(200, message);
+        // setAlertDialog({
+        //   status: "success",
+        //   title: "New resource item successfully added.",
+        //   description: message,
+        // });
         clearCart();
         navigate(`/ppmp/manage-items`);
       } else {
@@ -132,7 +133,7 @@ function AddItems(props) {
   return (
     <Fragment>
       <PageTitle
-        title={`AOP for Fiscal Year ${currentFiscalYear}`}
+        title={`PPMP for Fiscal Year ${currentFiscalYear}`}
         description={
           "The following below serves as the summary of your AOP request. You can open and update your request before the deadline as set by the administrators."
         }

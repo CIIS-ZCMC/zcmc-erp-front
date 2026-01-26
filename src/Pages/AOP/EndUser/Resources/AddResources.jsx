@@ -14,6 +14,7 @@ import useModalHook from "../../../../Hooks/ModalHook";
 import { useAuth } from "../../../../Store/AuthStore";
 import useSearchHook from "../../../../Hooks/SearchHook";
 import useAOPBreadcrumbs from "../../../../Hooks/AOP/AOpBreadcrumbs";
+import useSnackbarHook from "../../../../Hooks/SnackbarHook";
 
 export default function AddResources() {
   const { user } = useAuth();
@@ -36,6 +37,7 @@ export default function AddResources() {
     closeConfirmation,
     closeAlertDialog,
   } = useModalHook();
+  const { showSnack } = useSnackbarHook();
 
   const currentYear = new Date().getFullYear();
   const currentFiscalYear = currentYear + 1;
@@ -65,11 +67,12 @@ export default function AddResources() {
 
     await postAOPResources(formData, (status, message) => {
       if (status === 201) {
-        setAlertDialog({
-          status: "success",
-          title: `${message}`,
-          description: "",
-        });
+        showSnack(200, message);
+        // setAlertDialog({
+        //   status: "success",
+        //   title: `${message}`,
+        //   description: "",
+        // });
         clearCart();
         navigate(`/aop/manage-resources/${activityId}`, {
           state: { activityId: activityId },

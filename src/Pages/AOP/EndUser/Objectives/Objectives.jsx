@@ -194,11 +194,12 @@ const Objectives = () => {
     try {
       await updateObjective(params, payload, (status, message) => {
         if (status === 200) {
-          setAlertDialog({
-            status: "success",
-            title: `${message}`,
-            description: "",
-          });
+          showSnack(200, message);
+          // setAlertDialog({
+          //   status: "success",
+          //   title: `${message}`,
+          //   description: "",
+          // });
           // setIsLoading(false);
           handleCloseModal();
         } else {
@@ -448,7 +449,7 @@ const Objectives = () => {
                       }
                     />
                   </Grid>
-                )
+                ),
               )}
             </Grid>
           )}

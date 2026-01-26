@@ -1543,10 +1543,10 @@ export const PPMP_HEADERS = (status, editingRows, handleComments) => [
     width: status?.name === "draft" ? "300px" : "400PX",
     render: (row) => (
       <>
-        <Typography level="body-sm" fontWeight={600}>
+        <Typography level="body-sm" fontWeight={600} sx={{ color: "black" }}>
           {row?.item?.name}
         </Typography>
-        <Typography sx={{ fontSize: 14, fontWeight: 600, color: grey[600] }}>
+        <Typography sx={{ fontSize: 14, fontWeight: 500, color: grey[800] }}>
           Qty: {row?.quantity}
         </Typography>
       </>
@@ -1558,16 +1558,16 @@ export const PPMP_HEADERS = (status, editingRows, handleComments) => [
     width: status?.name === "draft" ? "150px" : "auto",
     render: (row) => (
       <>
-        <Typography level="body-sm" fontWeight={600}>
+        <Typography level="body-sm" fontWeight={600} sx={{ color: "black" }}>
           {row?.item?.item_classification?.name}
         </Typography>
         <Typography
           level={row?.item?.item_category?.name && "body-sm"}
           sx={{
             fontSize: row?.item?.item_classification?.name && 13,
-            color: row?.item?.item_classification?.name && grey[600],
+            color: row?.item?.item_classification?.name && grey[800],
           }}
-          fontWeight={600}
+          fontWeight={500}
         >
           {row?.item?.item_category?.name}
         </Typography>

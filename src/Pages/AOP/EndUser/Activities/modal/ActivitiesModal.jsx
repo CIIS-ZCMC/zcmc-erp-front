@@ -18,6 +18,7 @@ import useActivitiesStore, {
   useActivitiesActions,
 } from "../../../../../Store/ActivitiesStore";
 import { Warning } from "@mui/icons-material";
+import { grey } from "@mui/material/colors";
 
 const ActivitiesModal = ({ selectedActivity }) => {
   const { activity, startMonth, endMonth, isGadRelated, target } =
@@ -81,7 +82,9 @@ const ActivitiesModal = ({ selectedActivity }) => {
         />
 
         <Stack>
-          <Typography>Timeframe</Typography>
+          <Typography level="body-sm" sx={{ color: grey[900] }}>
+            Timeframe
+          </Typography>
 
           <Stack direction={"row"} alignItems={"center"} spacing={2}>
             <InputComponent
@@ -100,10 +103,12 @@ const ActivitiesModal = ({ selectedActivity }) => {
           </Stack>
 
           <Stack mt={2}>
-            <Typography>Target</Typography>
+            <Typography level="body-sm" sx={{ color: grey[900] }}>
+              Target by Quarter
+            </Typography>
             <Stack
               // mt={3}
-
+              mt={0.5}
               direction={"row"}
               alignItems={"center"}
               spacing={2}
@@ -128,7 +133,7 @@ const ActivitiesModal = ({ selectedActivity }) => {
             </Stack>
             <Stack
               // mt={3}
-              pt={1}
+              pt={1.5}
               spacing={2}
               direction={"row"}
               alignItems={"center"}
