@@ -57,7 +57,7 @@ const usePPMPApplicationHook = create((set) => ({
         },
 
         failed: () => {
-          callback();
+          callback;
           set({ isLoading: false });
         },
       });

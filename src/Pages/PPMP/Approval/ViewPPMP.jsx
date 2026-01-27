@@ -76,12 +76,29 @@ function ViewPPMP() {
 
   const effectiveTab = isBudget ? activeTab : "proc";
 
-  // const filteredPPMPItems = useMemo(() => {
-  //   if (!search) return ppmpApplicationItems;
-  //   return ppmpApplicationItems?.filter((item) =>
-  //     item.item.name.toLowerCase().includes(search.toLowerCase())
-  //   );
-  // }, [search, ppmpApplicationItems]);
+  const [debouncedSearch] = useDebounce(search, 500);
+
+  const tabs = [
+    { name: "All items", value: "all" },
+    { name: "Procurable", value: "proc" },
+    { name: "Non-procurable", value: "non-proc" },
+  ];
+
+  // Reset page when tab or search changes
+  useEffect(() => {
+    setPage(1);
+  }, [activeTab, debouncedSearch]);
+
+  // Always fetch data when relevant params change
+  useEffect(() => {
+    if (!id) return;
+    getPPMPApplicationByID(id, debouncedSearch, page, perPage, effectiveTab);
+  }, [id, effectiveTab, page, perPage, debouncedSearch]);
+
+  // Keep localRows in sync for optimistic updates
+  useEffect(() => {
+    setLocalRows(ppmpApplicationItems || []);
+  }, [ppmpApplicationItems]);
 
   const handleComments = (row) => {
     setSelectedRow(row);
@@ -95,14 +112,15 @@ function ViewPPMP() {
 
     try {
       await postPPMPComment({
-        ppmp_item_id: selectedRow?.id,
+        ppmp_item_id: selectedRow.id,
         comment: newComment,
       });
 
-      // Fetch drawer comments only
-      getPPMPComments(selectedRow?.id);
+      // Refresh drawer comments
+      getPPMPComments(selectedRow.id);
+      setNewComment("");
 
-      // 🔥 Update local comment count instantly
+      // Optimistically update comment count in table
       setLocalRows((prev) =>
         prev.map((item) =>
           item.id === selectedRow.id
@@ -110,60 +128,14 @@ function ViewPPMP() {
             : item,
         ),
       );
-
-      setNewComment("");
-    } catch (error) {
-      console.error("Failed to post comment:", error);
     } finally {
       setIsPostingComment(false);
     }
   };
 
-  const [debouncedSearch] = useDebounce(search, 500);
-
-  const tabs = [
-    { name: "All items", value: "all" },
-    { name: "Procurable", value: "proc" },
-    { name: "Non-procurable", value: "non-proc" },
-  ];
-
+  // Fetch comments when drawer opens
   useEffect(() => {
-    const cacheKey = `${effectiveTab}-${page}-${debouncedSearch}`;
-
-    // ✅ cache hit → reuse
-    if (tabCache[cacheKey]) {
-      setLocalRows(tabCache[cacheKey]);
-      return;
-    }
-
-    // ❌ cache miss → fetch
-    getPPMPApplicationByID(
-      id,
-      debouncedSearch, // search
-      page, // page
-      perPage, // per_page
-      effectiveTab, // tab
-      () => {}, // callback
-    );
-  }, [id, effectiveTab, debouncedSearch, page, perPage]);
-
-  useEffect(() => {
-    if (!ppmpApplicationItems) return;
-
-    const cacheKey = `${effectiveTab}-${page}-${debouncedSearch}`;
-
-    setTabCache((prev) => ({
-      ...prev,
-      [cacheKey]: ppmpApplicationItems,
-    }));
-
-    setLocalRows(ppmpApplicationItems);
-  }, [ppmpApplicationItems, effectiveTab, page, debouncedSearch]);
-
-  useEffect(() => {
-    if (openDrawer && selectedRow?.id) {
-      getPPMPComments(selectedRow.id); // fetch existing comments
-    }
+    if (openDrawer && selectedRow?.id) getPPMPComments(selectedRow.id);
   }, [openDrawer, selectedRow?.id]);
   return (
     <Fragment>
@@ -254,7 +226,7 @@ function ViewPPMP() {
         <>
           <TabComponent
             tabs={tabs}
-            handleTabChange={(e, val) => {
+            handleTabChange={(val) => {
               setActiveTab(val);
               setPage(1); // reset pagination when switching tabs
             }}
@@ -268,15 +240,6 @@ function ViewPPMP() {
         columns={PPMP_APPROVER_HEADERS(handleComments)}
         rows={localRows}
         loading={isLoading}
-        currentPage={pagination?.current_page}
-        totalPages={pagination?.last_page}
-        onNextPage={() => {
-          if (page < pagination?.last_page) setPage(page + 1);
-        }}
-        onPrevPage={() => {
-          if (page > 1) setPage(page - 1);
-        }}
-        totalRows={pagination?.total}
         stickyFooter
         renderExpanded={(row) => {
           const totalQuantity = row?.activities?.reduce(
@@ -531,11 +494,11 @@ function ViewPPMP() {
             </>
           );
         }}
-        currentPage={ppmpApplication?.pagination?.current_page}
-        totalPages={ppmpApplication?.pagination?.last_page}
-        totalRows={ppmpApplication?.pagination?.total}
+        currentPage={pagination?.current_page}
+        totalPages={pagination?.last_page}
+        totalRows={pagination?.total}
         onNextPage={() => {
-          if (page < ppmpApplication?.pagination?.last_page) setPage(page + 1);
+          if (page < pagination?.last_page) setPage(page + 1);
         }}
         onPrevPage={() => {
           if (page > 1) setPage(page - 1);
