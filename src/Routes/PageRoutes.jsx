@@ -51,6 +51,7 @@ import All from "../Pages/Consolidators/ItemManagement/ItemRequest/All";
 import Pending from "../Pages/Consolidators/ItemManagement/ItemRequest/Pending";
 import Saved from "../Pages/Consolidators/ItemManagement/ItemRequest/Saved";
 import ViewPPMP from "../Pages/PPMP/Approval/ViewPPMP";
+import ManageObjectives from "../Pages/PlanningOps/ObjectiveManagement/Objectives";
 
 export const sidebarRoutes = [
   // DASHBOARD ROUTE
@@ -175,7 +176,7 @@ export const sidebarRoutes = [
       {
         path: "/objectives",
         name: "Objectives and KPIs",
-        element: <Objectives />,
+        element: <ManageObjectives />,
         childPermissions: [
           "ERP-OBJ-MAN:write",
           "ERP-OBJ-MAN:view",

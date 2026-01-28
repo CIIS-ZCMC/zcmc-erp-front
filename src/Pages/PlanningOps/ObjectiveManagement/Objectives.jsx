@@ -16,6 +16,7 @@ import {
   Stack,
   Textarea,
   Typography,
+  useTheme,
 } from "@mui/joy";
 import TextareaComponent from "../../../Components/Form/TextareaComponent";
 import { BiPlus } from "react-icons/bi";
@@ -30,8 +31,17 @@ import ConfirmationModalComponent from "../../../Components/Common/Dialog/Confir
 import useFunctionTypeHook from "../../../Hooks/FunctionTypeHook";
 import ServerTableComponent from "../../../Components/Common/Table/ServerTableComponent";
 import userErrorInputHook from "../../../Hooks/ErrorInputHook";
+import ExpandableTable from "@Components/Common/Table/ExpandableTable";
+import useFunctionTypesStore, {
+  useFunctionTypes,
+} from "../../../Store/functionTypesStore";
+import { Add } from "@mui/icons-material";
+import BoxComponent from "@Components/Common/Card/BoxComponent";
+import TabComponent from "@Components/Common/TabComponent";
+import SearchBarComponentv2 from "@Components/SearchBarWithdeBounce";
+import StatusSwitch from "@Components/StatusSwitchComponent";
 
-function Objectives({ props }) {
+function ManageObjectives({ props }) {
   const {
     objectives,
     pagination,
@@ -43,20 +53,18 @@ function Objectives({ props }) {
     setSearchQuery,
     searchQuery,
   } = useManageObjHook();
-  const { function_types, getFunctionType } = useFunctionTypeHook();
+  const { getFunctionType } = useFunctionTypeHook();
+  const function_types = useFunctionTypes();
   const { setAlertDialog, setConfirmationModal, closeConfirmation } =
     useModalHook();
   const { errors, setError, clearErrors } = userErrorInputHook();
 
-  const [searchTerm, setSearchTerm] = useState("");
-  const [inputValue, setInputValue] = useState(""); // immediate input value
   const [openCreate, setOpenCreate] = useState(false);
   const [openUpdate, setOpenUpdate] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [buttonLoader, setButtonLoader] = useState(false);
   const [isView, setIsView] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
-  const [currentPage, setCurrentPage] = useState(1);
   const [obj, setObj] = useState({});
   const [objIndicators, setObjIndicators] = useState([]);
   const [pin, setPin] = useState(null);
@@ -73,6 +81,12 @@ function Objectives({ props }) {
   });
   const [highlightedRowId, setHighlightedRowId] = useState(null);
   const indicatorsContainerRef = useRef(null);
+  const [page, setPage] = useState(1);
+  const [index, setIndex] = useState("all");
+  const [active, setActive] = useState(true);
+
+  const theme = useTheme();
+  const color = theme.palette;
 
   //PAGINATION
   const totalPages = pagination?.last_page || 1;
@@ -213,7 +227,7 @@ function Objectives({ props }) {
   const handleOpenDel = (row) => {
     const data = {
       status: "error",
-      title: `Delete objective ${row?.objective?.code}?`,
+      title: `Archive objective ${row?.objective?.code}?`,
       description: "This action cannot be undone.",
     };
     setSelected(row);
@@ -229,7 +243,7 @@ function Objectives({ props }) {
     try {
       const { status, message } = await new Promise((resolve) => {
         removeObj(row.id, formData, (s, m, d) =>
-          resolve({ status: s, message: m })
+          resolve({ status: s, message: m }),
         );
       });
 
@@ -264,7 +278,7 @@ function Objectives({ props }) {
         setError(
           `indicator-[${index}]`,
           true,
-          `Success Indicator ${index + 1} is required.`
+          `Success Indicator ${index + 1} is required.`,
         );
         hasError = true;
       }
@@ -286,7 +300,7 @@ function Objectives({ props }) {
     try {
       const { status, message, data } = await new Promise((resolve) => {
         updateObjective(formData, (s, m, d) =>
-          resolve({ status: s, message: m, data: d })
+          resolve({ status: s, message: m, data: d }),
         );
       });
       setHighlightedRowId(data?.id);
@@ -326,7 +340,7 @@ function Objectives({ props }) {
         setError(
           `indicator-[${index}]`,
           true,
-          `Success Indicator ${index + 1} is required.`
+          `Success Indicator ${index + 1} is required.`,
         );
         hasError = true;
       }
@@ -347,7 +361,7 @@ function Objectives({ props }) {
       formData.append("pin", JSON.stringify(pin));
       const result = await new Promise((resolve) => {
         postObjective(formData, (status, message, data) =>
-          resolve({ status, message, data })
+          resolve({ status, message, data }),
         );
       });
 
@@ -389,17 +403,14 @@ function Objectives({ props }) {
 
   //FETCH ALL
   const fetchAll = async () => {
-    const wrap = (fn) => new Promise((resolve) => fn(() => resolve()));
     setIsLoading(true);
     try {
       await Promise.all([
-        wrap((done) => getObjectives(currentPage, done)),
-        wrap((done) => getFunctionType({ mode: "selection" }, done)),
+        getObjectives({ page, per_page: 10, search: searchQuery, tab: index }),
+        getFunctionType({ mode: "selection" }),
       ]);
-    } catch (err) {
-      console.error("Fetching error:", err);
     } finally {
-      setIsLoading(false); // This ensures it runs after the try/catch, success or failure.
+      setIsLoading(false);
     }
   };
 
@@ -410,9 +421,20 @@ function Objectives({ props }) {
     setIsView(true);
   };
 
+  const tabs = [
+    { name: "All", value: "all" },
+    { name: "Core", value: "core" },
+    { name: "Strategic", value: "strat" },
+    { name: "Support", value: "sup" },
+  ];
+
   useEffect(() => {
     fetchAll();
-  }, [currentPage, searchQuery]);
+  }, [page, index, searchQuery]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [index, searchQuery]);
 
   useEffect(() => {
     if (highlightedRowId) {
@@ -420,14 +442,11 @@ function Objectives({ props }) {
       return () => clearTimeout(timeout);
     }
   }, [highlightedRowId]);
-
   useEffect(() => {
-    const handler = setTimeout(() => {
-      setSearchTerm(inputValue);
-    }, 300); // debounce delay (300ms)
-
-    return () => clearTimeout(handler);
-  }, [inputValue]);
+    if (!function_types?.length) {
+      getFunctionType({ mode: "selection" });
+    }
+  }, []);
 
   return (
     <Fragment>
@@ -435,12 +454,40 @@ function Objectives({ props }) {
         title="Objectives and Success Indicators"
         description="This is a subheading. It should add more context to the interaction."
       />
-      <ContainerComponent
-        title={"List of Objectives and Success Indicators"}
-        description={
-          "This is a subheading. It should add more context to the interaction."
-        }
-        actions={
+
+      <BoxComponent bgColor={color.background.surface} my={2} p={2}>
+        <Stack direction={"row"} sx={{ justifyContent: "space-between" }}>
+          <Stack>
+            <Typography level="body-md" fontWeight={600}>
+              List of Objectives and Success Indicators
+            </Typography>
+            <Typography level="body-xs">
+              This is a subheading. It should add more context to the
+              interaction.
+            </Typography>
+          </Stack>
+        </Stack>
+      </BoxComponent>
+      <TabComponent tabs={tabs} index={index} setIndex={setIndex} />
+
+      <Stack
+        direction={"row"}
+        sx={{
+          alignItems: "center",
+          justifyContent: index !== "all" ? "space-between" : "flex-end",
+          my: 2,
+        }}
+      >
+        {index !== "all" && (
+          <StatusSwitch checked={active} onChange={setActive} />
+        )}
+
+        <Stack direction={"row"} spacing={2}>
+          <SearchBarComponentv2
+            placeholder="Search objectives..."
+            value={searchQuery}
+            setValue={setSearchQuery}
+          />
           <ButtonComponent
             label="Create new"
             color="primary"
@@ -449,40 +496,42 @@ function Objectives({ props }) {
               setCurrentStep(1);
               setOpenCreate(true);
             }}
+            startDecorator={<Add />}
           />
-        }
-        isTable={true}
-        sx={{ mt: 3 }}
-      >
-        <ServerTableComponent
-          data={objectives}
-          columns={objHeaders({
-            onUpdate: handleOpenUpdate,
-            onDelete: handleOpenDel,
-            onViewIndicators: handleViewIndicators,
-          })}
-          pageSize={pagination?.per_page}
-          currentPage={currentPage}
-          totalPages={totalPages}
-          onPageChange={setCurrentPage}
-          paginationMeta={pagination}
-          stripe="even"
-          highlightedRowId={highlightedRowId}
-          withCount={pagination?.total}
-          fieldsToSearch={[
-            "function.type",
-            "function.code",
-            "objective.description",
-            "objective.code",
-          ]}
-          isLoading={isLoading}
-          bordered
-          hoverRow
-          stickLast
-          search={searchQuery}
-          setSearch={setSearchQuery}
-        />
-      </ContainerComponent>
+        </Stack>
+      </Stack>
+      <ExpandableTable
+        rows={objectives}
+        columns={objHeaders({
+          active,
+          onUpdate: handleOpenUpdate,
+          onDelete: handleOpenDel,
+          onViewIndicators: handleViewIndicators,
+        })}
+        currentPage={pagination?.current_page}
+        totalPages={pagination?.last_page}
+        onNextPage={() => {
+          if (page < pagination?.last_page) setPage(page + 1);
+        }}
+        onPrevPage={() => {
+          if (page > 1) setPage(page - 1);
+        }}
+        totalRows={pagination?.total}
+        stickyFooter
+        stripe="even"
+        highlightedRowId={highlightedRowId}
+        withCount={pagination?.total}
+        fieldsToSearch={[
+          "function.type",
+          "function.code",
+          "objective.description",
+          "objective.code",
+        ]}
+        isLoading={isLoading}
+        bordered
+        stickLast
+        hoverRow={false}
+      />
 
       {/* //CREATE MODAL */}
       <ModalComponent
@@ -755,6 +804,7 @@ function Objectives({ props }) {
 
       <ModalComponent
         title={`Showing ${obj?.code}'s Success Indicators`}
+        description={obj.description}
         isOpen={isView}
         handleClose={() => {
           setObj({});
@@ -786,4 +836,4 @@ function Objectives({ props }) {
   );
 }
 
-export default Objectives;
+export default ManageObjectives;

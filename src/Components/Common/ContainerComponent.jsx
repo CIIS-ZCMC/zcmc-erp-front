@@ -37,6 +37,7 @@ function ContainerComponent({
   footer,
   isLoading,
   noboxshadow = false,
+  withoutDivider = false,
   ...props
 }) {
   return (
@@ -65,7 +66,7 @@ function ContainerComponent({
 
             {actions}
           </Stack>
-          <Divider sx={{ marginX: noPadding && -2.5 }} />
+          {!withoutDivider && <Divider sx={{ marginX: noPadding && -2.5 }} />}
         </Stack>
       )}
 

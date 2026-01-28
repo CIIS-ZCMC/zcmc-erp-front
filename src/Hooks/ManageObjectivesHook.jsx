@@ -12,29 +12,22 @@ const useManageObjHook = create((set, get) => ({
     set({ searchQuery: query });
   },
 
-  getObjectives: (page = 1, callBack) => {
-    const { searchQuery } = get();
-    const params = {
-      page: page,
-      per_page: 10, // Set the number of items per page
-    };
-    if (searchQuery && searchQuery.length > 1) {
-      params.search = searchQuery; // Add search query to params if it has more than 1 character
-    }
-
-    read({
-      url: `${PATH}s`,
-      params,
-      failed: callBack,
-      success: (res) => {
-        const { status, message, data } = res;
-        set({
-          objectives: data.data,
-          pagination: data.meta,
-          navLinks: data.links,
-        });
-        callBack(status, message, data);
-      },
+  getObjectives: async (params = {}, callback) => {
+    return new Promise((resolve, reject) => {
+      read({
+        url: `${PATH}s`,
+        params,
+        success: (res) => {
+          const { data } = res;
+          set({
+            objectives: data.data,
+            pagination: data.meta,
+            navLinks: data.links,
+          });
+          resolve(res);
+        },
+        failed: callback,
+      });
     });
   },
 
@@ -62,7 +55,7 @@ const useManageObjHook = create((set, get) => ({
         const { message, data } = response.data;
         set((state) => ({
           objectives: state.objectives.map((obj) =>
-            obj.id === data.id ? { ...obj, ...data } : obj
+            obj.id === data.id ? { ...obj, ...data } : obj,
           ),
         }));
 

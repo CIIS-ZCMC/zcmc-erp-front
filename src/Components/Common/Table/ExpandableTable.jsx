@@ -21,6 +21,7 @@ export default function ExpandableTable({
   stickyFooter = false,
   height,
   newItemId,
+  hoverRow = true,
 }) {
   const [openId, setOpenId] = useState(null);
   const [heights, setHeights] = useState({}); // store row heights
@@ -61,7 +62,7 @@ export default function ExpandableTable({
           }}
           stickyHeader
           stickyFooter={stickyFooter}
-          hoverRow
+          hoverRow={hoverRow}
         >
           <thead>
             <tr>
@@ -122,8 +123,8 @@ export default function ExpandableTable({
                             background: isNew
                               ? "var(--joy-palette-primary-softBg)"
                               : expanded
-                              ? grey[100]
-                              : undefined,
+                                ? grey[100]
+                                : undefined,
 
                             borderBottom:
                               expanded || isNew ? "none" : undefined,
