@@ -104,7 +104,7 @@ export default function ExpandableTable({
               rows?.map((row) => {
                 const id = getRowId(row);
                 const expanded = openId === id;
-                const isNew = id === newItemId;
+                const isNew = newItemId != null && id === newItemId;
 
                 return (
                   <React.Fragment key={id}>

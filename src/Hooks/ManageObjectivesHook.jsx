@@ -31,6 +31,25 @@ const useManageObjHook = create((set, get) => ({
     });
   },
 
+  getArchivedObjectives: async (params = {}, callback) => {
+    return new Promise((resolve, reject) => {
+      read({
+        url: `${PATH}s/trashbin`,
+        params,
+        success: (res) => {
+          const { data } = res;
+          set({
+            objectives: data.data,
+            pagination: data.meta,
+            navLinks: data.links,
+          });
+          resolve(res);
+        },
+        failed: callback,
+      });
+    });
+  },
+
   postObjective: async (body, callback) => {
     post({
       url: `${PATH}s`,
@@ -38,7 +57,7 @@ const useManageObjHook = create((set, get) => ({
       success: (response) => {
         const { message, data } = response.data;
         set((state) => ({
-          objectives: [...state.objectives, data],
+          objectives: [data, ...state.objectives],
         }));
 
         callback(response.status, message, data);
@@ -47,9 +66,9 @@ const useManageObjHook = create((set, get) => ({
     });
   },
 
-  updateObjective: async (body, callback) => {
+  updateObjective: async (id, body, callback) => {
     update({
-      url: `${PATH}s`,
+      url: `${PATH}s/${id}`,
       form: body,
       success: (response) => {
         const { message, data } = response.data;
@@ -65,16 +84,40 @@ const useManageObjHook = create((set, get) => ({
     });
   },
 
-  removeObj: async (params, body, callback) => {
+  archiveObj: async (id, body, callBack) => {
     remove({
-      url: `${PATH}s`,
-      param: { id: params },
-      form: body,
-      success: (response) => {
-        const { message, data } = response.data;
-        callback(response.status, message, data);
+      url: `${PATH}s/${id}`,
+      form: body, // { authorization_pin }
+      success: ({ status, data }) => {
+        const { message } = data;
+
+        set((state) => ({
+          objectives: state.objectives.filter((res) => res.id !== id),
+        }));
+
+        callBack(status, message);
       },
-      failed: callback,
+      failed: (status, message) => {
+        callBack(status, message);
+      },
+    });
+  },
+
+  unarchiveObj: async (id, body, callBack) => {
+    update({
+      url: `${PATH}s/${id}/restore`,
+      form: body, // { authorization_pin }
+      success: ({ status, data }) => {
+        const { message } = data;
+        set((state) => ({
+          objectives: state.objectives.filter((res) => res.id !== id),
+        }));
+
+        callBack(status, message);
+      },
+      failed: (status, message) => {
+        callBack(status, message);
+      },
     });
   },
 }));

@@ -46,6 +46,9 @@ export const getAlertColor = (statusCode) => {
   let color = "";
 
   switch (statusCode) {
+    case 201:
+      color = "success";
+      break;
     case 200:
       color = "success";
       break;

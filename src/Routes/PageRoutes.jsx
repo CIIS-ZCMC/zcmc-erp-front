@@ -1,8 +1,5 @@
 import { Navigate } from "react-router-dom";
-
 import Dashboard from "../Pages/Dashboard/Dashboard";
-
-// import AOP from "../Pages/AOP/EndUser/AOP";
 import AOP from "../Pages/AOP/EndUser/AOPDashboard";
 import AOPSummary from "../Pages/AOP/EndUser/AOPSummary";
 import Objectives from "../Pages/AOP/EndUser/Objectives/Objectives";
@@ -11,38 +8,20 @@ import ManageResources from "../Pages/AOP/EndUser/Resources/ManageResources";
 import AOPOutlet from "../Pages/AOP/EndUser/AOPOutlet";
 import AddResources from "../Pages/AOP/EndUser/Resources/AddResources";
 import ResponsiblePerson from "../Pages/AOP/EndUser/Responsible/ResponsiblePerson";
-
-import Items from "../Pages/Items";
-
 import ItemRequest from "../Pages/Consolidators/ItemManagement/ItemRequest/ItemRequest";
 import ItemLibrary from "../Pages/Consolidators/ItemManagement/Library/ItemLibrary";
-// import Objectives from "../Pages/PlanningOps/ObjectiveManagement/Objectives";
 import ManageAOP from "../Pages/AOP/Approval/ManageAOP";
 import AOPApproval from "../Pages/AOP/Approval/AOPApproval";
-import PPMPApproval from "../Pages/PPMP/Approval/PPMPApproval";
-import ManagePPMP from "../Pages/PPMP/Approval/ManagePPMP";
-
 import { Items as ConsolidatorItems } from "../Pages/Consolidators/Tabs/Items";
 import { Classification } from "../Pages/Consolidators/Tabs/Classification";
 import { Category } from "../Pages/Consolidators/Tabs/Category";
 import { Variant } from "../Pages/Consolidators/Tabs/Variant";
-import { LayoutDashboard, Lock, PersonStanding } from "lucide-react";
 import {
   MdDashboard,
   MdLibraryBooks,
   MdSettings,
   MdSupervisorAccount,
 } from "react-icons/md";
-
-const iconStyles = {
-  size: 24,
-};
-import ItemSubmittedRequestsList from "../Pages/TEMP/ItemSubmittedRequestsList";
-import { MyOwnRequestsList } from "../Pages/TEMP/ItemMyOwnRequestsLists";
-import { ItemRequestDatatable } from "../Pages/Consolidators/ItemManagement/ItemRequestDatatable";
-
-import { element } from "prop-types";
-
 import PPMPDashboard from "../Pages/PPMP/EndUser/PPMPDashboard";
 import PPMPItems from "../Pages/PPMP/EndUser/PPMPItems";
 import AddItems from "../Pages/PPMP/EndUser/AddItems";
@@ -52,7 +31,11 @@ import Pending from "../Pages/Consolidators/ItemManagement/ItemRequest/Pending";
 import Saved from "../Pages/Consolidators/ItemManagement/ItemRequest/Saved";
 import ViewPPMP from "../Pages/PPMP/Approval/ViewPPMP";
 import ManageObjectives from "../Pages/PlanningOps/ObjectiveManagement/Objectives";
+import ManageConsolidators from "../Pages/PlanningOps/ManageConsolidators/ManageConsolidators";
 
+const iconStyles = {
+  size: 24,
+};
 export const sidebarRoutes = [
   // DASHBOARD ROUTE
   {
@@ -174,10 +157,22 @@ export const sidebarRoutes = [
       // },
 
       {
-        path: "/objectives",
+        path: "/manage-objectives",
         name: "Objectives and KPIs",
         element: <ManageObjectives />,
         childPermissions: [
+          "ERP-OBJ-MAN:write",
+          "ERP-OBJ-MAN:view",
+          "ERP-OBJ-MAN:update",
+          "ERP-OBJ-MAN:view-all",
+        ],
+      },
+      {
+        path: "/manage-consolidators",
+        name: "Item Consolidators",
+        element: <ManageConsolidators />,
+        childPermissions: [
+          // change to item consolidators permissions
           "ERP-OBJ-MAN:write",
           "ERP-OBJ-MAN:view",
           "ERP-OBJ-MAN:update",

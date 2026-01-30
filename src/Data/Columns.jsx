@@ -55,7 +55,7 @@ export const objHeaders = ({
   {
     field: "function",
     label: "Function",
-    width: "150px",
+    width: "100px",
     align: "left",
     render: (params) => {
       return (
@@ -70,7 +70,7 @@ export const objHeaders = ({
   {
     field: "objective",
     label: "Objective",
-    width: "300px",
+    width: "350px",
     align: "left",
     render: (params) => {
       return (
@@ -2041,7 +2041,6 @@ export const SUMMARY_RESOURCES = () => [
         </Typography>
       </>
     ),
-    expandTrigger: true,
   },
   {
     id: "category",
@@ -2064,7 +2063,6 @@ export const SUMMARY_RESOURCES = () => [
         </Typography>
       </>
     ),
-    expandTrigger: true,
   },
   {
     id: "cost",
@@ -2084,7 +2082,6 @@ export const SUMMARY_RESOURCES = () => [
         </Typography>
       </>
     ),
-    expandTrigger: true,
   },
 ];
 
@@ -2112,5 +2109,101 @@ export const SUMMARY_PEOPLE = () => [
       );
     },
     expandTrigger: true,
+  },
+];
+
+export const MANAGE_CONSOLIDATORS = (
+  expandedCategories,
+  setExpandedCategories,
+  handleUpdate,
+) => [
+  {
+    id: "name",
+    label: "Consolidator Name",
+    width: "200px",
+    render: (row) => (
+      <Typography level="body-sm" fontWeight={600} color="black">
+        {row?.user_name}
+      </Typography>
+    ),
+  },
+  {
+    id: "item_category",
+    label: "Assigned Item Category",
+    width: "350px",
+    render: (row) => {
+      const categories = row?.assigned_categories || [];
+      const rowId = row?.id;
+
+      if (!categories.length) {
+        return (
+          <Typography level="body-xs" color="neutral">
+            —
+          </Typography>
+        );
+      }
+
+      const isExpanded = expandedCategories[rowId];
+      const visibleCount = 2;
+
+      const visible = isExpanded
+        ? categories
+        : categories.slice(0, visibleCount);
+
+      const remaining = categories.length - visibleCount;
+
+      const label = visible.map((c) => c.item_category_name).join(", ");
+
+      return (
+        <Typography
+          level="body-sm"
+          color="neutral"
+          sx={{
+            cursor: categories.length > visibleCount ? "pointer" : "default",
+            userSelect: "none",
+            color: "black",
+          }}
+          onClick={() => {
+            if (categories.length > visibleCount) {
+              setExpandedCategories((prev) => ({
+                ...prev,
+                [rowId]: !prev[rowId],
+              }));
+            }
+          }}
+        >
+          {label}
+          {!isExpanded && remaining > 0 && `… +${remaining} more`}
+        </Typography>
+      );
+    },
+  },
+  {
+    id: "updated_on",
+    label: "Updated on",
+    width: "150px",
+    render: (row) => (
+      <Typography level="body-sm" color="black">
+        {row?.updated_at
+          ? moment(row?.updated_at).format("MMMM DD, YYYY")
+          : "-"}
+      </Typography>
+    ),
+  },
+  {
+    id: "actions",
+    label: "Actions",
+    render: (row) => (
+      <Stack>
+        <Chip
+          variant="soft"
+          color="neutral"
+          startDecorator={<EditOutlined />}
+          onClick={() => handleUpdate(row)}
+        >
+          Edit
+        </Chip>
+      </Stack>
+    ),
   },
 ];

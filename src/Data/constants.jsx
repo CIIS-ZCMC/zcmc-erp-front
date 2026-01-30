@@ -300,6 +300,9 @@ export const API = {
   AOP_YEAR_LIST: "aop-application-yearList ",
   AOP_UPDATE: "aop-application-update-status",
 
+  CONSOLIDATORS: "category-consolidators",
+  UPDATE_CONSOLIDATOR: "update-consolidator",
+
   OBJECTIVES: "application-objectives",
   OBJECTIVE_BY_SECTOR: "user-application-objectives",
   OBJECTIVE_STORE: "application-objectives-store",

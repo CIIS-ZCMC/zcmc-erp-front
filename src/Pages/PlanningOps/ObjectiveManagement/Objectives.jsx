@@ -35,11 +35,21 @@ import ExpandableTable from "@Components/Common/Table/ExpandableTable";
 import useFunctionTypesStore, {
   useFunctionTypes,
 } from "../../../Store/functionTypesStore";
-import { Add } from "@mui/icons-material";
+import {
+  Add,
+  Check,
+  CheckCircleOutline,
+  DoneAll,
+  EmojiObjectsOutlined,
+  TextSnippetOutlined,
+} from "@mui/icons-material";
 import BoxComponent from "@Components/Common/Card/BoxComponent";
 import TabComponent from "@Components/Common/TabComponent";
 import SearchBarComponentv2 from "@Components/SearchBarWithdeBounce";
 import StatusSwitch from "@Components/StatusSwitchComponent";
+import useSnackbarHook from "../../../Hooks/SnackbarHook";
+import AuthorizationPinComponent from "@Components/AuthorizationPinComponent";
+import usePinHook from "../../../Hooks/PinHook";
 
 function ManageObjectives({ props }) {
   const {
@@ -47,7 +57,9 @@ function ManageObjectives({ props }) {
     pagination,
     navLinks,
     getObjectives,
-    removeObj,
+    getArchivedObjectives,
+    archiveObj,
+    unarchiveObj,
     postObjective,
     updateObjective,
     setSearchQuery,
@@ -57,17 +69,18 @@ function ManageObjectives({ props }) {
   const function_types = useFunctionTypes();
   const { setAlertDialog, setConfirmationModal, closeConfirmation } =
     useModalHook();
+  const { showSnack } = useSnackbarHook();
   const { errors, setError, clearErrors } = userErrorInputHook();
 
   const [openCreate, setOpenCreate] = useState(false);
   const [openUpdate, setOpenUpdate] = useState(false);
+  const [openDel, setOpenDel] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [buttonLoader, setButtonLoader] = useState(false);
   const [isView, setIsView] = useState(false);
   const [currentStep, setCurrentStep] = useState(1);
   const [obj, setObj] = useState({});
   const [objIndicators, setObjIndicators] = useState([]);
-  const [pin, setPin] = useState(null);
   const [selected, setSelected] = useState({});
   const [newObj, setNewObj] = useState({
     function: null,
@@ -79,10 +92,13 @@ function ManageObjectives({ props }) {
     objective: "",
     indicators: [],
   });
+
+  const { setPin, pin } = usePinHook();
   const [highlightedRowId, setHighlightedRowId] = useState(null);
   const indicatorsContainerRef = useRef(null);
   const [page, setPage] = useState(1);
   const [index, setIndex] = useState("all");
+  const [indexCreate, setIndexCreate] = useState(0);
   const [active, setActive] = useState(true);
 
   const theme = useTheme();
@@ -227,45 +243,43 @@ function ManageObjectives({ props }) {
   const handleOpenDel = (row) => {
     const data = {
       status: "error",
-      title: `Archive objective ${row?.objective?.code}?`,
+      title: `${active ? "Archive" : "Unarchive"} objective ${row?.objective?.code}?`,
       description: "This action cannot be undone.",
     };
     setSelected(row);
     setConfirmationModal(data);
+    setOpenDel(true);
   };
 
-  const handleDelete = async (row) => {
+  const handleDelete = async () => {
     setButtonLoader(true);
+    const form = {
+      authorization_pin: pin,
+    };
+    if (!active) {
+      await unarchiveObj(selected.id, form, (status, message) => {
+        // setLoading(false);
 
-    const formData = new FormData();
-    formData.append("pin", pin);
-
-    try {
-      const { status, message } = await new Promise((resolve) => {
-        removeObj(row.id, formData, (s, m, d) =>
-          resolve({ status: s, message: m }),
-        );
+        if (status === 200) {
+          setButtonLoader(false);
+          setOpenDel(false);
+          showSnack(200, message);
+        } else {
+          showSnack(500, message);
+        }
       });
+    } else {
+      await archiveObj(selected.id, form, (status, message) => {
+        // setLoading(false);
 
-      setAlertDialog({
-        status: status === 200 ? "success" : "error",
-        title: message,
-        description: message,
+        if (status === 200) {
+          setButtonLoader(false);
+          setOpenDel(false);
+          showSnack(200, message);
+        } else {
+          showSnack(500, message);
+        }
       });
-
-      if (status === 200) {
-        fetchAll();
-        setSelected({});
-      }
-    } catch (err) {
-      console.error("Delete error:", err);
-      setAlertDialog({
-        status: "error",
-        title: "Unexpected error",
-        description: "Something went wrong. Please try again.",
-      });
-    } finally {
-      setButtonLoader(false);
     }
   };
 
@@ -290,25 +304,26 @@ function ManageObjectives({ props }) {
     if (hasError) return;
     setButtonLoader(true);
 
-    const formData = new FormData();
-    formData.append("id", selected.id);
-    formData.append("function", JSON.stringify(updateObj.function));
-    formData.append("objective", updateObj.objective);
-    formData.append("indicators", JSON.stringify(updateObj.indicators));
-    formData.append("pin", JSON.stringify(pin));
+    const payload = {
+      type_of_function_id: updateObj.function.id, // object
+      description: updateObj.objective, // string
+      success_indicators: updateObj.indicators, // array of strings
+      authorization_pin: pin, // string
+    };
 
     try {
       const { status, message, data } = await new Promise((resolve) => {
-        updateObjective(formData, (s, m, d) =>
+        updateObjective(selected.id, payload, (s, m, d) =>
           resolve({ status: s, message: m, data: d }),
         );
       });
       setHighlightedRowId(data?.id);
-      setAlertDialog({
-        status: status === 200 ? "success" : "error",
-        title: message,
-        description: message,
-      });
+      showSnack(status, message);
+      // setAlertDialog({
+      //   status: status === 200 ? "success" : "error",
+      //   title: message,
+      //   description: message,
+      // });
 
       if (status === 200) {
         setOpenUpdate(false);
@@ -345,41 +360,43 @@ function ManageObjectives({ props }) {
         hasError = true;
       }
     });
+
     if (!pin?.trim()) {
       setError("pin", true, "Authorization PIN is required.");
       hasError = true;
     }
+
     if (hasError) return;
 
     try {
       setButtonLoader(true);
 
-      const formData = new FormData();
-      formData.append("function", JSON.stringify(newObj.function));
-      formData.append("objective", newObj.objective);
-      formData.append("indicators", JSON.stringify(newObj.indicators));
-      formData.append("pin", JSON.stringify(pin));
-      const result = await new Promise((resolve) => {
-        postObjective(formData, (status, message, data) =>
+      const payload = {
+        type_of_function_id: newObj.function.id, // object
+        description: newObj.objective, // string
+        success_indicators: newObj.indicators, // array of strings
+        authorization_pin: pin, // string
+      };
+
+      const { status, message, data } = await new Promise((resolve) => {
+        postObjective(payload, (status, message, data) =>
           resolve({ status, message, data }),
         );
       });
 
-      const { status, message, data } = result;
-
-      const alertData = {
-        status: status === 201 ? "success" : "error",
-        title: message,
-        description: message,
-      };
-
-      setAlertDialog(alertData);
+      showSnack(status, message);
+      // setAlertDialog({
+      //   status: status === 201 ? "success" : "error",
+      //   title: message,
+      //   description: message,
+      // });
 
       if (status === 201) {
         setHighlightedRowId(data?.id);
-        const lastPage = pagination?.last_page || 1;
-        setCurrentPage(lastPage);
-        await getObjectives(lastPage);
+
+        // const lastPage = pagination?.last_page || 1;
+        // setPage(lastPage);
+        // await getObjectives({ page: lastPage, per_page: 10 });
 
         setOpenCreate(false);
         setNewObj({
@@ -388,6 +405,7 @@ function ManageObjectives({ props }) {
           indicators: ["", "", ""],
         });
         setPin("");
+        setIndexCreate(0);
       }
     } catch (err) {
       console.error("Submission error:", err);
@@ -398,19 +416,6 @@ function ManageObjectives({ props }) {
       });
     } finally {
       setButtonLoader(false);
-    }
-  };
-
-  //FETCH ALL
-  const fetchAll = async () => {
-    setIsLoading(true);
-    try {
-      await Promise.all([
-        getObjectives({ page, per_page: 10, search: searchQuery, tab: index }),
-        getFunctionType({ mode: "selection" }),
-      ]);
-    } finally {
-      setIsLoading(false);
     }
   };
 
@@ -428,9 +433,29 @@ function ManageObjectives({ props }) {
     { name: "Support", value: "sup" },
   ];
 
+  const tabsCreate = [
+    { name: "Objective", value: 0, icon: <EmojiObjectsOutlined /> },
+    { name: "Success Indicators", value: 1, icon: <DoneAll /> },
+  ];
+
   useEffect(() => {
-    fetchAll();
-  }, [page, index, searchQuery]);
+    setIsLoading(true);
+
+    const params = {
+      page,
+      per_page: 10,
+      search: searchQuery,
+      tab: index,
+    };
+
+    const request = active
+      ? getObjectives(params)
+      : getArchivedObjectives(params);
+
+    request
+      .catch((err) => console.error(err))
+      .finally(() => setIsLoading(false));
+  }, [page, index, searchQuery, active]);
 
   useEffect(() => {
     setPage(1);
@@ -442,6 +467,7 @@ function ManageObjectives({ props }) {
       return () => clearTimeout(timeout);
     }
   }, [highlightedRowId]);
+
   useEffect(() => {
     if (!function_types?.length) {
       getFunctionType({ mode: "selection" });
@@ -452,14 +478,14 @@ function ManageObjectives({ props }) {
     <Fragment>
       <PageTitle
         title="Objectives and Success Indicators"
-        description="This is a subheading. It should add more context to the interaction."
+        description="Create, update, and monitor organizational objectives with measurable success indicators."
       />
 
       <BoxComponent bgColor={color.background.surface} my={2} p={2}>
         <Stack direction={"row"} sx={{ justifyContent: "space-between" }}>
           <Stack>
             <Typography level="body-md" fontWeight={600}>
-              List of Objectives and Success Indicators
+              Objective and Success Indicator Library
             </Typography>
             <Typography level="body-xs">
               This is a subheading. It should add more context to the
@@ -501,6 +527,7 @@ function ManageObjectives({ props }) {
         </Stack>
       </Stack>
       <ExpandableTable
+        isLoading={isLoading}
         rows={objectives}
         columns={objHeaders({
           active,
@@ -519,50 +546,41 @@ function ManageObjectives({ props }) {
         totalRows={pagination?.total}
         stickyFooter
         stripe="even"
-        highlightedRowId={highlightedRowId}
-        withCount={pagination?.total}
-        fieldsToSearch={[
-          "function.type",
-          "function.code",
-          "objective.description",
-          "objective.code",
-        ]}
-        isLoading={isLoading}
+        newItemId={highlightedRowId}
         bordered
         stickLast
         hoverRow={false}
       />
 
       {/* //CREATE MODAL */}
-      <ModalComponent
-        isOpen={openCreate}
-        hasActionButtons
-        handleClose={() => {
-          clearErrors();
-          setNewObj({
-            function: null,
-            objective: "",
-            indicators: ["", "", ""],
-          });
-          setOpenCreate(false);
-        }}
-        title={"Create a new objective"}
-        minWidth={480}
-        description={"Add a new function, objective and its success indicators"}
-        leftButtonLabel={currentStep === 1 ? "Cancel" : "Back to previous"}
-        leftButtonAction={() =>
-          currentStep === 1 ? handleClose() : handleBack()
-        }
-        rightButtonLabel={currentStep === 1 ? "Next step" : "Confirm and save"}
-        isLoading={buttonLoader}
-        rightButtonAction={() =>
-          currentStep === 2 ? submit() : handleNext("create")
-        }
-        content={
-          <Fragment>
-            {currentStep === 1 && (
-              <Fragment>
-                <Stack gap={2}>
+      {openCreate && (
+        <ModalComponent
+          isOpen={openCreate}
+          hasActionButtons
+          handleClose={() => {
+            clearErrors();
+            setNewObj({
+              function: null,
+              objective: "",
+              indicators: ["", "", ""],
+            });
+            setOpenCreate(false);
+          }}
+          title={"Create a new objective"}
+          minWidth={520}
+          description={"Add a new objective and its success indicators"}
+          rightButtonAction={() => submit()}
+          rightButtonLabel="Confirm and Save"
+          isLoading={buttonLoader}
+          content={
+            <Fragment>
+              <TabComponent
+                tabs={tabsCreate}
+                index={indexCreate}
+                setIndex={setIndexCreate}
+              />
+              {indexCreate === 0 && (
+                <Stack spacing={2} mt={2}>
                   <AutocompleteComponent
                     label={"Select a function"}
                     name="function"
@@ -589,246 +607,241 @@ function ManageObjectives({ props }) {
                     }
                   />
                 </Stack>
-              </Fragment>
-            )}
-            {currentStep === 2 && (
-              <Fragment>
-                <Box
-                  overflow="auto"
-                  maxHeight={300}
-                  ref={indicatorsContainerRef}
-                >
-                  {newObj.indicators.map((indicator, index) => (
-                    <Box
-                      key={index}
-                      sx={{ my: 2, padding: 1 }}
-                      bgcolor={"#F9F9F9"}
-                    >
-                      <Stack
-                        direction="row"
-                        sx={{
-                          justifyContent: "space-between",
-                          alignItems: "flex-end",
-                        }}
+              )}
+              {indexCreate === 1 && (
+                <Fragment>
+                  <Box
+                    overflow="auto"
+                    maxHeight={300}
+                    ref={indicatorsContainerRef}
+                    sx={{ mt: 2 }}
+                  >
+                    {newObj.indicators.map((indicator, index) => (
+                      <Box
+                        key={index}
+                        sx={{ my: 2, padding: 1 }}
+                        bgcolor={"#F9F9F9"}
                       >
-                        <Typography sx={{ fontSize: 14, fontWeight: 500 }}>
-                          Success indicator {index + 1}
-                        </Typography>
-                        {newObj.indicators.length > 1 && (
-                          <Link
-                            onClick={() => removeIndicator(index, "create")}
-                            underline="always"
-                            color="danger"
-                            fontSize={13}
-                          >
-                            Remove
-                          </Link>
-                        )}
-                      </Stack>
+                        <Stack
+                          direction="row"
+                          sx={{
+                            justifyContent: "space-between",
+                            alignItems: "flex-end",
+                          }}
+                        >
+                          <Typography sx={{ fontSize: 14, fontWeight: 500 }}>
+                            Success indicator {index + 1}
+                          </Typography>
+                          {newObj.indicators.length > 1 && (
+                            <Link
+                              onClick={() => removeIndicator(index, "create")}
+                              underline="always"
+                              color="danger"
+                              fontSize={13}
+                            >
+                              Remove
+                            </Link>
+                          )}
+                        </Stack>
 
-                      <TextareaComponent
-                        isRequired={true}
-                        value={indicator}
-                        name={`indicator-[${index}]`}
-                        onChange={(e) =>
-                          handleChangeIndicator(index, e.target.value, "create")
-                        }
-                      />
-                    </Box>
-                  ))}
-                </Box>
-                <Divider sx={{ my: 1 }} />
+                        <TextareaComponent
+                          isRequired={true}
+                          value={indicator}
+                          name={`indicator-[${index}]`}
+                          onChange={(e) =>
+                            handleChangeIndicator(
+                              index,
+                              e.target.value,
+                              "create",
+                            )
+                          }
+                        />
+                      </Box>
+                    ))}
+                  </Box>
 
-                <Link
-                  onClick={() => addIndicator("create")}
-                  fontSize={14}
-                  endDecorator={<BiPlus />}
-                  underline="always"
-                  color="success"
-                >
-                  Add another
-                </Link>
-                <Divider sx={{ my: 1 }} />
-                <InputComponent
-                  type="password"
-                  name="pin"
-                  label="Authorization pin"
-                  helperText={
-                    "Confirm your action by typing-in your authorization PIN."
-                  }
-                  setValue={setPin}
-                  value={pin}
-                />
-              </Fragment>
-            )}
-          </Fragment>
-        }
-      />
+                  <Link
+                    onClick={() => addIndicator("create")}
+                    fontSize={14}
+                    endDecorator={<BiPlus />}
+                    underline="always"
+                    color="primary"
+                  >
+                    Add another
+                  </Link>
+                </Fragment>
+              )}
+              <Divider sx={{ mt: 2 }} />
+              <AuthorizationPinComponent setPin={setPin} />
+            </Fragment>
+          }
+        />
+      )}
 
       {/* //UPDATE MODAL */}
-      <ModalComponent
-        isOpen={openUpdate}
-        hasActionButtons
-        handleClose={() => {
-          clearErrors();
-          setUpdateObj({
-            function: null,
-            objective: "",
-            indicators: [],
-          });
-          setOpenUpdate(false);
-        }}
-        title={
-          <>
-            Update objective{" "}
-            <span style={{ color: "#C98503" }}>
-              {selected?.objective?.code}
-            </span>
-          </>
-        }
-        description={"Keep the objective up-to-date."}
-        minWidth={480}
-        leftButtonLabel={currentStep === 1 ? "Cancel" : "Back to previous"}
-        leftButtonAction={() =>
-          currentStep === 1 ? handleClose() : handleBack()
-        }
-        rightButtonLabel={currentStep === 1 ? "Next step" : "Confirm and save"}
-        rightButtonAction={() =>
-          currentStep === 2 ? update() : handleNext("update")
-        }
-        isLoading={buttonLoader}
-        content={
-          <Fragment>
-            {currentStep === 1 && (
-              <Fragment>
-                <Stack gap={2}>
-                  <AutocompleteComponent
-                    label={"Select a function"}
-                    options={function_types}
-                    value={updateObj.function}
-                    getOptionLabel={(option) => option?.type || ""}
-                    handleSelect={(val) =>
-                      setUpdateObj((prev) => ({
-                        ...prev,
-                        function: val,
-                      }))
-                    }
-                  />
+      {openUpdate && (
+        <ModalComponent
+          isOpen={openUpdate}
+          hasActionButtons
+          handleClose={() => {
+            clearErrors();
+            setUpdateObj({
+              function: null,
+              objective: "",
+              indicators: [],
+            });
+            setOpenUpdate(false);
+          }}
+          title={
+            <>
+              Update objective{" "}
+              <span style={{ color: "#C98503" }}>
+                {selected?.objective?.code}
+              </span>
+            </>
+          }
+          description={"Keep the objective up-to-date."}
+          minWidth={480}
+          isLoading={buttonLoader}
+          rightButtonAction={() => update()}
+          rightButtonDisabled={buttonLoader}
+          content={
+            <Fragment>
+              <TabComponent
+                tabs={tabsCreate}
+                index={indexCreate}
+                setIndex={setIndexCreate}
+              />
+              {indexCreate === 0 && (
+                <Fragment>
+                  <Stack gap={2} mt={2}>
+                    <AutocompleteComponent
+                      label={"Select a function"}
+                      options={function_types}
+                      value={updateObj.function}
+                      getOptionLabel={(option) => option?.type || ""}
+                      handleSelect={(val) =>
+                        setUpdateObj((prev) => ({
+                          ...prev,
+                          function: val,
+                        }))
+                      }
+                    />
 
-                  <TextareaComponent
-                    label={"Objective"}
-                    value={updateObj.objective}
-                    onChange={(e) =>
-                      setUpdateObj((prev) => ({
-                        ...prev,
-                        objective: e.target.value,
-                      }))
-                    }
-                  />
-                </Stack>
-              </Fragment>
-            )}
-            {currentStep === 2 && (
-              <Fragment>
-                <Box
-                  overflow="auto"
-                  maxHeight={300}
-                  ref={indicatorsContainerRef}
-                >
-                  {updateObj.indicators.map((indicator, index) => (
-                    <Box
-                      key={index}
-                      sx={{ my: 2, padding: 1 }}
-                      bgcolor={"#F9F9F9"}
-                    >
-                      <Stack
-                        direction="row"
-                        sx={{
-                          justifyContent: "space-between",
-                          alignItems: "flex-end",
-                        }}
+                    <TextareaComponent
+                      label={"Objective"}
+                      value={updateObj.objective}
+                      onChange={(e) =>
+                        setUpdateObj((prev) => ({
+                          ...prev,
+                          objective: e.target.value,
+                        }))
+                      }
+                    />
+                  </Stack>
+                </Fragment>
+              )}
+              {indexCreate === 1 && (
+                <Fragment>
+                  <Box
+                    overflow="auto"
+                    maxHeight={300}
+                    ref={indicatorsContainerRef}
+                    sx={{ mt: 2 }}
+                  >
+                    {updateObj.indicators.map((indicator, index) => (
+                      <Box
+                        key={index}
+                        sx={{ my: 2, padding: 1 }}
+                        bgcolor={"#F9F9F9"}
                       >
-                        <Typography sx={{ fontSize: 14, fontWeight: 500 }}>
-                          Success indicator {index + 1}
-                        </Typography>
-                        {updateObj.indicators.length > 1 && (
-                          <Link
-                            onClick={() => removeIndicator(index, "update")}
-                            underline="always"
-                            color="danger"
-                            fontSize={13}
-                          >
-                            Remove
-                          </Link>
-                        )}
-                      </Stack>
+                        <Stack
+                          direction="row"
+                          sx={{
+                            justifyContent: "space-between",
+                            alignItems: "flex-end",
+                          }}
+                        >
+                          <Typography sx={{ fontSize: 14, fontWeight: 500 }}>
+                            Success indicator {index + 1}
+                          </Typography>
+                          {updateObj.indicators.length > 1 && (
+                            <Link
+                              onClick={() => removeIndicator(index, "update")}
+                              underline="always"
+                              color="danger"
+                              fontSize={13}
+                            >
+                              Remove
+                            </Link>
+                          )}
+                        </Stack>
 
-                      <TextareaComponent
-                        isRequired={true}
-                        value={indicator.description}
-                        name={`indicator-[${index}]`}
-                        onChange={(e) =>
-                          handleChangeIndicator(index, e.target.value, "update")
-                        }
-                      />
-                    </Box>
-                  ))}
-                </Box>
-                <Divider sx={{ my: 1 }} />
+                        <TextareaComponent
+                          isRequired={true}
+                          value={indicator.description}
+                          name={`indicator-[${index}]`}
+                          onChange={(e) =>
+                            handleChangeIndicator(
+                              index,
+                              e.target.value,
+                              "update",
+                            )
+                          }
+                        />
+                      </Box>
+                    ))}
+                  </Box>
 
-                <Link
-                  onClick={() => addIndicator("update")}
-                  fontSize={14}
-                  endDecorator={<BiPlus />}
-                  underline="always"
-                  color="success"
-                >
-                  Add another
-                </Link>
-                <Divider sx={{ my: 1 }} />
-                <InputComponent
-                  type="password"
-                  label="Authorization pin"
-                  helperText={
-                    "Confirm your action by typing-in your authorization PIN."
-                  }
-                  name="pin"
-                  setValue={setPin}
-                  value={pin}
-                />
-              </Fragment>
-            )}
-          </Fragment>
-        }
-      />
+                  <Link
+                    onClick={() => addIndicator("update")}
+                    fontSize={14}
+                    endDecorator={<BiPlus />}
+                    underline="always"
+                    color="primary"
+                  >
+                    Add another
+                  </Link>
+                </Fragment>
+              )}
+              <Divider sx={{ mt: 2 }} />
+              <AuthorizationPinComponent setPin={setPin} />
+            </Fragment>
+          }
+        />
+      )}
 
-      <ModalComponent
-        title={`Showing ${obj?.code}'s Success Indicators`}
-        description={obj.description}
-        isOpen={isView}
-        handleClose={() => {
-          setObj({});
-          setObjIndicators([]);
-          setIsView(false);
-        }}
-        content={
-          <Fragment>
-            <TableComponent
-              columns={successIndicator}
-              data={objIndicators}
-              stripe="odd"
-              bordered
-            />
-          </Fragment>
-        }
-      />
+      {isView && (
+        <ModalComponent
+          title={`Showing ${obj?.code}'s Success Indicators`}
+          description={obj.description}
+          isOpen={isView}
+          handleClose={() => {
+            setObj({});
+            setObjIndicators([]);
+            setIsView(false);
+          }}
+          content={
+            <Fragment>
+              <TableComponent
+                columns={successIndicator}
+                data={objIndicators}
+                stripe="odd"
+                bordered
+              />
+            </Fragment>
+          }
+        />
+      )}
 
-      <ConfirmationModalComponent
-        rightButtonAction={() => handleDelete(selected)}
-        withAuthPin
-        setAuthPin={setPin}
-        isLoading={isLoading}
-      />
+      {openDel && (
+        <ConfirmationModalComponent
+          rightButtonAction={() => handleDelete(selected)}
+          withAuthPin
+          setAuthPin={setPin}
+          isLoading={buttonLoader}
+        />
+      )}
 
       <AlertDialogComponent />
       {/* <PageLoader isLoading={isLoading} /> */}

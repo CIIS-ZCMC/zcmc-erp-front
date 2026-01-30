@@ -36,6 +36,7 @@ function MultipleAutocompleteComponent({
           )}
         </FormLabel>
       )}
+      {console.log(options)}
 
       <Autocomplete
         multiple
@@ -76,7 +77,7 @@ MultipleAutocompleteComponent.propTypes = {
       PropTypes.shape({
         title: PropTypes.string.isRequired,
       }),
-    ])
+    ]),
   ),
   helperText: PropTypes.string,
   size: PropTypes.oneOf(["small", "medium", "large"]),
@@ -85,7 +86,7 @@ MultipleAutocompleteComponent.propTypes = {
   startDecorator: PropTypes.node,
   name: PropTypes.string,
   isRequired: PropTypes.bool,
-  setValue: PropTypes.string,
+  setValue: PropTypes.func,
   value: PropTypes.array,
 };
 
