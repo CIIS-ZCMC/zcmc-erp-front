@@ -350,6 +350,7 @@ export const API = {
   PROCESS_AOP_REQUEST: "process-aop-request",
 
   APPROVAL_PPMP: "requests-approve-or-return",
+  GENERATE_WFP: "wfp-encoding-matrix/download-directly",
 
   APPROVAL_DIVISION_CHIEF: "approve-by-division-chief",
   RETURNED_DIVISON_CHIEF: "returned-by-division-chief",

@@ -74,52 +74,41 @@ export const download = ({
   fileName,
   success,
   failed,
-  body,
 }) => {
   erp_api
-    .get(url, params, body, { cancelToken: token, responseType: "blob" })
-    .then((res) => validateStatusOk(res))
+    .get(url, {
+      params,
+      cancelToken: token,
+      responseType: "blob",
+    })
     .then((res) => {
       if (res.status === 200) {
-        // Extract the filename from the content-disposition header
         const contentDisposition =
           res.headers["content-disposition"] ||
           res.headers["Content-Disposition"];
-
         const filename = contentDisposition
           ? contentDisposition.split("filename=")[1].replace(/"/g, "")
           : fileName;
 
-        // Create a URL for the file
         const blob = new Blob([res.data], {
           type: res.headers["content-type"],
         });
         const url = window.URL.createObjectURL(blob);
-
-        // Create a link element
         const link = document.createElement("a");
         link.href = url;
-        link.download = filename; // Use the filename from the header
-
-        // Append to the body
+        link.download = filename;
         document.body.appendChild(link);
-
-        // Trigger download
         link.click();
-
-        // Clean up
         link.remove();
         window.URL.revokeObjectURL(url);
 
-        // Notify success
         success(200, `Download ${title} Complete.`);
       } else {
-        // Handle unexpected status codes
         success(res.status, "Unexpected response status.");
       }
     })
-    .catch(() => {
-      //   console.error("Error downloading file", error);
+    .catch((error) => {
+      console.error("Download failed:", error);
       failed(500, `Failed to download ${title}.`);
     });
 };

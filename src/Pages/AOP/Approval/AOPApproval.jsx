@@ -1,6 +1,6 @@
 import { Fragment, useEffect, useState } from "react";
 import PageTitle from "../../../Components/Common/PageTitle";
-import { AOP_CONSTANTS } from "../../../Data/constants";
+import { AOP_CONSTANTS, API } from "../../../Data/constants";
 import ContainerComponent from "../../../Components/Common/ContainerComponent";
 import { Box, Grid, Link, Stack } from "@mui/joy";
 import InputComponent from "../../../Components/Form/InputComponent";
@@ -41,6 +41,9 @@ import SelectComponent from "@Components/Form/YearSelectComponent";
 import useAOPStore from "../../../Store/AOPStore";
 import useAOPHook from "../../../Hooks/AOP/AOPHook";
 import { nextYear } from "../../../Utils/Functions";
+import { CalendarToday } from "@mui/icons-material";
+import ButtonComponent from "@Components/Common/ButtonComponent";
+import useSnackbarHook from "../../../Hooks/SnackbarHook";
 
 const AOPApproval = () => {
   const navigate = useNavigate();
@@ -49,13 +52,14 @@ const AOPApproval = () => {
   const { getAOPApplications, getAOPApplicationById } =
     useAOPApplicationsActions();
   const AOPApplications = useAOPApplications();
-  const { getAOPApprovalTimeline } = useApprovalActions();
+  const { getAOPApprovalTimeline, generateWFP } = useApprovalActions();
   const approvalTimeline = useApprovalTimeline();
   const isLoading = useApprovalLoading();
 
   //ADDED HOOKS
   const { getAopYearList } = useAOPHook();
   const { getApproverTimeline, getTimelines } = useTimelineHook();
+  const { showSnack } = useSnackbarHook();
   const { timelines, approverTimelines } = useTimelinesStore();
   const { yearDetails } = useAOPStore();
   const { timelines: applicationTimelines, filters } = timelines;
@@ -69,6 +73,7 @@ const AOPApproval = () => {
   const [search, setSearch] = useState(null);
   const [pageLoading, setPageLoading] = useState("");
   const [isFetchLoading, setIsFetchLoading] = useState(false);
+  const [downloading, setDownloading] = useState(false);
 
   // FUNCTIONS
   const handleClickCard = (id, area_code) => {
@@ -82,6 +87,20 @@ const AOPApproval = () => {
 
     localStorageSetter("aop_application_id", id);
     localStorageSetter("aop_application_area_code", area_code);
+  };
+
+  const handleGenerate = () => {
+    setDownloading(true);
+
+    generateWFP(
+      { year }, // params
+      (status, msg) => {
+        if (status === 200) {
+          showSnack(200, msg);
+          setDownloading(false);
+        }
+      },
+    );
   };
 
   const handleViewTimeline = (id) => {
@@ -140,6 +159,14 @@ const AOPApproval = () => {
           description={
             "Each area can have only one request per year. Open a request to begin processing."
           }
+          actions={
+            <ButtonComponent
+              label={"Generate WFP"}
+              onClick={() => handleGenerate()}
+              isLoading={downloading}
+              loadingLabel={"Generating WFP..."}
+            />
+          }
         >
           <Stack gap={3} mt={3}>
             {/* check this  */}
@@ -162,16 +189,14 @@ const AOPApproval = () => {
               <Stack direction={"row"} gap={2} alignItems={"center"}>
                 {years?.length > 0 && (
                   <YearSelectorComponent
-                    width="auto"
+                    width="200px"
                     label={"Select year"}
                     setValue={setYear}
                     options={years}
                     value={{ year }}
+                    startDecorator={<CalendarToday />}
                   />
                 )}
-                <Link fontSize={13} mt={3} mr={1}>
-                  Clear filters
-                </Link>
               </Stack>
             </Stack>
             {/* LIST */}
@@ -258,7 +283,7 @@ const AOPApproval = () => {
                           />
                         </Grid>
                       );
-                    }
+                    },
                   )}
                 </>
               )}

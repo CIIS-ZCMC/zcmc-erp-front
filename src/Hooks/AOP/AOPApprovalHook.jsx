@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { post, read } from "../../Services/RequestMethods";
+import { download, post, read } from "../../Services/RequestMethods";
 import { API } from "../../Data/constants";
 
 const useAOPApprovalHook = create((set) => ({
@@ -61,13 +61,24 @@ const useAOPApprovalHook = create((set) => ({
 
           callback(
             status,
-            `Success fetching approval timeline for AOP ${AOP_ID}`
+            `Success fetching approval timeline for AOP ${AOP_ID}`,
           );
         },
         failed: (response) => {
           callback(response);
           set(() => ({ isLoading: false }));
         },
+      });
+    },
+
+    generateWFP: (params, callback) => {
+      download({
+        url: `${API.GENERATE_WFP}`,
+        params: params,
+        title: "WFP Matrix",
+        fileName: `WFP Matrix ${params.year}.csv`,
+        success: (status, msg) => callback(status, msg),
+        failed: (status, msg) => callback(status, msg),
       });
     },
   },

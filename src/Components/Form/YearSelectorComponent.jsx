@@ -16,16 +16,15 @@ function YearSelectorComponent({
   bgcolor = "inherit",
   txtcolor = "inherit",
   options,
+  endDecorator,
   ...props
 }) {
-
   const yearOptions = options?.map((year) => ({ year: year })) || [];
 
   // useEffect(() => {
   //   console.log(yearOptions)
   //   console.log(startYear)
   // }, [options])
-
 
   return (
     <FormControl sx={{ width: width }}>
@@ -34,6 +33,7 @@ function YearSelectorComponent({
       )}
       <Autocomplete
         startDecorator={startDecorator}
+        endDecorator={endDecorator}
         size={"sm"}
         placeholder={placeholder}
         options={yearOptions}
@@ -68,7 +68,7 @@ YearSelectorComponent.propTypes = {
       PropTypes.shape({
         title: PropTypes.string.isRequired,
       }),
-    ])
+    ]),
   ),
   helperText: PropTypes.string,
   size: PropTypes.oneOf(["small", "medium", "large"]),
