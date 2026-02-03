@@ -76,7 +76,7 @@ const useAOPApprovalHook = create((set) => ({
         url: `${API.GENERATE_WFP}`,
         params: params,
         title: "WFP Matrix",
-        fileName: `WFP Matrix ${params.year}.csv`,
+        fileName: `WFP Matrix ${params.year}.xlsx`,
         success: (status, msg) => callback(status, msg),
         failed: (status, msg) => callback(status, msg),
       });

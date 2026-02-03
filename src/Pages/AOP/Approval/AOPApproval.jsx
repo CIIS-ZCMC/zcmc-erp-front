@@ -41,7 +41,11 @@ import SelectComponent from "@Components/Form/YearSelectComponent";
 import useAOPStore from "../../../Store/AOPStore";
 import useAOPHook from "../../../Hooks/AOP/AOPHook";
 import { nextYear } from "../../../Utils/Functions";
-import { CalendarToday } from "@mui/icons-material";
+import {
+  CalendarToday,
+  FileDownload,
+  FileDownloadDoneOutlined,
+} from "@mui/icons-material";
 import ButtonComponent from "@Components/Common/ButtonComponent";
 import useSnackbarHook from "../../../Hooks/SnackbarHook";
 
@@ -98,6 +102,8 @@ const AOPApproval = () => {
         if (status === 200) {
           showSnack(200, msg);
           setDownloading(false);
+        } else {
+          showSnack(error, msg);
         }
       },
     );
@@ -162,9 +168,11 @@ const AOPApproval = () => {
           actions={
             <ButtonComponent
               label={"Generate WFP"}
+              width={downloading ? "250px" : "200px"}
               onClick={() => handleGenerate()}
               isLoading={downloading}
               loadingLabel={"Generating WFP..."}
+              startDecorator={<FileDownload />}
             />
           }
         >
@@ -189,12 +197,12 @@ const AOPApproval = () => {
               <Stack direction={"row"} gap={2} alignItems={"center"}>
                 {years?.length > 0 && (
                   <YearSelectorComponent
-                    width="200px"
+                    width="130px"
                     label={"Select year"}
                     setValue={setYear}
                     options={years}
                     value={{ year }}
-                    startDecorator={<CalendarToday />}
+                    startDecorator={<CalendarToday sx={{ fontSize: 15 }} />}
                   />
                 )}
               </Stack>

@@ -126,7 +126,7 @@ const Activities = () => {
 
   const status = aop.status.id;
   const objectiveName =
-    applicationActivities?.[0]?.objective_code || state?.objective;
+    applicationActivities?.[0]?.objective_name || state?.objective_name;
 
   useEffect(() => {
     console.log(aop);

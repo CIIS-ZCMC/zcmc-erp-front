@@ -13,17 +13,19 @@ const CardBody = ({
 }) => {
   return (
     <>
-      <Stack direction={"column"} textAlign={"left"} width={"80%"} gap={1}>
-        {/* <Typography level={"body-sm"}>{objective}</Typography> */}
+      <Stack direction={"column"} textAlign={"left"} width={"80%"}>
+        {/* <Typography level={"body-sm"} sx={{ color: "black" }}>
+          {objective}
+        </Typography> */}
 
-        <Typography level={"title-lg"} sx={{}}>
-          {activity}
+        <Typography level={"title-lg"}>{activity}</Typography>
+
+        <Typography level={"body-sm"} sx={{ color: "black" }}>
+          {timeframe}
         </Typography>
 
-        <Typography level={"body-md"}>{timeframe}</Typography>
-
         {status !== 1 && (
-          <Stack textAlign={"left"} width={"156%"}>
+          <Stack textAlign={"left"} width={"156%"} mt={1}>
             {comments.length !== 0 ? (
               <>
                 <Stack

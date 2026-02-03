@@ -11,39 +11,26 @@ import {
   ListDivider,
   ListItem,
   ListItemDecorator,
-  Skeleton,
   Stack,
   Typography,
   useTheme,
   Link,
 } from "@mui/joy";
 
-import {
-  PhilippinePesoIcon,
-  ExternalLink,
-  TargetIcon,
-  CloudDownload,
-} from "lucide-react";
-import { TbTargetArrow } from "react-icons/tb";
+import { PhilippinePesoIcon, ExternalLink } from "lucide-react";
 import ButtonComponent from "../../../Components/Common/ButtonComponent";
 import { useNavigate, useLocation } from "react-router-dom";
 import usePPMPHook from "../../../Hooks/PPMP/PPMPHook";
-import { MdOutlineShoppingCartCheckout } from "react-icons/md";
-import no_result from "../../../assets/empty-state-icon-base.png";
-import { ThreeDotsLoader } from "../../../Components/Common/Loading/ThreeDotsLoader";
 import { socket } from "../../../Services/Socket";
 import { useAuth } from "../../../Store/AuthStore";
 import { nextYear } from "../../../Utils/Functions";
 import SelectComponent from "@Components/Form/YearSelectComponent";
 import {
-  Check,
-  Circle,
   CloudDownloadOutlined,
   Comment,
   East,
   FormatListNumbered,
   Handyman,
-  Launch,
   TextSnippetOutlined,
   Warning,
   WarningAmber,
@@ -51,7 +38,6 @@ import {
 import PageTitle from "@Components/Common/PageTitle";
 import ModalComponent from "@Components/Common/Dialog/ModalComponent";
 import { grey } from "@mui/material/colors";
-import InputComponent from "@Components/Form/InputComponent";
 import AuthorizationPinComponent from "@Components/AuthorizationPinComponent";
 import useModalHook from "../../../Hooks/ModalHook";
 import StepperComponent from "@Components/Stepper/StepperComponent";
@@ -68,6 +54,7 @@ import NewRequestContent from "./Modal/AddItemRequest/Content";
 import Content from "./Modal/ItemRequests/Content";
 import Footer from "./Modal/ItemRequests/Footer";
 import CardComponent from "@Components/Common/Card/CardComponent";
+import { ThreeDotsLoader } from "@Components/Common/Loading/ThreeDotsLoader";
 
 const PPMPCard = ({
   bgColor = "#CCEEFF",
@@ -429,7 +416,7 @@ function PPMPDashboard(props) {
 
       <BoxComponent
         mt={3}
-        height={"82vh"}
+        height={"80vh"}
         boxShadow={"xs"}
         borderRadius={10}
         sx={{
@@ -635,7 +622,7 @@ function PPMPDashboard(props) {
                   display={"flex"}
                   gap={2}
                   padding={2}
-                  height="62vh" // <-- FULL HEIGHT
+                  height="55vh" // <-- FULL HEIGHT
                   flex={1} // <-- ALLOWS STRETCHING IN FLEX CONTEXT
                   minHeight={0}
                 >
@@ -709,7 +696,7 @@ function PPMPDashboard(props) {
                       sx={{
                         flex: 1, // take remaining height
                         overflowY: "auto", // scroll if content exceeds
-                        maxHeight: "51vh", // important for flex scroll
+                        maxHeight: "45vh", // important for flex scroll
                         pr: 1, // padding to avoid scrollbar overlapping content
                         mt: 2,
                       }}
@@ -846,7 +833,7 @@ function PPMPDashboard(props) {
                     </Stack>
                   </BoxComponent>
                 ) : (
-                  <BoxComponent height="62vh" padding={2}>
+                  <BoxComponent height="58vh" padding={2}>
                     <Typography level="title-lg">Approval Timeline</Typography>
                     <Typography
                       level="body-xs"

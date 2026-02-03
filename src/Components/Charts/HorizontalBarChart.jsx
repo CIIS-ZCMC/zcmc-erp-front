@@ -8,18 +8,6 @@ const chartSetting = {
       disableLine: true,
       disableTicks: true,
       scaleType: "linear",
-
-      //   label: "rainfall (mm)",
-    },
-  ],
-  yAxis: [
-    {
-      scaleType: "band",
-      dataKey: "unit",
-      width: 150,
-      disableTicks: true,
-
-      valueFormatter: (value) => wrapLabel(value),
     },
   ],
   height: 350,
@@ -39,6 +27,8 @@ export const pesoFormatter = (value) => `₱${value.toLocaleString()}`;
 
 export default function HorizontalBars({
   orientation = "horizontal",
+  dataKey = "unit",
+  dataset = [],
   isLoading,
 }) {
   return (
@@ -47,9 +37,17 @@ export default function HorizontalBars({
         <ChartSkeleton />
       ) : (
         <BarChart
-          dataset={totalCostByUnitDataset}
+          dataset={dataset}
           borderRadius={20}
-          yAxis={[{ scaleType: "band", dataKey: "unit" }]}
+          yAxis={[
+            {
+              scaleType: "band",
+              dataKey,
+              width: 150,
+              disableTicks: true,
+              valueFormatter: (value) => wrapLabel(value),
+            },
+          ]}
           series={[
             {
               dataKey: "totalCost",

@@ -24,6 +24,7 @@ const ActivitiesList = ({
   const {
     id,
     objective_code,
+    objective_name,
     activity_code,
     total_cost,
     is_draft,
@@ -56,7 +57,7 @@ const ActivitiesList = ({
         }
         cardBody={
           <CardBody
-            // objective={objective_code}
+            objective={objective_name}
             status={status}
             comments={comments}
             activity={activity_name ? activity_name : activity_code}

@@ -186,7 +186,7 @@ function Dashboard() {
                     fontStyle={"italic"}
                     fontWeight={400}
                   >
-                    20 out of 35 offices have submitted
+                    {approverDashboard?.completion_rate_sentence}
                   </Typography>
                 }
                 withBorderLeft
@@ -227,7 +227,11 @@ function Dashboard() {
                 "Total Budget Cost for each section/division/unit (in PHP)"
               }
             >
-              <HorizontalBars isLoading={isLoading} />
+              <HorizontalBars
+                isLoading={isLoading}
+                dataset={approverDashboard?.total_cost_by_sector}
+                dataKey="total_cost"
+              />
             </ContainerComponent>
           </Grid>
           <Grid xs={12} md={4} lg={4}>

@@ -6,6 +6,7 @@ import TextareaComponent from "@Components/Form/TextareaComponent";
 import InputComponent from "@Components/Form/InputComponent";
 
 import { ThreeDotsLoader } from "@Components/Common/Loading/ThreeDotsLoader";
+import { grey } from "@mui/material/colors";
 
 const CardBody = ({
   status,
@@ -23,7 +24,7 @@ const CardBody = ({
   // const { description, type_of_function } = objective;
 
   return (
-    <Stack direction={"row"} alignItems={"flex-start"} gap={2}>
+    <Stack direction={"row"} justifyContent={"space-between"} width={"100%"}>
       <Stack width={"100%"}>
         {!status ? (
           <Typography
@@ -56,18 +57,19 @@ const CardBody = ({
 
       <Stack
         width={"100%"}
-        sx={{ textAlign: "left", bgcolor: "#F2F2F2", borderRadius: 5, p: 2 }}
+        sx={{ textAlign: "left", bgcolor: "#F2F2F2", borderRadius: 10, p: 1.5 }}
       >
-        <Typography level="body-xs">Success Indicator</Typography>
+        <Typography level="body-sm">Success Indicator</Typography>
         {!status ? (
           <Typography
-            level="body-sm"
+            level="title-md"
             sx={{
               display: "-webkit-box", // enables the line clamping
               WebkitLineClamp: 3, // number of lines to show
               WebkitBoxOrient: "vertical", // required for -webkit-box
               overflow: "hidden", // hide overflowing text
               textOverflow: "ellipsis", // show "..." at the end
+              color: grey[800],
             }}
           >
             {success_indicator !== null
