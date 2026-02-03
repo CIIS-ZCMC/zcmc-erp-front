@@ -299,15 +299,15 @@ function PPMPDashboard(props) {
     });
   }, [AOP_ID]);
 
-  useEffect(() => {
-    if (!assignedArea?.name) return;
+  // useEffect(() => {
+  //   if (!assignedArea?.name) return;
 
-    socket.emit("register-user", {
-      userId: id,
-      name: name,
-      area: assignedArea.name,
-    });
-  }, [assignedArea]);
+  //   socket.emit("register-user", {
+  //     userId: id,
+  //     name: name,
+  //     area: assignedArea.name,
+  //   });
+  // }, [assignedArea]);
 
   const handleItemRequest = () => {
     setOpenItemRequest(true);

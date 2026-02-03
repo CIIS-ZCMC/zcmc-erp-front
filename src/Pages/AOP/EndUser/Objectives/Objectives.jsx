@@ -40,6 +40,8 @@ import PageTitle from "@Components/Common/PageTitle";
 import useAOPBreadcrumbs from "../../../../Hooks/AOP/AOPBreadcrumbs";
 import { CheckCircle } from "@mui/icons-material";
 import useSnackbarHook from "../../../../Hooks/SnackbarHook";
+import { useAuth } from "../../../../Store/AuthStore";
+import { socket } from "../../../../Services/Socket";
 
 const Objectives = () => {
   const location = useLocation();
@@ -77,21 +79,20 @@ const Objectives = () => {
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [selectedObjectiveId, setSelectedObjectiveId] = useState(null);
   const [search, setSearch] = useState("");
+  const [editingState, setEditingState] = useState({
+    editable: true,
+    editorId: null,
+    editorName: null,
+  });
+
+  const { user } = useAuth();
+  const { name, id, assignedArea } = user ?? {};
 
   useEffect(() => {
     getObjectivesBySector();
   }, []);
 
-  useEffect(() => {
-    // console.log('aop application object', aopApplication)
-    // console.log('selected objective', functionType)
-    // console.log(objectiveState)
-    // console.log('selected objective :', objective)
-    // console.log('succeses indicator id:', successIndicator?.id)
-    // console.log('objective:', applicationObjective)
-    // console.log('application objectives:', applicationObjectives)
-    // console.log(isLoading)
-  }, [
+  useEffect(() => {}, [
     aopApplication,
     functionType,
     objective,
@@ -114,11 +115,6 @@ const Objectives = () => {
 
   const currentYear = new Date().getFullYear();
   const currentFiscalYear = currentYear + 1;
-
-  function handleClick(event) {
-    event.preventDefault();
-    console.info("You clicked a breadcrumb.");
-  }
 
   const filteredObjectives = useMemo(() => {
     if (!search) return applicationObjectives;
@@ -288,6 +284,31 @@ const Objectives = () => {
     setIsEditMode(false);
     clearFields();
   };
+
+  useEffect(() => {
+    if (!socket || !aopId) return;
+
+    const area = assignedArea?.name;
+
+    socket.emit("register-user", {
+      userId: id, // or Auth user id
+      name: name, // or Auth name
+      area,
+    });
+
+    socket.emit("authenticate", {
+      id: id,
+      area,
+    });
+
+    socket.on("editing", (data) => {
+      setEditingState(data);
+    });
+
+    return () => {
+      socket.off("editing");
+    };
+  }, [socket, aopId]);
 
   return (
     <div>

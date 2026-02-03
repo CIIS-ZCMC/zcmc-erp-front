@@ -1528,7 +1528,13 @@ export const itemRequestDetailsCols = (onUpdate, openModal) => [
   },
 ];
 
-export const PPMP_HEADERS = (status, editingRows, handleComments) => [
+export const PPMP_HEADERS = (
+  status,
+  editingRows,
+  handleComments,
+  lockedRows,
+  userId,
+) => [
   {
     id: "name",
     label: "Item",
@@ -1665,6 +1671,10 @@ export const PPMP_HEADERS = (status, editingRows, handleComments) => [
     width: status?.name === "draft" ? "200px" : "auto",
     render: (row, open, onToggle, handleEditToggle, handleDeletePPMP) => {
       const isEditing = editingRows[row.id];
+
+      // ✅ Compute per-row lock here
+      const isRowLockedByOther =
+        lockedRows[row.id] && lockedRows[row.id].editorId !== userId;
       return (
         <Stack
           direction={"row"}

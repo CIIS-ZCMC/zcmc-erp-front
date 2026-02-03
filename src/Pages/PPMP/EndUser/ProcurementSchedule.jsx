@@ -52,7 +52,7 @@ export default function ProcurementSchedule({
       october: 0,
       november: 0,
       december: 0,
-    }
+    },
   );
 
   const handleMonthChange = (monthKey, value) => {
@@ -138,10 +138,10 @@ export default function ProcurementSchedule({
                   height: 36,
                   borderRadius: "50%",
                   backgroundColor: editing
-                    ? red[100]
+                    ? red[50]
                     : schedule[monthKeyMap[m]]
-                    ? green[400]
-                    : grey[400],
+                      ? green[400]
+                      : grey[400],
                   display: "flex",
                   justifyContent: "center",
                   alignItems: "center",
@@ -166,7 +166,7 @@ export default function ProcurementSchedule({
                       outline: "none",
                       background: "transparent",
                       textAlign: "center",
-                      fontSize: 12,
+                      fontSize: 14,
                       fontWeight: 600,
                     }}
                     placeholder="-"
@@ -178,8 +178,8 @@ export default function ProcurementSchedule({
                       color: editing
                         ? red[100]
                         : schedule[monthKeyMap[m]]
-                        ? "white"
-                        : grey[800],
+                          ? "white"
+                          : grey[800],
                     }}
                   >
                     {schedule[monthKeyMap[m]] ?? "-"}

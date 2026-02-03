@@ -2,6 +2,7 @@ import React from "react";
 
 import { Typography, Stack } from "@mui/joy";
 import moment from "moment";
+import { formatPeso } from "../../../../../Utils/FormatPeso";
 
 const CardBody = ({
   objective,
@@ -62,7 +63,7 @@ const CardBody = ({
                 </Stack>
               </>
             ) : (
-              <Typography level={"body-sm"}>
+              <Typography level={"body-xs"} sx={{ fontStyle: "italic" }}>
                 No Comments <br />
               </Typography>
             )}
@@ -79,26 +80,11 @@ const CardBody = ({
         }}
         width={"30%"}
       >
-        <Typography level="body-sm">Cost</Typography>
-        <Typography
-          level="body-md"
-          sx={
-            {
-              // flex: 1,
-              // whiteSpace: 'nowrap',
-              // overflow: 'hidden',
-              // textOverflow: 'ellipsis',
-              // maxWidth: '50%',
-            }
-          }
-        >
-          ₱{" "}
-          {cost
-            ? cost?.toLocaleString("en-PH", {
-                minimumFractionDigits: 2,
-                maximumFractionDigits: 2,
-              })
-            : "0.00"}
+        <Typography level="body-sm" sx={{ color: "black" }}>
+          Cost
+        </Typography>
+        <Typography level="body-md" sx={{ color: "black" }}>
+          {formatPeso(cost)}
         </Typography>
       </Stack>
     </>
