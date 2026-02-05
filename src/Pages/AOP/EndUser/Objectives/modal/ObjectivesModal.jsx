@@ -32,7 +32,7 @@ const ObjectivesModal = ({
     setObjective,
     setSuccessIndicator,
     setOtherObjective,
-    setOtherSuccessIndicator
+    setOtherSuccessIndicator,
   } = useObjectivesActions();
 
   const { getFunctionType } = FunctionTypeHook();
@@ -57,28 +57,28 @@ const ObjectivesModal = ({
     if (applicationObjective) {
       setFunctionType(applicationObjective);
 
-      const selectedObjectiveId = applicationObjective.selected_objective.id;
+      const selectedObjectiveId = applicationObjective?.selected_objective?.id;
       const selectedObjective = applicationObjective?.objectives?.filter(
-        ({ id }) => id === selectedObjectiveId
+        ({ id }) => id === selectedObjectiveId,
       );
       setObjective(selectedObjective?.[0] || null);
       // setOtherObjective(selectedObjective?.[0]?.code || null)
 
       const selectedSuccessIndicatorId =
-        applicationObjective.selected_success_indicator.id;
+        applicationObjective?.selected_success_indicator?.id;
       const selectedSuccessIndicator = selectedObjective.flatMap(
         ({ success_indicators }) =>
           success_indicators.filter(
-            ({ id }) => id === selectedSuccessIndicatorId
-          )
+            ({ id }) => id === selectedSuccessIndicatorId,
+          ),
       );
 
-      setSuccessIndicator(selectedSuccessIndicator?.[0] || null)
-      setOtherSuccessIndicator(selectedSuccessIndicator?.[0]?.name || null)
+      setSuccessIndicator(selectedSuccessIndicator?.[0] || null);
+      setOtherSuccessIndicator(selectedSuccessIndicator?.[0]?.name || null);
 
       // console.log('application success indicator id', applicationObjective.selected_success_indicator.id)
       // console.log('selected success indicator id', selectedSuccessIndicatorId)
-      console.log(selectedObjective)
+      console.log(selectedObjective);
       // console.log('success indicator', selectedSuccessIndicator)
     }
   }, [applicationObjective]);
@@ -129,20 +129,19 @@ const ObjectivesModal = ({
         </Stack>
 
         {objective?.id === 31 ||
-          objective?.id === 55 ||
-          objective?.id === 87 ? (
+        objective?.id === 55 ||
+        objective?.id === 87 ? (
           <>
-
             <TextareaComponent
-              label={'Other objective'}
-              placeholder={'Input other objective'}
+              label={"Other objective"}
+              placeholder={"Input other objective"}
               value={otherObjective || ""}
               onChange={(e) => setOtherObjective(e.target.value)}
             />
 
             <TextareaComponent
-              label={'Others success indicator'}
-              placeholder={'Input other success indicator'}
+              label={"Others success indicator"}
+              placeholder={"Input other success indicator"}
               value={otherSuccessIndicator || ""}
               onChange={(e) => setOtherSuccessIndicator(e.target.value)}
             />
@@ -162,7 +161,7 @@ const ObjectivesModal = ({
 
             <Stack>
               <Typography level="body-xs">Description:</Typography>
-              <Typography level="body-xs">
+              <Typography level="body-xs" fontWeight={600}>
                 {successIndicator?.description}
               </Typography>
             </Stack>

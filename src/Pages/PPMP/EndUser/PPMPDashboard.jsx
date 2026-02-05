@@ -522,8 +522,8 @@ function PPMPDashboard(props) {
                     Status: Not Generated
                   </Typography>
                   <Typography level="body-xs" color="warning">
-                    AOP for 2026 is missing. Submit the AOP to generate the PPMP
-                    and enable updates.
+                    AOP for {nextYear} is missing. Submit the AOP to generate
+                    the PPMP and enable updates.
                   </Typography>
                 </Box>
               </Stack>
@@ -564,7 +564,7 @@ function PPMPDashboard(props) {
                     <Stack mb={1}>
                       <Typography level="body-lg">
                         {" "}
-                        AOP for 2026 is missing
+                        AOP for {nextYear} is missing
                       </Typography>
                       <Typography level="title-lg">
                         Submit the AOP first to generate and update the PPMP.

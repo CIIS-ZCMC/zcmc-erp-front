@@ -20,14 +20,14 @@ const CardHeader = ({ status, handleSave, handleEdit, handleDelete }) => {
 
       <IconButtonComponent
         size={"sm"}
-        icon={<EditOutlined size={18} sx={{ color: "black" }} />}
+        icon={<EditOutlined size={18} />}
         onClick={handleEdit}
         disabled={isAopDisabled(status)}
       />
 
       <IconButtonComponent
         size={"sm"}
-        icon={<DeleteOutline size={18} sx={{ color: "black" }} />}
+        icon={<DeleteOutline size={18} />}
         onClick={handleDelete}
         disabled={isAopDisabled(status)}
       />

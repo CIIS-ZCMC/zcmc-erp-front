@@ -87,6 +87,7 @@ const Objectives = () => {
 
   const { user } = useAuth();
   const { name, id, assignedArea } = user ?? {};
+  const [lockedRows, setLockedRows] = useState({});
 
   useEffect(() => {
     getObjectivesBySector();
@@ -158,8 +159,8 @@ const Objectives = () => {
         } else {
           setAlertDialog({
             status: "error",
-            title: message,
-            description: "Please try again later",
+            title: "Duplicate Entry",
+            description: message,
           });
           // setIsLoading(false);
           console.error(" Failed to create objectives:", message);
@@ -190,6 +191,11 @@ const Objectives = () => {
     try {
       await updateObjective(params, payload, (status, message) => {
         if (status === 200) {
+          socket.emit("aop:row:stop-edit", {
+            aopId,
+            objectiveId: selectedObjectiveId,
+            userId: id,
+          });
           showSnack(200, message);
           // setAlertDialog({
           //   status: "success",
@@ -286,29 +292,40 @@ const Objectives = () => {
   };
 
   useEffect(() => {
-    if (!socket || !aopId) return;
+    if (!socket || !aopId || !id) return;
 
-    const area = assignedArea?.name;
-
-    socket.emit("register-user", {
-      userId: id, // or Auth user id
-      name: name, // or Auth name
-      area,
+    // Register user in AOP context
+    socket.emit("aop:register", {
+      userId: id,
+      name,
+      aopId,
     });
 
-    socket.emit("authenticate", {
-      id: id,
-      area,
+    // Receive row lock
+    socket.on("aop:row:lock", ({ objectiveId, editorId, editorName }) => {
+      setLockedRows((prev) => ({
+        ...prev,
+        [objectiveId]: {
+          editorId,
+          editorName,
+        },
+      }));
     });
 
-    socket.on("editing", (data) => {
-      setEditingState(data);
+    // Receive row unlock
+    socket.on("aop:row:unlock", ({ objectiveId }) => {
+      setLockedRows((prev) => {
+        const updated = { ...prev };
+        delete updated[objectiveId];
+        return updated;
+      });
     });
 
     return () => {
-      socket.off("editing");
+      socket.off("aop:row:lock");
+      socket.off("aop:row:unlock");
     };
-  }, [socket, aopId]);
+  }, [socket, aopId, id]);
 
   return (
     <div>
@@ -418,8 +435,8 @@ const Objectives = () => {
               spacing={2}
               sx={{ flexGrow: 1 }}
             >
-              {filteredObjectives?.map(
-                ({
+              {filteredObjectives.map((obj) => {
+                const {
                   id,
                   aop_application_id,
                   success_indicator,
@@ -428,18 +445,39 @@ const Objectives = () => {
                   other_success_indicator,
                   other_objective,
                   type_of_function,
-                }) => (
+                } = obj;
+
+                const lock = lockedRows[id];
+                const isLockedByOther = lock && lock.editorId !== user.id;
+
+                return (
                   <Grid key={id} size={4} lg={4} md={6} sm={12}>
                     <CardComponent
                       statusColor={null}
                       bgcolor={"#F9FAFB"}
                       boxShadow="sm"
+                      sx={{
+                        opacity: isLockedByOther ? 0.7 : 1,
+                        backgroundColor: isLockedByOther ? "#f5f5f5" : "#fff",
+                      }}
                       cardHeader={
                         <CardHeader
                           status={status_id}
-                          handleSave={() => console.log("save")}
-                          handleEdit={() => handleOpenEditModal(id)}
+                          handleEdit={() => {
+                            if (isLockedByOther) return;
+
+                            socket.emit("aop:row:start-edit", {
+                              aopId,
+                              objectiveId: id,
+                              userId: user.id,
+                              name: user.name,
+                            });
+
+                            handleOpenEditModal(id);
+                          }}
                           handleDelete={() => handleOpenDeleteModal(id)}
+                          isLocked={isLockedByOther}
+                          lockedBy={lock?.editorName}
                         />
                       }
                       cardBody={
@@ -455,23 +493,23 @@ const Objectives = () => {
                       cardActions={
                         <CardActions
                           count={activities_count}
-                          handleActivities={() => {
+                          handleActivities={() =>
                             navigate(`/aop/activities/${id}`, {
                               state: {
-                                objectiveId: id, // do not change state name
+                                objectiveId: id,
                                 aopId: aop_application_id,
                                 objective:
                                   objective?.description ||
                                   other_objective?.description,
                               },
-                            });
-                          }}
+                            })
+                          }
                         />
                       }
                     />
                   </Grid>
-                ),
-              )}
+                );
+              })}
             </Grid>
           )}
         </>

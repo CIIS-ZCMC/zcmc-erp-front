@@ -1,16 +1,23 @@
 import { API } from "../Data/constants";
 import { read, post, update, remove } from "../Services/RequestMethods";
 
-import { useApplicationObjectives, useObjectivesActions } from "../Store/ObjectivesStore";
+import {
+  useApplicationObjectives,
+  useObjectivesActions,
+} from "../Store/ObjectivesStore";
 import { useFeedbackStoreActions } from "../Store/FeedbackStore";
 // import { GetUserObjectives } from "@Services/ObjectiveServices";
 
 const useObjectivesHook = () => {
-
   const applicationObjectives = useApplicationObjectives();
 
-  const { setApplicationObjectives, setApplicationObjective, setAopApplication, setIsLoading, } = useObjectivesActions();
-  const { setFeedback } = useFeedbackStoreActions()
+  const {
+    setApplicationObjectives,
+    setApplicationObjective,
+    setAopApplication,
+    setIsLoading,
+  } = useObjectivesActions();
+  const { setFeedback } = useFeedbackStoreActions();
 
   const getObjectives = async (id, callBack) => {
     try {
@@ -18,7 +25,6 @@ const useObjectivesHook = () => {
         url: `${API.OBJECTIVES}/${id}`,
         failed: callBack,
         success: (res) => {
-
           const {
             status,
             data: { data, message },
@@ -26,42 +32,44 @@ const useObjectivesHook = () => {
           // Transform data structure: flatten comments from objectives
           const transformedData = {
             ...data,
-            activity_comments: data?.data?.flatMap(obj => obj.comments || []) || [],
+            activity_comments:
+              data?.data?.flatMap((obj) => obj.comments || []) || [],
             application_timelines: data?.data || [],
           };
           setFeedback(transformedData); // get the objectives data and set to feedback so we can access the comments and remarks data
-          callBack(status, message)
-        }
+          callBack(status, message);
+        },
       });
     } catch (error) {
-      console.error('Error fetching application objectives:', error);
-      callBack?.(false, error.message)
+      console.error("Error fetching application objectives:", error);
+      callBack?.(false, error.message);
     }
   };
 
   const getObjectivesBySector = async (callBack) => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
       await read({
         url: API.OBJECTIVE_BY_SECTOR,
         failed: callBack,
         success: (res) => {
-
           // console.log(res)
 
-          const { data: { data, message } } = res;
-          const { aop_application, application_objectives } = data
+          const {
+            data: { data, message },
+          } = res;
+          const { aop_application, application_objectives } = data;
           // console.log(application_objectives)
           // setApplicationObjectives(Array.isArray(data) ? data : []);
-          setIsLoading(false)
-          setAopApplication(aop_application)
-          setApplicationObjectives(application_objectives)
-          callBack(status, message)
-        }
+          setIsLoading(false);
+          setAopApplication(aop_application);
+          setApplicationObjectives(application_objectives);
+          callBack(status, message);
+        },
       });
     } catch (error) {
-      console.error('Error fetching application objectives:', error);
-      callBack?.(false, error.message)
+      console.error("Error fetching application objectives:", error);
+      callBack?.(false, error.message);
     }
   };
 
@@ -76,43 +84,47 @@ const useObjectivesHook = () => {
             data: { data, message },
           } = res;
           setApplicationObjective(data);
-          callBack(status, message)
-        }
-      })
+          callBack(status, message);
+        },
+      });
     } catch (error) {
-      console.error('Error fetching application objectives:', error);
-      callBack?.(false, error.message)
+      console.error("Error fetching application objectives:", error);
+      callBack?.(false, error.message);
     }
-  }
+  };
 
   const createObjective = async (body, callBack) => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
       await post({
         url: API.OBJECTIVE_STORE,
         form: body,
-        failed: callBack,
+        failed: (res, message) => {
+          console.log(message);
+          setIsLoading(false);
+          callBack?.(res, message);
+        },
         success: async (res) => {
           const {
             status,
             data: { data, message },
           } = res;
           if (status === 201) {
-            getObjectivesBySector()
-            setIsLoading(false)
+            getObjectivesBySector();
+            setIsLoading(false);
           }
           callBack?.(status, message);
         },
-      })
-    }
-    catch (error) {
+      });
+    } catch (error) {
       console.error("Error Creatin Objective:", error);
+      setIsLoading(false);
       callBack(false, error.message);
     }
-  }
+  };
 
   const updateObjective = async (params, body, callBack) => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
       await update({
         url: `${API.OBJECTIVE_EDIT}/${params.id}`,
@@ -124,21 +136,20 @@ const useObjectivesHook = () => {
             data: { message },
           } = res;
           if (status === 200) {
-            getObjectivesBySector()
-            setIsLoading(false)
+            getObjectivesBySector();
+            setIsLoading(false);
           }
           callBack?.(status, message);
         },
-      })
-    }
-    catch (error) {
+      });
+    } catch (error) {
       console.error("Error Creatin Objective:", error);
       callBack(false, error.message);
     }
-  }
+  };
 
   const removeObjective = async (params, callBack) => {
-    setIsLoading(true)
+    setIsLoading(true);
     try {
       await remove({
         url: `${API.OBJECTIVE_DELETE}/${params.id}`,
@@ -151,20 +162,21 @@ const useObjectivesHook = () => {
           } = res;
 
           if (status === 200) {
-            const updatedObjectives = applicationObjectives.filter((obj) => obj.id !== params.id)
+            const updatedObjectives = applicationObjectives.filter(
+              (obj) => obj.id !== params.id,
+            );
             // console.log(updatedObjectives)
-            setIsLoading(false)
+            setIsLoading(false);
             setApplicationObjectives(updatedObjectives);
           }
           callBack?.(status, message);
         },
-      })
-    }
-    catch (error) {
+      });
+    } catch (error) {
       console.error("Error Deleting Objective:", error);
       callBack(false, error.message);
     }
-  }
+  };
 
   return {
     getObjectives,
@@ -173,8 +185,7 @@ const useObjectivesHook = () => {
     createObjective,
     updateObjective,
     removeObjective,
-  }
-
-}
+  };
+};
 
 export default useObjectivesHook;
