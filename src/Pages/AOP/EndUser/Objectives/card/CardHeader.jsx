@@ -9,7 +9,13 @@ import { Check, Pencil, Trash } from "lucide-react";
 import { isAopDisabled } from "../../../../../Utils/AopStatus";
 import { DeleteOutline, EditOutlined } from "@mui/icons-material";
 
-const CardHeader = ({ status, handleSave, handleEdit, handleDelete }) => {
+const CardHeader = ({
+  status,
+  handleSave,
+  handleEdit,
+  handleDelete,
+  isLocked,
+}) => {
   return (
     <>
       {/* <IconButtonComponent
@@ -22,14 +28,14 @@ const CardHeader = ({ status, handleSave, handleEdit, handleDelete }) => {
         size={"sm"}
         icon={<EditOutlined size={18} />}
         onClick={handleEdit}
-        disabled={isAopDisabled(status)}
+        disabled={isLocked || isAopDisabled(status)}
       />
 
       <IconButtonComponent
         size={"sm"}
         icon={<DeleteOutline size={18} />}
         onClick={handleDelete}
-        disabled={isAopDisabled(status)}
+        disabled={isLocked || isAopDisabled(status)}
       />
     </>
   );

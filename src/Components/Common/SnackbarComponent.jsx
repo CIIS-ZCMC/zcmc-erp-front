@@ -6,12 +6,12 @@ import useSnackbarHook from "../../Hooks/SnackbarHook";
 SnackbarComponent.propTypes = {};
 
 function SnackbarComponent() {
-  const { title, statusCode, isOpen, closeSnack } = useSnackbarHook();
+  const { title, statusCode, isOpen, closeSnack, variant } = useSnackbarHook();
 
   return (
     <Snackbar
       anchorOrigin={{ vertical: "bottom", horizontal: "center" }}
-      variant="solid"
+      variant={variant}
       color={getAlertColor(statusCode)}
       open={isOpen}
       autoHideDuration={4000}
