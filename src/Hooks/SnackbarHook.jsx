@@ -4,12 +4,11 @@ const useSnackbarHook = create((set) => ({
   statusCode: null,
   title: "",
   variant: "solid",
-
   description: "",
   isOpen: false,
 
   // SHOW SNACKBAR
-  showSnack: (statusCode, title, variant, description) => {
+  showSnack: (statusCode, title, variant = "solid", description) => {
     set(() => ({
       isOpen: true,
       title: title,

@@ -306,63 +306,65 @@ const Objectives = () => {
   useEffect(() => {
     if (!socket || !aopId) return;
 
+    // Register with the AOP
     socket.emit("aop:register", { aopId });
 
-    return () => {
-      // optional: socket.leave happens automatically on disconnect
-    };
-  }, [socket, aopId]);
-
-  useEffect(() => {
-    if (!socket) return;
-
-    // 🔔 Editing notifications
-    socket.on("aop:editing", ({ editorName }) => {
-      showSnack(401, `${editorName} is editing an objective`, "soft");
-    });
-
-    socket.on("aop:editing-stopped", () => {
-      showSnack(200, "Editing finished", "soft");
-    });
-
-    // 🔒 Lock handling
-    socket.on("aop:lock", ({ objectiveId, editorId, editorName }) => {
+    // Helper to add a locked objective
+    const addLock = ({ objectiveId, editorId, editorName }) => {
       setLockedRows((prev) => ({
         ...prev,
         [objectiveId]: { editorId, editorName },
       }));
-    });
+    };
 
-    socket.on("aop:unlock", ({ objectiveId }) => {
+    // Helper to remove a lock
+    const removeLock = ({ objectiveId }) => {
       setLockedRows((prev) => {
         const updated = { ...prev };
         delete updated[objectiveId];
         return updated;
       });
-    });
+    };
 
-    socket.on("aop:locked", ({ objectiveId, editorId, editorName }) => {
-      setLockedRows((prev) => ({
-        ...prev,
-        [objectiveId]: { editorId, editorName },
-      }));
-
+    // 🔔 Notifications
+    const handleEditing = ({ editorName, objectiveId }) => {
       showSnack(
         401,
-        `Objective is currently being edited by ${editorName}`,
+        `${editorName} is editing Objective #${objectiveId}`,
+        "soft",
+      );
+    };
+
+    const handleEditingStopped = ({ objectiveId }) => {
+      if (objectiveId) removeLock({ objectiveId });
+      showSnack(200, "Editing finished", "soft");
+    };
+
+    // Event listeners
+    socket.on("aop:editing", handleEditing);
+    socket.on("aop:editing-stopped", handleEditingStopped);
+
+    socket.on("aop:lock", addLock);
+    socket.on("aop:unlock", removeLock);
+
+    socket.on("aop:locked", (data) => {
+      addLock(data);
+      showSnack(
+        401,
+        `Objective #${data.objectiveId} is currently being edited by ${data.editorName}`,
         "soft",
       );
     });
 
-    // ✅ SINGLE cleanup
+    // Cleanup on unmount
     return () => {
-      socket.off("aop:editing");
-      socket.off("aop:editing-stopped");
-      socket.off("aop:lock");
-      socket.off("aop:unlock");
+      socket.off("aop:editing", handleEditing);
+      socket.off("aop:editing-stopped", handleEditingStopped);
+      socket.off("aop:lock", addLock);
+      socket.off("aop:unlock", removeLock);
       socket.off("aop:locked");
     };
-  }, [socket]);
+  }, [socket, aopId]);
 
   return (
     <div>
@@ -566,7 +568,11 @@ const Objectives = () => {
       <ModalComponent
         isOpen={isOpenObjectivesModal}
         handleClose={handleCloseModal}
-        title={isEditMode ? EDIT_OBJECTIVE : ADD_OBJECTIVE}
+        title={
+          isEditMode
+            ? EDIT_OBJECTIVE + " #" + selectedObjectiveId
+            : ADD_OBJECTIVE
+        }
         description={ADD_OBJECTIVE_SUBHEADING}
         maxWidth={500}
         minWidth={500}

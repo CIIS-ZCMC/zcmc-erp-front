@@ -18,6 +18,8 @@ const ActivitiesList = ({
   handleAdd,
   handleEdit,
   handleDelete,
+  isLockedByOther,
+  lockedBy,
 }) => {
   const { EMPTY_STATE_TITLE, ACTIVITY_CREATE_NEW } = ACTIVITIES;
 
@@ -53,6 +55,8 @@ const ActivitiesList = ({
             status={status}
             handleEdit={handleEdit}
             handleDelete={handleDelete}
+            isLockedByOther={isLockedByOther}
+            lockedBy={lockedBy}
           />
         }
         cardBody={

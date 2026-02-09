@@ -23,7 +23,7 @@ const CardHeader = ({
                 icon={<Check size={18} />}
                 onClick={handleSave}
             /> */}
-
+      {console.log(isLocked)}
       <IconButtonComponent
         size={"sm"}
         icon={<EditOutlined size={18} />}

@@ -35,6 +35,7 @@ import useModalHook from "../../../Hooks/ModalHook";
 import useSnackbarHook from "../../../Hooks/SnackbarHook";
 import NoResultComponent from "@Components/Common/Table/NoResultComponent";
 import { ThreeDotsLoader } from "@Components/Common/Loading/ThreeDotsLoader";
+import defaultItem from "../../../assets/item.jpg";
 
 /**
  * ExpandableTable Component
@@ -128,8 +129,10 @@ export default function CollapsibleTable({
                 onEditToggle={onEditToggle}
                 open={openIndex === index}
                 onToggle={(forceState) => {
-                  if (forceState === true) setOpenIndex(index); // expand
-                  else if (forceState === false) setOpenIndex(null); // collapse
+                  if (forceState === true)
+                    setOpenIndex(index); // expand
+                  else if (forceState === false)
+                    setOpenIndex(null); // collapse
                   else handleToggle(index); // normal click
                 }}
                 onGetUpdatedData={onGetUpdatedData}
@@ -179,18 +182,18 @@ function ExpandableRow({
   } = useModalHook();
   const { modes, activities, getProcModes, getActivities } = usePPMPHook();
   const [procurementMode, setProcurementMode] = React.useState(
-    row?.procurement_mode || null
+    row?.procurement_mode || null,
   );
   const [activity, setActivity] = React.useState(null);
   const [linkedActivities, setLinkedActivities] = React.useState(
-    row?.activities || []
+    row?.activities || [],
   );
   const [scheduleData, setScheduleData] = React.useState({});
   const { showSnack } = useSnackbarHook();
 
   const totalQuantity = linkedActivities.reduce(
     (sum, act) => sum + (Number(act.resources_quantity) || 0),
-    0
+    0,
   );
 
   const unit = row?.item?.item_unit?.name || "";
@@ -199,7 +202,7 @@ function ExpandableRow({
     if (!selected) return;
 
     const exists = linkedActivities.some(
-      (a) => a.activity_code === selected.activity_code
+      (a) => a.activity_code === selected.activity_code,
     );
     if (exists) {
       showSnack(500, "Activity has already been selected.");
@@ -246,8 +249,8 @@ function ExpandableRow({
       prev.map((item) =>
         item.activity_code === activityCode
           ? { ...item, resources_quantity: qty }
-          : item
-      )
+          : item,
+      ),
     );
   };
   React.useEffect(() => {
@@ -272,6 +275,10 @@ function ExpandableRow({
   const getUpdatedData = () => ({
     procurement_mode_id: procurementMode?.id || null,
     schedule: scheduleData,
+    quantity: linkedActivities.reduce(
+      (sum, act) => sum + (Number(act.resources_quantity) || 0),
+      0,
+    ),
     activity_quantities: linkedActivities.map((act) => ({
       activity_id: act.activity_id,
       quantity: Number(act.resources_quantity) || 0,
@@ -410,8 +417,7 @@ function ExpandableRow({
                         {" "}
                         {/* Set a fixed height or responsive height */}
                         <img
-                          src="https://images.unsplash.com/photo-1593121925328-369cc8459c08?auto=format&fit=crop&w=286"
-                          srcSet="https://images.unsplash.com/photo-1593121925328-369cc8459c08?auto=format&fit=crop&w=286&dpr=2 2x"
+                          src={defaultItem}
                           loading="lazy"
                           alt=""
                           style={{
@@ -484,7 +490,7 @@ function ExpandableRow({
                                   >
                                     ● {spec.description}
                                   </Typography>
-                                )
+                                ),
                               )
                             ) : (
                               <Typography level="body-md">
@@ -575,7 +581,7 @@ function ExpandableRow({
                                               onClick={() =>
                                                 handleDeleteActivity(
                                                   row.id,
-                                                  act.activity_id
+                                                  act.activity_id,
                                                 )
                                               }
                                               size={"xs"}
@@ -597,7 +603,7 @@ function ExpandableRow({
                                               onChange={(e) =>
                                                 handleQuantityChange(
                                                   act.activity_code,
-                                                  e.target.value
+                                                  e.target.value,
                                                 )
                                               }
                                             />

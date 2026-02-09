@@ -28,6 +28,8 @@ import { blue, common, grey } from "@mui/material/colors";
 import PageTitle from "@Components/Common/PageTitle";
 
 import { isAopDisabled } from "../../../Utils/AopStatus";
+import ModalComponent from "@Components/Common/Dialog/ModalComponent";
+import AuthorizationPinComponent from "@Components/AuthorizationPinComponent";
 
 const AOPSummary = () => {
   const navigate = useNavigate();
@@ -406,12 +408,22 @@ const AOPSummary = () => {
       </Stack>
 
       {openModal && (
-        <ConfirmationModalComponent
-          withAuthPin
+        <ModalComponent
+          isOpen={openModal}
+          onClose={() => setOpenModal(false)}
+          title={
+            <Typography color="success">
+              {SUBMIT_ALERT_MESSAGES[status.id]}
+            </Typography>
+          }
+          description={`${SUBMIT_ALERT_DESC[status.id]}`}
+          maxWidth={"571px"}
+          minWidth={"571px"}
+          hasActionButtons
           content={
             <>
               <BoxComponent bgColor={"#F5F5F5"}>
-                <Stack p={2} spacing={1}>
+                <Stack p={1} spacing={1}>
                   <Typography level="title-md">
                     Please confirm the following:
                   </Typography>
@@ -429,13 +441,16 @@ const AOPSummary = () => {
                   ))}
                 </Stack>
               </BoxComponent>
+              <AuthorizationPinComponent
+                pin={pin}
+                setPin={setPin}
+                isLoading={isLoading}
+              />
             </>
           }
           leftButtonLabel="Cancel"
-          leftButtonAction={() => closeConfirmation()}
           rightButtonLabel={status.id === 6 ? "Resubmit" : "Submit"}
           rightButtonAction={() => handleSubmitAop()}
-          setAuthPin={setPin}
           isLoading={isLoading}
         />
       )}

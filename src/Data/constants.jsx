@@ -34,7 +34,7 @@ export const OBJECTIVES = {
   OBJECTIVES_SUBHEADING:
     "This is a subheading. It should add more context to the interaction.",
   ADD_OBJECTIVE: "Add an objective",
-  EDIT_OBJECTIVE: "Edit an objective",
+  EDIT_OBJECTIVE: "Edit objective",
   ADD_OBJECTIVE_SUBHEADING: "Add details to give context to the objective",
   OBJECTIVE_ALERT:
     "After this, you will have to make activities for this objective through manage objectives",

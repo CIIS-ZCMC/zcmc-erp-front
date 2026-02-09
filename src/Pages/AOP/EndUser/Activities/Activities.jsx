@@ -40,6 +40,9 @@ import ChipComponent from "@Components/Common/ChipComponent";
 import { isAopDisabled } from "../../../../Utils/AopStatus";
 import { CheckCircle, Circle } from "@mui/icons-material";
 import useSnackbarHook from "../../../../Hooks/SnackbarHook";
+import { socket } from "../../../../Services/Socket";
+import { nextYear } from "../../../../Utils/Functions";
+import { useAuth } from "../../../../Store/AuthStore";
 
 const centeredStyle = {
   direction: "column",
@@ -57,6 +60,7 @@ const Activities = () => {
   const { state } = location;
 
   const { aop } = useAOPStore();
+  const { user } = useAuth();
 
   const {
     applicationActivities,
@@ -102,13 +106,13 @@ const Activities = () => {
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [selectedActivityId, setSelectedActivityId] = useState(null);
   const [search, setSearch] = useState("");
-
-  const currentYear = new Date().getFullYear();
-  const currentFiscalYear = currentYear + 1;
-
+  const [lockedActivities, setLockedActivities] = useState({});
+  const getActivityKey = (aopId, objectiveId, activityId) =>
+    `${aopId}:${objectiveId}:${activityId}`;
   useEffect(() => {
     setIsLoading(true);
 
+    console.log(aop);
     const params = {
       application_objective_id: objectiveId,
       ...(search && { search }),
@@ -147,13 +151,6 @@ const Activities = () => {
     applicationActivities,
   ]);
 
-  // const filteredActivities = useMemo(() => {
-  //   if (!search) return applicationActivities;
-  //   return applicationActivities.filter((act) =>
-  //     act?.activity_name?.toLowerCase().includes(search.toLowerCase()),
-  //   );
-  // }, [search, applicationActivities]);
-
   const handleOpenActivitiesModal = () => {
     setIsOpenActivitiesModal(true);
   };
@@ -163,8 +160,17 @@ const Activities = () => {
   };
 
   const handleCloseModal = () => {
+    if (selectedActivityId) {
+      socket.emit("aop:activity:stop-edit", {
+        aopId: aop.id,
+        objectiveId,
+        activityId: selectedActivityId,
+        userId: user.id,
+      });
+    }
     setIsOpenActivitiesModal(false);
     setIsEditMode(false);
+    setSelectedActivityId(null);
     clearFields();
 
     // console.log(applicationActivities);
@@ -172,6 +178,16 @@ const Activities = () => {
 
   const handleOpenEditModal = async (activityId) => {
     // console.log(activityId);
+
+    const aopId = aop.id;
+
+    socket.emit("aop:activity:start-edit", {
+      aopId,
+      objectiveId,
+      activityId,
+      userId: user.id,
+      name: user.name,
+    });
     setIsLoading(true);
     setIsEditMode(true);
     setSelectedActivityId(activityId);
@@ -213,6 +229,12 @@ const Activities = () => {
     try {
       await updateActivity(params, payload, (status, message) => {
         if (status === 200) {
+          socket.emit("aop:activity:stop-edit", {
+            aopId: aop.id,
+            objectiveId,
+            activityId: selectedActivityId,
+            userId: user.id,
+          });
           showSnack(200, message);
           // setAlertDialog({
           //   status: "success",
@@ -251,14 +273,21 @@ const Activities = () => {
     await removeActivity(params, (status, message) => {
       const isSuccess = status === 200 || status === true;
 
-      setAlertDialog({
-        status: isSuccess ? "success" : "error",
-        title: message,
-        description: isSuccess ? "" : "Please try again later.",
-      });
-
       if (!isSuccess) {
-        console.error("Failed to delete objective:", message);
+        setAlertDialog({
+          status: "error",
+          title: message,
+          description: "Please try again later",
+        });
+      } else {
+        socket.emit("aop:activity:stop-edit", {
+          aopId: aop.id,
+          objectiveId,
+          activityId: selectedActivityId,
+          userId: user.id,
+        });
+
+        showSnack(200, message, "soft");
       }
 
       setIsLoading(false);
@@ -273,6 +302,16 @@ const Activities = () => {
   };
 
   const handleOpenDeleteModal = (activityId) => {
+    const aopId = aop.id;
+
+    socket.emit("aop:activity:start-edit", {
+      aopId,
+      objectiveId,
+      activityId,
+      userId: user.id,
+      name: user.name,
+    });
+
     setOpenDeleteModal(true);
     setSelectedActivityId(activityId);
 
@@ -320,10 +359,82 @@ const Activities = () => {
     }
   };
 
+  useEffect(() => {
+    if (!socket || !objectiveId || !aop?.id) return;
+
+    const aopId = aop.id;
+
+    socket.emit("aop:register", { aopId });
+
+    const addLock = ({
+      aopId,
+      objectiveId,
+      activityId,
+      editorId,
+      editorName,
+    }) => {
+      const key = getActivityKey(aopId, objectiveId, activityId);
+
+      setLockedActivities((prev) => ({
+        ...prev,
+        [key]: { editorId, editorName },
+      }));
+    };
+
+    const removeLock = ({ aopId, objectiveId, activityId }) => {
+      const key = getActivityKey(aopId, objectiveId, activityId);
+
+      setLockedActivities((prev) => {
+        const copy = { ...prev };
+        delete copy[key];
+        return copy;
+      });
+    };
+
+    const handleEditing = ({ activityId, editorName }) => {
+      showSnack(
+        401,
+        `${editorName} is editing Activity #${activityId}`,
+        "soft",
+      );
+    };
+
+    const handleEditingStopped = ({ aopId, objectiveId, activityId }) => {
+      if (!aopId || !objectiveId || !activityId) return;
+
+      removeLock({ aopId, objectiveId, activityId });
+
+      showSnack(200, "Activity editing finished", "soft");
+    };
+
+    // 🔔 Activity events only
+    socket.on("aop:activity-lock", addLock);
+    socket.on("aop:activity-unlock", removeLock);
+    socket.on("aop:activity-editing", handleEditing);
+    socket.on("aop:activity-editing-stopped", handleEditingStopped);
+
+    socket.on("aop:activity-locked", (data) => {
+      addLock(data);
+      showSnack(
+        401,
+        `Activity #${data.activityId} is being edited by ${data.editorName}`,
+        "soft",
+      );
+    });
+
+    return () => {
+      socket.off("aop:activity-lock", addLock);
+      socket.off("aop:activity-unlock", removeLock);
+      socket.off("aop:activity-editing", handleEditing);
+      socket.off("aop:activity-editing-stopped", handleEditingStopped);
+      socket.off("aop:activity-locked");
+    };
+  }, [socket, objectiveId, aop?.id]);
+
   return (
     <>
       <PageTitle
-        title={`AOP for Fiscal Year ${currentFiscalYear}`}
+        title={`AOP for Fiscal Year ${nextYear}`}
         description={
           "The following below serves as the summary of your AOP request. You can open and update your request before the deadline as set by the administrators."
         }
@@ -427,18 +538,29 @@ const Activities = () => {
         </>
       ) : (
         <Grid mt={2} container direction="row" spacing={2} sx={{ flexGrow: 1 }}>
-          {applicationActivities.map((activity) => (
-            <Grid key={activity.id} size={4} lg={4} md={6} sm={12}>
-              <ActivitiesList
-                status={status}
-                isLoading={isLoading}
-                activity={activity}
-                handleAdd={() => handleOpenCountModal()}
-                handleEdit={() => handleOpenEditModal(activity.id)}
-                handleDelete={() => handleOpenDeleteModal(activity.id)}
-              />
-            </Grid>
-          ))}
+          {applicationActivities.map((activity) => {
+            const activityKey = getActivityKey(
+              aop.id,
+              objectiveId,
+              activity.id,
+            );
+            const lock = lockedActivities[activityKey];
+            const isLockedByOther = lock && lock.editorId !== user.id;
+            return (
+              <Grid key={activity.id} size={4} lg={4} md={6} sm={12}>
+                <ActivitiesList
+                  status={status}
+                  isLoading={isLoading}
+                  activity={activity}
+                  handleAdd={() => handleOpenCountModal()}
+                  handleEdit={() => handleOpenEditModal(activity.id)}
+                  handleDelete={() => handleOpenDeleteModal(activity.id)}
+                  isLockedByOther={isLockedByOther}
+                  lockedBy={lock?.editorName}
+                />
+              </Grid>
+            );
+          })}
         </Grid>
       )}
 
@@ -510,6 +632,14 @@ const Activities = () => {
         <ConfirmationModalComponent
           leftButtonLabel="Cancel"
           leftButtonAction={() => {
+            if (selectedActivityId) {
+              socket.emit("aop:activity:stop-edit", {
+                aopId: aop.id,
+                objectiveId,
+                activityId: selectedActivityId,
+                userId: user.id,
+              });
+            }
             setOpenDeleteModal(false);
             closeConfirmation();
           }}
