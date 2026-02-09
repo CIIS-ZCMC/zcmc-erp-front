@@ -1544,7 +1544,7 @@ export const PPMP_HEADERS = (
         <Typography level="body-sm" fontWeight={600} sx={{ color: "black" }}>
           {row?.item?.name}
         </Typography>
-        <Typography sx={{ fontSize: 14, fontWeight: 500, color: grey[800] }}>
+        <Typography sx={{ fontSize: 14, fontWeight: 500, color: grey[900] }}>
           Qty: {row?.quantity}
         </Typography>
       </>
@@ -1563,7 +1563,7 @@ export const PPMP_HEADERS = (
           level={row?.item?.item_category?.name && "body-sm"}
           sx={{
             fontSize: row?.item?.item_classification?.name && 13,
-            color: row?.item?.item_classification?.name && grey[800],
+            color: row?.item?.item_classification?.name ? grey[800] : grey[900],
           }}
           fontWeight={500}
         >
@@ -1579,23 +1579,19 @@ export const PPMP_HEADERS = (
 
     render: (row) => (
       <>
-        <Typography level="body-sm" fontWeight={600}>
-          ₱{row?.total_amount?.toLocaleString()}
+        <Typography level="body-sm" fontWeight={600} sx={{ color: grey[900] }}>
+          {formattedPrice(row?.total_amount)}
         </Typography>
         <Typography
           sx={{
             fontSize: 14,
-            fontWeight: 600,
-            color: grey[600],
+            fontWeight: 500,
+            color: grey[800],
             textTransform: "lowercase",
           }}
         >
-          ₱{" "}
-          {(row?.item?.estimated_budget).toLocaleString("en-PH", {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          })}{" "}
-          per {row?.item?.item_unit?.name}
+          {formattedPrice(row?.item?.estimated_budget)} per{" "}
+          {row?.item?.item_unit?.name}
         </Typography>
       </>
     ),
@@ -1707,7 +1703,7 @@ export const PPMP_HEADERS = (
                 startDecorator={
                   isEditing ? <CheckOutlined /> : <ModeEditOutlineOutlined />
                 }
-                color={isEditing && "success"}
+                color={isEditing ? "success" : "neutral"}
                 onClick={(e) => {
                   e.stopPropagation();
                   handleEditToggle(row.id, onToggle, isEditing);

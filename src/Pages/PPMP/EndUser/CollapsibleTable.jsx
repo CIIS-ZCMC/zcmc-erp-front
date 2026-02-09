@@ -142,14 +142,21 @@ export default function CollapsibleTable({
             ))
           )}
         </tbody>
+        <tfoot>
+          <tr>
+            <td colSpan={columns.length}>
+              {/* Right: pagination */}
+              <PaginationComponent
+                currentPage={currentPage}
+                totalPages={totalPages}
+                totalRows={totalRows}
+                onNextPage={onNextPage}
+                onPrevPage={onPrevPage}
+              />
+            </td>
+          </tr>
+        </tfoot>
       </Table>
-      <PaginationComponent
-        currentPage={currentPage}
-        totalPages={totalPages}
-        totalRows={totalRows}
-        onNextPage={onNextPage}
-        onPrevPage={onPrevPage}
-      />
     </Sheet>
   );
 }
