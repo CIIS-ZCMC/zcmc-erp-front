@@ -1528,6 +1528,76 @@ export const itemRequestDetailsCols = (onUpdate, openModal) => [
   },
 ];
 
+// helper to check lock
+export const isRowLockedByOther = (rowId, lockedRows, userId) =>
+  lockedRows?.[rowId]?.editorId !== undefined &&
+  lockedRows[rowId].editorId !== userId;
+
+// Predefine render functions outside array to memoize
+const renderItem = (row) => (
+  <>
+    <Typography level="body-sm" fontWeight={600} sx={{ color: "black" }}>
+      {row?.item?.name}
+    </Typography>
+    <Typography sx={{ fontSize: 14, fontWeight: 500, color: grey[900] }}>
+      Qty: {row?.quantity}
+    </Typography>
+  </>
+);
+
+const renderCategory = (row) => (
+  <>
+    <Typography level="body-sm" fontWeight={600} sx={{ color: "black" }}>
+      {row?.item?.item_classification?.name}
+    </Typography>
+    <Typography
+      level={row?.item?.item_category?.name && "body-sm"}
+      sx={{
+        fontSize: row?.item?.item_classification?.name && 13,
+        color: row?.item?.item_classification?.name ? grey[800] : grey[900],
+      }}
+      fontWeight={500}
+    >
+      {row?.item?.item_category?.name}
+    </Typography>
+  </>
+);
+
+const renderCost = (row) => (
+  <>
+    <Typography level="body-sm" fontWeight={600} sx={{ color: grey[900] }}>
+      {formattedPrice(row?.total_amount)}
+    </Typography>
+    <Typography
+      sx={{
+        fontSize: 14,
+        fontWeight: 500,
+        color: grey[800],
+        textTransform: "lowercase",
+      }}
+    >
+      {formattedPrice(row?.item?.estimated_budget)} per{" "}
+      {row?.item?.item_unit?.name}
+    </Typography>
+  </>
+);
+
+const renderProcurement = (row) => (
+  <Chip
+    sx={{
+      color: "#7008E7",
+      bgcolor: "#DDD6FF",
+      alignItems: "center",
+      maxWidth: 200,
+      "& .MuiChip-label": { textOverflow: "ellipsis", whiteSpace: "nowrap" },
+    }}
+    size="md"
+    variant="soft"
+  >
+    {row?.procurement_mode?.name || "-"}
+  </Chip>
+);
+
 export const PPMP_HEADERS = (
   status,
   editingRows,
@@ -1538,88 +1608,27 @@ export const PPMP_HEADERS = (
   {
     id: "name",
     label: "Item",
-    width: status?.name === "draft" ? "300px" : "400PX",
-    render: (row) => (
-      <>
-        <Typography level="body-sm" fontWeight={600} sx={{ color: "black" }}>
-          {row?.item?.name}
-        </Typography>
-        <Typography sx={{ fontSize: 14, fontWeight: 500, color: grey[900] }}>
-          Qty: {row?.quantity}
-        </Typography>
-      </>
-    ),
+    width: status?.name === "draft" ? "300px" : "400px",
+    render: renderItem,
   },
   {
     id: "category",
     label: "Classification & Category",
     width: status?.name === "draft" ? "150px" : "auto",
-    render: (row) => (
-      <>
-        <Typography level="body-sm" fontWeight={600} sx={{ color: "black" }}>
-          {row?.item?.item_classification?.name}
-        </Typography>
-        <Typography
-          level={row?.item?.item_category?.name && "body-sm"}
-          sx={{
-            fontSize: row?.item?.item_classification?.name && 13,
-            color: row?.item?.item_classification?.name ? grey[800] : grey[900],
-          }}
-          fontWeight={500}
-        >
-          {row?.item?.item_category?.name}
-        </Typography>
-      </>
-    ),
+    render: renderCategory,
   },
   {
     id: "cost",
     label: "Total Cost & Individual Cost",
     width: status?.name === "draft" ? "200px" : "auto",
-
-    render: (row) => (
-      <>
-        <Typography level="body-sm" fontWeight={600} sx={{ color: grey[900] }}>
-          {formattedPrice(row?.total_amount)}
-        </Typography>
-        <Typography
-          sx={{
-            fontSize: 14,
-            fontWeight: 500,
-            color: grey[800],
-            textTransform: "lowercase",
-          }}
-        >
-          {formattedPrice(row?.item?.estimated_budget)} per{" "}
-          {row?.item?.item_unit?.name}
-        </Typography>
-      </>
-    ),
+    render: renderCost,
   },
   {
     id: "procurement",
     label: "Mode of Procurement",
     align: "center",
     width: status?.name === "draft" ? "200px" : "auto",
-
-    render: (row) => (
-      <Chip
-        sx={{
-          color: "#7008E7",
-          bgcolor: "#DDD6FF",
-          alignItems: "center",
-          maxWidth: 200, // limit width
-          "& .MuiChip-label": {
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
-          },
-        }}
-        size="md"
-        variant="soft"
-      >
-        {row?.procurement_mode === null ? "-" : row?.procurement_mode.name}
-      </Chip>
-    ),
+    render: renderProcurement,
   },
   ...(status?.name === "draft"
     ? [
@@ -1627,7 +1636,7 @@ export const PPMP_HEADERS = (
           id: "is_complete",
           label: "",
           width: "150px",
-          display: status?.name === "draft" ? "table-cell" : "none",
+          display: "table-cell",
           render: (row) =>
             row?.is_complete ? (
               ""
@@ -1635,15 +1644,15 @@ export const PPMP_HEADERS = (
               <Box
                 p={0.5}
                 bgcolor={red[50]}
-                display={"flex"}
-                justifyContent={"center"}
+                display="flex"
+                justifyContent="center"
                 width="150px"
                 borderRadius={5}
               >
                 <Typography
                   level="body-xs"
                   color="danger"
-                  alignItems={"center"}
+                  alignItems="center"
                   gap={1}
                   startDecorator={
                     <WarningAmberOutlined
@@ -1652,7 +1661,6 @@ export const PPMP_HEADERS = (
                     />
                   }
                 >
-                  {" "}
                   Incomplete Details.
                 </Typography>
               </Box>
@@ -1667,31 +1675,19 @@ export const PPMP_HEADERS = (
     width: status?.name === "draft" ? "200px" : "auto",
     render: (row, open, onToggle, handleEditToggle, handleDeletePPMP) => {
       const isEditing = editingRows[row.id];
+      const isLockedByOther = isRowLockedByOther(row.id, lockedRows, userId);
 
-      // ✅ Compute per-row lock here
-      const isRowLockedByOther =
-        lockedRows[row.id] && lockedRows[row.id].editorId !== userId;
       return (
-        <Stack
-          direction={"row"}
-          spacing={1}
-          justifyContent={
-            status?.name === "draft"
-              ? "center"
-              : status?.name === "returned"
-                ? "right"
-                : "center"
-          }
-        >
+        <Stack direction="row" spacing={1} justifyContent="center">
+          {console.log(lockedRows)}
           {status?.name !== "draft" && (
             <ChipComponent
               label={row.comments_count}
               startDecorator={<CommentOutlined />}
-              variant={"soft"}
+              variant="soft"
               onClick={(e) => {
-                e.stopPropagation(); // Prevent row expand
+                e.stopPropagation();
                 handleComments(row);
-                // Your comment click logic here
               }}
             />
           )}
@@ -1699,22 +1695,24 @@ export const PPMP_HEADERS = (
             <>
               <ChipComponent
                 label={isEditing ? "Save" : "Edit"}
-                variant={"soft"}
+                variant="soft"
                 startDecorator={
                   isEditing ? <CheckOutlined /> : <ModeEditOutlineOutlined />
                 }
                 color={isEditing ? "success" : "neutral"}
+                disabled={isLockedByOther}
                 onClick={(e) => {
                   e.stopPropagation();
                   handleEditToggle(row.id, onToggle, isEditing);
                 }}
               />
               <ChipComponent
-                label={"Remove"}
+                label="Remove"
                 startDecorator={<DeleteOutlineOutlined />}
-                variant={"soft"}
+                variant="soft"
+                disabled={isLockedByOther}
                 onClick={(e) => {
-                  e.stopPropagation(); // Prevent row expand
+                  e.stopPropagation();
                   handleDeletePPMP(row.id);
                 }}
               />

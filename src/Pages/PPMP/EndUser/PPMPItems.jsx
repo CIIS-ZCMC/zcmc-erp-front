@@ -53,10 +53,7 @@ function PPMPItems(props) {
 
   const { showSnack } = useSnackbarHook();
   const [pageLoader, setPageLoader] = useState(false);
-  const [dlLoader, setDlLoader] = useState(false);
-  const [disabled, setDisabled] = useState(false);
   const [openDrawer, setOpenDrawer] = useState(false);
-  const [show, setShow] = useState(false);
   const [openNotify, setOpenNotify] = useState(false);
   const [editor, setEditor] = useState(null);
   const [editingRows, setEditingRows] = useState({});
@@ -74,6 +71,7 @@ function PPMPItems(props) {
   const currentYear = new Date().getFullYear();
   const currentFiscalYear = currentYear + 1;
   const [lockedRows, setLockedRows] = useState({});
+  const editingRowsRef = useRef({});
 
   const getRowArea = (rowId) => `ppmp-${ppmp_id}-row-${rowId}`;
 
@@ -85,34 +83,13 @@ function PPMPItems(props) {
     );
   }, [search, localRows]);
 
-  //SNACKBAR
-  const notify = () => setOpenNotify(true);
-  const handleCloseSnack = () => {
-    setEditor(null);
-    setOpenNotify(false);
-  };
-
-  const handleEditing = ({ editable, showEdit, editorName, editorId }) => {
-    setDisabled(!editable);
-    setShow(showEdit);
-    setOpenNotify(editable ? false : true);
-    setEditor(() => {
-      return { editorName: editorName, editorId: editorId };
-    });
-
-    if (!editable) {
-      return notify();
-    }
-  };
-
   const handleEditToggle = async (rowId, onToggle, isSaveClick) => {
     const isEditing = editingRows[rowId];
-    const area = getRowArea(rowId);
-
     const lockedByOther =
       lockedRows[rowId] && lockedRows[rowId].editorId !== id;
 
-    if (lockedByOther && !isEditing) return;
+    // 🚫 block entering edit if locked
+    if (!isEditing && lockedByOther) return;
 
     if (isEditing && !isSaveClick) {
       return;
@@ -126,8 +103,11 @@ function PPMPItems(props) {
       try {
         updatePPMP(rowId, updatedData, (status, body) => {
           if (status === 200) {
-            socket.emit("stop-edit", { userId: id, area });
-
+            socket.emit("ppmp:stop-edit", {
+              ppmpId: ppmp_id,
+              rowId,
+              userId: id,
+            });
             showSnack(200, body.message);
 
             // collapse row only on success
@@ -158,12 +138,14 @@ function PPMPItems(props) {
       return;
     }
 
-    // ✏️ START EDIT
-    socket.emit("start-edit", {
+    // Start editing
+    socket.emit("ppmp:start-edit", {
+      ppmpId: ppmp_id,
+      rowId,
       userId: id,
       name,
-      area,
     });
+
     // Enter edit mode
     setEditingRows((prev) => ({
       ...prev,
@@ -215,41 +197,71 @@ function PPMPItems(props) {
     }
   }, [openDrawer, selectedRow?.id]);
 
+  // Track rows being edited by this user
+  // Keep ref in sync
   useEffect(() => {
-    socket.connect();
+    editingRowsRef.current = editingRows;
+  }, [editingRows]);
 
-    socket.emit("register-user", {
-      userId: id,
-      name,
-      area: `ppmp-${ppmp_id}`,
-    });
+  useEffect(() => {
+    if (!ppmp_id || !socket) return;
 
-    socket.on("editing", ({ editable, editorId, editorName, area }) => {
-      if (!area.includes("-row-")) return;
+    socket.emit("ppmp:join", { ppmpId: ppmp_id });
 
-      const rowId = area.split("-row-")[1];
+    const handleEditing = ({ ppmpId, rowId, editorId, editorName, locked }) => {
+      if (ppmpId !== ppmp_id) return;
 
-      setLockedRows((prev) => ({
-        ...prev,
-        [rowId]: {
-          editable,
-          editorId,
-          editorName,
-        },
-      }));
-    });
+      setLockedRows((prev) => {
+        const next = { ...prev };
 
-    return () => {
-      socket.off("editing");
+        if (locked) {
+          next[rowId] = { editorId, editorName };
+
+          if (editorId !== id) {
+            showSnack(400, `${editorName} is editing this row`, "soft");
+          }
+        } else {
+          if (next[rowId]) {
+            const previousEditor = next[rowId].editorName;
+            delete next[rowId];
+
+            if (editorId !== id) {
+              showSnack(
+                200,
+                `${previousEditor || editorName} stopped editing this row`,
+                "soft",
+              );
+            }
+          }
+        }
+
+        return next;
+      });
     };
-  }, [ppmp_id]);
+
+    const handleLocked = ({ userId, name }) => {
+      if (userId !== id) {
+        showSnack(400, `${name} is already editing this row`, "soft");
+      }
+    };
+
+    socket.on("ppmp:editing", handleEditing);
+    socket.on("ppmp:locked", handleLocked);
+
+    return () => {
+      socket.emit("ppmp:leave", { ppmpId: ppmp_id });
+      socket.off("ppmp:editing", handleEditing);
+      socket.off("ppmp:locked", handleLocked);
+    };
+  }, [ppmp_id, id, showSnack]);
 
   useEffect(() => {
     return () => {
-      Object.keys(editingRows).forEach((rowId) => {
-        socket.emit("stop-edit", {
+      Object.keys(editingRowsRef.current).forEach((rowId) => {
+        socket.emit("ppmp:stop-edit", {
+          ppmpId: ppmp_id,
+          rowId,
           userId: id,
-          area: getRowArea(rowId),
         });
       });
     };
@@ -370,21 +382,6 @@ function PPMPItems(props) {
       />
 
       <AlertDialogComponent leftButtonAction={() => handleClose()} />
-      <Snackbar
-        open={openNotify}
-        // autoHideDuration={2000}
-        onClose={handleCloseSnack}
-        color="success"
-      >
-        <Alert
-          onClose={handleCloseSnack}
-          severity="success"
-          variant="filled"
-          sx={{ width: "100%" }}
-        >
-          {editor?.editorName} is currently editing
-        </Alert>
-      </Snackbar>
       <DrawerComponent
         open={openDrawer}
         setOpen={setOpenDrawer}
