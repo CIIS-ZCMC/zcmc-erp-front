@@ -1,4 +1,11 @@
-import React, { Fragment, useEffect, useMemo, useRef, useState } from "react";
+import React, {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from "react";
 import PageTitle from "../../../Components/Common/PageTitle";
 import ButtonComponent from "../../../Components/Common/ButtonComponent";
 import { Stack, Typography, Snackbar, Alert, Box, Card } from "@mui/joy";
@@ -10,27 +17,22 @@ import AlertDialogComponent from "../../../Components/Common/Dialog/AlertDialogC
 import { InfoIcon, PlusIcon } from "lucide-react";
 import { useAuth } from "../../../Store/AuthStore";
 import { socket } from "../../../Services/Socket";
-import { usePPMPTotalStore } from "../../../Hooks/PPMP/PPMPItemsHook";
 import BoxComponent from "@Components/Common/Card/BoxComponent";
 import ChipComponent from "@Components/Common/ChipComponent";
-import SearchWithSuggestions from "@Components/SearchWithSuggestions";
-import CollapsibleTable from "./CollapsibleTable";
 import { PPMP_HEADERS } from "../../../Data/Columns";
-import { ThreeDotsLoader } from "@Components/Common/Loading/ThreeDotsLoader";
 import SearchBarComponentv2 from "@Components/SearchBarWithdeBounce";
 import useSnackbarHook from "../../../Hooks/SnackbarHook";
 import DrawerComponent from "@Components/Common/DrawerComponent";
-import { blue, grey } from "@mui/material/colors";
-import moment from "moment";
-import { ArrowBack, Circle } from "@mui/icons-material";
 import CommentContainerComponent from "@Components/Comments/CommentContainerComponent";
 import CountUp from "react-countup";
-import { usePPMPApplicationActions } from "../../../Hooks/PPMP/PPMPApplicationHook";
 import {
   usePPMPComments,
   usePPMPCommentsActions,
 } from "../../../Hooks/PPMP/PPMPCommentsHook";
 import NoResultComponent from "@Components/Common/Table/NoResultComponent";
+import { nextYear } from "../../../Utils/Functions";
+import ExpandableTable from "@Components/Common/Table/ExpandableTable";
+import { ExpandableRow } from "./ExpandableRow";
 
 function PPMPItems(props) {
   const navigate = useNavigate();
@@ -50,12 +52,12 @@ function PPMPItems(props) {
   const { errors, setError, clearErrors } = userErrorInputHook();
   const { getPPMPComments, postPPMPComment } = usePPMPCommentsActions();
   const { ppmpComments } = usePPMPComments();
-
   const { showSnack } = useSnackbarHook();
+  const { user } = useAuth();
+  const { name, id, assignedArea } = user ?? {};
+
   const [pageLoader, setPageLoader] = useState(false);
   const [openDrawer, setOpenDrawer] = useState(false);
-  const [openNotify, setOpenNotify] = useState(false);
-  const [editor, setEditor] = useState(null);
   const [editingRows, setEditingRows] = useState({});
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
@@ -63,17 +65,8 @@ function PPMPItems(props) {
   const updatedRowData = React.useRef({});
   const [selectedRow, setSelectedRow] = useState({});
   const [localRows, setLocalRows] = useState([]);
-
-  const location = useLocation();
-  const { user } = useAuth();
-  const { name, id, assignedArea } = user ?? {};
-
-  const currentYear = new Date().getFullYear();
-  const currentFiscalYear = currentYear + 1;
   const [lockedRows, setLockedRows] = useState({});
   const editingRowsRef = useRef({});
-
-  const getRowArea = (rowId) => `ppmp-${ppmp_id}-row-${rowId}`;
 
   // Filter results when search changes
   const filteredPPMPItems = useMemo(() => {
@@ -83,93 +76,9 @@ function PPMPItems(props) {
     );
   }, [search, localRows]);
 
-  const handleEditToggle = async (rowId, onToggle, isSaveClick) => {
-    const isEditing = editingRows[rowId];
-    const lockedByOther =
-      lockedRows[rowId] && lockedRows[rowId].editorId !== id;
-
-    // 🚫 block entering edit if locked
-    if (!isEditing && lockedByOther) return;
-
-    if (isEditing && !isSaveClick) {
-      return;
-    }
-    if (isEditing && isSaveClick) {
-      const getDataFunc = updatedRowData.current[rowId];
-      if (!getDataFunc) return;
-
-      const updatedData = getDataFunc();
-
-      try {
-        updatePPMP(rowId, updatedData, (status, body) => {
-          if (status === 200) {
-            socket.emit("ppmp:stop-edit", {
-              ppmpId: ppmp_id,
-              rowId,
-              userId: id,
-            });
-            showSnack(200, body.message);
-
-            // collapse row only on success
-            onToggle(false);
-
-            setEditingRows((prev) => ({
-              ...prev,
-              [rowId]: false,
-            }));
-          } else {
-            console.log(body);
-            setAlertDialog({
-              status: "danger",
-              title: "Failed to save.",
-              description: "",
-            });
-            // do nothing — keep row open
-          }
-        });
-      } catch (err) {
-        setAlertDialog({
-          status: "danger",
-          title: "Save error.",
-          description: err,
-        });
-        // do nothing — keep row open
-      }
-      return;
-    }
-
-    // Start editing
-    socket.emit("ppmp:start-edit", {
-      ppmpId: ppmp_id,
-      rowId,
-      userId: id,
-      name,
-    });
-
-    // Enter edit mode
-    setEditingRows((prev) => ({
-      ...prev,
-      [rowId]: true,
-    }));
-    // Force open row when entering edit
-    onToggle(true);
-  };
-
-  const handleDeleteItem = async (id) => {
-    await removeItem(id, (status, message) => {
-      // setLoading(false);
-
-      if (status === 200) {
-        showSnack(200, message);
-      } else {
-        showSnack(500, message);
-      }
-    });
-  };
-  const handleComments = (row) => {
-    setSelectedRow(row);
-    setOpenDrawer(true);
-  };
+  useEffect(() => {
+    editingRowsRef.current = editingRows;
+  }, [editingRows]);
 
   useEffect(() => {
     setPageLoader(true);
@@ -197,80 +106,136 @@ function PPMPItems(props) {
     }
   }, [openDrawer, selectedRow?.id]);
 
-  // Track rows being edited by this user
-  // Keep ref in sync
   useEffect(() => {
-    editingRowsRef.current = editingRows;
-  }, [editingRows]);
-
-  useEffect(() => {
-    if (!ppmp_id || !socket) return;
+    if (!ppmp_id) return;
 
     socket.emit("ppmp:join", { ppmpId: ppmp_id });
 
-    const handleEditing = ({ ppmpId, rowId, editorId, editorName, locked }) => {
-      if (ppmpId !== ppmp_id) return;
+    return () => {
+      socket.emit("ppmp:leave", { ppmpId: ppmp_id });
+    };
+  }, [ppmp_id]);
 
-      setLockedRows((prev) => {
-        const next = { ...prev };
+  useEffect(() => {
+    const handleLocked = ({ rowId, editorId, editorName }) => {
+      setLockedRows((prev) => ({
+        ...prev,
+        [rowId]: { editorId, editorName },
+      }));
 
-        if (locked) {
-          next[rowId] = { editorId, editorName };
-
-          if (editorId !== id) {
-            showSnack(400, `${editorName} is editing this row`, "soft");
-          }
-        } else {
-          if (next[rowId]) {
-            const previousEditor = next[rowId].editorName;
-            delete next[rowId];
-
-            if (editorId !== id) {
-              showSnack(
-                200,
-                `${previousEditor || editorName} stopped editing this row`,
-                "soft",
-              );
-            }
-          }
-        }
-
-        return next;
-      });
+      showSnack(
+        "warning",
+        `This row is currently being edited by ${editorName}.`,
+      );
     };
 
-    const handleLocked = ({ userId, name }) => {
-      if (userId !== id) {
-        showSnack(400, `${name} is already editing this row`, "soft");
-      }
-    };
-
-    socket.on("ppmp:editing", handleEditing);
     socket.on("ppmp:locked", handleLocked);
 
     return () => {
-      socket.emit("ppmp:leave", { ppmpId: ppmp_id });
-      socket.off("ppmp:editing", handleEditing);
       socket.off("ppmp:locked", handleLocked);
     };
-  }, [ppmp_id, id, showSnack]);
+  }, [showSnack]);
 
   useEffect(() => {
-    return () => {
+    const handleUnload = () => {
       Object.keys(editingRowsRef.current).forEach((rowId) => {
-        socket.emit("ppmp:stop-edit", {
-          ppmpId: ppmp_id,
-          rowId,
-          userId: id,
-        });
+        if (editingRowsRef.current[rowId]) {
+          socket.emit("ppmp:stop-edit", {
+            ppmpId: ppmp_id,
+            rowId,
+            userId: id,
+          });
+        }
       });
     };
+
+    window.addEventListener("beforeunload", handleUnload);
+
+    return () => {
+      window.removeEventListener("beforeunload", handleUnload);
+    };
+  }, [ppmp_id, id]);
+
+  const handleEditToggle = (rowId, openRow, isSaveClick) => {
+    const isEditing = editingRows[rowId];
+    const lockedByOther =
+      lockedRows[rowId] && lockedRows[rowId].editorId !== id;
+
+    if (!isEditing && lockedByOther) return;
+    if (isEditing && !isSaveClick) return;
+
+    // SAVE
+    if (isEditing && isSaveClick) {
+      const getDataFunc = updatedRowData.current[rowId];
+      if (!getDataFunc) return;
+
+      const updatedData = getDataFunc();
+      updatePPMP(rowId, updatedData, (status, body) => {
+        if (status === 200) {
+          socket.emit("ppmp:stop-edit", { ppmpId: ppmp_id, rowId, userId: id });
+          showSnack(200, body.message);
+          setEditingRows((prev) => ({ ...prev, [rowId]: false }));
+          // 🔴 DO NOT TOUCH EXPANSION
+        } else {
+          setAlertDialog({
+            status: "danger",
+            title: "Failed to save.",
+            description: "",
+          });
+        }
+      });
+      return;
+    }
+
+    // START EDITING
+    socket.emit("ppmp:start-edit", {
+      ppmpId: ppmp_id,
+      rowId,
+      userId: id,
+      name,
+    });
+
+    setEditingRows((prev) => ({ ...prev, [rowId]: true }));
+
+    // ✅ FORCE OPEN — no toggle, no collapse
+    openRow(rowId);
+  };
+
+  const handleDeleteItem = (id) => {
+    removeItem(id, (status, message) => showSnack(status, message));
+  };
+
+  const handleComments = useCallback((row) => {
+    setSelectedRow(row);
+    setOpenDrawer(true);
   }, []);
+
+  const columns = useMemo(
+    () =>
+      PPMP_HEADERS(
+        status,
+        editingRows,
+        handleComments,
+        handleDeleteItem,
+        handleEditToggle,
+        lockedRows,
+        id,
+      ),
+    [
+      status,
+      editingRows,
+      handleComments,
+      handleDeleteItem,
+      handleEditToggle,
+      lockedRows,
+      id,
+    ],
+  );
 
   return (
     <Fragment>
       <PageTitle
-        title={`PPMP for Fiscal Year ${currentFiscalYear}`}
+        title={`PPMP for Fiscal Year ${nextYear}`}
         description={""}
         items={[
           {
@@ -290,7 +255,7 @@ function PPMPItems(props) {
                 Manage Resources for{" "}
               </Typography>
               <ChipComponent
-                label={`PPMP Fiscal Year ${currentFiscalYear}`} // change to dynamic activity name
+                label={`PPMP Fiscal Year ${nextYear}`} // change to dynamic activity name
                 color={"success"}
                 variant={"outlined"}
                 fontSize={12}
@@ -352,23 +317,28 @@ function PPMPItems(props) {
           </BoxComponent>
         </Stack>
       </BoxComponent>
-      <CollapsibleTable
-        isLoading={pageLoader}
-        columns={PPMP_HEADERS(
-          status,
-          editingRows,
-          handleComments,
-          lockedRows,
-          id,
-        )}
+
+      <ExpandableTable
+        columns={columns}
         rows={filteredPPMPItems}
-        editingRows={editingRows}
-        onEditToggle={handleEditToggle}
-        onGetUpdatedData={(rowId, getDataFunc) => {
-          updatedRowData.current[rowId] = getDataFunc;
-        }}
-        onRemoveActivity={removeActivity}
-        ppmpId={ppmp_id}
+        loading={pageLoader}
+        stickyFooter
+        renderExpanded={(row) => (
+          <ExpandableRow
+            row={row}
+            columns={columns}
+            editing={editingRows?.[row.id]} // your edit state
+            onToggle={() => toggle(row.id)} // optional callback
+            onEditToggle={handleEditToggle} // your edit toggle handler
+            onGetUpdatedData={(rowId, getDataFunc) => {
+              updatedRowData.current[rowId] = getDataFunc;
+            }}
+            onRemoveActivity={removeActivity}
+            onDeletePPMP={handleDeleteItem}
+            lockedRows={lockedRows}
+            userId={id}
+          />
+        )}
         currentPage={pagination?.current_page}
         totalPages={pagination?.last_page}
         totalRows={pagination?.total}
@@ -378,7 +348,6 @@ function PPMPItems(props) {
         onPrevPage={() => {
           if (page > 1) setPage(page - 1);
         }}
-        onDeletePPMP={handleDeleteItem}
       />
 
       <AlertDialogComponent leftButtonAction={() => handleClose()} />

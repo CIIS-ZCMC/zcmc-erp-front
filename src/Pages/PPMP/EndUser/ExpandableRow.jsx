@@ -27,6 +27,7 @@ import IconButtonComponent from "@Components/Common/IconButtonComponent";
 import useModalHook from "../../../Hooks/ModalHook";
 import useSnackbarHook from "../../../Hooks/SnackbarHook";
 import defaultItem from "../../../assets/item.jpg";
+import formattedPrice from "../../../Utils/formattedPrice";
 
 const ExpandableRowComponent = ({
   row,
@@ -38,6 +39,8 @@ const ExpandableRowComponent = ({
   onGetUpdatedData,
   onRemoveActivity,
   onDeletePPMP,
+  lockedRows,
+  userId,
 }) => {
   const { setAlertDialog } = useModalHook();
   const { modes, activities, getProcModes, getActivities } = usePPMPHook();
@@ -196,14 +199,7 @@ const ExpandableRowComponent = ({
                     <Typography level="body-sm">{`${act.resources_quantity} ${act.unit}(s)`}</Typography>
                   )}
                   <Typography>
-                    • ₱
-                    {(
-                      row?.item?.estimated_budget *
-                      Number(act.resources_quantity)
-                    ).toLocaleString("en-PH", {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}
+                    • {formattedPrice(row?.item?.estimated_budget)}
                   </Typography>
                 </Stack>
               </Stack>
@@ -218,263 +214,207 @@ const ExpandableRowComponent = ({
 
   return (
     <>
-      <tr
-        onClick={(e) => {
-          if (editing) {
-            e.stopPropagation();
-            return;
-          }
-          onToggle();
-        }}
-        style={{
-          cursor: "pointer",
-          transition: "border-bottom .2s",
-          "--TableCell-borderColor": open && "transparent",
+      <Box
+        sx={{
+          maxHeight: "600px",
+          opacity: 1,
+          overflow: "hidden",
+          transition: "max-height .35s ease, opacity .25s ease",
+          backgroundColor: grey[100],
+          p: 1.5,
         }}
       >
-        {columns?.map((col) => (
-          <td
-            key={col.id}
-            style={{
-              textAlign: col.align || "left",
-              width: col.width,
-              backgroundColor: open ? grey[100] : "",
-              display: col.display && col.display,
+        {editing && (
+          <Box
+            sx={{
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              bgcolor: red[50],
+              p: 0.5,
             }}
           >
-            {col.render
-              ? col.render(row, open, onToggle, onEditToggle, onDeletePPMP)
-              : row[col.id]}
-          </td>
-        ))}
-      </tr>
+            <Typography
+              level="body-sm"
+              sx={{ color: red[800], fontWeight: 500 }}
+            >
+              You are in editing mode. Click the save button (✓) to save
+              changes.
+            </Typography>
+          </Box>
+        )}
 
-      {/* Lazy-mounted expanded content */}
-      {open && (
-        <tr>
-          <td style={{ height: 0, padding: 0 }} colSpan={columns.length}>
-            <Box
+        <Tabs defaultValue="a" sx={{ bgcolor: grey[100] }} variant="soft">
+          <TabList>
+            <Tab
+              value="a"
               sx={{
-                maxHeight: "600px",
-                opacity: 1,
-                overflow: "hidden",
-                transition: "max-height .35s ease, opacity .25s ease",
-                backgroundColor: grey[100],
-                p: 1.5,
+                "&.Mui-selected": {
+                  backgroundColor: blue[50],
+                  color: blue[800],
+                },
+                borderTopLeftRadius: 10,
+                borderTopRightRadius: 10,
               }}
             >
-              {editing && (
-                <Box
-                  sx={{
-                    display: "flex",
-                    alignItems: "center",
-                    justifyContent: "center",
-                    bgcolor: red[50],
-                    p: 0.5,
+              <ListItemDecorator>
+                <TextSnippetOutlined />
+              </ListItemDecorator>
+              Item Information
+            </Tab>
+            <Tab
+              value="b"
+              sx={{
+                "&.Mui-selected": {
+                  backgroundColor: blue[50],
+                  color: blue[800],
+                },
+                borderTopLeftRadius: 10,
+                borderTopRightRadius: 10,
+              }}
+            >
+              <ListItemDecorator>
+                <TodayOutlined />
+              </ListItemDecorator>
+              Procurement Schedule
+            </Tab>
+          </TabList>
+
+          <TabPanel value="a">
+            <Box
+              sx={{
+                display: "flex",
+                gap: 2,
+                flexWrap: "wrap",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <BoxComponent p={2} width={350} height={250} overflow="hidden">
+                <img
+                  src={defaultItem}
+                  loading="lazy"
+                  alt=""
+                  style={{
+                    width: "100%",
+                    height: "100%",
+                    objectFit: "cover",
+                    borderRadius: 10,
+                    display: "block",
                   }}
-                >
+                />
+              </BoxComponent>
+
+              <BoxComponent p={2} width={350} height={250}>
+                <Stack spacing={2}>
                   <Typography
-                    level="body-sm"
-                    sx={{ color: red[800], fontWeight: 500 }}
-                  >
-                    You are in editing mode. Click the save button (✓) to save
-                    changes.
-                  </Typography>
-                </Box>
-              )}
-
-              <Tabs defaultValue="a" sx={{ bgcolor: grey[100] }} variant="soft">
-                <TabList>
-                  <Tab
-                    value="a"
-                    sx={{
-                      "&.Mui-selected": {
-                        backgroundColor: blue[50],
-                        color: blue[800],
-                      },
-                      borderTopLeftRadius: 10,
-                      borderTopRightRadius: 10,
-                    }}
-                  >
-                    <ListItemDecorator>
-                      <TextSnippetOutlined />
-                    </ListItemDecorator>
-                    Item Information
-                  </Tab>
-                  <Tab
-                    value="b"
-                    sx={{
-                      "&.Mui-selected": {
-                        backgroundColor: blue[50],
-                        color: blue[800],
-                      },
-                      borderTopLeftRadius: 10,
-                      borderTopRightRadius: 10,
-                    }}
-                  >
-                    <ListItemDecorator>
-                      <TodayOutlined />
-                    </ListItemDecorator>
-                    Procurement Schedule
-                  </Tab>
-                </TabList>
-
-                <TabPanel value="a">
-                  <Box
-                    sx={{
-                      display: "flex",
-                      gap: 2,
-                      flexWrap: "wrap",
-                      alignItems: "center",
-                      justifyContent: "center",
-                    }}
-                  >
-                    <BoxComponent
-                      p={2}
-                      width={350}
-                      height={250}
-                      overflow="hidden"
-                    >
-                      <img
-                        src={defaultItem}
-                        loading="lazy"
-                        alt=""
-                        style={{
-                          width: "100%",
-                          height: "100%",
-                          objectFit: "cover",
-                          borderRadius: 10,
-                          display: "block",
-                        }}
+                    fontWeight={600}
+                    startDecorator={
+                      <TextSnippetOutlined
+                        style={{ color: blue[800], fontSize: 20 }}
                       />
-                    </BoxComponent>
+                    }
+                  >
+                    Item Information
+                  </Typography>
 
-                    <BoxComponent p={2} width={350} height={250}>
-                      <Stack spacing={2}>
-                        <Typography
-                          fontWeight={600}
-                          startDecorator={
-                            <TextSnippetOutlined
-                              style={{ color: blue[800], fontSize: 20 }}
-                            />
-                          }
-                        >
-                          Item Information
-                        </Typography>
-
-                        <Stack spacing={1}>
-                          <Typography level="body-sm">
-                            Mode of Procurement
-                          </Typography>
-                          {editing ? (
-                            <AutocompleteComponent
-                              label="Procurement Mode"
-                              options={modes}
-                              value={procurementMode}
-                              getOptionLabel={(option) => option.name}
-                              handleSelect={setProcurementMode}
-                              color="danger"
-                            />
-                          ) : row?.procurement_mode ? (
-                            <ChipComponent
-                              label={row?.procurement_mode?.name}
-                              sx={{ color: "#7008E7", bgcolor: "#DDD6FF" }}
-                              size="md"
-                            />
-                          ) : (
-                            <Typography level="body-sm" color="danger">
-                              No Mode of Procurement Yet.{" "}
-                              <i>Edit Resource to update.</i>
-                            </Typography>
-                          )}
-                        </Stack>
-
-                        <Stack spacing={0.5}>
-                          <Typography level="body-sm">
-                            Specifications
-                          </Typography>
-                          {row.item.item_specifications.length > 0 ? (
-                            row.item.item_specifications.map((spec, index) => (
-                              <Typography
-                                key={index}
-                                level="body-sm"
-                                sx={{ color: "black" }}
-                              >
-                                ● {spec.description}
-                              </Typography>
-                            ))
-                          ) : (
-                            <Typography level="body-md">
-                              No specifications provided.
-                            </Typography>
-                          )}
-                        </Stack>
-                      </Stack>
-                    </BoxComponent>
-
-                    <BoxComponent p={2} width={370} height={250}>
-                      <Stack>
-                        <Typography
-                          fontWeight={600}
-                          startDecorator={
-                            <ExtensionOutlined
-                              style={{ color: orange[800], fontSize: 20 }}
-                            />
-                          }
-                        >
-                          Linked Activities ({linkedActivities.length})
-                        </Typography>
-
-                        <Stack
-                          mt={2}
-                          spacing={1}
-                          height={"170px"}
-                          overflow={"auto"}
-                        >
-                          {editing && (
-                            <AutocompleteComponent
-                              label="Select an activity"
-                              options={activities}
-                              value={activity}
-                              getOptionLabel={(option) => option.activity_code}
-                              handleSelect={handleAddActivity}
-                              color="danger"
-                            />
-                          )}
-                          <Box
-                            height={"300px"}
-                            sx={{ overflowY: "auto" }}
-                            pr={1}
-                          >
-                            {renderedActivities}
-                          </Box>
-                        </Stack>
-                      </Stack>
-                      <Typography textAlign={"right"} level="body-sm" mt={2}>
-                        Total: {totalQuantity}{" "}
-                        <b>
-                          {unit}
-                          {totalQuantity > 1 ? "s" : ""}
-                        </b>
+                  <Stack spacing={1}>
+                    <Typography level="body-sm">Mode of Procurement</Typography>
+                    {editing ? (
+                      <AutocompleteComponent
+                        label="Procurement Mode"
+                        options={modes}
+                        value={procurementMode}
+                        getOptionLabel={(option) => option.name}
+                        handleSelect={setProcurementMode}
+                        color="danger"
+                      />
+                    ) : row?.procurement_mode ? (
+                      <ChipComponent
+                        label={row?.procurement_mode?.name}
+                        sx={{ color: "#7008E7", bgcolor: "#DDD6FF" }}
+                        size="md"
+                      />
+                    ) : (
+                      <Typography level="body-sm" color="danger">
+                        No Mode of Procurement Yet.{" "}
+                        <i>Edit Resource to update.</i>
                       </Typography>
-                    </BoxComponent>
-                  </Box>
-                </TabPanel>
+                    )}
+                  </Stack>
 
-                <TabPanel value="b">
-                  <BoxComponent bgColor={"white"} p={2} borderRadius={20}>
-                    <ProcurementSchedule
-                      editing={editing}
-                      initialData={row?.target_by_month}
-                      onChange={setScheduleData}
-                    />
-                  </BoxComponent>
-                </TabPanel>
-              </Tabs>
+                  <Stack spacing={0.5}>
+                    <Typography level="body-sm">Specifications</Typography>
+                    {row?.item?.item_specifications?.length > 0 ? (
+                      row?.item?.item_specifications?.map((spec, index) => (
+                        <Typography
+                          key={index}
+                          level="body-sm"
+                          sx={{ color: "black" }}
+                        >
+                          ● {spec?.description}
+                        </Typography>
+                      ))
+                    ) : (
+                      <Typography level="body-md">
+                        No specifications provided.
+                      </Typography>
+                    )}
+                  </Stack>
+                </Stack>
+              </BoxComponent>
+
+              <BoxComponent p={2} width={370} height={250}>
+                <Stack>
+                  <Typography
+                    fontWeight={600}
+                    startDecorator={
+                      <ExtensionOutlined
+                        style={{ color: orange[800], fontSize: 20 }}
+                      />
+                    }
+                  >
+                    Linked Activities ({linkedActivities?.length})
+                  </Typography>
+
+                  <Stack mt={2} spacing={1} height={"170px"} overflow={"auto"}>
+                    {editing && (
+                      <AutocompleteComponent
+                        label="Select an activity"
+                        options={activities}
+                        value={activity}
+                        getOptionLabel={(option) => option.activity_code}
+                        handleSelect={handleAddActivity}
+                        color="danger"
+                      />
+                    )}
+                    <Box height={"300px"} sx={{ overflowY: "auto" }} pr={1}>
+                      {renderedActivities}
+                    </Box>
+                  </Stack>
+                </Stack>
+                <Typography textAlign={"right"} level="body-sm" mt={2}>
+                  Total: {totalQuantity}{" "}
+                  <b>
+                    {unit}
+                    {totalQuantity > 1 ? "s" : ""}
+                  </b>
+                </Typography>
+              </BoxComponent>
             </Box>
-          </td>
-        </tr>
-      )}
+          </TabPanel>
+
+          <TabPanel value="b">
+            <BoxComponent bgColor={"white"} p={2} borderRadius={20}>
+              <ProcurementSchedule
+                editing={editing}
+                initialData={row?.target_by_month}
+                onChange={setScheduleData}
+              />
+            </BoxComponent>
+          </TabPanel>
+        </Tabs>
+      </Box>
     </>
   );
 };

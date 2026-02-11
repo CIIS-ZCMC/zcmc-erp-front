@@ -5,13 +5,21 @@ import { Stack, Box, Typography } from "@mui/joy";
 import SelectComponent from "@Components/Form/YearSelectComponent";
 
 import { AOP } from "../../../../Data/constants";
+import ButtonComponent from "@Components/Common/ButtonComponent";
+import { Edit } from "@mui/icons-material";
 
-const Header = ({ yearsData, nextYearIncluded, mission, handleChange }) => {
+const Header = ({
+  yearsData,
+  nextYearIncluded,
+  mission,
+  handleChange,
+  handleEdit,
+}) => {
   const { HEADER_TITLE, MISSION_LABEL } = AOP;
 
   return (
     <>
-      <Stack width={"100%"}>
+      <Stack width={"100%"} spacing={1}>
         <Box display="flex" alignItems="center" gap={1}>
           <Typography sx={{ color: "white", fontSize: 28, fontWeight: 600 }}>
             {HEADER_TITLE}
@@ -25,9 +33,32 @@ const Header = ({ yearsData, nextYearIncluded, mission, handleChange }) => {
             txtcolor="white"
           />
         </Box>
-        <Typography level="body-sm" sx={{ color: "white" }}>
-          {MISSION_LABEL}: {mission}
-        </Typography>
+        <Box display={"flex"} alignItems={"flex-end"}>
+          <Box width={"auto"}>
+            <Typography
+              level="body-sm"
+              sx={{ color: "white" }}
+              endDecorator={
+                <ButtonComponent
+                  size={"xs"}
+                  label={
+                    <Typography
+                      fontStyle={"italic"}
+                      sx={{ color: "white" }}
+                      fontSize={13}
+                    >
+                      Edit
+                    </Typography>
+                  }
+                  startDecorator={<Edit />}
+                  onClick={() => handleEdit()}
+                />
+              }
+            >
+              {MISSION_LABEL}: {mission}
+            </Typography>
+          </Box>
+        </Box>
       </Stack>
     </>
   );

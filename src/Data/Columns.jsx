@@ -1529,9 +1529,13 @@ export const itemRequestDetailsCols = (onUpdate, openModal) => [
 ];
 
 // helper to check lock
-export const isRowLockedByOther = (rowId, lockedRows, userId) =>
-  lockedRows?.[rowId]?.editorId !== undefined &&
-  lockedRows[rowId].editorId !== userId;
+export const isRowLockedByOther = (rowId, lockedRows, userId) => {
+  const key = String(rowId);
+  return (
+    lockedRows?.[key]?.editorId !== undefined &&
+    lockedRows[key].editorId !== userId
+  );
+};
 
 // Predefine render functions outside array to memoize
 const renderItem = (row) => (
@@ -1602,6 +1606,8 @@ export const PPMP_HEADERS = (
   status,
   editingRows,
   handleComments,
+  handleDeletePPMP,
+  handleEditToggle,
   lockedRows,
   userId,
 ) => [
@@ -1610,23 +1616,28 @@ export const PPMP_HEADERS = (
     label: "Item",
     width: status?.name === "draft" ? "300px" : "400px",
     render: renderItem,
+    expandTrigger: true,
   },
   {
     id: "category",
     label: "Classification & Category",
     width: status?.name === "draft" ? "150px" : "auto",
     render: renderCategory,
+    expandTrigger: true,
   },
   {
     id: "cost",
     label: "Total Cost & Individual Cost",
     width: status?.name === "draft" ? "200px" : "auto",
     render: renderCost,
+    expandTrigger: true,
   },
   {
     id: "procurement",
     label: "Mode of Procurement",
     align: "center",
+    expandTrigger: true,
+
     width: status?.name === "draft" ? "200px" : "auto",
     render: renderProcurement,
   },
@@ -1673,13 +1684,17 @@ export const PPMP_HEADERS = (
     label: "Actions",
     align: status?.name === "draft" ? "center" : "right",
     width: status?.name === "draft" ? "200px" : "auto",
-    render: (row, open, onToggle, handleEditToggle, handleDeletePPMP) => {
+    render: (row, { openRow }) => {
       const isEditing = editingRows[row.id];
-      const isLockedByOther = isRowLockedByOther(row.id, lockedRows, userId);
+      const lockedByOther =
+        lockedRows[row.id] && lockedRows[row.id].editorId !== id;
+      {
+        console.log("COLUMN disabled", row.id, lockedRows, userId);
+      }
 
       return (
         <Stack direction="row" spacing={1} justifyContent="center">
-          {console.log(lockedRows)}
+          {console.log("COLUMN lockedRows:", lockedRows)}
           {status?.name !== "draft" && (
             <ChipComponent
               label={row.comments_count}
@@ -1700,17 +1715,17 @@ export const PPMP_HEADERS = (
                   isEditing ? <CheckOutlined /> : <ModeEditOutlineOutlined />
                 }
                 color={isEditing ? "success" : "neutral"}
-                disabled={isLockedByOther}
+                disabled={lockedByOther}
                 onClick={(e) => {
                   e.stopPropagation();
-                  handleEditToggle(row.id, onToggle, isEditing);
+                  handleEditToggle(row.id, openRow, isEditing); // <--- toggle passed down
                 }}
               />
               <ChipComponent
                 label="Remove"
                 startDecorator={<DeleteOutlineOutlined />}
                 variant="soft"
-                disabled={isLockedByOther}
+                disabled={lockedByOther}
                 onClick={(e) => {
                   e.stopPropagation();
                   handleDeletePPMP(row.id);

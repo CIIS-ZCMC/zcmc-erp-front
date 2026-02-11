@@ -30,6 +30,10 @@ export default function ExpandableTable({
     setOpenId((prev) => (prev === id ? null : id));
   };
 
+  const openRow = (id) => {
+    setOpenId((prev) => (prev === id ? prev : id));
+  };
+
   const onRef = (id, node) => {
     if (node && !heights[id]) {
       const h = node.scrollHeight;
@@ -133,7 +137,9 @@ export default function ExpandableTable({
                           }}
                           onClick={() => col.expandTrigger && toggle(id)}
                         >
-                          {col.render ? col.render(row) : row[col.key]}
+                          {col.render
+                            ? col.render(row, { toggle, openRow, expanded })
+                            : row[col.key]}
                         </td>
                       ))}
                     </tr>
@@ -150,7 +156,7 @@ export default function ExpandableTable({
                             overflow: "hidden",
                             maxHeight: expanded ? heights[id] : 0,
                             opacity: expanded ? 1 : 0,
-                            padding: expanded ? "16px" : "0px", // <--- avoid spacing when closed
+                            padding: expanded ? "10px" : "0px", // <--- avoid spacing when closed
                             background: expanded && grey[100],
                             transition:
                               "max-height 0.35s ease, opacity 0.25s ease, padding 0.2s ease",

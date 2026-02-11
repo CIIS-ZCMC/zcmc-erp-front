@@ -1,10 +1,10 @@
 import { API } from "../../Data/constants";
 import { read, post, update } from "../../Services/RequestMethods";
 
-import { useAOPActions } from "../../Store/AOPStore";
+import { useAop, useAOPActions } from "../../Store/AOPStore";
 
 const useAOPHook = () => {
-  const { setAop, setYears, setAopCheckList } = useAOPActions();
+  const { setAop, setYears, setAopCheckList, setMission } = useAOPActions();
 
   const getAOP = async (callBack) => {
     try {
@@ -12,7 +12,7 @@ const useAOPHook = () => {
         url: API.AOP_APPLICATIONS,
         failed: callBack,
         success: (res) => {
-          console.log(res)
+          console.log(res);
           const {
             status,
             data: { data, message },
@@ -60,14 +60,15 @@ const useAOPHook = () => {
             data: { data, message },
           } = res;
           setAop(data);
-          callBack(status, message)
-        }
-      })
+          setMission(data.mission);
+          callBack(status, message);
+        },
+      });
     } catch (error) {
-      console.error('Error fetching application objectives:', error);
-      callBack?.(false, error.message)
+      console.error("Error fetching application objectives:", error);
+      callBack?.(false, error.message);
     }
-  }
+  };
 
   const getAopChecklist = async (params, callBack) => {
     try {
@@ -81,14 +82,14 @@ const useAOPHook = () => {
             data: { data, message },
           } = res;
           setAopCheckList(data);
-          callBack(status, message)
-        }
-      })
+          callBack(status, message);
+        },
+      });
     } catch (error) {
-      console.error('Error fetching application objectives:', error);
-      callBack?.(false, error.message)
+      console.error("Error fetching application objectives:", error);
+      callBack?.(false, error.message);
     }
-  }
+  };
 
   const createAOP = async (body, callBack) => {
     try {
@@ -118,15 +119,14 @@ const useAOPHook = () => {
         form: body,
         failed: callBack,
         success: async (res) => {
-
-          console.log(res)
+          console.log(res);
 
           const {
             status,
             data: { message, activities_without_resources },
           } = res;
 
-          console.log(activities_without_resources)
+          console.log(activities_without_resources);
 
           // if (status === 200) {
 
@@ -140,17 +140,38 @@ const useAOPHook = () => {
           // }
 
           callBack?.(status, message, activities_without_resources);
-
         },
-      })
-    }
-    catch (error) {
+      });
+    } catch (error) {
       console.error("Error Update Activity:", error);
       callBack(false, error.message);
     }
-  }
+  };
 
+  const updateMission = async (params, body, callBack) => {
+    try {
+      await update({
+        url: `${API.AOP_UPDATE_MISSION}/${params.id}`,
+        form: body,
+        failed: callBack,
+        success: async (res) => {
+          console.log(res);
 
+          const {
+            status,
+            data: { data, message },
+          } = res;
+
+          setMission(data.mission);
+
+          callBack(status, message);
+        },
+      });
+    } catch (error) {
+      console.error("Error Update Activity:", error);
+      callBack(false, error.message);
+    }
+  };
 
   return {
     getAOP,
@@ -159,6 +180,7 @@ const useAOPHook = () => {
     getAopChecklist,
     createAOP,
     updateAOP,
+    updateMission,
   };
 };
 

@@ -299,6 +299,7 @@ export const API = {
   AOP_CHECKLIST: "aop-checklist",
   AOP_YEAR_LIST: "aop-application-yearList ",
   AOP_UPDATE: "aop-application-update-status",
+  AOP_UPDATE_MISSION: "aop-application-mission",
 
   CONSOLIDATORS: "category-consolidators",
   UPDATE_CONSOLIDATOR: "update-consolidator",

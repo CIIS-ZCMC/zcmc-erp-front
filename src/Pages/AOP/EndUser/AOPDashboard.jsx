@@ -1,4 +1,4 @@
-import { Box, Button, Grid, Stack } from "@mui/joy";
+import { Box, Button, Grid, Stack, Typography } from "@mui/joy";
 
 import React, { Fragment, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
@@ -38,6 +38,9 @@ import {
   useComments,
   useRemarks,
 } from "../../../Hooks/CommentHook";
+import TextareaComponent from "@Components/Form/TextareaComponent";
+import useSnackbarHook from "../../../Hooks/SnackbarHook";
+import { Edit } from "@mui/icons-material";
 
 function DashboardEndUser(props) {
   const { header, description } = ANNUAL_OPS;
@@ -45,8 +48,10 @@ function DashboardEndUser(props) {
   const navigate = useNavigate();
 
   const { getObjectives } = useObjectivesHook();
-  const { createAOP, getAopBySectorAndYear, getAopYearList } = useAOPHook();
+  const { createAOP, getAopBySectorAndYear, getAopYearList, updateMission } =
+    useAOPHook();
   const { setAlertDialog, closeAlertDialog } = useModalHook();
+  const { showSnack } = useSnackbarHook();
 
   const { aop, mission, fiscalYear, yearDetails } = useAOPStore();
   const { setMission, clearMission } = useAOPActions();
@@ -56,6 +61,8 @@ function DashboardEndUser(props) {
   const [isLoading, setIsLoading] = useState(false);
   const [isAopLoading, setIsAopLoading] = useState(false);
   const [openFeedbackModal, setOpenFeedbackModal] = useState(false);
+  const [openEditModal, setOpenEditModal] = useState(false);
+  const [updateMissionValue, setUpdateMissionValue] = useState("");
 
   const {
     getCommentsByActivity,
@@ -95,6 +102,11 @@ function DashboardEndUser(props) {
     }, 2000);
   };
 
+  const handleOpenEdit = () => {
+    setOpenEditModal(true);
+    setUpdateMissionValue(mission);
+  };
+
   const handleSaveAOP = async () => {
     setIsLoading(true);
 
@@ -121,6 +133,47 @@ function DashboardEndUser(props) {
       });
     } catch (error) {
       console.error("Error creatinh aop:", error);
+      setAlertDialog({
+        status: "error",
+        title: "Unexpected Error",
+        description: error.message || "Something went wrong.",
+      });
+    }
+  };
+
+  const handleSaveMission = async () => {
+    if (!mission || mission.trim() === "") {
+      setAlertDialog({
+        status: "error",
+        title: "Mission cannot be empty",
+        description: "Please enter a valid mission statement",
+      });
+      return;
+    }
+
+    setIsLoading(true);
+
+    const body = {
+      mission: updateMissionValue,
+    };
+
+    try {
+      await updateMission({ id: aop.id }, body, (status, message) => {
+        if (status === 200) {
+          showSnack(200, message);
+          setIsLoading(false);
+          setOpenEditModal(false);
+        } else {
+          setIsLoading(false);
+          setAlertDialog({
+            status: "error",
+            title: message,
+            description: "Failed to update mission. Please try again.",
+          });
+        }
+      });
+    } catch (error) {
+      setIsLoading(false);
       setAlertDialog({
         status: "error",
         title: "Unexpected Error",
@@ -181,22 +234,6 @@ function DashboardEndUser(props) {
     });
   };
 
-  const handleViewFeedback = () => {
-    setIsLoading(true);
-    setOpenFeedbackModal(true);
-
-    const id = aop?.id;
-    if (!id) return;
-
-    // Fetch both comments + remarks, then stop loading when both are done
-    Promise.all([
-      new Promise((resolve) => getCommentsByApplication(id, resolve)),
-      new Promise((resolve) => getRemarksByApplication(id, resolve)),
-    ]).finally(() => {
-      setIsLoading(false);
-    });
-  };
-
   return (
     <Fragment>
       {isAopLoading ? (
@@ -233,15 +270,16 @@ function DashboardEndUser(props) {
               <Stack
                 direction={"row"}
                 justifyContent={"space-between"}
-                alignItems={"flex-start"}
-                gap={2}
+                alignItems={"center"}
+                spacing={1}
               >
                 {/* Header here */}
                 <Header
                   yearsData={years}
                   nextYearIncluded={next_year_included}
-                  mission={aop.mission}
+                  mission={mission}
                   handleChange={handleChangeFiscalYear}
+                  handleEdit={handleOpenEdit}
                 />
 
                 {/* {aop?.status?.id !== 4 && (
@@ -334,24 +372,48 @@ function DashboardEndUser(props) {
         <AOPEmpty setOpenFiscalYearModal={setOpenFiscalYearModal} />
       )}
 
-      <ModalComponent
-        isOpen={openFiscalYearModal}
-        handleClose={() => setOpenFiscalYearModal(false)}
-        title={header}
-        description={description}
-        content={
-          <FiscalYearModal
-            fiscalYear={fiscalYear}
-            value={mission}
-            onChange={(e) => setMission(e.target.value)}
-          />
-        }
-        hasActionButtons={true}
-        rightButtonLabel={"Save AOP"}
-        rightButtonAction={() => handleSaveAOP()}
-        maxWidth={500}
-        isLoading={isLoading}
-      />
+      {openFiscalYearModal && (
+        <ModalComponent
+          isOpen={openFiscalYearModal}
+          handleClose={() => setOpenFiscalYearModal(false)}
+          title={header}
+          description={description}
+          content={
+            <FiscalYearModal
+              fiscalYear={fiscalYear}
+              value={mission}
+              onChange={(e) => setMission(e.target.value)}
+            />
+          }
+          hasActionButtons={true}
+          rightButtonLabel={"Save AOP"}
+          rightButtonAction={() => handleSaveAOP()}
+          maxWidth={500}
+          isLoading={isLoading}
+        />
+      )}
+
+      {openEditModal && (
+        <ModalComponent
+          isOpen={openEditModal}
+          handleClose={() => setOpenEditModal(false)}
+          title={"Edit Mission"}
+          description={"Enter new or modify mission statement below"}
+          content={
+            <TextareaComponent
+              label={"Mission Statement"}
+              value={updateMissionValue}
+              onChange={(e) => setUpdateMissionValue(e.target.value)}
+            />
+          }
+          maxWidth={"512px"}
+          minWidth={"512px"}
+          rightButtonLabel="Save Changes"
+          rightButtonAction={() => handleSaveMission()}
+          hasActionButtons
+          isLoading={isLoading}
+        />
+      )}
 
       <AlertDialogComponent
         leftButtonAction={() => handleClose()}
