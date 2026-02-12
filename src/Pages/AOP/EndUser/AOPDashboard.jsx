@@ -165,7 +165,7 @@ function DashboardEndUser(props) {
   };
 
   const handleSaveMission = async () => {
-    if (!mission || mission.trim() === "") {
+    if (!updateMissionValue || updateMissionValue.trim() === "") {
       setAlertDialog({
         status: "error",
         title: "Mission cannot be empty",
