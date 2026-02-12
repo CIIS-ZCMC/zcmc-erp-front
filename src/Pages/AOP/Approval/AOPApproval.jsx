@@ -86,7 +86,7 @@ const AOPApproval = () => {
     getAOPApprovalTimeline(id, () => {});
     getAOPApplicationById(id, () => {
       setPageLoading(false);
-      navigate(`/aop-approval/objectives/${id}`);
+      navigate(`/approval/objectives/${id}`);
     });
 
     localStorageSetter("aop_application_id", id);

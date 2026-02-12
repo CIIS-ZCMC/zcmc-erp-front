@@ -8,7 +8,7 @@ import React, {
 } from "react";
 import PageTitle from "../../../Components/Common/PageTitle";
 import ButtonComponent from "../../../Components/Common/ButtonComponent";
-import { Stack, Typography, Snackbar, Alert, Box, Card } from "@mui/joy";
+import { Stack, Typography, Box, Card } from "@mui/joy";
 import { useLocation, useNavigate } from "react-router-dom";
 import usePPMPHook from "../../../Hooks/PPMP/PPMPHook";
 import useModalHook from "../../../Hooks/ModalHook";
@@ -107,54 +107,76 @@ function PPMPItems(props) {
   }, [openDrawer, selectedRow?.id]);
 
   useEffect(() => {
-    if (!ppmp_id) return;
+    if (!socket || !ppmp_id) return;
 
+    // Reset locks on PPMP change
+    setLockedRows({});
+
+    // Register with PPMP
     socket.emit("ppmp:join", { ppmpId: ppmp_id });
 
-    return () => {
-      socket.emit("ppmp:leave", { ppmpId: ppmp_id });
+    const handleReconnect = () => {
+      socket.emit("ppmp:join", { ppmpId: ppmp_id });
     };
-  }, [ppmp_id]);
 
-  useEffect(() => {
-    const handleLocked = ({ rowId, editorId, editorName }) => {
+    socket.on("connect", handleReconnect);
+
+    // 🔒 Add lock
+    const addLock = ({ rowId, editorId, editorName }) => {
       setLockedRows((prev) => ({
         ...prev,
         [rowId]: { editorId, editorName },
       }));
-
-      showSnack(
-        "warning",
-        `This row is currently being edited by ${editorName}.`,
-      );
     };
 
-    socket.on("ppmp:locked", handleLocked);
-
-    return () => {
-      socket.off("ppmp:locked", handleLocked);
-    };
-  }, [showSnack]);
-
-  useEffect(() => {
-    const handleUnload = () => {
-      Object.keys(editingRowsRef.current).forEach((rowId) => {
-        if (editingRowsRef.current[rowId]) {
-          socket.emit("ppmp:stop-edit", {
-            ppmpId: ppmp_id,
-            rowId,
-            userId: id,
-          });
-        }
+    // 🔓 Remove lock
+    const removeLock = ({ rowId }) => {
+      setLockedRows((prev) => {
+        const updated = { ...prev };
+        delete updated[rowId];
+        return updated;
       });
     };
 
-    window.addEventListener("beforeunload", handleUnload);
+    // 🔔 Someone started editing
+    const handleEditing = ({ rowId, editorName }) => {
+      showSnack(401, `${editorName} is editing Row #${rowId}`, "soft");
+    };
+
+    // 🔔 Someone stopped editing
+    const handleEditingStopped = ({ rowId }) => {
+      if (rowId) removeLock({ rowId });
+      showSnack(200, "Editing finished", "soft");
+    };
+
+    // 🚫 Lock rejection
+    const handleLocked = ({ rowId, editorId, editorName }) => {
+      addLock({ rowId, editorId, editorName });
+      showSnack(
+        401,
+        `Row #${rowId} is currently being edited by ${editorName}`,
+        "soft",
+      );
+    };
+
+    // Listeners
+    socket.on("ppmp:editing", handleEditing);
+    socket.on("ppmp:editing-stopped", handleEditingStopped);
+    socket.on("ppmp:lock", addLock);
+    socket.on("ppmp:unlock", removeLock);
+    socket.on("ppmp:locked", handleLocked);
 
     return () => {
-      window.removeEventListener("beforeunload", handleUnload);
+      socket.emit("ppmp:leave", { ppmpId: ppmp_id });
+
+      socket.off("connect", handleReconnect);
+      socket.off("ppmp:editing", handleEditing);
+      socket.off("ppmp:editing-stopped", handleEditingStopped);
+      socket.off("ppmp:lock", addLock);
+      socket.off("ppmp:unlock", removeLock);
+      socket.off("ppmp:locked", handleLocked);
     };
-  }, [ppmp_id, id]);
+  }, [socket, ppmp_id]);
 
   const handleEditToggle = (rowId, openRow, isSaveClick) => {
     const isEditing = editingRows[rowId];

@@ -41,6 +41,9 @@ import {
 import TextareaComponent from "@Components/Form/TextareaComponent";
 import useSnackbarHook from "../../../Hooks/SnackbarHook";
 import { Edit } from "@mui/icons-material";
+import usePPMPHook from "../../../Hooks/PPMP/PPMPHook";
+import Content from "../../../Pages/PPMP/EndUser/Modal/AddItemRequest/Content";
+import userErrorInputHook from "../../../Hooks/ErrorInputHook";
 
 function DashboardEndUser(props) {
   const { header, description } = ANNUAL_OPS;
@@ -56,6 +59,8 @@ function DashboardEndUser(props) {
   const { aop, mission, fiscalYear, yearDetails } = useAOPStore();
   const { setMission, clearMission } = useAOPActions();
   const { feedback } = useFeedbackStore();
+  const { itemRequestStore } = usePPMPHook();
+  const { setError, clearErrors } = userErrorInputHook();
 
   const [openFiscalYearModal, setOpenFiscalYearModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -63,6 +68,24 @@ function DashboardEndUser(props) {
   const [openFeedbackModal, setOpenFeedbackModal] = useState(false);
   const [openEditModal, setOpenEditModal] = useState(false);
   const [updateMissionValue, setUpdateMissionValue] = useState("");
+  const [openNewRequest, setOpenNewRequest] = useState(false);
+  const [buttonLoader, setButtonLoader] = useState(false);
+  const [step, setStep] = useState(1);
+  const [itemReq, setItemReq] = useState({
+    classification: null,
+    category: null,
+    item_name: "",
+    unit: null,
+    quantity: 0,
+    estimated_budget: "",
+    variant: null,
+    market_research: false,
+    specs: [
+      { id: 1, value: "" },
+      { id: 2, value: "" },
+    ],
+    pin: "",
+  });
 
   const {
     getCommentsByActivity,
@@ -178,6 +201,86 @@ function DashboardEndUser(props) {
         status: "error",
         title: "Unexpected Error",
         description: error.message || "Something went wrong.",
+      });
+    }
+  };
+
+  const handleNextStep = () => setStep((prev) => Math.min(prev + 1, 3));
+  const handlePreviousStep = () => setStep((prev) => Math.max(prev - 1, 1));
+
+  const submit = async () => {
+    clearErrors();
+    let hasError = false;
+
+    itemReq.specs.forEach((spec, index) => {
+      if (!spec.value.trim()) {
+        setError(
+          `specs[${index}]`,
+          true,
+          `Specification ${index + 1} is required.`,
+        );
+        hasError = true;
+      }
+    });
+    if (!itemReq?.pin?.trim()) {
+      setError("pin", true, "Authorization PIN is required.");
+      hasError = true;
+    }
+    console.log(hasError);
+    if (hasError) return;
+
+    try {
+      setButtonLoader(true);
+      const payload = {
+        name: itemReq.item_name || "",
+        estimated_budget: itemReq?.estimated_budget ?? 0,
+        item_unit_id: itemReq.unit?.id ?? null,
+        item_category_id: itemReq.category?.id ?? null,
+        item_classification_id: itemReq.classification?.id ?? null,
+        market_research: itemReq?.market_research, // boolean
+        specifications: itemReq?.specs?.map((spec) => ({
+          description: spec?.value ?? "",
+        })),
+        authorization_pin: itemReq?.pin ?? "",
+        terminology_category_id: itemReq?.variant?.id ?? null, // not required
+      };
+
+      await itemRequestStore(payload, (status, message, data) => {
+        const alertData = {
+          status: status === 201 ? "success" : "error",
+          title: "Request for new item successfully submitted.",
+          description: message,
+        };
+
+        setAlertDialog(alertData);
+
+        if (status === 201) {
+          setItemReq({
+            classification: null,
+            category: null,
+            item_name: "",
+            unit: null,
+            estimated_budget: "",
+            variant: null,
+            market_research: false,
+            specs: [
+              { id: 1, value: "" },
+              { id: 2, value: "" }, // initial two specs
+            ],
+            pin: "",
+          });
+          setButtonLoader(false);
+          setOpenNewRequest(false); // close modal
+          setStep(1); // reset to step 1 if using a stepper
+        }
+      });
+    } catch (error) {
+      console.log(error);
+      setButtonLoader(false);
+      setAlertDialog({
+        status: "error",
+        title: "Request Failed",
+        description: "An unexpected error occurred. Please try again.",
       });
     }
   };
@@ -369,7 +472,10 @@ function DashboardEndUser(props) {
         </Fragment>
       ) : (
         // aop empty state
-        <AOPEmpty setOpenFiscalYearModal={setOpenFiscalYearModal} />
+        <AOPEmpty
+          setOpenFiscalYearModal={setOpenFiscalYearModal}
+          setOpenNewRequest={setOpenNewRequest}
+        />
       )}
 
       {openFiscalYearModal && (
@@ -415,6 +521,41 @@ function DashboardEndUser(props) {
         />
       )}
 
+      {openNewRequest && (
+        <ModalComponent
+          isOpen={openNewRequest}
+          handleClose={() => setOpenNewRequest(false)}
+          title={step === 1 ? "General information" : "Specifications"}
+          description={
+            step === 1
+              ? "Fill in the item information to create it"
+              : "List down details for the item you want to cretae to specify it."
+          }
+          maxWidth={"500px"}
+          height={step === 1 ? "auto" : step === 2 ? "680px" : "650px"}
+          content={
+            <Content step={step} itemReq={itemReq} setItemReq={setItemReq} />
+          }
+          leftButtonLabel={step > 1 ? "Back to previous" : "Cancel"}
+          leftButtonAction={() => {
+            if (step > 1) {
+              handlePreviousStep();
+            } else {
+              setOpenNewRequest(false);
+            }
+          }}
+          rightButtonLabel={step < 2 ? "Next step" : "Confirm and save"}
+          rightButtonAction={() => {
+            if (step < 2) {
+              handleNextStep();
+            } else {
+              submit();
+            }
+          }}
+          isLoading={buttonLoader}
+          hasActionButtons
+        />
+      )}
       <AlertDialogComponent
         leftButtonAction={() => handleClose()}
         rightButtonAction={() => handleClose()}

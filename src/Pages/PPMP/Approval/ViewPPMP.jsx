@@ -156,7 +156,7 @@ function ViewPPMP() {
         items={[
           {
             label: "AOP",
-            to: `/aop-approval/objectives/${AOP_APPLICATION_ID}`,
+            to: `/approval/objectives/${AOP_APPLICATION_ID}`,
           },
           {
             label: "PPMP",

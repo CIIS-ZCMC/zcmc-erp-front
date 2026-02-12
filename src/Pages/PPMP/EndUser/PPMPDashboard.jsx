@@ -164,7 +164,7 @@ function PPMPDashboard(props) {
   const [year, setYear] = useState(nextYear);
 
   const [openViewItemRequest, setOpenItemRequest] = useState();
-  const [openNewRequest, setOpenNewRequest] = useState();
+  const [openNewRequest, setOpenNewRequest] = useState(false);
   const [step, setStep] = useState(1);
 
   const [selectedActivities, setSelectedActivities] = useState([]);
@@ -231,6 +231,8 @@ function PPMPDashboard(props) {
 
   const handleSubmit = async () => {
     try {
+      setButtonLoader(true);
+
       const payload = {
         status_id: 2,
         authorization_pin: pin,
@@ -241,7 +243,7 @@ function PPMPDashboard(props) {
         payload,
         (status, message, errors) => {
           if (status === 200) {
-            console.log("here");
+            setButtonLoader(false);
             setOpenSave(false);
             setPin("");
             setOpenSuccessDialog(true);
@@ -255,6 +257,7 @@ function PPMPDashboard(props) {
             );
             return;
           } else {
+            setButtonLoader(false);
             setAlertDialog({
               status: "error",
               title: "Submission Failed",
@@ -388,8 +391,6 @@ function PPMPDashboard(props) {
             pin: "",
           });
           setButtonLoader(false);
-          setActivity(null);
-          setSelectedActivities([]);
           setOpenNewRequest(false); // close modal
           setStep(1); // reset to step 1 if using a stepper
         }
@@ -968,6 +969,7 @@ function PPMPDashboard(props) {
           noRightButton={true}
           leftButtonLabel="Submit"
           leftButtonAction={() => handleSubmit()}
+          isLoading={buttonLoader}
         />
       )}
 

@@ -8,7 +8,7 @@ import no_result from "../../../assets/empty-state-icon-base.svg";
 
 import { AOP } from "../../../Data/constants";
 
-const AOPEmpty = ({ setOpenFiscalYearModal }) => {
+const AOPEmpty = ({ setOpenFiscalYearModal, setOpenNewRequest }) => {
   const {
     EMPTY_STATE_TITLE,
     EMPTY_STATE_SUBTITLE,
@@ -57,7 +57,11 @@ const AOPEmpty = ({ setOpenFiscalYearModal }) => {
           {EMPTY_STATE_DESCRIPTION}
         </Typography>
         <Stack direction="row" gap={1}>
-          <ButtonComponent label="Request new items" variant="outlined" />
+          <ButtonComponent
+            label="Request new items"
+            variant="outlined"
+            onClick={() => setOpenNewRequest(true)}
+          />
           <ButtonComponent
             label="Create New AOP"
             variant="solid"

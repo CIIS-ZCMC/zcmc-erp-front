@@ -23,7 +23,7 @@ const useNotificationsHook = create((set) => ({
       url: `notifications/employee-notifs/${id}`,
       failed: callback,
       success: (res) => {
-        // console.log(res.data.data);
+        console.log(res);
         set(() => ({ notifications: res.data.data }));
       },
     });
@@ -40,7 +40,7 @@ const useNotificationsHook = create((set) => ({
 
           set((state) => ({
             notifications: state.notifications.map((notif) =>
-              notif.id === id ? { ...notif, seen: 1 } : notif
+              notif.id === id ? { ...notif, seen: 1 } : notif,
             ),
           }));
         },
@@ -53,8 +53,7 @@ const useNotificationsHook = create((set) => ({
         url: `notifications/all-seen/${employeeProfileId}`,
         failed: callback,
         success: (res) => {
-          callback(200, res.data.data);
-
+          callback(200, res.data.message);
           set((state) => ({
             notifications: state.notifications.map((notif) => ({
               ...notif,
@@ -80,11 +79,11 @@ export const useNotificationActions = () =>
 export const useNotificationEvents = () => {
   const { socket } = useSocketStore();
   const addNotification = useNotificationsHook(
-    (state) => state.addNotification
+    (state) => state.addNotification,
   );
 
   const fetchNotifications = useNotificationsHook(
-    (state) => state.getNotifications
+    (state) => state.getNotifications,
   );
 
   const { user } = useAuth();
@@ -104,7 +103,28 @@ export const useNotificationEvents = () => {
     return () => {
       socket.off(`erp-notification-${user.id}`);
     };
-  }, [socket]);
+  }, [socket, user]);
+  // useEffect(() => {
+  //   if (!socket || !user) return;
+
+  //   // 1️⃣ Fetch existing notifications from DB
+  //   fetchNotifications(user.id);
+
+  //   // 2️⃣ Register this socket for real-time notifications
+  //   socket.emit("register-user", { userId: user.id });
+
+  //   // 3️⃣ Listen for ERP notifications
+  //   const handler = (notification) => {
+  //     addNotification(notification);
+  //     console.log("New ERP notification:", notification);
+  //   };
+
+  //   socket.on("erp-notification", handler);
+
+  //   return () => {
+  //     socket.off("erp-notification", handler);
+  //   };
+  // }, [socket, user]);
 };
 
 export const useUnseenCount = () => {

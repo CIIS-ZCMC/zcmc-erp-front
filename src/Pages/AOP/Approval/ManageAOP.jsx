@@ -131,7 +131,7 @@ export default function ManageAOP() {
             },
           ]}
           withArrowBack
-          onClickArrow={() => navigate("/aop-approval")}
+          onClickArrow={() => navigate("/approval")}
         />
         {/* CONTENT */}
         <Box
@@ -168,7 +168,7 @@ export default function ManageAOP() {
                   fullWidth={true}
                   variant={"soft"}
                   onClick={() =>
-                    navigate(`/aop-approval/view-ppmp/${AOP_APPLICATION_ID}`)
+                    navigate(`/approval/view-ppmp/${AOP_APPLICATION_ID}`)
                   }
                 />
               </ContainerComponent>

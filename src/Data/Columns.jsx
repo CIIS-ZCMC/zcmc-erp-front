@@ -1587,19 +1587,30 @@ const renderCost = (row) => (
 );
 
 const renderProcurement = (row) => (
-  <Chip
-    sx={{
-      color: "#7008E7",
-      bgcolor: "#DDD6FF",
-      alignItems: "center",
-      maxWidth: 200,
-      "& .MuiChip-label": { textOverflow: "ellipsis", whiteSpace: "nowrap" },
-    }}
-    size="md"
-    variant="soft"
-  >
-    {row?.procurement_mode?.name || "-"}
-  </Chip>
+  <>
+    {row?.procurement_mode?.name ? (
+      <Chip
+        sx={{
+          color: "#7008E7",
+          bgcolor: "#DDD6FF",
+          alignItems: "center",
+          maxWidth: 200,
+          "& .MuiChip-label": {
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+          },
+        }}
+        size="md"
+        variant="soft"
+      >
+        {row?.procurement_mode?.name}
+      </Chip>
+    ) : (
+      <Typography color="danger" sx={{ fontSize: 12 }}>
+        No Mode of Procurement yet.
+      </Typography>
+    )}
+  </>
 );
 
 export const PPMP_HEADERS = (
@@ -1687,14 +1698,9 @@ export const PPMP_HEADERS = (
     render: (row, { openRow }) => {
       const isEditing = editingRows[row.id];
       const lockedByOther =
-        lockedRows[row.id] && lockedRows[row.id].editorId !== id;
-      {
-        console.log("COLUMN disabled", row.id, lockedRows, userId);
-      }
-
+        lockedRows[row.id] && lockedRows[row.id].editorId !== userId;
       return (
         <Stack direction="row" spacing={1} justifyContent="center">
-          {console.log("COLUMN lockedRows:", lockedRows)}
           {status?.name !== "draft" && (
             <ChipComponent
               label={row.comments_count}

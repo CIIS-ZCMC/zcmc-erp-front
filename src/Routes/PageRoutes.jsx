@@ -127,7 +127,7 @@ export const sidebarRoutes = [
     ],
     children: [
       {
-        path: "/aop-approval",
+        path: "/approval",
         name: "AOP and PPMP Management",
         childPermissions: ["ERP-AOP-MAN:approve", "ERP-PPMP-MAN:approve"],
         children: [
