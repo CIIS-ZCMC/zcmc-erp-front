@@ -22,7 +22,7 @@ const Content = ({ sidebarWidth }) => {
     if (route.permissions && route.permissions[0] === "*") return true; // No abilities means it's always accessible
 
     const hasPermission = route.permissions.some((permission) =>
-      permissions.includes(permission)
+      permissions.includes(permission),
     );
 
     return hasPermission;
@@ -64,7 +64,7 @@ const Content = ({ sidebarWidth }) => {
           />
         ) : (
           <SimpleMenuItem key={index} {...item} isCollapsed={isCollapsed} />
-        )
+        ),
       )}
     </Stack>
   );
