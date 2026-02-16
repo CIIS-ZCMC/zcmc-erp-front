@@ -1,21 +1,24 @@
-import { API } from "../Data/constants";
-import { read, post, update, remove } from "../Services/RequestMethods";
+import { API } from "../../Data/constants";
+import { read, post, update, remove } from "../../Services/RequestMethods";
 
 import {
   useApplicationObjectives,
+  useObjectiveByType,
   useObjectivesActions,
-} from "../Store/ObjectivesStore";
-import { useFeedbackStoreActions } from "../Store/FeedbackStore";
+} from "../../Store/ObjectivesStore";
+import { useFeedbackStoreActions } from "../../Store/FeedbackStore";
 // import { GetUserObjectives } from "@Services/ObjectiveServices";
 
 const useObjectivesHook = () => {
   const applicationObjectives = useApplicationObjectives();
+  const objectiveByType = useObjectiveByType();
 
   const {
     setApplicationObjectives,
     setApplicationObjective,
     setAopApplication,
     setIsLoading,
+    setObjectiveByType,
   } = useObjectivesActions();
   const { setFeedback } = useFeedbackStoreActions();
 
@@ -37,6 +40,28 @@ const useObjectivesHook = () => {
             application_timelines: data?.data || [],
           };
           setFeedback(transformedData); // get the objectives data and set to feedback so we can access the comments and remarks data
+          callBack(status, message);
+        },
+      });
+    } catch (error) {
+      console.error("Error fetching application objectives:", error);
+      callBack?.(false, error.message);
+    }
+  };
+
+  const getObjectivesByFunctionType = async (id, callBack) => {
+    try {
+      await read({
+        url: `${API.OBJECTIVE_BY_FUNCTION_TYPE}`,
+        params: { type_id: id },
+        failed: callBack,
+        success: (res) => {
+          const {
+            status,
+            data: { data, message },
+          } = res;
+          // Transform data structure: flatten comments from objectives
+          setObjectiveByType(data);
           callBack(status, message);
         },
       });
@@ -117,7 +142,7 @@ const useObjectivesHook = () => {
         },
       });
     } catch (error) {
-      console.error("Error Creatin Objective:", error);
+      console.error("Error Creating Objective:", error);
       setIsLoading(false);
       callBack(false, error.message);
     }
@@ -181,6 +206,7 @@ const useObjectivesHook = () => {
   return {
     getObjectives,
     getObjectivesBySector,
+    getObjectivesByFunctionType,
     showObjective,
     createObjective,
     updateObjective,

@@ -1700,7 +1700,11 @@ export const PPMP_HEADERS = (
       const lockedByOther =
         lockedRows[row.id] && lockedRows[row.id].editorId !== userId;
       return (
-        <Stack direction="row" spacing={1} justifyContent="center">
+        <Stack
+          direction="row"
+          spacing={1}
+          justifyContent={status?.name !== "draft" ? "right" : "center"}
+        >
           {status?.name !== "draft" && (
             <ChipComponent
               label={row.comments_count}

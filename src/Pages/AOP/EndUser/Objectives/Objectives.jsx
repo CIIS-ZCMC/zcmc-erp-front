@@ -35,7 +35,7 @@ import {
   useIsLoading,
 } from "../../../../Store/ObjectivesStore";
 
-import useObjectivesHook from "../../../../Hooks/ObjectivesHook";
+import useObjectivesHook from "../../../../Hooks/AOP/ObjectivesHook";
 import PageTitle from "@Components/Common/PageTitle";
 import useAOPBreadcrumbs from "../../../../Hooks/AOP/AOPBreadcrumbs";
 import { CheckCircle } from "@mui/icons-material";
@@ -565,35 +565,37 @@ const Objectives = () => {
       )}
 
       {/* edit and add objectives modal */}
-      <ModalComponent
-        isOpen={isOpenObjectivesModal}
-        handleClose={handleCloseModal}
-        title={
-          isEditMode
-            ? EDIT_OBJECTIVE + " #" + selectedObjectiveId
-            : ADD_OBJECTIVE
-        }
-        description={ADD_OBJECTIVE_SUBHEADING}
-        maxWidth={500}
-        minWidth={500}
-        content={
-          <ObjectivesModal
-            isEditMode={isEditMode}
-            functionType={functionType}
-            objective={objective}
-            successIndicator={successIndicator}
-            otherObjective={otherObjective}
-            otherSuccessIndicator={otherSuccessIndicator}
-            applicationObjective={applicationObjective}
-          />
-        }
-        hasActionButtons={true}
-        rightButtonLabel={`${isEditMode ? "Update" : "Save"} Objective`}
-        rightButtonAction={() =>
-          isEditMode ? handleUpdateObjectives() : handleSaveObjectives()
-        }
-        isLoading={isLoading}
-      />
+      {isOpenObjectivesModal && (
+        <ModalComponent
+          isOpen={isOpenObjectivesModal}
+          handleClose={handleCloseModal}
+          title={
+            isEditMode
+              ? EDIT_OBJECTIVE + " #" + selectedObjectiveId
+              : ADD_OBJECTIVE
+          }
+          description={ADD_OBJECTIVE_SUBHEADING}
+          maxWidth={500}
+          minWidth={500}
+          content={
+            <ObjectivesModal
+              isEditMode={isEditMode}
+              functionType={functionType}
+              objective={objective}
+              successIndicator={successIndicator}
+              otherObjective={otherObjective}
+              otherSuccessIndicator={otherSuccessIndicator}
+              applicationObjective={applicationObjective}
+            />
+          }
+          hasActionButtons={true}
+          rightButtonLabel={`${isEditMode ? "Update" : "Save"} Objective`}
+          rightButtonAction={() =>
+            isEditMode ? handleUpdateObjectives() : handleSaveObjectives()
+          }
+          isLoading={isLoading}
+        />
+      )}
 
       {/* Delete Objectives Modal */}
       {openDeleteModal && (

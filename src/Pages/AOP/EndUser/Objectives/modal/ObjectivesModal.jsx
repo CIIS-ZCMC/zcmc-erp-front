@@ -11,9 +11,13 @@ import FunctionTypeHook from "../../../../../Hooks/FunctionTypeHook";
 
 // Store
 import { useFunctionTypes } from "../../../../../Store/functionTypesStore";
-import { useObjectivesActions } from "../../../../../Store/ObjectivesStore";
+import {
+  useObjectiveByType,
+  useObjectivesActions,
+} from "../../../../../Store/ObjectivesStore";
 
 import { OBJECTIVES } from "../../../../../Data/constants";
+import useObjectivesHook from "../../../../../Hooks/AOP/ObjectivesHook";
 
 const ObjectivesModal = ({
   functionType,
@@ -26,6 +30,7 @@ const ObjectivesModal = ({
   const { OBJECTIVE_ALERT } = OBJECTIVES;
 
   const function_types = useFunctionTypes();
+  const objectiveByType = useObjectiveByType();
 
   const {
     setFunctionType,
@@ -36,13 +41,14 @@ const ObjectivesModal = ({
   } = useObjectivesActions();
 
   const { getFunctionType } = FunctionTypeHook();
+  const { getObjectivesByFunctionType } = useObjectivesHook();
 
   // useEffect(() => {
   // }, [function_types, applicationObjective, otherSuccessIndicator])
 
   useEffect(() => {
     // setIsLoading(true);
-    const params = { with_sub_data: 1 };
+    const params = {};
 
     getFunctionType(params, (status, message) => {
       if (!(status >= 200 && status < 300)) {
@@ -83,6 +89,18 @@ const ObjectivesModal = ({
     }
   }, [applicationObjective]);
 
+  useEffect(() => {
+    if (functionType) {
+      getObjectivesByFunctionType(functionType?.id, (status, message) => {
+        if (!(status >= 200 && status < 300)) {
+          // if status not success
+          return; //Toast error
+        }
+        // setIsLoading(false);
+      });
+    }
+  }, [functionType]);
+
   // useEffect(() => {
   //   console.log(functionType)
   // }, [functionType])
@@ -102,6 +120,7 @@ const ObjectivesModal = ({
             setOtherSuccessIndicator(null);
           }}
           options={function_types}
+          getOptionLabel={(opt) => opt?.type || ""}
         />
 
         <AutocompleteComponent
@@ -115,7 +134,8 @@ const ObjectivesModal = ({
             setSuccessIndicator(null);
             setOtherSuccessIndicator(null);
           }}
-          options={functionType?.objectives ?? []}
+          options={objectiveByType}
+          getOptionLabel={(opt) => opt?.description || ""}
           width="100%"
         />
 

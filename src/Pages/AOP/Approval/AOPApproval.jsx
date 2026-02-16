@@ -27,7 +27,7 @@ import {
   useApprovalTimeline,
 } from "../../../Hooks/AOP/AOPApprovalHook";
 
-import useObjectivesHook from "../../../Hooks/ObjectivesHook";
+import useObjectivesHook from "../../../Hooks/AOP/ObjectivesHook";
 import useTimelineHook from "../../../Hooks/AOP/TimelineHook";
 import useTimelinesStore from "../../../Store/TimelinesStore";
 

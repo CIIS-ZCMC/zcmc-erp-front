@@ -16,7 +16,7 @@ import { FeedbackContent } from "../Approval/Contents/FeedbackContent";
 
 import useAOPHook from "../../../Hooks/AOP/AOPHook";
 import useModalHook from "../../../Hooks/ModalHook";
-import useObjectivesHook from "../../../Hooks/ObjectivesHook";
+import useObjectivesHook from "../../../Hooks/AOP/ObjectivesHook";
 
 import useObjectivesStore from "../../../Store/ObjectivesStore";
 import useAOPStore, { useAOPActions } from "../../../Store/AOPStore";

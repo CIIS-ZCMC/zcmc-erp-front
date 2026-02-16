@@ -310,6 +310,7 @@ export const API = {
   OBJECTIVE_EDIT: "edit-application-objectives",
   OBJECTIVE_DELETE: "delete-application-objectives",
   OBJECTIVE_SHOW: "show-application-objective",
+  OBJECTIVE_BY_FUNCTION_TYPE: "choose-objective",
 
   ACTIVITIES: "activities",
   ACTIVITIES_STORE: "activities-store",
