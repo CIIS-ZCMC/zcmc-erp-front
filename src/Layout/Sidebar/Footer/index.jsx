@@ -21,6 +21,8 @@ import ConfirmationModalComponent from "../../../Components/Common/Dialog/Confir
 import { useAuth } from "../../../Store/AuthStore";
 
 import useAOPStore, { useAOPActions } from "../../../Store/AOPStore";
+import useCartStore from "../../../Hooks/ItemCartHook";
+import { useActivityActions } from "../../../Hooks/AOP/ActivityHook";
 
 const Footer = () => {
   const { resetAll } = useAOPActions();
@@ -28,9 +30,14 @@ const Footer = () => {
   const { isCollapsed } = useSidebarHook();
   const { setConfirmationModal, closeConfirmation } = useModalHook();
   const { user } = useAuth();
-  const profile_url = user?.profile_url || null;
   const theme = useTheme();
+  const { clearActivityStore } = useActivityActions();
+
+  const cartStore = useCartStore(user?.id || "guest");
+  const { clearCart } = cartStore();
+  const profile_url = user?.profile_url || null;
   const color = theme.palette.custom;
+
   const [logOut, setLogOut] = useState(false);
 
   const handleOpen = () => {
@@ -47,11 +54,15 @@ const Footer = () => {
 
     resetAll(); //reset the memory state
     useAOPStore.persist.clearStorage(); //zustand clear persisted state;
-
+    clearCart();
+    clearActivityStore();
     localStorage.removeItem("aop-storage");
     localStorage.removeItem("aopApplication");
     localStorage.removeItem("aopApplicationObjectives");
     localStorage.removeItem("aop_application_area_code");
+    localStorage.removeItem("aop-ids");
+    localStorage.removeItem("aop-storage");
+    localStorage.removeItem("aop_application_id");
     window.location.href = BASE_URL.umis_landing_page;
   };
 

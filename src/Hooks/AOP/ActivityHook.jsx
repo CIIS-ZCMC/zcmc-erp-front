@@ -74,6 +74,19 @@ const useActivityHook = create(
             },
           });
         },
+
+        // ---------------------------------------------------
+        // CLEAR ACTIVITY STORE
+        // ---------------------------------------------------
+        clearActivityStore: () => {
+          set({
+            activity: null,
+            resources: [],
+            activityStates: { objectiveNumber: 1, activityNumber: 1 },
+            UIStates: { activeActivity: null },
+            isLoading: false,
+          });
+        },
       },
     }),
     {
@@ -81,8 +94,8 @@ const useActivityHook = create(
       partialize: (state) => ({
         UIStates: { activeActivity: state.UIStates.activeActivity },
       }), // only persist UIStates.activeActivity, not actions
-    }
-  )
+    },
+  ),
 );
 
 export const useActivity = () => useActivityHook((state) => state.activity);
