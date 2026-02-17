@@ -5,6 +5,7 @@ const useObjectivesStore = create((set, get) => ({
   isLoading: false,
   aopApplication: {},
   objectiveByType: [],
+  successIndicatorByObjective: [],
 
   applicationObjectives: [], //application objectives
   applicationObjective: null, //single application objective
@@ -20,7 +21,10 @@ const useObjectivesStore = create((set, get) => ({
     setObjectives: (objectives) => set({ objectives }),
     setIsLoading: (isLoading) => set({ isLoading }),
     setAopApplication: (aopApplication) => set({ aopApplication }),
+
     setObjectiveByType: (objectiveByType) => set({ objectiveByType }),
+    setSuccessIndicatorByObjective: (successIndicatorByObjective) =>
+      set({ successIndicatorByObjective }),
 
     setApplicationObjectives: (applicationObjectives) =>
       set({ applicationObjectives }),
@@ -35,19 +39,18 @@ const useObjectivesStore = create((set, get) => ({
     setOtherSuccessIndicator: (otherSuccessIndicator) =>
       set({ otherSuccessIndicator }),
 
-    // clear individual fields
-    clearFunctionType: () => set({ functionType: "" }),
-    clearObjective: () => set({ objective: "" }),
-    clearSuccessIndicator: () => set({ successIndicator: "" }),
+    clearFields: () =>
+      set({
+        functionType: null,
+        objective: null,
+        successIndicator: null,
 
-    //clear all fields
-    clearFields: () => {
-      const { clearFunctionType, clearObjective, clearSuccessIndicator } =
-        get().actions;
-      clearFunctionType();
-      clearObjective();
-      clearSuccessIndicator();
-    },
+        objectiveByType: [],
+        successIndicatorByObjective: [],
+
+        otherObjective: null,
+        otherSuccessIndicator: null,
+      }),
   },
 }));
 
@@ -79,3 +82,5 @@ export const useObjectivesActions = () =>
   useObjectivesStore((state) => state.actions);
 export const useObjectiveByType = () =>
   useObjectivesStore((state) => state.objectiveByType);
+export const useSuccessIndicatorByObjective = () =>
+  useObjectivesStore((state) => state.successIndicatorByObjective);

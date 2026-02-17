@@ -34,7 +34,7 @@ export const OBJECTIVES = {
   OBJECTIVES_SUBHEADING:
     "This is a subheading. It should add more context to the interaction.",
   ADD_OBJECTIVE: "Add an objective",
-  EDIT_OBJECTIVE: "Edit objective",
+  EDIT_OBJECTIVE: "Edit Objective",
   ADD_OBJECTIVE_SUBHEADING: "Add details to give context to the objective",
   OBJECTIVE_ALERT:
     "After this, you will have to make activities for this objective through manage objectives",
@@ -311,6 +311,7 @@ export const API = {
   OBJECTIVE_DELETE: "delete-application-objectives",
   OBJECTIVE_SHOW: "show-application-objective",
   OBJECTIVE_BY_FUNCTION_TYPE: "choose-objective",
+  SUCCESS_INDICATOR_BY_OBJECTIVE: "choose-success-indicator",
 
   ACTIVITIES: "activities",
   ACTIVITIES_STORE: "activities-store",

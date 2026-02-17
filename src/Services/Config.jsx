@@ -20,7 +20,7 @@ export const BASE_URL = {
   development: "http://localhost:8000/api", // You can change the port or ip here
   socket_development: "http://localhost:3025/",
   test_landing_page: "http://192.168.36.163:5173/",
-  umis_landing_page: "http://192.168.36.150/",
+  umis_landing_page: "http://192.168.36.162:8001/",
 };
 
 export const TEST_MODE = false;

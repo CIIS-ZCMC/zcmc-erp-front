@@ -14,12 +14,15 @@ import { useFunctionTypes } from "../../../../../Store/functionTypesStore";
 import {
   useObjectiveByType,
   useObjectivesActions,
+  useSuccessIndicatorByObjective,
 } from "../../../../../Store/ObjectivesStore";
 
 import { OBJECTIVES } from "../../../../../Data/constants";
 import useObjectivesHook from "../../../../../Hooks/AOP/ObjectivesHook";
+import { ThreeDotsLoader } from "@Components/Common/Loading/ThreeDotsLoader";
 
 const ObjectivesModal = ({
+  isLoading,
   functionType,
   objective,
   successIndicator,
@@ -31,6 +34,7 @@ const ObjectivesModal = ({
 
   const function_types = useFunctionTypes();
   const objectiveByType = useObjectiveByType();
+  const successIndicatorByObjective = useSuccessIndicatorByObjective();
 
   const {
     setFunctionType,
@@ -41,7 +45,8 @@ const ObjectivesModal = ({
   } = useObjectivesActions();
 
   const { getFunctionType } = FunctionTypeHook();
-  const { getObjectivesByFunctionType } = useObjectivesHook();
+  const { getObjectivesByFunctionType, getSuccessIndicatorsByObjective } =
+    useObjectivesHook();
 
   // useEffect(() => {
   // }, [function_types, applicationObjective, otherSuccessIndicator])
@@ -60,36 +65,6 @@ const ObjectivesModal = ({
   }, []);
 
   useEffect(() => {
-    if (applicationObjective) {
-      setFunctionType(applicationObjective);
-
-      const selectedObjectiveId = applicationObjective?.selected_objective?.id;
-      const selectedObjective = applicationObjective?.objectives?.filter(
-        ({ id }) => id === selectedObjectiveId,
-      );
-      setObjective(selectedObjective?.[0] || null);
-      // setOtherObjective(selectedObjective?.[0]?.code || null)
-
-      const selectedSuccessIndicatorId =
-        applicationObjective?.selected_success_indicator?.id;
-      const selectedSuccessIndicator = selectedObjective.flatMap(
-        ({ success_indicators }) =>
-          success_indicators.filter(
-            ({ id }) => id === selectedSuccessIndicatorId,
-          ),
-      );
-
-      setSuccessIndicator(selectedSuccessIndicator?.[0] || null);
-      setOtherSuccessIndicator(selectedSuccessIndicator?.[0]?.name || null);
-
-      // console.log('application success indicator id', applicationObjective.selected_success_indicator.id)
-      // console.log('selected success indicator id', selectedSuccessIndicatorId)
-      console.log(selectedObjective);
-      // console.log('success indicator', selectedSuccessIndicator)
-    }
-  }, [applicationObjective]);
-
-  useEffect(() => {
     if (functionType) {
       getObjectivesByFunctionType(functionType?.id, (status, message) => {
         if (!(status >= 200 && status < 300)) {
@@ -100,6 +75,18 @@ const ObjectivesModal = ({
       });
     }
   }, [functionType]);
+
+  useEffect(() => {
+    if (objective) {
+      getSuccessIndicatorsByObjective(objective?.id, (status, message) => {
+        if (!(status >= 200 && status < 300)) {
+          // if status not success
+          return; //Toast error
+        }
+        // setIsLoading(false);
+      });
+    }
+  }, [objective]);
 
   // useEffect(() => {
   //   console.log(functionType)
@@ -141,16 +128,14 @@ const ObjectivesModal = ({
 
         {/* 31, 87, 55*/}
 
-        <Stack width={"100%"}>
+        <Stack width={"100%"} sx={{ display: objective ? "block" : "none" }}>
           <Typography level="body-xs">Description:</Typography>
           <Typography level="body-xs" fontWeight={600}>
-            {objective?.label}
+            {objective?.description}
           </Typography>
         </Stack>
 
-        {objective?.id === 31 ||
-        objective?.id === 55 ||
-        objective?.id === 87 ? (
+        {objective?.is_other ? (
           <>
             <TextareaComponent
               label={"Other objective"}
@@ -176,10 +161,11 @@ const ObjectivesModal = ({
               setValue={(val) => {
                 setSuccessIndicator(val);
               }}
-              options={objective?.success_indicators ?? []}
+              options={successIndicatorByObjective}
+              getOptionLabel={(opt) => opt?.description || ""}
             />
 
-            <Stack>
+            <Stack sx={{ display: objective ? "block" : "none" }}>
               <Typography level="body-xs">Description:</Typography>
               <Typography level="body-xs" fontWeight={600}>
                 {successIndicator?.description}

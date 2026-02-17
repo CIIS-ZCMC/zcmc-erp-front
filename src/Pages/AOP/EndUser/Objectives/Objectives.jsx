@@ -136,8 +136,6 @@ const Objectives = () => {
   }, [search, applicationObjectives]);
 
   const handleSaveObjectives = async () => {
-    // setIsLoading(true);
-
     const payload = {
       aop_application_id: aopId,
       objective_id: objective?.id,
@@ -150,20 +148,14 @@ const Objectives = () => {
       await createObjective(payload, (status, message) => {
         if (status === 201) {
           showSnack(200, message);
-          // setAlertDialog({
-          //   status: "success",
-          //   title: `${message}`,
-          //   description: "",
-          // });
-          // setIsLoading(false);
           handleCloseModal();
+          clearFields();
         } else {
           setAlertDialog({
             status: "error",
             title: "Duplicate Entry",
             description: message,
           });
-          // setIsLoading(false);
           console.error(" Failed to create objectives:", message);
         }
       });
@@ -178,8 +170,6 @@ const Objectives = () => {
   };
 
   const handleUpdateObjectives = async () => {
-    // setIsLoading(true);
-
     const payload = {
       objective_id: objective?.id,
       success_indicator_id: successIndicator?.id,
@@ -199,20 +189,14 @@ const Objectives = () => {
           });
 
           showSnack(200, message);
-          // setAlertDialog({
-          //   status: "success",
-          //   title: `${message}`,
-          //   description: "",
-          // });
-          // setIsLoading(false);
           handleCloseModal();
+          clearFields();
         } else {
           setAlertDialog({
             status: "error",
             title: message,
             description: "Please try again later",
           });
-          // setIsLoading(false);
           console.error(" Failed to update objectives:", message);
         }
       });
@@ -227,7 +211,6 @@ const Objectives = () => {
   };
 
   const handleOpenEditModal = async (objectiveId) => {
-    // setIsLoading(true)
     setSelectedObjectiveId(objectiveId);
 
     const params = { id: objectiveId };
@@ -237,11 +220,11 @@ const Objectives = () => {
         // if status not success
         return; //Toast error
       }
-      // setIsLoading(false);
     });
-
-    setIsEditMode(true);
-    setIsOpenObjectivesModal(true);
+    if (!isLoading) {
+      setIsEditMode(true);
+      setIsOpenObjectivesModal(true);
+    }
   };
 
   const handleConfirmDelete = async () => {
@@ -579,6 +562,7 @@ const Objectives = () => {
           minWidth={500}
           content={
             <ObjectivesModal
+              isLoading={isLoading}
               isEditMode={isEditMode}
               functionType={functionType}
               objective={objective}

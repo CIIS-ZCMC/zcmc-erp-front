@@ -16,9 +16,15 @@ const useObjectivesHook = () => {
   const {
     setApplicationObjectives,
     setApplicationObjective,
+    setFunctionType,
+    setObjective,
+    setSuccessIndicator,
+    setOtherObjective,
+    setOtherSuccessIndicator,
     setAopApplication,
     setIsLoading,
     setObjectiveByType,
+    setSuccessIndicatorByObjective,
   } = useObjectivesActions();
   const { setFeedback } = useFeedbackStoreActions();
 
@@ -48,11 +54,11 @@ const useObjectivesHook = () => {
       callBack?.(false, error.message);
     }
   };
-
   const getObjectivesByFunctionType = async (id, callBack) => {
+    setIsLoading(true);
     try {
       await read({
-        url: `${API.OBJECTIVE_BY_FUNCTION_TYPE}`,
+        url: API.OBJECTIVE_BY_FUNCTION_TYPE,
         params: { type_id: id },
         failed: callBack,
         success: (res) => {
@@ -60,14 +66,41 @@ const useObjectivesHook = () => {
             status,
             data: { data, message },
           } = res;
-          // Transform data structure: flatten comments from objectives
+
           setObjectiveByType(data);
-          callBack(status, message);
+          callBack?.(status, message);
         },
       });
     } catch (error) {
-      console.error("Error fetching application objectives:", error);
+      console.error("Error fetching objectives by function type:", error);
       callBack?.(false, error.message);
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  const getSuccessIndicatorsByObjective = async (id, callBack) => {
+    setIsLoading(true);
+    try {
+      await read({
+        url: API.SUCCESS_INDICATOR_BY_OBJECTIVE,
+        params: { objective_id: id },
+        failed: callBack,
+        success: (res) => {
+          const {
+            status,
+            data: { data, message },
+          } = res;
+
+          setSuccessIndicatorByObjective(data);
+          callBack?.(status, message);
+        },
+      });
+    } catch (error) {
+      console.error("Error fetching success indicators:", error);
+      callBack?.(false, error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -78,27 +111,29 @@ const useObjectivesHook = () => {
         url: API.OBJECTIVE_BY_SECTOR,
         failed: callBack,
         success: (res) => {
-          // console.log(res)
-
           const {
+            status,
             data: { data, message },
           } = res;
+
           const { aop_application, application_objectives } = data;
-          // console.log(application_objectives)
-          // setApplicationObjectives(Array.isArray(data) ? data : []);
-          setIsLoading(false);
+
           setAopApplication(aop_application);
           setApplicationObjectives(application_objectives);
-          callBack(status, message);
+
+          callBack?.(status, message);
         },
       });
     } catch (error) {
       console.error("Error fetching application objectives:", error);
       callBack?.(false, error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
 
   const showObjective = async (params, callBack) => {
+    setIsLoading(true);
     try {
       await read({
         url: `${API.OBJECTIVE_SHOW}/${params.id}`,
@@ -108,43 +143,56 @@ const useObjectivesHook = () => {
             status,
             data: { data, message },
           } = res;
+
           setApplicationObjective(data);
-          callBack(status, message);
+          setFunctionType(data?.type || null);
+          setObjective(data?.selected_objective || null);
+          setSuccessIndicator(data?.selected_success_indicator || null);
+          setOtherObjective(
+            data?.custom_objective_details?.custom_objective_description ||
+              null,
+          );
+          setOtherSuccessIndicator(
+            data?.custom_success_indicator_details
+              ?.custom_success_indicator_description || null,
+          );
+
+          callBack?.(status, message);
         },
       });
     } catch (error) {
-      console.error("Error fetching application objectives:", error);
+      console.error("Error fetching objective:", error);
       callBack?.(false, error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
-
   const createObjective = async (body, callBack) => {
     setIsLoading(true);
     try {
       await post({
         url: API.OBJECTIVE_STORE,
         form: body,
-        failed: (res, message) => {
-          console.log(message);
-          setIsLoading(false);
-          callBack?.(res, message);
-        },
         success: async (res) => {
           const {
             status,
-            data: { data, message },
+            data: { message },
           } = res;
           if (status === 201) {
-            getObjectivesBySector();
-            setIsLoading(false);
+            await getObjectivesBySector(); // refresh list
           }
           callBack?.(status, message);
         },
+        failed: (res, message) => {
+          console.error("Failed to create objective:", message);
+          callBack?.(res, message);
+        },
       });
     } catch (error) {
-      console.error("Error Creating Objective:", error);
+      console.error("Error creating objective:", error);
+      callBack?.(false, error.message);
+    } finally {
       setIsLoading(false);
-      callBack(false, error.message);
     }
   };
 
@@ -154,22 +202,27 @@ const useObjectivesHook = () => {
       await update({
         url: `${API.OBJECTIVE_EDIT}/${params.id}`,
         form: body,
-        failed: callBack,
         success: async (res) => {
           const {
             status,
             data: { message },
           } = res;
           if (status === 200) {
-            getObjectivesBySector();
-            setIsLoading(false);
+            await getObjectivesBySector(); // refresh data
           }
           callBack?.(status, message);
         },
+        failed: (res, message) => {
+          console.error("Failed to update objective:", message);
+          callBack?.(res, message);
+          // no need to setIsLoading here because finally handles it
+        },
       });
     } catch (error) {
-      console.error("Error Creatin Objective:", error);
-      callBack(false, error.message);
+      console.error("Error updating objective:", error);
+      callBack?.(false, error.message);
+    } finally {
+      setIsLoading(false); // ✅ always stops loading
     }
   };
 
@@ -178,8 +231,7 @@ const useObjectivesHook = () => {
     try {
       await remove({
         url: `${API.OBJECTIVE_DELETE}/${params.id}`,
-        params: params,
-        failed: callBack,
+        params,
         success: (res) => {
           const {
             status,
@@ -187,19 +239,20 @@ const useObjectivesHook = () => {
           } = res;
 
           if (status === 200) {
-            const updatedObjectives = applicationObjectives.filter(
-              (obj) => obj.id !== params.id,
+            setApplicationObjectives(
+              applicationObjectives.filter((obj) => obj.id !== params.id),
             );
-            // console.log(updatedObjectives)
-            setIsLoading(false);
-            setApplicationObjectives(updatedObjectives);
           }
+
           callBack?.(status, message);
         },
+        failed: callBack,
       });
     } catch (error) {
       console.error("Error Deleting Objective:", error);
       callBack(false, error.message);
+    } finally {
+      setIsLoading(false); // ✅ always executed
     }
   };
 
@@ -207,6 +260,7 @@ const useObjectivesHook = () => {
     getObjectives,
     getObjectivesBySector,
     getObjectivesByFunctionType,
+    getSuccessIndicatorsByObjective,
     showObjective,
     createObjective,
     updateObjective,
