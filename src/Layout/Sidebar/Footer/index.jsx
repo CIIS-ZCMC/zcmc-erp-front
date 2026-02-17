@@ -23,7 +23,6 @@ import { useAuth } from "../../../Store/AuthStore";
 import useAOPStore, { useAOPActions } from "../../../Store/AOPStore";
 
 const Footer = () => {
-
   const { resetAll } = useAOPActions();
 
   const { isCollapsed } = useSidebarHook();
@@ -46,11 +45,13 @@ const Footer = () => {
   const handleLogOut = () => {
     setLogOut(false);
 
-    resetAll() //reset the memory state 
+    resetAll(); //reset the memory state
     useAOPStore.persist.clearStorage(); //zustand clear persisted state;
 
-    localStorage.removeItem("ppmp-items");
-    localStorage.removeItem("ppmp-edits");
+    localStorage.removeItem("aop-storage");
+    localStorage.removeItem("aopApplication");
+    localStorage.removeItem("aopApplicationObjectives");
+    localStorage.removeItem("aop_application_area_code");
     window.location.href = BASE_URL.umis_landing_page;
   };
 

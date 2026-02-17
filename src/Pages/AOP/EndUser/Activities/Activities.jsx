@@ -129,35 +129,7 @@ const Activities = () => {
   }, [search, objectiveId]);
 
   const status = aop.status.id;
-  const objectiveName =
-    applicationActivities?.[0]?.objective_name || state?.objective_name;
-
-  useEffect(() => {
-    console.log(aop);
-    // console.log('current activity value:', activity)
-    // console.log('current start month', startMonth)
-    // console.log('current end month:', endMonth)
-    // console.log('current is gad related', isGadRelated)
-    // console.log('current is gad target', target)
-    // console.log('from location:', state.objective)
-    // console.log('from application activities:', applicationActivities?.[0]?.objective_code)
-  }, [
-    aop,
-    activity,
-    startMonth,
-    endMonth,
-    isGadRelated,
-    target,
-    applicationActivities,
-  ]);
-
-  const handleOpenActivitiesModal = () => {
-    setIsOpenActivitiesModal(true);
-  };
-
-  const handleCloseActivitiesModal = () => {
-    setIsOpenActivitiesModal(false);
-  };
+  const objectiveName = applicationActivities?.objective;
 
   const handleCloseModal = () => {
     if (selectedActivityId) {
@@ -516,7 +488,7 @@ const Activities = () => {
         <Stack sx={centeredStyle}>
           <ThreeDotsLoader />
         </Stack>
-      ) : applicationActivities.length === 0 ? (
+      ) : applicationActivities?.activities?.length === 0 ? (
         <>
           <BoxComponent mt={2}>
             <Stack sx={centeredStyle}>
@@ -538,7 +510,7 @@ const Activities = () => {
         </>
       ) : (
         <Grid mt={2} container direction="row" spacing={2} sx={{ flexGrow: 1 }}>
-          {applicationActivities.map((activity) => {
+          {applicationActivities?.activities?.map((activity) => {
             const activityKey = getActivityKey(
               aop.id,
               objectiveId,
