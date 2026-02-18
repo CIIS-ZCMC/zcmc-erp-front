@@ -4,7 +4,7 @@ import { read } from "../Services/RequestMethods";
 import { useFunctionTypesActions } from "../Store/FunctionTypesStore";
 
 const useFunctionTypeHook = () => {
-  const { setFunctionTypes } = useFunctionTypesActions()
+  const { setFunctionTypes } = useFunctionTypesActions();
 
   const getFunctionType = (params, callBack) => {
     try {
@@ -31,6 +31,6 @@ const useFunctionTypeHook = () => {
   return {
     getFunctionType,
   };
-}
+};
 
-export default useFunctionTypeHook
+export default useFunctionTypeHook;

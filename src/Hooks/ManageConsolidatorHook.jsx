@@ -37,13 +37,14 @@ const useManageConsolidatorsHook = create((set, get) => ({
     },
 
     updateConsolidator: async (body, callback) => {
+      set({ isLoading: true, error: null });
+
       update({
         url: API.UPDATE_CONSOLIDATOR,
-        // param: { id: param },
         form: body,
         success: (response) => {
-          const { message, data } = response.data; // data is an array
-          const updatedConsolidator = data[0]; // take the first consolidator returned
+          const { message, data } = response.data;
+          const updatedConsolidator = data[0];
 
           set((state) => ({
             consolidators: state.consolidators.map((itm) =>
@@ -59,11 +60,16 @@ const useManageConsolidatorsHook = create((set, get) => ({
                   }
                 : itm,
             ),
+            isLoading: false,
           }));
 
-          callback(response.status, message);
+          callback?.(response.status, message);
         },
-        failed: callback,
+        failed: (err) => {
+          set({ isLoading: false, error: err });
+          console.log(err);
+          callback?.(err?.status ?? 500, err?.message);
+        },
       });
     },
   },

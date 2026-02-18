@@ -33,6 +33,10 @@ import {
   useOtherObjective,
   useOtherSuccessIndicator,
   useIsLoading,
+  useIsObjLoading,
+  useIsIndicatorLoading,
+  useIsShowLoading,
+  useIsBtnLoading,
 } from "../../../../Store/ObjectivesStore";
 
 import useObjectivesHook from "../../../../Hooks/AOP/ObjectivesHook";
@@ -59,7 +63,10 @@ const Objectives = () => {
   const applicationObjectives = useApplicationObjectives();
   const applicationObjective = useApplicationObjective();
   const isLoading = useIsLoading();
-
+  const isObjLoading = useIsObjLoading();
+  const isIndicatorLoading = useIsIndicatorLoading();
+  const isBtnLoading = useIsBtnLoading();
+  const isShowLoading = useIsShowLoading();
   const { clearFields } = useObjectivesActions();
 
   const { setAlertDialog, setConfirmationModal, closeConfirmation } =
@@ -91,8 +98,13 @@ const Objectives = () => {
   const [lockedRows, setLockedRows] = useState({});
 
   useEffect(() => {
-    getObjectivesBySector();
-  }, []);
+    getObjectivesBySector(search, (status, message) => {
+      if (status < 200 || status >= 300) {
+        // handle error (toast, snackbar, etc.)
+        return;
+      }
+    });
+  }, [search]);
 
   useEffect(() => {}, [
     aopApplication,
@@ -118,23 +130,6 @@ const Objectives = () => {
   const currentYear = new Date().getFullYear();
   const currentFiscalYear = currentYear + 1;
 
-  const filteredObjectives = useMemo(() => {
-    if (!search) return applicationObjectives;
-
-    const keyword = search.toLowerCase();
-
-    return applicationObjectives.filter((obj) => {
-      const textsToSearch = [
-        obj.objective?.description,
-        obj.other_objective?.description,
-        obj.success_indicator?.description,
-        obj.other_success_indicator?.description,
-      ].filter(Boolean);
-
-      return textsToSearch.some((text) => text.toLowerCase().includes(keyword));
-    });
-  }, [search, applicationObjectives]);
-
   const handleSaveObjectives = async () => {
     const payload = {
       aop_application_id: aopId,
@@ -150,13 +145,18 @@ const Objectives = () => {
           showSnack(200, message);
           handleCloseModal();
           clearFields();
-        } else {
+        } else if (status === 409) {
           setAlertDialog({
             status: "error",
             title: "Duplicate Entry",
             description: message,
           });
-          console.error(" Failed to create objectives:", message);
+        } else {
+          setAlertDialog({
+            status: "error",
+            title: "Unexpected error",
+            description: message,
+          });
         }
       });
     } catch (error) {
@@ -221,7 +221,7 @@ const Objectives = () => {
         return; //Toast error
       }
     });
-    if (!isLoading) {
+    if (!isShowLoading) {
       setIsEditMode(true);
       setIsOpenObjectivesModal(true);
     }
@@ -386,7 +386,6 @@ const Objectives = () => {
             onClick={() => handleOpenObjectivesModal()}
             label={"Add an Objective"}
             disabled={status_id === 4 || status_id === 2}
-            isLoading={isLoading}
             startDecorator={<CheckCircle />}
             // endDecorator={<Plus size={16} />}
             // disabled={
@@ -396,19 +395,6 @@ const Objectives = () => {
           />
         </Stack>
       </BoxComponent>
-
-      {isLoading && (
-        <Stack
-          direction={"column"}
-          alignItems={"center"}
-          justifyContent={"center"}
-          textAlign={"center"}
-          my={2}
-          height={"65vh"}
-        >
-          <ThreeDotsLoader />
-        </Stack>
-      )}
 
       {isLoading ? (
         <Stack
@@ -447,7 +433,7 @@ const Objectives = () => {
         </BoxComponent>
       ) : (
         <>
-          {filteredObjectives.length === 0 ? (
+          {applicationObjectives.length === 0 ? (
             <NoResultComponent />
           ) : (
             <Grid
@@ -457,7 +443,7 @@ const Objectives = () => {
               spacing={2}
               sx={{ flexGrow: 1 }}
             >
-              {filteredObjectives.map((obj) => {
+              {applicationObjectives.map((obj) => {
                 const {
                   id,
                   aop_application_id,
@@ -562,7 +548,7 @@ const Objectives = () => {
           minWidth={500}
           content={
             <ObjectivesModal
-              isLoading={isLoading}
+              isLoading={isShowLoading}
               isEditMode={isEditMode}
               functionType={functionType}
               objective={objective}
@@ -577,13 +563,14 @@ const Objectives = () => {
           rightButtonAction={() =>
             isEditMode ? handleUpdateObjectives() : handleSaveObjectives()
           }
-          isLoading={isLoading}
+          isLoading={isBtnLoading}
         />
       )}
 
       {/* Delete Objectives Modal */}
       {openDeleteModal && (
         <ConfirmationModalComponent
+          btnColor={"danger"}
           leftButtonLabel="Cancel"
           leftButtonAction={() => {
             if (isEditMode && selectedObjectiveId) {
@@ -598,7 +585,7 @@ const Objectives = () => {
           }}
           rightButtonLabel="Delete"
           rightButtonAction={() => handleConfirmDelete()}
-          isLoading={isLoading}
+          isLoading={isBtnLoading}
         />
       )}
     </div>

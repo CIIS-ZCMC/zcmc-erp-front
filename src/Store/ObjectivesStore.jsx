@@ -3,6 +3,10 @@ import { create } from "zustand";
 const useObjectivesStore = create((set, get) => ({
   objectives: [],
   isLoading: false,
+  isObjLoading: false,
+  isIndicatorLoading: false,
+  isBtnLoading: false,
+  isShowLoading: false,
   aopApplication: {},
   objectiveByType: [],
   successIndicatorByObjective: [],
@@ -20,6 +24,10 @@ const useObjectivesStore = create((set, get) => ({
   actions: {
     setObjectives: (objectives) => set({ objectives }),
     setIsLoading: (isLoading) => set({ isLoading }),
+    setIsObjectiveLoading: (isObjLoading) => set({ isObjLoading }),
+    setIsIndicatorLoading: (isIndicatorLoading) => set({ isIndicatorLoading }),
+    setIsShowLoading: (isShowLoading) => set({ isShowLoading }),
+    setIsBtnLoading: (isBtnLoading) => set({ isBtnLoading }),
     setAopApplication: (aopApplication) => set({ aopApplication }),
 
     setObjectiveByType: (objectiveByType) => set({ objectiveByType }),
@@ -60,6 +68,14 @@ export const useObjectives = () =>
   useObjectivesStore((state) => state.objectives);
 export const useIsLoading = () =>
   useObjectivesStore((state) => state.isLoading);
+export const useIsObjLoading = () =>
+  useObjectivesStore((state) => state.isObjLoading);
+export const useIsIndicatorLoading = () =>
+  useObjectivesStore((state) => state.isIndicatorLoading);
+export const useIsShowLoading = () =>
+  useObjectivesStore((state) => state.isShowLoading);
+export const useIsBtnLoading = () =>
+  useObjectivesStore((state) => state.isBtnLoading);
 export const useAopApplication = () =>
   useObjectivesStore((state) => state.aopApplication);
 

@@ -23,236 +23,280 @@ const useObjectivesHook = () => {
     setOtherSuccessIndicator,
     setAopApplication,
     setIsLoading,
+    setIsObjectiveLoading,
+    setIsIndicatorLoading,
+    setIsShowLoading,
     setObjectiveByType,
     setSuccessIndicatorByObjective,
+    setIsBtnLoading,
   } = useObjectivesActions();
   const { setFeedback } = useFeedbackStoreActions();
 
   const getObjectives = async (id, callBack) => {
+    setIsLoading(true);
     try {
-      await read({
-        url: `${API.OBJECTIVES}/${id}`,
-        failed: callBack,
-        success: (res) => {
-          const {
-            status,
-            data: { data, message },
-          } = res;
-          // Transform data structure: flatten comments from objectives
-          const transformedData = {
-            ...data,
-            activity_comments:
-              data?.data?.flatMap((obj) => obj.comments || []) || [],
-            application_timelines: data?.data || [],
-          };
-          setFeedback(transformedData); // get the objectives data and set to feedback so we can access the comments and remarks data
-          callBack(status, message);
-        },
-      });
+      const res = await request(({ success, failed }) =>
+        read({
+          url: `${API.OBJECTIVES}/${id}`,
+          success,
+          failed,
+        }),
+      );
+
+      const {
+        status,
+        data: { data, message },
+      } = res;
+
+      const transformedData = {
+        ...data,
+        activity_comments:
+          data?.data?.flatMap((obj) => obj.comments || []) || [],
+        application_timelines: data?.data || [],
+      };
+
+      setFeedback(transformedData);
+      callBack?.(status, message);
     } catch (error) {
       console.error("Error fetching application objectives:", error);
       callBack?.(false, error.message);
+    } finally {
+      setIsLoading(false);
     }
   };
-  const getObjectivesByFunctionType = async (id, callBack) => {
-    setIsLoading(true);
-    try {
-      await read({
-        url: API.OBJECTIVE_BY_FUNCTION_TYPE,
-        params: { type_id: id },
-        failed: callBack,
-        success: (res) => {
-          const {
-            status,
-            data: { data, message },
-          } = res;
 
-          setObjectiveByType(data);
-          callBack?.(status, message);
-        },
+  const getObjectivesByFunctionType = async (id, callBack) => {
+    setIsObjectiveLoading(true);
+
+    try {
+      const res = await new Promise((resolve, reject) => {
+        read({
+          url: API.OBJECTIVE_BY_FUNCTION_TYPE,
+          params: { type_id: id },
+          success: resolve,
+          failed: reject,
+        });
       });
+
+      const {
+        status,
+        data: { data, message },
+      } = res;
+
+      setObjectiveByType(data);
+      callBack?.(status, message);
     } catch (error) {
       console.error("Error fetching objectives by function type:", error);
       callBack?.(false, error.message);
     } finally {
-      setIsLoading(false);
+      setIsObjectiveLoading(false);
     }
   };
 
   const getSuccessIndicatorsByObjective = async (id, callBack) => {
-    setIsLoading(true);
-    try {
-      await read({
-        url: API.SUCCESS_INDICATOR_BY_OBJECTIVE,
-        params: { objective_id: id },
-        failed: callBack,
-        success: (res) => {
-          const {
-            status,
-            data: { data, message },
-          } = res;
+    setIsIndicatorLoading(true);
 
-          setSuccessIndicatorByObjective(data);
-          callBack?.(status, message);
-        },
+    try {
+      const res = await new Promise((resolve, reject) => {
+        read({
+          url: API.SUCCESS_INDICATOR_BY_OBJECTIVE,
+          params: { objective_id: id },
+          success: (res) => resolve(res),
+          failed: (err) => reject(err),
+        });
       });
+
+      const {
+        status,
+        data: { data, message },
+      } = res;
+
+      setSuccessIndicatorByObjective(data);
+      callBack?.(status, message);
     } catch (error) {
       console.error("Error fetching success indicators:", error);
       callBack?.(false, error.message);
     } finally {
-      setIsLoading(false);
+      setIsIndicatorLoading(false);
     }
   };
 
-  const getObjectivesBySector = async (callBack) => {
+  const getObjectivesBySector = async (query = "", callBack) => {
     setIsLoading(true);
+
     try {
-      await read({
-        url: API.OBJECTIVE_BY_SECTOR,
-        failed: callBack,
-        success: (res) => {
-          const {
-            status,
-            data: { data, message },
-          } = res;
+      await new Promise((resolve, reject) => {
+        read({
+          url: API.OBJECTIVE_BY_SECTOR,
+          params: query ? { search: query } : {},
+          success: (res) => {
+            const {
+              status,
+              data: { data, message },
+            } = res;
 
-          const { aop_application, application_objectives } = data;
+            const { aop_application, application_objectives } = data;
 
-          setAopApplication(aop_application);
-          setApplicationObjectives(application_objectives);
+            setAopApplication(aop_application);
+            setApplicationObjectives(application_objectives);
 
-          callBack?.(status, message);
-        },
+            callBack?.(status, message);
+            resolve(res);
+          },
+          failed: (err) => {
+            callBack?.(false, err?.message);
+            reject(err);
+          },
+        });
       });
     } catch (error) {
       console.error("Error fetching application objectives:", error);
-      callBack?.(false, error.message);
     } finally {
       setIsLoading(false);
     }
   };
 
   const showObjective = async (params, callBack) => {
-    setIsLoading(true);
+    setIsShowLoading(true);
+
     try {
-      await read({
-        url: `${API.OBJECTIVE_SHOW}/${params.id}`,
-        failed: callBack,
-        success: (res) => {
-          const {
-            status,
-            data: { data, message },
-          } = res;
+      await new Promise((resolve, reject) => {
+        read({
+          url: `${API.OBJECTIVE_SHOW}/${params.id}`,
+          success: (res) => {
+            const {
+              status,
+              data: { data, message },
+            } = res;
 
-          setApplicationObjective(data);
-          setFunctionType(data?.type || null);
-          setObjective(data?.selected_objective || null);
-          setSuccessIndicator(data?.selected_success_indicator || null);
-          setOtherObjective(
-            data?.custom_objective_details?.custom_objective_description ||
-              null,
-          );
-          setOtherSuccessIndicator(
-            data?.custom_success_indicator_details
-              ?.custom_success_indicator_description || null,
-          );
+            setApplicationObjective(data);
+            setFunctionType(data?.type || null);
+            setObjective(data?.selected_objective || null);
+            setSuccessIndicator(data?.selected_success_indicator || null);
+            setOtherObjective(
+              data?.custom_objective_details?.custom_objective_description ||
+                null,
+            );
+            setOtherSuccessIndicator(
+              data?.custom_success_indicator_details
+                ?.custom_success_indicator_description || null,
+            );
 
-          callBack?.(status, message);
-        },
+            callBack?.(status, message);
+            resolve(res);
+          },
+          failed: (err) => {
+            callBack?.(false, err?.message);
+            reject(err);
+          },
+        });
       });
     } catch (error) {
       console.error("Error fetching objective:", error);
-      callBack?.(false, error.message);
     } finally {
-      setIsLoading(false);
+      setIsShowLoading(false);
     }
   };
+
   const createObjective = async (body, callBack) => {
-    setIsLoading(true);
+    setIsBtnLoading(true);
+
     try {
-      await post({
-        url: API.OBJECTIVE_STORE,
-        form: body,
-        success: async (res) => {
-          const {
-            status,
-            data: { message },
-          } = res;
-          if (status === 201) {
-            await getObjectivesBySector(); // refresh list
-          }
-          callBack?.(status, message);
-        },
-        failed: (res, message) => {
-          console.error("Failed to create objective:", message);
-          callBack?.(res, message);
-        },
+      const res = await new Promise((resolve, reject) => {
+        post({
+          url: API.OBJECTIVE_STORE,
+          form: body,
+          success: resolve,
+          failed: (res, message) => {
+            reject({ res, message }); // 👈 wrap BOTH
+          },
+        });
       });
-    } catch (error) {
-      console.error("Error creating objective:", error);
-      callBack?.(false, error.message);
+
+      const {
+        status,
+        data: { message },
+      } = res;
+
+      // Refresh the objectives list after successful creation
+      if (status === 201) {
+        await getObjectivesBySector();
+      }
+
+      callBack?.(status, message);
+    } catch ({ res, message }) {
+      console.error("Failed to create objective:", message);
+      callBack?.(res, message);
     } finally {
-      setIsLoading(false);
+      setIsBtnLoading(false);
     }
   };
 
   const updateObjective = async (params, body, callBack) => {
-    setIsLoading(true);
+    setIsBtnLoading(true);
+
     try {
-      await update({
-        url: `${API.OBJECTIVE_EDIT}/${params.id}`,
-        form: body,
-        success: async (res) => {
-          const {
-            status,
-            data: { message },
-          } = res;
-          if (status === 200) {
-            await getObjectivesBySector(); // refresh data
-          }
-          callBack?.(status, message);
-        },
-        failed: (res, message) => {
-          console.error("Failed to update objective:", message);
-          callBack?.(res, message);
-          // no need to setIsLoading here because finally handles it
-        },
+      const res = await new Promise((resolve, reject) => {
+        update({
+          url: `${API.OBJECTIVE_EDIT}/${params.id}`,
+          form: body,
+          success: resolve,
+          failed: reject,
+        });
       });
+
+      const {
+        status,
+        data: { message },
+      } = res;
+
+      // Refresh the objectives list after successful update
+      if (status === 200) {
+        await getObjectivesBySector();
+      }
+
+      callBack?.(status, message);
     } catch (error) {
       console.error("Error updating objective:", error);
       callBack?.(false, error.message);
     } finally {
-      setIsLoading(false); // ✅ always stops loading
+      setIsBtnLoading(false);
     }
   };
 
   const removeObjective = async (params, callBack) => {
-    setIsLoading(true);
+    setIsBtnLoading(true);
+
     try {
-      await remove({
-        url: `${API.OBJECTIVE_DELETE}/${params.id}`,
-        params,
-        success: (res) => {
-          const {
-            status,
-            data: { message },
-          } = res;
+      await new Promise((resolve, reject) => {
+        remove({
+          url: `${API.OBJECTIVE_DELETE}/${params.id}`,
+          params,
+          success: (res) => {
+            const {
+              status,
+              data: { message },
+            } = res;
 
-          if (status === 200) {
-            setApplicationObjectives(
-              applicationObjectives.filter((obj) => obj.id !== params.id),
-            );
-          }
+            if (status === 200) {
+              setApplicationObjectives(
+                applicationObjectives.filter((obj) => obj.id !== params.id),
+              );
+            }
 
-          callBack?.(status, message);
-        },
-        failed: callBack,
+            callBack?.(status, message);
+            resolve(res);
+          },
+          failed: (err) => {
+            callBack?.(false, err?.message);
+            reject(err);
+          },
+        });
       });
     } catch (error) {
       console.error("Error Deleting Objective:", error);
-      callBack(false, error.message);
     } finally {
-      setIsLoading(false); // ✅ always executed
+      setIsBtnLoading(false);
     }
   };
 

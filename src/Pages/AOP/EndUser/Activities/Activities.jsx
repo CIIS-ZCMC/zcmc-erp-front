@@ -109,10 +109,9 @@ const Activities = () => {
   const [lockedActivities, setLockedActivities] = useState({});
   const getActivityKey = (aopId, objectiveId, activityId) =>
     `${aopId}:${objectiveId}:${activityId}`;
+
   useEffect(() => {
     setIsLoading(true);
-
-    console.log(aop);
     const params = {
       application_objective_id: objectiveId,
       ...(search && { search }),

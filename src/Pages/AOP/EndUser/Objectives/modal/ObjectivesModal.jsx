@@ -65,28 +65,16 @@ const ObjectivesModal = ({
   }, []);
 
   useEffect(() => {
-    if (functionType) {
-      getObjectivesByFunctionType(functionType?.id, (status, message) => {
-        if (!(status >= 200 && status < 300)) {
-          // if status not success
-          return; //Toast error
-        }
-        // setIsLoading(false);
-      });
+    if (functionType?.id) {
+      getObjectivesByFunctionType(functionType.id);
     }
-  }, [functionType]);
+  }, [functionType?.id]);
 
   useEffect(() => {
-    if (objective) {
-      getSuccessIndicatorsByObjective(objective?.id, (status, message) => {
-        if (!(status >= 200 && status < 300)) {
-          // if status not success
-          return; //Toast error
-        }
-        // setIsLoading(false);
-      });
+    if (objective?.id) {
+      getSuccessIndicatorsByObjective(objective.id);
     }
-  }, [objective]);
+  }, [objective?.id]);
 
   // useEffect(() => {
   //   console.log(functionType)

@@ -134,6 +134,7 @@ export default function ManageConsolidators() {
             "Update the assigned categories or details for this consolidator"
           }
           isOpen={openUpdate}
+          isLoading={isLoading}
           handleClose={() => setOpenUpdate(false)}
           maxWidth={"480px"}
           hasActionButtons
