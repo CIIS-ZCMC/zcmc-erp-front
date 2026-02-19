@@ -139,6 +139,7 @@ export default function ResourceCardComponent({
                     quantity={quantity}
                     onDecrease={() => onQtyChange(resource_id, quantity - 1)}
                     onIncrease={() => onQtyChange(resource_id, quantity + 1)}
+                    disabled={isAopDisabled(status)}
                   />
                 </Box>
               ))}

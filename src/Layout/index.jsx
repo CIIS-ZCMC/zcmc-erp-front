@@ -25,15 +25,31 @@ function Layout() {
 
   const { alertDialogState } = useModalHook();
   const { isOpen: snackbarIsOpen } = useSnackbarHook();
-  const { user } = useAuth();
+  const { user, isAuthenticated } = useAuth();
   const profile_url = user?.profile_url || null;
 
   const { isCollapsed, toggleSidebar, setCollapsed } = useSidebarHook();
   const isSmallScreen = useMediaQuery("(max-width:1500px)");
 
   useEffect(() => {
-    setCollapsed(isSmallScreen); // Auto-collapse if small screen
+    setCollapsed(isSmallScreen);
   }, [isSmallScreen, setCollapsed]);
+
+  // Don't render full layout if not authenticated yet
+  if (!isAuthenticated) {
+    return (
+      <Box
+        sx={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
   return (
     <Fragment>
       <Grid container sx={{ maxHeight: "100vh" }}>

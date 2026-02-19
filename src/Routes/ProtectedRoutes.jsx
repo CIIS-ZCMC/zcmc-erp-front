@@ -1,74 +1,134 @@
-// App.js
+// Routes/ProtectedRoutes.js
 
 import { useLocation, useNavigate } from "react-router-dom";
 import { BASE_URL, ROOT_PATH, SSO_SIGNING_PATH } from "../Services/Config";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
-import { localStorageGetter } from "../Utils/LocalStorage";
+import { localStorageGetter, localStorageSetter } from "../Utils/LocalStorage";
 import { useAuth, useAuthActions } from "../Store/AuthStore";
+import { CircularProgress } from "@mui/joy";
+import { canAccessRoute } from "../Utils/routeUtils";
 
 function ProtectedRoutes({ children }) {
   const navigate = useNavigate();
   const location = useLocation();
   const { sessionValidation } = useAuthActions();
-  const { permissions } = useAuth();
-  // const [loading, setLoading] = useState(true);
-
-  function initialize(token) {
-    if (location.pathname.includes(SSO_SIGNING_PATH)) {
-      const regenerateSigningSessionURL = `${location.pathname}${location.search}`;
-      navigate(regenerateSigningSessionURL);
-      return;
-    }
-
-    sessionValidation(token, (status) => {
-      if (!(status >= 200 && status < 300)) {
-        window.location.href = BASE_URL.umis_landing_page;
-
-        // setLoading(false);
-        return;
-      }
-      if (status === 200) {
-        const lastPath = localStorageGetter("path");
-
-        // --- SAFELY CHECK PERMISSION ---
-        const hasApproval =
-          Array.isArray(permissions) &&
-          permissions.includes("ERP-AOP-MAN:approval");
-
-        // --- When no redirect history exists ---
-        if (!lastPath) {
-          // If user does NOT have approval permission → redirect to /aop
-          if (!hasApproval) {
-            return navigate("/aop");
-          }
-
-          // Otherwise go to ROOT_PATH (/dashboard)
-          return navigate(ROOT_PATH);
-        }
-
-        // --- If lastPath exists ---
-        return navigate(lastPath ?? ROOT_PATH);
-      }
-
-      // if (!localStorageGetter("path")) {
-      //   // setLoading(false);
-      //   return navigate(ROOT_PATH);
-      // }
-      // // setLoading(false);
-      // return navigate(localStorageGetter("path") ?? ROOT_PATH);
-
-      // setLoading(false);
-    });
-  }
+  const { isAuthenticated, permissions } = useAuth();
+  const [isVerifying, setIsVerifying] = useState(true);
 
   useEffect(() => {
     const cancelToken = axios.CancelToken.source();
 
-    initialize(cancelToken.token);
+    const initialize = () => {
+      console.log("ProtectedRoutes - initializing");
+
+      // Handle SSO signing path
+      if (location.pathname.includes(SSO_SIGNING_PATH)) {
+        const regenerateSigningSessionURL = `${location.pathname}${location.search}`;
+        navigate(regenerateSigningSessionURL);
+        return;
+      }
+
+      // If already authenticated and have permissions, we're done
+      if (isAuthenticated && permissions?.length > 0) {
+        console.log("Already authenticated with permissions");
+        setIsVerifying(false);
+        return;
+      }
+
+      // Validate session
+      console.log("Calling sessionValidation");
+      sessionValidation(null, (status) => {
+        console.log("sessionValidation callback - status:", status);
+
+        if (!(status >= 200 && status < 300)) {
+          window.location.href = BASE_URL.umis_landing_page;
+          return;
+        }
+      });
+    };
+
+    initialize();
 
     return () => cancelToken.cancel();
   }, []);
+
+  // Watch for permissions to be loaded AND check route access
+  useEffect(() => {
+    console.log("Auth state:", { isAuthenticated, permissions });
+
+    if (isAuthenticated && permissions?.length > 0) {
+      console.log(
+        "Permissions loaded, checking route access for:",
+        location.pathname,
+      );
+
+      // Skip permission check for root and signing paths
+      if (
+        location.pathname === "/" ||
+        location.pathname.includes(SSO_SIGNING_PATH)
+      ) {
+        setIsVerifying(false);
+        return;
+      }
+
+      // Check if user has permission for current path
+      const hasAccess = canAccessRoute(location.pathname, permissions);
+      console.log("Access check result:", hasAccess);
+
+      if (!hasAccess) {
+        console.log("ACCESS DENIED for path:", location.pathname);
+
+        // Get the last valid path they were on
+        const lastPath = localStorageGetter("path");
+        console.log("Redirecting to last valid path:", lastPath);
+
+        // Redirect back to where they were
+        if (lastPath && lastPath !== location.pathname) {
+          navigate(lastPath, { replace: true });
+        } else {
+          // If no last path or it's the same, go to dashboard
+          navigate("/dashboard", { replace: true });
+        }
+        return;
+      }
+
+      // If access granted, save this path as the last valid path
+      console.log("Access granted, saving path:", location.pathname);
+      localStorageSetter("path", location.pathname);
+      setIsVerifying(false);
+    }
+  }, [isAuthenticated, permissions, location.pathname]);
+
+  // Handle root path redirect
+  useEffect(() => {
+    if (!isVerifying && isAuthenticated && permissions?.length > 0) {
+      if (location.pathname === "/") {
+        const lastPath = localStorageGetter("path");
+        navigate(lastPath || "/dashboard", { replace: true });
+      }
+    }
+  }, [isVerifying, isAuthenticated, permissions, location.pathname]);
+
+  // Show loading while verifying
+  if (isVerifying) {
+    return (
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
+        <CircularProgress />
+      </div>
+    );
+  }
+
+  if (!isAuthenticated) {
+    return null;
+  }
 
   return children;
 }

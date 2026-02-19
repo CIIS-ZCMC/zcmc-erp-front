@@ -1,3 +1,5 @@
+// Store/AuthStore.js
+
 import { create } from "zustand";
 import erp_api from "../Services/ERP_API";
 import { read } from "../Services/RequestMethods";
@@ -9,8 +11,9 @@ const useAuthStore = create((set) => ({
   loading: false,
   error: null,
   meta: null,
-  permissions: [],
+  permissions: localStorageGetter("user")?.meta?.permissions ?? [], // Try to get permissions from stored user
   area: localStorageGetter("user")?.assignedArea ?? null,
+  isAuthenticated: !!localStorageGetter("user"),
   //Actions
   actions: {
     // Session ID must be pass in call
@@ -32,6 +35,7 @@ const useAuthStore = create((set) => ({
             meta: data.meta,
             permissions: data.data.meta.permissions,
             loading: false,
+            isAuthenticated: true,
           });
 
           localStorageSetter("user", data.data);
@@ -54,7 +58,14 @@ const useAuthStore = create((set) => ({
             throw new Error("Bad response", { cause: res });
           }
 
-          set({ user: null, meta: null });
+          set({
+            user: null,
+            meta: null,
+            isAuthenticated: false,
+            permissions: [],
+          });
+
+          localStorageSetter("user", null);
 
           return data.meta.redirect_to;
         })
@@ -69,8 +80,11 @@ const useAuthStore = create((set) => ({
           const { data, status } = res;
 
           if (!(status >= 200 && status < 300)) {
-            throw new Error("Bad response", { cause: res });
+            if (callBack) callBack(status);
+            return;
           }
+
+          console.log("Session validation success:", data);
 
           set({
             user: data.data,
@@ -78,10 +92,18 @@ const useAuthStore = create((set) => ({
             meta: data.meta,
             permissions: data.data.meta.permissions,
             loading: false,
+            isAuthenticated: true,
           });
+
           localStorageSetter("user", data.data);
+
+          // IMPORTANT: Call the callback with success status
+          if (callBack) callBack(status);
         },
-        failed: callBack,
+        failed: (error) => {
+          console.log("Session validation failed:", error);
+          if (callBack) callBack(error?.status || 401);
+        },
       });
     },
   },
@@ -92,23 +114,20 @@ export const useAuth = () => {
   const meta = useAuthStore((state) => state.meta);
   const permissions = useAuthStore((state) => state.permissions);
   const area = useAuthStore((state) => state.area);
-  const loading = useAuthStore((state) => state.login);
+  const loading = useAuthStore((state) => state.loading);
   const error = useAuthStore((state) => state.error);
+  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
 
-  return { user, meta, area, permissions, loading, error };
+  return { user, meta, area, permissions, loading, error, isAuthenticated };
 };
 
 export const useAuthActions = () => {
   const actions = useAuthStore((state) => state.actions);
-
   return { ...actions };
 };
 
 export const useUserTypes = () => {
-  // const user = useAuthStore((state) => state.user);
-
   const area = useAuthStore((state) => state.area);
-  // console.log(area);
   const { type, is_head } = area || {};
 
   if (area) {
@@ -122,4 +141,6 @@ export const useUserTypes = () => {
       isBudget: area.area_id === AREA_ID.BUDGET && is_head,
     };
   }
+
+  return {};
 };

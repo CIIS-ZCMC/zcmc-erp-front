@@ -143,19 +143,6 @@ export const sidebarRoutes = [
         ],
       },
 
-      // {
-      //   path: "/ppmp-approval",
-      //   name: "PPMP Management",
-      //   childPermissions: ["ERP-PPMP-MAN:approve"],
-      //   children: [
-      //     { index: true, element: <PPMPApproval /> },
-      //     {
-      //       path: "view/:id",
-      //       element: <ManagePPMP />,
-      //     },
-      //   ],
-      // },
-
       {
         path: "/manage-objectives",
         name: "Objectives and KPIs",
@@ -199,7 +186,6 @@ export const sidebarRoutes = [
       "ERP-ITM-MAN:view-all",
       "ERP-ITM-MAN:update",
       "ERP-ITM-MAN:approve",
-      "ERP-ITM-MAN:request",
       "ERP-ITM-MAN:delete",
     ],
     children: [

@@ -21,6 +21,7 @@ const QuantityControlComponent = ({
   onIncrease,
   onChange,
   withLabel = false,
+  disabled = false,
 }) => {
   // Local input state
   const [inputValue, setInputValue] = React.useState(String(quantity));
@@ -60,7 +61,13 @@ const QuantityControlComponent = ({
         </Typography>
       )}
 
-      <ButtonGroup variant="soft" size="sm" color="neutral" spacing="0.2rem">
+      <ButtonGroup
+        variant="soft"
+        size="sm"
+        color="neutral"
+        spacing="0.2rem"
+        disabled={disabled}
+      >
         <IconButton onClick={onDecrease} disabled={quantity === 1}>
           <Minus />
         </IconButton>
