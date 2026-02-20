@@ -19,6 +19,7 @@ import ButtonComponent from "../../../../Components/Common/ButtonComponent";
 import { useNavigate } from "react-router-dom";
 import { useAOPApplication } from "../../../../Hooks/AOP/AOPApplicationsHook";
 import { usePPMPApplicationActions } from "../../../../Hooks/PPMP/PPMPApplicationHook";
+import { localStorageGetter } from "../../../../Utils/LocalStorage";
 
 export const ActivityDetails = () => {
   const navigate = useNavigate();
@@ -27,7 +28,7 @@ export const ActivityDetails = () => {
   const AOPApplication = useAOPApplication();
   const Application = useMemo(
     () => AOPApplication ?? localStorageGetter("aopApplication"),
-    [AOPApplication]
+    [AOPApplication],
   );
 
   const [openResourcesModal, setOpenResourcesModal] = useState(false);
@@ -231,7 +232,7 @@ export const ActivityDetails = () => {
                       )}
                     </Box>
                   </Box>
-                )
+                ),
               )}
 
               {/* {!isPlanning && (

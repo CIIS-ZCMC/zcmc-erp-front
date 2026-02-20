@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useMemo, useState } from "react";
 import PageTitle from "../../../Components/Common/PageTitle";
 import { useNavigate, useParams } from "react-router-dom";
 import { Box, Grid, Stack, Typography } from "@mui/joy";
@@ -8,6 +8,8 @@ import { ExternalLink } from "lucide-react";
 import {
   useAOPApplication,
   useAOPApplicationObjectives,
+  useAOPApplicationsActions,
+  useLoadingState,
 } from "../../../Hooks/AOP/AOPApplicationsHook";
 import { useActivityActions } from "../../../Hooks/AOP/ActivityHook";
 import { localStorageGetter } from "../../../Utils/LocalStorage";
@@ -26,194 +28,196 @@ import { useUserTypes } from "../../../Store/AuthStore";
 import ProcessAOPContent from "./Contents/ProcessAOPContent";
 import { useApprovalActions } from "../../../Hooks/AOP/AOPApprovalHook";
 import BoxComponent from "@Components/Common/Card/BoxComponent";
+import { ThreeDotsLoader } from "@Components/Common/Loading/ThreeDotsLoader";
 
 export default function ManageAOP() {
   const { isPlanning, isMCC } = useUserTypes();
   const { getAOPApprovalTimeline } = useApprovalActions();
-  const AOPApplication = useAOPApplication();
+  const { id: AOP_APPLICATION_ID } = useParams();
+  const { getAOPApplicationById } = useAOPApplicationsActions();
   const navigate = useNavigate();
-
-  // AOP HOOK
-  const AOPApplicationObjectives =
-    useAOPApplicationObjectives() ??
-    localStorageGetter("aopApplicationObjectives");
-
-  const AOP_APPLICATION_ID = localStorageGetter("aop_application_id");
-
-  // ACTIVITY HOOK
-  const defaultActivityId = AOPApplicationObjectives[0]?.activities[0]?.id;
-  const activityId = localStorageGetter("activeActivityId");
-  const { getActivityById } = useActivityActions();
-
   // COMMENTS HOOK
   const {
     getCommentsByActivity,
     getCommentsByApplication,
     getRemarksByApplication,
   } = useCommentActions();
-  const allComments = useComments() ?? localStorageGetter("comments");
+  const { getActivityById } = useActivityActions();
 
+  const allComments = useComments() ?? localStorageGetter("comments");
+  const isLoading = useLoadingState();
+  const AOPApplication = useAOPApplication();
+  const objectives = useAOPApplicationObjectives();
   const remarks = useRemarks();
+
+  // ACTIVITY ID
+  // ✅ SAFE DERIVATION
+  const defaultActivityId = objectives?.[0]?.activities?.[0]?.id ?? null;
 
   // STATES
   const [isRemarksLoading, setIsRemarksLoading] = useState(true);
-
-  const AREA_CODE = localStorageGetter("aop_application_area_code");
+  const AREA_CODE = AOPApplication?.area_from;
   const FISCAL_YEAR = new Date().getFullYear() + 1;
-
   // MODAL
   const [openFeedbackModal, setOpenFeedbackModal] = useState(false);
 
   // FUNCTIONS
-  const handleViewFeedback = () => {
+  const handleViewFeedback = async () => {
     setOpenFeedbackModal(true);
     setIsRemarksLoading(true);
 
-    const fetch = () => {
-      // if (!isDivisionHead || !isMCC) {
-      getCommentsByApplication(AOP_APPLICATION_ID, () => {});
-      // }
-
-      getRemarksByApplication(AOP_APPLICATION_ID, () => {
-        setTimeout(() => setIsRemarksLoading(false), 1000);
-      });
-    };
-
-    Promise.all(fetch())
-      .then(() => {
-        setIsRemarksLoading(false);
-      })
-      .catch((error) => {
-        console.error("Error fetching comments or remarks:", error);
-        setIsRemarksLoading(false);
-      });
+    try {
+      await Promise.all([
+        getCommentsByApplication(AOP_APPLICATION_ID, () => {}),
+        getRemarksByApplication(AOP_APPLICATION_ID, () => {}),
+      ]);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsRemarksLoading(false);
+    }
   };
 
-  const isAllowedFeedbackViewing = () => {
-    return !isMCC;
-  };
+  const isAllowedFeedbackViewing = !isMCC;
 
   useEffect(() => {
-    if (activityId == defaultActivityId) return;
+    if (!AOP_APPLICATION_ID) return;
+
+    getAOPApplicationById(AOP_APPLICATION_ID);
+    getAOPApprovalTimeline(AOP_APPLICATION_ID);
+    getCommentsByApplication(AOP_APPLICATION_ID);
+    getRemarksByApplication(AOP_APPLICATION_ID);
+  }, [AOP_APPLICATION_ID]);
+
+  useEffect(() => {
+    if (!defaultActivityId) return;
 
     Promise.all([
-      getAOPApprovalTimeline(AOP_APPLICATION_ID, () => {}),
-      getActivityById(defaultActivityId, () => {}),
-      getCommentsByActivity(defaultActivityId, () => {}),
-      getCommentsByApplication(AOP_APPLICATION_ID, () => {}),
-      getRemarksByApplication(AOP_APPLICATION_ID, () => {}),
-    ]).catch((error) => {
-      console.error("Error fetching data:", error);
-    });
-  }, []);
+      getActivityById(defaultActivityId),
+      getCommentsByActivity(defaultActivityId),
+    ]).catch(console.error);
+  }, [defaultActivityId]);
 
   return (
     <Fragment>
-      <Stack gap={3}>
-        <PageTitle
-          title={
-            <Typography>
-              Manage{" "}
-              <Typography textColor={"warning.400"}>{AREA_CODE}'s</Typography>{" "}
-              AOP{" "}
-              {/* AOP <Typography textColor={"warning.400"}>#{id} </Typography> */}
-              for Fiscal Year{" "}
-              <Typography textColor={"warning.400"}>{FISCAL_YEAR}</Typography>
-            </Typography>
-          }
-          description={
-            "Each objective has its own list of activities. Mark each activity as reviewed and process the request to continue."
-          }
-          items={[
-            {
-              label: "AOP",
-              current: true,
-            },
-          ]}
-          withArrowBack
-          onClickArrow={() => navigate("/approval")}
-        />
-        {/* CONTENT */}
-        <Box
-          sx={{
-            backgroundColor: "white",
-            borderRadius: 12,
-            border: 1,
-            borderColor: "neutral.100",
-            padding: 0,
-            pr: 1.5,
-          }}
+      {isLoading ? (
+        <Stack
+          direction={"column"}
+          alignItems={"center"}
+          justifyContent={"center"}
+          textAlign={"center"}
+          my={2}
+          height={"85vh"}
         >
-          <Grid
-            container
-            columns={{ xs: 4, sm: 4, md: 4, lg: 12 }}
-            columnSpacing={{ md: 0, lg: 3 }}
-            rowSpacing={{ xs: 1, sm: 3, md: 1 }}
+          <ThreeDotsLoader />
+        </Stack>
+      ) : (
+        <Stack gap={3}>
+          <PageTitle
+            title={
+              <Typography>
+                Manage{" "}
+                <Typography textColor={"warning.400"}>{AREA_CODE}'s</Typography>{" "}
+                AOP{" "}
+                {/* AOP <Typography textColor={"warning.400"}>#{id} </Typography> */}
+                for Fiscal Year{" "}
+                <Typography textColor={"warning.400"}>{FISCAL_YEAR}</Typography>
+              </Typography>
+            }
+            description={
+              "Each objective has its own list of activities. Mark each activity as reviewed and process the request to continue."
+            }
+            items={[
+              {
+                label: "AOP",
+                current: true,
+              },
+            ]}
+            withArrowBack
+            onClickArrow={() => navigate("/approval")}
+          />
+          {/* CONTENT */}
+          <Box
             sx={{
-              minHeight: "85vh",
-              height: "85vh",
-              msOverflowY: "auto",
-              overflowY: "auto",
+              backgroundColor: "white",
+              borderRadius: 12,
+              border: 1,
+              borderColor: "neutral.100",
+              padding: 0,
+              pr: 1.5,
             }}
           >
-            {/* OBJECTIVES  */}
-            <Grid item="true" xs={4} height={{ md: "auto", lg: "100%" }}>
-              <ContainerComponent sx={{ mb: 1 }}>
-                <Typography level="body-sm" mb={2}>
-                  To view the <b>Project Procurement Management Plan</b> of{" "}
-                  <b>{AREA_CODE}</b>, click the button below.
-                </Typography>
-                <ButtonComponent
-                  label="View PPMP"
-                  fullWidth={true}
-                  variant={"soft"}
-                  onClick={() =>
-                    navigate(`/approval/view-ppmp/${AOP_APPLICATION_ID}`)
+            <Grid
+              container
+              columns={{ xs: 4, sm: 4, md: 4, lg: 12 }}
+              columnSpacing={{ md: 0, lg: 3 }}
+              rowSpacing={{ xs: 1, sm: 3, md: 1 }}
+              sx={{
+                minHeight: "85vh",
+                height: "85vh",
+                msOverflowY: "auto",
+                overflowY: "auto",
+              }}
+            >
+              {/* OBJECTIVES  */}
+              <Grid item="true" xs={4} height={{ md: "auto", lg: "100%" }}>
+                <ContainerComponent sx={{ mb: 1 }}>
+                  <Typography level="body-sm" mb={2}>
+                    To view the <b>Project Procurement Management Plan</b> of{" "}
+                    <b>{AREA_CODE}</b>, click the button below.
+                  </Typography>
+                  <ButtonComponent
+                    label="View PPMP"
+                    fullWidth={true}
+                    variant={"soft"}
+                    onClick={() =>
+                      navigate(`/approval/view-ppmp/${AOP_APPLICATION_ID}`)
+                    }
+                  />
+                </ContainerComponent>
+                <ContainerComponent
+                  title={"List of objectives and activities"}
+                  description={
+                    "Collapse an objective and select one of its activities to view more information."
                   }
-                />
-              </ContainerComponent>
-              <ContainerComponent
-                title={"List of objectives and activities"}
-                description={
-                  "Collapse an objective and select one of its activities to view more information."
-                }
-                footer={
-                  <Stack direction={"row"} spacing={2}>
-                    {isAllowedFeedbackViewing() && (
-                      <ButtonComponent
-                        variant={"outlined"}
-                        label={`Go to feedback (${
-                          isPlanning ? remarks?.length : allComments?.length
-                        })`}
-                        endDecorator={<ExternalLink size={14} />}
-                        onClick={handleViewFeedback}
-                      />
-                    )}
-                    <ProcessAOPContent />
-                  </Stack>
-                }
-                scrollable
-                contentMaxHeight={"46vh"}
-                contentMinHeight={"46vh"}
-              >
-                <ObjectivesList />
-              </ContainerComponent>
-            </Grid>
+                  footer={
+                    <Stack direction={"row"} spacing={2}>
+                      {isAllowedFeedbackViewing && (
+                        <ButtonComponent
+                          variant={"outlined"}
+                          label={`Go to feedback (${
+                            isPlanning ? remarks?.length : allComments?.length
+                          })`}
+                          endDecorator={<ExternalLink size={14} />}
+                          onClick={handleViewFeedback}
+                        />
+                      )}
+                      {/* PROCESS REQUEST */}
 
-            {/* ACTIVITY DETAILS  */}
-            <Grid item="true" xs={!isPlanning ? 8 : 4} mt={3}>
-              <ActivityDetails />
-            </Grid>
+                      <ProcessAOPContent />
+                    </Stack>
+                  }
+                  scrollable
+                  contentMaxHeight={"46vh"}
+                  contentMinHeight={"46vh"}
+                >
+                  <ObjectivesList />
+                </ContainerComponent>
+              </Grid>
 
-            {/* COMMENTS  */}
-            <Grid item="true" xs={4} mt={3} display={!isPlanning && "none"}>
-              <CommentsDetails />
-            </Grid>
-          </Grid>
-        </Box>
-      </Stack>
+              {/* ACTIVITY DETAILS  */}
+              <Grid item="true" xs={!isPlanning ? 8 : 4} mt={3}>
+                <ActivityDetails />
+              </Grid>
 
-      {/* PROCESS REQUEST */}
+              {/* COMMENTS  */}
+              <Grid item="true" xs={4} mt={3} display={!isPlanning && "none"}>
+                <CommentsDetails />
+              </Grid>
+            </Grid>
+          </Box>
+        </Stack>
+      )}
 
       <FeedbackContent
         openFeedbackModal={openFeedbackModal}

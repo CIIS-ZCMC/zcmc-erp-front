@@ -9,9 +9,8 @@ import { API } from "../../Data/constants";
 
 const useAOPApplicationsHook = create((set) => ({
   aopApplications: [],
-  aopApplicationObjectives:
-    localStorageGetter("aopApplicationObjectives") ?? null,
-  aopApplication: localStorageGetter("aopApplication") ?? null,
+  aopApplicationObjectives: [],
+  aopApplication: null,
   timeline_id: "",
 
   // approvalTimeline: [],
@@ -38,7 +37,7 @@ const useAOPApplicationsHook = create((set) => ({
         failed: callback,
         success: (response) => {
           const { data, message } = response.data;
-          set({ aopApplications: data.applications });
+          set({ aopApplications: data.applications ?? [] });
           callback(200, message);
         },
       });
@@ -56,7 +55,7 @@ const useAOPApplicationsHook = create((set) => ({
         },
         success: (response) => {
           const {
-            data: { objectives, application, latest_timeline_id },
+            data: { objectives = [], application, latest_timeline_id },
             message,
           } = response.data;
 
@@ -87,7 +86,7 @@ const useAOPApplicationsHook = create((set) => ({
         dataToSubmit.append("other_objective_description", other_objective);
         dataToSubmit.append(
           "other_success_indicator_description",
-          other_success_indicator
+          other_success_indicator,
         );
 
         update({

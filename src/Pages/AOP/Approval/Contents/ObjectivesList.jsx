@@ -28,12 +28,8 @@ const ObjectivesList = () => {
   // HOOKS
   const { isPlanning } = useUserTypes();
   const AOPApplicationObjectives = useAOPApplicationObjectives();
-  const ApplicationObjectives = useMemo(
-    () =>
-      AOPApplicationObjectives ??
-      localStorageGetter("aopApplicationObjectives"),
-    [AOPApplicationObjectives]
-  );
+  const ApplicationObjectives = localStorageGetter("aopApplicationObjectives");
+
   const { setActiveActivity, getActivityById } = useActivityActions();
 
   const { getCommentsByActivity } = useCommentActions();
@@ -108,7 +104,7 @@ const ObjectivesList = () => {
               activities,
               is_editable,
             },
-            objective_key
+            objective_key,
           ) => (
             <CustomAccordionComponent
               key={objective_key}
@@ -150,7 +146,7 @@ const ObjectivesList = () => {
                     {activities?.map(
                       (
                         { id, name, with_comments, is_reviewed },
-                        activity_key
+                        activity_key,
                       ) => (
                         <ActivityContainerComponent
                           key={activity_key}
@@ -161,13 +157,13 @@ const ObjectivesList = () => {
                           withComment={with_comments}
                           reviewed={isPlanning ? is_reviewed : false}
                         />
-                      )
+                      ),
                     )}
                   </Stack>
                 </CustomAccordionComponent>
               </Stack>
             </CustomAccordionComponent>
-          )
+          ),
         )}
 
         {/* EDIT OBJECTIVE */}

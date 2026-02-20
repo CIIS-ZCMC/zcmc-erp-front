@@ -81,16 +81,10 @@ const AOPApproval = () => {
 
   // FUNCTIONS
   const handleClickCard = (id, area_code) => {
-    setPageLoading(true);
-
-    getAOPApprovalTimeline(id, () => {});
-    getAOPApplicationById(id, () => {
-      setPageLoading(false);
-      navigate(`/approval/objectives/${id}`);
-    });
-
     localStorageSetter("aop_application_id", id);
     localStorageSetter("aop_application_area_code", area_code);
+
+    navigate(`/approval/objectives/${id}`);
   };
 
   const handleGenerate = () => {
