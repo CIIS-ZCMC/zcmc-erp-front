@@ -20,6 +20,7 @@ import { color } from "framer-motion";
 import { CircleSmall, ShoppingCart } from "lucide-react";
 import React, { Fragment, useEffect, useState } from "react";
 import { BiX } from "react-icons/bi";
+import defaultItem from "../../assets/item.jpg";
 
 export default function CartPreviewComponent({
   open,
@@ -77,7 +78,7 @@ export default function CartPreviewComponent({
                       overflow: "hidden",
                     }}
                   >
-                    <img src={image} loading="lazy" alt={name} />
+                    <img src={defaultItem} loading="lazy" alt={name} />
                   </AspectRatio>
 
                   {/* Floating Chip */}

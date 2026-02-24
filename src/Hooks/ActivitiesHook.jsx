@@ -125,13 +125,15 @@ const useActivitiesHook = () => {
             status,
             data: { message },
           } = res;
+          setApplicationActivities((prev = []) => {
+            // If only one activity exists and it's the one being deleted
+            if (prev.length === 1 && prev[0].id === params.id) {
+              return []; // explicitly reset to empty array
+            }
 
-          if (status === 200) {
-            const updatedActivities = applicationActivities.filter(
-              (obj) => obj.id !== params.id,
-            );
-            setApplicationActivities(updatedActivities);
-          }
+            // Otherwise, filter normally
+            return prev.filter((obj) => obj.id !== params.id);
+          });
           callBack?.(status, message);
         },
       });

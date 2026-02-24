@@ -1546,6 +1546,23 @@ const renderItem = (row) => (
     <Typography sx={{ fontSize: 14, fontWeight: 500, color: grey[900] }}>
       Qty: {row?.quantity}
     </Typography>
+    <Typography
+      color="primary"
+      sx={{
+        fontSize: 12,
+        fontWeight: 500,
+        fontStyle: "italic",
+        display: row?.area_from?.length > 0 ? "block" : "none",
+      }}
+    >
+      Common - use supply from:{" "}
+      {row?.area_from?.map((item, index) => (
+        <span key={index}>
+          {item}
+          {index < row.area_from.length - 1 ? ", " : ""}
+        </span>
+      ))}
+    </Typography>
   </>
 );
 

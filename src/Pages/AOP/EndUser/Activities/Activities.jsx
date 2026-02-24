@@ -242,12 +242,12 @@ const Activities = () => {
     const params = { id: selectedActivityId };
 
     await removeActivity(params, (status, message) => {
-      const isSuccess = status === 200 || status === true;
+      const isSuccess = status === 200;
 
       if (!isSuccess) {
         setAlertDialog({
           status: "error",
-          title: message,
+          title: "Error deleting",
           description: "Please try again later",
         });
       } else {
@@ -257,7 +257,6 @@ const Activities = () => {
           activityId: selectedActivityId,
           userId: user.id,
         });
-
         showSnack(200, message, "soft");
       }
 

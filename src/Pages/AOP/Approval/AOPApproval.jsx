@@ -1,4 +1,4 @@
-import { Fragment, useEffect, useState } from "react";
+import { Fragment, useCallback, useEffect, useMemo, useState } from "react";
 import PageTitle from "../../../Components/Common/PageTitle";
 import { AOP_CONSTANTS, API } from "../../../Data/constants";
 import ContainerComponent from "../../../Components/Common/ContainerComponent";
@@ -11,9 +11,6 @@ import {
   useAOPApplicationsActions,
 } from "../../../Hooks/AOP/AOPApplicationsHook";
 import AOPCardComponent from "../../../Components/Common/Card/AOPCardComponent";
-import { toCapitalize } from "../../../Utils/Typography";
-import { TEST_MODE } from "../../../Services/Config";
-import { APPROVAL_TIMELINE, MANAGE_AOP_APPROVAL } from "../../../Data/TestData";
 import { localStorageSetter } from "../../../Utils/LocalStorage";
 import DrawerComponent from "../../../Components/Common/DrawerComponent";
 import StepperComponent from "../../../Components/Stepper/StepperComponent";
@@ -26,26 +23,16 @@ import {
   useApprovalLoading,
   useApprovalTimeline,
 } from "../../../Hooks/AOP/AOPApprovalHook";
-
-import useObjectivesHook from "../../../Hooks/AOP/ObjectivesHook";
 import useTimelineHook from "../../../Hooks/AOP/TimelineHook";
 import useTimelinesStore from "../../../Store/TimelinesStore";
-
 import { ThreeDotsLoader } from "../../../Components/Common/Loading/ThreeDotsLoader";
 import PageLoader from "../../../Components/Loading/PageLoader";
 import { ThreeDots } from "react-loader-spinner";
 import debounce from "lodash.debounce";
-
-import SelectComponent from "@Components/Form/YearSelectComponent";
-
 import useAOPStore from "../../../Store/AOPStore";
 import useAOPHook from "../../../Hooks/AOP/AOPHook";
 import { nextYear } from "../../../Utils/Functions";
-import {
-  CalendarToday,
-  FileDownload,
-  FileDownloadDoneOutlined,
-} from "@mui/icons-material";
+import { CalendarToday, FileDownload } from "@mui/icons-material";
 import ButtonComponent from "@Components/Common/ButtonComponent";
 import useSnackbarHook from "../../../Hooks/SnackbarHook";
 
@@ -62,7 +49,6 @@ const AOPApproval = () => {
 
   //ADDED HOOKS
   const { getAopYearList } = useAOPHook();
-  const { getApproverTimeline, getTimelines } = useTimelineHook();
   const { showSnack } = useSnackbarHook();
   const { timelines, approverTimelines } = useTimelinesStore();
   const { yearDetails } = useAOPStore();
@@ -74,7 +60,7 @@ const AOPApproval = () => {
   const [openTimelineModal, setOpenTimelineModal] = useState(false);
   const [index, setIndex] = useState(8);
   const [year, setYear] = useState(nextYear);
-  const [search, setSearch] = useState(null);
+  const [search, setSearch] = useState("");
   const [pageLoading, setPageLoading] = useState("");
   const [isFetchLoading, setIsFetchLoading] = useState(false);
   const [downloading, setDownloading] = useState(false);
@@ -94,7 +80,7 @@ const AOPApproval = () => {
       { year }, // params
       (status, msg) => {
         if (status === 200) {
-          showSnack(200, msg);
+          showSnack(status, msg);
           setDownloading(false);
         } else {
           showSnack(error, msg);
@@ -109,9 +95,10 @@ const AOPApproval = () => {
     });
   };
 
-  const yearsData = [2026, 2025];
-
-  // console.log(yearsData)
+  const onLeftClick = useCallback(
+    (id, area) => () => handleClickCard(id, area),
+    [],
+  );
 
   useEffect(() => {
     getAopYearList((status, message) => {
@@ -122,29 +109,28 @@ const AOPApproval = () => {
     });
   }, []);
 
+  const debouncedFetch = useMemo(
+    () =>
+      debounce((params) => {
+        setIsFetchLoading(true);
+        getAOPApplications(params, () => {
+          setIsFetchLoading(false);
+        });
+      }, 300),
+    [getAOPApplications],
+  );
+
   useEffect(() => {
-    const debouncedFetch = debounce((params) => {
-      setIsFetchLoading(true);
-      getAOPApplications(params, () => {
-        setIsFetchLoading(false);
-      });
-    }, 300);
-
-    const params = {
-      search: search,
-      year: year,
+    debouncedFetch({
+      search,
+      year,
       status_id: index,
-    };
-
-    debouncedFetch(params);
+    });
 
     return () => {
-      localStorage.removeItem("all_comments");
       debouncedFetch.cancel();
     };
-  }, [index, year, search, getAOPApplications]);
-
-  const TIMELINE = TEST_MODE ? APPROVAL_TIMELINE : approvalTimeline;
+  }, [search, year, index, debouncedFetch]);
 
   return (
     <Fragment>
@@ -276,9 +262,10 @@ const AOPApproval = () => {
                             statusLabel={status_name}
                             status={status_id}
                             total_cost={ppmp_total}
-                            leftClick={() =>
-                              handleClickCard(aop_application_id, actor?.area)
-                            }
+                            leftClick={onLeftClick(
+                              aop_application_id,
+                              actor?.area,
+                            )}
                             rightClick={() =>
                               handleViewTimeline(aop_application_id)
                             }
@@ -295,7 +282,6 @@ const AOPApproval = () => {
       </Stack>
 
       {/* APPROVAL TIMELINE */}
-      {console.log(approvalTimeline)}
       <DrawerComponent
         open={openTimelineModal}
         setOpen={setOpenTimelineModal}

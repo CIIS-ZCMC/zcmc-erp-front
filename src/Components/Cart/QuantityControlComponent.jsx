@@ -77,6 +77,7 @@ const QuantityControlComponent = ({
           size="sm"
           onChange={handleChange}
           onBlur={handleBlur}
+          disabled={disabled}
           variant="soft"
           sx={{
             width: 50,

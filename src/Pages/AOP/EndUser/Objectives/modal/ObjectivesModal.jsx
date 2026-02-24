@@ -153,7 +153,7 @@ const ObjectivesModal = ({
               getOptionLabel={(opt) => opt?.description || ""}
             />
 
-            <Stack sx={{ display: objective ? "block" : "none" }}>
+            <Stack sx={{ display: successIndicator ? "block" : "none" }}>
               <Typography level="body-xs">Description:</Typography>
               <Typography level="body-xs" fontWeight={600}>
                 {successIndicator?.description}
