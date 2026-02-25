@@ -20,8 +20,6 @@ function ProtectedRoutes({ children }) {
     const cancelToken = axios.CancelToken.source();
 
     const initialize = () => {
-      console.log("ProtectedRoutes - initializing");
-
       // Handle SSO signing path
       if (location.pathname.includes(SSO_SIGNING_PATH)) {
         const regenerateSigningSessionURL = `${location.pathname}${location.search}`;
@@ -31,16 +29,12 @@ function ProtectedRoutes({ children }) {
 
       // If already authenticated and have permissions, we're done
       if (isAuthenticated && permissions?.length > 0) {
-        console.log("Already authenticated with permissions");
         setIsVerifying(false);
         return;
       }
 
       // Validate session
-      console.log("Calling sessionValidation");
       sessionValidation(null, (status) => {
-        console.log("sessionValidation callback - status:", status);
-
         if (!(status >= 200 && status < 300)) {
           window.location.href = BASE_URL.umis_landing_page;
           return;
@@ -55,14 +49,7 @@ function ProtectedRoutes({ children }) {
 
   // Watch for permissions to be loaded AND check route access
   useEffect(() => {
-    console.log("Auth state:", { isAuthenticated, permissions });
-
     if (isAuthenticated && permissions?.length > 0) {
-      console.log(
-        "Permissions loaded, checking route access for:",
-        location.pathname,
-      );
-
       // Skip permission check for root and signing paths
       if (
         location.pathname === "/" ||
@@ -74,14 +61,10 @@ function ProtectedRoutes({ children }) {
 
       // Check if user has permission for current path
       const hasAccess = canAccessRoute(location.pathname, permissions);
-      console.log("Access check result:", hasAccess);
 
       if (!hasAccess) {
-        console.log("ACCESS DENIED for path:", location.pathname);
-
         // Get the last valid path they were on
         const lastPath = localStorageGetter("path");
-        console.log("Redirecting to last valid path:", lastPath);
 
         // Redirect back to where they were
         if (lastPath && lastPath !== location.pathname) {
@@ -94,7 +77,6 @@ function ProtectedRoutes({ children }) {
       }
 
       // If access granted, save this path as the last valid path
-      console.log("Access granted, saving path:", location.pathname);
       localStorageSetter("path", location.pathname);
       setIsVerifying(false);
     }

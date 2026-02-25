@@ -246,7 +246,7 @@ const Objectives = () => {
       if (!isSuccess) {
         console.error("Failed to delete objective:", message);
       }
-
+      setIsEditMode(false);
       // setIsLoading(false);
       setOpenDeleteModal(false);
       setSelectedObjectiveId(null);

@@ -20,7 +20,7 @@ const useActivitiesHook = () => {
           console.log(res);
           const { status, data } = res;
           setApplicationActivities(data);
-          callBack(status, message);
+          callBack(status, data.message);
         },
       });
     } catch (error) {
@@ -118,28 +118,37 @@ const useActivitiesHook = () => {
     try {
       remove({
         url: `${API.ACTIVITIES_DELETE}/${params.id}`,
-        params: params,
         failed: callBack,
         success: (res) => {
           const {
             status,
             data: { message },
           } = res;
-          setApplicationActivities((prev = []) => {
-            // If only one activity exists and it's the one being deleted
-            if (prev.length === 1 && prev[0].id === params.id) {
-              return []; // explicitly reset to empty array
-            }
 
-            // Otherwise, filter normally
-            return prev.filter((obj) => obj.id !== params.id);
+          console.log("removeActivity response:", res);
+
+          // Remove activity from state
+          const newActivities = applicationActivities.activities.filter(
+            (activity) => activity.id !== params.id,
+          );
+
+          setApplicationActivities({
+            ...applicationActivities,
+            activities: newActivities,
+            meta: {
+              ...applicationActivities.meta,
+              total_activities: newActivities.length,
+            },
           });
+
+          console.log("Deleting activity ID:", params.id);
+          console.log("New activities array:", newActivities);
           callBack?.(status, message);
         },
       });
     } catch (error) {
-      console.error("Error Deleting Objective:", error);
-      callBack(false, error.message);
+      console.error("Error Deleting Activity:", error);
+      callBack?.(false, error.message);
     }
   };
 

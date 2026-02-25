@@ -44,11 +44,6 @@ const Content = ({ sidebarWidth }) => {
     );
   }, [permissions, isAuthenticated]); // Re-run when permissions or auth state changes
 
-  // Debug logging
-  console.log("Content - isAuthenticated:", isAuthenticated);
-  console.log("Content - permissions:", permissions);
-  console.log("Content - filteredRoutes:", filteredRoutes);
-
   // Show loading state if not authenticated or no permissions yet
   if (!isAuthenticated || !permissions || permissions.length === 0) {
     return (

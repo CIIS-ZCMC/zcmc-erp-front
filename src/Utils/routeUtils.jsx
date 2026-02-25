@@ -68,7 +68,6 @@ const buildRouteMap = (routes) => {
 };
 
 buildRouteMap(sidebarRoutes);
-console.log("Route Permission Map:", routePermissionMap);
 
 // Simple function to check if user can access a path
 export const canAccessRoute = (pathname, userPermissions) => {

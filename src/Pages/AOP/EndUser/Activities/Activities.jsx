@@ -99,6 +99,7 @@ const Activities = () => {
   } = ACTIVITIES;
 
   const [isLoading, setIsLoading] = useState(false);
+  const [btnLoading, setIsBtnLoading] = useState(false);
   const [isCountModal, setIsCountModal] = useState(false);
   const [countActivities, setCountActivities] = useState(1);
   const [isOpenActivitiesModal, setIsOpenActivitiesModal] = useState(false);
@@ -180,7 +181,7 @@ const Activities = () => {
   };
 
   const handleSaveActivity = async () => {
-    setIsLoading(true);
+    setIsBtnLoading(true);
 
     const params = { id: selectedActivityId };
 
@@ -212,7 +213,7 @@ const Activities = () => {
           //   title: `${message}`,
           //   description: "",
           // });
-          setIsLoading(false);
+          setIsBtnLoading(false);
           handleCloseModal();
         } else {
           setAlertDialog({
@@ -220,7 +221,7 @@ const Activities = () => {
             title: message,
             description: "Please try again later",
           });
-          setIsLoading(false);
+          setIsBtnLoading(false);
           console.error(" Failed to update activity:", message);
         }
       });
@@ -237,11 +238,12 @@ const Activities = () => {
   const handleConfirmDelete = async () => {
     if (!selectedActivityId) return;
 
-    setIsLoading(true);
+    setIsBtnLoading(true);
 
     const params = { id: selectedActivityId };
 
     await removeActivity(params, (status, message) => {
+      console.log(status);
       const isSuccess = status === 200;
 
       if (!isSuccess) {
@@ -260,15 +262,10 @@ const Activities = () => {
         showSnack(200, message, "soft");
       }
 
-      setIsLoading(false);
+      setIsBtnLoading(false);
       setOpenDeleteModal(false);
       setSelectedActivityId(null);
     });
-
-    setTimeout(() => {
-      setIsLoading(false);
-      setOpenDeleteModal(false);
-    }, 2000);
   };
 
   const handleOpenDeleteModal = (activityId) => {
@@ -294,7 +291,7 @@ const Activities = () => {
   };
 
   const handleCountActivities = async () => {
-    setIsLoading(true);
+    setIsBtnLoading(true);
 
     const payload = {
       application_objective_id: objectiveId,
@@ -306,7 +303,7 @@ const Activities = () => {
         if (status === 201) {
           showSnack(200, message);
 
-          setIsLoading(false);
+          setIsBtnLoading(false);
           // handleCloseModal()
           setIsCountModal(false);
         } else {
@@ -315,7 +312,7 @@ const Activities = () => {
             title: message,
             description: "Please try again later",
           });
-          setIsLoading(false);
+          setIsBtnLoading(false);
           console.error(" Failed to update objectives:", message);
         }
       });
@@ -481,6 +478,7 @@ const Activities = () => {
           </Stack>
         </Stack>
       </BoxComponent>
+      {console.log(applicationActivities)}
 
       {isLoading ? (
         <Stack sx={centeredStyle}>
@@ -569,7 +567,7 @@ const Activities = () => {
           hasActionButtons={true}
           rightButtonLabel={`Save`}
           rightButtonAction={() => handleCountActivities()}
-          isLoading={isLoading}
+          isLoading={btnLoading}
         />
       )}
 
@@ -594,7 +592,7 @@ const Activities = () => {
           hasActionButtons={true}
           rightButtonLabel={`Save activity`}
           rightButtonAction={() => handleSaveActivity()}
-          isLoading={isLoading}
+          isLoading={btnLoading}
         />
       )}
 
@@ -615,7 +613,7 @@ const Activities = () => {
           }}
           rightButtonLabel="Delete"
           rightButtonAction={() => handleConfirmDelete()}
-          isLoading={isLoading}
+          isLoading={btnLoading}
         />
       )}
     </>

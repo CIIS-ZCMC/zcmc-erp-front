@@ -416,6 +416,10 @@ const AOPSummary = () => {
               {SUBMIT_ALERT_MESSAGES[status.id]}
             </Typography>
           }
+          handleClose={() => {
+            setOpenModal(false);
+            setPin("");
+          }}
           description={`${SUBMIT_ALERT_DESC[status.id]}`}
           maxWidth={"571px"}
           minWidth={"571px"}
