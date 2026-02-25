@@ -132,17 +132,15 @@ export default function ResourceCardComponent({
             </Box>
 
             {/* Quantity Controls */}
-            {status !== 2 ||
-              (status !== 4 && (
-                <Box>
-                  <QuantityControlComponent
-                    quantity={quantity}
-                    onDecrease={() => onQtyChange(resource_id, quantity - 1)}
-                    onIncrease={() => onQtyChange(resource_id, quantity + 1)}
-                    disabled={isAopDisabled(status)}
-                  />
-                </Box>
-              ))}
+
+            <Box>
+              <QuantityControlComponent
+                quantity={quantity}
+                onDecrease={() => onQtyChange(resource_id, quantity - 1)}
+                onIncrease={() => onQtyChange(resource_id, quantity + 1)}
+                disabled={isAopDisabled(status)}
+              />
+            </Box>
           </Stack>
 
           <Box>
