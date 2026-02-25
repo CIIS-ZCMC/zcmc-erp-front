@@ -68,7 +68,7 @@ const QuantityControlComponent = ({
         spacing="0.2rem"
         disabled={disabled}
       >
-        <IconButton onClick={onDecrease} disabled={quantity === 1}>
+        <IconButton onClick={onDecrease} disabled={disabled || quantity === 1}>
           <Minus />
         </IconButton>
         {/* <Button>{quantity}</Button> */}
