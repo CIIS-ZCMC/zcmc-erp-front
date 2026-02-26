@@ -232,7 +232,7 @@ export default function PPMPSummaryCards({
             spacing={1}
             sx={{
               flexGrow: 1,
-              height: isDispensing ? "75vh" : "65vh", // ONE source of truth
+              height: isDispensing ? "75vh" : "68vh", // ONE source of truth
             }}
             bgcolor={"#FAFAFA"}
             p={1}
@@ -243,7 +243,7 @@ export default function PPMPSummaryCards({
                 display={"flex"}
                 gap={2}
                 padding={0.5}
-                height={isDispensing ? "90%" : "100%"} // <-- FULL HEIGHT
+                height={isDispensing ? "95%" : "100%"} // <-- FULL HEIGHT
                 minHeight={0}
               >
                 <Box width="100%" display="flex" flexDirection="column">
@@ -371,7 +371,6 @@ export default function PPMPSummaryCards({
                         gridTemplateRows: "1fr 1fr",
                         gap: 2,
                         minHeight: 0,
-                        mb: 1,
                       }}
                     >
                       <PPMPCard

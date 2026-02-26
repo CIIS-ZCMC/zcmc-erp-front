@@ -56,6 +56,7 @@ import Footer from "../Modal/ItemRequests/Footer";
 import CardComponent from "@Components/Common/Card/CardComponent";
 import { ThreeDotsLoader } from "@Components/Common/Loading/ThreeDotsLoader";
 import PPMPSummaryCards from "./PPMPSummaryCards";
+import DashboardHeader from "./DashboardHeader";
 
 function PPMPDashboard(props) {
   const location = useLocation();
@@ -354,135 +355,50 @@ function PPMPDashboard(props) {
         }
       />
 
-      <BoxComponent
+      <Box
         mt={3}
-        height={"80vh"}
-        boxShadow={"xs"}
-        borderRadius={10}
+        height="80vh"
         sx={{
           display: "flex",
           flexDirection: "column",
+          borderRadius: 10,
+          boxShadow: "xs",
+          bgcolor: "white",
+          minHeight: 0, // 🔑 allow children to scroll
         }}
       >
-        <Grid
-          xs={12}
-          bgcolor="#006599"
-          sx={{ borderTopRightRadius: 10, borderTopLeftRadius: 10 }}
-          p={2}
-          mb={1}
+        {/* FIXED HEADER */}
+        <Box sx={{ flexShrink: 0 }}>
+          <DashboardHeader
+            setYear={setYear}
+            setOpenSave={setOpenSave}
+            years={years}
+            dashboard={dashboard}
+          />
+        </Box>
+
+        {/* SCROLLABLE BODY */}
+        <Box
+          sx={{
+            flex: 1,
+            minHeight: 0, // 🔑 required
+            overflowY: "auto",
+            px: 2,
+            pb: 2,
+          }}
         >
-          <Stack
-            direction={"row"}
-            justifyContent={"space-between"}
-            alignItems={"center"}
-            spacing={2}
-          >
-            <Stack width={"100%"}>
-              <Box display="flex" alignItems="center" gap={1}>
-                <Typography
-                  sx={{ color: "white", fontSize: 28, fontWeight: 600 }}
-                >
-                  PPMP for Fiscal year
-                </Typography>
-                <SelectComponent
-                  width="120px"
-                  bgcolor="#004366"
-                  txtcolor="white"
-                  years={years.years}
-                  onChange={(value) => {
-                    setYear(value);
-                  }}
-                />
-              </Box>
-              <Typography level="body-sm" sx={{ color: "white" }}>
-                {/* Mission: This is a sample mission written by the requesting
-                body. This could be as short as a single sentence but could be
-                as long as two sentences if necessary. */}
-                Mission :{" "}
-                {dashboard?.mission ? dashboard?.mission : "No mission yet"}
-              </Typography>
-            </Stack>
-            {dashboard?.ppmp_application?.status_id === 1 ||
-            dashboard?.ppmp_application?.status_id === 6 ? (
-              <Stack
-                bgcolor={"#FFF4E5"}
-                borderRadius={5}
-                direction={"row"}
-                alignItems="center"
-                padding={2}
-                spacing={1.5}
-                width={"75%"}
-              >
-                <WarningAmber sx={{ color: color.warning, fontSize: 20 }} />
-                <Box width={"100%"}>
-                  <Typography
-                    level="body-xs"
-                    color="warning"
-                    sx={{ fontWeight: 600 }}
-                  >
-                    {" "}
-                    Status: Draft Mode{" "}
-                  </Typography>
-                  <Typography level="body-xs" color="warning">
-                    This is a draft PPMP request that we’ve generated based from
-                    the AOP you’ve just created recently. Update the draft so
-                    you can submit it for approval.
-                  </Typography>
-                </Box>
-                <Box>
-                  <ButtonComponent
-                    label={
-                      dashboard?.ppmp_application?.status_id === 1
-                        ? "Submit AOP and PPMP for Review"
-                        : "Resubmit AOP and PPMP for Review"
-                    }
-                    width="250px"
-                    onClick={() => setOpenSave(true)}
-                  />
-                </Box>
-              </Stack>
-            ) : dashboard?.ppmp_application?.status_id === null ? (
-              <Stack
-                bgcolor={"#FFF4E5"}
-                borderRadius={5}
-                direction={"row"}
-                alignItems="center"
-                padding={2}
-                spacing={1.5}
-                width={"75%"}
-              >
-                <WarningAmber sx={{ color: color.warning, fontSize: 20 }} />
-                <Box width={"100%"}>
-                  <Typography
-                    level="body-xs"
-                    color="warning"
-                    sx={{ fontWeight: 600 }}
-                  >
-                    {" "}
-                    Status: Not Generated
-                  </Typography>
-                  <Typography level="body-xs" color="warning">
-                    AOP for {nextYear} is missing. Submit the AOP to generate
-                    the PPMP and enable updates.
-                  </Typography>
-                </Box>
-              </Stack>
-            ) : (
-              ""
-            )}
-          </Stack>
-        </Grid>
-        <PPMPSummaryCards
-          pageLoader={pageLoader}
-          dashboard={dashboard}
-          isDispensing={isDispensing}
-          timeline={timeline}
-          handleNavigate={handleNavigate}
-          setOpenNewRequest={setOpenNewRequest}
-          openNewRequest={openNewRequest}
-          handleItemRequest={handleItemRequest}
-        />
-      </BoxComponent>
+          <PPMPSummaryCards
+            pageLoader={pageLoader}
+            dashboard={dashboard}
+            isDispensing={isDispensing}
+            timeline={timeline}
+            handleNavigate={handleNavigate}
+            setOpenNewRequest={setOpenNewRequest}
+            openNewRequest={openNewRequest}
+            handleItemRequest={handleItemRequest}
+          />
+        </Box>
+      </Box>
       {/* <PageLoader isLoading={pageLoader} /> */}
 
       {/* View Item Requests Modal */}

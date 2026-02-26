@@ -17,7 +17,7 @@ export default function ApprovalTimeline({
         sx={{
           display: "flex",
           flexDirection: "column",
-          height: !isDispensing ? "60vh" : "40vh", // 👈 parent owns height
+          height: !isDispensing ? "60vh" : "45vh", // 👈 parent owns height
           minHeight: 0, // 🔑 required for flex scrolling children
           borderColor: "neutral.100",
           bgcolor: "white",
