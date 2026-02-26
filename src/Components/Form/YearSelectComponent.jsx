@@ -19,8 +19,7 @@ export default function SelectComponent({
   // );
   const [value, setValue] = React.useState(nextYear);
   const handleChange = (event, newValue) => {
-
-    console.log(newValue)
+    console.log(newValue);
 
     setValue(newValue); // update internal state
     if (onChange) onChange(newValue); // send value to parent if provided
@@ -35,8 +34,7 @@ export default function SelectComponent({
       onChange={handleChange}
       sx={{
         width: width,
-        fontSize: "22px",
-        fontWeight: "bolder",
+        fontSize: "30px",
         [`& .${selectClasses.indicator}`]: {
           transition: "0.2s",
           [`&.${selectClasses.expanded}`]: {

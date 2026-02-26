@@ -22,7 +22,7 @@ import {
   MdSettings,
   MdSupervisorAccount,
 } from "react-icons/md";
-import PPMPDashboard from "../Pages/PPMP/EndUser/PPMPDashboard";
+import PPMPDashboard from "../Pages/PPMP/EndUser/Dashboard/PPMPDashboard";
 import PPMPItems from "../Pages/PPMP/EndUser/PPMPItems";
 import AddItems from "../Pages/PPMP/EndUser/AddItems";
 import PPMPOutlet from "../Pages/PPMP/EndUser/PPMPOutlet";

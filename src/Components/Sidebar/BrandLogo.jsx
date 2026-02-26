@@ -21,7 +21,7 @@ function BrandLogo() {
   return (
     <Stack
       gap={1}
-      p={1.2}
+      p={1}
       sx={{ backgroundColor: color.light, borderRadius: theme.radius.lg }}
     >
       <Stack

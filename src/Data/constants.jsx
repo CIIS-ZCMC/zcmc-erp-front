@@ -91,7 +91,7 @@ export const AOP_SUMMARY = {
 export const AOP = {
   HEADER_TITLE: "AOP for Fiscal year",
   MISSION_LABEL: "Mission",
-  PAGE_TITLE: "Annual Operations Planning",
+  PAGE_TITLE: "Annual Operations Plan",
   PAGE_DESCRIPTION: ` The following below serves as the summary of your AOP request. You
                 can open and update your request before the deadline as set by the
                 administrators.`,

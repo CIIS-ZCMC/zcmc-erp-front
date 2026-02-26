@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState } from "react";
-import BoxComponent from "../../../Components/Common/Card/BoxComponent";
+import BoxComponent from "../../../../Components/Common/Card/BoxComponent";
 import {
   Box,
   Card,
@@ -18,12 +18,12 @@ import {
 } from "@mui/joy";
 
 import { PhilippinePesoIcon, ExternalLink } from "lucide-react";
-import ButtonComponent from "../../../Components/Common/ButtonComponent";
+import ButtonComponent from "../../../../Components/Common/ButtonComponent";
 import { useNavigate, useLocation } from "react-router-dom";
-import usePPMPHook from "../../../Hooks/PPMP/PPMPHook";
-import { socket } from "../../../Services/Socket";
-import { useAuth } from "../../../Store/AuthStore";
-import { nextYear } from "../../../Utils/Functions";
+import usePPMPHook from "../../../../Hooks/PPMP/PPMPHook";
+import { socket } from "../../../../Services/Socket";
+import { useAuth } from "../../../../Store/AuthStore";
+import { nextYear } from "../../../../Utils/Functions";
 import SelectComponent from "@Components/Form/YearSelectComponent";
 import {
   CloudDownloadOutlined,
@@ -39,86 +39,23 @@ import PageTitle from "@Components/Common/PageTitle";
 import ModalComponent from "@Components/Common/Dialog/ModalComponent";
 import { grey } from "@mui/material/colors";
 import AuthorizationPinComponent from "@Components/AuthorizationPinComponent";
-import useModalHook from "../../../Hooks/ModalHook";
+import useModalHook from "../../../../Hooks/ModalHook";
 import StepperComponent from "@Components/Stepper/StepperComponent";
 
-import useItemRequestHook from "../../../Hooks/ItemRequest/ItemRequestHookv2";
-import useItemRequestStore from "../../../Store/ItemRequestStore";
-import userErrorInputHook from "../../../Hooks/ErrorInputHook";
-import useAOPStore from "../../../Store/AOPStore";
+import useItemRequestHook from "../../../../Hooks/ItemRequest/ItemRequestHookv2";
+import useItemRequestStore from "../../../../Store/ItemRequestStore";
+import userErrorInputHook from "../../../../Hooks/ErrorInputHook";
+import useAOPStore from "../../../../Store/AOPStore";
 
 // Add New Item Request Components
-import NewRequestContent from "./Modal/AddItemRequest/Content";
+import NewRequestContent from "../Modal/AddItemRequest/Content";
 
 // View Item Requests Modal Components
-import Content from "./Modal/ItemRequests/Content";
-import Footer from "./Modal/ItemRequests/Footer";
+import Content from "../Modal/ItemRequests/Content";
+import Footer from "../Modal/ItemRequests/Footer";
 import CardComponent from "@Components/Common/Card/CardComponent";
 import { ThreeDotsLoader } from "@Components/Common/Loading/ThreeDotsLoader";
-
-const PPMPCard = ({
-  bgColor = "#CCEEFF",
-  icon,
-  label,
-  value,
-  description,
-  btnAction,
-  btnLabel,
-}) => {
-  const theme = useTheme();
-  const color = theme.palette.custom;
-  return (
-    <>
-      <Card
-        variant="soft"
-        sx={{
-          border: "1px solid #F0F0F0",
-          borderRadius: 20,
-          bgcolor: "white",
-          pt: 3,
-        }}
-      >
-        <CardContent>
-          <Stack spacing={1.5}>
-            <Box
-              width={56}
-              height={56}
-              sx={{ bgcolor: bgColor }}
-              borderRadius={50}
-              display={"flex"}
-              justifyContent={"center"}
-              alignItems={"center"}
-            >
-              {icon}
-            </Box>
-            <Typography
-              level="body-xs"
-              textTransform={"uppercase"}
-              sx={{ color: color.main, fontWeight: 600 }}
-            >
-              {label}
-            </Typography>
-            <Typography level="h3" sx={{ color: color.main, fontWeight: 600 }}>
-              {value}
-              {/* {activity?.cost?.toLocaleString("en-PH", {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}*/}
-            </Typography>
-            <Typography level="body-xs"> {description}</Typography>
-            {btnAction && (
-              <ButtonComponent
-                label={btnLabel}
-                endDecorator={<East />}
-                onClick={btnAction}
-              />
-            )}
-          </Stack>
-        </CardContent>
-      </Card>
-    </>
-  );
-};
+import PPMPSummaryCards from "./PPMPSummaryCards";
 
 function PPMPDashboard(props) {
   const location = useLocation();
@@ -406,10 +343,12 @@ function PPMPDashboard(props) {
     }
   };
 
+  const isDispensing = true;
+
   return (
     <Fragment>
       <PageTitle
-        title={"Project Procurement Management Planning"}
+        title={"Project Procurement Management Plan"}
         description={
           " The following below serves as the summary of your AOP request. You can open and update your request before the deadline as set by the administrators."
         }
@@ -533,339 +472,16 @@ function PPMPDashboard(props) {
             )}
           </Stack>
         </Grid>
-        {pageLoader ? (
-          <Stack height="70vh" alignItems="center" justifyContent="center">
-            <ThreeDotsLoader />
-          </Stack>
-        ) : dashboard &&
-          Object.keys(dashboard).length === 0 &&
-          dashboard.constructor === Object ? (
-          <>
-            {" "}
-            <Grid
-              container
-              bgcolor={"#FAFAFA"}
-              padding={0.5}
-              spacing={2}
-              sx={{
-                flexGrow: 1,
-                borderBottomLeftRadius: 10,
-                borderBottomRightRadius: 10,
-              }}
-            >
-              <Grid mt={1} xs={8}>
-                <BoxComponent
-                  justifyContent="center"
-                  alignItems="center"
-                  height="64vh"
-                  display="flex"
-                  padding={2}
-                >
-                  <Box textAlign="center">
-                    <Stack mb={1}>
-                      <Typography level="body-lg">
-                        {" "}
-                        AOP for {nextYear} is missing
-                      </Typography>
-                      <Typography level="title-lg">
-                        Submit the AOP first to generate and update the PPMP.
-                      </Typography>
-                    </Stack>
-
-                    <ButtonComponent
-                      label={"Go to AOP"}
-                      onClick={() => navigate("/aop")}
-                    />
-                  </Box>
-                </BoxComponent>
-              </Grid>
-
-              <Grid mt={1} sm={12} md={4}>
-                <BoxComponent height="64vh" padding={2}>
-                  <Typography level="title-lg">Approval Timeline</Typography>
-                  <Typography
-                    level="body-xs"
-                    mt={0.5}
-                    sx={{ color: color.fontLight }}
-                  >
-                    {" "}
-                    The list below shows the current status of the request.
-                  </Typography>
-                  <Divider sx={{ my: 1, color: "gray" }} />
-                  <Box
-                    sx={{
-                      display: "flex",
-                      justifyContent: "center",
-                      alignItems: "center",
-                    }}
-                    height={"57vh"}
-                  >
-                    <Typography level="body-sm" sx={{ color: color.fontLight }}>
-                      No transactions done yet.
-                    </Typography>
-                  </Box>
-                </BoxComponent>
-              </Grid>
-            </Grid>
-          </>
-        ) : (
-          <>
-            <Grid
-              container
-              spacing={1}
-              sx={{ flexGrow: 1 }}
-              bgcolor={"#FAFAFA"}
-              p={1}
-            >
-              <Grid xs={8.5}>
-                <BoxComponent
-                  bgColor={"#FAFAFA"}
-                  display={"flex"}
-                  gap={2}
-                  padding={2}
-                  height="55vh" // <-- FULL HEIGHT
-                  flex={1} // <-- ALLOWS STRETCHING IN FLEX CONTEXT
-                  minHeight={0}
-                >
-                  <Box
-                    sx={{
-                      width: "100%",
-                      height: "100%",
-                      maxWidth: 800,
-                      display: "grid",
-                      gridTemplateColumns: "minmax(0, 1fr) minmax(0, 1fr)",
-                      gridTemplateRows: "repeat(2, 1fr)",
-                      gap: 2,
-                    }}
-                  >
-                    <PPMPCard
-                      icon={
-                        <Handyman sx={{ fontSize: 25, color: color.main }} />
-                      }
-                      label={"   Total Items"}
-                      value={dashboard?.summary?.total_items_count}
-                      description={`Contained from (${dashboard?.summary?.activity_count}) total combined activities`}
-                      btnAction={() => handleNavigate()}
-                      btnLabel={"Go to Item Management"}
-                    />
-                    <PPMPCard
-                      bgColor="#C7EBC9"
-                      icon={
-                        <FormatListNumbered
-                          sx={{ fontSize: 25, color: "green" }}
-                        />
-                      }
-                      label={"Total Item Quantity"}
-                      value={dashboard?.summary?.total_quantity}
-                      description={`With a total cost of (₱ ${dashboard?.summary?.total_cost?.toLocaleString(
-                        "en-PH",
-                        {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        },
-                      )})`}
-                    />
-                    <PPMPCard
-                      bgColor="#FFD2D2"
-                      icon={
-                        <PhilippinePesoIcon
-                          style={{ fontSize: 25, color: "red" }}
-                        />
-                      }
-                      label={"TOTAL COST"}
-                      value={`₱ ${(dashboard?.summary?.total_cost).toLocaleString(
-                        "en-PH",
-                        {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        },
-                      )}`}
-                      description={`as found in (${dashboard?.summary?.total_items_count}) items in total on this request`}
-                    />
-                    <PPMPCard
-                      bgColor="#FBE2CC"
-                      icon={<Comment sx={{ fontSize: 25, color: "orange" }} />}
-                      label={"COMMENTS"}
-                      value={dashboard?.summary?.comments_count}
-                      description={`as found in (${dashboard?.summary?.items_with_comments_count}) items in total on this request`}
-                    />
-                  </Box>
-
-                  <BoxComponent width="60%">
-                    <Typography level="title-lg">PPMP Checklist</Typography>
-                    <Box
-                      sx={{
-                        flex: 1, // take remaining height
-                        overflowY: "auto", // scroll if content exceeds
-                        maxHeight: "45vh", // important for flex scroll
-                        pr: 1, // padding to avoid scrollbar overlapping content
-                        mt: 2,
-                      }}
-                    >
-                      <List size="lg" component="nav" variant="">
-                        {dashboard?.checklist?.map((list, key) => (
-                          <>
-                            <ListItem>
-                              <ListItemDecorator>
-                                <Checkbox
-                                  checked={!!list.status}
-                                  color={!!list.status && "success"}
-                                />
-                              </ListItemDecorator>
-                              <Stack>
-                                <Typography
-                                  level={list?.status ? "title-sm" : "body-sm"}
-                                  sx={{
-                                    color: list?.status ? grey[900] : grey[400],
-                                  }}
-                                >
-                                  {list?.title}
-                                </Typography>
-                                <Typography
-                                  level="body-xs"
-                                  fontWeight={400}
-                                  sx={{
-                                    color: list?.status ? grey[700] : grey[400],
-                                  }}
-                                  textAlign={"justify"}
-                                >
-                                  {list?.description}
-                                </Typography>
-                              </Stack>
-                            </ListItem>
-                            <ListDivider inset={"gutter"} />
-                          </>
-                        ))}
-                      </List>
-                    </Box>
-                  </BoxComponent>
-                </BoxComponent>
-
-                <Stack
-                  direction={"row"}
-                  alignItems={"flex-end"}
-                  justifyContent={"space-between"}
-                  pt={1}
-                >
-                  <Link
-                    sx={{
-                      fontSize: 12,
-                      // textDecoration: "none",
-                      textDecoration: "underline",
-                      gap: 0.5,
-                    }}
-                    endDecorator={<CloudDownloadOutlined />}
-                    // onClick={() => setOpenItemRequest(true)}
-                  >
-                    Print as (.XLS)
-                  </Link>
-
-                  <Stack
-                    display={"flex"}
-                    flexDirection={"row"}
-                    gap={2}
-                    alignItems={"center"}
-                    justifyContent={"center"}
-                  >
-                    {dashboard.ppmp_application.status_id === 1 ||
-                      (dashboard.ppmp_application.status_id === 6 && (
-                        <Link
-                          sx={{
-                            fontSize: 12,
-                            // textDecoration: "none",
-                            textDecoration: "underline",
-                            gap: 0.5,
-                          }}
-                          onClick={() => setOpenNewRequest(true)}
-                          endDecorator={<ExternalLink size={18} />}
-                        >
-                          Request new item
-                        </Link>
-                      ))}
-
-                    <Link
-                      sx={{
-                        fontSize: 12,
-                        // textDecoration: "none",
-                        textDecoration: "underline",
-                        gap: 0.5,
-                      }}
-                      onClick={() => handleItemRequest()}
-                      endDecorator={<ExternalLink size={18} />}
-                    >
-                      View Item Request
-                    </Link>
-                  </Stack>
-                </Stack>
-              </Grid>
-              <Grid
-                xs={3.5}
-                sx={{
-                  display: "flex",
-                  flexDirection: "column",
-                  height: "100%", // make the grid occupy full available height
-                }}
-              >
-                {/* Approval Timeline Here */}
-                {timeline?.length > 0 ? (
-                  <BoxComponent bgColor="#FFFFFF" p={2} height={"62vh"}>
-                    <Typography level="title-lg">Approval Timeline</Typography>
-
-                    <Typography
-                      level="body-xs"
-                      mt={0.5}
-                      sx={{ color: color.fontLight }}
-                    >
-                      The list below shows the current status of the request.
-                    </Typography>
-
-                    <Divider sx={{ my: 1 }} />
-
-                    <Stack
-                      sx={{
-                        height: "calc(60vh - 80px)", // adjust for title, subtitle, divider
-                        overflowY: "auto",
-                        overflowX: "hidden", // prevent horizontal overflow
-                        pr: 1, // optional padding for scrollbar
-                        mt: 3,
-                      }}
-                    >
-                      <StepperComponent data={timeline} />
-                    </Stack>
-                  </BoxComponent>
-                ) : (
-                  <BoxComponent height="58vh" padding={2}>
-                    <Typography level="title-lg">Approval Timeline</Typography>
-                    <Typography
-                      level="body-xs"
-                      mt={0.5}
-                      sx={{ color: color.fontLight }}
-                    >
-                      {" "}
-                      The list below shows the current status of the request.
-                    </Typography>
-                    <Divider sx={{ my: 1, color: "gray" }} />
-                    <Box
-                      sx={{
-                        display: "flex",
-                        justifyContent: "center",
-                        alignItems: "center",
-                      }}
-                      height={"50vh"}
-                    >
-                      <Typography
-                        level="body-sm"
-                        sx={{ color: color.fontLight }}
-                      >
-                        No transactions done yet.
-                      </Typography>
-                    </Box>
-                  </BoxComponent>
-                )}
-              </Grid>
-            </Grid>
-          </>
-        )}
+        <PPMPSummaryCards
+          pageLoader={pageLoader}
+          dashboard={dashboard}
+          isDispensing={isDispensing}
+          timeline={timeline}
+          handleNavigate={handleNavigate}
+          setOpenNewRequest={setOpenNewRequest}
+          openNewRequest={openNewRequest}
+          handleItemRequest={handleItemRequest}
+        />
       </BoxComponent>
       {/* <PageLoader isLoading={pageLoader} /> */}
 
