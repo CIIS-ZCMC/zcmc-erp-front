@@ -101,7 +101,7 @@ export const sidebarRoutes = [
             element: <PPMPDashboard />,
           },
           {
-            path: "manage-items",
+            path: "manage-items/:type",
             element: <PPMPItems />,
           },
           {

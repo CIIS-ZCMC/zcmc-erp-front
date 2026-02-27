@@ -9,7 +9,7 @@ import React, {
 import PageTitle from "../../../Components/Common/PageTitle";
 import ButtonComponent from "../../../Components/Common/ButtonComponent";
 import { Stack, Typography, Box, Card } from "@mui/joy";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import usePPMPHook from "../../../Hooks/PPMP/PPMPHook";
 import useModalHook from "../../../Hooks/ModalHook";
 import userErrorInputHook from "../../../Hooks/ErrorInputHook";
@@ -55,6 +55,7 @@ function PPMPItems(props) {
   const { showSnack } = useSnackbarHook();
   const { user } = useAuth();
   const { name, id, assignedArea } = user ?? {};
+  const { type } = useParams();
 
   const [pageLoader, setPageLoader] = useState(false);
   const [openDrawer, setOpenDrawer] = useState(false);
@@ -83,6 +84,7 @@ function PPMPItems(props) {
   useEffect(() => {
     setPageLoader(true);
     getPPMPItems(
+      type,
       (status, message) => {
         if (status !== 200) {
           console.error("Failed to fetch items:", message);

@@ -1,3 +1,4 @@
+import { Typography } from "@mui/joy";
 import { nextYear } from "../Utils/Functions";
 import { ReceiptEuroIcon, Check } from "lucide-react";
 
@@ -226,6 +227,11 @@ export const PPMP_CONSTANTS = {
   PPMP_RECEIVE_TITLE: "PPMP Management: Receiving",
   PPMP_RECEIVE_SUBHEADING:
     "Receive PPMP requests here. Each request is therefore recognized as completed its processing once received.",
+
+  PPMP_REGULAR:
+    "Covers all resources your unit planned under its own Annual Operations Plan objectives and activities. This is your department's standard procurement plan.",
+  PPMP_DISPENSING:
+    "Covers all common-use supply requests from other offices. Items here were added to your PPMP when end-users selected common-use supply under your office.",
 };
 
 export const LIBRARY_CONSTANTS = {
@@ -424,3 +430,39 @@ export const AOP_BUTTON_LABEL = {
   4: "View AOP Summary",
   6: "Review AOP",
 };
+
+//PPMP AND AOP SUBMISSION
+export const happensNext = [
+  {
+    description: (
+      <Typography level="body-sm" color="black">
+        ● <b>Planning Office Review:</b> Your AOP will be reviewed by the
+        Planning Office within 7–10 business days
+      </Typography>
+    ),
+  },
+  {
+    description: (
+      <Typography level="body-sm" color="black">
+        ● <b>Notification:</b> You will receive an official notification once
+        the review is complete
+      </Typography>
+    ),
+  },
+  {
+    description: (
+      <Typography level="body-sm" color="black">
+        ● <b>Dashboard Updates:</b> Check your AOP Dashboard anytime to track
+        the status of your submission
+      </Typography>
+    ),
+  },
+  {
+    description: (
+      <Typography level="body-sm" color="black">
+        ● <b>Possible Outcomes:</b> Your AOP may be approved, returned for
+        revision, or require additional information
+      </Typography>
+    ),
+  },
+];

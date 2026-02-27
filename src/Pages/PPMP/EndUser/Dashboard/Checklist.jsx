@@ -22,7 +22,7 @@ export default function Checklist({ checklist = [], isDispensing = false }) {
       sx={{
         display: "flex",
         flexDirection: "column",
-        height: !isDispensing ? "60vh" : "45vh", // 👈 parent owns height
+        height: !isDispensing ? "65vh" : "45vh", // 👈 parent owns height
         minHeight: 0, // 🔑 required for flex scrolling children
         borderColor: "neutral.100",
         bgcolor: "white",

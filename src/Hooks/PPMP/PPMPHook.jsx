@@ -23,10 +23,10 @@ const usePPMPHook = create((set) => ({
   status: [],
   timeline: [],
 
-  getPPMPItems: (callBack, page = 1, per_page = 15) => {
+  getPPMPItems: (type, callBack, page = 1, per_page = 15) => {
     read({
       url: `${PATH}-items`,
-      params: { page, per_page },
+      params: { type, page, per_page },
       failed: callBack,
       success: (res) => {
         const { status, message, data } = res;
@@ -146,7 +146,6 @@ const usePPMPHook = create((set) => ({
     });
   },
 
-
   removeItem: async (id, callBack) => {
     remove({
       url: `${PATH}-items-delete/${id}`,
@@ -199,9 +198,10 @@ const usePPMPHook = create((set) => ({
       url: `${PATH}-items-update/${id}`,
       form,
 
-      failed: (err) => {
+      failed: (status, message) => {
         // err is the raw error — pass everything to callback
-        callBack(500, err);
+        console.log(message);
+        callBack(status, message);
       },
       success: ({ status, data }) => {
         // Correct destructure for "data.data"
@@ -209,7 +209,7 @@ const usePPMPHook = create((set) => ({
         // Update store
         set((state) => ({
           ppmp: state.ppmp.map((res) =>
-            res.id === updatedItem.id ? { ...res, ...updatedItem } : res
+            res.id === updatedItem.id ? { ...res, ...updatedItem } : res,
           ),
           ppmp_total: ppmp_total,
         }));
@@ -230,7 +230,7 @@ const usePPMPHook = create((set) => ({
           ppmp: state.ppmp.map((res) =>
             res.id === updatedItem.id
               ? { ...res, activities: updatedItem.activities } // ✅ update only activities
-              : res
+              : res,
           ),
           ppmp_total: ppmp_total_amount,
         }));

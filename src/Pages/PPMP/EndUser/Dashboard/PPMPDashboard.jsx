@@ -1,62 +1,25 @@
 import React, { Fragment, useEffect, useState } from "react";
-import BoxComponent from "../../../../Components/Common/Card/BoxComponent";
-import {
-  Box,
-  Card,
-  CardContent,
-  Checkbox,
-  Divider,
-  Grid,
-  List,
-  ListDivider,
-  ListItem,
-  ListItemDecorator,
-  Stack,
-  Typography,
-  useTheme,
-  Link,
-} from "@mui/joy";
-
-import { PhilippinePesoIcon, ExternalLink } from "lucide-react";
-import ButtonComponent from "../../../../Components/Common/ButtonComponent";
+import { Box, useTheme } from "@mui/joy";
 import { useNavigate, useLocation } from "react-router-dom";
 import usePPMPHook from "../../../../Hooks/PPMP/PPMPHook";
-import { socket } from "../../../../Services/Socket";
-import { useAuth } from "../../../../Store/AuthStore";
 import { nextYear } from "../../../../Utils/Functions";
-import SelectComponent from "@Components/Form/YearSelectComponent";
-import {
-  CloudDownloadOutlined,
-  Comment,
-  East,
-  FormatListNumbered,
-  Handyman,
-  TextSnippetOutlined,
-  Warning,
-  WarningAmber,
-} from "@mui/icons-material";
 import PageTitle from "@Components/Common/PageTitle";
 import ModalComponent from "@Components/Common/Dialog/ModalComponent";
-import { grey } from "@mui/material/colors";
-import AuthorizationPinComponent from "@Components/AuthorizationPinComponent";
 import useModalHook from "../../../../Hooks/ModalHook";
-import StepperComponent from "@Components/Stepper/StepperComponent";
 
 import useItemRequestHook from "../../../../Hooks/ItemRequest/ItemRequestHookv2";
 import useItemRequestStore from "../../../../Store/ItemRequestStore";
 import userErrorInputHook from "../../../../Hooks/ErrorInputHook";
 import useAOPStore from "../../../../Store/AOPStore";
 
-// Add New Item Request Components
-import NewRequestContent from "../Modal/AddItemRequest/Content";
-
 // View Item Requests Modal Components
 import Content from "../Modal/ItemRequests/Content";
-import Footer from "../Modal/ItemRequests/Footer";
-import CardComponent from "@Components/Common/Card/CardComponent";
-import { ThreeDotsLoader } from "@Components/Common/Loading/ThreeDotsLoader";
 import PPMPSummaryCards from "./PPMPSummaryCards";
 import DashboardHeader from "./DashboardHeader";
+import NewRequestModal from "../Modal/AddItemRequest/NewRequestModal";
+import PPMPSubmissionModal from "../Modal/Dashboard/PPMPSubmissionModal";
+import SuccessSubmissionModal from "../Modal/Dashboard/SuccessSubmissionModal";
+import { happensNext } from "../../../../Data/constants";
 
 function PPMPDashboard(props) {
   const location = useLocation();
@@ -90,26 +53,14 @@ function PPMPDashboard(props) {
   }, [dashboard]);
 
   const [pageLoader, setPageLoader] = useState(false);
-  const { user } = useAuth();
-  const { name, id, assignedArea } = user ?? {};
-  const status = dashboard?.ppmp_application?.is_draft;
-
-  const theme = useTheme();
-  const color = theme.palette.custom;
-
   const [openSave, setOpenSave] = useState(false);
   const [pin, setPin] = useState("");
   const [year, setYear] = useState(nextYear);
-
   const [openViewItemRequest, setOpenItemRequest] = useState();
   const [openNewRequest, setOpenNewRequest] = useState(false);
   const [step, setStep] = useState(1);
-
-  const [selectedActivities, setSelectedActivities] = useState([]);
   const [buttonLoader, setButtonLoader] = useState(false);
-  const [activity, setActivity] = useState(null);
   const [openSuccessDialog, setOpenSuccessDialog] = useState(false);
-
   const [itemReq, setItemReq] = useState({
     classification: null,
     category: null,
@@ -126,46 +77,11 @@ function PPMPDashboard(props) {
     pin: "",
   });
 
-  const handleNavigate = () => {
-    navigate("/ppmp/manage-items");
+  const handleNavigate = (type) => {
+    navigate(`/ppmp/manage-items/${type}`);
   };
 
   const AOP_ID = dashboard?.ppmp_application?.aop_application?.id;
-
-  const happensNext = [
-    {
-      description: (
-        <Typography level="body-sm" color="black">
-          ● <b>Planning Office Review:</b> Your AOP will be reviewed by the
-          Planning Office within 7–10 business days
-        </Typography>
-      ),
-    },
-    {
-      description: (
-        <Typography level="body-sm" color="black">
-          ● <b>Notification:</b> You will receive an official notification once
-          the review is complete
-        </Typography>
-      ),
-    },
-    {
-      description: (
-        <Typography level="body-sm" color="black">
-          ● <b>Dashboard Updates:</b> Check your AOP Dashboard anytime to track
-          the status of your submission
-        </Typography>
-      ),
-    },
-    {
-      description: (
-        <Typography level="body-sm" color="black">
-          ● <b>Possible Outcomes:</b> Your AOP may be approved, returned for
-          revision, or require additional information
-        </Typography>
-      ),
-    },
-  ];
 
   const handleSubmit = async () => {
     try {
@@ -239,16 +155,6 @@ function PPMPDashboard(props) {
       }
     });
   }, [AOP_ID]);
-
-  // useEffect(() => {
-  //   if (!assignedArea?.name) return;
-
-  //   socket.emit("register-user", {
-  //     userId: id,
-  //     name: name,
-  //     area: assignedArea.name,
-  //   });
-  // }, [assignedArea]);
 
   const handleItemRequest = () => {
     setOpenItemRequest(true);
@@ -344,7 +250,7 @@ function PPMPDashboard(props) {
     }
   };
 
-  const isDispensing = true;
+  const isDispensing = dashboard?.is_dispensing;
 
   return (
     <Fragment>
@@ -357,7 +263,7 @@ function PPMPDashboard(props) {
 
       <Box
         mt={3}
-        height="80vh"
+        height="83vh"
         sx={{
           display: "flex",
           flexDirection: "column",
@@ -391,6 +297,9 @@ function PPMPDashboard(props) {
             pageLoader={pageLoader}
             dashboard={dashboard}
             isDispensing={isDispensing}
+            regularPPMP={dashboard?.regular_ppmp}
+            dispensingPPMP={dashboard?.dispensed_ppmp}
+            checklist={dashboard?.checklist}
             timeline={timeline}
             handleNavigate={handleNavigate}
             setOpenNewRequest={setOpenNewRequest}
@@ -414,143 +323,37 @@ function PPMPDashboard(props) {
       )}
 
       {openNewRequest && (
-        <ModalComponent
-          isOpen={openNewRequest}
-          handleClose={() => setOpenNewRequest(false)}
-          title={step === 1 ? "General information" : "Specifications"}
-          description={
-            step === 1
-              ? "Fill in the item information to create it"
-              : "List down details for the item you want to cretae to specify it."
-          }
-          maxWidth={"500px"}
-          height={step === 1 ? "auto" : step === 2 ? "680px" : "650px"}
-          content={
-            <NewRequestContent
-              step={step}
-              itemReq={itemReq}
-              setItemReq={setItemReq}
-            />
-          }
-          leftButtonLabel={step > 1 ? "Back to previous" : "Cancel"}
-          leftButtonAction={() => {
-            if (step > 1) {
-              handlePreviousStep();
-            } else {
-              setOpenNewRequest(false);
-            }
-          }}
-          rightButtonLabel={step < 2 ? "Next step" : "Confirm and save"}
-          rightButtonAction={() => {
-            if (step < 2) {
-              handleNextStep();
-            } else {
-              submit();
-            }
-          }}
-          isLoading={buttonLoader}
-          hasActionButtons
+        <NewRequestModal
+          openNewRequest={openNewRequest}
+          setOpenNewRequest={setOpenNewRequest}
+          step={step}
+          itemReq={itemReq}
+          setItemReq={setItemReq}
+          handlePreviousStep={handlePreviousStep}
+          handleNextStep={handleNextStep}
+          submit={submit}
+          buttonLoader={buttonLoader}
         />
       )}
 
       {/* call api item request by user first */}
       {openSave && (
-        <ModalComponent
-          isOpen={openSave}
-          title={
-            <Typography color="success">
-              Official Submission Confirmation
-            </Typography>
-          }
-          description={`You are about to officially submit your Annual Operational Plan and Project Procurement Management Plan for Fiscal Year ${nextYear} to the approving bodies for review and approval.`}
-          maxWidth={"571px"}
-          handleClose={() => setOpenSave(false)}
-          content={
-            <>
-              <Stack
-                sx={{
-                  bgcolor: grey[100],
-                  border: `1px solid ${grey[400]}`,
-                  borderRadius: 10,
-                  padding: 2,
-                  mt: 1.5,
-                }}
-                spacing={1}
-              >
-                <Typography
-                  level="body-sm"
-                  sx={{ fontWeight: 500, color: grey[800] }}
-                >
-                  Please confirm the following:
-                </Typography>
-                <Typography level="body-sm" sx={{ color: grey[800] }}>
-                  <b>✓</b> All information provided is accurate and complete
-                </Typography>
-                <Typography level="body-sm" sx={{ color: grey[800] }}>
-                  <b>✓</b> All required resource item details have been properly
-                  filled out
-                </Typography>
-                <Typography level="body-sm" sx={{ color: grey[800] }}>
-                  <b>✓</b> You have the authority to submit this document
-                </Typography>
-              </Stack>
-              <AuthorizationPinComponent setPin={setPin} />
-            </>
-          }
-          hasActionButtons
-          noRightButton={true}
-          leftButtonLabel="Submit"
-          leftButtonAction={() => handleSubmit()}
-          isLoading={buttonLoader}
+        <PPMPSubmissionModal
+          openSave={openSave}
+          setOpenSave={setOpenSave}
+          nextYear={nextYear}
+          handleSubmit={handleSubmit}
+          buttonLoader={buttonLoader}
+          setPin={setPin}
         />
       )}
 
       {openSuccessDialog && (
-        <ModalComponent
-          isOpen={openSuccessDialog}
-          title={
-            <Typography level="title-lg" color="">
-              AOP and PPMP for F.Y. {nextYear}{" "}
-              <b style={{ fontWeight: 600, color: "green" }}>
-                successfully submitted for review.
-              </b>
-            </Typography>
-          }
-          description="Your AOP and PPMP applications has been sent to designated to the next approving body and notified them for approvals."
-          content={
-            <Stack padding={2}>
-              <CardComponent
-                statusColor={"#0288D1"}
-                bgcolor={"#E0F5FF"}
-                justifyContentHeader={"flex-start"}
-                cardHeader={
-                  <Typography
-                    level="title-lg"
-                    startDecorator={<TextSnippetOutlined />}
-                    color="primary"
-                    mb={2}
-                  >
-                    What Happens Next?
-                  </Typography>
-                }
-                cardBody={
-                  <Stack
-                    spacing={2}
-                    textAlign={"left"}
-                    sx={{ textAlign: "justify" }}
-                  >
-                    {happensNext.map((item, index) => item.description)}
-                  </Stack>
-                }
-              />
-            </Stack>
-          }
-          maxWidth={"571px"}
-          handleClose={() => setOpenSuccessDialog(false)}
-          hasActionButtons
-          noRightButton={true}
-          leftButtonLabel="Close"
-          leftButtonAction={() => setOpenSuccessDialog(false)}
+        <SuccessSubmissionModal
+          openSuccessDialog={openSuccessDialog}
+          setOpenSuccessDialog={setOpenSuccessDialog}
+          nextYear={nextYear}
+          happensNext={happensNext}
         />
       )}
     </Fragment>

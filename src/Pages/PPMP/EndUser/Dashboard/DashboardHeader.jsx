@@ -2,7 +2,8 @@ import ButtonComponent from "@Components/Common/ButtonComponent";
 import SelectComponent from "@Components/Form/YearSelectComponent";
 import { WarningAmber } from "@mui/icons-material";
 import { Box, Grid, Stack, Typography, useTheme } from "@mui/joy";
-import React from "react";
+import { nextYear } from "../../../../Utils/Functions";
+import React, { useMemo } from "react";
 
 export default function DashboardHeader({
   years,
@@ -12,6 +13,11 @@ export default function DashboardHeader({
 }) {
   const theme = useTheme();
   const color = theme.palette.custom;
+
+  // const isChecklistComplete = useMemo(
+  //   () => dashboard?.checklist?.every((item) => item.status),
+  //   [dashboard?.checklist],
+  // );
   return (
     <Grid
       xs={12}
@@ -42,9 +48,6 @@ export default function DashboardHeader({
             />
           </Box>
           <Typography level="body-sm" sx={{ color: "white" }}>
-            {/* Mission: This is a sample mission written by the requesting
-                    body. This could be as short as a single sentence but could be
-                    as long as two sentences if necessary. */}
             Mission :{" "}
             {dashboard?.mission ? dashboard?.mission : "No mission yet"}
           </Typography>
@@ -85,6 +88,7 @@ export default function DashboardHeader({
                 }
                 width="250px"
                 onClick={() => setOpenSave(true)}
+                // disabled={!isChecklistComplete}
               />
             </Box>
           </Stack>

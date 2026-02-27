@@ -26,6 +26,7 @@ import Checklist from "./Checklist";
 import ApprovalTimeline from "./ApprovalTimeline";
 import { nextYear } from "../../../../Utils/Functions";
 import { useAuth } from "../../../../Store/AuthStore";
+import { PPMP_CONSTANTS } from "../../../../Data/constants";
 
 const PPMPCard = ({
   bgColor = "#CCEEFF",
@@ -142,6 +143,9 @@ export default function PPMPSummaryCards({
   setOpenNewRequest,
   openNewRequest,
   handleItemRequest,
+  regularPPMP = {},
+  dispensingPPMP = {},
+  checklist = [],
 }) {
   const theme = useTheme();
   const color = theme.palette.custom;
@@ -232,7 +236,7 @@ export default function PPMPSummaryCards({
             spacing={1}
             sx={{
               flexGrow: 1,
-              height: isDispensing ? "75vh" : "68vh", // ONE source of truth
+              height: isDispensing ? "75vh" : "70vh", // ONE source of truth
             }}
             bgcolor={"#FAFAFA"}
             p={1}
@@ -243,33 +247,29 @@ export default function PPMPSummaryCards({
                 display={"flex"}
                 gap={2}
                 padding={0.5}
-                height={isDispensing ? "95%" : "100%"} // <-- FULL HEIGHT
+                height={isDispensing ? "95%" : "90%"} // <-- FULL HEIGHT
                 minHeight={0}
               >
                 <Box width="100%" display="flex" flexDirection="column">
-                  {isDispensing && (
-                    <Box
-                      sx={{
-                        backgroundColor: "#004366",
-                        borderTopLeftRadius: 10,
-                        borderTopRightRadius: 10,
-                        mb: 1,
-                        padding: 2,
-                      }}
+                  <Box
+                    sx={{
+                      backgroundColor: "#004366",
+                      borderTopLeftRadius: 10,
+                      borderTopRightRadius: 10,
+                      mb: 1,
+                      padding: 2,
+                    }}
+                  >
+                    <Typography level="title-lg" sx={{ color: "white" }}>
+                      {regularPPMP?.area_code} PPMP{" "}
+                    </Typography>
+                    <Typography
+                      level="body-xs"
+                      sx={{ color: "white", fontWeight: 300 }}
                     >
-                      <Typography level="title-lg" sx={{ color: "white" }}>
-                        {user?.assignedArea?.area_id} PPMP{" "}
-                      </Typography>
-                      <Typography
-                        level="body-xs"
-                        sx={{ color: "white", fontWeight: 300 }}
-                      >
-                        Covers all resources your unit planned under its own
-                        Annual Operations Plan objectives and activities. This
-                        is your department's standard procurement plan.
-                      </Typography>
-                    </Box>
-                  )}
+                      {PPMP_CONSTANTS.PPMP_REGULAR}
+                    </Typography>
+                  </Box>
 
                   <Box
                     sx={{
@@ -286,9 +286,9 @@ export default function PPMPSummaryCards({
                         <Handyman sx={{ fontSize: 25, color: color.main }} />
                       }
                       label={"   Total Items"}
-                      value={dashboard?.summary?.total_items_count}
-                      description={`Contained from (${dashboard?.summary?.activity_count}) total combined activities`}
-                      btnAction={() => handleNavigate()}
+                      value={regularPPMP?.summary?.total_items_count}
+                      description={`Contained from (${regularPPMP?.summary?.activity_count}) total combined activities`}
+                      btnAction={() => handleNavigate("regular")}
                       btnLabel={"Go to Item Management"}
                     />
                     <PPMPCard
@@ -299,8 +299,8 @@ export default function PPMPSummaryCards({
                         />
                       }
                       label={"Total Item Quantity"}
-                      value={dashboard?.summary?.total_quantity}
-                      description={`With a total cost of (₱ ${dashboard?.summary?.total_cost?.toLocaleString(
+                      value={regularPPMP?.summary?.total_quantity}
+                      description={`With a total cost of (₱ ${regularPPMP?.summary?.total_cost?.toLocaleString(
                         "en-PH",
                         {
                           minimumFractionDigits: 2,
@@ -316,27 +316,27 @@ export default function PPMPSummaryCards({
                         />
                       }
                       label={"TOTAL COST"}
-                      value={`₱ ${(dashboard?.summary?.total_cost).toLocaleString(
+                      value={`₱ ${(regularPPMP?.summary?.total_cost).toLocaleString(
                         "en-PH",
                         {
                           minimumFractionDigits: 2,
                           maximumFractionDigits: 2,
                         },
                       )}`}
-                      description={`as found in (${dashboard?.summary?.total_items_count}) items in total on this request`}
+                      description={`as found in (${regularPPMP?.summary?.total_items_count}) items in total on this request`}
                     />
                     <PPMPCard
                       bgColor="#FBE2CC"
                       icon={<Comment sx={{ fontSize: 25, color: "orange" }} />}
                       label={"COMMENTS"}
-                      value={dashboard?.summary?.comments_count}
-                      description={`as found in (${dashboard?.summary?.items_with_comments_count}) items in total on this request`}
+                      value={regularPPMP?.summary?.comments_count}
+                      description={`as found in (${regularPPMP?.summary?.items_with_comments_count}) items in total on this request`}
                     />
                   </Box>
                   <FooterLinks
                     handleItemRequest={handleItemRequest}
                     setOpenNewRequest={setOpenNewRequest}
-                    status_id={dashboard?.ppmp_application?.status_id}
+                    status_id={regularPPMP?.status_id}
                   />
                 </Box>
 
@@ -358,9 +358,7 @@ export default function PPMPSummaryCards({
                         level="body-xs"
                         sx={{ color: "white", fontWeight: 300 }}
                       >
-                        Covers all common-use supply requests from other
-                        offices. Items here were added to your PPMP when
-                        end-users selected common-use supply under your office.
+                        {PPMP_CONSTANTS.PPMP_DISPENSING}{" "}
                       </Typography>
                     </Box>
                     <Box
@@ -378,9 +376,9 @@ export default function PPMPSummaryCards({
                           <Handyman sx={{ fontSize: 25, color: color.main }} />
                         }
                         label={"   Total Items"}
-                        value={dashboard?.summary?.total_items_count}
-                        description={`Contained from (${dashboard?.summary?.activity_count}) total combined activities`}
-                        btnAction={() => handleNavigate()}
+                        value={dispensingPPMP?.summary?.total_items_count}
+                        description={`Contained from (${dispensingPPMP?.summary?.activity_count}) total combined activities`}
+                        btnAction={() => handleNavigate("dispensed")}
                         btnLabel={"Go to Item Management"}
                       />
                       <PPMPCard
@@ -391,8 +389,8 @@ export default function PPMPSummaryCards({
                           />
                         }
                         label={"Total Item Quantity"}
-                        value={dashboard?.summary?.total_quantity}
-                        description={`With a total cost of (₱ ${dashboard?.summary?.total_cost?.toLocaleString(
+                        value={dispensingPPMP?.summary?.total_quantity}
+                        description={`With a total cost of (₱ ${dispensingPPMP?.summary?.total_cost?.toLocaleString(
                           "en-PH",
                           {
                             minimumFractionDigits: 2,
@@ -408,14 +406,14 @@ export default function PPMPSummaryCards({
                           />
                         }
                         label={"TOTAL COST"}
-                        value={`₱ ${(dashboard?.summary?.total_cost).toLocaleString(
+                        value={`₱ ${(dispensingPPMP?.summary?.total_cost).toLocaleString(
                           "en-PH",
                           {
                             minimumFractionDigits: 2,
                             maximumFractionDigits: 2,
                           },
                         )}`}
-                        description={`as found in (${dashboard?.summary?.total_items_count}) items in total on this request`}
+                        description={`as found in (${dispensingPPMP?.summary?.total_items_count}) items in total on this request`}
                       />
                       <PPMPCard
                         bgColor="#FBE2CC"
@@ -423,18 +421,18 @@ export default function PPMPSummaryCards({
                           <Comment sx={{ fontSize: 25, color: "orange" }} />
                         }
                         label={"COMMENTS"}
-                        value={dashboard?.summary?.comments_count}
-                        description={`as found in (${dashboard?.summary?.items_with_comments_count}) items in total on this request`}
+                        value={dispensingPPMP?.summary?.comments_count}
+                        description={`as found in (${dispensingPPMP?.summary?.items_with_comments_count}) items in total on this request`}
                       />
                     </Box>
                     <FooterLinks
                       handleItemRequest={handleItemRequest}
                       setOpenNewRequest={setOpenNewRequest}
-                      status_id={dashboard?.ppmp_application?.status_id}
+                      status_id={dispensingPPMP?.status_id}
                     />
                   </Box>
                 ) : (
-                  <Checklist checklist={dashboard?.checklist} />
+                  <Checklist checklist={checklist} />
                 )}
               </Box>
             </Grid>
