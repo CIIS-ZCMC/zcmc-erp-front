@@ -28,7 +28,6 @@ export default function Checklist({ checklist = [], isDispensing = false }) {
         bgcolor: "white",
       }}
     >
-      {console.log(checklist)}
       <Typography level="title-lg" p={2}>
         PPMP Checklist
       </Typography>

@@ -222,8 +222,8 @@ function ManageResources(props) {
               <Stack direction={"row"} spacing={1} width="100%">
                 <CalendarToday sx={{ fontSize: 20, color: blue[800] }} />{" "}
                 <Stack>
-                  <Typography level="body-xs">Timeframe</Typography>
-                  <Typography level="title-sm">
+                  <Typography level="body-sm">Timeframe</Typography>
+                  <Typography level="title-md">
                     {activity?.start_month
                       ? moment(activity.start_month).format("MMMM")
                       : ""}
@@ -249,8 +249,8 @@ function ManageResources(props) {
                   <PhilippinePesoIcon style={{ color: "white" }} />{" "}
                 </Box>
                 <Stack>
-                  <Typography level="body-xs">Total Cost</Typography>
-                  <Typography level="title-sm">
+                  <Typography level="body-sm">Total Cost</Typography>
+                  <Typography level="title-md">
                     ₱{" "}
                     {activity?.cost?.toLocaleString("en-PH", {
                       minimumFractionDigits: 2,
@@ -263,8 +263,8 @@ function ManageResources(props) {
               <Stack direction={"row"} spacing={1} width="100%">
                 <CheckCircle sx={{ fontSize: 26, color: blue[800] }} />{" "}
                 <Stack>
-                  <Typography level="body-xs">GAD-related activity</Typography>
-                  <Typography level="title-sm">
+                  <Typography level="body-sm">GAD-related activity</Typography>
+                  <Typography level="title-md">
                     {activity.is_gad_related ? "Yes" : "No"}
                   </Typography>
                 </Stack>
@@ -272,7 +272,7 @@ function ManageResources(props) {
             </Stack>
           </Stack>
           <Stack direction="row" spacing={3} alignItems="center" width={"100%"}>
-            <Typography level="body-xs" sx={{ fontWeight: 600 }}>
+            <Typography level="body-sm" sx={{ fontWeight: 600 }}>
               Target (by quarter)
             </Typography>
             <QuarterTarget

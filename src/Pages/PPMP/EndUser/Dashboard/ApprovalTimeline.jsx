@@ -38,9 +38,8 @@ export default function ApprovalTimeline({
             flex: 1,
             minHeight: 0,
             overflowY: "auto", // ✅ only this scrolls
-            pr: 1,
             p: 1,
-            display: timeline?.length > 0 ? "none" : "flex",
+            display: timeline?.length > 0 ? "block" : "none",
             alignItems: timeline?.length > 0 ? "none" : "center",
             justifyContent: timeline?.length > 0 ? "none" : "center",
           }}

@@ -1555,7 +1555,7 @@ const renderItem = (row) => (
         display: row?.area_from?.length > 0 ? "block" : "none",
       }}
     >
-      Common - use supply from:{" "}
+      Area/s:{" "}
       {row?.area_from?.map((item, index) => (
         <span key={index}>
           {item}

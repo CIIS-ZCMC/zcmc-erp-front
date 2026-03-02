@@ -425,11 +425,6 @@ export default function PPMPSummaryCards({
                         description={`as found in (${dispensingPPMP?.summary?.items_with_comments_count}) items in total on this request`}
                       />
                     </Box>
-                    <FooterLinks
-                      handleItemRequest={handleItemRequest}
-                      setOpenNewRequest={setOpenNewRequest}
-                      status_id={dispensingPPMP?.status_id}
-                    />
                   </Box>
                 ) : (
                   <Checklist checklist={checklist} />
@@ -445,6 +440,7 @@ export default function PPMPSummaryCards({
                 gap: 2,
               }}
             >
+              {console.log(timeline)}
               <ApprovalTimeline
                 timeline={timeline}
                 isDispensing={isDispensing}

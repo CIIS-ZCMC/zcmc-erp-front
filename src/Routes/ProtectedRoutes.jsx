@@ -20,23 +20,23 @@ function ProtectedRoutes({ children }) {
     const cancelToken = axios.CancelToken.source();
 
     const initialize = () => {
-      // Handle SSO signing path
+      // Allow SSO signing route
       if (location.pathname.includes(SSO_SIGNING_PATH)) {
-        const regenerateSigningSessionURL = `${location.pathname}${location.search}`;
-        navigate(regenerateSigningSessionURL);
+        setIsVerifying(false);
         return;
       }
 
-      // If already authenticated and have permissions, we're done
+      // Already authenticated
       if (isAuthenticated && permissions?.length > 0) {
         setIsVerifying(false);
         return;
       }
 
-      // Validate session
+      // Validate existing session
       sessionValidation(null, (status) => {
         if (!(status >= 200 && status < 300)) {
-          window.location.href = BASE_URL.umis_landing_page;
+          // ❗ NO USER / INVALID SESSION → SIGN IN
+          navigate(ROOT_PATH, { replace: true });
           return;
         }
       });
@@ -47,10 +47,9 @@ function ProtectedRoutes({ children }) {
     return () => cancelToken.cancel();
   }, []);
 
-  // Watch for permissions to be loaded AND check route access
+  // Permissions + route access check
   useEffect(() => {
     if (isAuthenticated && permissions?.length > 0) {
-      // Skip permission check for root and signing paths
       if (
         location.pathname === "/" ||
         location.pathname.includes(SSO_SIGNING_PATH)
@@ -59,30 +58,20 @@ function ProtectedRoutes({ children }) {
         return;
       }
 
-      // Check if user has permission for current path
       const hasAccess = canAccessRoute(location.pathname, permissions);
 
       if (!hasAccess) {
-        // Get the last valid path they were on
         const lastPath = localStorageGetter("path");
-
-        // Redirect back to where they were
-        if (lastPath && lastPath !== location.pathname) {
-          navigate(lastPath, { replace: true });
-        } else {
-          // If no last path or it's the same, go to dashboard
-          navigate("/dashboard", { replace: true });
-        }
+        navigate(lastPath || "/dashboard", { replace: true });
         return;
       }
 
-      // If access granted, save this path as the last valid path
       localStorageSetter("path", location.pathname);
       setIsVerifying(false);
     }
   }, [isAuthenticated, permissions, location.pathname]);
 
-  // Handle root path redirect
+  // Root redirect
   useEffect(() => {
     if (!isVerifying && isAuthenticated && permissions?.length > 0) {
       if (location.pathname === "/") {
@@ -92,7 +81,13 @@ function ProtectedRoutes({ children }) {
     }
   }, [isVerifying, isAuthenticated, permissions, location.pathname]);
 
-  // Show loading while verifying
+  // 🔴 FINAL GUARD: no user data → sign in
+  useEffect(() => {
+    if (!isVerifying && !isAuthenticated) {
+      navigate(ROOT_PATH, { replace: true });
+    }
+  }, [isVerifying, isAuthenticated]);
+
   if (isVerifying) {
     return (
       <div
@@ -106,10 +101,6 @@ function ProtectedRoutes({ children }) {
         <CircularProgress />
       </div>
     );
-  }
-
-  if (!isAuthenticated) {
-    return null;
   }
 
   return children;
