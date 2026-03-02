@@ -1555,10 +1555,10 @@ const renderItem = (row) => (
         display: row?.area_from?.length > 0 ? "block" : "none",
       }}
     >
-      Area/s:{" "}
+      Areas:{" "}
       {row?.area_from?.map((item, index) => (
         <span key={index}>
-          {item}
+          {item?.area} ({item?.quantity})
           {index < row.area_from.length - 1 ? ", " : ""}
         </span>
       ))}
@@ -1638,6 +1638,7 @@ export const PPMP_HEADERS = (
   handleEditToggle,
   lockedRows,
   userId,
+  isLocked,
 ) => [
   {
     id: "name",
@@ -1748,16 +1749,18 @@ export const PPMP_HEADERS = (
                   handleEditToggle(row.id, openRow, isEditing); // <--- toggle passed down
                 }}
               />
-              <ChipComponent
-                label="Remove"
-                startDecorator={<DeleteOutlineOutlined />}
-                variant="soft"
-                disabled={lockedByOther}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleDeletePPMP(row.id);
-                }}
-              />
+              {!isLocked && (
+                <ChipComponent
+                  label="Remove"
+                  startDecorator={<DeleteOutlineOutlined />}
+                  variant="soft"
+                  disabled={lockedByOther}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleDeletePPMP(row.id);
+                  }}
+                />
+              )}
             </>
           )}
         </Stack>

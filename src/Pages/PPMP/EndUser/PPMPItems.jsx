@@ -42,6 +42,7 @@ function PPMPItems(props) {
     ppmp,
     ppmp_total,
     pagination,
+    isLocked,
     getPPMPItems,
     exportPPMP,
     updatePPMP,
@@ -244,6 +245,7 @@ function PPMPItems(props) {
         handleEditToggle,
         lockedRows,
         id,
+        isLocked,
       ),
     [
       status,
@@ -253,6 +255,7 @@ function PPMPItems(props) {
       handleEditToggle,
       lockedRows,
       id,
+      isLocked,
     ],
   );
 
@@ -270,7 +273,7 @@ function PPMPItems(props) {
         withArrowBack
         onClickArrow={() => navigate("/ppmp")}
       />
-
+      {console.log(localRows)}
       <BoxComponent my={2} bgColor={"#FAFAF9"} boxShadow="xs" p={2}>
         <Stack direction={"row"} justifyContent={"space-between"} mb={2}>
           <Stack>
@@ -361,6 +364,7 @@ function PPMPItems(props) {
             onDeletePPMP={handleDeleteItem}
             lockedRows={lockedRows}
             userId={id}
+            isLocked={isLocked}
           />
         )}
         currentPage={pagination?.current_page}

@@ -41,6 +41,7 @@ const ExpandableRowComponent = ({
   onDeletePPMP,
   lockedRows,
   userId,
+  isLocked,
 }) => {
   const { setAlertDialog } = useModalHook();
   const { modes, activities, getProcModes, getActivities } = usePPMPHook();
@@ -386,6 +387,7 @@ const ExpandableRowComponent = ({
                         getOptionLabel={(option) => option.activity_code}
                         handleSelect={handleAddActivity}
                         color="danger"
+                        disabled={isLocked}
                       />
                     )}
                     <Box height={"300px"} sx={{ overflowY: "auto" }} pr={1}>
