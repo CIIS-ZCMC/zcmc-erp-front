@@ -27,6 +27,7 @@ import ApprovalTimeline from "./ApprovalTimeline";
 import { nextYear } from "../../../../Utils/Functions";
 import { useAuth } from "../../../../Store/AuthStore";
 import { PPMP_CONSTANTS } from "../../../../Data/constants";
+import formattedPrice from "../../../../Utils/formattedPrice";
 
 const PPMPCard = ({
   bgColor = "#CCEEFF",
@@ -36,6 +37,7 @@ const PPMPCard = ({
   description,
   btnAction,
   btnLabel,
+  isDispensing = false,
 }) => {
   const theme = useTheme();
   const color = theme.palette.custom;
@@ -84,6 +86,7 @@ const PPMPCard = ({
                 label={btnLabel}
                 endDecorator={<East />}
                 onClick={btnAction}
+                size={isDispensing ? "xs" : "sm"}
               />
             )}
           </Stack>
@@ -290,6 +293,7 @@ export default function PPMPSummaryCards({
                       description={`Contained from (${regularPPMP?.summary?.activity_count}) total combined activities`}
                       btnAction={() => handleNavigate("regular")}
                       btnLabel={"Go to Item Management"}
+                      isDispensing={isDispensing}
                     />
                     <PPMPCard
                       bgColor="#C7EBC9"
@@ -300,13 +304,7 @@ export default function PPMPSummaryCards({
                       }
                       label={"Total Item Quantity"}
                       value={regularPPMP?.summary?.total_quantity}
-                      description={`With a total cost of (₱ ${regularPPMP?.summary?.total_cost?.toLocaleString(
-                        "en-PH",
-                        {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        },
-                      )})`}
+                      description={`With a total cost of (${formattedPrice(regularPPMP?.summary?.total_cost)})`}
                     />
                     <PPMPCard
                       bgColor="#FFD2D2"
@@ -316,13 +314,7 @@ export default function PPMPSummaryCards({
                         />
                       }
                       label={"TOTAL COST"}
-                      value={`₱ ${(regularPPMP?.summary?.total_cost).toLocaleString(
-                        "en-PH",
-                        {
-                          minimumFractionDigits: 2,
-                          maximumFractionDigits: 2,
-                        },
-                      )}`}
+                      value={formattedPrice(regularPPMP?.summary?.total_cost)}
                       description={`as found in (${regularPPMP?.summary?.total_items_count}) items in total on this request`}
                     />
                     <PPMPCard
@@ -380,6 +372,7 @@ export default function PPMPSummaryCards({
                         description={`Contained from (${dispensingPPMP?.summary?.activity_count}) total combined activities`}
                         btnAction={() => handleNavigate("dispensed")}
                         btnLabel={"Go to Item Management"}
+                        isDispensing={isDispensing}
                       />
                       <PPMPCard
                         bgColor="#C7EBC9"
@@ -390,13 +383,7 @@ export default function PPMPSummaryCards({
                         }
                         label={"Total Item Quantity"}
                         value={dispensingPPMP?.summary?.total_quantity}
-                        description={`With a total cost of (₱ ${dispensingPPMP?.summary?.total_cost?.toLocaleString(
-                          "en-PH",
-                          {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          },
-                        )})`}
+                        description={`With a total cost of (${formattedPrice(dispensingPPMP?.summary?.total_cost)})`}
                       />
                       <PPMPCard
                         bgColor="#FFD2D2"
@@ -406,13 +393,9 @@ export default function PPMPSummaryCards({
                           />
                         }
                         label={"TOTAL COST"}
-                        value={`₱ ${(dispensingPPMP?.summary?.total_cost).toLocaleString(
-                          "en-PH",
-                          {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          },
-                        )}`}
+                        value={formattedPrice(
+                          dispensingPPMP?.summary?.total_cost,
+                        )}
                         description={`as found in (${dispensingPPMP?.summary?.total_items_count}) items in total on this request`}
                       />
                       <PPMPCard

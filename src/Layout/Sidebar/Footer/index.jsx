@@ -63,6 +63,8 @@ const Footer = () => {
     localStorage.removeItem("aop-ids");
     localStorage.removeItem("aop-storage");
     localStorage.removeItem("aop_application_id");
+    localStorage.removeItem("user");
+    localStorage.removeItem("path");
     window.location.href = BASE_URL.umis_landing_page;
   };
 

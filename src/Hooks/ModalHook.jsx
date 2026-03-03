@@ -33,6 +33,7 @@ const useModalHook = create((set, get) => ({
     status: "200",
     title: "This is a title",
     description: "This is subtitle.",
+    maxWidth: "200px",
   },
 
   setOpenModal: (isNew, isDelete, Open) => {
@@ -46,7 +47,13 @@ const useModalHook = create((set, get) => ({
   },
   // HANDLE ALERT STATE
   setAlertDialog: (data) => {
-    const { status, title, description, isGlobal = true } = data ?? null;
+    const {
+      status,
+      title,
+      description,
+      maxWidth,
+      isGlobal = true,
+    } = data ?? null;
     try {
       get().closeConfirmation();
       set(() => ({
@@ -56,6 +63,7 @@ const useModalHook = create((set, get) => ({
           status: status,
           title: title,
           description: description,
+          maxWidth: maxWidth,
         },
       }));
     } catch (e) {
@@ -71,6 +79,7 @@ const useModalHook = create((set, get) => ({
           // status: null,
           // title: null,
           // description: null,
+          maxWidth: "400px",
         },
       }));
     } catch (e) {

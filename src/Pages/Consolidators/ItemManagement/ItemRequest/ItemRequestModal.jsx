@@ -207,7 +207,7 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
           setAlertDialog({
             status: "error",
             title: message,
-            description: "Please try again later",
+            description: "Please try again.",
           });
           setIsLoading(false);
           console.error(" Failed to update activity:", message);

@@ -9,8 +9,6 @@ import BoxComponent from "@Components/Common/Card/BoxComponent";
 import AccordionComponent from "@Components/Common/AccordionComponent";
 import CardComponent from "@Components/Common/Card/CardComponent";
 import ButtonComponent from "@Components/Common/ButtonComponent";
-import ConfirmationModalComponent from "@Components/Common/Dialog/ConfirmationModalComponent";
-import AlertDialogComponent from "@Components/Common/Dialog/AlertDialogComponent";
 
 import Summary from "./Summary/Summary";
 import AccordionSummary from "./accordion/Objectives/AccordionSummary";
@@ -30,6 +28,7 @@ import PageTitle from "@Components/Common/PageTitle";
 import { isAopDisabled } from "../../../Utils/AopStatus";
 import ModalComponent from "@Components/Common/Dialog/ModalComponent";
 import AuthorizationPinComponent from "@Components/AuthorizationPinComponent";
+import useSnackbarHook from "../../../Hooks/SnackbarHook";
 
 const AOPSummary = () => {
   const navigate = useNavigate();
@@ -47,6 +46,8 @@ const AOPSummary = () => {
     closeConfirmation,
     closeAlertDialog,
   } = useModalHook();
+
+  const { showSnack } = useSnackbarHook();
 
   const {
     PAGE_TITLE,
@@ -133,13 +134,8 @@ const AOPSummary = () => {
     try {
       await updateAOP(params, payload, (status, message) => {
         if (status === 200) {
-          const data = {
-            status,
-            title: `AOP For F.Y. ${year} ${message}`,
-            isGlobal: false,
-            description: "",
-          };
-          setAlertDialog(data);
+          showSnack(status, message);
+          navigate("/aop");
           setIsLoading(false);
         } else if (status === 422) {
           // console.log(message)
@@ -245,20 +241,19 @@ const AOPSummary = () => {
           setIsLoading(false);
         } else {
           setAlertDialog({
-            status: 422,
+            status: "error",
             title: message,
             description: "",
           });
           setIsLoading(false);
-          console.error(" Failed to update activity:", message);
         }
       });
     } catch (error) {
-      console.error("Error updating AOP:", error);
+      console.log(error);
       setAlertDialog({
         status: "error",
         title: "Unexpected Error",
-        description: error.message || "Something went wrong.",
+        description: "Something went wrong.",
       });
     }
   };
@@ -395,7 +390,7 @@ const AOPSummary = () => {
                   </Typography>
 
                   <ButtonComponent
-                    label={status.id === 6 ? "Resubmit AOP" : "Create AOP"}
+                    label={status.id === 6 ? "Resubmit AOP" : "Submit AOP"}
                     size={"lg"}
                     onClick={() => handleOpenSubmitAopModal()}
                     color="primary"
@@ -458,13 +453,6 @@ const AOPSummary = () => {
           isLoading={isLoading}
         />
       )}
-
-      <AlertDialogComponent
-        leftButtonAction={() => handleConfirm()}
-        rightButtonAction={() => handleConfirm()}
-        isLoading={isLoading}
-        noRightButton={false}
-      />
     </>
   );
 };

@@ -9,6 +9,7 @@ import {
   useAOPApplication,
   useAOPApplicationObjectives,
   useAOPApplicationsActions,
+  useHasDispense,
   useLoadingState,
 } from "../../../Hooks/AOP/AOPApplicationsHook";
 import { useActivityActions } from "../../../Hooks/AOP/ActivityHook";
@@ -22,13 +23,13 @@ import {
 } from "../../../Hooks/CommentHook";
 import { ActivityDetails } from "./Contents/ActivityDetails";
 import { CommentsDetails } from "./Contents/CommentsDetails";
-
 import { FeedbackContent } from "./Contents/FeedbackContent";
 import { useUserTypes } from "../../../Store/AuthStore";
 import ProcessAOPContent from "./Contents/ProcessAOPContent";
 import { useApprovalActions } from "../../../Hooks/AOP/AOPApprovalHook";
 import BoxComponent from "@Components/Common/Card/BoxComponent";
 import { ThreeDotsLoader } from "@Components/Common/Loading/ThreeDotsLoader";
+import { OpenInNew } from "@mui/icons-material";
 
 export default function ManageAOP() {
   const { isPlanning, isMCC } = useUserTypes();
@@ -49,6 +50,7 @@ export default function ManageAOP() {
   const AOPApplication = useAOPApplication();
   const objectives = useAOPApplicationObjectives();
   const remarks = useRemarks();
+  const hasDispense = useHasDispense();
 
   // ACTIVITY ID
   // ✅ SAFE DERIVATION
@@ -163,17 +165,38 @@ export default function ManageAOP() {
               <Grid item="true" xs={4} height={{ md: "auto", lg: "100%" }}>
                 <ContainerComponent sx={{ mb: 1 }}>
                   <Typography level="body-sm" mb={2}>
-                    To view the <b>Project Procurement Management Plan</b> of{" "}
-                    <b>{AREA_CODE}</b>, click the button below.
+                    To view the Project Procurement Management Plan for this
+                    AOP, click the button below.
                   </Typography>
-                  <ButtonComponent
-                    label="View PPMP"
-                    fullWidth={true}
-                    variant={"soft"}
-                    onClick={() =>
-                      navigate(`/approval/view-ppmp/${AOP_APPLICATION_ID}`)
-                    }
-                  />
+                  <Stack
+                    spacing={2}
+                    direction={!hasDispense ? "column" : "row"}
+                  >
+                    <ButtonComponent
+                      label={`${AREA_CODE} PPMP`}
+                      fullWidth={true}
+                      variant={"soft"}
+                      onClick={() =>
+                        navigate(
+                          `/approval/view-ppmp/${AOP_APPLICATION_ID}/${"regular"}`,
+                        )
+                      }
+                      endDecorator={<OpenInNew />}
+                    />
+                    {hasDispense && (
+                      <ButtonComponent
+                        label="Dispensing PPMP"
+                        fullWidth={true}
+                        variant={"soft"}
+                        onClick={() =>
+                          navigate(
+                            `/approval/view-ppmp/${AOP_APPLICATION_ID}/${"dispensed"}`,
+                          )
+                        }
+                        endDecorator={<OpenInNew />}
+                      />
+                    )}
+                  </Stack>
                 </ContainerComponent>
                 <ContainerComponent
                   title={"List of objectives and activities"}

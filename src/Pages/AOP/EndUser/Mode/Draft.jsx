@@ -50,7 +50,7 @@ const Draft = ({ status }) => {
         </Box>
         <Box width={"450px"}>
           <ButtonComponent
-            label={AOP_BUTTON_LABEL[status] ?? "Create PPMP"}
+            label={AOP_BUTTON_LABEL[status] ?? "Submit AOP"}
             onClick={() => navigate("/aop/summary")}
             fullWidth={true}
           />

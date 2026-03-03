@@ -33,6 +33,7 @@ const usePPMPApplicationHook = create((set) => ({
 
     getPPMPApplicationByID: (
       id,
+      type,
       search = "",
       page = 1,
       per_page = 15,
@@ -43,7 +44,7 @@ const usePPMPApplicationHook = create((set) => ({
 
       read({
         url: `${API.PPMP_APPLICATION}/${id}`,
-        params: { search: search, page, per_page, tab: tab },
+        params: { search: search, page, per_page, tab: tab, type: type },
         success: (res) => {
           const { data, message } = res.data;
 

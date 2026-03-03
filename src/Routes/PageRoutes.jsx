@@ -137,7 +137,7 @@ export const sidebarRoutes = [
             element: <ManageAOP />,
           },
           {
-            path: "view-ppmp/:id",
+            path: "view-ppmp/:id/:type",
             element: <ViewPPMP />,
           },
         ],

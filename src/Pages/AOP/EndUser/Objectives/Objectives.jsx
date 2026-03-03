@@ -195,7 +195,7 @@ const Objectives = () => {
           setAlertDialog({
             status: "error",
             title: message,
-            description: "Please try again later",
+            description: "Please try again.",
           });
           console.error(" Failed to update objectives:", message);
         }
@@ -240,7 +240,7 @@ const Objectives = () => {
       setAlertDialog({
         status: isSuccess ? "success" : "error",
         title: message,
-        description: isSuccess ? "" : "Please try again later.",
+        description: isSuccess ? "" : "Please try again.",
       });
 
       if (!isSuccess) {

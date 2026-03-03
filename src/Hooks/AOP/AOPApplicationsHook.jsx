@@ -12,6 +12,7 @@ const useAOPApplicationsHook = create((set) => ({
   aopApplicationObjectives: [],
   aopApplication: null,
   timeline_id: "",
+  has_dispense: false,
 
   // approvalTimeline: [],
   isLoading: false,
@@ -55,7 +56,12 @@ const useAOPApplicationsHook = create((set) => ({
         },
         success: (response) => {
           const {
-            data: { objectives = [], application, latest_timeline_id },
+            data: {
+              objectives = [],
+              application,
+              latest_timeline_id,
+              has_dispense,
+            },
             message,
           } = response.data;
 
@@ -64,10 +70,12 @@ const useAOPApplicationsHook = create((set) => ({
             aopApplicationObjectives: objectives,
             aopApplication: application,
             isLoading: false,
+            has_dispense: has_dispense,
           });
           localStorageSetter("aopApplication", application); // STORE TO LOCALSTORAGE
           localStorageSetter("aopApplicationObjectives", objectives); // STORE TO LOCALSTORAGE
           localStorageSetter("timeline_id", latest_timeline_id); // STORE TO LOCALSTORAGE
+          localStorageSetter("has_dispense", has_dispense); // STORE TO LOCALSTORAGE
           // STORE TO LOCALSTORAGE
 
           callback(200, message);
@@ -121,6 +129,9 @@ export const useAOPApplicationsActions = () =>
 
 export const useLoadingState = () =>
   useAOPApplicationsHook((state) => state.isLoading);
+
+export const useHasDispense = () =>
+  useAOPApplicationsHook((state) => state.has_dispense);
 
 export const useTimelineID = () =>
   useAOPApplicationsHook((state) => state.timeline_id);

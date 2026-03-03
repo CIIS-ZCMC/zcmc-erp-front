@@ -123,23 +123,10 @@ const useAOPHook = () => {
 
           const {
             status,
-            data: { message, activities_without_resources },
+            data: { message, data },
           } = res;
 
-          console.log(activities_without_resources);
-
-          // if (status === 200) {
-
-          //   const fetchParams = { application_objective_id: data.application_objective_id };
-
-          //   getActivities(fetchParams, (status, message) => {
-          //     if (!(status >= 200 && status < 300)) {
-          //       console.error("Failed to refresh activities:", message);
-          //     }
-          //   });
-          // }
-
-          callBack?.(status, message, activities_without_resources);
+          callBack?.(status, message);
         },
       });
     } catch (error) {

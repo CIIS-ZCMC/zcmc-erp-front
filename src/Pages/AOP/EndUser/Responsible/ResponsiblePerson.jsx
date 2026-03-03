@@ -120,7 +120,7 @@ const ResponsiblePerson = () => {
           setAlertDialog({
             status: "error",
             title: message,
-            description: "Please try again later",
+            description: "Please try again",
           });
           setIsLoading(false);
           console.error(" Failed to create responsible people:", message);
@@ -160,7 +160,7 @@ const ResponsiblePerson = () => {
       setAlertDialog({
         status: isSuccess ? "success" : "error",
         title: message,
-        description: isSuccess ? "" : "Please try again later.",
+        description: isSuccess ? "" : "Please try again.",
       });
 
       if (!isSuccess) {

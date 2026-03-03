@@ -219,7 +219,7 @@ const Activities = () => {
           setAlertDialog({
             status: "error",
             title: message,
-            description: "Please try again later",
+            description: "Please try again.",
           });
           setIsBtnLoading(false);
           console.error(" Failed to update activity:", message);
@@ -250,7 +250,7 @@ const Activities = () => {
         setAlertDialog({
           status: "error",
           title: "Error deleting",
-          description: "Please try again later",
+          description: "Please try again.",
         });
       } else {
         socket.emit("aop:activity:stop-edit", {
@@ -310,7 +310,7 @@ const Activities = () => {
           setAlertDialog({
             status: "error",
             title: message,
-            description: "Please try again later",
+            description: "Please try again.",
           });
           setIsBtnLoading(false);
           console.error(" Failed to update objectives:", message);

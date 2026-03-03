@@ -50,6 +50,7 @@ import { useUserTypes } from "../../../Store/AuthStore";
 
 function ViewPPMP() {
   const { id } = useParams();
+  const { type } = useParams();
   const { getPPMPApplicationByID } = usePPMPApplicationActions();
   const { ppmpApplicationItems, ppmpApplication, isLoading, pagination } =
     usePPMP();
@@ -92,7 +93,14 @@ function ViewPPMP() {
   // Always fetch data when relevant params change
   useEffect(() => {
     if (!id) return;
-    getPPMPApplicationByID(id, debouncedSearch, page, perPage, effectiveTab);
+    getPPMPApplicationByID(
+      id,
+      type,
+      debouncedSearch,
+      page,
+      perPage,
+      effectiveTab,
+    );
   }, [id, effectiveTab, page, perPage, debouncedSearch]);
 
   // Keep localRows in sync for optimistic updates
@@ -143,15 +151,15 @@ function ViewPPMP() {
         title={
           <Typography>
             Manage{" "}
-            <Typography textColor={"warning.400"}>{AREA_CODE}'s</Typography>{" "}
+            <Typography textColor={"warning.400"}>
+              {" "}
+              {type === "regular" ? `${AREA_CODE}'s` : "Dispensing"}
+            </Typography>{" "}
             PPMP{" "}
             {/* AOP <Typography textColor={"warning.400"}>#{id} </Typography> */}
             for Fiscal Year{" "}
             <Typography textColor={"warning.400"}>{FISCAL_YEAR}</Typography>
           </Typography>
-        }
-        description={
-          "Each objective has its own list of activities. Mark each activity as reviewed and process the request to continue."
         }
         items={[
           {
@@ -169,8 +177,23 @@ function ViewPPMP() {
         <Stack direction={"row"} alignItems={"flex-end"} spacing={5}>
           <Stack width={"100%"}>
             <Stack direction={"row"} gap={1.5}>
-              <Typography level="body-md" sx={{ fontWeight: 600 }}>
-                List of PPMP Resources
+              <Typography
+                level="body-md"
+                sx={{ fontWeight: 600 }}
+                endDecorator={
+                  <ChipComponent
+                    label={
+                      type === "regular"
+                        ? `${AREA_CODE}'s`
+                        : "Consolidated Supplies"
+                    }
+                    color={"success"}
+                    variant={"outlined"}
+                    size="md"
+                  />
+                }
+              >
+                PPMP Resources for
               </Typography>
             </Stack>
             <Typography level="body-sm" sx={{ mb: 2 }}>

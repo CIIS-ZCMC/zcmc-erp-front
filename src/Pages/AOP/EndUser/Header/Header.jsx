@@ -7,6 +7,7 @@ import SelectComponent from "@Components/Form/YearSelectComponent";
 import { AOP } from "../../../../Data/constants";
 import ButtonComponent from "@Components/Common/ButtonComponent";
 import { Edit } from "@mui/icons-material";
+import { isAopDisabled } from "../../../../Utils/AopStatus";
 
 const Header = ({
   yearsData,
@@ -14,6 +15,7 @@ const Header = ({
   mission,
   handleChange,
   handleEdit,
+  status,
 }) => {
   const { HEADER_TITLE, MISSION_LABEL } = AOP;
 
@@ -39,20 +41,24 @@ const Header = ({
               level="body-sm"
               sx={{ color: "white" }}
               endDecorator={
-                <ButtonComponent
-                  size={"xs"}
-                  label={
-                    <Typography
-                      fontStyle={"italic"}
-                      sx={{ color: "white" }}
-                      fontSize={13}
-                    >
-                      Edit
-                    </Typography>
-                  }
-                  startDecorator={<Edit />}
-                  onClick={() => handleEdit()}
-                />
+                !isAopDisabled(status) ? (
+                  <ButtonComponent
+                    size={"xs"}
+                    label={
+                      <Typography
+                        fontStyle={"italic"}
+                        sx={{ color: "white" }}
+                        fontSize={13}
+                      >
+                        Edit
+                      </Typography>
+                    }
+                    startDecorator={<Edit />}
+                    onClick={() => handleEdit()}
+                  />
+                ) : (
+                  "none"
+                )
               }
             >
               {MISSION_LABEL}: {mission}

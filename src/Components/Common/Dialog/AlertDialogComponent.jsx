@@ -36,7 +36,14 @@ function AlertDialogComponent({
   noRightButton = true,
 }) {
   const {
-    alertDialogState: { isOpen, status, title, subtitle, description },
+    alertDialogState: {
+      isOpen,
+      status,
+      title,
+      subtitle,
+      description,
+      maxWidth,
+    },
     closeAlertDialog,
   } = useModalHook();
 
@@ -53,7 +60,7 @@ function AlertDialogComponent({
             <ModalDialog
               sx={{
                 width: "auto",
-                maxWidth: "400px",
+                maxWidth: "500px",
                 maxHeight: "60vh",
                 overflowY: "auto",
                 p: 2,

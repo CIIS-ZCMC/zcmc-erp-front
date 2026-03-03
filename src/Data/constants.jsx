@@ -425,7 +425,7 @@ export const STATUS_MESSAGES = {
 };
 
 export const AOP_BUTTON_LABEL = {
-  1: "Create PPMP",
+  1: "Submit AOP",
   2: "View AOP Summary",
   4: "View AOP Summary",
   6: "Review AOP",

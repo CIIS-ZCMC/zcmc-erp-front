@@ -101,21 +101,18 @@ function PPMPDashboard(props) {
             setOpenSave(false);
             setPin("");
             setOpenSuccessDialog(true);
-            getPPMPTimeline(
-              dashboard?.ppmp_application?.id,
-              (status, message) => {
-                if (!(status >= 200 && status < 300)) {
-                  // show toast error
-                }
-              },
-            );
+            getPPMPTimeline(AOP_ID, (status, message) => {
+              if (!(status >= 200 && status < 300)) {
+                // show toast error
+              }
+            });
             return;
           } else {
             setButtonLoader(false);
             setAlertDialog({
               status: "error",
-              title: "Submission Failed",
-              description: message,
+              title: message,
+              description: "",
             });
             return;
           }
@@ -149,7 +146,7 @@ function PPMPDashboard(props) {
   useEffect(() => {
     if (!AOP_ID) return;
 
-    getPPMPTimeline(AOP_ID, "ppmp", (status, message) => {
+    getPPMPTimeline(AOP_ID, (status, message) => {
       if (!(status >= 200 && status < 300)) {
         // show toast error
       }

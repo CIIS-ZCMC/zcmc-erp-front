@@ -148,7 +148,7 @@ function DashboardEndUser(props) {
           setAlertDialog({
             status: "error",
             title: `${message}`,
-            description: "Please try again later",
+            description: "Please try again.",
           });
           setIsLoading(false);
           console.error(" Failed to create aop:", message);
@@ -383,6 +383,7 @@ function DashboardEndUser(props) {
                   mission={mission}
                   handleChange={handleChangeFiscalYear}
                   handleEdit={handleOpenEdit}
+                  status={aop?.status.id}
                 />
 
                 {/* {aop?.status?.id !== 4 && (
