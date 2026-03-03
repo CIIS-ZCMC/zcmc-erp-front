@@ -18,7 +18,7 @@ export const SSO_SIGNING_PATH = "signing-in";
  * Directory of user first sigin
  * Change according to your system needs
  */
-export const ROOT_PATH = "/dashboard";
+export const ROOT_PATH = "/";
 
 export const EPR_API_ENDPOINTS = {
   //ERP END POINTS RELATED HERE

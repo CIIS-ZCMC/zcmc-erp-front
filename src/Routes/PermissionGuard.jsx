@@ -4,7 +4,7 @@ import { useAuth } from "../Store/AuthStore";
 export default function PermissionGuard({
   children,
   requiredPermissions = [],
-  redirectTo = "/dashboard",
+  redirectTo = "/",
 }) {
   const { permissions } = useAuth();
 

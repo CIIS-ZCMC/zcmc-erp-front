@@ -18,7 +18,7 @@ import { BASE_URL } from "../../../Services/Config";
 import MenuItemComponent from "../Content/MenuItemComponent";
 import useModalHook from "../../../Hooks/ModalHook";
 import ConfirmationModalComponent from "../../../Components/Common/Dialog/ConfirmationModalComponent";
-import { useAuth } from "../../../Store/AuthStore";
+import { useAuth, useAuthActions } from "../../../Store/AuthStore";
 
 import useAOPStore, { useAOPActions } from "../../../Store/AOPStore";
 import useCartStore from "../../../Hooks/ItemCartHook";
@@ -30,6 +30,7 @@ const Footer = () => {
   const { isCollapsed } = useSidebarHook();
   const { setConfirmationModal, closeConfirmation } = useModalHook();
   const { user } = useAuth();
+  const { logout } = useAuthActions();
   const theme = useTheme();
   const { clearActivityStore } = useActivityActions();
 
@@ -49,21 +50,18 @@ const Footer = () => {
     };
     setConfirmationModal(data);
   };
-  const handleLogOut = () => {
+  const handleLogOut = async () => {
     setLogOut(false);
 
-    resetAll(); //reset the memory state
-    useAOPStore.persist.clearStorage(); //zustand clear persisted state;
+    resetAll();
+    useAOPStore.persist.clearStorage();
     clearCart();
     clearActivityStore();
-    localStorage.removeItem("aop-storage");
-    localStorage.removeItem("aopApplication");
-    localStorage.removeItem("aopApplicationObjectives");
-    localStorage.removeItem("aop_application_area_code");
-    localStorage.removeItem("aop-ids");
-    localStorage.removeItem("aop-storage");
-    localStorage.removeItem("aop_application_id");
-    localStorage.removeItem("user");
+
+    // 2. Logout from auth store (THIS MATTERS)
+    await logout();
+
+    // 3. Optional: clear non-auth cache keys only
     localStorage.removeItem("path");
     window.location.href = BASE_URL.umis_landing_page;
   };
