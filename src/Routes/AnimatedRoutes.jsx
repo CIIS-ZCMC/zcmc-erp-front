@@ -8,6 +8,7 @@ import { sidebarRoutes } from "./PageRoutes";
 import Layout from "../Layout";
 import Authentication from "../Pages/Authentication";
 import ProtectedRoutes from "./ProtectedRoutes";
+import { guardRoutes } from "./guardRoutes";
 
 const router = createBrowserRouter([
   {
@@ -17,7 +18,7 @@ const router = createBrowserRouter([
         <Layout />
       </ProtectedRoutes>
     ),
-    children: sidebarRoutes,
+    children: guardRoutes(sidebarRoutes),
   },
   {
     path: "/signing-in/:id",

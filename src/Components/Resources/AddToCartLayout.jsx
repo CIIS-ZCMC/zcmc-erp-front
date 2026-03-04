@@ -79,12 +79,14 @@ export default function AddToCartLayout({
     // Build main params
     const params = {
       ...(searchValue && { search: searchValue }),
+      ...(isPPMP && { type: "ppmp_item" }),
       ...filterParams,
     };
 
     // If nothing is selected, add mode: 'selection'
     if (!searchValue && Object.keys(filterParams).length === 0) {
       params.mode = "selection";
+      isPPMP && (params.type = "ppmp_item");
     }
 
     getItems(params, (status, message) => {
@@ -96,12 +98,15 @@ export default function AddToCartLayout({
   useEffect(() => {
     setDisplayLoading(true);
 
-    getItemCategories(() => {});
-    getItemClassification(() => {});
-    getSystems(() => {});
-    getItems({ mode: "selection" }, () => {
-      setDisplayLoading(false);
-    });
+    getItemCategories({ ...(isPPMP && { type: "ppmp_item" }) }, () => {});
+    getItemClassification({ ...(isPPMP && { type: "ppmp_item" }) }, () => {});
+    getSystems({ ...(isPPMP && { type: "ppmp_item" }) }, () => {});
+    getItems(
+      { mode: "selection", ...(isPPMP && { type: "ppmp_item" }) },
+      () => {
+        setDisplayLoading(false);
+      },
+    );
   }, []);
 
   return (
@@ -125,6 +130,7 @@ export default function AddToCartLayout({
                 search={search}
                 setSearch={setSearch}
                 getItems={getItems}
+                isPPMP={isPPMP}
               />
               <Typography
                 level="body-sm"

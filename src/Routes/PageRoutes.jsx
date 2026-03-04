@@ -105,7 +105,7 @@ export const sidebarRoutes = [
             element: <PPMPItems />,
           },
           {
-            path: "add-item",
+            path: "add-item/:type",
             element: <AddItems />,
           },
         ],

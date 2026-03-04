@@ -17,7 +17,7 @@ import InputComponent from "@Components/Form/InputComponent";
 import useActivitiesStore, {
   useActivitiesActions,
 } from "../../../../../Store/ActivitiesStore";
-import { Warning } from "@mui/icons-material";
+import { Percent, Warning } from "@mui/icons-material";
 import { grey } from "@mui/material/colors";
 
 const ActivitiesModal = ({ selectedActivity }) => {
@@ -104,7 +104,7 @@ const ActivitiesModal = ({ selectedActivity }) => {
 
           <Stack mt={2}>
             <Typography level="body-sm" sx={{ color: grey[900] }}>
-              Target by Quarter
+              Target by Quarter (% completion)
             </Typography>
             <Stack
               // mt={3}
@@ -120,6 +120,7 @@ const ActivitiesModal = ({ selectedActivity }) => {
                 max={100}
                 value={firstQuarter || ""}
                 onChange={handleQuarterChange("firstQuarter")}
+                endDecorator={<Percent />}
               />
 
               <InputComponent
@@ -129,6 +130,7 @@ const ActivitiesModal = ({ selectedActivity }) => {
                 max={100}
                 value={secondQuarter || ""}
                 onChange={handleQuarterChange("secondQuarter")}
+                endDecorator={<Percent />}
               />
             </Stack>
             <Stack
@@ -145,6 +147,7 @@ const ActivitiesModal = ({ selectedActivity }) => {
                 max={100}
                 value={thirdQuarter || ""}
                 onChange={handleQuarterChange("thirdQuarter")}
+                endDecorator={<Percent />}
               />
 
               <InputComponent
@@ -154,6 +157,7 @@ const ActivitiesModal = ({ selectedActivity }) => {
                 max={100}
                 value={fourthQuarter || ""}
                 onChange={handleQuarterChange("fourthQuarter")}
+                endDecorator={<Percent />}
               />
             </Stack>
           </Stack>

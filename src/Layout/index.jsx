@@ -1,4 +1,4 @@
-import { Outlet } from "react-router-dom";
+import { Outlet, useLocation } from "react-router-dom";
 import {
   Avatar,
   Box,
@@ -19,6 +19,8 @@ import NotificationMain from "../Components/Notification/NotificationMain";
 import SnackbarComponent from "../Components/Common/SnackbarComponent";
 import useSnackbarHook from "../Hooks/SnackbarHook";
 import { useAuth } from "../Store/AuthStore";
+import { SSO_SIGNING_PATH } from "../Services/Config";
+import { localStorageSetter } from "../Utils/LocalStorage";
 
 function Layout() {
   const theme = useTheme();
@@ -35,6 +37,15 @@ function Layout() {
   useEffect(() => {
     setCollapsed(isSmallScreen);
   }, [isSmallScreen, setCollapsed]);
+
+  const location = useLocation();
+
+  useEffect(() => {
+    // Skip SSO / auth routes
+    if (location.pathname.includes(SSO_SIGNING_PATH)) return;
+
+    localStorageSetter("path", location.pathname + location.search);
+  }, [location.pathname, location.search]);
 
   // Don't render full layout if not authenticated yet
   if (!isAuthenticated) {

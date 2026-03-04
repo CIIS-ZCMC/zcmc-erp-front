@@ -299,7 +299,7 @@ function PPMPItems(props) {
             <ButtonComponent
               label={"Add an Item"}
               startDecorator={<PlusIcon />}
-              onClick={() => navigate("/ppmp/add-item")}
+              onClick={() => navigate(`/ppmp/add-item/${type}`)}
             />
           )}
         </Stack>

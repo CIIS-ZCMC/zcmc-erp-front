@@ -11,7 +11,7 @@
  */
 
 export const SSO_SIGNING_PATH = "signing-in";
-export const ROOT_PATH = "/";
+export const ROOT_PATH = "/dashboard";
 
 export const BASE_URL = {
   development_landing_page: "http://192.168.9.243:8011/", // This will be the landing page

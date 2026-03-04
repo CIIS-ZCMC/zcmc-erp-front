@@ -1,6 +1,6 @@
 import { Box, Divider, Stack, Typography, useTheme } from "@mui/joy";
 import React, { Fragment, useEffect, useState } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation, useNavigate, useParams } from "react-router-dom";
 import ContainerComponent from "../../../Components/Common/ContainerComponent";
 import IconButtonComponent from "../../../Components/Common/IconButtonComponent";
 import { X } from "lucide-react";
@@ -22,6 +22,8 @@ function AddItems(props) {
 
   const navigate = useNavigate();
   const location = useLocation();
+  const { type } = useParams();
+
   const theme = useTheme();
   const color = theme.palette;
   const { activity } = location.state || {};
@@ -90,7 +92,7 @@ function AddItems(props) {
         //   description: message,
         // });
         clearCart();
-        navigate(`/ppmp/manage-items`);
+        navigate(`/ppmp/manage-items/${type}`);
       } else {
         setAlertDialog({
           status: "error",
@@ -140,7 +142,7 @@ function AddItems(props) {
         items={[
           {
             label: "PPMP",
-            path: () => navigate(`/ppmp/manage-items`),
+            path: () => navigate(`/ppmp/manage-items/${type}`),
           },
           {
             label: "Add New Items",
@@ -171,7 +173,7 @@ function AddItems(props) {
                 variant={"outlined"}
                 onClick={() => {
                   clearCart();
-                  navigate(`/ppmp/manage-items`);
+                  navigate(`/ppmp/manage-items/${type}`);
                 }}
               />
               <ButtonComponent
@@ -181,7 +183,7 @@ function AddItems(props) {
               <IconButtonComponent
                 icon={<X />}
                 size={"sm"}
-                onClick={() => navigate(`/ppmp/manage-items`)}
+                onClick={() => navigate(`/ppmp/manage-items/${type}`)}
               />
             </Stack>
           </Stack>

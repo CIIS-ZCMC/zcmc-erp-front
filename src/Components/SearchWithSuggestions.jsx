@@ -43,6 +43,7 @@ export default function SearchWithSuggestions({
   search,
   setSearch,
   getItems,
+  isPPMP,
 }) {
   const [loading, setLoading] = useState(false);
 
@@ -66,7 +67,10 @@ export default function SearchWithSuggestions({
       debouncedFetchSuggestions.cancel?.(); // cancel pending calls
       setLoading(false);
 
-      getItems({ mode: "selection" }, () => {});
+      getItems(
+        { mode: "selection", ...(isPPMP && { type: "ppmp_item" }) },
+        () => {},
+      );
       return;
     }
 
