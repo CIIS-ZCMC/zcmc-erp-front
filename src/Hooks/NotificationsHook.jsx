@@ -23,7 +23,6 @@ const useNotificationsHook = create((set) => ({
       url: `notifications/employee-notifs/${id}`,
       failed: callback,
       success: (res) => {
-        console.log(res);
         set(() => ({ notifications: res.data.data }));
       },
     });
@@ -96,7 +95,6 @@ export const useNotificationEvents = () => {
     if (socket && user) {
       socket.on(`erp-notification-${user.id}`, (data) => {
         addNotification(data);
-        console.log(data);
       });
     }
 

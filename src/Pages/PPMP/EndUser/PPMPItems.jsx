@@ -10,7 +10,10 @@ import PageTitle from "../../../Components/Common/PageTitle";
 import ButtonComponent from "../../../Components/Common/ButtonComponent";
 import { Stack, Typography, Box, Card } from "@mui/joy";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import usePPMPHook from "../../../Hooks/PPMP/PPMPHook";
+import usePPMPHook, {
+  usePPMP,
+  usePPMPActions,
+} from "../../../Hooks/PPMP/PPMPHook";
 import useModalHook from "../../../Hooks/ModalHook";
 import userErrorInputHook from "../../../Hooks/ErrorInputHook";
 import AlertDialogComponent from "../../../Components/Common/Dialog/AlertDialogComponent";
@@ -36,19 +39,15 @@ import { ExpandableRow } from "./ExpandableRow";
 
 function PPMPItems(props) {
   const navigate = useNavigate();
+  const { status, ppmp_id, ppmp, ppmp_total, pagination, isLocked } = usePPMP();
   const {
-    status,
-    ppmp_id,
-    ppmp,
-    ppmp_total,
-    pagination,
-    isLocked,
     getPPMPItems,
     exportPPMP,
     updatePPMP,
     removeActivity,
     removeItem,
-  } = usePPMPHook();
+    getProcTimelines,
+  } = usePPMPActions();
   const { setAlertDialog } = useModalHook();
   const { errors, setError, clearErrors } = userErrorInputHook();
   const { getPPMPComments, postPPMPComment } = usePPMPCommentsActions();
@@ -181,6 +180,12 @@ function PPMPItems(props) {
     };
   }, [socket, ppmp_id]);
 
+  useEffect(() => {
+    getProcTimelines("start", () => {});
+    getProcTimelines("end", () => {});
+    getProcTimelines("delivery", () => {});
+  }, []);
+
   const handleEditToggle = (rowId, openRow, isSaveClick) => {
     const isEditing = editingRows[rowId];
     const lockedByOther =
@@ -195,10 +200,10 @@ function PPMPItems(props) {
       if (!getDataFunc) return;
 
       const updatedData = getDataFunc();
-      updatePPMP(rowId, updatedData, (status, body) => {
+      updatePPMP(rowId, updatedData, (status, message) => {
         if (status === 200) {
           socket.emit("ppmp:stop-edit", { ppmpId: ppmp_id, rowId, userId: id });
-          showSnack(200, body.message);
+          showSnack(status, message);
           setEditingRows((prev) => ({ ...prev, [rowId]: false }));
           // 🔴 DO NOT TOUCH EXPANSION
         } else {
@@ -235,6 +240,9 @@ function PPMPItems(props) {
     setOpenDrawer(true);
   }, []);
 
+  const isDraft = status?.name === "draft";
+  const isReturned = status?.name === "returned";
+
   const columns = useMemo(
     () =>
       PPMP_HEADERS(
@@ -258,7 +266,6 @@ function PPMPItems(props) {
       isLocked,
     ],
   );
-
   return (
     <Fragment>
       <PageTitle
@@ -273,7 +280,6 @@ function PPMPItems(props) {
         withArrowBack
         onClickArrow={() => navigate("/ppmp")}
       />
-      {console.log(localRows)}
       <BoxComponent my={2} bgColor={"#FAFAF9"} boxShadow="xs" p={2}>
         <Stack direction={"row"} justifyContent={"space-between"} mb={2}>
           <Stack>
@@ -294,8 +300,9 @@ function PPMPItems(props) {
               AOP request. Click a row to expand and view more details.
             </Typography>
           </Stack>
+          {console.log(isDraft)}
 
-          {(status?.name === "draft" || status?.name === "returned") && (
+          {(isDraft || isReturned) && (
             <ButtonComponent
               label={"Add an Item"}
               startDecorator={<PlusIcon />}
@@ -344,7 +351,6 @@ function PPMPItems(props) {
           </BoxComponent>
         </Stack>
       </BoxComponent>
-
       <ExpandableTable
         columns={columns}
         rows={filteredPPMPItems}

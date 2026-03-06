@@ -17,7 +17,6 @@ const useActivitiesHook = () => {
         failed: callBack,
         params,
         success: (res) => {
-          console.log(res);
           const { status, data } = res;
           setApplicationActivities(data);
           callBack(status, data.message);
@@ -56,7 +55,6 @@ const useActivitiesHook = () => {
         form: body,
         failed: callBack,
         success: async (res) => {
-          console.log(res.data);
           const {
             status,
             data: { data, message },
@@ -124,8 +122,6 @@ const useActivitiesHook = () => {
             status,
             data: { message },
           } = res;
-
-          console.log("removeActivity response:", res);
 
           // Remove activity from state
           const newActivities = applicationActivities.activities.filter(

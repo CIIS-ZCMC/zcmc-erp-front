@@ -12,7 +12,6 @@ const useAOPHook = () => {
         url: API.AOP_APPLICATIONS,
         failed: callBack,
         success: (res) => {
-          console.log(res);
           const {
             status,
             data: { data, message },
@@ -119,8 +118,6 @@ const useAOPHook = () => {
         form: body,
         failed: callBack,
         success: async (res) => {
-          console.log(res);
-
           const {
             status,
             data: { message, data },
@@ -142,8 +139,6 @@ const useAOPHook = () => {
         form: body,
         failed: callBack,
         success: async (res) => {
-          console.log(res);
-
           const {
             status,
             data: { data, message },

@@ -150,52 +150,51 @@ function AddItems(props) {
           },
         ]}
       />
-      <Stack mt={2}>
-        <ContainerComponent>
-          <Stack direction={"row"} justifyContent="space-between">
-            <Stack>
-              <Typography level="body-md" fontWeight={600}>
-                Select resources (items) to add
-              </Typography>
-              <Typography level="body-sm">
-                All resources you'll select here only applies to this selected
-                activity
-              </Typography>
-            </Stack>
-            <Stack direction="row" spacing={1}>
-              <ButtonComponent
-                label="Request New Item"
-                variant={"outlined"}
-                onClick={() => setOpenReq(true)} // open modal
-              />
-              <ButtonComponent
-                label="Cancel Selection"
-                variant={"outlined"}
-                onClick={() => {
-                  clearCart();
-                  navigate(`/ppmp/manage-items/${type}`);
-                }}
-              />
-              <ButtonComponent
-                label={"Save items"}
-                onClick={() => handleSaveItems()}
-              />
-              <IconButtonComponent
-                icon={<X />}
-                size={"sm"}
-                onClick={() => navigate(`/ppmp/manage-items/${type}`)}
-              />
-            </Stack>
+      <br />
+      <ContainerComponent>
+        <Stack direction={"row"} justifyContent="space-between">
+          <Stack>
+            <Typography level="body-md" fontWeight={600}>
+              Select resources (items) to add
+            </Typography>
+            <Typography level="body-sm">
+              All resources you'll select here only applies to this selected
+              activity
+            </Typography>
           </Stack>
-          <Divider sx={{ my: 2, bgcolor: color.primary.fontLight }} />
-          <AddToCartLayout
-            isPPMP={isPPMP}
-            options={activities}
-            removeActivityFromItem={removeActivityFromItem}
-            addActivityToItem={addActivityToItem}
-          />
-        </ContainerComponent>
-      </Stack>
+          <Stack direction="row" spacing={1}>
+            <ButtonComponent
+              label="Request New Item"
+              variant={"outlined"}
+              onClick={() => setOpenReq(true)} // open modal
+            />
+            <ButtonComponent
+              label="Cancel Selection"
+              variant={"outlined"}
+              onClick={() => {
+                clearCart();
+                navigate(`/ppmp/manage-items/${type}`);
+              }}
+            />
+            <ButtonComponent
+              label={"Save items"}
+              onClick={() => handleSaveItems()}
+            />
+            <IconButtonComponent
+              icon={<X />}
+              size={"sm"}
+              onClick={() => navigate(`/ppmp/manage-items/${type}`)}
+            />
+          </Stack>
+        </Stack>
+        <Divider sx={{ my: 2, bgcolor: color.primary.fontLight }} />
+        <AddToCartLayout
+          isPPMP={isPPMP}
+          options={activities}
+          removeActivityFromItem={removeActivityFromItem}
+          addActivityToItem={addActivityToItem}
+        />
+      </ContainerComponent>
 
       {/* Render modal */}
       {openReq && (

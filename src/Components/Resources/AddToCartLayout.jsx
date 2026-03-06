@@ -98,9 +98,9 @@ export default function AddToCartLayout({
   useEffect(() => {
     setDisplayLoading(true);
 
-    getItemCategories({ ...(isPPMP && { type: "ppmp_item" }) }, () => {});
-    getItemClassification({ ...(isPPMP && { type: "ppmp_item" }) }, () => {});
-    getSystems({ ...(isPPMP && { type: "ppmp_item" }) }, () => {});
+    getItemCategories(() => {});
+    getItemClassification(() => {});
+    getSystems(() => {});
     getItems(
       { mode: "selection", ...(isPPMP && { type: "ppmp_item" }) },
       () => {
@@ -112,7 +112,7 @@ export default function AddToCartLayout({
   return (
     <Fragment>
       <Grid container spacing={2} sx={{ flexGrow: 1 }}>
-        <Grid xs={8}>
+        <Grid xs={8.5}>
           <BoxComponent boxShadow="sm">
             <Stack
               direction={"row"}
@@ -131,6 +131,8 @@ export default function AddToCartLayout({
                 setSearch={setSearch}
                 getItems={getItems}
                 isPPMP={isPPMP}
+                setDisplayLoading={setDisplayLoading}
+                displayLoading={displayLoading}
               />
               <Typography
                 level="body-sm"
@@ -228,7 +230,7 @@ export default function AddToCartLayout({
             items={items}
           />
         </Grid>
-        <Grid xs={4}>
+        <Grid xs={3.5}>
           <Cart
             cart={cart}
             removeFromCart={removeFromCart}

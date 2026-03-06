@@ -145,6 +145,7 @@ const AOPSummary = () => {
             activities_without_responsible_people,
             activities_without_target,
             objectives_without_activities,
+            mission_missing,
           } = message;
 
           const MISSING_DATA_SECTIONS = [
@@ -167,6 +168,15 @@ const AOPSummary = () => {
             title: statusMessage,
             description: (
               <>
+                {mission_missing && (
+                  <>
+                    {mission_missing?.map((mission, idx) => (
+                      <Typography key={idx} level="body-xs">
+                        {mission}
+                      </Typography>
+                    ))}
+                  </>
+                )}
                 {objectives_without_activities && (
                   <>
                     <Typography level="title-sm">

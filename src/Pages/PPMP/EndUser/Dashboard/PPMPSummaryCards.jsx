@@ -86,7 +86,7 @@ const PPMPCard = ({
                 label={btnLabel}
                 endDecorator={<East />}
                 onClick={btnAction}
-                size={isDispensing ? "xs" : "sm"}
+                size={"sm"}
               />
             )}
           </Stack>
@@ -423,7 +423,6 @@ export default function PPMPSummaryCards({
                 gap: 2,
               }}
             >
-              {console.log(timeline)}
               <ApprovalTimeline
                 timeline={timeline}
                 isDispensing={isDispensing}

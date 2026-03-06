@@ -18,7 +18,7 @@ export default function Cart({
 }) {
   return (
     <Fragment>
-      <BoxComponent height={"72vh"} display="flex" flexDirection="column">
+      <BoxComponent height={"95%"} display="flex" flexDirection="column">
         <Box sx={{ p: 2, borderBottom: "1px solid #eee" }}>
           <Typography level="h6">
             {" "}

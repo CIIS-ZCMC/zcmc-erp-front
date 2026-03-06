@@ -115,7 +115,7 @@ AutocompleteComponent.propTypes = {
       PropTypes.shape({
         title: PropTypes.string.isRequired,
       }),
-    ])
+    ]),
   ),
   helperText: PropTypes.string,
   size: PropTypes.oneOf(["small", "medium", "large"]),

@@ -10,8 +10,6 @@ const useListUserRequestItemHook = create((set, get) => ({
     set({ selected_data: selected });
   },
   SaveItem: async (data, callBack) => {
-    console.log(data);
-    return;
     try {
       const response = await fetch(`${API.ITEM_CLASSIFICATIONS}`, {
         method: "POST",
@@ -81,7 +79,7 @@ const useListUserRequestItemHook = create((set, get) => ({
     setError,
     setAlertDialog,
     reload,
-    reloadSelected
+    reloadSelected,
   ) => {
     const id = get().selected_data?.id;
     update({

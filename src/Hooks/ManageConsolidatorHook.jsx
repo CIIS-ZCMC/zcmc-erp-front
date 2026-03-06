@@ -67,7 +67,6 @@ const useManageConsolidatorsHook = create((set, get) => ({
         },
         failed: (err) => {
           set({ isLoading: false, error: err });
-          console.log(err);
           callback?.(err?.status ?? 500, err?.message);
         },
       });

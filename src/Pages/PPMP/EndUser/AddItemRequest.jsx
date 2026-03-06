@@ -16,7 +16,10 @@ import {
 import React, { Fragment, useEffect, useRef, useState } from "react";
 import useItemsHook from "../../../Hooks/ItemManagementHook";
 import { grey } from "@mui/material/colors";
-import usePPMPHook from "../../../Hooks/PPMP/PPMPHook";
+import usePPMPHook, {
+  usePPMP,
+  usePPMPActions,
+} from "../../../Hooks/PPMP/PPMPHook";
 import { MdAdd } from "react-icons/md";
 import { handleInputValidation } from "../../../Utils/HandleInput";
 import handleSingleChangeAutcomplete from "../../../Utils/HandleAutocomplete";
@@ -36,9 +39,9 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
     getItemUnits,
     getVariantsByCategory,
   } = useItemsHook();
-  const { activities, getActivities } = usePPMPHook();
+  const { activities } = usePPMP();
   const { showSnack } = useSnackbarHook();
-  const { postItemRequest } = usePPMPHook();
+  const { postItemRequest, getActivities } = usePPMPActions();
   const { errors, setError, clearErrors } = userErrorInputHook();
 
   // === STATE VARIABLES ===
@@ -90,7 +93,7 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
     setItemReq((prev) => ({
       ...prev,
       specs: prev.specs.map((spec) =>
-        spec.id === id ? { ...spec, value } : spec
+        spec.id === id ? { ...spec, value } : spec,
       ),
     }));
 
@@ -106,7 +109,7 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
         setError(
           `specs[${index}]`,
           true,
-          `Specification ${index + 1} is required.`
+          `Specification ${index + 1} is required.`,
         );
         hasError = true;
       }
@@ -132,7 +135,7 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
       formData.append("variant", JSON.stringify(itemReq.variant));
       formData.append(
         "market_research",
-        itemReq.market_research ? "true" : "false"
+        itemReq.market_research ? "true" : "false",
       );
       formData.append("specifications", JSON.stringify(itemReq.specs));
       formData.append("pin", itemReq.pin || "");
@@ -170,7 +173,7 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
 
     setSelectedActivities((prev) => {
       const exists = prev.some(
-        (item) => item.activity_code === selected.activity_code
+        (item) => item.activity_code === selected.activity_code,
       );
 
       if (exists) {
@@ -184,12 +187,12 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
 
   const removeActivity = (activity_code) => {
     setSelectedActivities((prev) =>
-      prev.filter((a) => a.activity_code !== activity_code)
+      prev.filter((a) => a.activity_code !== activity_code),
     );
 
     // If the removed activity is currently selected in Autocomplete → clear it
     setActivity((prev) =>
-      prev?.activity_code === activity_code ? null : prev
+      prev?.activity_code === activity_code ? null : prev,
     );
   };
 
@@ -202,7 +205,7 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
         setError(
           `specs[${index}]`,
           true,
-          `Specification ${index + 1} is required.`
+          `Specification ${index + 1} is required.`,
         );
         hasError = true;
       }
@@ -320,19 +323,19 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
           step === 1
             ? "On what activity shall we assign the resources you’ll add?"
             : step === 2
-            ? "General information"
-            : step === 3
-            ? "Specifications"
-            : ""
+              ? "General information"
+              : step === 3
+                ? "Specifications"
+                : ""
         }
         description={
           step === 1
             ? "Select a request status and reasons (if returned) to continue. You may add remarks if necessary."
             : step === 2
-            ? "Fill in the item information to create it."
-            : step === 3
-            ? "List down details for the item you want to cretae to specify it."
-            : ""
+              ? "Fill in the item information to create it."
+              : step === 3
+                ? "List down details for the item you want to cretae to specify it."
+                : ""
         }
         maxWidth={"500px"}
         height={step === 1 ? "auto" : step === 2 ? "680px" : "650px"}
@@ -411,7 +414,7 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
                       getOptionLabel={(option) => option.name || ""}
                       value={
                         classification?.find(
-                          (el) => el.id === itemReq?.classification?.id
+                          (el) => el.id === itemReq?.classification?.id,
                         ) || null
                       } // Match the full object in value
                       handleSelect={(value) => {
@@ -419,7 +422,7 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
                           value,
                           setItemReq,
                           "classification",
-                          setError
+                          setError,
                         );
                       }}
                     />
@@ -429,7 +432,7 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
                       name="category"
                       value={
                         categories?.find(
-                          (el) => el.id === itemReq?.category?.id
+                          (el) => el.id === itemReq?.category?.id,
                         ) || null
                       }
                       options={categories}
@@ -439,7 +442,7 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
                           value,
                           setItemReq,
                           "category",
-                          setError
+                          setError,
                         );
                       }}
                     />
@@ -470,7 +473,7 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
                           value,
                           setItemReq,
                           "unit",
-                          setError
+                          setError,
                         );
                       }}
                     />
@@ -489,7 +492,7 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
                         value,
                         setItemReq,
                         "variant",
-                        setError
+                        setError,
                       );
                     }}
                   />

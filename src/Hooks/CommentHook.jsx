@@ -28,7 +28,6 @@ const useCommentHook = create((set, get) => ({
           const {
             data: { comments },
           } = response.data;
-          console.log(comments);
           set({ comments: comments });
           localStorageSetter("comments", comments.length === 0 ? [] : comments);
           callback(response.status, comments);
@@ -63,7 +62,6 @@ const useCommentHook = create((set, get) => ({
     },
 
     getRemarksByApplication: (id, callback) => {
-      console.log(id);
       read({
         url: `${REMARKS}/${id}`,
         success: (response) => {
@@ -102,10 +100,9 @@ const useCommentHook = create((set, get) => ({
           failed: callback,
         });
       } catch (error) {
-        console.error("Error posting comment:", error);
         return callback(
           error?.status || 500,
-          error?.response || "Unknown error occurred"
+          error?.response || "Unknown error occurred",
         );
       }
     },

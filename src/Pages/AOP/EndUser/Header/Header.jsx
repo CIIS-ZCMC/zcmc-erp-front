@@ -41,7 +41,7 @@ const Header = ({
               level="body-sm"
               sx={{ color: "white" }}
               endDecorator={
-                !isAopDisabled(status) ? (
+                !isAopDisabled(status) && (
                   <ButtonComponent
                     size={"xs"}
                     label={
@@ -56,8 +56,6 @@ const Header = ({
                     startDecorator={<Edit />}
                     onClick={() => handleEdit()}
                   />
-                ) : (
-                  "none"
                 )
               }
             >

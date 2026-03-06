@@ -23,7 +23,6 @@ const useItemsHook = create((set) => ({
   },
 
   setSearchQuery: (query) => {
-    console.log("Setting search query:", query);
     set({ search_Query: query });
   },
 
@@ -184,7 +183,6 @@ const useItemsHook = create((set) => ({
       params,
       success: (res) => {
         const { status, message, data, meta } = res;
-        console.log("Response:", data);
         set({
           items: data.data,
           pagination: {
@@ -273,7 +271,6 @@ const useItemsHook = create((set) => ({
       params,
       success: (res) => {
         const { status, message, data, meta } = res;
-        console.log("Response:", data);
         set({
           categories: data.data,
           pagination: {
@@ -417,7 +414,6 @@ const useItemsHook = create((set) => ({
       params,
       success: (res) => {
         const { status, message, data, meta } = res;
-        console.log("Response:", data);
         set({
           classification: data.data,
           pagination: {
@@ -546,7 +542,6 @@ const useItemsHook = create((set) => ({
       params,
       success: (res) => {
         const { status, message, data, meta } = res;
-        console.log("Response:", data);
         set({
           classification: data.data,
           pagination: {
@@ -655,7 +650,6 @@ const useItemsHook = create((set) => ({
       params,
       success: (res) => {
         const { status, message, data, meta } = res;
-        console.log("Response:", data);
         set({
           terminology: data.data,
           pagination: {

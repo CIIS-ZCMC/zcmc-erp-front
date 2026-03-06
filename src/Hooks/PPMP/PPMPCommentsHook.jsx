@@ -16,7 +16,6 @@ const usePPMPCommentsHook = create((set) => ({
         params: { ppmp_item_id },
         success: (res) => {
           const { data, message } = res.data;
-          console.log("comments", data);
           set(() => ({
             ppmpComments: data.comments, // store the comments
             isLoading: false,

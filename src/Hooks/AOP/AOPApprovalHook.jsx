@@ -31,8 +31,6 @@ const useAOPApprovalHook = create((set) => ({
         form: form,
         failed: callback,
         success: (response) => {
-          console.log(response);
-
           const {
             data: { status_details, timeline, message },
           } = response.data;

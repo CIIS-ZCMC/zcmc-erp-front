@@ -103,7 +103,6 @@ const useAOPApplicationsHook = create((set) => ({
           success: (response) => {
             const { data, message } = response.data;
             // set({ aopApplications: data });
-            console.log(data);
             callback(200, message);
           },
           failed: callback,

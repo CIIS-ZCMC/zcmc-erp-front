@@ -36,7 +36,6 @@ function MultipleAutocompleteComponent({
           )}
         </FormLabel>
       )}
-      {console.log(options)}
 
       <Autocomplete
         multiple

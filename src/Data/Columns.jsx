@@ -1649,8 +1649,8 @@ export const PPMP_HEADERS = (
   },
   {
     id: "category",
-    label: "Classification & Category",
-    width: status?.name === "draft" ? "150px" : "auto",
+    label: "Project Type & Category",
+    width: status?.name === "draft" ? "auto" : "auto",
     render: renderCategory,
     expandTrigger: true,
   },
@@ -1712,17 +1712,19 @@ export const PPMP_HEADERS = (
     id: "actions",
     label: "Actions",
     align: status?.name === "draft" ? "center" : "right",
-    width: status?.name === "draft" ? "200px" : "auto",
+    width: status?.name === "draft" ? 200 : "auto",
     render: (row, { openRow }) => {
       const isEditing = editingRows[row.id];
       const lockedByOther =
         lockedRows[row.id] && lockedRows[row.id].editorId !== userId;
+
       return (
         <Stack
           direction="row"
           spacing={1}
-          justifyContent={status?.name !== "draft" ? "right" : "center"}
+          justifyContent={status?.name === "draft" ? "center" : "flex-end"}
         >
+          {/* Show comments only if status is not draft */}
           {status?.name !== "draft" && (
             <ChipComponent
               label={row.comments_count}
@@ -1734,21 +1736,25 @@ export const PPMP_HEADERS = (
               }}
             />
           )}
+
+          {/* Show edit/remove only if draft */}
           {status?.name === "draft" && (
             <>
               <ChipComponent
                 label={isEditing ? "Save" : "Edit"}
-                variant="soft"
                 startDecorator={
                   isEditing ? <CheckOutlined /> : <ModeEditOutlineOutlined />
                 }
                 color={isEditing ? "success" : "neutral"}
+                variant="soft"
                 disabled={lockedByOther}
                 onClick={(e) => {
                   e.stopPropagation();
-                  handleEditToggle(row.id, openRow, isEditing); // <--- toggle passed down
+                  handleEditToggle(row.id, openRow, isEditing);
                 }}
               />
+
+              {/* Show Remove only if the row is not globally locked */}
               {!isLocked && (
                 <ChipComponent
                   label="Remove"

@@ -19,8 +19,6 @@ export default function SelectComponent({
   // );
   const [value, setValue] = React.useState(nextYear);
   const handleChange = (event, newValue) => {
-    console.log(newValue);
-
     setValue(newValue); // update internal state
     if (onChange) onChange(newValue); // send value to parent if provided
   };

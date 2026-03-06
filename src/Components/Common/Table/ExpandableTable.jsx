@@ -127,7 +127,7 @@ export default function ExpandableTable({
                             background: isNew
                               ? "var(--joy-palette-primary-softBg)"
                               : expanded
-                                ? grey[100]
+                                ? grey[50]
                                 : undefined,
 
                             borderBottom:
@@ -157,12 +157,12 @@ export default function ExpandableTable({
                             maxHeight: expanded ? heights[id] : 0,
                             opacity: expanded ? 1 : 0,
                             padding: expanded ? "10px" : "0px", // <--- avoid spacing when closed
-                            background: expanded && grey[100],
+                            background: expanded && grey[50],
                             transition:
                               "max-height 0.35s ease, opacity 0.25s ease, padding 0.2s ease",
                           }}
                         >
-                          <Box sx={{ p: 2 }}>{renderExpanded(row)}</Box>
+                          <Box>{renderExpanded(row)}</Box>
                         </div>
                       </td>
                     </tr>

@@ -14,6 +14,7 @@ import { blue, grey, orange, red } from "@mui/material/colors";
 import {
   CancelOutlined,
   ExtensionOutlined,
+  InfoOutline,
   TextSnippetOutlined,
   TodayOutlined,
 } from "@mui/icons-material";
@@ -22,12 +23,16 @@ import AutocompleteComponent from "@Components/Form/AutocompleteComponent";
 import ChipComponent from "@Components/Common/ChipComponent";
 import ProcurementSchedule from "./ProcurementSchedule";
 import InputComponent from "@Components/Form/InputComponent";
-import usePPMPHook from "../../../Hooks/PPMP/PPMPHook";
+import usePPMPHook, {
+  usePPMP,
+  usePPMPActions,
+} from "../../../Hooks/PPMP/PPMPHook";
 import IconButtonComponent from "@Components/Common/IconButtonComponent";
 import useModalHook from "../../../Hooks/ModalHook";
 import useSnackbarHook from "../../../Hooks/SnackbarHook";
 import defaultItem from "../../../assets/item.jpg";
 import formattedPrice from "../../../Utils/formattedPrice";
+import ProcurementTimeline from "./ProcurementTimeline";
 
 const ExpandableRowComponent = ({
   row,
@@ -44,7 +49,8 @@ const ExpandableRowComponent = ({
   isLocked,
 }) => {
   const { setAlertDialog } = useModalHook();
-  const { modes, activities, getProcModes, getActivities } = usePPMPHook();
+  const { modes, activities } = usePPMP();
+  const { getProcModes, getActivities } = usePPMPActions();
   const [procurementMode, setProcurementMode] = React.useState(
     row?.procurement_mode || null,
   );
@@ -52,8 +58,14 @@ const ExpandableRowComponent = ({
   const [linkedActivities, setLinkedActivities] = React.useState(
     row?.activities || [],
   );
-  const [scheduleData, setScheduleData] = React.useState({});
+  const [scheduleData, setScheduleData] = React.useState(
+    row?.target_by_month || {},
+  );
+  const [procTimeline, setProcTimeline] = React.useState(
+    row?.ppmp_item_timeline || {},
+  );
   const { showSnack } = useSnackbarHook();
+  const { timelineDates } = usePPMP();
 
   // Fetch modes & activities once
   React.useEffect(() => {
@@ -91,8 +103,15 @@ const ExpandableRowComponent = ({
         activity_id: act.activity_id,
         quantity: Number(act.resources_quantity) || 0,
       })),
+      ppmp_item_timeline: procTimeline,
     }),
-    [procurementMode, scheduleData, linkedActivities, totalQuantity],
+    [
+      procurementMode,
+      scheduleData,
+      linkedActivities,
+      totalQuantity,
+      procTimeline,
+    ],
   );
 
   React.useEffect(() => {
@@ -195,6 +214,7 @@ const ExpandableRowComponent = ({
                       onChange={(e) =>
                         handleQuantityChange(act.activity_code, e.target.value)
                       }
+                      disabled={isLocked}
                     />
                   ) : (
                     <Typography level="body-sm">{`${act.resources_quantity} ${act.unit}(s)`}</Typography>
@@ -221,7 +241,7 @@ const ExpandableRowComponent = ({
           opacity: 1,
           overflow: "hidden",
           transition: "max-height .35s ease, opacity .25s ease",
-          backgroundColor: grey[100],
+          backgroundColor: grey[50],
           p: 1.5,
         }}
       >
@@ -233,6 +253,7 @@ const ExpandableRowComponent = ({
               justifyContent: "center",
               bgcolor: red[50],
               p: 0.5,
+              mb: 1,
             }}
           >
             <Typography
@@ -245,7 +266,7 @@ const ExpandableRowComponent = ({
           </Box>
         )}
 
-        <Tabs defaultValue="a" sx={{ bgcolor: grey[100] }} variant="soft">
+        <Tabs defaultValue="a" sx={{ bgcolor: grey[50] }} variant="soft">
           <TabList>
             <Tab
               value="a"
@@ -306,7 +327,7 @@ const ExpandableRowComponent = ({
                 />
               </BoxComponent>
 
-              <BoxComponent p={2} width={350} height={250}>
+              <BoxComponent p={2} width={400} height={250}>
                 <Stack spacing={2}>
                   <Typography
                     fontWeight={600}
@@ -331,11 +352,23 @@ const ExpandableRowComponent = ({
                         color="danger"
                       />
                     ) : row?.procurement_mode ? (
-                      <ChipComponent
-                        label={row?.procurement_mode?.name}
-                        sx={{ color: "#7008E7", bgcolor: "#DDD6FF" }}
-                        size="md"
-                      />
+                      <Stack direction={"column"} gap={2}>
+                        <ChipComponent
+                          label={row?.procurement_mode?.name}
+                          sx={{ color: "#7008E7", bgcolor: "#DDD6FF" }}
+                          size="md"
+                        />
+                        <Typography
+                          level="body-sm"
+                          startDecorator={<InfoOutline />}
+                          gap={0.3}
+                        >
+                          Pre-Procurement Conference:{"  "}
+                          <b>
+                            {row?.pre_procurement_conference ? " YES " : " NO "}
+                          </b>
+                        </Typography>
+                      </Stack>
                     ) : (
                       <Typography level="body-sm" color="danger">
                         No Mode of Procurement Yet.{" "}
@@ -405,15 +438,29 @@ const ExpandableRowComponent = ({
               </BoxComponent>
             </Box>
           </TabPanel>
-
           <TabPanel value="b">
-            <BoxComponent bgColor={"white"} p={2} borderRadius={20}>
-              <ProcurementSchedule
-                editing={editing}
-                initialData={row?.target_by_month}
-                onChange={setScheduleData}
-              />
-            </BoxComponent>
+            <Stack direction={"row"} width={"100%"} gap={2}>
+              <BoxComponent width="30%" borderRadius={20}>
+                <ProcurementTimeline
+                  timelines={timelineDates}
+                  onChange={setProcTimeline}
+                  value={procTimeline}
+                  editing={editing}
+                />
+              </BoxComponent>
+              <BoxComponent
+                bgColor={"white"}
+                p={2}
+                borderRadius={20}
+                width="70%"
+              >
+                <ProcurementSchedule
+                  editing={editing}
+                  value={scheduleData}
+                  onChange={setScheduleData}
+                />
+              </BoxComponent>
+            </Stack>
           </TabPanel>
         </Tabs>
       </Box>
@@ -440,4 +487,5 @@ ExpandableRow.propTypes = {
   onGetUpdatedData: PropTypes.func,
   onRemoveActivity: PropTypes.func,
   onDeletePPMP: PropTypes.func,
+  timelines: PropTypes.object,
 };
