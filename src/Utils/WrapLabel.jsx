@@ -1,18 +1,16 @@
-export const wrapLabel = (text, maxCharsPerLine = 18, maxLines = 3) => {
-  const words = text.split(" ");
+export const wrapLabel = (text = "", wordsPerLine = 2, maxLines = 3) => {
+  const words = String(text).trim().split(/\s+/);
   const lines = [];
-  let currentLine = "";
 
-  for (const word of words) {
-    if ((currentLine + " " + word).length <= maxCharsPerLine) {
-      currentLine = currentLine ? `${currentLine} ${word}` : word;
-    } else {
-      lines.push(currentLine);
-      currentLine = word;
-    }
+  for (let i = 0; i < words.length; i += wordsPerLine) {
+    lines.push(words.slice(i, i + wordsPerLine).join(" "));
   }
 
-  if (currentLine) lines.push(currentLine);
+  const trimmed = lines.slice(0, maxLines);
 
-  return lines.slice(0, maxLines).join("\n");
+  if (lines.length > maxLines) {
+    trimmed[maxLines - 1] += "...";
+  }
+
+  return trimmed.join("\n");
 };

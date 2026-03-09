@@ -23,10 +23,7 @@ import AutocompleteComponent from "@Components/Form/AutocompleteComponent";
 import ChipComponent from "@Components/Common/ChipComponent";
 import ProcurementSchedule from "./ProcurementSchedule";
 import InputComponent from "@Components/Form/InputComponent";
-import usePPMPHook, {
-  usePPMP,
-  usePPMPActions,
-} from "../../../Hooks/PPMP/PPMPHook";
+import { usePPMPActions, usePPMPState } from "../../../Hooks/PPMP/PPMPHook";
 import IconButtonComponent from "@Components/Common/IconButtonComponent";
 import useModalHook from "../../../Hooks/ModalHook";
 import useSnackbarHook from "../../../Hooks/SnackbarHook";
@@ -52,7 +49,7 @@ const ExpandableRowComponent = ({
   isLocked,
 }) => {
   const { setAlertDialog } = useModalHook();
-  const { modes, activities } = usePPMP();
+  const { modes, activities } = usePPMPState();
   const { getProcModes, getActivities } = usePPMPActions();
   const [procurementMode, setProcurementMode] = React.useState(
     row?.procurement_mode || null,
@@ -69,7 +66,7 @@ const ExpandableRowComponent = ({
   );
   const [itemRemarks, setItemRemarks] = React.useState(row?.item_remarks || "");
   const { showSnack } = useSnackbarHook();
-  const { timelineDates } = usePPMP();
+  const { timelineDates } = usePPMPState();
 
   // Fetch modes & activities once
   React.useEffect(() => {

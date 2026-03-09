@@ -1,10 +1,7 @@
 import React, { Fragment, useEffect, useState } from "react";
 import { Box, useTheme } from "@mui/joy";
 import { useNavigate, useLocation } from "react-router-dom";
-import usePPMPHook, {
-  usePPMP,
-  usePPMPActions,
-} from "../../../../Hooks/PPMP/PPMPHook";
+import { usePPMPActions, usePPMPState } from "../../../../Hooks/PPMP/PPMPHook";
 import { nextYear } from "../../../../Utils/Functions";
 import PageTitle from "@Components/Common/PageTitle";
 import ModalComponent from "@Components/Common/Dialog/ModalComponent";
@@ -38,7 +35,7 @@ function PPMPDashboard(props) {
     requestsByUser || {};
 
   const navigate = useNavigate();
-  const { dashboard, years, timeline } = usePPMP();
+  const { dashboard, years, timeline } = usePPMPState();
   const {
     getPPMPDashboard,
     getYearList,

@@ -10,10 +10,7 @@ import PageTitle from "../../../Components/Common/PageTitle";
 import ButtonComponent from "../../../Components/Common/ButtonComponent";
 import { Stack, Typography, Box, Card } from "@mui/joy";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-import usePPMPHook, {
-  usePPMP,
-  usePPMPActions,
-} from "../../../Hooks/PPMP/PPMPHook";
+import { usePPMPActions, usePPMPState } from "../../../Hooks/PPMP/PPMPHook";
 import useModalHook from "../../../Hooks/ModalHook";
 import userErrorInputHook from "../../../Hooks/ErrorInputHook";
 import AlertDialogComponent from "../../../Components/Common/Dialog/AlertDialogComponent";
@@ -39,7 +36,8 @@ import { ExpandableRow } from "./ExpandableRow";
 
 function PPMPItems(props) {
   const navigate = useNavigate();
-  const { status, ppmp_id, ppmp, ppmp_total, pagination, isLocked } = usePPMP();
+  const { status, ppmp_id, ppmp, ppmp_total, pagination, isLocked } =
+    usePPMPState();
   const {
     getPPMPItems,
     exportPPMP,

@@ -16,10 +16,7 @@ import {
 import React, { Fragment, useEffect, useRef, useState } from "react";
 import useItemsHook from "../../../Hooks/ItemManagementHook";
 import { grey } from "@mui/material/colors";
-import usePPMPHook, {
-  usePPMP,
-  usePPMPActions,
-} from "../../../Hooks/PPMP/PPMPHook";
+import { usePPMPActions, usePPMPState } from "../../../Hooks/PPMP/PPMPHook";
 import { MdAdd } from "react-icons/md";
 import { handleInputValidation } from "../../../Utils/HandleInput";
 import handleSingleChangeAutcomplete from "../../../Utils/HandleAutocomplete";
@@ -39,7 +36,7 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
     getItemUnits,
     getVariantsByCategory,
   } = useItemsHook();
-  const { activities } = usePPMP();
+  const { activities } = usePPMPState();
   const { showSnack } = useSnackbarHook();
   const { postItemRequest, getActivities } = usePPMPActions();
   const { errors, setError, clearErrors } = userErrorInputHook();

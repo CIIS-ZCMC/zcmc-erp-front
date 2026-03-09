@@ -31,6 +31,7 @@ import {
   ExpandLess,
   ExpandMore,
   ExtensionOutlined,
+  InfoOutlineRounded,
   TextSnippetOutlined,
   TodayOutlined,
 } from "@mui/icons-material";
@@ -47,6 +48,12 @@ import CountUp from "react-countup";
 import IconButtonComponent from "@Components/Common/IconButtonComponent";
 import TableComponent from "@Components/Common/Table/TableComponent";
 import { useUserTypes } from "../../../Store/AuthStore";
+import { ExpandableRow } from "../EndUser/ExpandableRow";
+import ItemRowComponent from "@Components/Resources/ItemRowComponent";
+import ProcurementTimeline from "../EndUser/ProcurementTimeline";
+import formattedPrice from "../../../Utils/formattedPrice";
+import AutocompleteComponent from "@Components/Form/AutocompleteComponent";
+import { usePPMPActions, usePPMPState } from "../../../Hooks/PPMP/PPMPHook";
 
 function ViewPPMP() {
   const { id } = useParams();
@@ -54,6 +61,8 @@ function ViewPPMP() {
   const { getPPMPApplicationByID } = usePPMPApplicationActions();
   const { ppmpApplicationItems, ppmpApplication, isLoading, pagination } =
     usePPMP();
+  const { sourceOfFunds } = usePPMPState();
+  const { getSourceOfFunds } = usePPMPActions();
   const navigate = useNavigate();
 
   const { getPPMPComments, postPPMPComment } = usePPMPCommentsActions();
@@ -101,6 +110,8 @@ function ViewPPMP() {
       perPage,
       effectiveTab,
     );
+
+    getSourceOfFunds(() => {});
   }, [id, effectiveTab, page, perPage, debouncedSearch]);
 
   // Keep localRows in sync for optimistic updates
@@ -301,6 +312,22 @@ function ViewPPMP() {
                       value="b"
                       sx={{
                         "&.Mui-selected": {
+                          backgroundColor: blue[50],
+                          color: blue[800],
+                        },
+                        borderTopLeftRadius: 10,
+                        borderTopRightRadius: 10,
+                      }}
+                    >
+                      <ListItemDecorator>
+                        <ExtensionOutlined />
+                      </ListItemDecorator>
+                      Linked Activities{" "}
+                    </Tab>
+                    <Tab
+                      value="c"
+                      sx={{
+                        "&.Mui-selected": {
                           backgroundColor: blue[50], // selected background
                           color: blue[800], // selected text
                         },
@@ -332,22 +359,10 @@ function ViewPPMP() {
                       >
                         {" "}
                         {/* Set a fixed height or responsive height */}
-                        <img
-                          src="https://images.unsplash.com/photo-1593121925328-369cc8459c08?auto=format&fit=crop&w=286"
-                          srcSet="https://images.unsplash.com/photo-1593121925328-369cc8459c08?auto=format&fit=crop&w=286&dpr=2 2x"
-                          loading="lazy"
-                          alt=""
-                          style={{
-                            width: "100%", // Fill the width of the container
-                            height: "100%", // Fill the height of the container
-                            objectFit: "cover", // Maintain aspect ratio, crop if necessary
-                            borderRadius: 10,
-                            display: "block", // Remove default inline spacing
-                          }}
-                        />
+                        <ItemRowComponent item={row?.item} minHeight={250} />
                       </BoxComponent>
 
-                      <BoxComponent p={2} width={350} height={250}>
+                      <BoxComponent p={2} width={450} height={250}>
                         <Stack spacing={2}>
                           <Typography
                             fontWeight={600}
@@ -407,92 +422,153 @@ function ViewPPMP() {
                           </Stack>
                         </Stack>
                       </BoxComponent>
-                      <BoxComponent p={2} width={350} height={250}>
-                        <Stack>
+
+                      <Stack width={510} gap={2}>
+                        <BoxComponent height={80}>
+                          <Stack
+                            direction={"row"}
+                            justifyContent={"space-between"}
+                            mb={2}
+                          >
+                            <Typography
+                              level="title-md"
+                              startDecorator={
+                                <TextSnippetOutlined
+                                  sx={{ color: blue[800], fontSize: 20 }}
+                                />
+                              }
+                            >
+                              Source of Funds
+                            </Typography>
+                            <Typography
+                              level="body-sm"
+                              startDecorator={
+                                <InfoOutlineRounded
+                                  sx={{ fontSize: 15 }}
+                                  color="warning"
+                                />
+                              }
+                            >
+                              Action Required
+                            </Typography>
+                          </Stack>
+                          <AutocompleteComponent
+                            options={sourceOfFunds}
+                            getOptionLabel={(option) => option?.name || ""}
+                          />
+                        </BoxComponent>
+                        <BoxComponent p={2} height={115}>
                           <Typography
-                            fontWeight={600}
                             startDecorator={
-                              <ExtensionOutlined
-                                style={{ color: orange[800], fontSize: 20 }}
+                              <TextSnippetOutlined
+                                sx={{ color: blue[800], fontSize: 20 }}
                               />
                             }
+                            level="title-md"
+                            mb={2}
                           >
-                            Linked Activities ({row?.activities?.length})
+                            Remarks
                           </Typography>
-                          <Stack
-                            mt={2}
-                            spacing={1}
-                            height={"170px"}
-                            overflow={"auto"}
-                          >
-                            <Box height={"300px"} sx={{ overflowY: "scroll" }}>
-                              {row?.activities?.length > 0 ? (
-                                row?.activities?.map((act, index) => (
-                                  <BoxComponent
-                                    bgColor={"#F5F5F4"}
-                                    p={1}
-                                    key={index}
-                                    mb={1}
+
+                          <Typography level="body-sm" sx={{ color: "black" }}>
+                            {row?.item_remarks || "No remarks provided."}
+                          </Typography>
+                        </BoxComponent>
+                      </Stack>
+                    </Box>
+                  </TabPanel>
+                  <TabPanel value="b">
+                    <Stack direction={"row"} spacing={2}>
+                      <BoxComponent
+                        p={2}
+                        width={500}
+                        height={250}
+                        overflow="hidden"
+                      >
+                        <ItemRowComponent item={row?.item} minHeight={250} />
+                      </BoxComponent>
+                      <BoxComponent width={"100%"} height={250}>
+                        <Typography
+                          fontWeight={600}
+                          startDecorator={
+                            <ExtensionOutlined
+                              style={{ color: orange[800], fontSize: 20 }}
+                            />
+                          }
+                        >
+                          Linked Activities ({row?.activities?.length})
+                        </Typography>
+
+                        <Stack
+                          mt={2}
+                          spacing={1}
+                          height={"170px"}
+                          overflow={"auto"}
+                        >
+                          <Box height={"250px"} sx={{ overflowY: "scroll" }}>
+                            {row?.activities?.length > 0 ? (
+                              row?.activities?.map((act, index) => (
+                                <BoxComponent
+                                  bgColor={"#F5F5F4"}
+                                  p={1}
+                                  key={index}
+                                  mb={1}
+                                >
+                                  <Stack
+                                    direction={"row"}
+                                    width={"100%"}
+                                    spacing={2}
+                                    alignItems={"center"}
                                   >
-                                    <Stack
-                                      direction={"row"}
-                                      width={"100%"}
-                                      spacing={2}
-                                      alignItems={"center"}
-                                    >
-                                      <Stack width={"40%"}>
-                                        <ChipComponent
-                                          label={act.activity_code}
-                                          color={"primary"}
-                                          fontSize={11}
-                                        />
+                                    <Stack>
+                                      <ChipComponent
+                                        label={act.activity_code}
+                                        color={"primary"}
+                                        fontSize={11}
+                                      />
+                                    </Stack>
+
+                                    <Stack>
+                                      <Stack
+                                        direction={"row"}
+                                        justifyContent={"space-between"}
+                                        alignItems={"center"}
+                                      >
+                                        <Typography
+                                          level="body-sm"
+                                          fontWeight={600}
+                                        >
+                                          {act.activity_name}
+                                        </Typography>
                                       </Stack>
 
-                                      <Stack width={"60%"}>
-                                        <Stack
-                                          direction={"row"}
-                                          justifyContent={"space-between"}
-                                          alignItems={"center"}
-                                        >
-                                          <Typography
-                                            level="body-sm"
-                                            fontWeight={600}
-                                          >
-                                            {act.activity_name}
-                                          </Typography>
-                                        </Stack>
+                                      <Stack
+                                        direction={"row"}
+                                        alignItems={"flex-end"}
+                                        spacing={1}
+                                      >
+                                        <Typography level="body-sm">
+                                          {`${act.resources_quantity} ${act.unit}(s)`}
+                                        </Typography>
 
-                                        <Stack
-                                          direction={"row"}
-                                          alignItems={"flex-end"}
-                                          spacing={1}
-                                        >
-                                          <Typography level="body-sm">
-                                            {`${act.resources_quantity} ${act.unit}(s)`}
-                                          </Typography>
-
-                                          <Typography>
-                                            • ₱
-                                            {(
-                                              row?.item?.estimated_budget *
-                                              Number(act.resources_quantity)
-                                            ).toLocaleString("en-PH", {
-                                              minimumFractionDigits: 2,
-                                              maximumFractionDigits: 2,
-                                            })}
-                                          </Typography>
-                                        </Stack>
+                                        <Typography>
+                                          •{" "}
+                                          {formattedPrice(
+                                            row?.item?.estimated_budget *
+                                              Number(act.resources_quantity),
+                                          )}
+                                        </Typography>
                                       </Stack>
                                     </Stack>
-                                  </BoxComponent>
-                                ))
-                              ) : (
-                                <Typography level="body-md">
-                                  No activities found.
-                                </Typography>
-                              )}
-                            </Box>
-                          </Stack>
+                                  </Stack>
+                                </BoxComponent>
+                              ))
+                            ) : (
+                              <Typography level="body-md">
+                                No activities found.
+                              </Typography>
+                            )}
+                          </Box>
                         </Stack>
                         <Typography textAlign={"right"} level="body-sm" mt={2}>
                           Total: {totalQuantity}{" "}
@@ -502,15 +578,25 @@ function ViewPPMP() {
                           </b>
                         </Typography>
                       </BoxComponent>
-                    </Box>
+                    </Stack>
                   </TabPanel>
-                  <TabPanel value="b">
-                    <BoxComponent bgColor={"white"} p={2} borderRadius={20}>
-                      <ProcurementSchedule
-                        editing={false}
-                        initialData={row?.target_by_month}
-                      />
-                    </BoxComponent>
+                  <TabPanel value="c">
+                    <Stack direction={"row"} width={"100%"} gap={2}>
+                      <BoxComponent width={"30%"}>
+                        <ProcurementTimeline />
+                      </BoxComponent>
+                      <BoxComponent
+                        bgColor={"white"}
+                        p={2}
+                        borderRadius={20}
+                        width={"70%"}
+                      >
+                        <ProcurementSchedule
+                          editing={false}
+                          value={row?.target_by_month}
+                        />
+                      </BoxComponent>
+                    </Stack>
                   </TabPanel>
                 </Tabs>
               </React.Fragment>

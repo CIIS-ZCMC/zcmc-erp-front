@@ -27,6 +27,7 @@ const usePPMPStoreHook = create((set, get) => ({
     delivery: [],
   },
   years: [],
+  sourceOfFunds: [],
   pagination: {},
   isLoading: false,
 
@@ -238,6 +239,18 @@ const usePPMPStoreHook = create((set, get) => ({
         },
       });
     },
+
+    getSourceOfFunds: (callBack) => {
+      read({
+        url: `source-of-funds/list`,
+        failed: callBack,
+        success: ({ status, data: { data, message } }) => {
+          console.log("sourceOfFunds", data);
+          set({ sourceOfFunds: data });
+          callBack && callBack(status, message);
+        },
+      });
+    },
   },
 }));
 
@@ -245,7 +258,7 @@ const usePPMPStoreHook = create((set, get) => ({
 export const usePPMPActions = () => usePPMPStoreHook((state) => state.actions);
 
 // --- Expose state separately ---
-export const usePPMP = () => {
+export const usePPMPState = () => {
   const ppmp = usePPMPStoreHook((state) => state.ppmp);
   const ppmp_total = usePPMPStoreHook((state) => state.ppmp_total);
   const ppmp_id = usePPMPStoreHook((state) => state.ppmp_id);
@@ -257,6 +270,7 @@ export const usePPMP = () => {
   const isLocked = usePPMPStoreHook((state) => state.isLocked);
   const timelineDates = usePPMPStoreHook((state) => state.timelineDates);
   const years = usePPMPStoreHook((state) => state.years);
+  const sourceOfFunds = usePPMPStoreHook((state) => state.sourceOfFunds);
   const pagination = usePPMPStoreHook((state) => state.pagination);
   const isLoading = usePPMPStoreHook((state) => state.isLoading);
 
@@ -272,6 +286,7 @@ export const usePPMP = () => {
     isLocked,
     timelineDates,
     years,
+    sourceOfFunds,
     pagination,
     isLoading,
   };

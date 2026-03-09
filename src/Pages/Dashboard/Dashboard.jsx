@@ -230,7 +230,8 @@ function Dashboard() {
               <HorizontalBars
                 isLoading={isLoading}
                 dataset={approverDashboard?.total_cost_by_sector}
-                dataKey="total_cost"
+                dataKeyX="total_cost"
+                datakeyY="unit"
               />
             </ContainerComponent>
           </Grid>

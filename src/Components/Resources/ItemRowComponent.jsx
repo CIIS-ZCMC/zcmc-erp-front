@@ -38,9 +38,11 @@ export default function ItemRowComponent({
             alt={item?.name}
             onClick={itemInfoAction}
             style={{
-              width: "100%",
-              height: "100%",
-              objectFit: "cover",
+              width: "100%", // Fill the width of the container
+              height: "100%", // Fill the height of the container
+              objectFit: "cover", // Maintain aspect ratio, crop if necessary
+              borderRadius: 10,
+              display: "block", // Remove default inline spacing
             }}
           />
         </AspectRatio>

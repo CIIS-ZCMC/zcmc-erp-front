@@ -27,7 +27,8 @@ export const pesoFormatter = (value) => `₱${value.toLocaleString()}`;
 
 export default function HorizontalBars({
   orientation = "horizontal",
-  dataKey = "unit",
+  dataKeyX = "unit",
+  dataKeyY = "totalCost",
   dataset = [],
   isLoading,
 }) {
@@ -42,7 +43,7 @@ export default function HorizontalBars({
           yAxis={[
             {
               scaleType: "band",
-              dataKey,
+              dataKey: dataKeyY,
               width: 150,
               disableTicks: true,
               valueFormatter: (value) => wrapLabel(value),
@@ -50,7 +51,7 @@ export default function HorizontalBars({
           ]}
           series={[
             {
-              dataKey: "totalCost",
+              dataKey: dataKeyX,
               color: "#006599",
               valueFormatter: pesoFormatter,
             },
