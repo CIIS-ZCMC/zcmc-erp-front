@@ -71,7 +71,6 @@ const usePPMPApplicationHook = create((set) => ({
         success: (res) => {
           const { data, message } = res.data;
 
-          console.log(data);
           // set(() => ({
           //   ppmpApplicationItems: data.items,
           //   ppmpApplication: data,

@@ -33,6 +33,9 @@ import useSnackbarHook from "../../../Hooks/SnackbarHook";
 import defaultItem from "../../../assets/item.jpg";
 import formattedPrice from "../../../Utils/formattedPrice";
 import ProcurementTimeline from "./ProcurementTimeline";
+import TextareaComponent from "@Components/Form/TextareaComponent";
+import ItemCardComponent from "@Components/Resources/ItemCardComponent";
+import ItemRowComponent from "@Components/Resources/ItemRowComponent";
 
 const ExpandableRowComponent = ({
   row,
@@ -64,6 +67,7 @@ const ExpandableRowComponent = ({
   const [procTimeline, setProcTimeline] = React.useState(
     row?.ppmp_item_timeline || {},
   );
+  const [itemRemarks, setItemRemarks] = React.useState(row?.item_remarks || "");
   const { showSnack } = useSnackbarHook();
   const { timelineDates } = usePPMP();
 
@@ -104,6 +108,7 @@ const ExpandableRowComponent = ({
         quantity: Number(act.resources_quantity) || 0,
       })),
       ppmp_item_timeline: procTimeline,
+      item_remarks: itemRemarks,
     }),
     [
       procurementMode,
@@ -111,6 +116,7 @@ const ExpandableRowComponent = ({
       linkedActivities,
       totalQuantity,
       procTimeline,
+      itemRemarks,
     ],
   );
 
@@ -171,21 +177,28 @@ const ExpandableRowComponent = ({
     () =>
       linkedActivities?.length > 0 ? (
         linkedActivities.map((act, index) => (
-          <BoxComponent bgColor={"#F5F5F4"} p={1} key={index} mb={1}>
+          <BoxComponent
+            bgColor={"#F5F5F4"}
+            p={1}
+            key={index}
+            mb={1}
+            display="flex"
+            justifyContent="space-between"
+          >
             <Stack
               direction={"row"}
               width={"100%"}
               spacing={2}
               alignItems={"center"}
             >
-              <Stack width={"40%"}>
+              <Stack>
                 <ChipComponent
                   label={act.activity_code}
                   color={"primary"}
                   fontSize={11}
                 />
               </Stack>
-              <Stack width={"60%"}>
+              <Stack>
                 <Stack
                   direction={editing && "row"}
                   justifyContent={editing && "space-between"}
@@ -194,15 +207,6 @@ const ExpandableRowComponent = ({
                   <Typography level="body-sm" fontWeight={600}>
                     {act.activity_name}
                   </Typography>
-                  {editing && (
-                    <IconButtonComponent
-                      icon={<CancelOutlined sx={{ fontSize: 15 }} />}
-                      onClick={() =>
-                        handleDeleteActivity(row.id, act.activity_id)
-                      }
-                      size={"xs"}
-                    />
-                  )}
                 </Stack>
                 <Stack direction={"row"} alignItems={"flex-end"} spacing={1}>
                   {editing ? (
@@ -225,6 +229,15 @@ const ExpandableRowComponent = ({
                 </Stack>
               </Stack>
             </Stack>
+            <Stack>
+              {editing && (
+                <IconButtonComponent
+                  icon={<CancelOutlined sx={{ fontSize: 15 }} />}
+                  onClick={() => handleDeleteActivity(row.id, act.activity_id)}
+                  size={"xs"}
+                />
+              )}
+            </Stack>
           </BoxComponent>
         ))
       ) : (
@@ -237,12 +250,12 @@ const ExpandableRowComponent = ({
     <>
       <Box
         sx={{
-          maxHeight: "600px",
+          maxHeight: "800px",
           opacity: 1,
           overflow: "hidden",
           transition: "max-height .35s ease, opacity .25s ease",
           backgroundColor: grey[50],
-          p: 1.5,
+          p: 1,
         }}
       >
         {editing && (
@@ -296,6 +309,22 @@ const ExpandableRowComponent = ({
               }}
             >
               <ListItemDecorator>
+                <ExtensionOutlined />
+              </ListItemDecorator>
+              Linked Activities{" "}
+            </Tab>
+            <Tab
+              value="c"
+              sx={{
+                "&.Mui-selected": {
+                  backgroundColor: blue[50],
+                  color: blue[800],
+                },
+                borderTopLeftRadius: 10,
+                borderTopRightRadius: 10,
+              }}
+            >
+              <ListItemDecorator>
                 <TodayOutlined />
               </ListItemDecorator>
               Procurement Schedule
@@ -313,21 +342,14 @@ const ExpandableRowComponent = ({
               }}
             >
               <BoxComponent p={2} width={350} height={250} overflow="hidden">
-                <img
-                  src={defaultItem}
-                  loading="lazy"
-                  alt=""
-                  style={{
-                    width: "100%",
-                    height: "100%",
-                    objectFit: "cover",
-                    borderRadius: 10,
-                    display: "block",
-                  }}
+                <ItemRowComponent
+                  item={row?.item}
+                  withContent={false}
+                  minHeight={250}
                 />
               </BoxComponent>
 
-              <BoxComponent p={2} width={400} height={250}>
+              <BoxComponent p={2} width={550} height={250}>
                 <Stack spacing={2}>
                   <Typography
                     fontWeight={600}
@@ -397,9 +419,45 @@ const ExpandableRowComponent = ({
                   </Stack>
                 </Stack>
               </BoxComponent>
+              <BoxComponent p={2} width={410} height={250}>
+                <Typography
+                  startDecorator={
+                    <TextSnippetOutlined
+                      sx={{ color: blue[800], fontSize: 20 }}
+                    />
+                  }
+                  level="title-md"
+                  mb={2}
+                >
+                  Remarks
+                </Typography>
 
-              <BoxComponent p={2} width={370} height={250}>
-                <Stack>
+                {editing ? (
+                  <TextareaComponent
+                    color={"danger"}
+                    value={itemRemarks}
+                    setValue={setItemRemarks}
+                    placeholder={"Add your remarks here..."}
+                  />
+                ) : (
+                  <Typography level="body-sm" sx={{ color: "black" }}>
+                    {row?.item_remarks || "No remarks provided."}
+                  </Typography>
+                )}
+              </BoxComponent>
+            </Box>
+          </TabPanel>
+          <TabPanel value="b">
+            <Stack direction={"row"} gap={2}>
+              <BoxComponent p={2} width={500} height={250} overflow="hidden">
+                <ItemRowComponent
+                  item={row?.item}
+                  withContent={false}
+                  minHeight={250}
+                />
+              </BoxComponent>
+              <BoxComponent p={2} width={"100%"} height={250}>
+                <Stack height={"100%"} spacing={1}>
                   <Typography
                     fontWeight={600}
                     startDecorator={
@@ -410,9 +468,16 @@ const ExpandableRowComponent = ({
                   >
                     Linked Activities ({linkedActivities?.length})
                   </Typography>
-
-                  <Stack mt={2} spacing={1} height={"170px"} overflow={"auto"}>
-                    {editing && (
+                  {editing && (
+                    <Box
+                      sx={{
+                        position: "sticky",
+                        top: 0,
+                        zIndex: 1,
+                        backgroundColor: "white",
+                        pb: 1,
+                      }}
+                    >
                       <AutocompleteComponent
                         label="Select an activity"
                         options={activities}
@@ -422,23 +487,23 @@ const ExpandableRowComponent = ({
                         color="danger"
                         disabled={isLocked}
                       />
-                    )}
-                    <Box height={"300px"} sx={{ overflowY: "auto" }} pr={1}>
-                      {renderedActivities}
                     </Box>
-                  </Stack>
+                  )}
+                  <Box sx={{ flex: 1, overflowY: "auto" }}>
+                    {renderedActivities}
+                  </Box>
+                  <Typography textAlign={"right"} level="body-sm">
+                    Total: {totalQuantity}{" "}
+                    <b>
+                      {unit}
+                      {totalQuantity > 1 ? "s" : ""}
+                    </b>
+                  </Typography>
                 </Stack>
-                <Typography textAlign={"right"} level="body-sm" mt={2}>
-                  Total: {totalQuantity}{" "}
-                  <b>
-                    {unit}
-                    {totalQuantity > 1 ? "s" : ""}
-                  </b>
-                </Typography>
               </BoxComponent>
-            </Box>
+            </Stack>
           </TabPanel>
-          <TabPanel value="b">
+          <TabPanel value="c">
             <Stack direction={"row"} width={"100%"} gap={2}>
               <BoxComponent width="30%" borderRadius={20}>
                 <ProcurementTimeline

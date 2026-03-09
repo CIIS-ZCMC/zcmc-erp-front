@@ -176,7 +176,7 @@ const usePPMPStoreHook = create((set, get) => ({
         url: `${PATH}-remove-activity/${ppmpID}/${activityID}`,
         failed: callBack,
         success: ({
-          data: { data: updatedItem, ppmp_total_amount },
+          data: { message, data: updatedItem, ppmp_total_amount },
           status,
         }) => {
           set((state) => ({
@@ -187,7 +187,7 @@ const usePPMPStoreHook = create((set, get) => ({
             ),
             ppmp_total: ppmp_total_amount,
           }));
-          callBack && callBack(status, updatedItem.message);
+          callBack && callBack(status, message);
         },
       });
     },

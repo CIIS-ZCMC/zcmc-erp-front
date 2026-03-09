@@ -36,9 +36,18 @@ const ItemCardComponent = ({
   amount = 12000,
   itemInfoAction,
   btnAction,
+  withContent = true,
+  minHeight = 120,
+  maxHeight = 200,
+  showZoom = true,
+  showVariant = true,
+  onZoom,
+  sx = {},
 }) => {
   const theme = useTheme();
   const color = theme.palette;
+
+  const imgSrc = item?.image || defaultItem;
 
   return (
     <Fragment>
@@ -46,92 +55,110 @@ const ItemCardComponent = ({
         variant="plain"
         sx={{
           borderRadius: "lg",
+          transition: "0.2s ease",
           "&:hover": {
             boxShadow: "lg",
             transform: "scale(1.02)",
-            transition: "0.2s ease-in-out",
           },
+          ...sx,
         }}
       >
         <CardOverflow>
-          <AspectRatio minHeight={120} maxHeight={200}>
+          <AspectRatio minHeight={minHeight} maxHeight={maxHeight}>
             <img
-              src={defaultItem}
+              src={imgSrc}
               role="button"
               loading="lazy"
               alt={item?.name}
               onClick={itemInfoAction}
+              style={{
+                width: "100%",
+                height: "100%",
+                objectFit: "cover",
+              }}
             />
           </AspectRatio>
 
-          <Box
-            sx={{
-              position: "absolute",
-              top: 8,
-              left: 8,
-              display: "flex",
-              gap: 1,
-              alignItems: "center",
-            }}
-          >
-            <IconButton size="sm" variant="soft" sx={{ opacity: 0.6 }}>
-              <ZoomOutMap />
-            </IconButton>
-          </Box>
+          {/* Zoom Button */}
+          {showZoom && (
+            <Box
+              sx={{
+                position: "absolute",
+                top: 8,
+                left: 8,
+              }}
+            >
+              <IconButton
+                size="sm"
+                variant="soft"
+                sx={{ opacity: 0.7 }}
+                onClick={onZoom}
+              >
+                <ZoomOutMap />
+              </IconButton>
+            </Box>
+          )}
 
-          <Box
-            sx={{
-              position: "absolute",
-              bottom: 8,
-              left: 8,
-            }}
-          >
-            <ChipComponent
-              label={item?.terminology ?? "High-end"}
-              size="sm"
-              color={
-                item?.terminology === "Variant-Regular" ? "success" : "warning"
-              }
-              startDecorator={<Circle style={{ fontSize: 11 }} />}
-            />
-          </Box>
+          {/* Variant Badge */}
+          {showVariant && (
+            <Box
+              sx={{
+                position: "absolute",
+                bottom: 8,
+                left: 8,
+              }}
+            >
+              <ChipComponent
+                label={item?.terminology ?? "High-end"}
+                size="sm"
+                color={
+                  item?.terminology === "Variant-Regular"
+                    ? "success"
+                    : "warning"
+                }
+                startDecorator={<Circle sx={{ fontSize: 10 }} />}
+              />
+            </Box>
+          )}
         </CardOverflow>
 
-        <CardContent>
-          <Typography level="body-xs">
-            {item?.item_category?.name} <CircleSmall size={8} />{" "}
-            {item?.item_unit?.name}
-          </Typography>
+        {withContent && (
+          <CardContent>
+            <Typography level="body-xs">
+              {item?.item_category?.name} <CircleSmall size={8} />{" "}
+              {item?.item_unit?.name}
+            </Typography>
 
-          <Tooltip title={item?.name}>
-            <Typography level="title-sm" noWrap sx={{ cursor: "default" }}>
-              {item?.name}
-            </Typography>
-          </Tooltip>
-          <Stack
-            direction={"row"}
-            justifyContent={"space-between"}
-            alignItems={"center"}
-          >
-            <Typography
-              level="title-md"
-              fontWeight="bold"
-              mt={0.5}
-              sx={{ color: color.custom.light }}
+            <Tooltip title={item?.name}>
+              <Typography level="title-sm" noWrap sx={{ cursor: "default" }}>
+                {item?.name}
+              </Typography>
+            </Tooltip>
+            <Stack
+              direction={"row"}
+              justifyContent={"space-between"}
+              alignItems={"center"}
             >
-              ₱
-              {item?.estimated_budget.toLocaleString("en-PH", {
-                minimumFractionDigits: 2,
-              })}
-            </Typography>
-            <ButtonComponent
-              label={"Add to cart"}
-              size={"sm"}
-              variant={"outlined"}
-              onClick={btnAction}
-            />
-          </Stack>
-        </CardContent>
+              <Typography
+                level="title-md"
+                fontWeight="bold"
+                mt={0.5}
+                sx={{ color: color.custom.light }}
+              >
+                ₱
+                {item?.estimated_budget.toLocaleString("en-PH", {
+                  minimumFractionDigits: 2,
+                })}
+              </Typography>
+              <ButtonComponent
+                label={"Add to cart"}
+                size={"sm"}
+                variant={"outlined"}
+                onClick={btnAction}
+              />
+            </Stack>
+          </CardContent>
+        )}
       </Card>
     </Fragment>
   );
