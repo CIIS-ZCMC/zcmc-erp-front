@@ -22,22 +22,32 @@ export default function ExpandableTable({
   height,
   newItemId,
   hoverRow = true,
+  editingRows,
 }) {
   const [openId, setOpenId] = useState(null);
   const [heights, setHeights] = useState({}); // store row heights
 
+  const measured = React.useRef({});
+
   const toggle = (id) => {
+    if (editingRows?.[id]) return; // prevent closing if editing
     setOpenId((prev) => (prev === id ? null : id));
   };
 
   const openRow = (id) => {
     setOpenId((prev) => (prev === id ? prev : id));
   };
-
   const onRef = (id, node) => {
-    if (node && !heights[id]) {
+    if (!node) return;
+
+    if (!measured.current[id]) {
+      measured.current[id] = true;
       const h = node.scrollHeight;
-      setHeights((prev) => ({ ...prev, [id]: h }));
+
+      setHeights((prev) => ({
+        ...prev,
+        [id]: h,
+      }));
     }
   };
 
@@ -46,6 +56,16 @@ export default function ExpandableTable({
     // console.log(rows)
     // console.log(columns)
   }, [rows, columns, isLoading]);
+
+  useEffect(() => {
+    if (!editingRows) return;
+
+    const editingId = Object.keys(editingRows).find((id) => editingRows[id]);
+
+    if (editingId) {
+      setOpenId(Number(editingId));
+    }
+  }, [editingRows]);
 
   return (
     <>
@@ -151,7 +171,7 @@ export default function ExpandableTable({
                         colSpan={columns.length}
                       >
                         <div
-                          ref={(node) => onRef(id, node)}
+                          ref={expanded ? (node) => onRef(id, node) : null}
                           style={{
                             overflow: "hidden",
                             maxHeight: expanded ? heights[id] : 0,

@@ -67,7 +67,7 @@ export default function CartPreviewComponent({
         content={
           <>
             <Grid container spacing={2} sx={{ flexGrow: 1 }}>
-              <Grid xs={6}>
+              <Grid xs={6} p={2}>
                 <Box sx={{ position: "relative", width: "100%" }}>
                   <AspectRatio
                     minHeight={isAddToCart ? 120 : "100%"}
@@ -78,7 +78,18 @@ export default function CartPreviewComponent({
                       overflow: "hidden",
                     }}
                   >
-                    <img src={defaultItem} loading="lazy" alt={name} />
+                    <img
+                      src={defaultItem}
+                      loading="lazy"
+                      alt={name}
+                      style={{
+                        width: "100%", // Fill the width of the container
+                        height: "100%", // Fill the height of the container
+                        objectFit: "contain", // Maintain aspect ratio, crop if necessary
+                        borderRadius: 10,
+                        display: "block", // Remove default inline spacing
+                      }}
+                    />
                   </AspectRatio>
 
                   {/* Floating Chip */}
@@ -88,7 +99,7 @@ export default function CartPreviewComponent({
                       color={
                         variant === "Variant-Regular" ? "success" : "warning"
                       }
-                      label={variant}
+                      label={variant ?? "Variant not indicated"}
                       sx={{
                         position: "absolute",
                         bottom: 8,

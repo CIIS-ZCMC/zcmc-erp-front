@@ -1,5 +1,5 @@
 import { create } from "zustand";
-import { post, read } from "../../Services/RequestMethods";
+import { post, read, update } from "../../Services/RequestMethods";
 import { API } from "../../Data/constants";
 import { paginationClasses } from "@mui/material";
 
@@ -9,6 +9,7 @@ const usePPMPApplicationHook = create((set) => ({
   ppmpApplicationItems: [],
   isLoading: false,
   pagination: {},
+  sourceOfFunds: [],
 
   actions: {
     getPPMPApplications: (params, callback) => {
@@ -81,6 +82,40 @@ const usePPMPApplicationHook = create((set) => ({
         failed: callback,
       });
     },
+
+    getSourceOfFunds: (callBack) => {
+      read({
+        url: `source-of-funds/list`,
+        failed: callBack,
+        success: ({ status, data: { data, message } }) => {
+          console.log("sourceOfFunds", data);
+          set({ sourceOfFunds: data });
+          callBack && callBack(status, message);
+        },
+      });
+    },
+
+    updateSourceOfFunds: (id, form, callBack) => {
+      update({
+        url: `ppmp-items/${id}/source-of-fund`,
+        form,
+        failed: (status, message) => callBack(status, message),
+        success: ({ data: { data, message }, status }) => {
+          console.log("updateSourceOfFunds", data);
+          set((state) => ({
+            ppmpApplicationItems: state.ppmpApplicationItems.map((item) =>
+              item.id === data.id
+                ? {
+                    ...item,
+                    source_of_fund: data.source_of_fund,
+                  }
+                : item,
+            ),
+          }));
+          callBack && callBack(status, message);
+        },
+      });
+    },
   },
 }));
 
@@ -97,6 +132,7 @@ export const usePPMP = () => {
   const ppmpApplication = usePPMPApplicationHook(
     (state) => state.ppmpApplication,
   );
+  const sourceOfFunds = usePPMPApplicationHook((state) => state.sourceOfFunds);
 
   const pagination = usePPMPApplicationHook((state) => state.pagination);
 
@@ -108,5 +144,6 @@ export const usePPMP = () => {
     ppmpApplication,
     isLoading,
     pagination,
+    sourceOfFunds,
   };
 };

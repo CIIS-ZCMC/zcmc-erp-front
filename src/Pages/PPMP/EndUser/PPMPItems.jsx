@@ -45,6 +45,8 @@ function PPMPItems(props) {
     removeActivity,
     removeItem,
     getProcTimelines,
+    getProcModes,
+    getActivities,
   } = usePPMPActions();
   const { setAlertDialog } = useModalHook();
   const { errors, setError, clearErrors } = userErrorInputHook();
@@ -182,6 +184,12 @@ function PPMPItems(props) {
     getProcTimelines("start", () => {});
     getProcTimelines("end", () => {});
     getProcTimelines("delivery", () => {});
+    getProcModes((status, message) => {
+      if (status !== 200) console.error("Failed to fetch items:", message);
+    });
+    getActivities((status, message) => {
+      if (status !== 200) console.error("Failed to fetch items:", message);
+    });
   }, []);
 
   const handleEditToggle = (rowId, openRow, isSaveClick) => {
@@ -205,9 +213,10 @@ function PPMPItems(props) {
           setEditingRows((prev) => ({ ...prev, [rowId]: false }));
           // 🔴 DO NOT TOUCH EXPANSION
         } else {
+          console.log(status, message);
           setAlertDialog({
             status: "danger",
-            title: "Failed to save.",
+            title: message,
             description: "",
           });
         }
@@ -354,6 +363,7 @@ function PPMPItems(props) {
         rows={filteredPPMPItems}
         loading={pageLoader}
         stickyFooter
+        editingRows={editingRows}
         renderExpanded={(row) => (
           <ExpandableRow
             row={row}

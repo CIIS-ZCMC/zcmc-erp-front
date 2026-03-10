@@ -114,7 +114,7 @@ const ActivitiesModal = ({ selectedActivity }) => {
               spacing={2}
             >
               <InputComponent
-                type={"text"}
+                type={"number"}
                 label={"Quarter 1"}
                 min={0}
                 max={100}
@@ -124,7 +124,7 @@ const ActivitiesModal = ({ selectedActivity }) => {
               />
 
               <InputComponent
-                type={"text"}
+                type={"number"}
                 label={"Quarter 2"}
                 min={0}
                 max={100}
@@ -141,7 +141,7 @@ const ActivitiesModal = ({ selectedActivity }) => {
               alignItems={"center"}
             >
               <InputComponent
-                type={"text"}
+                type={"number"}
                 label={"Quarter 3"}
                 min={0}
                 max={100}
@@ -151,7 +151,7 @@ const ActivitiesModal = ({ selectedActivity }) => {
               />
 
               <InputComponent
-                type={"text"}
+                type={"number"}
                 label={"Quarter 4"}
                 min={0}
                 max={100}

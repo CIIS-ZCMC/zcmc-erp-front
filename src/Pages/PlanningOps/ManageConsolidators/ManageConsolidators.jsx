@@ -79,12 +79,15 @@ export default function ManageConsolidators() {
     getItemCategories(() => {});
   }, []);
 
-  // const categoryOptions =
-  //   categories?.data?.map((cat) => ({
-  //     id: cat.id,
-  //     name: cat.name,
-  //     code: cat.code,
-  //   })) || [];
+  const columns = React.useMemo(
+    () =>
+      MANAGE_CONSOLIDATORS(
+        expandedCategories,
+        setExpandedCategories,
+        handleUpdate,
+      ),
+    [expandedCategories, handleUpdate],
+  );
 
   return (
     <Fragment>
@@ -118,14 +121,7 @@ export default function ManageConsolidators() {
           value={searchQuery}
         />
       </Stack>
-      <ExpandableTable
-        columns={MANAGE_CONSOLIDATORS(
-          expandedCategories,
-          setExpandedCategories,
-          handleUpdate,
-        )}
-        rows={consolidators}
-      />
+      <ExpandableTable columns={columns} rows={consolidators} />
 
       {openUpdate && (
         <ModalComponent

@@ -29,7 +29,6 @@ const useCommentHook = create((set, get) => ({
             data: { comments },
           } = response.data;
           set({ comments: comments });
-          localStorageSetter("comments", comments.length === 0 ? [] : comments);
           callback(response.status, comments);
         },
         failed: () => {

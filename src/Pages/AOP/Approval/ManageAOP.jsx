@@ -102,145 +102,129 @@ export default function ManageAOP() {
 
   return (
     <Fragment>
-      {isLoading ? (
-        <Stack
-          direction={"column"}
-          alignItems={"center"}
-          justifyContent={"center"}
-          textAlign={"center"}
-          my={2}
-          height={"85vh"}
+      <Stack gap={3}>
+        <PageTitle
+          title={
+            <Typography>
+              Manage{" "}
+              <Typography textColor={"warning.400"}>{AREA_CODE}'s</Typography>{" "}
+              AOP{" "}
+              {/* AOP <Typography textColor={"warning.400"}>#{id} </Typography> */}
+              for Fiscal Year{" "}
+              <Typography textColor={"warning.400"}>{FISCAL_YEAR}</Typography>
+            </Typography>
+          }
+          description={
+            "Each objective has its own list of activities. Mark each activity as reviewed and process the request to continue."
+          }
+          items={[
+            {
+              label: "AOP",
+              current: true,
+            },
+          ]}
+          withArrowBack
+          onClickArrow={() => navigate("/approval")}
+        />
+        {/* CONTENT */}
+        <Box
+          sx={{
+            backgroundColor: "white",
+            borderRadius: 12,
+            border: 1,
+            borderColor: "neutral.100",
+            padding: 0,
+            pr: 1.5,
+          }}
         >
-          <ThreeDotsLoader />
-        </Stack>
-      ) : (
-        <Stack gap={3}>
-          <PageTitle
-            title={
-              <Typography>
-                Manage{" "}
-                <Typography textColor={"warning.400"}>{AREA_CODE}'s</Typography>{" "}
-                AOP{" "}
-                {/* AOP <Typography textColor={"warning.400"}>#{id} </Typography> */}
-                for Fiscal Year{" "}
-                <Typography textColor={"warning.400"}>{FISCAL_YEAR}</Typography>
-              </Typography>
-            }
-            description={
-              "Each objective has its own list of activities. Mark each activity as reviewed and process the request to continue."
-            }
-            items={[
-              {
-                label: "AOP",
-                current: true,
-              },
-            ]}
-            withArrowBack
-            onClickArrow={() => navigate("/approval")}
-          />
-          {/* CONTENT */}
-          <Box
+          <Grid
+            container
+            columns={{ xs: 4, sm: 4, md: 4, lg: 12 }}
+            columnSpacing={{ md: 0, lg: 3 }}
+            rowSpacing={{ xs: 1, sm: 3, md: 1 }}
             sx={{
-              backgroundColor: "white",
-              borderRadius: 12,
-              border: 1,
-              borderColor: "neutral.100",
-              padding: 0,
-              pr: 1.5,
+              minHeight: "85vh",
+              height: "85vh",
+              msOverflowY: "auto",
+              overflowY: "auto",
             }}
           >
-            <Grid
-              container
-              columns={{ xs: 4, sm: 4, md: 4, lg: 12 }}
-              columnSpacing={{ md: 0, lg: 3 }}
-              rowSpacing={{ xs: 1, sm: 3, md: 1 }}
-              sx={{
-                minHeight: "85vh",
-                height: "85vh",
-                msOverflowY: "auto",
-                overflowY: "auto",
-              }}
-            >
-              {/* OBJECTIVES  */}
-              <Grid item="true" xs={4} height={{ md: "auto", lg: "100%" }}>
-                <ContainerComponent sx={{ mb: 1 }}>
-                  <Typography level="body-sm" mb={2}>
-                    To view the Project Procurement Management Plan for this
-                    AOP, click the button below.
-                  </Typography>
-                  <Stack
-                    spacing={2}
-                    direction={!hasDispense ? "column" : "row"}
-                  >
+            {/* OBJECTIVES  */}
+            <Grid item="true" xs={4} height={{ md: "auto", lg: "100%" }}>
+              <ContainerComponent sx={{ mb: 1 }}>
+                <Typography level="body-sm" mb={2}>
+                  To view the Project Procurement Management Plan for this AOP,
+                  click the button below.
+                </Typography>
+                <Stack spacing={2} direction={!hasDispense ? "column" : "row"}>
+                  <ButtonComponent
+                    label={`${AREA_CODE} PPMP`}
+                    fullWidth={true}
+                    variant={"soft"}
+                    onClick={() =>
+                      navigate(
+                        `/approval/view-ppmp/${AOP_APPLICATION_ID}/${"regular"}`,
+                      )
+                    }
+                    endDecorator={<OpenInNew />}
+                  />
+                  {hasDispense && (
                     <ButtonComponent
-                      label={`${AREA_CODE} PPMP`}
+                      label="Dispensing PPMP"
                       fullWidth={true}
                       variant={"soft"}
                       onClick={() =>
                         navigate(
-                          `/approval/view-ppmp/${AOP_APPLICATION_ID}/${"regular"}`,
+                          `/approval/view-ppmp/${AOP_APPLICATION_ID}/${"dispensed"}`,
                         )
                       }
                       endDecorator={<OpenInNew />}
                     />
-                    {hasDispense && (
+                  )}
+                </Stack>
+              </ContainerComponent>
+              <ContainerComponent
+                title={"List of objectives and activities"}
+                description={
+                  "Collapse an objective and select one of its activities to view more information."
+                }
+                footer={
+                  <Stack direction={"row"} spacing={2}>
+                    {isAllowedFeedbackViewing && (
                       <ButtonComponent
-                        label="Dispensing PPMP"
-                        fullWidth={true}
-                        variant={"soft"}
-                        onClick={() =>
-                          navigate(
-                            `/approval/view-ppmp/${AOP_APPLICATION_ID}/${"dispensed"}`,
-                          )
-                        }
-                        endDecorator={<OpenInNew />}
+                        variant={"outlined"}
+                        label={`Go to feedback (${
+                          isPlanning ? remarks?.length : allComments?.length
+                        })`}
+                        endDecorator={<ExternalLink size={14} />}
+                        onClick={handleViewFeedback}
                       />
                     )}
+                    {/* PROCESS REQUEST */}
+
+                    <ProcessAOPContent />
                   </Stack>
-                </ContainerComponent>
-                <ContainerComponent
-                  title={"List of objectives and activities"}
-                  description={
-                    "Collapse an objective and select one of its activities to view more information."
-                  }
-                  footer={
-                    <Stack direction={"row"} spacing={2}>
-                      {isAllowedFeedbackViewing && (
-                        <ButtonComponent
-                          variant={"outlined"}
-                          label={`Go to feedback (${
-                            isPlanning ? remarks?.length : allComments?.length
-                          })`}
-                          endDecorator={<ExternalLink size={14} />}
-                          onClick={handleViewFeedback}
-                        />
-                      )}
-                      {/* PROCESS REQUEST */}
-
-                      <ProcessAOPContent />
-                    </Stack>
-                  }
-                  scrollable
-                  contentMaxHeight={"46vh"}
-                  contentMinHeight={"46vh"}
-                >
-                  <ObjectivesList />
-                </ContainerComponent>
-              </Grid>
-
-              {/* ACTIVITY DETAILS  */}
-              <Grid item="true" xs={!isPlanning ? 8 : 4} mt={3}>
-                <ActivityDetails />
-              </Grid>
-
-              {/* COMMENTS  */}
-              <Grid item="true" xs={4} mt={3} display={!isPlanning && "none"}>
-                <CommentsDetails />
-              </Grid>
+                }
+                scrollable
+                contentMaxHeight={"46vh"}
+                contentMinHeight={"46vh"}
+              >
+                <ObjectivesList />
+              </ContainerComponent>
             </Grid>
-          </Box>
-        </Stack>
-      )}
+
+            {/* ACTIVITY DETAILS  */}
+            <Grid item="true" xs={!isPlanning ? 8 : 4} mt={3}>
+              <ActivityDetails />
+            </Grid>
+
+            {/* COMMENTS  */}
+            <Grid item="true" xs={4} mt={3} display={!isPlanning && "none"}>
+              <CommentsDetails />
+            </Grid>
+          </Grid>
+        </Box>
+      </Stack>
 
       <FeedbackContent
         openFeedbackModal={openFeedbackModal}

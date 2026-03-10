@@ -14,21 +14,12 @@ const chartSetting = {
   margin: { left: 0 },
 };
 
-export const totalCostByUnitDataset = [
-  { unit: "Office of Medical Center Chief", totalCost: 1200000 },
-  { unit: "Nursing Service", totalCost: 420000 },
-  { unit: "Human Resource Management", totalCost: 800000 },
-  { unit: "Innovations and Information Systems Unit", totalCost: 1200000 },
-  { unit: "Finance", totalCost: 2000000 },
-  { unit: "Allied Health Professionals Section", totalCost: 600000 },
-];
-
 export const pesoFormatter = (value) => `₱${value.toLocaleString()}`;
 
 export default function HorizontalBars({
   orientation = "horizontal",
-  dataKeyX = "unit",
-  dataKeyY = "totalCost",
+  dataKeyY = "unit",
+  dataKeyX = "totalCost",
   dataset = [],
   isLoading,
 }) {

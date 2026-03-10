@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useMemo, useState } from "react";
-import { useComments } from "../../../../Hooks/CommentHook";
+import { useCommentActions, useComments } from "../../../../Hooks/CommentHook";
 import { Divider, Stack } from "@mui/joy";
 import SimpleCommentComponent from "../../../../Components/Comments/SimpleCommentComponent";
 import { groupByDate } from "../../../../Utils/GroupData";
@@ -10,19 +10,25 @@ import ContainerComponent from "../../../../Components/Common/ContainerComponent
 import { useActivityLoadingState } from "../../../../Hooks/AOP/ActivityHook";
 
 import { useActivity } from "../../../../Hooks/AOP/ActivityHook";
+import { useAOPApplicationObjectives } from "../../../../Hooks/AOP/AOPApplicationsHook";
 
 export const CommentsDetails = () => {
-
   // const { activity } = useActivity();
-
+  const { getCommentsByActivity } = useCommentActions();
   const comments = useComments();
   const [postCommentModal, setPostCommentModal] = useState(false);
   const commentsDisplay = useMemo(() => groupByDate(comments), [comments]);
   const isLoading = useActivityLoadingState();
+  const objectives = useAOPApplicationObjectives();
+  const defaultActivityId = objectives?.[0]?.activities?.[0]?.id ?? null;
 
-  // useEffect(() => {
-  //   console.log(activity)
-  // }, [activity])
+  useEffect(() => {
+    if (!defaultActivityId) return;
+
+    Promise.all([getCommentsByActivity(defaultActivityId)]).catch(
+      console.error,
+    );
+  }, [defaultActivityId]);
 
   return (
     <Fragment>
@@ -61,7 +67,7 @@ export const CommentsDetails = () => {
                     area_code={area_code}
                     date={created_at}
                   />
-                )
+                ),
               )}
             </Fragment>
           ))}

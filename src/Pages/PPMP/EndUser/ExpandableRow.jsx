@@ -68,16 +68,6 @@ const ExpandableRowComponent = ({
   const { showSnack } = useSnackbarHook();
   const { timelineDates } = usePPMPState();
 
-  // Fetch modes & activities once
-  React.useEffect(() => {
-    getProcModes((status, message) => {
-      if (status !== 200) console.error("Failed to fetch items:", message);
-    });
-    getActivities((status, message) => {
-      if (status !== 200) console.error("Failed to fetch items:", message);
-    });
-  }, []);
-
   // Keep linkedActivities in sync with row.activities
   React.useEffect(() => {
     if (row?.activities) setLinkedActivities(row.activities);

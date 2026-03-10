@@ -52,8 +52,9 @@ const StepperComponent = ({ data = [] }) => {
             number_of_comments = null,
             created_at,
             date_returned,
+            turnaround,
           },
-          key
+          key,
         ) => {
           const isActor = status === "submitted"; // actor exists → it's the creator submission
 
@@ -74,9 +75,10 @@ const StepperComponent = ({ data = [] }) => {
               remarks={remarks}
               activities_with_comments={activities_with_comments}
               number_of_comments={number_of_comments}
+              turnaround={turnaround}
             />
           );
-        }
+        },
       )}
 
       {/* <Step

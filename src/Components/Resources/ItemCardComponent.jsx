@@ -109,7 +109,7 @@ const ItemCardComponent = ({
               }}
             >
               <ChipComponent
-                label={item?.terminology ?? "High-end"}
+                label={item?.terminology ?? "Variant not indicated"}
                 size="sm"
                 color={
                   item?.terminology === "Variant-Regular"

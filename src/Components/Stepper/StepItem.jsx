@@ -47,6 +47,7 @@ function StepItem({
   date_approved,
   returned_at,
   role,
+  turnaround,
 }) {
   const theme = useTheme();
   const color = theme.palette.custom;
@@ -132,6 +133,7 @@ function StepItem({
               <StepTextDisplay
                 label={"Approved on:"}
                 value={moment(approved_at).format("LLL")}
+                turnaround={turnaround}
               />
               {/* <Divider sx={dividerStyles} /> */}
             </>

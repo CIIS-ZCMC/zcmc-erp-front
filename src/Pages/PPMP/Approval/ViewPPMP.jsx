@@ -31,6 +31,7 @@ import {
   ExpandLess,
   ExpandMore,
   ExtensionOutlined,
+  InfoOutline,
   InfoOutlineRounded,
   TextSnippetOutlined,
   TodayOutlined,
@@ -54,15 +55,22 @@ import ProcurementTimeline from "../EndUser/ProcurementTimeline";
 import formattedPrice from "../../../Utils/formattedPrice";
 import AutocompleteComponent from "@Components/Form/AutocompleteComponent";
 import { usePPMPActions, usePPMPState } from "../../../Hooks/PPMP/PPMPHook";
+import useSnackbarHook from "../../../Hooks/SnackbarHook";
+import useModalHook from "../../../Hooks/ModalHook";
 
 function ViewPPMP() {
   const { id } = useParams();
   const { type } = useParams();
-  const { getPPMPApplicationByID } = usePPMPApplicationActions();
-  const { ppmpApplicationItems, ppmpApplication, isLoading, pagination } =
-    usePPMP();
-  const { sourceOfFunds } = usePPMPState();
-  const { getSourceOfFunds } = usePPMPActions();
+  const { getPPMPApplicationByID, getSourceOfFunds, updateSourceOfFunds } =
+    usePPMPApplicationActions();
+  const {
+    ppmpApplicationItems,
+    ppmpApplication,
+    isLoading,
+    pagination,
+    sourceOfFunds,
+  } = usePPMP();
+
   const navigate = useNavigate();
 
   const { getPPMPComments, postPPMPComment } = usePPMPCommentsActions();
@@ -76,6 +84,7 @@ function ViewPPMP() {
   const [openDrawer, setOpenDrawer] = useState(false);
   const [selectedRow, setSelectedRow] = useState({});
   const [newComment, setNewComment] = useState("");
+  const [fund, setFund] = useState("");
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
   const [isPostingComment, setIsPostingComment] = useState(false);
@@ -83,6 +92,8 @@ function ViewPPMP() {
   const [activeTab, setActiveTab] = useState("all");
   const [tabCache, setTabCache] = useState({});
   const { isBudget } = useUserTypes();
+  const { showSnack } = useSnackbarHook();
+  const { setAlertDialog } = useModalHook();
 
   const effectiveTab = isBudget ? activeTab : "proc";
 
@@ -110,7 +121,7 @@ function ViewPPMP() {
       perPage,
       effectiveTab,
     );
-
+    if (!isBudget) return;
     getSourceOfFunds(() => {});
   }, [id, effectiveTab, page, perPage, debouncedSearch]);
 
@@ -150,6 +161,27 @@ function ViewPPMP() {
     } finally {
       setIsPostingComment(false);
     }
+  };
+
+  const handleUpdateSource = (row, sourceOfFund) => {
+    updateSourceOfFunds(
+      row.id,
+      {
+        source_of_fund_id: sourceOfFund.id,
+      },
+      (status, message) => {
+        if (status === 200) {
+          // Refresh data
+          showSnack(200, message);
+        } else {
+          setAlertDialog({
+            status: "danger",
+            title: message,
+            description: "",
+          });
+        }
+      },
+    );
   };
 
   // Fetch comments when drawer opens
@@ -381,14 +413,29 @@ function ViewPPMP() {
                             </Typography>
                             {row?.procurement_mode ? (
                               // VIEW MODE → Show chip if procurement_mode exists
-                              <ChipComponent
-                                label={row?.procurement_mode?.name}
-                                sx={{
-                                  color: "#7008E7",
-                                  bgcolor: "#DDD6FF",
-                                }}
-                                size="md"
-                              />
+                              <>
+                                <ChipComponent
+                                  label={row?.procurement_mode?.name}
+                                  sx={{
+                                    color: "#7008E7",
+                                    bgcolor: "#DDD6FF",
+                                  }}
+                                  size="md"
+                                />
+
+                                <Typography
+                                  level="body-sm"
+                                  startDecorator={<InfoOutline />}
+                                  gap={0.3}
+                                >
+                                  Pre-Procurement Conference:{"  "}
+                                  <b>
+                                    {row?.pre_procurement_conference
+                                      ? " YES "
+                                      : " NO "}
+                                  </b>
+                                </Typography>
+                              </>
                             ) : (
                               // VIEW MODE → No procurement_mode
                               <Typography level="body-sm" color="danger">
@@ -424,40 +471,47 @@ function ViewPPMP() {
                       </BoxComponent>
 
                       <Stack width={510} gap={2}>
-                        <BoxComponent height={80}>
-                          <Stack
-                            direction={"row"}
-                            justifyContent={"space-between"}
-                            mb={2}
-                          >
-                            <Typography
-                              level="title-md"
-                              startDecorator={
-                                <TextSnippetOutlined
-                                  sx={{ color: blue[800], fontSize: 20 }}
-                                />
-                              }
+                        {isBudget && (
+                          <BoxComponent height={80}>
+                            <Stack
+                              direction={"row"}
+                              justifyContent={"space-between"}
+                              mb={2}
                             >
-                              Source of Funds
-                            </Typography>
-                            <Typography
-                              level="body-sm"
-                              startDecorator={
-                                <InfoOutlineRounded
-                                  sx={{ fontSize: 15 }}
-                                  color="warning"
-                                />
+                              <Typography
+                                level="title-md"
+                                startDecorator={
+                                  <TextSnippetOutlined
+                                    sx={{ color: blue[800], fontSize: 20 }}
+                                  />
+                                }
+                              >
+                                Source of Funds
+                              </Typography>
+                              <Typography
+                                level="body-sm"
+                                startDecorator={
+                                  <InfoOutlineRounded
+                                    sx={{ fontSize: 15 }}
+                                    color="warning"
+                                  />
+                                }
+                              >
+                                Action Required
+                              </Typography>
+                            </Stack>
+                            <AutocompleteComponent
+                              options={sourceOfFunds}
+                              getOptionLabel={(option) => option?.name || ""}
+                              value={row?.source_of_fund ?? null}
+                              handleSelect={(option) =>
+                                handleUpdateSource(row, option)
                               }
-                            >
-                              Action Required
-                            </Typography>
-                          </Stack>
-                          <AutocompleteComponent
-                            options={sourceOfFunds}
-                            getOptionLabel={(option) => option?.name || ""}
-                          />
-                        </BoxComponent>
-                        <BoxComponent p={2} height={115}>
+                            />
+                          </BoxComponent>
+                        )}
+
+                        <BoxComponent p={2} height={isBudget ? 115 : 250}>
                           <Typography
                             startDecorator={
                               <TextSnippetOutlined
@@ -583,7 +637,7 @@ function ViewPPMP() {
                   <TabPanel value="c">
                     <Stack direction={"row"} width={"100%"} gap={2}>
                       <BoxComponent width={"30%"}>
-                        <ProcurementTimeline />
+                        <ProcurementTimeline value={row?.ppmp_item_timeline} />
                       </BoxComponent>
                       <BoxComponent
                         bgColor={"white"}

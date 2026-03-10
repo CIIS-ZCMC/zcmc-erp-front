@@ -6,9 +6,10 @@ StepTextDisplay.propTypes = {
   value: PropTypes.string,
   isRed: PropTypes.bool,
   isWarning: PropTypes.bool,
+  turnaround: PropTypes.string,
 };
 
-function StepTextDisplay({ label, value, isRed, isWarning }) {
+function StepTextDisplay({ label, value, isRed, isWarning, turnaround }) {
   return (
     <Stack
       gap={0.5}
@@ -28,6 +29,11 @@ function StepTextDisplay({ label, value, isRed, isWarning }) {
       >
         {value ?? "-"}
       </Typography>
+      {turnaround && (
+        <Typography level="body-xs" color="neutral" fontWeight={400}>
+          {turnaround}
+        </Typography>
+      )}
     </Stack>
   );
 }

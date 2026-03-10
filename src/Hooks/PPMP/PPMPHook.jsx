@@ -27,7 +27,6 @@ const usePPMPStoreHook = create((set, get) => ({
     delivery: [],
   },
   years: [],
-  sourceOfFunds: [],
   pagination: {},
   isLoading: false,
 
@@ -159,7 +158,7 @@ const usePPMPStoreHook = create((set, get) => ({
       update({
         url: `${PATH}-items-update/${id}`,
         form,
-        failed: callBack,
+        failed: (status, message) => callBack(status, message),
         success: ({ data: { data, ppmp_total, message }, status }) => {
           set((state) => ({
             ppmp: state.ppmp.map((item) =>
@@ -239,18 +238,6 @@ const usePPMPStoreHook = create((set, get) => ({
         },
       });
     },
-
-    getSourceOfFunds: (callBack) => {
-      read({
-        url: `source-of-funds/list`,
-        failed: callBack,
-        success: ({ status, data: { data, message } }) => {
-          console.log("sourceOfFunds", data);
-          set({ sourceOfFunds: data });
-          callBack && callBack(status, message);
-        },
-      });
-    },
   },
 }));
 
@@ -270,7 +257,6 @@ export const usePPMPState = () => {
   const isLocked = usePPMPStoreHook((state) => state.isLocked);
   const timelineDates = usePPMPStoreHook((state) => state.timelineDates);
   const years = usePPMPStoreHook((state) => state.years);
-  const sourceOfFunds = usePPMPStoreHook((state) => state.sourceOfFunds);
   const pagination = usePPMPStoreHook((state) => state.pagination);
   const isLoading = usePPMPStoreHook((state) => state.isLoading);
 
@@ -286,7 +272,6 @@ export const usePPMPState = () => {
     isLocked,
     timelineDates,
     years,
-    sourceOfFunds,
     pagination,
     isLoading,
   };

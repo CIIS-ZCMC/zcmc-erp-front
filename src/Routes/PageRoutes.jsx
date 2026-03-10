@@ -43,7 +43,7 @@ export const sidebarRoutes = [
     name: "Dashboard",
     element: <Dashboard />,
     icon: <MdDashboard {...iconStyles} />,
-    permissions: ["ERP-PPMP-MAN:approve", "ERP-PPMP-MAN:approve"],
+    permissions: ["ERP-AOP-MAN:approve", "ERP-PPMP-MAN:approve"],
   },
 
   // SUPERVISOR ROUTES
