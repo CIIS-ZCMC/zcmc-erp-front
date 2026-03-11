@@ -307,7 +307,6 @@ function PPMPItems(props) {
               AOP request. Click a row to expand and view more details.
             </Typography>
           </Stack>
-          {console.log(isDraft)}
 
           {(isDraft || isReturned) && (
             <ButtonComponent

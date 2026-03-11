@@ -34,25 +34,24 @@ const AccordionSummary = ({
   resourcesCount,
   peopleCount,
   commentsCount,
+  openDrawer,
+  showDrawer,
+  closeDrawer,
 }) => {
   const { getCommentsByActivity } = useCommentActions();
   const comments = useComments();
-
-  const [openDrawer, setOpenDrawer] = useState(false);
-  // useEffect(() => {
-  //     console.log(startMonth)
-  //     console.log(endMonth)
-  // }, [startMonth, endMonth])
   const theme = useTheme();
   const color = theme.palette.custom;
 
-  const showComments = () => {
-    getCommentsByActivity(id, () => {}), setOpenDrawer(true);
+  const showComments = (e) => {
+    e.stopPropagation(); // <-- this prevents the accordion from opening
+
+    getCommentsByActivity(id, () => {});
+    showDrawer();
   };
 
   return (
     <>
-      {console.log(comments)}
       <Stack
         direction={"row"}
         justifyContent={"space-between"}
@@ -82,7 +81,7 @@ const AccordionSummary = ({
             >
               {startMonth && endMonth
                 ? `${formattedLongDate(startMonth)} to ${formattedLongDate(
-                    endMonth
+                    endMonth,
                   )}`
                 : "Please select a start month and end month"}
             </Typography>
@@ -125,7 +124,7 @@ const AccordionSummary = ({
 
         <ButtonComponent
           width="200px"
-          onClick={() => showComments()}
+          onClick={(e) => showComments(e)}
           label={
             <Stack direction="row" alignItems="center" spacing={1}>
               <CommentOutlined color="warning" />
@@ -157,9 +156,9 @@ const AccordionSummary = ({
       </Stack>
       <DrawerComponent
         open={openDrawer}
-        setOpen={setOpenDrawer}
-        title={"sample"}
-        description={`The following comments were submitted by reviewing offices regarding this resource item.`}
+        setOpen={closeDrawer}
+        title={name}
+        description={`The following comments were submitted by reviewing offices regarding this activity.`}
         size="md"
         content={
           comments?.length > 0 ? (

@@ -53,7 +53,7 @@ const Summary = ({
   }
 
   return (
-    <Grid container spacing={1} pb={4}>
+    <Grid container spacing={1} pb={4} sx={{ alignItems: "stretch" }}>
       {cards.map((card, idx) => (
         <Grid key={idx} xs>
           {card}

@@ -22,7 +22,8 @@ export default function ManageConsolidators() {
   const theme = useTheme();
   const color = theme.palette;
 
-  const { consolidators, isLoading, actions } = useManageConsolidatorsHook();
+  const { consolidators, isLoading, actions, pagination } =
+    useManageConsolidatorsHook();
   const { getItemCategories, categories } = useItemsHook();
   const { setPin, pin } = usePinHook();
   const { showSnack } = useSnackbarHook();
@@ -33,7 +34,7 @@ export default function ManageConsolidators() {
   const [openUpdate, setOpenUpdate] = useState(false);
   const [selectedData, setSelectedData] = useState(null);
 
-  const handleUpdate = (row) => {
+  const handleUpdate = React.useCallback((row) => {
     const updateData = {
       consolidator: {
         id: row.user_id,
@@ -46,9 +47,10 @@ export default function ManageConsolidators() {
         code: cat.item_category_code,
       })),
     };
+
     setSelectedData(updateData);
     setOpenUpdate(true);
-  };
+  }, []);
 
   const handleSubmit = () => {
     const payload = {
@@ -65,19 +67,19 @@ export default function ManageConsolidators() {
       } else {
         setAlertDialog({
           status: "error",
-          title: "Unexpected Error",
-          description: message,
+          title: message,
+          description: "",
         });
       }
     });
   };
 
   useEffect(() => {
-    actions.getConsolidators((status, message) => {
+    actions.getConsolidators(searchQuery, (status, message) => {
       console.log(status, message);
     });
     getItemCategories(() => {});
-  }, []);
+  }, [searchQuery]);
 
   const columns = React.useMemo(
     () =>
@@ -92,19 +94,20 @@ export default function ManageConsolidators() {
   return (
     <Fragment>
       <PageTitle
-        title={"Manage Consolidators"}
+        title={"Manage Dispensing Units"}
         description={
-          "Create, update, and maintain consolidator assignments to ensure accurate and timely data consolidation."
+          "Create, update, and maintain dispensing unit assignments to ensure accurate and timely data consolidation."
         }
       />
       <BoxComponent bgColor={color.background.surface} my={2} p={2}>
         <Stack direction={"row"} sx={{ justifyContent: "space-between" }}>
           <Stack>
             <Typography level="body-md" fontWeight={600}>
-              Item Consolidator Library{" "}
+              Dispensing Unit Library{" "}
             </Typography>
             <Typography level="body-xs">
-              Manage the library for consolidators managing AOP and PPMP items
+              Manage the library for dispensing units managing AOP and PPMP
+              items
             </Typography>
           </Stack>
         </Stack>
@@ -116,12 +119,26 @@ export default function ManageConsolidators() {
         sx={{ justifyContent: "flex-start", pb: 2 }}
       >
         <SearchBarComponentv2
-          placeholder="Search objectives..."
+          placeholder="Search employee/area..."
           setValue={setSearchQuery}
           value={searchQuery}
+          fullWidth
         />
       </Stack>
-      <ExpandableTable columns={columns} rows={consolidators} />
+      <ExpandableTable
+        columns={columns}
+        rows={consolidators}
+        currentPage={pagination?.current_page}
+        totalPages={pagination?.last_page}
+        onNextPage={() => {
+          if (page < pagination?.last_page) setPage(page + 1);
+        }}
+        onPrevPage={() => {
+          if (page > 1) setPage(page - 1);
+        }}
+        totalRows={pagination?.total}
+        stickyFooter
+      />
 
       {openUpdate && (
         <ModalComponent
@@ -138,7 +155,7 @@ export default function ManageConsolidators() {
           content={
             <Stack spacing={2.5}>
               <InputComponent
-                label={"Consolidator"}
+                label={"Dispensing Unit (Employee)"}
                 helperText={
                   "Type to search for an employee or select from the list"
                 }

@@ -10,26 +10,39 @@ const AccordionComponent = ({
   accordionSummary,
   accordionDetails,
   defaultExpanded = false,
+  expanded,
+  onChange,
   expandedStyles = {},
   summaryStyles = (expanded) => ({}), // function returning object
   detailsStyles = {},
 }) => {
-  const [expanded, setExpanded] = useState(defaultExpanded);
+  // const [expanded, setExpanded] = useState(defaultExpanded);
+
+  const [internalExpanded, setInternalExpanded] = useState(defaultExpanded);
+
+  const isExpanded = expanded !== undefined ? expanded : internalExpanded;
+  const handleChange = (event, newExpanded) => {
+    if (onChange) {
+      onChange(event, newExpanded);
+    } else {
+      setInternalExpanded(newExpanded);
+    }
+  };
 
   return (
     <AccordionGroup transition="0.2s">
       <Accordion
-        expanded={expanded}
-        onChange={(event, isExpanded) => setExpanded(isExpanded)}
+        expanded={isExpanded}
+        onChange={handleChange}
         sx={{
           transition: "all 0.2s",
-          ...(expanded ? expandedStyles : {}), // apply ONLY when expanded
+          ...(isExpanded ? expandedStyles : {}), // apply ONLY when expanded
         }}
       >
         <AccordionSummary
           sx={{
             transition: "all 0.2s",
-            ...summaryStyles(expanded), // call the function here
+            ...summaryStyles(isExpanded), // call the function here
           }}
         >
           {accordionSummary}

@@ -38,7 +38,7 @@ export default function DashboardHeader({
               PPMP for Fiscal year
             </Typography>
             <SelectComponent
-              width="120px"
+              width="150px"
               bgcolor="#004366"
               txtcolor="white"
               years={years.years}

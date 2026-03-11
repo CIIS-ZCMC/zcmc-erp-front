@@ -7,6 +7,7 @@ const useManageConsolidatorsHook = create((set, get) => ({
   // STATE
   // =========================
   consolidators: [],
+  pagination: {},
   isLoading: false,
   error: null,
 
@@ -14,16 +15,18 @@ const useManageConsolidatorsHook = create((set, get) => ({
   // ACTIONS
   // =========================
   actions: {
-    getConsolidators: async (callback) => {
+    getConsolidators: async (search = "", callback) => {
       set({ isLoading: true, error: null });
 
       read({
         url: API.CONSOLIDATORS,
+        params: { search },
         success: (res) => {
           const { status, message, data } = res;
 
           set({
             consolidators: data.data,
+            pagination: data.meta,
             isLoading: false,
           });
 
@@ -65,9 +68,9 @@ const useManageConsolidatorsHook = create((set, get) => ({
 
           callback?.(response.status, message);
         },
-        failed: (err) => {
-          set({ isLoading: false, error: err });
-          callback?.(err?.status ?? 500, err?.message);
+        failed: (status, message) => {
+          set({ isLoading: false });
+          callback?.(status, message);
         },
       });
     },

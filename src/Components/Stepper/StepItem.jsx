@@ -103,9 +103,15 @@ function StepItem({
           />
         </Stack>
 
-        <Stack gap={1.5} ml={0.7}>
-          <Typography fontWeight={400} level="body-xs">
-            <Typography>
+        <Stack ml={0.7} spacing={0.5} mb={1}>
+          <Stack
+            direction={{ xs: "column", sm: "row" }}
+            sx={{
+              justifyContent: "space-between",
+              alignItems: { xs: "start", sm: "center" },
+            }}
+          >
+            <Typography level="body-xs">
               {status === "submitted"
                 ? "Submitted "
                 : status === "approved"
@@ -116,9 +122,12 @@ function StepItem({
               by:{" "}
             </Typography>
 
-            <Typography textColor={"neutral.900"}> {name}</Typography>
-          </Typography>
-          <Divider sx={dividerStyles} />
+            <Typography textColor={"neutral.900"} level="body-xs">
+              {" "}
+              {name}
+            </Typography>
+          </Stack>
+          {/* <Divider sx={dividerStyles} /> */}
           {status === "submitted" && (
             <>
               <StepTextDisplay
@@ -133,7 +142,6 @@ function StepItem({
               <StepTextDisplay
                 label={"Approved on:"}
                 value={moment(approved_at).format("LLL")}
-                turnaround={turnaround}
               />
               {/* <Divider sx={dividerStyles} /> */}
             </>
@@ -147,6 +155,12 @@ function StepItem({
               {/* <Divider sx={dividerStyles} /> */}
             </>
           )}
+          {turnaround && (
+            <>
+              <StepTextDisplay label={"Turnaround Time:"} value={turnaround} />
+              {/* <Divider sx={dividerStyles} /> */}
+            </>
+          )}
 
           {number_of_comments > 0 && (
             <>
@@ -157,29 +171,19 @@ function StepItem({
               <Divider sx={dividerStyles} />
             </>
           )}
-          {/* {remarks && (
-            <Typography
-              level="body-xs"
-              fontWeight={400}
-              textColor={"neutral.900"}
-            >
-              {remarks}
-            </Typography>
-          )} */}
-        </Stack>
 
-        {/* <Divider sx={{ my: 0.3 }} /> */}
-        {/* BODY */}
-        <Stack my={1} gap={{ xs: 2, sm: 1 }}>
           {remarks !== null && (
             <Link
-              sx={{ fontSize: 12, textDecoration: "underline" }}
+              sx={{ fontSize: 12, textDecoration: "none" }}
               onClick={() => setViewCommentModal(true)}
             >
               See remarks
             </Link>
           )}
         </Stack>
+
+        {/* <Divider sx={{ my: 0.3 }} /> */}
+        {/* BODY */}
       </Step>
 
       {/* COMMENT */}

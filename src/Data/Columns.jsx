@@ -2174,12 +2174,17 @@ export const MANAGE_CONSOLIDATORS = (
 ) => [
   {
     id: "name",
-    label: "Consolidator Name",
+    label: "Dispensing Unit (Employee)",
     width: "200px",
     render: (row) => (
-      <Typography level="body-sm" fontWeight={600} color="black">
-        {row?.user_name}
-      </Typography>
+      <Stack>
+        <Typography level="body-sm" fontWeight={600} color="black">
+          {row?.user_name}
+        </Typography>
+        <Typography level="body-xs" color="neutral">
+          {row?.area_name}
+        </Typography>
+      </Stack>
     ),
   },
   {
@@ -2188,7 +2193,7 @@ export const MANAGE_CONSOLIDATORS = (
     width: "350px",
     render: (row) => {
       const categories = row?.assigned_categories || [];
-      const rowId = row?.id;
+      const rowId = row?.user_id;
 
       if (!categories.length) {
         return (

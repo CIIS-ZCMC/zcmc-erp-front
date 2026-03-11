@@ -128,7 +128,7 @@ export const sidebarRoutes = [
     children: [
       {
         path: "/approval",
-        name: "AOP and PPMP Management",
+        name: "Manage AOP and PPMP",
         childPermissions: ["ERP-AOP-MAN:approve", "ERP-PPMP-MAN:approve"],
         children: [
           { index: true, element: <AOPApproval /> },
@@ -145,7 +145,7 @@ export const sidebarRoutes = [
 
       {
         path: "/manage-objectives",
-        name: "Objectives and KPIs",
+        name: "Manage Objectives",
         element: <ManageObjectives />,
         childPermissions: [
           "ERP-OBJ-MAN:write",
@@ -156,7 +156,7 @@ export const sidebarRoutes = [
       },
       {
         path: "/manage-consolidators",
-        name: "Item Consolidators",
+        name: "Manage Dispensing Units",
         element: <ManageConsolidators />,
         childPermissions: [
           // change to item consolidators permissions
@@ -166,12 +166,12 @@ export const sidebarRoutes = [
           "ERP-OBJ-MAN:view-all",
         ],
       },
-      {
-        path: "/dealine-management",
-        name: "Deadline Management",
-        children: [{ index: true, element: <>Deadline Management</> }],
-        childPermissions: ["ERP-DEAD-MAN:write"],
-      },
+      // {
+      //   path: "/dealine-management",
+      //   name: "Deadline Management",
+      //   children: [{ index: true, element: <>Deadline Management</> }],
+      //   childPermissions: ["ERP-DEAD-MAN:write"],
+      // },
     ],
   },
 

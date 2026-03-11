@@ -1,4 +1,4 @@
-import React, { Fragment, useEffect } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 
 import AccordionSummary from "../Activities/AccordionSummary";
 import AccordionDetails from "../Activities/AccordionDetails";
@@ -7,6 +7,16 @@ import AccordionComponent from "@Components/Common/AccordionComponent";
 import { grey } from "@mui/material/colors";
 
 const ActivityAccordion = ({ activities }) => {
+  const [expandedActivity, setExpandedActivity] = useState(null);
+
+  // Controlled drawer state per activity id
+  const [drawerOpen, setDrawerOpen] = useState({});
+
+  const openDrawer = (id) => setDrawerOpen((prev) => ({ ...prev, [id]: true }));
+
+  const closeDrawer = (id) =>
+    setDrawerOpen((prev) => ({ ...prev, [id]: false }));
+
   return (
     <>
       {activities.map(
@@ -22,7 +32,7 @@ const ActivityAccordion = ({ activities }) => {
             resources,
             responsible_people,
           },
-          index
+          index,
         ) => {
           const {
             total_cost,
@@ -43,7 +53,10 @@ const ActivityAccordion = ({ activities }) => {
           return (
             <>
               <AccordionComponent
-                defaultExpanded={false}
+                expanded={expandedActivity === id}
+                onChange={(event, isExpanded) =>
+                  setExpandedActivity(isExpanded ? id : null)
+                }
                 summaryStyles={(expanded) => ({
                   borderLeft: `4px solid ${grey[600]}`,
                   bgcolor: grey[100],
@@ -61,6 +74,9 @@ const ActivityAccordion = ({ activities }) => {
                       resourcesCount={resources_count}
                       peopleCount={responsible_people_count}
                       commentsCount={comments_count}
+                      openDrawer={drawerOpen[id] || false}
+                      showDrawer={() => openDrawer(id)}
+                      closeDrawer={() => closeDrawer(id)}
                     />
                   </Fragment>
                 }
@@ -79,7 +95,7 @@ const ActivityAccordion = ({ activities }) => {
               />
             </>
           );
-        }
+        },
       )}
     </>
   );

@@ -87,27 +87,9 @@ function DashboardEndUser(props) {
     pin: "",
   });
 
-  const {
-    getCommentsByActivity,
-    getCommentsByApplication,
-    getRemarksByApplication,
-  } = useCommentActions();
-
-  const allComments = useComments() ?? localStorageGetter("comments");
-
-  const remarks = useRemarks();
-
   const { activity_comments, application_timelines, current_user } = feedback;
 
   const { role } = current_user || {};
-
-  useEffect(() => {
-    // console.log("user aop applications data", aop);
-    // console.log('user aop applications data', aop)
-    // console.log('user aop applications data', aop)
-    // console.log('role', role);
-    // console.log('feedback', feedback);
-  }, [feedback, aop]);
 
   const remarksCount = application_timelines?.length || 0;
   const commentCount = activity_comments?.length || 0;
@@ -115,14 +97,12 @@ function DashboardEndUser(props) {
 
   const handleClose = () => {
     setIsLoading(true);
-    setTimeout(() => {
-      // window.location.reload();
-      clearMission();
-      setOpenFiscalYearModal(false);
-      closeAlertDialog();
-      setIsLoading(false);
-      navigate(0);
-    }, 2000);
+
+    clearMission();
+    setOpenFiscalYearModal(false);
+    closeAlertDialog();
+
+    setIsLoading(false);
   };
 
   const handleOpenEdit = () => {

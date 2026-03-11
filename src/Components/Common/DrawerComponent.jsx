@@ -41,7 +41,10 @@ function DrawerComponent({
   return (
     <Drawer
       open={open}
-      onClose={toggleDrawer(false)}
+      onClose={(event) => {
+        event.stopPropagation(); // prevent accordion toggle
+        toggleDrawer(false)(event); // call original function
+      }}
       sx={{ padding: 3 }}
       size={size}
       variant="plain"
@@ -88,7 +91,13 @@ function DrawerComponent({
                 </Typography>
               </Stack>
 
-              <IconButton variant="plain" onClick={toggleDrawer(false)}>
+              <IconButton
+                variant="plain"
+                onClick={(e) => {
+                  e.stopPropagation(); // prevent accordion toggle
+                  toggleDrawer(false)(e);
+                }}
+              >
                 <BiX fontSize={27} />
               </IconButton>
             </DialogTitle>
