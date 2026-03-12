@@ -44,6 +44,7 @@ import { Edit } from "@mui/icons-material";
 import usePPMPHook from "../../../Hooks/PPMP/PPMPHook";
 import Content from "../../../Pages/PPMP/EndUser/Modal/AddItemRequest/Content";
 import userErrorInputHook from "../../../Hooks/ErrorInputHook";
+import useItemRequestsHook from "../../../Hooks/ItemRequest/ItemRequestHookv2";
 
 function DashboardEndUser(props) {
   const { header, description } = ANNUAL_OPS;
@@ -59,7 +60,7 @@ function DashboardEndUser(props) {
   const { aop, mission, fiscalYear, yearDetails } = useAOPStore();
   const { setMission, clearMission } = useAOPActions();
   const { feedback } = useFeedbackStore();
-  const { itemRequestStore } = usePPMPHook();
+  const { postItmRequest } = useItemRequestsHook();
   const { setError, clearErrors } = userErrorInputHook();
 
   const [openFiscalYearModal, setOpenFiscalYearModal] = useState(false);
@@ -225,7 +226,7 @@ function DashboardEndUser(props) {
         terminology_category_id: itemReq?.variant?.id ?? null, // not required
       };
 
-      await itemRequestStore(payload, (status, message, data) => {
+      await postItmRequest(payload, (status, message, data) => {
         const alertData = {
           status: status === 201 ? "success" : "error",
           title: "Request for new item successfully submitted.",

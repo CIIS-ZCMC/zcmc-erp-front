@@ -20,6 +20,7 @@ import NewRequestModal from "../Modal/AddItemRequest/NewRequestModal";
 import PPMPSubmissionModal from "../Modal/Dashboard/PPMPSubmissionModal";
 import SuccessSubmissionModal from "../Modal/Dashboard/SuccessSubmissionModal";
 import { happensNext } from "../../../../Data/constants";
+import useItemRequestsHook from "../../../../Hooks/ItemRequest/ItemRequestHookv2";
 
 function PPMPDashboard(props) {
   const location = useLocation();
@@ -28,7 +29,7 @@ function PPMPDashboard(props) {
   const { requestsByUser } = useItemRequestStore();
   const { aop } = useAOPStore();
 
-  const { getItemRequestByUser } = useItemRequestHook();
+  const { getItemRequestByUser, postItmRequest } = useItemRequestsHook();
   const { setError, clearErrors } = userErrorInputHook();
 
   const { data, current_page, per_page, next_page_url, prev_page_url, total } =
@@ -42,7 +43,6 @@ function PPMPDashboard(props) {
     postPPMP,
     getPPMPTimeline,
     postItemRequest,
-    itemRequestStore,
   } = usePPMPActions();
   const { setAlertDialog } = useModalHook();
 
@@ -200,15 +200,7 @@ function PPMPDashboard(props) {
         terminology_category_id: itemReq?.variant?.id ?? null, // not required
       };
 
-      await itemRequestStore(payload, (status, message, data) => {
-        const alertData = {
-          status: status === 201 ? "success" : "error",
-          title: "Request for new item successfully submitted.",
-          description: message,
-        };
-
-        setAlertDialog(alertData);
-
+      await postItmRequest(payload, (status, message, data) => {
         if (status === 201) {
           setItemReq({
             classification: null,
@@ -224,9 +216,21 @@ function PPMPDashboard(props) {
             ],
             pin: "",
           });
+          setAlertDialog({
+            status: "success",
+            title: "Request for new item successfully submitted.",
+            description: message,
+          });
           setButtonLoader(false);
           setOpenNewRequest(false); // close modal
           setStep(1); // reset to step 1 if using a stepper
+        } else {
+          setButtonLoader(false);
+          setAlertDialog({
+            status: "error",
+            title: "Request Failed",
+            description: message,
+          });
         }
       });
     } catch (error) {

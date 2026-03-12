@@ -47,6 +47,7 @@ import useSnackbarHook from "../../../../Hooks/SnackbarHook";
 import { useAuth } from "../../../../Store/AuthStore";
 import { socket } from "../../../../Services/Socket";
 import SnackbarComponent from "@Components/Common/SnackbarComponent";
+import { nextYear } from "../../../../Utils/Functions";
 
 const Objectives = () => {
   const location = useLocation();
@@ -106,15 +107,6 @@ const Objectives = () => {
     });
   }, [search]);
 
-  useEffect(() => {}, [
-    aopApplication,
-    functionType,
-    objective,
-    successIndicator,
-    applicationObjectives,
-    isLoading,
-  ]);
-
   const { status_id } = aopApplication; //get status id on aop application object
 
   const {
@@ -126,9 +118,6 @@ const Objectives = () => {
     MANAGE_OBJECTIVES_HEADER,
     MANAGE_OBJECTIVES_SUBHEADER,
   } = OBJECTIVES;
-
-  const currentYear = new Date().getFullYear();
-  const currentFiscalYear = currentYear + 1;
 
   const handleSaveObjectives = async () => {
     const payload = {
@@ -352,7 +341,7 @@ const Objectives = () => {
   return (
     <div>
       <PageTitle
-        title={`AOP for Fiscal Year ${currentFiscalYear}`}
+        title={`AOP for Fiscal Year ${nextYear}`}
         description={
           "The following below serves as the summary of your AOP request. You can open and update your request before the deadline as set by the administrators."
         }
@@ -427,6 +416,7 @@ const Objectives = () => {
             <ButtonComponent
               onClick={() => handleOpenObjectivesModal()}
               label={"Add an Objective"}
+              startDecorator={<CheckCircle />}
               // endDecorator={<Plus size={16} />}
             />
           </Stack>

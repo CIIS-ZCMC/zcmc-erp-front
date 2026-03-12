@@ -416,21 +416,20 @@ const Activities = () => {
           justifyContent={"space-between"}
         >
           <Stack>
-            <Typography
-              fontWeight={600}
-              endDecorator={
-                <ChipComponent
-                  //change this
-                  label={"Objective: " + objectiveName}
-                  color={"success"}
-                  variant={"outlined"}
-                  fontSize={13}
-                  size={"lg"}
-                />
-              }
-            >
-              {MANAGE_ACTIVITIES_HEADER}
-            </Typography>
+            <Stack direction={"row"} spacing={1}>
+              <Typography fontWeight={600}>
+                {MANAGE_ACTIVITIES_HEADER}
+              </Typography>
+              <ChipComponent
+                //change this
+                label={"Objective: " + objectiveName}
+                color={"success"}
+                variant={"outlined"}
+                fontSize={13}
+                size={"lg"}
+              />
+            </Stack>
+
             <Typography level="body-xs" fontWeight={400}>
               {MANAGE_ACTIVITIES_SUBHEADER}
             </Typography>
@@ -499,6 +498,7 @@ const Activities = () => {
               <ButtonComponent
                 onClick={() => handleOpenCountModal()}
                 label={"Add Activity"}
+                startDecorator={<CheckCircle />}
                 // endDecorator={<Plus size={16} />}
               />
             </Stack>

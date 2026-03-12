@@ -101,8 +101,9 @@ const useAOPHook = () => {
             status,
             data: { data, message },
           } = res;
+          console.log("createAOP data", data);
           setAop(data);
-          setMission(data?.mission);
+          setMission(data.mission);
           callBack(status, message);
         },
       });

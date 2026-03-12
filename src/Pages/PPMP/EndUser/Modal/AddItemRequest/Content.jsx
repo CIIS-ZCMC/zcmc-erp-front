@@ -12,8 +12,12 @@ import { handleInputValidation } from "../../../../../Utils/HandleInput";
 import handleSingleChangeAutcomplete from "../../../../../Utils/HandleAutocomplete";
 import userErrorInputHook from "../../../../../Hooks/ErrorInputHook";
 
-import usePPMPHook from "../../../../../Hooks/PPMP/PPMPHook";
+import usePPMPHook, {
+  usePPMPActions,
+  usePPMPState,
+} from "../../../../../Hooks/PPMP/PPMPHook";
 import useItemsHook from "../../../../../Hooks/ItemManagementHook";
+import { formatNumber } from "../../../../../Utils/FormatNumber";
 
 const Content = ({ step, itemReq, setItemReq }) => {
   const [displayLoading, setDisplayLoading] = useState(false);
@@ -30,7 +34,8 @@ const Content = ({ step, itemReq, setItemReq }) => {
     getVariantsByCategory,
   } = useItemsHook();
 
-  const { activities, getActivities } = usePPMPHook();
+  const { activities } = usePPMPState();
+  const { getActivities } = usePPMPActions();
 
   const specsContainerRef = useRef(null);
   const { errors, setError, clearErrors } = userErrorInputHook();
@@ -56,10 +61,20 @@ const Content = ({ step, itemReq, setItemReq }) => {
     setItemReq((prev) => ({
       ...prev,
       specs: prev.specs.map((spec) =>
-        spec.id === id ? { ...spec, value } : spec
+        spec.id === id ? { ...spec, value } : spec,
       ),
     }));
 
+  const handleBudgetChange = (e) => {
+    const raw = e.target.value.replace(/,/g, ""); // remove commas
+
+    if (!/^\d*$/.test(raw)) return; // allow only numbers
+
+    setItemReq((prev) => ({
+      ...prev,
+      estimated_budget: raw,
+    }));
+  };
   useEffect(() => {
     setDisplayLoading(true);
 
@@ -116,7 +131,7 @@ const Content = ({ step, itemReq, setItemReq }) => {
               getOptionLabel={(option) => option.name || ""}
               value={
                 classification?.find(
-                  (el) => el.id === itemReq?.classification?.id
+                  (el) => el.id === itemReq?.classification?.id,
                 ) || null
               } // Match the full object in value
               handleSelect={(value) => {
@@ -124,7 +139,7 @@ const Content = ({ step, itemReq, setItemReq }) => {
                   value,
                   setItemReq,
                   "classification",
-                  setError
+                  setError,
                 );
               }}
             />
@@ -143,7 +158,7 @@ const Content = ({ step, itemReq, setItemReq }) => {
                   value,
                   setItemReq,
                   "category",
-                  setError
+                  setError,
                 );
               }}
             />
@@ -160,7 +175,7 @@ const Content = ({ step, itemReq, setItemReq }) => {
                 value,
                 setItemReq,
                 "unit",
-                setError
+                setError,
               );
             }}
           />
@@ -178,7 +193,7 @@ const Content = ({ step, itemReq, setItemReq }) => {
                 value,
                 setItemReq,
                 "variant",
-                setError
+                setError,
               );
             }}
           />
@@ -188,8 +203,8 @@ const Content = ({ step, itemReq, setItemReq }) => {
             name="estimated_budget"
             size="sm"
             fontWeight={500}
-            value={itemReq?.estimated_budget}
-            handleInput={(e) => handleInputValidation(e, setItemReq)}
+            value={formatNumber(itemReq?.estimated_budget)}
+            handleInput={handleBudgetChange}
             color="primary"
             startDecorator={"₱"}
           />

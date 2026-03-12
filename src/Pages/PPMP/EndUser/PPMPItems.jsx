@@ -313,6 +313,7 @@ function PPMPItems(props) {
               label={"Add an Item"}
               startDecorator={<PlusIcon />}
               onClick={() => navigate(`/ppmp/add-item/${type}`)}
+              disabled={isLocked}
             />
           )}
         </Stack>
