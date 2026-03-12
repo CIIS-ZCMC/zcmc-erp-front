@@ -2,8 +2,8 @@ import ExpandableTable from "@Components/Common/Table/ExpandableTable";
 import { ITEMS_REQUESTS } from "../../../../Data/Columns";
 import React, { useEffect, useState } from "react";
 // import useItemRequestHook from "../../../../Hooks/ItemRequest/ItemRequestHook";
-import useItemRequestHook from "../../../../Hooks/ItemRequest/ItemRequestHookv2";
-import useItemRequestStore from '../../../../Store/ItemRequestStore';
+import useItemRequestHook from "../../../../Hooks/ItemRequest/ItemRequestHook";
+import useItemRequestStore from "../../../../Store/ItemRequestStore";
 
 import { Box, Sheet, Typography } from "@mui/joy";
 import { ExtensionOutlined } from "@mui/icons-material";
@@ -13,7 +13,6 @@ import { useLocation } from "react-router-dom";
 import ItemRequestModal from "./ItemRequestModal";
 
 export default function Pending() {
-
   const location = useLocation();
   const pathName = location.pathname;
 
@@ -26,15 +25,8 @@ export default function Pending() {
   const [isDecline, setIsDecline] = useState(false);
 
   // const data = requests?.data || []
-  const {
-    data,
-    current_page,
-    next_page_url,
-    per_page,
-    prev_page_url,
-    total
-  } = requests || {}
-
+  const { data, current_page, next_page_url, per_page, prev_page_url, total } =
+    requests || {};
 
   const handleOpen = (status, row) => {
     setStatus(status);
@@ -43,11 +35,11 @@ export default function Pending() {
   };
 
   const handleClose = () => {
-    setOpenApprove(false)
-  }
+    setOpenApprove(false);
+  };
 
   useEffect(() => {
-    const params = { status_id: 3 }
+    const params = { status_id: 3 };
     getItemRequests(params, (status, message) => {
       // console.log(params)
       if (status !== 200) {
@@ -57,9 +49,9 @@ export default function Pending() {
   }, []);
 
   useEffect(() => {
-    console.log('request data', requests)
-    console.log('row', data)
-  }, [requests])
+    console.log("request data", requests);
+    console.log("row", data);
+  }, [requests]);
 
   return (
     <div>

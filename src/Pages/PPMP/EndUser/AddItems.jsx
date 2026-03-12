@@ -12,10 +12,7 @@ import AddToCartLayout from "@Components/Resources/AddToCartLayout";
 import useCartStore from "../../../Hooks/ItemCartHook";
 import { useAuth } from "../../../Store/AuthStore";
 import useSearchHook from "../../../Hooks/SearchHook";
-import usePPMPHook, {
-  usePPMPActions,
-  usePPMPState,
-} from "../../../Hooks/PPMP/PPMPHook";
+import { usePPMPActions, usePPMPState } from "../../../Hooks/PPMP/PPMPHook";
 import AlertDialogComponent from "@Components/Common/Dialog/AlertDialogComponent";
 import useSnackbarHook from "../../../Hooks/SnackbarHook";
 import AddItemRequest from "./AddItemRequest";
@@ -33,11 +30,9 @@ function AddItems(props) {
   const isPPMP = true;
 
   const { activities } = usePPMPState();
-  const { getActivities, postPPMP, postItems, updatePPMP } = usePPMPActions();
-  const { items, getItems, getSearchResults } = useItemsHook();
-  const { getSearchSuggestions, suggestions } = useSearchHook();
-  const { setAlertDialog, setConfirmationModal, closeAlertDialog } =
-    useModalHook();
+  const { getActivities, postItems } = usePPMPActions();
+  const { getItems } = useItemsHook();
+  const { setAlertDialog, closeAlertDialog } = useModalHook();
   const { showSnack } = useSnackbarHook();
 
   const cartStore = useCartStore(user?.id || "guest", isPPMP);

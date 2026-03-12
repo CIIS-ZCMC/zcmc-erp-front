@@ -22,8 +22,8 @@ export default function Checklist({ checklist = [], isDispensing = false }) {
       sx={{
         display: "flex",
         flexDirection: "column",
-        height: !isDispensing ? "65vh" : "45vh", // 👈 parent owns height
-        minHeight: 0, // 🔑 required for flex scrolling children
+        height: !isDispensing ? "65vh" : "45vh",
+        minHeight: 0,
         borderColor: "neutral.100",
         bgcolor: "white",
       }}
@@ -37,7 +37,7 @@ export default function Checklist({ checklist = [], isDispensing = false }) {
           minHeight: 0,
           overflowY: "auto", // ✅ only this scrolls
           pr: 1,
-          p: 1,
+          mb: 2,
         }}
       >
         <List size="lg" component="nav" variant="">

@@ -1,19 +1,18 @@
-import React, { useState, useEffect } from 'react'
-import { Typography, Box, Sheet } from '@mui/joy'
-import { ExtensionOutlined } from '@mui/icons-material'
+import React, { useState, useEffect } from "react";
+import { Typography, Box, Sheet } from "@mui/joy";
+import { ExtensionOutlined } from "@mui/icons-material";
 import { grey } from "@mui/material/colors";
-import { useLocation } from 'react-router-dom';
+import { useLocation } from "react-router-dom";
 
-import ExpandableTable from '@Components/Common/Table/ExpandableTable'
+import ExpandableTable from "@Components/Common/Table/ExpandableTable";
 
-import { ITEMS_REQUESTS } from '../../../../Data/Columns'
+import { ITEMS_REQUESTS } from "../../../../Data/Columns";
 
-import useItemRequestStore from '../../../../Store/ItemRequestStore'
-import useItemRequestsHook from '../../../../Hooks/ItemRequest/ItemRequestHookv2'
+import useItemRequestStore from "../../../../Store/ItemRequestStore";
+import useItemRequestsHook from "../../../../Hooks/ItemRequest/ItemRequestHook";
 
 const Saved = () => {
-
-  const location = useLocation()
+  const location = useLocation();
   const pathName = location.pathname;
 
   const { requests, isLoading } = useItemRequestStore();
@@ -23,14 +22,8 @@ const Saved = () => {
   const [status, setStatus] = useState();
   const [row, setRow] = useState({});
 
-  const {
-    data,
-    current_page,
-    next_page_url,
-    per_page,
-    prev_page_url,
-    total
-  } = requests || {}
+  const { data, current_page, next_page_url, per_page, prev_page_url, total } =
+    requests || {};
 
   const handleOpen = (status, row) => {
     setStatus(status);
@@ -39,7 +32,7 @@ const Saved = () => {
   };
 
   useEffect(() => {
-    const params = { status_id: 4 }
+    const params = { status_id: 4 };
     getItemRequests(params, (status, message) => {
       // console.log(params)
       if (status !== 200) {
@@ -88,8 +81,8 @@ const Saved = () => {
           </>
         )}
       />
-    </ >
-  )
-}
+    </>
+  );
+};
 
-export default Saved
+export default Saved;

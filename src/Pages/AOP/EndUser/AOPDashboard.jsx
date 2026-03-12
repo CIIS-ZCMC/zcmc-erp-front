@@ -33,18 +33,11 @@ import FiscalYearModal from "./Modal/FiscalYearModal";
 import AOPDataSummary from "./AOPDataSummary";
 
 import { ANNUAL_OPS } from "../../../Data/constants";
-import {
-  useCommentActions,
-  useComments,
-  useRemarks,
-} from "../../../Hooks/CommentHook";
 import TextareaComponent from "@Components/Form/TextareaComponent";
 import useSnackbarHook from "../../../Hooks/SnackbarHook";
-import { Edit } from "@mui/icons-material";
-import usePPMPHook from "../../../Hooks/PPMP/PPMPHook";
 import Content from "../../../Pages/PPMP/EndUser/Modal/AddItemRequest/Content";
 import userErrorInputHook from "../../../Hooks/ErrorInputHook";
-import useItemRequestsHook from "../../../Hooks/ItemRequest/ItemRequestHookv2";
+import useItemRequestsHook from "../../../Hooks/ItemRequest/ItemRequestHook";
 
 function DashboardEndUser(props) {
   const { header, description } = ANNUAL_OPS;

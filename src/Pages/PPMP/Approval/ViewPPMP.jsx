@@ -121,8 +121,7 @@ function ViewPPMP() {
       perPage,
       effectiveTab,
     );
-    if (!isBudget) return;
-    getSourceOfFunds(() => {});
+    if (isBudget) getSourceOfFunds(() => {});
   }, [id, effectiveTab, page, perPage, debouncedSearch]);
 
   // Keep localRows in sync for optimistic updates
@@ -130,13 +129,20 @@ function ViewPPMP() {
     setLocalRows(ppmpApplicationItems || []);
   }, [ppmpApplicationItems]);
 
+  useEffect(() => setPage(1), [activeTab, debouncedSearch]);
+
+  // Fetch comments when drawer opens
+  useEffect(() => {
+    if (selectedRow?.id) getPPMPComments(selectedRow.id);
+  }, [selectedRow?.id]);
+
   const handleComments = (row) => {
     setSelectedRow(row);
     setOpenDrawer(true);
   };
 
   const handleAddComment = async () => {
-    if (!newComment.trim() || isPostingComment) return;
+    if (!newComment.trim() || isPostingComment || !selectedRow) return;
 
     setIsPostingComment(true);
 
@@ -148,8 +154,6 @@ function ViewPPMP() {
 
       // Refresh drawer comments
       getPPMPComments(selectedRow.id);
-      setNewComment("");
-
       // Optimistically update comment count in table
       setLocalRows((prev) =>
         prev.map((item) =>
@@ -158,6 +162,7 @@ function ViewPPMP() {
             : item,
         ),
       );
+      setNewComment("");
     } finally {
       setIsPostingComment(false);
     }
@@ -184,10 +189,6 @@ function ViewPPMP() {
     );
   };
 
-  // Fetch comments when drawer opens
-  useEffect(() => {
-    if (openDrawer && selectedRow?.id) getPPMPComments(selectedRow.id);
-  }, [openDrawer, selectedRow?.id]);
   return (
     <Fragment>
       <PageTitle
@@ -294,7 +295,6 @@ function ViewPPMP() {
             tabs={tabs}
             handleTabChange={(val) => {
               setActiveTab(val);
-              setPage(1); // reset pagination when switching tabs
             }}
             index={activeTab}
           />
@@ -678,7 +678,7 @@ function ViewPPMP() {
           ppmpComments?.length > 0 ? (
             <Box
               sx={{
-                maxHeight: "480px", // adjust as needed
+                maxHeight: "400px", // adjust as needed
                 overflowY: "auto",
                 pr: 1, // optional: add padding for scrollbar
               }}
@@ -698,7 +698,7 @@ function ViewPPMP() {
           ) : (
             <Box
               sx={{
-                height: "50vh",
+                height: "45vh",
                 display: "flex",
                 alignItems: "center",
                 justifyContent: "center",

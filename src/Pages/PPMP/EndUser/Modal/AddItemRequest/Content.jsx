@@ -12,7 +12,7 @@ import { handleInputValidation } from "../../../../../Utils/HandleInput";
 import handleSingleChangeAutcomplete from "../../../../../Utils/HandleAutocomplete";
 import userErrorInputHook from "../../../../../Hooks/ErrorInputHook";
 
-import usePPMPHook, {
+import {
   usePPMPActions,
   usePPMPState,
 } from "../../../../../Hooks/PPMP/PPMPHook";

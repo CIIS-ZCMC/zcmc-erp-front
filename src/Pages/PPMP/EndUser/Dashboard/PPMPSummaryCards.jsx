@@ -86,7 +86,6 @@ const PPMPCard = ({
                 label={btnLabel}
                 endDecorator={<East />}
                 onClick={btnAction}
-                size={"sm"}
               />
             )}
           </Stack>

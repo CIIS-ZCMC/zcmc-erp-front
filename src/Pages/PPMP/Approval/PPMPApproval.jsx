@@ -18,7 +18,7 @@ import {
   usePPMP,
   usePPMPApplicationActions,
 } from "../../../Hooks/PPMP/PPMPApplicationHook";
-import usePPMPHook from "../../../Hooks/PPMP/PPMPHook";
+import { usePPMPActions } from "../../../Hooks/PPMP/PPMPHook";
 import useModalHook from "../../../Hooks/ModalHook";
 import debounce from "lodash.debounce";
 
@@ -28,7 +28,7 @@ function PPMPApproval() {
   const { getPPMPApplications, getPPMPApplicationByID } =
     usePPMPApplicationActions();
   const { ppmpApplications } = usePPMP();
-  const { exportPPMP } = usePPMPHook();
+  const { exportPPMP } = usePPMPActions();
   const { setAlertDialog } = useModalHook();
 
   // STATES
