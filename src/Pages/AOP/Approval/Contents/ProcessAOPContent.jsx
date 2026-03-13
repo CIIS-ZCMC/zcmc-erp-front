@@ -35,7 +35,7 @@ const ProcessAOPContent = () => {
   const { user } = useAuth();
 
   const canProcess = approvalTimeline?.some(
-    (item) => item.approver_user?.id === user?.id && item.status === "pending"
+    (item) => item.approver_user?.id === user?.id && item.status === "pending",
   );
   // STATE
   const [processData, setProcessData] = useState({ action: "approved" });
@@ -95,14 +95,14 @@ const ProcessAOPContent = () => {
           description: isMCC
             ? `The AOP request has been successfully ${processData.action}. All parties involved will be notified of this update.`
             : processData.action === "returned"
-            ? `The request has been returned to the requesting party for necessary revisions. They will be notified of your remarks and required changes.`
-            : `Everyone can now see the changes you’ve made. The request is now ready for processing of the next approving body (${getNextOffice()}).`, //CHECK THIS IT DISPLAYS UNDEFINED ONCE THE BUDGET AND MCC APPPROVES
+              ? `The request has been returned to the requesting party for necessary revisions. They will be notified of your remarks and required changes.`
+              : `Everyone can now see the changes you’ve made. The request is now ready for processing of the next approving body (${getNextOffice()}).`, //CHECK THIS IT DISPLAYS UNDEFINED ONCE THE BUDGET AND MCC APPPROVES
         };
       } else {
         data = {
           status: "error",
           isGlobal: false,
-          title: "Failed to update status",
+          title: "Failed to submit approval",
           description:
             message ??
             "An error occurred while updating the status of the AOP request. Please check your authorization PIN and try again. If the problem persists, contact the system administrator.",
@@ -160,7 +160,7 @@ const ProcessAOPContent = () => {
                       handleChangeInput(
                         "action",
                         setProcessData,
-                        e.target.value
+                        e.target.value,
                       )
                     }
                   />

@@ -405,6 +405,7 @@ const ExpandableRowComponent = ({
                       getOptionLabel={(option) => option?.name || ""}
                       value={row?.source_of_fund ?? null}
                       handleSelect={(option) => onUpdateSource(row, option)}
+                      disabled={row?.procurement_mode === null}
                     />
                   </BoxComponent>
                 )}
