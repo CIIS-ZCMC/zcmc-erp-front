@@ -21,12 +21,14 @@ export default function TabComponent({
   const notifications = useNotifications();
 
   const unreadCount = notifications?.filter(
-    (element) => element.seen === 0
+    (element) => element.seen === 0,
   )?.length;
 
   useEffect(() => {
-    // console.log('tabs', tabs)
-  }, [tabs])
+    if (index === undefined && tabs?.length) {
+      setIndex(tabs[0].value ?? 0);
+    }
+  }, [tabs]);
 
   return (
     <Box
@@ -39,7 +41,6 @@ export default function TabComponent({
         aria-label="Pipeline"
         value={index}
         onChange={(event, value) => {
-          // console.log(value);
           handleTabChange ? handleTabChange(value) : setIndex(value);
         }}
         sx={{ bgcolor: bgcolor }}
@@ -72,7 +73,7 @@ export default function TabComponent({
               <Tab value={1}>Read </Tab>
               <Tab value={2}>
                 Unread
-                {unreadCount?.length > 0 ? (
+                {unreadCount > 0 ? (
                   <Chip
                     size="sm"
                     color="primary"

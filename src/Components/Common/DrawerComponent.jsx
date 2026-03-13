@@ -69,7 +69,16 @@ function DrawerComponent({
           overflow: "auto",
         }}
       >
-        <Stack p={3} gap={2}>
+        <Stack
+          p={2}
+          gap={2}
+          sx={{
+            flex: 1,
+            display: "flex",
+            flexDirection: "column",
+            minHeight: 0,
+          }}
+        >
           {title && (
             <DialogTitle
               sx={{ alignItems: "start", justifyContent: "space-between" }}
@@ -103,7 +112,18 @@ function DrawerComponent({
             </DialogTitle>
           )}
           <Divider sx={{ mx: 0.2 }} />
-          <DialogContent sx={{ flex: 1 }}>{content}</DialogContent>
+          <DialogContent
+            sx={{
+              flex: 1,
+              display: "flex",
+              flexDirection: "column",
+              overflow: "hidden",
+              minHeight: 0,
+              p: 1,
+            }}
+          >
+            {content}
+          </DialogContent>
         </Stack>
         {footer && (
           <DialogActions

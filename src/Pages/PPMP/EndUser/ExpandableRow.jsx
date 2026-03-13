@@ -1,20 +1,12 @@
 import * as React from "react";
 import PropTypes from "prop-types";
-import {
-  Typography,
-  Box,
-  Tabs,
-  TabList,
-  Tab,
-  ListItemDecorator,
-  TabPanel,
-  Stack,
-} from "@mui/joy";
+import { Typography, Box, Stack } from "@mui/joy";
 import { blue, grey, orange, red } from "@mui/material/colors";
 import {
   CancelOutlined,
   ExtensionOutlined,
   InfoOutline,
+  InfoOutlineRounded,
   TextSnippetOutlined,
   TodayOutlined,
 } from "@mui/icons-material";
@@ -23,7 +15,7 @@ import AutocompleteComponent from "@Components/Form/AutocompleteComponent";
 import ChipComponent from "@Components/Common/ChipComponent";
 import ProcurementSchedule from "./ProcurementSchedule";
 import InputComponent from "@Components/Form/InputComponent";
-import { usePPMPActions, usePPMPState } from "../../../Hooks/PPMP/PPMPHook";
+import { usePPMPState } from "../../../Hooks/PPMP/PPMPHook";
 import IconButtonComponent from "@Components/Common/IconButtonComponent";
 import useModalHook from "../../../Hooks/ModalHook";
 import useSnackbarHook from "../../../Hooks/SnackbarHook";
@@ -33,24 +25,20 @@ import ProcurementTimeline from "./ProcurementTimeline";
 import TextareaComponent from "@Components/Form/TextareaComponent";
 import ItemCardComponent from "@Components/Resources/ItemCardComponent";
 import ItemRowComponent from "@Components/Resources/ItemRowComponent";
+import TabComponent from "@Components/Common/TabComponent";
 
 const ExpandableRowComponent = ({
   row,
-  columns,
-  editing,
-  onEditToggle,
-  open,
-  onToggle,
+  editing = false,
   onGetUpdatedData,
   onRemoveActivity,
-  onDeletePPMP,
-  lockedRows,
-  userId,
-  isLocked,
+  isLocked = false,
+  isBudget = false,
+  sourceOfFunds = [],
+  onUpdateSource,
 }) => {
   const { setAlertDialog } = useModalHook();
   const { modes, activities } = usePPMPState();
-  const { getProcModes, getActivities } = usePPMPActions();
   const [procurementMode, setProcurementMode] = React.useState(
     row?.procurement_mode || null,
   );
@@ -65,6 +53,8 @@ const ExpandableRowComponent = ({
     row?.ppmp_item_timeline || {},
   );
   const [itemRemarks, setItemRemarks] = React.useState(row?.item_remarks || "");
+
+  const [activeTab, setActiveTab] = React.useState("info");
   const { showSnack } = useSnackbarHook();
   const { timelineDates } = usePPMPState();
 
@@ -233,6 +223,24 @@ const ExpandableRowComponent = ({
     [linkedActivities, editing, row],
   );
 
+  const tabs = [
+    {
+      name: "Item Information",
+      value: "info",
+      icon: <TextSnippetOutlined />,
+    },
+    {
+      name: "Linked Activities",
+      value: "activities",
+      icon: <ExtensionOutlined />,
+    },
+    {
+      name: "Procurement Schedule",
+      value: "schedule",
+      icon: <TodayOutlined />,
+    },
+  ];
+
   return (
     <>
       <Box
@@ -266,59 +274,13 @@ const ExpandableRowComponent = ({
           </Box>
         )}
 
-        <Tabs defaultValue="a" sx={{ bgcolor: grey[50] }} variant="soft">
-          <TabList>
-            <Tab
-              value="a"
-              sx={{
-                "&.Mui-selected": {
-                  backgroundColor: blue[50],
-                  color: blue[800],
-                },
-                borderTopLeftRadius: 10,
-                borderTopRightRadius: 10,
-              }}
-            >
-              <ListItemDecorator>
-                <TextSnippetOutlined />
-              </ListItemDecorator>
-              Item Information
-            </Tab>
-            <Tab
-              value="b"
-              sx={{
-                "&.Mui-selected": {
-                  backgroundColor: blue[50],
-                  color: blue[800],
-                },
-                borderTopLeftRadius: 10,
-                borderTopRightRadius: 10,
-              }}
-            >
-              <ListItemDecorator>
-                <ExtensionOutlined />
-              </ListItemDecorator>
-              Linked Activities{" "}
-            </Tab>
-            <Tab
-              value="c"
-              sx={{
-                "&.Mui-selected": {
-                  backgroundColor: blue[50],
-                  color: blue[800],
-                },
-                borderTopLeftRadius: 10,
-                borderTopRightRadius: 10,
-              }}
-            >
-              <ListItemDecorator>
-                <TodayOutlined />
-              </ListItemDecorator>
-              Procurement Schedule
-            </Tab>
-          </TabList>
-
-          <TabPanel value="a">
+        <TabComponent
+          tabs={tabs}
+          index={activeTab}
+          setIndex={setActiveTab}
+          bgcolor={grey[50]}
+        >
+          {activeTab === "info" && (
             <Box
               sx={{
                 display: "flex",
@@ -326,6 +288,7 @@ const ExpandableRowComponent = ({
                 flexWrap: "wrap",
                 alignItems: "center",
                 justifyContent: "center",
+                mt: 1,
               }}
             >
               <BoxComponent p={2} width={350} height={250} overflow="hidden">
@@ -406,36 +369,76 @@ const ExpandableRowComponent = ({
                   </Stack>
                 </Stack>
               </BoxComponent>
-              <BoxComponent p={2} width={410} height={250}>
-                <Typography
-                  startDecorator={
-                    <TextSnippetOutlined
-                      sx={{ color: blue[800], fontSize: 20 }}
-                    />
-                  }
-                  level="title-md"
-                  mb={2}
-                >
-                  Remarks
-                </Typography>
 
-                {editing ? (
-                  <TextareaComponent
-                    color={"danger"}
-                    value={itemRemarks}
-                    setValue={setItemRemarks}
-                    placeholder={"Add your remarks here..."}
-                  />
-                ) : (
-                  <Typography level="body-sm" sx={{ color: "black" }}>
-                    {row?.item_remarks || "No remarks provided."}
-                  </Typography>
+              <Stack width={500} gap={2} mt={1}>
+                {isBudget && (
+                  <BoxComponent height={80}>
+                    <Stack
+                      direction={"row"}
+                      justifyContent={"space-between"}
+                      mb={2}
+                    >
+                      <Typography
+                        level="title-md"
+                        startDecorator={
+                          <TextSnippetOutlined
+                            sx={{ color: blue[800], fontSize: 20 }}
+                          />
+                        }
+                      >
+                        Source of Funds
+                      </Typography>
+                      <Typography
+                        level="body-sm"
+                        startDecorator={
+                          <InfoOutlineRounded
+                            sx={{ fontSize: 15 }}
+                            color="warning"
+                          />
+                        }
+                      >
+                        Action Required
+                      </Typography>
+                    </Stack>
+                    <AutocompleteComponent
+                      options={sourceOfFunds}
+                      getOptionLabel={(option) => option?.name || ""}
+                      value={row?.source_of_fund ?? null}
+                      handleSelect={(option) => onUpdateSource(row, option)}
+                    />
+                  </BoxComponent>
                 )}
-              </BoxComponent>
+                <BoxComponent p={2} height={isBudget ? 115 : 250}>
+                  <Typography
+                    startDecorator={
+                      <TextSnippetOutlined
+                        sx={{ color: blue[800], fontSize: 20 }}
+                      />
+                    }
+                    level="title-md"
+                    mb={2}
+                  >
+                    Remarks
+                  </Typography>
+
+                  {editing ? (
+                    <TextareaComponent
+                      color={"danger"}
+                      value={itemRemarks}
+                      setValue={setItemRemarks}
+                      placeholder={"Add your remarks here..."}
+                    />
+                  ) : (
+                    <Typography level="body-sm" sx={{ color: "black" }}>
+                      {row?.item_remarks || "No remarks provided."}
+                    </Typography>
+                  )}
+                </BoxComponent>
+              </Stack>
             </Box>
-          </TabPanel>
-          <TabPanel value="b">
-            <Stack direction={"row"} gap={2}>
+          )}
+          {activeTab === "activities" && (
+            <Stack direction={"row"} mt={2} spacing={2}>
               <BoxComponent p={2} width={500} height={250} overflow="hidden">
                 <ItemRowComponent
                   item={row?.item}
@@ -489,9 +492,9 @@ const ExpandableRowComponent = ({
                 </Stack>
               </BoxComponent>
             </Stack>
-          </TabPanel>
-          <TabPanel value="c">
-            <Stack direction={"row"} width={"100%"} gap={2}>
+          )}
+          {activeTab === "schedule" && (
+            <Stack direction={"row"} width={"100%"} gap={2} mt={2}>
               <BoxComponent width="30%" borderRadius={20}>
                 <ProcurementTimeline
                   timelines={timelineDates}
@@ -513,8 +516,8 @@ const ExpandableRowComponent = ({
                 />
               </BoxComponent>
             </Stack>
-          </TabPanel>
-        </Tabs>
+          )}
+        </TabComponent>
       </Box>
     </>
   );

@@ -288,7 +288,7 @@ const AOPApproval = () => {
         title={`Approval timeline for this AOP`}
         description={"The list below shows the current status of the request."}
         content={
-          <Stack mt={2} width="99%">
+          <Stack mt={2}>
             {isLoading ? (
               <ThreeDotsLoader />
             ) : (
