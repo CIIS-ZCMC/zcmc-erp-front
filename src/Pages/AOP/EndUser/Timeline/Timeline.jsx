@@ -77,7 +77,7 @@ const Timeline = ({ aopId }) => {
                     justifyContent: "center",
                     alignItems: "center",
                   }}
-                  height={"58vh"}
+                  height={"50vh"}
                 >
                   <Typography level="body-sm" sx={{ color: color.fontLight }}>
                     {EMPTY_STATE}

@@ -22,15 +22,7 @@ import { usePPMPApplicationActions } from "../../../../Hooks/PPMP/PPMPApplicatio
 import { localStorageGetter } from "../../../../Utils/LocalStorage";
 
 export const ActivityDetails = () => {
-  const navigate = useNavigate();
   const { isPlanning } = useUserTypes();
-
-  const AOPApplication = useAOPApplication();
-  const Application = useMemo(
-    () => AOPApplication ?? localStorageGetter("aopApplication"),
-    [AOPApplication],
-  );
-
   const [openResourcesModal, setOpenResourcesModal] = useState(false);
   const [openMarkModal, setOpenMarkModal] = useState(false);
   const activity = useActivity();

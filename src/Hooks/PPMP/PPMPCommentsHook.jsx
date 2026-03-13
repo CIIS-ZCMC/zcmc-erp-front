@@ -40,7 +40,7 @@ const usePPMPCommentsHook = create((set) => ({
           console.log(data);
           // Append new comment
           set((state) => ({
-            ppmpComments: [...state.ppmpComments, data], // ⬅️ append
+            ppmpComments: [data, ...state.ppmpComments], // ⬅️ append
           }));
 
           callback?.(200, message);
@@ -56,6 +56,7 @@ export const usePPMPCommentsActions = () =>
 
 export const usePPMPComments = () => {
   const ppmpComments = usePPMPCommentsHook((state) => state.ppmpComments);
+  const isLoading = usePPMPCommentsHook((state) => state.isLoading);
 
-  return { ppmpComments };
+  return { ppmpComments, isLoading };
 };

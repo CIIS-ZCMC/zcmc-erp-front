@@ -90,13 +90,8 @@ function DashboardEndUser(props) {
   const feedbackCount = commentCount + remarksCount;
 
   const handleClose = () => {
-    setIsLoading(true);
-
-    clearMission();
     setOpenFiscalYearModal(false);
     closeAlertDialog();
-
-    setIsLoading(false);
   };
 
   const handleOpenEdit = () => {
@@ -116,6 +111,7 @@ function DashboardEndUser(props) {
       await createAOP(body, (status, message) => {
         if (status === 200) {
           // console.log(`fiscal year: ${fiscalYear}, mission: ${mission}`);
+          showSnack(200, "AOP created successfully");
           setIsLoading(false);
           handleClose();
         } else {

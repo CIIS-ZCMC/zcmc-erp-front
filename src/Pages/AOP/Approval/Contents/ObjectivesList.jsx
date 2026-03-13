@@ -28,7 +28,12 @@ const ObjectivesList = () => {
   // HOOKS
   const { isPlanning } = useUserTypes();
   const AOPApplicationObjectives = useAOPApplicationObjectives();
-  const ApplicationObjectives = localStorageGetter("aopApplicationObjectives");
+  const ApplicationObjectives = useMemo(
+    () =>
+      AOPApplicationObjectives ??
+      localStorageGetter("aopApplicationObjectives"),
+    [AOPApplicationObjectives],
+  );
 
   const { setActiveActivity, getActivityById } = useActivityActions();
 
@@ -84,10 +89,14 @@ const ObjectivesList = () => {
   };
 
   useEffect(() => {
-    if (AOPApplicationObjectives) {
-      setActiveActivity(AOPApplicationObjectives[0]?.activities[0]?.id);
+    if (!AOPApplicationObjectives?.length) return;
+
+    const firstActivityId = AOPApplicationObjectives?.[0]?.activities?.[0]?.id;
+
+    if (firstActivityId && !activeActivity) {
+      handleClickActivity(firstActivityId);
     }
-  }, []);
+  }, [AOPApplicationObjectives]);
 
   return (
     <Fragment>

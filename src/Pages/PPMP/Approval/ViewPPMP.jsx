@@ -25,7 +25,6 @@ import CommentContainerComponent from "@Components/Comments/CommentContainerComp
 import TextareaComponent from "@Components/Form/TextareaComponent";
 import ButtonComponent from "@Components/Common/ButtonComponent";
 import TabComponent from "@Components/Common/TabComponent";
-import { PPMP_COLLAPSE } from "../../../Data/constants";
 import ProcurementSchedule from "../EndUser/ProcurementSchedule";
 import {
   ExpandLess,
@@ -46,17 +45,14 @@ import {
 import NoResultComponent from "@Components/Common/Table/NoResultComponent";
 import { useDebounce } from "use-debounce";
 import CountUp from "react-countup";
-import IconButtonComponent from "@Components/Common/IconButtonComponent";
-import TableComponent from "@Components/Common/Table/TableComponent";
 import { useUserTypes } from "../../../Store/AuthStore";
-import { ExpandableRow } from "../EndUser/ExpandableRow";
 import ItemRowComponent from "@Components/Resources/ItemRowComponent";
 import ProcurementTimeline from "../EndUser/ProcurementTimeline";
 import formattedPrice from "../../../Utils/formattedPrice";
 import AutocompleteComponent from "@Components/Form/AutocompleteComponent";
-import { usePPMPActions, usePPMPState } from "../../../Hooks/PPMP/PPMPHook";
 import useSnackbarHook from "../../../Hooks/SnackbarHook";
 import useModalHook from "../../../Hooks/ModalHook";
+import EllipsisText from "../../../Utils/EllipsisText";
 
 function ViewPPMP() {
   const { id } = useParams();
@@ -74,7 +70,7 @@ function ViewPPMP() {
   const navigate = useNavigate();
 
   const { getPPMPComments, postPPMPComment } = usePPMPCommentsActions();
-  const { ppmpComments } = usePPMPComments();
+  const { ppmpComments, isLoading: isCommentsLoading } = usePPMPComments();
 
   const AOP_APPLICATION_ID = localStorageGetter("aop_application_id");
   const AREA_CODE = localStorageGetter("aop_application_area_code");
@@ -84,13 +80,11 @@ function ViewPPMP() {
   const [openDrawer, setOpenDrawer] = useState(false);
   const [selectedRow, setSelectedRow] = useState({});
   const [newComment, setNewComment] = useState("");
-  const [fund, setFund] = useState("");
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
   const [isPostingComment, setIsPostingComment] = useState(false);
   const [localRows, setLocalRows] = useState([]);
   const [activeTab, setActiveTab] = useState("all");
-  const [tabCache, setTabCache] = useState({});
   const { isBudget } = useUserTypes();
   const { showSnack } = useSnackbarHook();
   const { setAlertDialog } = useModalHook();
@@ -151,14 +145,11 @@ function ViewPPMP() {
         ppmp_item_id: selectedRow.id,
         comment: newComment,
       });
-
-      // Refresh drawer comments
-      getPPMPComments(selectedRow.id);
       // Optimistically update comment count in table
       setLocalRows((prev) =>
         prev.map((item) =>
           item.id === selectedRow.id
-            ? { ...item, comment_count: (item.comment_count || 0) + 1 }
+            ? { ...item, comments_count: (item.comments_count || 0) + 1 }
             : item,
         ),
       );
@@ -320,7 +311,7 @@ function ViewPPMP() {
               <React.Fragment>
                 <Tabs
                   defaultValue="a"
-                  sx={{ bgcolor: grey[100] }}
+                  sx={{ bgcolor: grey[50] }}
                   variant="soft"
                 >
                   <TabList>
@@ -671,14 +662,25 @@ function ViewPPMP() {
       <DrawerComponent
         open={openDrawer}
         setOpen={setOpenDrawer}
-        title={`${selectedRow?.item?.name}`}
+        title={<EllipsisText text={selectedRow?.item?.name} />}
         description={`The following are comments specifically commented in this item.`}
         size="md"
         content={
-          ppmpComments?.length > 0 ? (
+          isCommentsLoading ? (
             <Box
               sx={{
-                maxHeight: "400px", // adjust as needed
+                height: "45vh",
+                display: "flex",
+                alignItems: "center",
+                justifyContent: "center",
+              }}
+            >
+              <ThreeDotsLoader />
+            </Box>
+          ) : ppmpComments.length > 0 ? (
+            <Box
+              sx={{
+                maxHeight: "460px", // adjust as needed
                 overflowY: "auto",
                 pr: 1, // optional: add padding for scrollbar
               }}
@@ -704,7 +706,7 @@ function ViewPPMP() {
                 justifyContent: "center",
               }}
             >
-              <NoResultComponent />{" "}
+              <NoResultComponent />
             </Box>
           )
         }
@@ -713,7 +715,7 @@ function ViewPPMP() {
             <Stack width={"100%"} spacing={2}>
               <TextareaComponent
                 placeholder={"Comment here .. "}
-                maxRows={2}
+                maxRows={3}
                 label={"Add a comment"}
                 value={newComment}
                 onChange={(e) => setNewComment(e.target.value)}

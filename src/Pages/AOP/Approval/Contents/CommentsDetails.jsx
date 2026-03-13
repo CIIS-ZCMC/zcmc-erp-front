@@ -13,22 +13,10 @@ import { useActivity } from "../../../../Hooks/AOP/ActivityHook";
 import { useAOPApplicationObjectives } from "../../../../Hooks/AOP/AOPApplicationsHook";
 
 export const CommentsDetails = () => {
-  // const { activity } = useActivity();
-  const { getCommentsByActivity } = useCommentActions();
   const comments = useComments();
   const [postCommentModal, setPostCommentModal] = useState(false);
   const commentsDisplay = useMemo(() => groupByDate(comments), [comments]);
   const isLoading = useActivityLoadingState();
-  const objectives = useAOPApplicationObjectives();
-  const defaultActivityId = objectives?.[0]?.activities?.[0]?.id ?? null;
-
-  useEffect(() => {
-    if (!defaultActivityId) return;
-
-    Promise.all([getCommentsByActivity(defaultActivityId)]).catch(
-      console.error,
-    );
-  }, [defaultActivityId]);
 
   return (
     <Fragment>

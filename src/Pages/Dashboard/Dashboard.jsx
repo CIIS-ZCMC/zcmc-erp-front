@@ -194,7 +194,11 @@ function Dashboard() {
               />
               <DashboardStatCard
                 icon={<AccessTime />}
-                value={approverDashboard?.average_turnaround_time + " days"}
+                value={
+                  approverDashboard?.average_turnaround_time +
+                  " day" +
+                  (approverDashboard?.average_turnaround_time > 1 ? "s" : "")
+                }
                 gradient={`linear-gradient(to right, #99DCFF , #CCEEFF)`}
                 textColor={blue[800]}
                 iconColor={"primary"}

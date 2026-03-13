@@ -94,10 +94,7 @@ export default function ManageAOP() {
   useEffect(() => {
     if (!defaultActivityId) return;
 
-    Promise.all([
-      getActivityById(defaultActivityId),
-      getCommentsByActivity(defaultActivityId),
-    ]).catch(console.error);
+    getActivityById(defaultActivityId);
   }, [defaultActivityId]);
 
   return (
