@@ -31,15 +31,14 @@ export default function ProcurementTimeline({
       >
         Timeline of Procurement Activity{" "}
       </Typography>
-      <Stack gap={1}>
-        <Stack gap={1} mt={2} direction={"row"}>
+      <Stack gap={3}>
+        <Stack spacing={1} mt={2} direction={"row"}>
           <AutocompleteComponent
             label={"Start"}
             placeholder="Select start date"
             options={timelines.start || []}
             value={values?.start_date || null}
             handleSelect={(val) => setValues({ ...values, start_date: val })}
-            width={!editing ? "auto" : "200px"}
             disabled={!editing}
             size="md"
             color={editing ? "danger" : "neutral"}
@@ -51,7 +50,6 @@ export default function ProcurementTimeline({
             options={timelines.end || []}
             value={values?.end_date || null}
             handleSelect={(val) => setValues({ ...values, end_date: val })}
-            width={!editing ? "auto" : "200px"}
             disabled={!editing}
             size="md"
             color={editing ? "danger" : "neutral"}

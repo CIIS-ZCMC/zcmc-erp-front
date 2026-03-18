@@ -69,14 +69,6 @@ function PPMPItems(props) {
   const [lockedRows, setLockedRows] = useState({});
   const editingRowsRef = useRef({});
 
-  // Filter results when search changes
-  const filteredPPMPItems = useMemo(() => {
-    if (!search) return localRows;
-    return localRows?.filter((item) =>
-      item.item.name.toLowerCase().includes(search.toLowerCase()),
-    );
-  }, [search, localRows]);
-
   useEffect(() => {
     editingRowsRef.current = editingRows;
   }, [editingRows]);
@@ -93,8 +85,9 @@ function PPMPItems(props) {
       },
       page,
       perPage,
+      search,
     );
-  }, [page, perPage]);
+  }, [page, perPage, search]);
 
   useEffect(() => {
     if (ppmp) {
@@ -313,7 +306,7 @@ function PPMPItems(props) {
               label={"Add an Item"}
               startDecorator={<PlusIcon />}
               onClick={() => navigate(`/ppmp/add-item/${type}`)}
-              disabled={isLocked}
+              disabled={isLocked || localRows.length === 0}
             />
           )}
         </Stack>
@@ -360,7 +353,7 @@ function PPMPItems(props) {
       </BoxComponent>
       <ExpandableTable
         columns={columns}
-        rows={filteredPPMPItems}
+        rows={localRows}
         loading={pageLoader}
         stickyFooter
         editingRows={editingRows}

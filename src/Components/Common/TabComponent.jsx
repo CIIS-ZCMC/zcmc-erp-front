@@ -33,8 +33,8 @@ export default function TabComponent({
   return (
     <Box
       sx={{
-        flexGrow: 1,
-        overflowX: "hidden",
+        width: "100%",
+        overflow: "visible",
       }}
     >
       <Tabs
@@ -97,11 +97,10 @@ export default function TabComponent({
             ))
           )}
         </TabList>
-        <Box>
-          <TabPanel value={index} sx={{ p: 0 }}>
-            {children}
-          </TabPanel>
-        </Box>
+
+        <TabPanel value={index} sx={{ p: 0, overflow: "visible" }}>
+          {children}
+        </TabPanel>
       </Tabs>
     </Box>
   );

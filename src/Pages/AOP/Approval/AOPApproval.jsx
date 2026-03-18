@@ -35,6 +35,7 @@ import { nextYear } from "../../../Utils/Functions";
 import { CalendarToday, FileDownload } from "@mui/icons-material";
 import ButtonComponent from "@Components/Common/ButtonComponent";
 import useSnackbarHook from "../../../Hooks/SnackbarHook";
+import { useUserTypes } from "../../../Store/AuthStore";
 
 const AOPApproval = () => {
   const navigate = useNavigate();
@@ -46,6 +47,7 @@ const AOPApproval = () => {
   const { getAOPApprovalTimeline, generateWFP } = useApprovalActions();
   const approvalTimeline = useApprovalTimeline();
   const isLoading = useApprovalLoading();
+  const { isPlanning } = useUserTypes();
 
   //ADDED HOOKS
   const { getAopYearList } = useAOPHook();
@@ -153,6 +155,7 @@ const AOPApproval = () => {
               isLoading={downloading}
               loadingLabel={"Generating WFP..."}
               startDecorator={<FileDownload />}
+              disabled={!isPlanning}
             />
           }
         >

@@ -1,6 +1,6 @@
 import * as React from "react";
 import PropTypes from "prop-types";
-import { Typography, Box, Stack } from "@mui/joy";
+import { Typography, Box, Stack, Grid } from "@mui/joy";
 import { blue, grey, orange, red } from "@mui/material/colors";
 import {
   CancelOutlined,
@@ -26,6 +26,7 @@ import TextareaComponent from "@Components/Form/TextareaComponent";
 import ItemCardComponent from "@Components/Resources/ItemCardComponent";
 import ItemRowComponent from "@Components/Resources/ItemRowComponent";
 import TabComponent from "@Components/Common/TabComponent";
+import { usePPMP } from "../../../Hooks/PPMP/PPMPApplicationHook";
 
 const ExpandableRowComponent = ({
   row,
@@ -34,11 +35,11 @@ const ExpandableRowComponent = ({
   onRemoveActivity,
   isLocked = false,
   isBudget = false,
-  sourceOfFunds = [],
   onUpdateSource,
 }) => {
   const { setAlertDialog } = useModalHook();
   const { modes, activities } = usePPMPState();
+  const { sourceOfFunds } = usePPMP();
   const [procurementMode, setProcurementMode] = React.useState(
     row?.procurement_mode || null,
   );
@@ -243,14 +244,13 @@ const ExpandableRowComponent = ({
 
   return (
     <>
+      {console.log(sourceOfFunds)}
       <Box
         sx={{
-          maxHeight: "800px",
           opacity: 1,
           overflow: "hidden",
           transition: "max-height .35s ease, opacity .25s ease",
           backgroundColor: grey[50],
-          p: 1,
         }}
       >
         {editing && (
@@ -281,98 +281,97 @@ const ExpandableRowComponent = ({
           bgcolor={grey[50]}
         >
           {activeTab === "info" && (
-            <Box
-              sx={{
-                display: "flex",
-                gap: 2,
-                flexWrap: "wrap",
-                alignItems: "center",
-                justifyContent: "center",
-                mt: 1,
-              }}
-            >
-              <BoxComponent p={2} width={350} height={250} overflow="hidden">
-                <ItemRowComponent
-                  item={row?.item}
-                  withContent={false}
-                  minHeight={250}
-                />
-              </BoxComponent>
+            <Grid container spacing={2} mt={1}>
+              <Grid item xs={12} md={3}>
+                <BoxComponent p={2} minHeight={250}>
+                  <ItemRowComponent
+                    item={row?.item}
+                    withContent={false}
+                    minHeight={250}
+                  />
+                </BoxComponent>
+              </Grid>
 
-              <BoxComponent p={2} width={550} height={250}>
-                <Stack spacing={2}>
-                  <Typography
-                    fontWeight={600}
-                    startDecorator={
-                      <TextSnippetOutlined
-                        style={{ color: blue[800], fontSize: 20 }}
-                      />
-                    }
-                  >
-                    Item Information
-                  </Typography>
-
-                  <Stack spacing={1}>
-                    <Typography level="body-sm">Mode of Procurement</Typography>
-                    {editing ? (
-                      <AutocompleteComponent
-                        label="Procurement Mode"
-                        options={modes}
-                        value={procurementMode}
-                        getOptionLabel={(option) => option.name}
-                        handleSelect={setProcurementMode}
-                        color="danger"
-                      />
-                    ) : row?.procurement_mode ? (
-                      <Stack direction={"column"} gap={2}>
-                        <ChipComponent
-                          label={row?.procurement_mode?.name}
-                          sx={{ color: "#7008E7", bgcolor: "#DDD6FF" }}
-                          size="md"
+              <Grid item xs={12} md={5}>
+                <BoxComponent p={2} minHeight={250}>
+                  <Stack spacing={2}>
+                    <Typography
+                      fontWeight={600}
+                      startDecorator={
+                        <TextSnippetOutlined
+                          style={{ color: blue[800], fontSize: 20 }}
                         />
-                        <Typography
-                          level="body-sm"
-                          startDecorator={<InfoOutline />}
-                          gap={0.3}
-                        >
-                          Pre-Procurement Conference:{"  "}
-                          <b>
-                            {row?.pre_procurement_conference ? " YES " : " NO "}
-                          </b>
-                        </Typography>
-                      </Stack>
-                    ) : (
-                      <Typography level="body-sm" color="danger">
-                        No Mode of Procurement Yet.{" "}
-                        <i>Edit Resource to update.</i>
-                      </Typography>
-                    )}
-                  </Stack>
+                      }
+                    >
+                      Item Information
+                    </Typography>
 
-                  <Stack spacing={0.5}>
-                    <Typography level="body-sm">Specifications</Typography>
-                    {row?.item?.item_specifications?.length > 0 ? (
-                      row?.item?.item_specifications?.map((spec, index) => (
-                        <Typography
-                          key={index}
-                          level="body-sm"
-                          sx={{ color: "black" }}
-                        >
-                          ● {spec?.description}
-                        </Typography>
-                      ))
-                    ) : (
-                      <Typography level="body-md">
-                        No specifications provided.
+                    <Stack spacing={1}>
+                      <Typography level="body-sm">
+                        Mode of Procurement
                       </Typography>
-                    )}
-                  </Stack>
-                </Stack>
-              </BoxComponent>
+                      {editing ? (
+                        <AutocompleteComponent
+                          label="Procurement Mode"
+                          options={modes}
+                          value={procurementMode}
+                          getOptionLabel={(option) => option.name}
+                          handleSelect={setProcurementMode}
+                          color="danger"
+                        />
+                      ) : row?.procurement_mode ? (
+                        <Stack direction={"column"} gap={2}>
+                          <ChipComponent
+                            label={row?.procurement_mode?.name}
+                            sx={{ color: "#7008E7", bgcolor: "#DDD6FF" }}
+                            size="md"
+                          />
+                          <Typography
+                            level="body-sm"
+                            startDecorator={<InfoOutline />}
+                            gap={0.3}
+                          >
+                            Pre-Procurement Conference:{"  "}
+                            <b>
+                              {row?.pre_procurement_conference
+                                ? " YES "
+                                : " NO "}
+                            </b>
+                          </Typography>
+                        </Stack>
+                      ) : (
+                        <Typography level="body-sm" color="danger">
+                          No Mode of Procurement Yet.{" "}
+                          <i>Edit Resource to update.</i>
+                        </Typography>
+                      )}
+                    </Stack>
 
-              <Stack width={500} gap={2} mt={1}>
+                    <Stack spacing={0.5}>
+                      <Typography level="body-sm">Specifications</Typography>
+                      {row?.item?.item_specifications?.length > 0 ? (
+                        row?.item?.item_specifications?.map((spec, index) => (
+                          <Typography
+                            key={index}
+                            level="body-sm"
+                            sx={{ color: "black" }}
+                          >
+                            ● {spec?.description}
+                          </Typography>
+                        ))
+                      ) : (
+                        <Typography level="body-md">
+                          No specifications provided.
+                        </Typography>
+                      )}
+                    </Stack>
+                  </Stack>
+                </BoxComponent>
+              </Grid>
+
+              <Grid item xs={12} md={4}>
                 {isBudget && (
-                  <BoxComponent height={80}>
+                  <BoxComponent minHeight={85} mb={2}>
                     <Stack
                       direction={"row"}
                       justifyContent={"space-between"}
@@ -409,7 +408,7 @@ const ExpandableRowComponent = ({
                     />
                   </BoxComponent>
                 )}
-                <BoxComponent p={2} height={isBudget ? 115 : 250}>
+                <BoxComponent p={2} minHeight={isBudget ? 115 : 250}>
                   <Typography
                     startDecorator={
                       <TextSnippetOutlined
@@ -435,88 +434,92 @@ const ExpandableRowComponent = ({
                     </Typography>
                   )}
                 </BoxComponent>
-              </Stack>
-            </Box>
+              </Grid>
+            </Grid>
           )}
           {activeTab === "activities" && (
-            <Stack direction={"row"} mt={2} spacing={2}>
-              <BoxComponent p={2} width={500} height={250} overflow="hidden">
-                <ItemRowComponent
-                  item={row?.item}
-                  withContent={false}
-                  minHeight={250}
-                />
-              </BoxComponent>
-              <BoxComponent p={2} width={"100%"} height={250}>
-                <Stack height={"100%"} spacing={1}>
-                  <Typography
-                    fontWeight={600}
-                    startDecorator={
-                      <ExtensionOutlined
-                        style={{ color: orange[800], fontSize: 20 }}
-                      />
-                    }
-                  >
-                    Linked Activities ({linkedActivities?.length})
-                  </Typography>
-                  {editing && (
-                    <Box
-                      sx={{
-                        position: "sticky",
-                        top: 0,
-                        zIndex: 1,
-                        backgroundColor: "white",
-                        pb: 1,
-                      }}
+            <Grid container spacing={2} sx={{ mt: 1 }}>
+              <Grid item xs={12} md={3}>
+                <BoxComponent p={2} minHeight={250}>
+                  <ItemRowComponent
+                    item={row?.item}
+                    withContent={false}
+                    minHeight={250}
+                  />
+                </BoxComponent>
+              </Grid>
+
+              <Grid item xs={12} md={9}>
+                <BoxComponent p={2} minHeight={250}>
+                  <Stack height={"100%"} spacing={1}>
+                    <Typography
+                      fontWeight={600}
+                      startDecorator={
+                        <ExtensionOutlined
+                          style={{ color: orange[800], fontSize: 20 }}
+                        />
+                      }
                     >
-                      <AutocompleteComponent
-                        label="Select an activity"
-                        options={activities}
-                        value={activity}
-                        getOptionLabel={(option) => option.activity_code}
-                        handleSelect={handleAddActivity}
-                        color="danger"
-                        disabled={isLocked}
-                      />
+                      Linked Activities ({linkedActivities?.length})
+                    </Typography>
+                    {editing && (
+                      <Box
+                        sx={{
+                          position: "sticky",
+                          top: 0,
+                          zIndex: 1,
+                          backgroundColor: "white",
+                          pb: 1,
+                        }}
+                      >
+                        <AutocompleteComponent
+                          label="Select an activity"
+                          options={activities}
+                          value={activity}
+                          getOptionLabel={(option) => option.activity_code}
+                          handleSelect={handleAddActivity}
+                          color="danger"
+                          disabled={isLocked}
+                        />
+                      </Box>
+                    )}
+                    <Box sx={{ flex: 1, overflowY: "auto" }}>
+                      {renderedActivities}
                     </Box>
-                  )}
-                  <Box sx={{ flex: 1, overflowY: "auto" }}>
-                    {renderedActivities}
-                  </Box>
-                  <Typography textAlign={"right"} level="body-sm">
-                    Total: {totalQuantity}{" "}
-                    <b>
-                      {unit}
-                      {totalQuantity > 1 ? "s" : ""}
-                    </b>
-                  </Typography>
-                </Stack>
-              </BoxComponent>
-            </Stack>
+                    <Typography textAlign={"right"} level="body-sm">
+                      Total: {totalQuantity}{" "}
+                      <b>
+                        {unit}
+                        {totalQuantity > 1 ? "s" : ""}
+                      </b>
+                    </Typography>
+                  </Stack>
+                </BoxComponent>
+              </Grid>
+            </Grid>
           )}
           {activeTab === "schedule" && (
-            <Stack direction={"row"} width={"100%"} gap={2} mt={2}>
-              <BoxComponent width="30%" borderRadius={20}>
-                <ProcurementTimeline
-                  timelines={timelineDates}
-                  onChange={setProcTimeline}
-                  value={procTimeline}
-                  editing={editing}
-                />
-              </BoxComponent>
-              <BoxComponent
-                bgColor={"white"}
-                p={2}
-                borderRadius={20}
-                width="70%"
-              >
-                <ProcurementSchedule
-                  editing={editing}
-                  value={scheduleData}
-                  onChange={setScheduleData}
-                />
-              </BoxComponent>
-            </Stack>
+            <Grid container spacing={2} sx={{ mt: 1 }}>
+              <Grid item xs={12} md={4}>
+                <BoxComponent minHeight={200}>
+                  <ProcurementTimeline
+                    timelines={timelineDates}
+                    onChange={setProcTimeline}
+                    value={procTimeline}
+                    editing={editing}
+                  />
+                </BoxComponent>
+              </Grid>
+              <Grid item xs={12} md={8}>
+                <BoxComponent p={2} minHeight={200}>
+                  <ProcurementSchedule
+                    editing={editing}
+                    value={scheduleData}
+                    onChange={setScheduleData}
+                  />
+                </BoxComponent>
+              </Grid>
+            </Grid>
           )}
         </TabComponent>
       </Box>
