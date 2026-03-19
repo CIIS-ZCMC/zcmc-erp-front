@@ -16,7 +16,7 @@ import {
 } from "@mui/joy";
 import debounce from "lodash.debounce";
 import { SearchIcon } from "lucide-react";
-import React, { Fragment, useMemo, useState } from "react";
+import React, { Fragment, useCallback, useMemo, useState } from "react";
 
 /**
  * Reusable search component with suggestions + full result modal.
@@ -41,8 +41,11 @@ export default function SearchWithSuggestions({
   onClear,
   onEnter,
   search,
+  isPPMP,
   setSearch,
   getItems,
+  setDisplayLoading,
+  displayLoading = false,
 }) {
   const [loading, setLoading] = useState(false);
 
@@ -51,27 +54,54 @@ export default function SearchWithSuggestions({
     () =>
       debounce(async (text) => {
         if (!text.trim()) return;
-        setLoading(true);
-        await getSearchSuggestions((status, message) => {
+
+        try {
+          setLoading(true); // local autocomplete spinner
+          setDisplayLoading?.(true); // global display loader
+
+          await getSearchSuggestions((status, message) => {
+            setLoading(false);
+            setDisplayLoading?.(false);
+          }, text);
+        } catch (err) {
           setLoading(false);
-        }, text);
+          setDisplayLoading?.(false);
+        }
       }, debounceDelay),
-    [getSearchSuggestions, debounceDelay],
+    [getSearchSuggestions, debounceDelay, setDisplayLoading],
   );
 
   // Input change
-  const handleInputChange = (e, value, reason) => {
-    setSearch(value);
-    if (reason === "clear" || !value.trim()) {
-      debouncedFetchSuggestions.cancel?.(); // cancel pending calls
-      setLoading(false);
+  const handleInputChange = useCallback(
+    (e, value, reason) => {
+      setSearch(value);
 
-      getItems({ mode: "selection" }, () => {});
-      return;
-    }
+      if (reason === "clear" || !value.trim()) {
+        // Cancel any pending fetch
+        debouncedFetchSuggestions.cancel?.();
 
-    debouncedFetchSuggestions(value);
-  };
+        setDisplayLoading?.(true);
+
+        setLoading(false);
+
+        // Notify parent if needed
+        onClear?.();
+
+        // Reset items
+        getItems?.(
+          { mode: "selection", ...(isPPMP && { type: "ppmp_item" }) },
+          () => {
+            setDisplayLoading?.(false);
+          },
+        );
+        return;
+      }
+
+      // Trigger fetch and show loaders
+      debouncedFetchSuggestions(value);
+    },
+    [debouncedFetchSuggestions, setDisplayLoading, onClear, getItems],
+  );
 
   // Suggestion select
   const handleSelect = (e, value) => {

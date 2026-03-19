@@ -112,11 +112,11 @@ export default function AddToCartLayout({
   return (
     <Fragment>
       <Grid container spacing={2} sx={{ flexGrow: 1 }}>
-        <Grid xs={8.5}>
+        <Grid item xs={12} md={8.5}>
           <BoxComponent boxShadow="sm">
             <Stack
-              direction={"row"}
-              alignItems={"center"}
+              direction={{ xs: "column", sm: "row" }}
+              alignItems={{ xs: "stretch", sm: "center" }}
               justifyContent={"space-between"}
               p={1}
             >
@@ -144,6 +144,7 @@ export default function AddToCartLayout({
                     onClick={() => setOpenFilter(!openFilter)}
                   />
                 }
+                sx={{ mt: { xs: 1, sm: 0 } }}
               >
                 Filters
               </Typography>
@@ -162,7 +163,11 @@ export default function AddToCartLayout({
               }}
             >
               <Divider sx={{ py: 0.05, my: 1.5 }} />
-              <Stack direction={"row"} spacing={3} alignItems={"flex-end"}>
+              <Stack
+                direction={{ xs: "column", sm: "row" }}
+                spacing={3}
+                alignItems={{ xs: "stretch", sm: "flex-end" }}
+              >
                 <AutocompleteComponent
                   label={"Filter by classification"}
                   options={classification}
@@ -201,8 +206,8 @@ export default function AddToCartLayout({
                 />
                 <ButtonComponent
                   label="Clear Filters"
-                  width="400px"
-                  variant="plain"
+                  width={{ xs: "100%", sm: "400px" }}
+                  variant="soft"
                   color="primary"
                   onClick={() => {
                     // Reset all filters
@@ -230,7 +235,7 @@ export default function AddToCartLayout({
             items={items}
           />
         </Grid>
-        <Grid xs={3.5}>
+        <Grid item xs={12} md={3.5}>
           <Cart
             cart={cart}
             removeFromCart={removeFromCart}

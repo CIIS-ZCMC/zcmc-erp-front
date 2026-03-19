@@ -60,22 +60,22 @@ const ItemCardComponent = ({
             boxShadow: "lg",
             transform: "scale(1.02)",
           },
+          width: "100%",
+          maxWidth: { xs: "100%", sm: 260, md: 290 },
+          height: 320, // ✅ ADD THIS
+          display: "flex",
+          flexDirection: "column",
           ...sx,
         }}
       >
         <CardOverflow>
-          <AspectRatio minHeight={minHeight} maxHeight={maxHeight}>
+          <AspectRatio ratio="4/3">
             <img
               src={imgSrc}
               role="button"
               loading="lazy"
               alt={item?.name}
               onClick={itemInfoAction}
-              style={{
-                width: "100%",
-                height: "100%",
-                objectFit: "cover",
-              }}
             />
           </AspectRatio>
 

@@ -3,8 +3,47 @@ import { createJSONStorage, persist } from "zustand/middleware";
 
 const cartStores = {};
 
+const ACTIVE_CARTS_KEY = "active-cart-users";
+let cleanedUpOnce = false; // ensures cleanup runs only once per session
+
+function addActiveUser(userId) {
+  const users = JSON.parse(localStorage.getItem(ACTIVE_CARTS_KEY)) || [];
+  if (!users.includes(userId)) {
+    users.push(userId);
+    localStorage.setItem(ACTIVE_CARTS_KEY, JSON.stringify(users));
+  }
+}
+
+function removeActiveUser(userId) {
+  const users = JSON.parse(localStorage.getItem(ACTIVE_CARTS_KEY)) || [];
+  const filtered = users.filter((u) => u !== userId);
+  localStorage.setItem(ACTIVE_CARTS_KEY, JSON.stringify(filtered));
+}
+
+function cleanupOldCarts() {
+  // only run cleanup once per session
+  if (cleanedUpOnce) return;
+  cleanedUpOnce = true;
+
+  const activeUsers = JSON.parse(localStorage.getItem(ACTIVE_CARTS_KEY)) || [];
+
+  Object.keys(localStorage)
+    .filter((key) => key.startsWith("cart-storage-"))
+    .forEach((key) => {
+      const userId = key.replace("cart-storage-", "");
+      if (!activeUsers.includes(userId)) {
+        localStorage.removeItem(key);
+      }
+    });
+}
+
 const useCartStore = (userId = "guest", isPPMP = false) => {
   if (cartStores[userId]) return cartStores[userId];
+
+  // Mark user as active
+  addActiveUser(userId);
+  cleanupOldCarts(); // cleanup runs only once per session now
+
   const store = create(
     persist(
       (set, get) => ({
@@ -31,7 +70,7 @@ const useCartStore = (userId = "guest", isPPMP = false) => {
                       ...p,
                       qty: p.qty + (item.qty || 1),
                     }
-                  : p
+                  : p,
               ),
             });
           } else {
@@ -51,7 +90,7 @@ const useCartStore = (userId = "guest", isPPMP = false) => {
         updateQty: (id, qty) =>
           set({
             cart: get().cart.map((i) =>
-              i.id === id ? { ...i, qty: Math.max(qty, 1) } : i
+              i.id === id ? { ...i, qty: Math.max(qty, 1) } : i,
             ),
           }),
 
@@ -65,7 +104,7 @@ const useCartStore = (userId = "guest", isPPMP = false) => {
                 ? {
                     ...item,
                     activities: item.activities?.some(
-                      (a) => a.id === activity.id
+                      (a) => a.id === activity.id,
                     )
                       ? item.activities // prevent duplicates
                       : [
@@ -76,7 +115,7 @@ const useCartStore = (userId = "guest", isPPMP = false) => {
                           ...(item.activities || []), // add on top
                         ],
                   }
-                : item
+                : item,
             ),
           }),
 
@@ -90,10 +129,10 @@ const useCartStore = (userId = "guest", isPPMP = false) => {
                 ? {
                     ...item,
                     activities: (item.activities || []).filter(
-                      (a) => a.id !== activityId
+                      (a) => a.id !== activityId,
                     ),
                   }
-                : item
+                : item,
             ),
           }),
 
@@ -101,12 +140,18 @@ const useCartStore = (userId = "guest", isPPMP = false) => {
         // CLEAR CART
         // ---------------------------------------------------
         clearCart: () => set({ cart: [] }),
+        clearCartStorage: () => {
+          const storageKey = `cart-storage-${userId}`;
+          localStorage.removeItem(storageKey); // remove persisted cart
+          removeActiveUser(userId); // remove from active users
+          set({ cart: [] }); // clear in-memory cart
+        },
       }),
       {
         name: `cart-storage-${userId}`, // per-user key
         storage: createJSONStorage(() => localStorage),
-      }
-    )
+      },
+    ),
   );
   cartStores[userId] = store;
   return store;

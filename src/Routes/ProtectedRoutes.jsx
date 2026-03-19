@@ -14,14 +14,14 @@ function ProtectedRoutes({ children }) {
   const { permissions } = useAuth();
   // const [loading, setLoading] = useState(true);
 
-  function initialize(token) {
+  function initialize() {
     if (location.pathname.includes(SSO_SIGNING_PATH)) {
       const regenerateSigningSessionURL = `${location.pathname}${location.search}`;
       navigate(regenerateSigningSessionURL);
       return;
     }
 
-    sessionValidation(token, (status) => {
+    sessionValidation(null, (status) => {
       if (!(status >= 200 && status < 300)) {
         window.location.href = BASE_URL.umis_landing_page;
 
@@ -65,7 +65,7 @@ function ProtectedRoutes({ children }) {
   useEffect(() => {
     const cancelToken = axios.CancelToken.source();
 
-    initialize(cancelToken.token);
+    initialize();
 
     return () => cancelToken.cancel();
   }, []);

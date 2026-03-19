@@ -1,29 +1,42 @@
 import BoxComponent from "@Components/Common/Card/BoxComponent";
-import { Box, Grid, Skeleton, Typography } from "@mui/joy";
+import { Box, Grid, Skeleton, Typography, useTheme } from "@mui/joy";
 import React, { Fragment, useEffect, useMemo, useRef, useState } from "react";
 import ItemCardComponent from "./ItemCardComponent";
 import useItemsHook from "../../Hooks/ItemManagementHook";
 import { useVirtualizer } from "@tanstack/react-virtual";
+import { useMediaQuery } from "@mui/material";
 
 export default function ProductGrid({
   onAddToCart,
   onItemInfo,
   columnWidth = 300,
-  rowHeight = 360,
   height = "64vh",
   loading = false,
   items = [],
 }) {
   const parentRef = useRef();
+  const rowRef = useRef(null);
+
+  const [rowHeight, setRowHeight] = useState(360);
 
   // Example: 3 columns
-  const columns = 3;
+  const theme = useTheme();
+  const isXs = useMediaQuery(theme.breakpoints.down("sm"));
+  const isSm = useMediaQuery(theme.breakpoints.between("sm", "md"));
+
+  const columns = isXs ? 1 : isSm ? 2 : 3;
   const rowCount = Math.ceil(items.length / columns);
+
+  useEffect(() => {
+    if (rowRef.current) {
+      setRowHeight(rowRef.current.offsetHeight);
+    }
+  }, []);
 
   const rowVirtualizer = useVirtualizer({
     count: rowCount,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => 310, // estimated row height
+    estimateSize: () => rowHeight, // estimated row height
     overscan: 3, // render a few extra rows for smooth scrolling
   });
   return (
@@ -70,6 +83,9 @@ export default function ProductGrid({
                 <Box
                   key={virtualRow.key}
                   sx={{
+                    display: "grid",
+                    gridTemplateColumns: `repeat(${columns}, 1fr)`,
+                    gap: 1,
                     position: "absolute",
                     top: 0,
                     left: 0,
@@ -77,17 +93,13 @@ export default function ProductGrid({
                     width: "100%",
                   }}
                 >
-                  <Grid container spacing={2}>
-                    {rowItems.map((item, index) => (
-                      <Grid xs={12} sm={6} md={4} key={index}>
-                        <ItemCardComponent
-                          item={item}
-                          btnAction={() => onAddToCart?.(item)}
-                          itemInfoAction={() => onItemInfo?.(item)}
-                        />
-                      </Grid>
-                    ))}
-                  </Grid>
+                  {rowItems.map((item, index) => (
+                    <ItemCardComponent
+                      item={item}
+                      btnAction={() => onAddToCart?.(item)}
+                      itemInfoAction={() => onItemInfo?.(item)}
+                    />
+                  ))}
                 </Box>
               );
             })}

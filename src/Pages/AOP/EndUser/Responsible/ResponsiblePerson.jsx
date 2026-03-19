@@ -63,6 +63,7 @@ const ResponsiblePerson = () => {
   const [openResponsibleModal, setOpenResponsibleModal] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [selectedId, setSelectedId] = useState(null);
+  const [search, setSearch] = useState("");
 
   const handleOpenResponsibleModal = () => {
     setOpenResponsibleModal(true);
@@ -80,7 +81,7 @@ const ResponsiblePerson = () => {
   useEffect(() => {
     setIsLoading(true);
 
-    const params = { activity_id: activityId };
+    const params = { activity_id: activityId, search: search };
 
     getPeople(params, (status, message) => {
       if (!(status >= 200 && status < 300)) {
@@ -89,7 +90,7 @@ const ResponsiblePerson = () => {
       }
       setIsLoading(false);
     });
-  }, []);
+  }, [search]);
 
   useEffect(() => {
     console.log("updated responsible people list", responsiblePeople);
@@ -186,6 +187,8 @@ const ResponsiblePerson = () => {
           activity={activity}
           openResponsibleModal={handleOpenResponsibleModal}
           status={status}
+          search={search}
+          setSearch={setSearch}
         />
 
         {isLoading ? (

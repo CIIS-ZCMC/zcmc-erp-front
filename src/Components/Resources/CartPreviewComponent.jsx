@@ -21,6 +21,7 @@ import { CircleSmall, ShoppingCart } from "lucide-react";
 import React, { Fragment, useEffect, useState } from "react";
 import { BiX } from "react-icons/bi";
 import defaultItem from "../../assets/item.jpg";
+import { formatPeso } from "../../Utils/FormatPeso";
 
 export default function CartPreviewComponent({
   open,
@@ -153,11 +154,7 @@ export default function CartPreviewComponent({
                           fontWeight={600}
                           sx={{ color: color.custom.main }}
                         >
-                          ₱{" "}
-                          {subTotal?.toLocaleString("en-PH", {
-                            minimumFractionDigits: 2,
-                            maximumFractionDigits: 2,
-                          })}
+                          {formatPeso(subTotal)}
                         </Typography>
                       </Stack>
                     </Stack>
@@ -216,22 +213,29 @@ export default function CartPreviewComponent({
 
                 <Stack spacing={1}>
                   <Typography level="body-sm">Specifications: </Typography>
-                  {specifications.length > 0 ? (
-                    specifications.map((spec, index) => (
-                      <Typography
-                        key={index}
-                        level="body-sm"
-                        alignItems="center"
-                        sx={{ color: "black" }}
-                      >
-                        ● {spec.description}
+                  <Box
+                    sx={{
+                      maxHeight: 200, // adjust as needed
+                      overflowY: "auto",
+                      pr: 1, // space for scrollbar
+                    }}
+                  >
+                    {specifications.length > 0 ? (
+                      specifications.map((spec, index) => (
+                        <Typography
+                          key={index}
+                          level="body-sm"
+                          sx={{ color: "black", display: "block" }}
+                        >
+                          ● {spec.description}
+                        </Typography>
+                      ))
+                    ) : (
+                      <Typography level="body-md">
+                        No specifications provided.
                       </Typography>
-                    ))
-                  ) : (
-                    <Typography level="body-md">
-                      No specifications provided.
-                    </Typography>
-                  )}
+                    )}
+                  </Box>
                 </Stack>
               </Grid>
             </Grid>

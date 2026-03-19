@@ -320,6 +320,7 @@ function ManageResources(props) {
                 quantity={item.quantity}
                 unit={item.item.item_unit?.name}
                 specifications={item.item.item_specifications}
+                object_category={item.expense_class}
                 onQtyChange={handleUpdateResource}
                 options={purchase_types}
                 purchase_type={item.purchase_type}

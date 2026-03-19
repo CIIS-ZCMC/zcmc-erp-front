@@ -63,7 +63,7 @@ const QuantityControlComponent = ({
 
       <ButtonGroup
         variant="soft"
-        size="sm"
+        size="xs"
         color="neutral"
         spacing="0.2rem"
         disabled={disabled}
@@ -74,7 +74,7 @@ const QuantityControlComponent = ({
         {/* <Button>{quantity}</Button> */}
         <Input
           value={inputValue}
-          size="sm"
+          size="xs"
           onChange={handleChange}
           onBlur={handleBlur}
           disabled={disabled}

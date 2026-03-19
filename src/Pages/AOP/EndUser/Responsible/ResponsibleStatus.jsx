@@ -14,8 +14,15 @@ import { RESPONSIBLE } from "../../../../Data/constants";
 
 import formattedPrice from "../../../../Utils/formattedPrice";
 import { isAopDisabled } from "../../../../Utils/AopStatus";
+import SearchBarComponentv2 from "@Components/SearchBarWithdeBounce";
 
-const ResponsibleStatus = ({ activity, openResponsibleModal, status }) => {
+const ResponsibleStatus = ({
+  activity,
+  openResponsibleModal,
+  status,
+  search,
+  setSearch,
+}) => {
   const { MANAGE_RESPONSIBLE_HEADER, MANAGE_RESPONSIBLE_SUBHEADER } =
     RESPONSIBLE;
 
@@ -50,19 +57,17 @@ const ResponsibleStatus = ({ activity, openResponsibleModal, status }) => {
           alignItems={"flex-end"}
         >
           <Stack>
-            <Typography
-              level="body-md"
-              sx={{ fontWeight: 600 }}
-              endDecorator={
-                <ChipComponent
-                  label={`Activity: ${name}`}
-                  color={"success"}
-                  variant={"outlined"}
-                />
-              }
-            >
-              {MANAGE_RESPONSIBLE_HEADER}
-            </Typography>
+            <Stack direction={"row"} spacing={1} alignItems={"center"}>
+              <Typography level="body-md" sx={{ fontWeight: 600 }}>
+                {MANAGE_RESPONSIBLE_HEADER}
+              </Typography>
+              <ChipComponent
+                label={`Activity: ${name}`}
+                color={"success"}
+                variant={"outlined"}
+              />
+            </Stack>
+
             <Typography level="body-xs">
               {MANAGE_RESPONSIBLE_SUBHEADER}
             </Typography>
@@ -197,6 +202,14 @@ const ResponsibleStatus = ({ activity, openResponsibleModal, status }) => {
               </Typography>
             </Stack>
           </Stack>
+        </Stack>
+        <Stack mt={3} width={"350px"}>
+          <SearchBarComponentv2
+            value={search}
+            setValue={setSearch}
+            placeholder="Search responsible person..."
+            fullWidth
+          />
         </Stack>
       </BoxComponent>
     </>

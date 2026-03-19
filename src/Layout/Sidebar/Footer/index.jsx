@@ -35,7 +35,7 @@ const Footer = () => {
   const { clearActivityStore } = useActivityActions();
 
   const cartStore = useCartStore(user?.id || "guest");
-  const { clearCart } = cartStore();
+  const { clearCart, clearCartStorage } = cartStore();
   const profile_url = user?.profile_url || null;
   const color = theme.palette.custom;
 
@@ -56,14 +56,23 @@ const Footer = () => {
     resetAll();
     useAOPStore.persist.clearStorage();
     clearCart();
+    clearCartStorage();
     clearActivityStore();
 
-    // 2. Logout from auth store (THIS MATTERS)
-    await logout();
+    try {
+      // Call logout
+      const redirectTo = await logout();
 
-    // 3. Optional: clear non-auth cache keys only
-    localStorage.removeItem("path");
-    window.location.href = BASE_URL.umis_landing_page;
+      // Redirect user
+      if (redirectTo) {
+        window.location.href = redirectTo; // could be UMIS landing page
+      } else {
+        window.location.href = "/"; // fallback
+      }
+    } catch (err) {
+      console.error("Logout failed", err);
+      window.location.href = "/";
+    }
   };
 
   return (

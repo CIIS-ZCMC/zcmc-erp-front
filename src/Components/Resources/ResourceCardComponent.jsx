@@ -1,7 +1,7 @@
 import QuantityControlComponent from "@Components/Cart/QuantityControlComponent";
 import IconButtonComponent from "@Components/Common/IconButtonComponent";
 import AutocompleteComponent from "@Components/Form/AutocompleteComponent";
-import { Delete } from "@mui/icons-material";
+import { Delete, NorthEast } from "@mui/icons-material";
 import {
   AspectRatio,
   Box,
@@ -19,6 +19,8 @@ import CartPreviewComponent from "./CartPreviewComponent";
 
 import { isAopDisabled } from "../../Utils/AopStatus";
 import defaultItem from "../../assets/item.jpg";
+import { formatPeso } from "../../Utils/FormatPeso";
+import ChipComponent from "@Components/Common/ChipComponent";
 
 export default function ResourceCardComponent({
   status,
@@ -30,6 +32,7 @@ export default function ResourceCardComponent({
   quantity,
   unit,
   specifications = [],
+  object_category,
   onQtyChange,
   onDelete,
   options = [],
@@ -47,7 +50,7 @@ export default function ResourceCardComponent({
   return (
     <Fragment>
       <Card
-        variant="outlined"
+        variant="plain"
         sx={{
           maxWidth: "100%",
           boxShadow: "lg",
@@ -58,7 +61,7 @@ export default function ResourceCardComponent({
         }}
       >
         <CardOverflow>
-          <AspectRatio sx={{ minWidth: 200 }}>
+          <AspectRatio ratio="2">
             <img
               src={defaultItem}
               srcSet="https://images.unsplash.com/photo-1593121925328-369cc8459c08?auto=format&fit=crop&w=286&dpr=2 2x"
@@ -100,6 +103,7 @@ export default function ResourceCardComponent({
             justifyContent="space-between"
             alignItems="flex-start"
             mt={2}
+            spacing={1}
           >
             <Box>
               {category && (
@@ -123,7 +127,7 @@ export default function ResourceCardComponent({
                   {name}
                 </Typography>
                 <IconButtonComponent
-                  icon={<ArrowUpRightIcon />}
+                  icon={<NorthEast />}
                   size={"xs"}
                   color={"#323232"}
                   onClick={() => setOpenModal(true)}
@@ -133,14 +137,20 @@ export default function ResourceCardComponent({
 
             {/* Quantity Controls */}
 
-            <Box>
+            <Stack alignItems="flex-end" spacing={2}>
               <QuantityControlComponent
                 quantity={quantity}
                 onDecrease={() => onQtyChange(resource_id, quantity - 1)}
                 onIncrease={() => onQtyChange(resource_id, quantity + 1)}
                 disabled={isAopDisabled(status)}
               />
-            </Box>
+              <ChipComponent
+                label={object_category}
+                fontSize={10}
+                variant={"soft"}
+                color={object_category === "MOOE" ? "primary" : "warning"}
+              />
+            </Stack>
           </Stack>
 
           <Box>
@@ -161,14 +171,14 @@ export default function ResourceCardComponent({
           {/* Prices */}
           <Stack direction="row" justifyContent="space-between">
             <Box>
-              <Typography level="body-lg" fontWeight={600}>
-                ₱{price?.toLocaleString()}.00
+              <Typography level="body-lg" fontWeight={"bolder"}>
+                {formatPeso(price)}
               </Typography>
               <Typography level="body-xs">per item</Typography>
             </Box>
             <Box textAlign="right">
-              <Typography level="body-lg" fontWeight={600} color="primary">
-                ₱{total?.toLocaleString()}.00
+              <Typography level="body-lg" fontWeight={"bolder"} color="primary">
+                {formatPeso(total)}
               </Typography>
               <Typography level="body-xs">Total Cost</Typography>
             </Box>
