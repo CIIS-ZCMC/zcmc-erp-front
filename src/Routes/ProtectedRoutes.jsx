@@ -1,7 +1,7 @@
 // App.js
 
 import { useLocation, useNavigate } from "react-router-dom";
-import { BASE_URL, ROOT_PATH, SSO_SIGNING_PATH } from "../Services/Config";
+import { BASE_URL, ENV, ROOT_PATH, SSO_SIGNING_PATH } from "../Services/Config";
 import { useEffect } from "react";
 import axios from "axios";
 import { localStorageGetter } from "../Utils/LocalStorage";
@@ -23,7 +23,7 @@ function ProtectedRoutes({ children }) {
 
     sessionValidation(null, (status) => {
       if (!(status >= 200 && status < 300)) {
-        window.location.href = BASE_URL.umis_landing_page;
+        window.location.href = BASE_URL[ENV];
 
         // setLoading(false);
         return;

@@ -1,15 +1,17 @@
 import axios from "axios";
+import { ENV } from "./Config";
 
 const BASE_URL = {
   development_landing_page: "http://192.168.5.1:5170", // This will be the landing page
   production_landing_page: "https://zcmc.online", // This will be the production landing page url
   production: "https://api_name.zcmc.online/api/", // Change the sub domain name to your prefer name
+  staging: "https://staging-erp.zcmc.online/api/", // Change the sub domain name to your prefer name
   development: "http://192.168.36.163:8000/api", // You can change the port or ip here
   local: "http://localhost:8000/api",
 };
 
 const erp_api = new axios.create({
-  baseURL: BASE_URL.local, //CHANGE TO DEVELOPMENT WHEN IN PRODUCTION
+  baseURL: BASE_URL[ENV], //CHANGE TO DEVELOPMENT WHEN IN PRODUCTION
   withCredentials: true,
   headers: {
     Accept: "application/json",
