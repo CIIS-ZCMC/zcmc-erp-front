@@ -22,7 +22,7 @@ const InputComponent = ({
   value,
   setValue,
   autoFocus,
-  fontWeight = 400,
+  fontWeight = 500,
   darkMode,
   type,
   size = "md",
@@ -55,7 +55,7 @@ const InputComponent = ({
   };
 
   return (
-    <FormControl sx={{ width: width }}>
+    <FormControl error={fieldError?.isError} sx={{ width: width }}>
       <FormLabel
         sx={{
           fontWeight: fontWeight,
@@ -73,25 +73,35 @@ const InputComponent = ({
         autoFocus={autoFocus}
         placeholder={placeholder}
         value={value || ""}
-        color={color}
-        onChange={handleInput ? handleInput : (e) => setValue(e.target.value)}
+        color={fieldError?.isError ? "danger" : color}
+        onChange={(e) => {
+          const value = e.target.value;
+
+          // Clear error if user starts typing
+          if (fieldError?.isError && value.trim()) {
+            const { setError } = userErrorInputHook.getState();
+            setError(name, false, "");
+          }
+
+          handleInput ? handleInput(e) : setValue(value);
+        }}
         sx={{
           fontSize: 13,
           fontWeight: fontWeight,
           py: size ?? 1,
           background: darkMode && "none",
           color: darkMode ? "white" : "neutral.900",
-          borderColor: "neutral.300",
+          borderColor: fieldError?.isError ? "danger.300" : "neutral.300",
         }}
-
-        slotProps={type === "number" && {
-          input: {
-            min: 1,
-            max: 99,
-            step: 1,
-          },
-        }}
-
+        slotProps={
+          type === "number" && {
+            input: {
+              min: 1,
+              max: 99,
+              step: 1,
+            },
+          }
+        }
         startDecorator={startDecorator}
         endDecorator={
           isPassword ? (

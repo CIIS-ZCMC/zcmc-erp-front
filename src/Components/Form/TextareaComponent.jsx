@@ -25,10 +25,10 @@ function TextareaComponent({
   };
 
   return (
-    <FormControl>
+    <FormControl error={fieldError?.isError}>
       {label && (
         <FormLabel
-          sx={{ fontSize: 14, fontWeight: 400, color: darkMode && "white" }}
+          sx={{ fontSize: 14, fontWeight: 500, color: darkMode && "white" }}
         >
           {label}
           {isRequired && <span style={{ color: "red", fontSize: 18 }}>*</span>}
@@ -44,7 +44,17 @@ function TextareaComponent({
         color={color}
         maxRows={maxRows}
         value={value}
-        onChange={setValue ? handleInput : onChange}
+        onChange={(e) => {
+          const value = e.target.value;
+
+          // Clear error when user types something valid
+          if (fieldError?.isError && value.trim()) {
+            const { setError } = userErrorInputHook.getState();
+            setError(name, false, "");
+          }
+
+          setValue ? handleInput(e) : onChange(e);
+        }}
         sx={{
           fontSize: 13,
           fontWeight: fontWeight,

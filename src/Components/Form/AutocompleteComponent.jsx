@@ -33,12 +33,12 @@ function AutocompleteComponent({
 }) {
   const { errors } = userErrorInputHook(); // Get error state
   const fieldError = errors?.[name];
-  const handleChange = (event) => {
-    setValue(event);
+  const handleChange = (newValue) => {
+    setValue(newValue);
   };
 
   return (
-    <FormControl sx={{ width: width }} {...props}>
+    <FormControl sx={{ width: width }} error={fieldError?.isError} {...props}>
       {label && <FormLabel>{label}</FormLabel>}
       <Autocomplete
         disabled={disabled}
@@ -50,6 +50,11 @@ function AutocompleteComponent({
         size={size}
         placeholder={placeholder}
         onChange={(_, newValue) => {
+          if (fieldError?.isError) {
+            const { setError } = userErrorInputHook.getState();
+            setError(name, false, "");
+          }
+
           handleSelect ? handleSelect(newValue) : handleChange(newValue);
         }}
         renderOption={
@@ -126,7 +131,7 @@ AutocompleteComponent.propTypes = {
   multiple: PropTypes.bool,
   name: PropTypes.string,
   handleSelect: PropTypes.func,
-  setValue: PropTypes.oneOfType([PropTypes.object]),
+  setValue: PropTypes.func,
   value: PropTypes.oneOfType([PropTypes.object]),
 };
 

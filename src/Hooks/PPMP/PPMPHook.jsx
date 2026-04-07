@@ -142,8 +142,9 @@ const usePPMPStoreHook = create((set, get) => ({
     removeItem: (id, callBack) => {
       remove({
         url: `${PATH}-items-delete/${id}`,
-        success: ({ data: { data }, status }) => {
-          const { deleted_ppmp_item, ppmp_total } = data;
+        success: ({ data, status }) => {
+          const { deleted_ppmp_item, ppmp_total } = data.data;
+          console.log("message", data.message);
           set((state) => ({
             ppmp: state.ppmp.filter((item) => item.id !== deleted_ppmp_item.id),
             ppmp_total,

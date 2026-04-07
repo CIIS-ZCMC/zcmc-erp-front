@@ -22,6 +22,7 @@ import { handleInputValidation } from "../../../Utils/HandleInput";
 import handleSingleChangeAutcomplete from "../../../Utils/HandleAutocomplete";
 import useSnackbarHook from "../../../Hooks/SnackbarHook";
 import userErrorInputHook from "../../../Hooks/ErrorInputHook";
+import { formatNumber } from "../../../Utils/FormatNumber";
 
 export default function AddItemRequest({ openReq, setOpenReq }) {
   const { setAlertDialog } = useModalHook();
@@ -35,6 +36,7 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
     getItemClassification,
     getItemUnits,
     getVariantsByCategory,
+    clearVariants,
   } = useItemsHook();
   const { activities } = usePPMPState();
   const { showSnack } = useSnackbarHook();
@@ -69,8 +71,88 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
   // ref for scrolling container
   const specsContainerRef = useRef(null);
 
+  const resetForm = () => {
+    setStep(1);
+    setActivity(null);
+    setExpenseClass(null);
+    setSelectedActivities([]);
+    clearErrors();
+
+    setItemReq({
+      classification: null,
+      category: null,
+      item_name: "",
+      unit: null,
+      quantity: 0,
+      estimated_budget: "",
+      variant: null,
+      market_research: false,
+      specs: [
+        { id: 1, value: "" },
+        { id: 2, value: "" },
+      ],
+      pin: "",
+    });
+  };
+
+  const validateStep = () => {
+    clearErrors();
+    let hasError = false;
+
+    if (step === 1) {
+      if (!selectedActivities.length) {
+        setError("activity", true, "Please select at least one activity.");
+        hasError = true;
+      }
+    }
+
+    if (step === 2) {
+      if (!itemReq.item_name?.trim()) {
+        setError("item_name", true, "Item name is required.");
+        hasError = true;
+      }
+
+      if (!itemReq.classification) {
+        setError("classification", true, "Classification is required.");
+        hasError = true;
+      }
+
+      if (!itemReq.category) {
+        setError("category", true, "Category is required.");
+        hasError = true;
+      }
+
+      if (!itemReq.unit) {
+        setError("unit", true, "Unit is required.");
+        hasError = true;
+      }
+
+      if (!itemReq.quantity || itemReq.quantity <= 0) {
+        setError("quantity", true, "Quantity must be greater than 0.");
+        hasError = true;
+      }
+
+      if (variants?.length > 0 && !itemReq.variant) {
+        setError("variant", true, "Variant is required.");
+        hasError = true;
+      }
+
+      if (!itemReq.estimated_budget) {
+        setError("estimated_budget", true, "Estimated budget is required.");
+        hasError = true;
+      }
+    }
+
+    return !hasError;
+  };
+
   // === STEP HANDLERS ===
-  const handleNextStep = () => setStep((prev) => Math.min(prev + 1, 3));
+  const handleNextStep = () => {
+    const isValid = validateStep();
+    if (!isValid) return;
+
+    setStep((prev) => Math.min(prev + 1, 3));
+  };
   const handlePreviousStep = () => setStep((prev) => Math.max(prev - 1, 1));
 
   // === SPEC HANDLERS ===
@@ -93,70 +175,6 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
         spec.id === id ? { ...spec, value } : spec,
       ),
     }));
-
-  const handleRequest = async () => {
-    clearErrors();
-    let hasError = false;
-    // if (!itemReq?.specs?.length || itemReq.specs.some((s) => !s.value.trim())) {
-    //   setError("specs", true, "Please complete all specifications.");
-    //   hasError = true;
-    // }
-    itemReq.specs.forEach((spec, index) => {
-      if (!spec.value.trim()) {
-        setError(
-          `specs[${index}]`,
-          true,
-          `Specification ${index + 1} is required.`,
-        );
-        hasError = true;
-      }
-    });
-    if (!itemReq?.pin?.trim()) {
-      setError("pin", true, "Authorization PIN is required.");
-      hasError = true;
-    }
-
-    console.log(hasError);
-    if (hasError) return;
-
-    try {
-      setButtonLoader(true);
-      const formData = new FormData();
-      formData.append("activity", JSON.stringify(activity));
-      formData.append("expense_class", JSON.stringify(expenseClass));
-      formData.append("classification", JSON.stringify(itemReq.classification));
-      formData.append("category", JSON.stringify(itemReq.category));
-      formData.append("item_name", itemReq.item_name || "");
-      formData.append("unit", JSON.stringify(itemReq.unit));
-      formData.append("estimated_budget", itemReq.estimated_budget || "");
-      formData.append("variant", JSON.stringify(itemReq.variant));
-      formData.append(
-        "market_research",
-        itemReq.market_research ? "true" : "false",
-      );
-      formData.append("specifications", JSON.stringify(itemReq.specs));
-      formData.append("pin", itemReq.pin || "");
-
-      await postItemRequest(formData, (status, message, data) => {
-        setButtonLoader(false);
-
-        const alertData = {
-          status: status === 201 ? "success" : "error",
-          title: message,
-          description: message,
-        };
-
-        setAlertDialog(alertData);
-      });
-    } catch (error) {
-      setButtonLoader(false);
-      setAlertDialog({
-        status: "error",
-        title: "Request Failed",
-        description: "An unexpected error occurred. Please try again.",
-      });
-    }
-  };
 
   const handleSelectActivity = (selected) => {
     // When user clears the Autocomplete
@@ -200,7 +218,7 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
     itemReq.specs.forEach((spec, index) => {
       if (!spec.value.trim()) {
         setError(
-          `specs[${index}]`,
+          `spec-${index}`,
           true,
           `Specification ${index + 1} is required.`,
         );
@@ -284,12 +302,13 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
       { fn: getItemUnits, name: "units" },
     ];
 
-    // Only fetch variants if category ID exists
     if (itemReq.category?.id) {
       apiCalls.push({
-        fn: (callback) => getVariantsByCategory(callback, itemReq.category.id),
+        fn: (callback) => getVariantsByCategory(itemReq.category.id, callback),
         name: "variants",
       });
+    } else {
+      clearVariants();
     }
 
     let completed = 0;
@@ -306,7 +325,13 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
         checkDone();
       });
     });
-  }, [itemReq.category?.id]); // Re-run if category changes
+  }, [itemReq.category?.id]);
+
+  useEffect(() => {
+    if (openReq) {
+      resetForm();
+    }
+  }, [openReq]);
 
   return (
     <div>
@@ -475,6 +500,7 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
                       }}
                     />
                   </Stack>
+                  {console.log(variants)}
                   <AutocompleteComponent
                     label="Variant"
                     name="variant"
@@ -482,6 +508,7 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
                       variants?.find((el) => el.id === itemReq?.variant?.id) ||
                       null
                     }
+                    disabled={!variants?.category}
                     options={variants}
                     getOptionLabel={(option) => option.name || ""}
                     handleSelect={(value) => {
@@ -498,7 +525,7 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
                     name="estimated_budget"
                     size="sm"
                     // fontWeight={500}
-                    value={itemReq?.estimated_budget}
+                    value={formatNumber(itemReq?.estimated_budget)}
                     handleInput={(e) => handleInputValidation(e, setItemReq)}
                     color="primary"
                     startDecorator={"₱"}
@@ -583,6 +610,7 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
           if (step > 1) {
             handlePreviousStep();
           } else {
+            resetForm();
             setOpenReq(false);
           }
         }}

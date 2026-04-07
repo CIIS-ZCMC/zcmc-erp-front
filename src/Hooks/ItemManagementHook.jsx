@@ -760,7 +760,7 @@ const useItemsHook = create((set) => ({
     });
   },
 
-  getVariantsByCategory: async (callBack, item_category_id) => {
+  getVariantsByCategory: async (item_category_id, callBack) => {
     read({
       url: `terminologies`,
       params: { item_category_id },
@@ -786,6 +786,8 @@ const useItemsHook = create((set) => ({
       },
     });
   },
+
+  clearVariants: () => set({ variants: [] }),
 }));
 
 export default useItemsHook;
