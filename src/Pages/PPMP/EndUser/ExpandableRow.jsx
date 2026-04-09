@@ -124,7 +124,7 @@ const ExpandableRowComponent = ({
     setActivity(null);
   };
 
-  const handleDeleteActivity = async (id, actID) => {
+  const handleDeleteActivity = (id, actID) => {
     if (linkedActivities.length <= 1) {
       setAlertDialog({
         status: "danger",
@@ -134,9 +134,12 @@ const ExpandableRowComponent = ({
       });
       return;
     }
-    await onRemoveActivity(id, actID, (status, message) => {
-      showSnack(status === 200 ? 200 : 500, message);
-    });
+
+    setLinkedActivities((prev) =>
+      prev.filter((act) => act.activity_id !== actID),
+    );
+
+    showSnack(200, "Activity removed.");
   };
 
   const handleQuantityChange = (activityCode, value) => {

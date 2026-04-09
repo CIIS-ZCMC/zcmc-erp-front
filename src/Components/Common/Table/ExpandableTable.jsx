@@ -173,7 +173,7 @@ export default function ExpandableTable({
                         <div
                           ref={expanded ? (node) => onRef(id, node) : null}
                           style={{
-                            overflow: "hidden",
+                            overflow: "auto",
                             maxHeight: expanded ? heights[id] : 0,
                             opacity: expanded ? 1 : 0,
                             padding: expanded ? "10px" : "0px", // <--- avoid spacing when closed
