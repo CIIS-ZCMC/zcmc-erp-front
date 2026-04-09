@@ -124,7 +124,7 @@ const ExpandableRowComponent = ({
     setActivity(null);
   };
 
-  const handleDeleteActivity = async (id, actID) => {
+  const handleDeleteActivity = (id, actID) => {
     if (linkedActivities.length <= 1) {
       setAlertDialog({
         status: "danger",
@@ -134,9 +134,12 @@ const ExpandableRowComponent = ({
       });
       return;
     }
-    await onRemoveActivity(id, actID, (status, message) => {
-      showSnack(status === 200 ? 200 : 500, message);
-    });
+
+    setLinkedActivities((prev) =>
+      prev.filter((act) => act.activity_id !== actID),
+    );
+
+    showSnack(200, "Activity removed.");
   };
 
   const handleQuantityChange = (activityCode, value) => {
@@ -244,7 +247,6 @@ const ExpandableRowComponent = ({
 
   return (
     <>
-      {console.log(sourceOfFunds)}
       <Box
         sx={{
           opacity: 1,
@@ -438,19 +440,27 @@ const ExpandableRowComponent = ({
             </Grid>
           )}
           {activeTab === "activities" && (
-            <Grid container spacing={2} sx={{ mt: 1 }}>
+            <Grid container spacing={2} sx={{ mt: 0.5 }}>
               <Grid item xs={12} md={3}>
-                <BoxComponent p={2} minHeight={250}>
+                <Box>
                   <ItemRowComponent
                     item={row?.item}
                     withContent={false}
                     minHeight={250}
                   />
-                </BoxComponent>
+                </Box>
               </Grid>
 
               <Grid item xs={12} md={9}>
-                <BoxComponent p={2} minHeight={250}>
+                <Box
+                  p={2}
+                  sx={{
+                    minHeight: 250,
+                    maxHeight: 400, // 🔑 REQUIRED for scroll to activate
+                    display: "flex",
+                    flexDirection: "column",
+                  }}
+                >
                   <Stack height={"100%"} spacing={1}>
                     <Typography
                       fontWeight={600}
@@ -483,7 +493,7 @@ const ExpandableRowComponent = ({
                         />
                       </Box>
                     )}
-                    <Box sx={{ flex: 1, overflowY: "auto" }}>
+                    <Box sx={{ flex: 1, overflowY: "auto", minHeight: 0 }}>
                       {renderedActivities}
                     </Box>
                     <Typography textAlign={"right"} level="body-sm">
@@ -494,7 +504,7 @@ const ExpandableRowComponent = ({
                       </b>
                     </Typography>
                   </Stack>
-                </BoxComponent>
+                </Box>
               </Grid>
             </Grid>
           )}

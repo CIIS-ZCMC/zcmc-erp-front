@@ -173,7 +173,7 @@ export default function ExpandableTable({
                         <div
                           ref={expanded ? (node) => onRef(id, node) : null}
                           style={{
-                            overflow: "hidden",
+                            overflowY: expanded ? "auto" : "hidden", // ✅ KEY FIX
                             maxHeight: expanded ? heights[id] : 0,
                             opacity: expanded ? 1 : 0,
                             padding: expanded ? "10px" : "0px", // <--- avoid spacing when closed
@@ -182,7 +182,9 @@ export default function ExpandableTable({
                               "max-height 0.35s ease, opacity 0.25s ease, padding 0.2s ease",
                           }}
                         >
-                          <Box>{renderExpanded(row)}</Box>
+                          <Box sx={{ height: "100%" }}>
+                            {renderExpanded(row)}
+                          </Box>
                         </div>
                       </td>
                     </tr>
