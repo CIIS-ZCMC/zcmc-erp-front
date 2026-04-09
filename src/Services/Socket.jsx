@@ -1,7 +1,7 @@
 import { io } from "socket.io-client";
-import { BASE_URL } from "./Config";
+import { SOCKET_URL } from "./Config";
 
-export const socket = io(BASE_URL.socket_development, (attempt) => {
+export const socket = io(SOCKET_URL, (attempt) => {
   console.log(attempt);
 });
 

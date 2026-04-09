@@ -17,10 +17,20 @@ export const BASE_URL = {
   development_landing_page: "http://192.168.9.243:8011/", // This will be the landing page
   production_landing_page: "https://zcmc.online", // This will be the production landing page url
   production: "https://api_name.zcmc.online/api/", // Change the sub domain name to your prefer name
+  staging: "https://staging.zcmc.online", // This will be the production landing page url
   development: "http://localhost:8000/api", // You can change the port or ip here
   socket_development: "http://localhost:3025/",
   test_landing_page: "http://192.168.36.163:5173/",
   umis_landing_page: "http://192.168.36.162:8001/",
 };
+
+const SOCKET_BASE_URL = {
+  production: 'https://socket.zcmc.online/',
+  staging: 'https://staging-socket.zcmc.online/',
+  local: 'http://localhost:3025/' 
+}
+
+export const ENV = 'staging';
+export const SOCKET_URL = SOCKET_BASE_URL[ENV];
 
 export const TEST_MODE = false;
