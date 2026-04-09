@@ -24,6 +24,13 @@ export const BASE_URL = {
   umis_landing_page: "http://192.168.36.162:8001/",
 };
 
+const SOCKET_BASE_URL = {
+  production: 'https://socket.zcmc.online/',
+  staging: 'https://staging-socket.zcmc.online/',
+  local: 'http://localhost:3025/' 
+}
+
 export const ENV = 'staging';
+export const SOCKET_URL = SOCKET_BASE_URL[ENV];
 
 export const TEST_MODE = false;
