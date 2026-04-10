@@ -24,7 +24,7 @@ function BoxComponent({
         maxWidth: "100%",
         height: height ?? "auto",
         maxHeight: maxHeight,
-        overflowY: maxHeight ? "scroll" : "visible", // Improved condition
+        overflowY: height || maxHeight ? "auto" : "visible",
         border: 1,
         borderColor: "neutral.100",
         bgcolor: bgColor || "white", // Use default color when bgColor is not passed

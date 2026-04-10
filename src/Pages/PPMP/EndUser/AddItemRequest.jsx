@@ -60,6 +60,7 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
     specs: [
       { id: 1, value: "" },
       { id: 2, value: "" },
+      { id: 3, value: "" },
     ],
     pin: "",
   });
@@ -90,6 +91,7 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
       specs: [
         { id: 1, value: "" },
         { id: 2, value: "" },
+        { id: 3, value: "" },
       ],
       pin: "",
     });
@@ -255,8 +257,7 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
 
         const alertData = {
           status: status === 201 ? "success" : "error",
-          title: "Request for new item successfully submitted.",
-          description: message,
+          title: message,
         };
 
         setAlertDialog(alertData);
@@ -360,7 +361,7 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
                 : ""
         }
         maxWidth={"500px"}
-        height={step === 1 ? "auto" : step === 2 ? "680px" : "650px"}
+        height={step === 1 ? "auto" : step === 2 ? "680px" : "680px"}
         content={
           <Fragment>
             <Box mt={1}>
@@ -406,7 +407,7 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
                             </Chip>
 
                             <Typography sx={{ fontSize: 14 }}>
-                              {act.activity_name}ddd
+                              {act.activity_name}
                             </Typography>
                           </Stack>
                         </>
@@ -500,7 +501,6 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
                       }}
                     />
                   </Stack>
-                  {console.log(variants)}
                   <AutocompleteComponent
                     label="Variant"
                     name="variant"
@@ -508,7 +508,7 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
                       variants?.find((el) => el.id === itemReq?.variant?.id) ||
                       null
                     }
-                    disabled={!variants?.category}
+                    disabled={variants?.length === 0}
                     options={variants}
                     getOptionLabel={(option) => option.name || ""}
                     handleSelect={(value) => {
@@ -524,10 +524,14 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
                     label="Estimated budget"
                     name="estimated_budget"
                     size="sm"
-                    // fontWeight={500}
-                    value={formatNumber(itemReq?.estimated_budget)}
+                    value={itemReq?.estimated_budget}
                     handleInput={(e) => handleInputValidation(e, setItemReq)}
-                    color="primary"
+                    onBlur={(e) => {
+                      setItemReq((prev) => ({
+                        ...prev,
+                        estimated_budget: formatNumber(e.target.value),
+                      }));
+                    }}
                     startDecorator={"₱"}
                   />
 

@@ -247,7 +247,6 @@ const ExpandableRowComponent = ({
 
   return (
     <>
-      {console.log(sourceOfFunds)}
       <Box
         sx={{
           opacity: 1,
@@ -443,7 +442,7 @@ const ExpandableRowComponent = ({
           {activeTab === "activities" && (
             <Grid container spacing={2} sx={{ mt: 1 }}>
               <Grid item xs={12} md={3}>
-                <BoxComponent p={2} minHeight={250}>
+                <BoxComponent p={2} height={250}>
                   <ItemRowComponent
                     item={row?.item}
                     withContent={false}
@@ -453,8 +452,8 @@ const ExpandableRowComponent = ({
               </Grid>
 
               <Grid item xs={12} md={9}>
-                <BoxComponent p={2} minHeight={250}>
-                  <Stack height={"100%"} spacing={1}>
+                <BoxComponent p={2} height={250}>
+                  <Stack sx={{ height: "100%", minHeight: 0 }}>
                     <Typography
                       fontWeight={600}
                       startDecorator={
@@ -471,7 +470,7 @@ const ExpandableRowComponent = ({
                           position: "sticky",
                           top: 0,
                           zIndex: 1,
-                          backgroundColor: "white",
+                          bgcolor: "white",
                           pb: 1,
                         }}
                       >
@@ -479,14 +478,14 @@ const ExpandableRowComponent = ({
                           label="Select an activity"
                           options={activities}
                           value={activity}
-                          getOptionLabel={(option) => option.activity_code}
+                          getOptionLabel={(option) => option.activity_name}
                           handleSelect={handleAddActivity}
                           color="danger"
                           disabled={isLocked}
                         />
                       </Box>
                     )}
-                    <Box sx={{ flex: 1, overflowY: "auto" }}>
+                    <Box sx={{ flex: 1, overflowY: "auto", minHeight: 0 }}>
                       {renderedActivities}
                     </Box>
                     <Typography textAlign={"right"} level="body-sm">

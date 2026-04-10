@@ -37,19 +37,17 @@ export default function ExpandableTable({
   const openRow = (id) => {
     setOpenId((prev) => (prev === id ? prev : id));
   };
-  const onRef = (id, node) => {
+
+  const onRef = React.useCallback((id, node) => {
     if (!node) return;
 
-    if (!measured.current[id]) {
-      measured.current[id] = true;
-      const h = node.scrollHeight;
+    const h = node.scrollHeight;
 
-      setHeights((prev) => ({
-        ...prev,
-        [id]: h,
-      }));
-    }
-  };
+    setHeights((prev) => {
+      if (prev[id] === h) return prev;
+      return { ...prev, [id]: h };
+    });
+  }, []);
 
   useEffect(() => {
     // console.log(isLoading)
