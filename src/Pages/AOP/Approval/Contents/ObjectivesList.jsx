@@ -93,8 +93,17 @@ const ObjectivesList = () => {
 
     const firstActivityId = AOPApplicationObjectives?.[0]?.activities?.[0]?.id;
 
-    if (firstActivityId && !activeActivity) {
-      handleClickActivity(firstActivityId);
+    // Always select the first activity when objectives load, regardless of current activeActivity
+    // This ensures we always have the correct activity for the current application
+    if (firstActivityId) {
+      // Check if the current activeActivity belongs to this application
+      const isActiveInCurrentApp = AOPApplicationObjectives.some((obj) =>
+        obj.activities.some((activity) => activity.id === activeActivity),
+      );
+
+      if (!isActiveInCurrentApp) {
+        handleClickActivity(firstActivityId);
+      }
     }
   }, [AOPApplicationObjectives]);
 

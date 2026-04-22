@@ -327,11 +327,13 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
       });
     });
   }, [itemReq.category?.id]);
+  const prevOpenRef = useRef(false);
 
   useEffect(() => {
-    if (openReq) {
-      resetForm();
+    if (openReq && !prevOpenRef.current) {
+      resetForm(); // only runs when opening
     }
+    prevOpenRef.current = openReq;
   }, [openReq]);
 
   return (
@@ -524,12 +526,15 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
                     label="Estimated budget"
                     name="estimated_budget"
                     size="sm"
-                    value={itemReq?.estimated_budget}
-                    handleInput={(e) => handleInputValidation(e, setItemReq)}
-                    onBlur={(e) => {
+                    value={formatNumber(itemReq?.estimated_budget)}
+                    helperText={"Input estimated budget of the item."}
+                    handleInput={(e) => {
+                      const raw = e.target.value.replace(/,/g, "");
+                      const num = Number(raw);
+
                       setItemReq((prev) => ({
                         ...prev,
-                        estimated_budget: formatNumber(e.target.value),
+                        estimated_budget: isNaN(num) ? "" : num,
                       }));
                     }}
                     startDecorator={"₱"}
@@ -553,24 +558,30 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
                 <Stack spacing={2}>
                   <Stack>
                     <Box
-                      height={"280px"}
-                      overflow="auto"
+                      sx={{
+                        height: "300px",
+                        overflowY: "auto",
+                        overflowX: "hidden",
+                      }}
                       ref={specsContainerRef}
                     >
                       {itemReq?.specs?.map((spec, index) => (
                         <Box key={spec.id} sx={{ mb: 0.5 }}>
                           <Stack spacing={1}>
-                            <TextareaComponent
-                              label={`Specification ${index + 1}:`}
-                              placeholder="e.g., Size: Large"
-                              name={`spec-${index}`}
-                              minRows={3}
-                              value={spec.value}
-                              onChange={(e) =>
-                                handleChange(spec.id, e.target.value)
-                              }
-                              size="sm"
-                            />
+                            <Box sx={{ width: "100%", minWidth: 0 }}>
+                              <TextareaComponent
+                                label={`Specification ${index + 1}:`}
+                                placeholder="e.g., Size: Large"
+                                name={`spec-${index}`}
+                                minRows={3}
+                                maxRows={5}
+                                value={spec.value}
+                                onChange={(e) =>
+                                  handleChange(spec.id, e.target.value)
+                                }
+                                size="sm"
+                              />
+                            </Box>
                             {itemReq?.specs?.length > 1 && (
                               <Link
                                 onClick={() => removeSpec(spec.id)}

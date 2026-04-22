@@ -42,7 +42,7 @@ const EditObjective = ({ onOpen, data, handleClose }) => {
       {/* MODAL EDIT OBJECTIVES */}
       <ModalComponent
         isOpen={onOpen}
-        title={`You’re editing for objective (#${objectiveData?.index} - ${objectiveData?.core})`}
+        title={`You’re editing for objective (#${objectiveData?.index - 1} - ${objectiveData?.core})`}
         description={
           "The following information you’re editing are based on end-users selection of “Others” in objectives and success indicators that are unique and not registered on the system library."
         }
@@ -72,7 +72,7 @@ const EditObjective = ({ onOpen, data, handleClose }) => {
                 handleChangeInput(
                   "other_success_indicator",
                   setObjectiveData,
-                  value
+                  value,
                 )
               }
             />

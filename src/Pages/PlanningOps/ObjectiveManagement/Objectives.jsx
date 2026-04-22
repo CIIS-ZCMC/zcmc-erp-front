@@ -176,53 +176,12 @@ function ManageObjectives({ props }) {
     }
   };
 
-  const isEmptyObject = (obj) =>
-    obj && typeof obj === "object" && Object.keys(obj).length === 0;
+  //OPEN
 
-  // HANDLE MODAL NEXT
-  const handleNext = (mode = "create") => {
-    let hasError = false;
-    if (mode === "create") {
-      if (currentStep === 1) {
-        if (!newObj.function) {
-          setError("function", true, "Please select a function");
-          hasError = true;
-        }
-        if (!newObj.objective) {
-          setError("objective", true, "Please input an objective");
-          hasError = true;
-        }
-        if (hasError) return;
-      }
-    }
-
-    if (mode === "update") {
-      if (currentStep === 1) {
-        if (!updateObj.function) {
-          setError("function", true, "Please select a function");
-          hasError = true;
-        }
-        if (!updateObj.objective) {
-          setError("objective", true, "Please input an objective");
-          hasError = true;
-        }
-        if (hasError) return;
-      }
-    }
-
-    setCurrentStep((prev) => prev + 1);
-    // setIsLoading(false); // STOP LOADING
-  };
-
-  // HANDLE MODAL NEXT
-  const handleBack = () => {
-    setCurrentStep((prev) => prev - 1);
-  };
-
-  const handleClose = () => {
-    clearErrors();
-    setOpenCreate(false);
+  const handleOpenCreate = () => {
     setCurrentStep(1);
+    setOpenCreate(true);
+    setPin("");
   };
 
   //UPDATE
@@ -238,6 +197,7 @@ function ManageObjectives({ props }) {
       })),
     });
     setOpenUpdate(true);
+    setPin("");
   };
 
   const handleOpenDel = (row) => {
@@ -248,6 +208,7 @@ function ManageObjectives({ props }) {
     };
     setSelected(row);
     setConfirmationModal(data);
+    setPin("");
     setOpenDel(true);
   };
 
@@ -264,7 +225,9 @@ function ManageObjectives({ props }) {
           setButtonLoader(false);
           setOpenDel(false);
           showSnack(200, message);
+          setPin("");
         } else {
+          setButtonLoader(false);
           showSnack(500, message);
         }
       });
@@ -276,7 +239,10 @@ function ManageObjectives({ props }) {
           setButtonLoader(false);
           setOpenDel(false);
           showSnack(200, message);
+          setPin("");
         } else {
+          setButtonLoader(false);
+
           showSnack(500, message);
         }
       });

@@ -91,11 +91,11 @@ export default function ManageAOP() {
     getRemarksByApplication(AOP_APPLICATION_ID);
   }, [AOP_APPLICATION_ID]);
 
-  useEffect(() => {
-    if (!defaultActivityId) return;
+  // useEffect(() => {
+  //   if (!defaultActivityId) return;
 
-    getActivityById(defaultActivityId);
-  }, [defaultActivityId]);
+  //   getActivityById(defaultActivityId);
+  // }, [defaultActivityId]);
 
   return (
     <Fragment>
