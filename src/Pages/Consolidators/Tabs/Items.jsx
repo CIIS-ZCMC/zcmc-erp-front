@@ -122,7 +122,7 @@ export const Items = () => {
     });
 
     if (row.item_category?.id) {
-      getVariantsByCategory(() => {}, row.item_category.id);
+      getVariantsByCategory(row.item_category.id, () => {});
     }
 
     setOpenUpdate(true);
@@ -312,11 +312,11 @@ export const Items = () => {
     });
 
     if (newItem?.category?.id) {
-      getVariantsByCategory((status, message) => {
+      getVariantsByCategory(newItem.category.id, (status, message) => {
         if (status !== 200) {
           console.error("Failed to fetch variants:", message);
         }
-      }, newItem.category.id);
+      });
     }
   }, [newItem?.category?.id]);
   // Re-run if category changes
@@ -360,11 +360,11 @@ export const Items = () => {
       return;
     }
 
-    getVariantsByCategory((status, message) => {
+    getVariantsByCategory(updatedData.category.id, (status, message) => {
       if (status !== 200) {
         console.error("Failed to fetch variants:", message);
       }
-    }, updatedData.category.id);
+    });
   }, [updatedData?.category?.id]);
 
   return (
@@ -461,7 +461,7 @@ export const Items = () => {
                           handleSingleChangeAutcomplete(
                             val,
                             setNewItem,
-                            "classification"
+                            "classification",
                           )
                         }
                       />
@@ -476,7 +476,7 @@ export const Items = () => {
                           handleSingleChangeAutcomplete(
                             val,
                             setNewItem,
-                            "category"
+                            "category",
                           )
                         }
                       />
@@ -493,7 +493,7 @@ export const Items = () => {
                           handleSingleChangeAutcomplete(
                             val,
                             setNewItem,
-                            "variant"
+                            "variant",
                           )
                         }
                       />
@@ -510,7 +510,7 @@ export const Items = () => {
                           handleSingleChangeAutcomplete(
                             val,
                             setNewItem,
-                            "unitOfMeasurement"
+                            "unitOfMeasurement",
                           )
                         }
                       />
@@ -523,7 +523,7 @@ export const Items = () => {
                           handleChangeInput(
                             "estimatedBudget",
                             setNewItem,
-                            e.target.value
+                            e.target.value,
                           )
                         }
                         startDecorator={"₱"}
@@ -540,7 +540,7 @@ export const Items = () => {
                         handleChangeInput(
                           "market_research_done",
                           setNewItem,
-                          e.target.checked
+                          e.target.checked,
                         )
                       }
                     />
@@ -641,7 +641,7 @@ export const Items = () => {
                         handleChangeInput(
                           "name",
                           setUpdatedData,
-                          e.target.value
+                          e.target.value,
                         )
                       }
                       helperText={
@@ -659,7 +659,7 @@ export const Items = () => {
                           handleSingleChangeAutcomplete(
                             val,
                             setUpdatedData,
-                            "classification"
+                            "classification",
                           )
                         }
                       />
@@ -674,7 +674,7 @@ export const Items = () => {
                           handleSingleChangeAutcomplete(
                             val,
                             setUpdatedData,
-                            "category"
+                            "category",
                           )
                         }
                       />
@@ -691,7 +691,7 @@ export const Items = () => {
                           handleSingleChangeAutcomplete(
                             val,
                             setUpdatedData,
-                            "variant"
+                            "variant",
                           )
                         }
                       />
@@ -708,7 +708,7 @@ export const Items = () => {
                           handleSingleChangeAutcomplete(
                             val,
                             setUpdatedData,
-                            "unitOfMeasurement"
+                            "unitOfMeasurement",
                           )
                         }
                       />
@@ -721,7 +721,7 @@ export const Items = () => {
                           handleChangeInput(
                             "estimatedBudget",
                             setUpdatedData,
-                            e.target.value
+                            e.target.value,
                           )
                         }
                         startDecorator={"₱"}
@@ -738,7 +738,7 @@ export const Items = () => {
                         handleChangeInput(
                           "market_research_done",
                           setUpdatedData,
-                          e.target.checked
+                          e.target.checked,
                         )
                       }
                     />

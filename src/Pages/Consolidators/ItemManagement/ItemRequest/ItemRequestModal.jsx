@@ -145,7 +145,7 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
     // Only fetch variants if category ID exists
     if (category?.id) {
       apiCalls.push({
-        fn: (callback) => getVariantsByCategory(callback, category.id),
+        fn: (callback) => getVariantsByCategory(category.id, callback),
         name: "variants",
       });
     }

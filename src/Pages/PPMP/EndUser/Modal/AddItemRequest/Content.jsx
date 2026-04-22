@@ -88,7 +88,7 @@ const Content = ({ step, itemReq, setItemReq }) => {
     // Only fetch variants if category ID exists
     if (itemReq.category?.id) {
       apiCalls.push({
-        fn: (callback) => getVariantsByCategory(callback, itemReq.category.id),
+        fn: (callback) => getVariantsByCategory(itemReq.category.id, callback),
         name: "variants",
       });
     }

@@ -18,11 +18,15 @@ import ModalComponent from "../../../../Components/Common/Dialog/ModalComponent"
 import AlertDialogComponent from "../../../../Components/Common/Dialog/AlertDialogComponent";
 import { TEST_MODE } from "../../../../Services/Config";
 import { APPROVAL_TIMELINE } from "../../../../Data/TestData";
-import { useTimelineID } from "../../../../Hooks/AOP/AOPApplicationsHook";
+import {
+  useAOPApplicationObjectives,
+  useTimelineID,
+} from "../../../../Hooks/AOP/AOPApplicationsHook";
 
 const ProcessAOPContent = () => {
   // HOOKS
   const { isDivisionHead, isPlanning, isMCC, isBudget } = useUserTypes();
+  const AOPApplicationObjectives = useAOPApplicationObjectives();
   const { processApplication } = useApprovalActions();
   const {
     setAlertDialog,
@@ -45,8 +49,16 @@ const ProcessAOPContent = () => {
   const [openProcessModal, setOpenProcessModal] = useState(false);
   const [btnLoading, setBtnLoading] = useState(false);
 
+  // Add this after the existing state declarations (around line 46)
+  const areAllActivitiesReviewed =
+    AOPApplicationObjectives?.every((obj) =>
+      obj.activities?.every((activity) => activity.is_reviewed),
+    ) ?? true;
+
   // FUNCTIONS
   const handleProcessRequest = () => {
+    // Add validation for planning users
+
     setOpenProcessModal(true);
   };
 
@@ -125,10 +137,16 @@ const ProcessAOPContent = () => {
   return (
     <Fragment>
       <ButtonComponent
-        label={"Process request"}
-        disabled={disabledProcessRequest ?? true}
+        label={
+          isPlanning && !areAllActivitiesReviewed
+            ? "Review all activities first"
+            : "Process request"
+        }
+        disabled={
+          disabledProcessRequest ?? (isPlanning && !areAllActivitiesReviewed)
+        }
         onClick={handleProcessRequest}
-      />{" "}
+      />
       {/* MODAL */}
       <ModalComponent
         hasActionButtons
