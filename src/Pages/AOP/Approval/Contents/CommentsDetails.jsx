@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useMemo, useState } from "react";
-import { useCommentActions, useComments } from "../../../../Hooks/CommentHook";
+import { useComments } from "../../../../Hooks/CommentHook";
 import { Divider, Stack } from "@mui/joy";
 import SimpleCommentComponent from "../../../../Components/Comments/SimpleCommentComponent";
 import { groupByDate } from "../../../../Utils/GroupData";
@@ -8,9 +8,6 @@ import NoResultComponent from "../../../../Components/Common/Table/NoResultCompo
 import PostCommentComponent from "../../../../Components/Form/PostCommentComponent";
 import ContainerComponent from "../../../../Components/Common/ContainerComponent";
 import { useActivityLoadingState } from "../../../../Hooks/AOP/ActivityHook";
-
-import { useActivity } from "../../../../Hooks/AOP/ActivityHook";
-import { useAOPApplicationObjectives } from "../../../../Hooks/AOP/AOPApplicationsHook";
 
 export const CommentsDetails = () => {
   const comments = useComments();

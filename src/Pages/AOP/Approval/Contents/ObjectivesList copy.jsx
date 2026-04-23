@@ -6,17 +6,8 @@ import { Divider, Stack, Typography } from "@mui/joy";
 import CustomAccordionComponent from "../../../../Components/Common/Accordion/CustomAccordionComponent";
 import EllipsisComponent from "../../../../Components/Common/Typography/EllipsisComponent";
 import { ActivityContainerComponent } from "../../../../Components/Activities/ActivityContainerComponent";
-import ModalComponent from "../../../../Components/Common/Dialog/ModalComponent";
-import TextareaComponent from "../../../../Components/Form/TextareaComponent";
-import InputComponent from "../../../../Components/Form/InputComponent";
-import {
-  useActivityActions,
-  useActivityUIStates,
-} from "../../../../Hooks/AOP/ActivityHook";
-import useAccordionHook, {
-  useExpandedChild,
-  useExpandedParent,
-} from "../../../../Hooks/AccordionHook";
+import { useActivityActions } from "../../../../Hooks/AOP/ActivityHook";
+import useAccordionHook from "../../../../Hooks/AccordionHook";
 import { useCommentActions } from "../../../../Hooks/CommentHook";
 import EditObjective from "./EditObjective";
 import { useCallback } from "react";
@@ -32,7 +23,7 @@ const ObjectivesList = () => {
   const aopApplicationData = useAOPApplication();
   const AOPApplication = useMemo(
     () => aopApplicationData ?? localStorageGetter("aopApplication"),
-    [aopApplicationData]
+    [aopApplicationData],
   );
   const {
     // setActiveActivity,
@@ -162,7 +153,7 @@ const ObjectivesList = () => {
               activities,
               is_editable,
             },
-            objective_key
+            objective_key,
           ) => (
             <CustomAccordionComponent
               key={objective_key}
@@ -206,7 +197,7 @@ const ObjectivesList = () => {
                     {activities?.map(
                       (
                         { id, name, with_comments, is_reviewed },
-                        activity_key
+                        activity_key,
                       ) => (
                         <ActivityContainerComponent
                           key={activity_key}
@@ -217,13 +208,13 @@ const ObjectivesList = () => {
                           withComment={with_comments}
                           reviewed={is_reviewed}
                         />
-                      )
+                      ),
                     )}
                   </Stack>
                 </CustomAccordionComponent>
               </Stack>
             </CustomAccordionComponent>
-          )
+          ),
         )}
 
         {/* EDIT OBJECTIVE */}

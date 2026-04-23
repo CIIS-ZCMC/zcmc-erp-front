@@ -9,6 +9,7 @@ import {
   useAOPApplication,
   useAOPApplicationObjectives,
   useAOPApplicationsActions,
+  useAOPPermissions,
   useHasDispense,
   useLoadingState,
 } from "../../../Hooks/AOP/AOPApplicationsHook";
@@ -32,7 +33,14 @@ import { ThreeDotsLoader } from "@Components/Common/Loading/ThreeDotsLoader";
 import { OpenInNew } from "@mui/icons-material";
 
 export default function ManageAOP() {
-  const { isPlanning, isMCC } = useUserTypes();
+  // const { isPlanning, isMCC } = useUserTypes();
+
+  const apiPermissions = useAOPPermissions();
+
+  const isDivisionChief = apiPermissions?.is_division_chief;
+  const isPlanningOfficer = apiPermissions?.is_planning;
+  const isMCCOfficer = !isDivisionChief && !isPlanningOfficer; // Keep this from user types for now
+
   const { getAOPApprovalTimeline } = useApprovalActions();
   const { id: AOP_APPLICATION_ID } = useParams();
   const { getAOPApplicationById } = useAOPApplicationsActions();
@@ -80,7 +88,7 @@ export default function ManageAOP() {
     }
   };
 
-  const isAllowedFeedbackViewing = !isMCC;
+  const isAllowedFeedbackViewing = !isMCCOfficer;
 
   useEffect(() => {
     if (!AOP_APPLICATION_ID) return;
@@ -191,7 +199,9 @@ export default function ManageAOP() {
                       <ButtonComponent
                         variant={"outlined"}
                         label={`Go to feedback (${
-                          isPlanning ? remarks?.length : allComments?.length
+                          isPlanningOfficer
+                            ? remarks?.length
+                            : allComments?.length
                         })`}
                         endDecorator={<ExternalLink size={14} />}
                         onClick={handleViewFeedback}
@@ -211,12 +221,17 @@ export default function ManageAOP() {
             </Grid>
 
             {/* ACTIVITY DETAILS  */}
-            <Grid item="true" xs={!isPlanning ? 8 : 4} mt={3}>
+            <Grid item="true" xs={!isPlanningOfficer ? 8 : 4} mt={3}>
               <ActivityDetails />
             </Grid>
 
             {/* COMMENTS  */}
-            <Grid item="true" xs={4} mt={3} display={!isPlanning && "none"}>
+            <Grid
+              item="true"
+              xs={4}
+              mt={3}
+              display={!isPlanningOfficer && "none"}
+            >
               <CommentsDetails />
             </Grid>
           </Grid>

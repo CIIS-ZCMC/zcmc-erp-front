@@ -4,7 +4,6 @@ import {
   useActivityLoadingState,
 } from "../../../../Hooks/AOP/ActivityHook";
 import moment from "moment";
-import ModalComponent from "../../../../Components/Common/Dialog/ModalComponent";
 import { Box, Divider, Grid, Link, Sheet, Stack, Typography } from "@mui/joy";
 import { CornerDownRight, ExternalLink } from "lucide-react";
 import BoxComponent from "../../../../Components/Common/Card/BoxComponent";
@@ -12,17 +11,15 @@ import ContainerComponent from "../../../../Components/Common/ContainerComponent
 import { MarkReviewFooter } from "./MarkReviewFooter";
 import ScrollableTableComponent from "../../../../Components/Common/Table/ScrollableTableComponent";
 import { RESOURCES_HEADER } from "../../../../Data/Columns";
-import { useUserTypes } from "../../../../Store/AuthStore";
-import { AOP_RESOURCES } from "../../../../Data/TestData";
 import DrawerComponent from "../../../../Components/Common/DrawerComponent";
-import ButtonComponent from "../../../../Components/Common/ButtonComponent";
-import { useNavigate } from "react-router-dom";
-import { useAOPApplication } from "../../../../Hooks/AOP/AOPApplicationsHook";
-import { usePPMPApplicationActions } from "../../../../Hooks/PPMP/PPMPApplicationHook";
-import { localStorageGetter } from "../../../../Utils/LocalStorage";
+import { useAOPPermissions } from "../../../../Hooks/AOP/AOPApplicationsHook";
 
 export const ActivityDetails = () => {
-  const { isPlanning } = useUserTypes();
+  const apiPermissions = useAOPPermissions();
+
+  const isPlanningOfficer = apiPermissions?.is_planning;
+  const isDivisionChief = apiPermissions?.is_division_chief;
+
   const [openResourcesModal, setOpenResourcesModal] = useState(false);
   const [openMarkModal, setOpenMarkModal] = useState(false);
   const activity = useActivity();
@@ -57,10 +54,10 @@ export const ActivityDetails = () => {
         }
         isLoading={isLoading}
         scrollable
-        contentMaxHeight={!isPlanning ? "55vh" : "50vh"}
-        contentMinHeight={!isPlanning ? "55vh" : "50vh"}
+        contentMaxHeight={!isPlanningOfficer ? "55vh" : "50vh"}
+        contentMinHeight={!isPlanningOfficer ? "55vh" : "50vh"}
         footer={
-          isPlanning && (
+          isPlanningOfficer && (
             <MarkReviewFooter
               is_reviewed={is_reviewed}
               openMarkModal={openMarkModal}
@@ -72,12 +69,12 @@ export const ActivityDetails = () => {
         <Grid
           container
           columns={{ md: 4, lg: 12 }}
-          sx={{ width: !isPlanning ? "100%" : "auto" }}
-          columnSpacing={!isPlanning ? 4 : 0}
+          sx={{ width: !isPlanningOfficer ? "100%" : "auto" }}
+          columnSpacing={!isPlanningOfficer ? 4 : 0}
           overflow={"hidden"}
         >
-          <Grid item={"true"} xs={!isPlanning ? 6 : 12}>
-            <Stack spacing={!isPlanning ? 2 : 1.5}>
+          <Grid item={"true"} xs={!isPlanningOfficer ? 6 : 12}>
+            <Stack spacing={!isPlanningOfficer ? 2 : 1.5}>
               {/* ACTIVITY NAME */}
               <Typography
                 level={titleStyles.level}
@@ -185,8 +182,12 @@ export const ActivityDetails = () => {
             </Stack>
           </Grid>
 
-          <Grid item="true" xs={!isPlanning ? 6 : 12} mt={isPlanning && 2}>
-            <Stack spacing={!isPlanning ? 2 : 1.5}>
+          <Grid
+            item="true"
+            xs={!isPlanningOfficer ? 6 : 12}
+            mt={isPlanningOfficer && 2}
+          >
+            <Stack spacing={!isPlanningOfficer ? 2 : 1.5}>
               {/* PERSON */}
               <Typography
                 level={titleStyles.level}

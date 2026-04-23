@@ -39,25 +39,21 @@ export const ActivityContainerComponent = ({
             {label}
           </Typography>{" "}
           <Box display={"flex"} gap={0.5}>
-            {isPlanning && (
-              <>
-                {withComment && (
-                  <ChipComponent
-                    label={"With comments"}
-                    size="sm"
-                    variant={"soft"}
-                  />
-                )}
-                {reviewed && (
-                  <ChipComponent
-                    label={"Reviewed"}
-                    size="sm"
-                    variant={"soft"}
-                    color={"success"}
-                    startDecorator={<CircleSmall size={12} />}
-                  />
-                )}
-              </>
+            {withComment && (
+              <ChipComponent
+                label={"With comments"}
+                size="sm"
+                variant={"soft"}
+              />
+            )}
+            {reviewed && (
+              <ChipComponent
+                label={"Reviewed"}
+                size="sm"
+                variant={"soft"}
+                color={"success"}
+                startDecorator={<CircleSmall size={12} />}
+              />
             )}
           </Box>
         </Stack>

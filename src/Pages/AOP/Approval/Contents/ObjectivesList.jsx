@@ -173,7 +173,7 @@ const ObjectivesList = () => {
                           label={`Activity #${activity_key + 1} `}
                           text={name}
                           withComment={with_comments}
-                          reviewed={isPlanning ? is_reviewed : false}
+                          reviewed={is_reviewed}
                         />
                       ),
                     )}
