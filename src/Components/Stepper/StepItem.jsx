@@ -37,6 +37,8 @@ StepItem.propTypes = {
 function StepItem({
   position,
   name,
+  area,
+  area_code,
   status,
   approved_at,
   submitted_at,
@@ -91,7 +93,8 @@ function StepItem({
             fontWeight={600}
             sx={{ textTransform: "uppercase" }}
           >
-            {role ? role : position}
+            {role ? role : position}{" "}
+            {role === "Division Chief" && name && `(${area_code})`}
           </Typography>
 
           <ChipComponent
