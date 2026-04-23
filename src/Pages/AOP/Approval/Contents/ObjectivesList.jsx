@@ -1,6 +1,9 @@
 import React, { Fragment, useEffect, useMemo, useState } from "react";
 import { localStorageGetter } from "../../../../Utils/LocalStorage";
-import { useAOPApplicationObjectives } from "../../../../Hooks/AOP/AOPApplicationsHook";
+import {
+  useAOPApplicationObjectives,
+  useAOPPermissions,
+} from "../../../../Hooks/AOP/AOPApplicationsHook";
 import { toCapitalize } from "../../../../Utils/Typography";
 import { Stack, Typography } from "@mui/joy";
 import CustomAccordionComponent from "../../../../Components/Common/Accordion/CustomAccordionComponent";
@@ -26,7 +29,10 @@ const ObjectivesList = () => {
   });
 
   // HOOKS
-  const { isPlanning } = useUserTypes();
+
+  const apiPermissions = useAOPPermissions();
+  const isPlanningOfficer = apiPermissions?.is_planning;
+
   const AOPApplicationObjectives = useAOPApplicationObjectives();
   const ApplicationObjectives = useMemo(
     () =>
@@ -173,7 +179,7 @@ const ObjectivesList = () => {
                           label={`Activity #${activity_key + 1} `}
                           text={name}
                           withComment={with_comments}
-                          reviewed={is_reviewed}
+                          reviewed={isPlanningOfficer ? is_reviewed : false}
                         />
                       ),
                     )}
