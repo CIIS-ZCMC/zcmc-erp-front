@@ -61,6 +61,7 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
   const [isLoading, setIsLoading] = useState(false);
   const [remarks, setRemarks] = useState("");
   const [isSpecialItem, setIsSpecialItem] = useState(false);
+  const [isPpmpItemRequest, setIsPpmpItemRequest] = useState(false);
 
   // Local editable state
   const [formData, setFormData] = useState({
@@ -103,21 +104,9 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
       setUnit(row.item_unit || "");
       setEstimatedBudget(row.estimated_budget || "");
       setSpecification(row.item_specifications || "");
+      setIsSpecialItem(row.is_special || false);
+      setIsPpmpItemRequest(row.is_ppmp_item_request || false);
     }
-
-    // old code setformdata approach
-    // if (row) {
-    //   setFormData({
-    //     name: row.name || "",
-    //     classification: row.item_classification || "",
-    //     category: row.item_category || "",
-    //     unit: row.item_unit || "",
-    //     estimated_budget: row.estimated_budget || "",
-    //     item_specifications:
-    //       row.item_specifications?.map((s) => ({ ...s })) || [],
-    //     market_research_done: row?.market_research_done || false,
-    //   });
-    // }
   }, [row]);
 
   // === SPEC HANDLERS ===
@@ -194,6 +183,7 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
       terminology_category_id: variant.id,
       market_research: marketResearched,
       specifications: specification.map(({ description }) => ({ description })),
+      is_special: formData.is_special,
     };
 
     const declinePayload = {
@@ -421,21 +411,25 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
                     >
                       Add another
                     </Link>
-                    <Divider />
-                    <Stack sx={{ my: 1.5 }}>
-                      <Checkbox
-                        sx={{ fontSize: "13px", fontWeight: 500 }}
-                        label="Special Item"
-                        checked={formData.is_special}
-                        onChange={(e) =>
-                          handleSpecialItemChange(e.target.checked)
-                        }
-                      />
-                      <Typography fontSize={12} marginLeft={4}>
-                        Items under a dispensing unit that are only procured by
-                        the requesting unit.
-                      </Typography>
-                    </Stack>
+                    {isPpmpItemRequest && (
+                      <>
+                        <Divider />
+                        <Stack sx={{ my: 1.5 }}>
+                          <Checkbox
+                            sx={{ fontSize: "13px", fontWeight: 500 }}
+                            label="Special Item"
+                            checked={formData.is_special}
+                            onChange={(e) =>
+                              handleSpecialItemChange(e.target.checked)
+                            }
+                          />
+                          <Typography fontSize={12} marginLeft={4}>
+                            Items under a dispensing unit that are only procured
+                            by the requesting unit.
+                          </Typography>
+                        </Stack>
+                      </>
+                    )}
                   </Stack>
                 )}
               </TabComponent>
