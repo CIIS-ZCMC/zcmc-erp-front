@@ -158,11 +158,22 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
   const handlePreviousStep = () => setStep((prev) => Math.max(prev - 1, 1));
 
   // === SPEC HANDLERS ===
-  const addSpec = () =>
+  const addSpec = () => {
     setItemReq((prev) => ({
       ...prev,
       specs: [...prev.specs, { id: Date.now(), value: "" }],
     }));
+
+    // Smooth scroll to bottom after adding new spec
+    setTimeout(() => {
+      if (specsContainerRef.current) {
+        specsContainerRef.current.scrollTo({
+          top: specsContainerRef.current.scrollHeight,
+          behavior: "smooth",
+        });
+      }
+    }, 100); // Slight delay to ensure DOM is updated
+  };
 
   const removeSpec = (id) =>
     setItemReq((prev) => ({
@@ -363,10 +374,19 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
                 : ""
         }
         maxWidth={"500px"}
-        height={step === 1 ? "auto" : step === 2 ? "680px" : "680px"}
+        maxHeight={step === 1 ? "auto" : step === 2 ? "700px" : "700px"}
+        height={"auto"} // Change from fixed height to auto
         content={
           <Fragment>
-            <Box mt={1}>
+            <Box
+              mt={1}
+              sx={{
+                maxHeight: step === 1 ? "none" : step === 2 ? "600px" : "600px",
+                overflowY: "auto",
+                overflowX: "hidden",
+                paddingRight: 1, // Add some padding to account for scrollbar
+              }}
+            >
               {step === 1 && (
                 <Stack spacing={2}>
                   <AutocompleteComponent
@@ -562,6 +582,8 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
                         height: "300px",
                         overflowY: "auto",
                         overflowX: "hidden",
+                        paddingRight: "12px", // Add space beside scrollbar
+                        marginRight: "-8px",
                       }}
                       ref={specsContainerRef}
                     >

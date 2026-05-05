@@ -44,7 +44,7 @@ const Saved = () => {
   return (
     <>
       <ExpandableTable
-        columns={ITEMS_REQUESTS(handleOpen, pathName)}
+        columns={ITEMS_REQUESTS(handleOpen, pathName, false)}
         rows={data}
         isLoading={isLoading}
         currentPage={current_page}

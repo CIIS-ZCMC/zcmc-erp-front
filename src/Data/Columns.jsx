@@ -1775,7 +1775,7 @@ export const PPMP_HEADERS = (
   },
 ];
 
-export const ITEMS_REQUESTS = (handleOpen, pathName) => [
+export const ITEMS_REQUESTS = (handleOpen, pathName, showActions = false) => [
   {
     key: "item",
     label: "Item & Unit",
@@ -1831,139 +1831,143 @@ export const ITEMS_REQUESTS = (handleOpen, pathName) => [
     },
   },
 
-  {
-    key: "actions",
-    label: "Actions",
-    render: (r) => (
-      <>
-        {pathName === "/ppmp" && (
-          <>
-            {r.status_id === 3 && (
-              <>
-                <ChipComponent
-                  size="lg"
-                  color="primary"
-                  variant={"soft"}
-                  label={"Pending"}
-                  startDecorator={<HourglassEmpty />}
-                />
-              </>
-            )}
+  ...(showActions
+    ? [
+        {
+          key: "actions",
+          label: "Actions",
+          render: (r) => (
+            <>
+              {pathName === "/ppmp" && (
+                <>
+                  {r.status_id === 3 && (
+                    <>
+                      <ChipComponent
+                        size="lg"
+                        color="primary"
+                        variant={"soft"}
+                        label={"Pending"}
+                        startDecorator={<HourglassEmpty />}
+                      />
+                    </>
+                  )}
 
-            {r.status_id === 4 && (
-              <>
-                <ChipComponent
-                  size="lg"
-                  color="success"
-                  variant={"soft"}
-                  label={"Saved to Library"}
-                  startDecorator={<CheckOutlined />}
-                />
-              </>
-            )}
+                  {r.status_id === 4 && (
+                    <>
+                      <ChipComponent
+                        size="lg"
+                        color="success"
+                        variant={"soft"}
+                        label={"Saved to Library"}
+                        startDecorator={<CheckOutlined />}
+                      />
+                    </>
+                  )}
 
-            {r.status_id === 5 && (
-              <>
-                <ChipComponent
-                  size="lg"
-                  color="danger"
-                  variant={"soft"}
-                  label={"Declined"}
-                  startDecorator={<Clear />}
-                />
-              </>
-            )}
-          </>
-        )}
+                  {r.status_id === 5 && (
+                    <>
+                      <ChipComponent
+                        size="lg"
+                        color="danger"
+                        variant={"soft"}
+                        label={"Declined"}
+                        startDecorator={<Clear />}
+                      />
+                    </>
+                  )}
+                </>
+              )}
 
-        {pathName === "/item-requests/" && (
-          <>
-            {r.status_id === 3 && (
-              <>
-                <ChipComponent
-                  size="lg"
-                  color="primary"
-                  variant={"soft"}
-                  label={"Pending"}
-                  startDecorator={<HourglassEmpty />}
-                />
-              </>
-            )}
+              {pathName === "/item-requests/" && (
+                <>
+                  {r.status_id === 3 && (
+                    <>
+                      <ChipComponent
+                        size="lg"
+                        color="primary"
+                        variant={"soft"}
+                        label={"Pending"}
+                        startDecorator={<HourglassEmpty />}
+                      />
+                    </>
+                  )}
 
-            {r.status_id === 4 && (
-              <>
-                <ChipComponent
-                  size="lg"
-                  color="success"
-                  variant={"soft"}
-                  label={"Saved to Library"}
-                  startDecorator={<CheckOutlined />}
-                />
-              </>
-            )}
+                  {r.status_id === 4 && (
+                    <>
+                      <ChipComponent
+                        size="lg"
+                        color="success"
+                        variant={"soft"}
+                        label={"Saved to Library"}
+                        startDecorator={<CheckOutlined />}
+                      />
+                    </>
+                  )}
 
-            {r.status_id === 5 && (
-              <>
-                <ChipComponent
-                  size="lg"
-                  color="danger"
-                  variant={"soft"}
-                  label={"Declined"}
-                  startDecorator={<Clear />}
-                />
-              </>
-            )}
-          </>
-        )}
+                  {r.status_id === 5 && (
+                    <>
+                      <ChipComponent
+                        size="lg"
+                        color="danger"
+                        variant={"soft"}
+                        label={"Declined"}
+                        startDecorator={<Clear />}
+                      />
+                    </>
+                  )}
+                </>
+              )}
 
-        {pathName === "/item-requests/pending" && (
-          <>
-            <div style={{ display: "flex", gap: "8px" }}>
-              <ChipComponent
-                size="lg"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleOpen(4, r); /* approve */
-                }}
-                color="success"
-                label={"Approve"}
-                variant={"soft"}
-                startDecorator={<CheckOutlined />}
-              />
+              {pathName === "/item-requests/pending" && (
+                <>
+                  <div style={{ display: "flex", gap: "8px" }}>
+                    <ChipComponent
+                      size="lg"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleOpen(4, r); /* approve */
+                      }}
+                      color="success"
+                      label={"Approve"}
+                      variant={"soft"}
+                      startDecorator={<CheckOutlined />}
+                    />
 
-              <ChipComponent
-                size="lg"
-                color="danger"
-                variant={"soft"}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleOpen(5, r); /* decline */
-                }}
-                label={"Decline"}
-                startDecorator={<Clear />}
-              />
-            </div>
-          </>
-        )}
+                    <ChipComponent
+                      size="lg"
+                      color="danger"
+                      variant={"soft"}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleOpen(5, r); /* decline */
+                      }}
+                      label={"Decline"}
+                      startDecorator={<Clear />}
+                    />
+                  </div>
+                </>
+              )}
 
-        {pathName === "/item-requests/saved" && (
-          <>
-            {r.status_id === 4 && (
-              <>
-                <ChipComponent
-                  size="lg"
-                  color="success"
-                  variant={"soft"}
-                  label={"Approved"}
-                  startDecorator={<CheckOutlined />}
-                />
-              </>
-            )}
-          </>
-        )}
-      </>
-    ),
-  },
+              {pathName === "/item-requests/saved" && (
+                <>
+                  {r.status_id === 4 && (
+                    <>
+                      <ChipComponent
+                        size="lg"
+                        color="success"
+                        variant={"soft"}
+                        label={"Approved"}
+                        startDecorator={<CheckOutlined />}
+                      />
+                    </>
+                  )}
+                </>
+              )}
+            </>
+          ),
+        },
+      ]
+    : []),
 ];
 
 export const PPMP_APPROVER_HEADERS = (handleComments) => [

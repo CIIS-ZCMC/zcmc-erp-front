@@ -56,7 +56,7 @@ export default function Pending() {
   return (
     <div>
       <ExpandableTable
-        columns={ITEMS_REQUESTS(handleOpen, pathName)}
+        columns={ITEMS_REQUESTS(handleOpen, pathName, true)}
         rows={data}
         isLoading={isLoading}
         currentPage={current_page}

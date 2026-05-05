@@ -1,6 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { grey } from "@mui/material/colors";
-import { TextSnippetOutlined, Today } from "@mui/icons-material";
+import {
+  TextSnippetOutlined,
+  Today,
+  WarningAmberOutlined,
+} from "@mui/icons-material";
 import { Checkbox, Divider, Stack, Typography, Box, Link } from "@mui/joy";
 import { MdAdd } from "react-icons/md";
 import { useNavigate } from "react-router-dom";
@@ -56,6 +60,7 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
   const [itemRequestId, setItemRequestId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [remarks, setRemarks] = useState("");
+  const [isSpecialItem, setIsSpecialItem] = useState(false);
 
   // Local editable state
   const [formData, setFormData] = useState({
@@ -66,6 +71,7 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
     estimated_budget: "",
     item_specifications: [],
     market_research_done: false,
+    is_special: false, // Add this
   });
 
   const {
@@ -131,6 +137,14 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
     const newSpecs = [...specification];
     newSpecs[index].description = value;
     setSpecification(newSpecs);
+  };
+
+  const handleSpecialItemChange = (checked) => {
+    setIsSpecialItem(checked);
+    setFormData((prev) => ({
+      ...prev,
+      is_special: checked,
+    }));
   };
 
   useEffect(() => {
@@ -354,14 +368,25 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
                     />
                   </Stack>
                 ) : (
-                  <Stack>
+                  <Stack
+                    sx={{
+                      overflowX: "hidden", // Hide horizontal overflow
+                    }}
+                  >
                     <Box
                       height={"280px"}
                       overflow="auto"
+
                       // ref={specsContainerRef}
                     >
                       {specification?.map((spec, index) => (
-                        <Box key={spec.id} sx={{ mb: 0.5 }}>
+                        <Box
+                          key={spec.id}
+                          sx={{
+                            my: 1.5,
+                            paddingRight: "12px", // Move padding here
+                          }}
+                        >
                           <Stack spacing={1}>
                             <TextareaComponent
                               label={`Specification ${index + 1}:`}
@@ -396,7 +421,21 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
                     >
                       Add another
                     </Link>
-                    <Divider sx={{ my: 1 }} />
+                    <Divider />
+                    <Stack sx={{ my: 1.5 }}>
+                      <Checkbox
+                        sx={{ fontSize: "13px", fontWeight: 500 }}
+                        label="Special Item"
+                        checked={formData.is_special}
+                        onChange={(e) =>
+                          handleSpecialItemChange(e.target.checked)
+                        }
+                      />
+                      <Typography fontSize={12} marginLeft={4}>
+                        Items under a dispensing unit that are only procured by
+                        the requesting unit.
+                      </Typography>
+                    </Stack>
                   </Stack>
                 )}
               </TabComponent>
