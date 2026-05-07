@@ -33,6 +33,7 @@ const useItemsHook = create((set) => ({
       failed: callBack,
       success: (res) => {
         const { status, message, data } = res;
+        console.log("ITEMS DATA:", data);
         set({ items: data.data });
         callBack(status, message);
       },

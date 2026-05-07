@@ -24,6 +24,7 @@ import useItemRequestsHook from "../../../../Hooks/ItemRequest/ItemRequestHook";
 
 import useItemLibraryStore from "../../../../Store/Item/LibraryStore";
 import { useItemLibraryActions } from "../../../../Store/Item/LibraryStore";
+import useSnackbarHook from "../../../../Hooks/SnackbarHook";
 
 export default function ItemRequestModal({ open, handleClose, status, row }) {
   const navigate = useNavigate();
@@ -53,6 +54,8 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
     setEstimatedBudget,
     setSpecification,
   } = useItemLibraryActions();
+
+  const { showSnack } = useSnackbarHook();
 
   const [pin, setPin] = useState("");
   const [displayLoading, setDisplayLoading] = useState(false);
@@ -199,11 +202,7 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
     try {
       updateItemRequest(itemRequestId, payload, (status, message) => {
         if (status === 200) {
-          setAlertDialog({
-            status: "success",
-            title: message,
-            description: "",
-          });
+          showSnack(message, "success");
           setIsLoading(false);
           handleClose();
           navigate("/item-requests/saved");

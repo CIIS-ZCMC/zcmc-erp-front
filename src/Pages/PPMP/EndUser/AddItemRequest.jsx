@@ -266,13 +266,6 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
       await postItemRequest(payload, (status, message, data) => {
         setButtonLoader(false);
 
-        const alertData = {
-          status: status === 201 ? "success" : "error",
-          title: message,
-        };
-
-        setAlertDialog(alertData);
-
         if (status === 201) {
           setItemReq({
             classification: null,
@@ -292,6 +285,7 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
           setSelectedActivities([]);
           setOpenReq(false); // close modal
           setStep(1); // reset to step 1 if using a stepper
+          showSnack(message, "success");
         }
       });
     } catch (error) {

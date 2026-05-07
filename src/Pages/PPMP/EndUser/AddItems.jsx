@@ -106,7 +106,10 @@ function AddItems(props) {
       try {
         setDisplayLoading(true);
 
-        const itemsResult = await getItems();
+        const itemsResult = await getItems({
+          mode: "selection",
+          ...(isPPMP && { type: "ppmp_item" }),
+        });
         if (itemsResult.status !== 200) {
           console.error("Failed to fetch items:", itemsResult.message);
           return;
