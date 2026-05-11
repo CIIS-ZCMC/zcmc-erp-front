@@ -1,10 +1,12 @@
 import { API } from "../Data/constants";
-import { read, post, update, remove } from '../Services/RequestMethods';
+import { read, post, update, remove } from "../Services/RequestMethods";
 
-import useResponsibleStore, { useResponsiblePeopleActions } from "../Store/ResponsibleStore";
+import useResponsibleStore, {
+  useResponsiblePeopleActions,
+} from "../Store/ResponsiblePeopleStore";
 
 const useResponsibleHook = () => {
-  const { responsiblePeople } = useResponsibleStore()
+  const { responsiblePeople } = useResponsibleStore();
   const { setResponsiblePeople } = useResponsiblePeopleActions();
 
   const getPeople = (params, callBack) => {
@@ -20,12 +22,12 @@ const useResponsibleHook = () => {
             data: { message },
           } = res;
           setResponsiblePeople(res.data);
-          callBack(status, message)
-        }
+          callBack(status, message);
+        },
       });
     } catch (error) {
-      console.error('Error fetching Responsible People:', error);
-      callBack?.(false, error.message)
+      console.error("Error fetching Responsible People:", error);
+      callBack?.(false, error.message);
     }
   };
 
@@ -51,13 +53,12 @@ const useResponsibleHook = () => {
           }
           callBack?.(status, message);
         },
-      })
-    }
-    catch (error) {
+      });
+    } catch (error) {
       console.error("Error Creatin Objective:", error);
       callBack(false, error.message);
     }
-  }
+  };
 
   const removeResponsible = (params, callBack) => {
     try {
@@ -75,7 +76,7 @@ const useResponsibleHook = () => {
             const updatedData = {
               ...responsiblePeople,
               responsible_people: responsiblePeople.responsible_people.filter(
-                (person) => person.responsible_person_id !== params.id
+                (person) => person.responsible_person_id !== params.id,
               ),
             };
             // console.log('updated people', updatedData);
@@ -83,21 +84,18 @@ const useResponsibleHook = () => {
           }
           callBack?.(status, message);
         },
-      })
-    }
-    catch (error) {
+      });
+    } catch (error) {
       console.error("Error Deleting pEOPLE:", error);
       callBack(false, error.message);
     }
-  }
-
+  };
 
   return {
     getPeople,
     createResponsible,
     removeResponsible,
-  }
+  };
+};
 
-}
-
-export default useResponsibleHook
+export default useResponsibleHook;

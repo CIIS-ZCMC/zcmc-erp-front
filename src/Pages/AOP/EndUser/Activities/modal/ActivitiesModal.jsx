@@ -23,8 +23,7 @@ import { grey } from "@mui/material/colors";
 const ActivitiesModal = ({ selectedActivity }) => {
   const { activity, startMonth, endMonth, isGadRelated, target } =
     useActivitiesStore();
-  const { firstQuarter, secondQuarter, thirdQuarter, fourthQuarter } =
-    target ?? {};
+  const { firstQuarter, secondQuarter, thirdQuarter, fourthQuarter } = target;
 
   const {
     setActivity,
@@ -40,12 +39,18 @@ const ActivitiesModal = ({ selectedActivity }) => {
       setStartMonth(selectedActivity.start_month);
       setEndMonth(selectedActivity.end_month);
       setIsGadRelated(selectedActivity.is_gad_related);
-      setTarget({
-        firstQuarter: selectedActivity.target.first_quarter || "",
-        secondQuarter: selectedActivity.target.second_quarter || "",
-        thirdQuarter: selectedActivity.target.third_quarter || "",
-        fourthQuarter: selectedActivity.target.fourth_quarter || "",
-      });
+
+      if (selectedActivity.target) {
+        console.log("selectedActivity.target", selectedActivity.target);
+        setTarget({
+          firstQuarter: selectedActivity.target.first_quarter || "",
+          secondQuarter: selectedActivity.target.second_quarter || "",
+          thirdQuarter: selectedActivity.target.third_quarter || "",
+          fourthQuarter: selectedActivity.target.fourth_quarter || "",
+        });
+      } else {
+        console.log("No target data found in selectedActivity");
+      }
     }
   }, [selectedActivity]);
 
@@ -118,7 +123,7 @@ const ActivitiesModal = ({ selectedActivity }) => {
                 label={"Quarter 1"}
                 min={0}
                 max={100}
-                value={firstQuarter || ""}
+                value={firstQuarter}
                 onChange={handleQuarterChange("firstQuarter")}
                 endDecorator={<Percent />}
               />
@@ -128,7 +133,7 @@ const ActivitiesModal = ({ selectedActivity }) => {
                 label={"Quarter 2"}
                 min={0}
                 max={100}
-                value={secondQuarter || ""}
+                value={secondQuarter}
                 onChange={handleQuarterChange("secondQuarter")}
                 endDecorator={<Percent />}
               />
@@ -145,7 +150,7 @@ const ActivitiesModal = ({ selectedActivity }) => {
                 label={"Quarter 3"}
                 min={0}
                 max={100}
-                value={thirdQuarter || ""}
+                value={thirdQuarter}
                 onChange={handleQuarterChange("thirdQuarter")}
                 endDecorator={<Percent />}
               />
@@ -155,7 +160,7 @@ const ActivitiesModal = ({ selectedActivity }) => {
                 label={"Quarter 4"}
                 min={0}
                 max={100}
-                value={fourthQuarter || ""}
+                value={fourthQuarter}
                 onChange={handleQuarterChange("fourthQuarter")}
                 endDecorator={<Percent />}
               />

@@ -43,6 +43,7 @@ import useSnackbarHook from "../../../../Hooks/SnackbarHook";
 import { socket } from "../../../../Services/Socket";
 import { nextYear } from "../../../../Utils/Functions";
 import { useAuth } from "../../../../Store/AuthStore";
+import PageLoader from "@Components/Loading/PageLoader";
 
 const centeredStyle = {
   direction: "column",
@@ -71,6 +72,9 @@ const Activities = () => {
     endMonth,
     isGadRelated,
     target,
+    isEditLoading,
+    isCreateLoading,
+    isUpdateLoading,
   } = useActivitiesStore();
 
   const { clearFields } = useActivitiesActions();
@@ -160,19 +164,16 @@ const Activities = () => {
       userId: user.id,
       name: user.name,
     });
-    setIsLoading(true);
     setIsEditMode(true);
     setSelectedActivityId(activityId);
-    setIsOpenActivitiesModal(true);
 
     const params = { id: activityId };
 
     await showActivity(params, (status, message) => {
       if (!(status >= 200 && status < 300)) {
-        // if status not success
         return; //Toast error
       }
-      setIsLoading(false);
+      setIsOpenActivitiesModal(true);
     });
   };
 
@@ -479,7 +480,11 @@ const Activities = () => {
       </BoxComponent>
       {console.log(applicationActivities)}
 
-      {isLoading ? (
+      {isEditLoading ? (
+        <Stack sx={centeredStyle}>
+          <PageLoader isLoading={isEditLoading} />
+        </Stack>
+      ) : isLoading ? (
         <Stack sx={centeredStyle}>
           <ThreeDotsLoader />
         </Stack>
@@ -518,7 +523,6 @@ const Activities = () => {
               <Grid key={activity.id} size={4} lg={4} md={6} sm={12}>
                 <ActivitiesList
                   status={status}
-                  isLoading={isLoading}
                   activity={activity}
                   handleAdd={() => handleOpenCountModal()}
                   handleEdit={() => handleOpenEditModal(activity.id)}

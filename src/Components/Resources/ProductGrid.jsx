@@ -43,11 +43,11 @@ export default function ProductGrid({
     <Fragment>
       <BoxComponent
         mt={2}
+        height="100%"
         boxShadow="sm"
-        height={height}
         sx={{ position: "relative" }}
       >
-        {loading && (
+        {loading ? (
           <Grid container spacing={2}>
             {[...Array(9)].map((_, index) => (
               <Grid xs={12} sm={6} md={4} key={index}>
@@ -60,51 +60,54 @@ export default function ProductGrid({
               </Grid>
             ))}
           </Grid>
-        )}
-        <Box
-          ref={parentRef}
-          sx={{
-            overflow: "auto",
-            height,
-            position: "relative",
-          }}
-        >
+        ) : (
           <Box
+            ref={parentRef}
             sx={{
-              height: `${rowVirtualizer.getTotalSize()}px`,
+              overflow: "auto",
+              height: "100%",
               position: "relative",
             }}
           >
-            {rowVirtualizer.getVirtualItems().map((virtualRow) => {
-              const startIndex = virtualRow.index * columns;
-              const rowItems = items.slice(startIndex, startIndex + columns);
+            <Box
+              sx={{
+                height: `${rowVirtualizer.getTotalSize()}px`,
+                width: "100%",
+                position: "relative",
+              }}
+            >
+              {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+                const startIndex = virtualRow.index * columns;
+                const rowItems = items.slice(startIndex, startIndex + columns);
 
-              return (
-                <Box
-                  key={virtualRow.key}
-                  sx={{
-                    display: "grid",
-                    gridTemplateColumns: `repeat(${columns}, 1fr)`,
-                    gap: 1,
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    transform: `translateY(${virtualRow.start}px)`,
-                    width: "100%",
-                  }}
-                >
-                  {rowItems.map((item, index) => (
-                    <ItemCardComponent
-                      item={item}
-                      btnAction={() => onAddToCart?.(item)}
-                      itemInfoAction={() => onItemInfo?.(item)}
-                    />
-                  ))}
-                </Box>
-              );
-            })}
+                return (
+                  <Box
+                    key={virtualRow.key}
+                    sx={{
+                      display: "grid",
+                      gridTemplateColumns: `repeat(${columns}, 1fr)`,
+                      gap: 1,
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      transform: `translateY(${virtualRow.start}px)`,
+                      width: "100%",
+                    }}
+                  >
+                    {rowItems.map((item, index) => (
+                      <ItemCardComponent
+                        key={item?.id || index}
+                        item={item}
+                        btnAction={() => onAddToCart?.(item)}
+                        itemInfoAction={() => onItemInfo?.(item)}
+                      />
+                    ))}
+                  </Box>
+                );
+              })}
+            </Box>
           </Box>
-        </Box>
+        )}
       </BoxComponent>
     </Fragment>
   );

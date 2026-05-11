@@ -5,6 +5,10 @@ const useActivitiesStore = create((set, get) => ({
   applicationActivity: null,
   aopApplication: {},
 
+  isEditLoading: false,
+  isCreateLoading: false,
+  isUpdateLoading: false,
+
   activity: null,
   cost: null,
   startMonth: null,
@@ -12,10 +16,10 @@ const useActivitiesStore = create((set, get) => ({
   isGadRelated: false,
 
   target: {
-    firstQuarter: null,
-    secondQuarter: null,
-    thirdQuarter: null,
-    fourthQuarter: null,
+    firstQuarter: "",
+    secondQuarter: "",
+    thirdQuarter: "",
+    fourthQuarter: "",
   },
 
   actions: {
@@ -23,6 +27,10 @@ const useActivitiesStore = create((set, get) => ({
       set({ applicationActivities }),
     setApplicationActivity: (applicationActivity) =>
       set({ applicationActivity }),
+
+    setIsEditLoading: (isEditLoading) => set({ isEditLoading }),
+    setIsCreateLoading: (isCreateLoading) => set({ isCreateLoading }),
+    setIsUpdateLoading: (isUpdateLoading) => set({ isUpdateLoading }),
 
     setActivity: (activity) => set({ activity }),
     setCost: (cost) => set({ cost }),
@@ -45,10 +53,10 @@ const useActivitiesStore = create((set, get) => ({
     clearTarget: () =>
       set({
         target: {
-          firstQuarter: null,
-          secondQuarter: null,
-          thirdQuarter: null,
-          fourthQuarter: null,
+          firstQuarter: "",
+          secondQuarter: "",
+          thirdQuarter: "",
+          fourthQuarter: "",
         },
       }),
 

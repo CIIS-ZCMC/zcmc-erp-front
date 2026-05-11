@@ -96,48 +96,47 @@ export default function AddResources() {
         description="The following below serves as the summary of your AOP request. You can open and update your request before the deadline as set by the administrators."
         items={breadcrumbs}
       />
-      <Stack mt={2}>
-        <ContainerComponent>
-          <Stack direction={"row"} justifyContent="space-between">
-            <Stack>
-              <Typography level="body-md" fontWeight={600}>
-                Select resources (items) to add
-              </Typography>
-              <Typography level="body-sm">
-                All resources you'll select here only applies to this selected
-                activity
-              </Typography>
-            </Stack>
-            <Stack direction="row" spacing={1}>
-              <ButtonComponent
-                label="Cancel Selection"
-                variant={"outlined"}
-                onClick={() => {
-                  clearCart();
-                  navigate(`/aop//manage-resources/${activityId}`, {
-                    state: { activityId: activityId },
-                  });
-                }}
-              />
-              <ButtonComponent
-                label={"Save items"}
-                onClick={() => handleSaveItems()}
-              />
-              <IconButtonComponent
-                icon={<X />}
-                size={"sm"}
-                onClick={() =>
-                  navigate(`/aop/manage-resources/${activityId}`, {
-                    state: { activityId: activityId },
-                  })
-                }
-              />
-            </Stack>
+      <ContainerComponent sx={{ minHeight: "85vh", mt: 2 }}>
+        {" "}
+        <Stack direction={"row"} justifyContent="space-between">
+          <Stack>
+            <Typography level="body-md" fontWeight={600}>
+              Select resources (items) to add
+            </Typography>
+            <Typography level="body-sm">
+              All resources you'll select here only applies to this selected
+              activity
+            </Typography>
           </Stack>
-          <Divider sx={{ my: 2, bgcolor: color.primary.fontLight }} />
-          <AddToCartLayout loading={displayLoading} />
-        </ContainerComponent>
-      </Stack>
+          <Stack direction="row" spacing={1}>
+            <ButtonComponent
+              label="Cancel Selection"
+              variant={"outlined"}
+              onClick={() => {
+                clearCart();
+                navigate(`/aop//manage-resources/${activityId}`, {
+                  state: { activityId: activityId },
+                });
+              }}
+            />
+            <ButtonComponent
+              label={"Save items"}
+              onClick={() => handleSaveItems()}
+            />
+            <IconButtonComponent
+              icon={<X />}
+              size={"sm"}
+              onClick={() =>
+                navigate(`/aop/manage-resources/${activityId}`, {
+                  state: { activityId: activityId },
+                })
+              }
+            />
+          </Stack>
+        </Stack>
+        <Divider sx={{ my: 2, bgcolor: color.primary.fontLight }} />
+        <AddToCartLayout loading={displayLoading} />
+      </ContainerComponent>
     </Fragment>
   );
 }

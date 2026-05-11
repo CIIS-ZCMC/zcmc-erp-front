@@ -15,7 +15,7 @@ import ResponsibleModal from "./modal/ResponsibleModal";
 
 import useResponsibleStore, {
   useResponsiblePeopleActions,
-} from "../../../../Store/ResponsibleStore";
+} from "../../../../Store/ResponsiblePeopleStore";
 import useAOPStore from "../../../../Store/AOPStore";
 
 import useResponsibleHook from "../../../../Hooks/ResponsiblePeopleHook";
@@ -23,6 +23,7 @@ import useModalHook from "../../../../Hooks/ModalHook";
 
 import { RESPONSIBLE } from "../../../../Data/constants";
 import useSnackbarHook from "../../../../Hooks/SnackbarHook";
+import useAOPIdStore from "../../../../Hooks/AOP/AOPIdStore";
 
 const centeredStyle = {
   direction: "column",
@@ -35,16 +36,18 @@ const centeredStyle = {
 
 const ResponsiblePerson = () => {
   const location = useLocation();
-  const { activityId } = location.state;
+  const { activityId } = useAOPIdStore();
 
   const { MODAL_TITLE, MODAL_DESCRIPTION } = RESPONSIBLE;
 
-  const { clearSelectedPeople } = useResponsiblePeopleActions();
+  const { clearSelectedPeople, setIsSubmitting, setIsDeleting } =
+    useResponsiblePeopleActions();
 
   const { aop } = useAOPStore();
   const status = aop.status.id;
 
-  const { selectedPeople, responsiblePeople } = useResponsibleStore();
+  const { selectedPeople, responsiblePeople, isSubmitting, isDeleting } =
+    useResponsibleStore();
   const { activity, responsible_people, users_only, designations_only } =
     responsiblePeople;
 
@@ -84,46 +87,38 @@ const ResponsiblePerson = () => {
     const params = { activity_id: activityId, search: search };
 
     getPeople(params, (status, message) => {
+      setIsLoading(false);
+
       if (!(status >= 200 && status < 300)) {
         // if status not success
         return; //Toast error
       }
-      setIsLoading(false);
     });
-  }, [search]);
-
-  useEffect(() => {
-    console.log("updated responsible people list", responsiblePeople);
-  }, [responsiblePeople]);
+  }, [search, activityId]);
 
   const handleAssignPerson = async () => {
-    setIsLoading(true);
+    setIsSubmitting(true);
 
     const payload = {
       activity_id: activityId,
       users: selectedPeople.filter((p) => p.sector_id).map((p) => p.id),
-
       designations: selectedPeople.filter((p) => !p.sector_id).map((p) => p.id),
     };
 
     try {
       await createResponsible(payload, (status, message) => {
         if (status === 201) {
-          showSnack(200, message);
-          // setAlertDialog({
-          //   status: "success",
-          //   title: `${message}`,
-          //   description: "",
-          // });
-          setIsLoading(false);
+          setIsSubmitting(false);
           handleCloseModal();
+          clearSelectedPeople();
+          showSnack(200, message);
         } else {
           setAlertDialog({
             status: "error",
             title: message,
             description: "Please try again",
           });
-          setIsLoading(false);
+          setIsSubmitting(false);
           console.error(" Failed to create responsible people:", message);
         }
       });
@@ -151,32 +146,26 @@ const ResponsiblePerson = () => {
   const handleConfirmDelete = async () => {
     if (!selectedId) return;
 
-    setIsLoading(true);
+    setIsDeleting(true);
 
     const params = { id: selectedId };
 
     await removeResponsible(params, (status, message) => {
       const isSuccess = status === 200 || status === true;
 
-      setAlertDialog({
-        status: isSuccess ? "success" : "error",
-        title: message,
-        description: isSuccess ? "" : "Please try again.",
-      });
-
+      showSnack(status, message);
       if (!isSuccess) {
+        setAlertDialog({
+          status: "error",
+          title: message,
+          description: "Please try again.",
+        });
         console.error("Failed to delete responsible:", message);
       }
-
-      setIsLoading(false);
+      setIsDeleting(false);
       setOpenDeleteModal(false);
       setSelectedId(null);
     });
-
-    setTimeout(() => {
-      setIsLoading(false);
-      setOpenDeleteModal(false);
-    }, 2000);
   };
 
   return (
@@ -223,7 +212,7 @@ const ResponsiblePerson = () => {
         hasActionButtons={true}
         rightButtonLabel={"Assign Person"}
         rightButtonAction={() => handleAssignPerson()}
-        isLoading={isLoading}
+        isLoading={isSubmitting}
       />
 
       {openDeleteModal && (
@@ -235,7 +224,7 @@ const ResponsiblePerson = () => {
           }}
           rightButtonLabel="Delete"
           rightButtonAction={() => handleConfirmDelete()}
-          isLoading={isLoading}
+          isLoading={isDeleting}
         />
       )}
     </>

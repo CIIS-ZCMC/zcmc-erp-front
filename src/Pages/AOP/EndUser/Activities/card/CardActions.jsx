@@ -11,93 +11,78 @@ import ModalComponent from "@Components/Common/Dialog/ModalComponent";
 
 import useAOPId from "../../../../../Hooks/AOP/AOPIDHook";
 
-
 const Content = ({ comments }) => {
-
   // useEffect(() => {
   //   console.log(comments)
   // }, [comments])
 
   return (
     <>
-      {comments?.map(({ id, comment, user_name, user_area, created_at }, index) => {
+      {comments?.map(
+        ({ id, comment, user_name, user_area, created_at }, index) => {
+          const formattedDate = moment(created_at).format("MMMM D, YYYY");
 
-        const formattedDate = moment(created_at).format("MMMM D, YYYY")
+          return (
+            <Fragment key={id}>
+              <Stack
+                display={"flex"}
+                flexDirection={"row"}
+                alignItems={"start"}
+                justifyContent={"space-between"}
+              >
+                <Stack>
+                  <Typography level="body-md" fontWeight={600}>
+                    {user_name}
+                  </Typography>
 
-        return (
-          <Fragment key={id}>
-            <Stack
-              display={'flex'}
-              flexDirection={'row'}
-              alignItems={'start'}
-              justifyContent={'space-between'}
-            >
+                  <Typography level="body-xs">{user_area}</Typography>
+                </Stack>
 
-              <Stack>
-                <Typography
-                  level="body-md"
-                  fontWeight={600}
-                >
-                  {user_name}
-                </Typography>
-
-                <Typography
-                  level="body-xs"
-                >
-                  {user_area}
-                </Typography>
+                <Typography level="body-xs">{formattedDate}</Typography>
               </Stack>
 
-              <Typography
-                level="body-xs"
+              <Stack
+                sx={{
+                  bgcolor: "#F2F2F2",
+                  padding: 1,
+                  borderRadius: 10,
+                  mt: 0.5,
+                  mb: 1,
+                }}
               >
-                {formattedDate}
-              </Typography>
-
-            </Stack>
-
-            <Stack
-              sx={{
-                bgcolor: "#F2F2F2",
-                padding: 1,
-                borderRadius: 10,
-                mt: 0.5,
-                mb: 1
-              }}
-            >
-              {comment}
-            </Stack>
-          </Fragment>
-
-
-        )
-      })}
+                {comment}
+              </Stack>
+            </Fragment>
+          );
+        },
+      )}
     </>
-  )
-}
+  );
+};
 
-
-const CardActions = ({ activityId, resourcesCount, responsibleCount, comments }) => {
+const CardActions = ({
+  activityId,
+  resourcesCount,
+  responsibleCount,
+  comments,
+}) => {
   const navigate = useNavigate();
 
   const [isOpenCommentsModal, setIsOpenCommentsModal] = useState(false);
 
-
   const handleOpenModal = () => {
-    setIsOpenCommentsModal(true)
-  }
+    setIsOpenCommentsModal(true);
+  };
 
   return (
     <>
-
       <Stack
         gap={1}
         direction={"row"}
         alignItems={"center"}
         justifyContent={"end"}
       >
-
-        {comments.length !== 0 &&
+        {comments.length !== 0 && (
           <>
             <Chip
               variant="soft"
@@ -123,8 +108,7 @@ const CardActions = ({ activityId, resourcesCount, responsibleCount, comments })
               Comments
             </Chip>
           </>
-
-        }
+        )}
 
         <Chip
           variant="soft"
@@ -188,15 +172,10 @@ const CardActions = ({ activityId, resourcesCount, responsibleCount, comments })
         handleClose={() => setIsOpenCommentsModal(false)}
         title={"Comments List"}
         minWidth={500}
-        content={
-          <Content
-            comments={comments}
-          />
-        }
+        content={<Content comments={comments} />}
         hasActionButtons
         noRightButton={true}
       />
-
     </>
   );
 };

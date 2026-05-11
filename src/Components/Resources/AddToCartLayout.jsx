@@ -112,7 +112,12 @@ export default function AddToCartLayout({
   return (
     <Fragment>
       <Grid container spacing={2} sx={{ flexGrow: 1 }}>
-        <Grid item xs={12} md={8.5}>
+        <Grid
+          item
+          xs={12}
+          md={8.5}
+          sx={{ flexGrow: 1, height: "calc(100vh - 350px)" }}
+        >
           <BoxComponent boxShadow="sm">
             <Stack
               direction={{ xs: "column", sm: "row" }}
@@ -235,7 +240,12 @@ export default function AddToCartLayout({
             items={items}
           />
         </Grid>
-        <Grid item xs={12} md={3.5}>
+        <Grid
+          item
+          xs={12}
+          md={3.5}
+          sx={{ flexGrow: 1, height: "calc(100vh - 250px)" }}
+        >
           <Cart
             cart={cart}
             removeFromCart={removeFromCart}

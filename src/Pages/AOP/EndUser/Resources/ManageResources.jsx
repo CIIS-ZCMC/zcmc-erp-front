@@ -40,6 +40,7 @@ import useAOPBreadcrumbs from "../../../../Hooks/AOP/AOpBreadcrumbs";
 
 import useAOPStore from "../../../../Store/AOPStore";
 import { isAopDisabled } from "../../../../Utils/AopStatus";
+import ActivityDetailsSection from "../ActivityDetailsSection";
 
 const QuarterTarget = ({ label = "Q1", value }) => (
   <>
@@ -210,89 +211,13 @@ function ManageResources(props) {
           </Stack>
         </Stack>
 
-        <Stack
-          direction={"row"}
-          justifyContent={"space-between"}
-          alignItems={"center"}
-          spacing={3}
-          mt={3}
-        >
-          <Stack width={"100%"}>
-            <Stack direction={"row"} justifyContent={"space-between"}>
-              <Stack direction={"row"} spacing={1} width="100%">
-                <CalendarToday sx={{ fontSize: 20, color: blue[800] }} />{" "}
-                <Stack>
-                  <Typography level="body-sm">Timeframe</Typography>
-                  <Typography level="title-md">
-                    {activity?.start_month
-                      ? moment(activity.start_month).format("MMMM")
-                      : ""}
-                    -{" "}
-                    {activity?.end_month
-                      ? moment(activity.end_month).format("MMMM")
-                      : ""}
-                  </Typography>
-                </Stack>
-              </Stack>
-
-              <Stack direction={"row"} spacing={1} width="100%">
-                <Box
-                  sx={{ bgcolor: blue[800] }}
-                  width={10}
-                  height={10}
-                  borderRadius={50}
-                  display="flex"
-                  justifyContent="center"
-                  alignItems="center"
-                  padding={1}
-                >
-                  <PhilippinePesoIcon style={{ color: "white" }} />{" "}
-                </Box>
-                <Stack>
-                  <Typography level="body-sm">Total Cost</Typography>
-                  <Typography level="title-md">
-                    ₱{" "}
-                    {activity?.cost?.toLocaleString("en-PH", {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}
-                  </Typography>
-                </Stack>
-              </Stack>
-
-              <Stack direction={"row"} spacing={1} width="100%">
-                <CheckCircle sx={{ fontSize: 26, color: blue[800] }} />{" "}
-                <Stack>
-                  <Typography level="body-sm">GAD-related activity</Typography>
-                  <Typography level="title-md">
-                    {activity.is_gad_related ? "Yes" : "No"}
-                  </Typography>
-                </Stack>
-              </Stack>
-            </Stack>
-          </Stack>
-          <Stack direction="row" spacing={3} alignItems="center" width={"100%"}>
-            <Typography level="body-sm" sx={{ fontWeight: 600 }}>
-              Target (by quarter)
-            </Typography>
-            <QuarterTarget
-              label={"Q1"}
-              value={activity?.target?.first_quarter}
-            />
-            <QuarterTarget
-              label={"Q2"}
-              value={activity?.target?.second_quarter}
-            />
-            <QuarterTarget
-              label={"Q3"}
-              value={activity?.target?.third_quarter}
-            />
-            <QuarterTarget
-              label={"Q4"}
-              value={activity?.target?.fourth_quarter}
-            />
-          </Stack>
-        </Stack>
+        <ActivityDetailsSection
+          start_month={activity?.start_month}
+          end_month={activity?.end_month}
+          cost={activity?.cost}
+          is_gad_related={activity?.is_gad_related}
+          target={activity?.target}
+        />
         <Stack mt={3} width={"350px"}>
           <SearchBarComponentv2
             value={search}

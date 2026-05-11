@@ -17,11 +17,11 @@ function PageLoader({ isLoading }) {
           //   bgcolor: "neutral.50",
         }}
       >
-        <ThreeDots
+        <Bars
           height="80"
           width="80"
           color="#003049"
-          ariaLabel="three-dots-loading"
+          ariaLabel="bars-loading"
           wrapperStyle={{}}
           wrapperClass=""
           visible={true}

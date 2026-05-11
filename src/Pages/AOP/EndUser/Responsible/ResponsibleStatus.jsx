@@ -15,6 +15,7 @@ import { RESPONSIBLE } from "../../../../Data/constants";
 import formattedPrice from "../../../../Utils/formattedPrice";
 import { isAopDisabled } from "../../../../Utils/AopStatus";
 import SearchBarComponentv2 from "@Components/SearchBarWithdeBounce";
+import ActivityDetailsSection from "../ActivityDetailsSection";
 
 const ResponsibleStatus = ({
   activity,
@@ -37,8 +38,10 @@ const ResponsibleStatus = ({
   //     console.log(activity)
   // }, [activity])
 
-  const formattedStartMonth = moment(start_month, "YYYY-MM").format("MMMM");
-  const formattedEndMonth = moment(end_month, "YYYY-MM").format("MMMM");
+  const formattedStartMonth = moment(start_month, "YYYY-MM").format(
+    "MMMM YYYY",
+  );
+  const formattedEndMonth = moment(end_month, "YYYY-MM").format("MMMM YYYY");
 
   const timeframe = `${start_month ? formattedStartMonth : ""} - ${
     end_month ? formattedEndMonth : ""
@@ -83,131 +86,18 @@ const ResponsibleStatus = ({
           </Stack>
         </Stack>
 
-        <Stack
-          direction={"row"}
-          justifyContent={"space-between"}
-          alignItems={"flex-center"}
-          mt={3}
-          spacing={3}
-        >
-          <Stack width={"100%"}>
-            <Stack direction={"row"} justifyContent={"space-between"}>
-              <Stack direction={"row"} spacing={1} width="100%">
-                <CalendarToday sx={{ fontSize: 20, color: blue[800] }} />{" "}
-                <Stack>
-                  <Typography level="body-sm">Timeframe</Typography>
-                  <Typography level="title-md">{timeframe}</Typography>
-                </Stack>
-              </Stack>
-              <Stack direction={"row"} spacing={1} width="100%">
-                <Box
-                  sx={{ bgcolor: blue[800] }}
-                  width={10}
-                  height={10}
-                  borderRadius={50}
-                  display="flex"
-                  justifyContent="center"
-                  alignItems="center"
-                  padding={1}
-                >
-                  <PhilippinePesoIcon style={{ color: "white" }} />{" "}
-                </Box>
-                <Stack>
-                  <Typography level="body-sm">Total Cost</Typography>
-                  <Typography level="title-md">
-                    {formattedPrice(cost)}
-                  </Typography>
-                </Stack>
-              </Stack>
-
-              <Stack direction={"row"} spacing={1} width="100%">
-                <CheckCircle sx={{ fontSize: 26, color: blue[800] }} />{" "}
-                <Stack>
-                  <Typography level="body-sm">GAD-related activity</Typography>
-                  <Typography level="title-md">
-                    {is_gad_related === 0 ? "No" : "Yes"}
-                  </Typography>
-                </Stack>
-              </Stack>
-            </Stack>
-          </Stack>
-
-          <Stack
-            direction={"row"}
-            spacing={3}
-            alignItems={"center"}
-            width={"100%"}
-          >
-            <Typography level="body-xs" sx={{ fontWeight: 600 }}>
-              Target (by quarter){" "}
-            </Typography>
-
-            <Stack
-              direction={"row"}
-              spacing={1}
-              alignItems={"center"}
-              bgcolor={"#F2F2F2"}
-              padding={0.5}
-              borderRadius={5}
-              gap={1}
-            >
-              <Typography level="body-xs">Q1</Typography>
-              <Typography sx={{ fontWeight: 600 }}>
-                {first_quarter ? first_quarter : "0"}
-              </Typography>
-            </Stack>
-
-            <Stack
-              direction={"row"}
-              spacing={1}
-              alignItems={"center"}
-              bgcolor={"#F2F2F2"}
-              padding={0.5}
-              borderRadius={5}
-              gap={1}
-            >
-              <Typography level="body-xs">Q2</Typography>
-              <Typography sx={{ fontWeight: 600 }}>
-                {second_quarter ? second_quarter : "0"}
-              </Typography>
-            </Stack>
-
-            <Stack
-              direction={"row"}
-              spacing={1}
-              alignItems={"center"}
-              bgcolor={"#F2F2F2"}
-              padding={0.5}
-              borderRadius={5}
-              gap={1}
-            >
-              <Typography level="body-xs">Q3</Typography>
-              <Typography sx={{ fontWeight: 600 }}>
-                {third_quarter ? third_quarter : "0"}
-              </Typography>
-            </Stack>
-
-            <Stack
-              direction={"row"}
-              spacing={1}
-              alignItems={"center"}
-              bgcolor={"#F2F2F2"}
-              padding={0.5}
-              borderRadius={5}
-              gap={1}
-            >
-              <Typography level="body-xs">Q4</Typography>
-              <Typography sx={{ fontWeight: 600 }}>
-                {fourth_quarter ? fourth_quarter : "0"}
-              </Typography>
-            </Stack>
-          </Stack>
-        </Stack>
+        <ActivityDetailsSection
+          start_month={start_month}
+          end_month={end_month}
+          cost={cost}
+          is_gad_related={is_gad_related}
+          target={target}
+        />
         <Stack mt={3} width={"350px"}>
           <SearchBarComponentv2
             value={search}
             setValue={setSearch}
-            placeholder="Search responsible person..."
+            placeholder="Search responsible person/position..."
             fullWidth
           />
         </Stack>

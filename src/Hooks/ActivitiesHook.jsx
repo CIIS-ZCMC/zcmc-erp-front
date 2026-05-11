@@ -7,8 +7,13 @@ import useActivitiesStore, {
 
 const useActivitiesHook = () => {
   const { applicationActivities } = useActivitiesStore();
-  const { setApplicationActivities, setApplicationActivity } =
-    useActivitiesActions();
+  const {
+    setApplicationActivities,
+    setApplicationActivity,
+    setIsEditLoading,
+    setIsCreateLoading,
+    setIsUpdateLoading,
+  } = useActivitiesActions();
 
   const getActivities = (params, callBack) => {
     try {
@@ -29,6 +34,7 @@ const useActivitiesHook = () => {
   };
 
   const showActivity = async (params, callBack) => {
+    setIsEditLoading(true);
     try {
       await read({
         url: `${API.ACTIVITY_SHOW}/${params.id}`,
@@ -39,11 +45,13 @@ const useActivitiesHook = () => {
             data: { data, message },
           } = res;
           setApplicationActivity(data);
+          setIsEditLoading(false);
           callBack(status, message);
         },
       });
     } catch (error) {
       console.error("Error fetching application activity:", error);
+      setIsEditLoading(false);
       callBack?.(false, error.message);
     }
   };

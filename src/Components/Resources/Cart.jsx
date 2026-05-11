@@ -18,7 +18,8 @@ export default function Cart({
 }) {
   return (
     <Fragment>
-      <BoxComponent height={"95%"} display="flex" flexDirection="column">
+      <BoxComponent height={"100%"} display="flex" flexDirection="column">
+        {" "}
         <Box sx={{ p: 2, borderBottom: "1px solid #eee" }}>
           <Typography level="h6">
             {" "}
@@ -37,6 +38,8 @@ export default function Cart({
             p: 2,
             display: "flex",
             flexDirection: "column",
+            maxHeight: "none",
+            // maxHeight: "calc(64vh - 120px)", // Account for header and footer
           }}
         >
           {cart?.length > 0 ? (
@@ -77,7 +80,6 @@ export default function Cart({
             </Stack>
           )}
         </Box>
-
         <Box sx={{ p: 2, borderTop: "1px solid #eee" }}>
           <Stack direction={"row"} justifyContent={"space-between"}>
             <Stack>
