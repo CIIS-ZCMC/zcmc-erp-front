@@ -8,7 +8,6 @@ const useResponsibleStore = create((set, get) => ({
 
   actions: {
     setResponsiblePeople: (responsiblePeople) => set({ responsiblePeople }),
-
     setSelectedPeople: (responsible) => {
       set((state) => {
         const currentList = state.selectedPeople?.filter(Boolean) || [];
@@ -55,6 +54,8 @@ const useResponsibleStore = create((set, get) => ({
 }));
 
 export default useResponsibleStore;
+
+export const getResponsibleState = () => useResponsibleStore.getState();
 
 export const useResponsiblePeopleActions = () =>
   useResponsibleStore((state) => state.actions);

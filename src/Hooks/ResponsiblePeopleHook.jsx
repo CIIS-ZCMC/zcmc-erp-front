@@ -3,6 +3,7 @@ import { read, post, update, remove } from "../Services/RequestMethods";
 
 import useResponsibleStore, {
   useResponsiblePeopleActions,
+  getResponsibleState,
 } from "../Store/ResponsiblePeopleStore";
 
 const useResponsibleHook = () => {
@@ -43,19 +44,42 @@ const useResponsibleHook = () => {
             data: { data, message },
           } = res;
           if (status === 201) {
-            const fetchParams = { activity_id: data[0].activity_id };
+            // Get current responsible people from store
+            const currentResponsiblePeople =
+              getResponsibleState().responsiblePeople;
 
-            getPeople(fetchParams, (status, message) => {
-              if (!(status >= 200 && status < 300)) {
-                console.error("Failed to refresh activities:", message);
-              }
+            {
+              console.log(currentResponsiblePeople);
+            }
+            // Separate users and designations from response
+            const newUsers = data.users || [];
+            const newDesignations = data.designations || [];
+
+            // Append to existing arrays
+            const updatedUsers = [
+              ...(currentResponsiblePeople?.responsible_people?.users || []),
+              ...newUsers,
+            ];
+            const updatedDesignations = [
+              ...(currentResponsiblePeople?.responsible_people?.designations ||
+                []),
+              ...newDesignations,
+            ];
+
+            // Update store with merged data
+            setResponsiblePeople({
+              ...currentResponsiblePeople,
+              responsible_people: {
+                users: updatedUsers,
+                designations: updatedDesignations,
+              },
             });
           }
           callBack?.(status, message);
         },
       });
     } catch (error) {
-      console.error("Error Creatin Objective:", error);
+      console.error("Error Creating Responsible:", error);
       callBack(false, error.message);
     }
   };
@@ -73,20 +97,37 @@ const useResponsibleHook = () => {
           } = res;
 
           if (status === 200) {
+            // Get current state from store
+            const currentResponsiblePeople = getResponsibleState();
+
+            // Filter out the removed person from both users and designations
+            const updatedUsers =
+              currentResponsiblePeople.responsible_people?.users?.filter(
+                (person) => person.id !== params.id,
+              ) || [];
+
+            const updatedDesignations =
+              currentResponsiblePeople.responsible_people?.designations?.filter(
+                (designation) => designation.id !== params.id,
+              ) || [];
+
+            // Update store with filtered data
             const updatedData = {
-              ...responsiblePeople,
-              responsible_people: responsiblePeople.responsible_people.filter(
-                (person) => person.responsible_person_id !== params.id,
-              ),
+              ...currentResponsiblePeople,
+              responsible_people: {
+                ...currentResponsiblePeople.responsible_people,
+                users: updatedUsers,
+                designations: updatedDesignations,
+              },
             };
-            // console.log('updated people', updatedData);
+
             setResponsiblePeople(updatedData);
           }
           callBack?.(status, message);
         },
       });
     } catch (error) {
-      console.error("Error Deleting pEOPLE:", error);
+      console.error("Error Deleting Responsible:", error);
       callBack(false, error.message);
     }
   };

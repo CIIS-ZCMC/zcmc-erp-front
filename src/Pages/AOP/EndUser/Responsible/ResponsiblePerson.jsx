@@ -51,11 +51,6 @@ const ResponsiblePerson = () => {
   const { activity, responsible_people, users_only, designations_only } =
     responsiblePeople;
 
-  useEffect(() => {
-    // console.log('responsible people data:', users_only)
-    // console.log('aop', status)
-  }, [users_only, aop]);
-
   const { setAlertDialog, setConfirmationModal, closeConfirmation } =
     useModalHook();
   const { showSnack } = useSnackbarHook();
