@@ -89,7 +89,9 @@ const ResponsibleList = ({
                   </Stack>
                 </Stack>
 
-                <Avatar color="primary">{usersCount}</Avatar>
+                <Avatar color="primary">
+                  {responsible_people?.users?.length}
+                </Avatar>
               </Stack>
 
               <Stack
@@ -114,38 +116,47 @@ const ResponsibleList = ({
                       <Stack
                         key={rowIndex}
                         direction="row"
-                        spacing={2}
-                        sx={{ width: "100%", pt: 3 }}
+                        spacing={1}
+                        sx={{ width: "100%", pt: 1 }}
                       >
-                        {pair.map(({ id, name, assignedArea }) => (
-                          <Stack
-                            key={id}
-                            direction="row"
-                            justifyContent="space-between"
-                            alignItems="center"
-                            sx={{
-                              flex: 1,
-                              p: 1,
-                              bgcolor: color.background.level1,
-                              borderRadius: 10,
-                            }}
-                          >
-                            <Stack direction="column">
-                              <Typography level="title-sm">{name}</Typography>
-                              <Typography level="body-sm">
-                                {assignedArea?.name}
-                              </Typography>
-                            </Stack>
-                            <IconButton
-                              onClick={() => handleDelete(id)}
-                              aria-label="Delete"
-                              size="sm"
-                              disabled={isAopDisabled(status)}
+                        {pair.map(
+                          ({
+                            id,
+                            responsible_person_id,
+                            name,
+                            assignedArea,
+                          }) => (
+                            <Stack
+                              key={id}
+                              direction="row"
+                              justifyContent="space-between"
+                              alignItems="center"
+                              sx={{
+                                flex: 1,
+                                p: 1,
+                                bgcolor: color.background.level1,
+                                borderRadius: 10,
+                              }}
                             >
-                              <Close />
-                            </IconButton>
-                          </Stack>
-                        ))}
+                              <Stack direction="column">
+                                <Typography level="title-sm">{name}</Typography>
+                                <Typography level="body-sm">
+                                  {assignedArea?.name}
+                                </Typography>
+                              </Stack>
+                              <IconButton
+                                onClick={() =>
+                                  handleDelete(responsible_person_id)
+                                }
+                                aria-label="Delete"
+                                size="sm"
+                                disabled={isAopDisabled(status)}
+                              >
+                                <Close />
+                              </IconButton>
+                            </Stack>
+                          ),
+                        )}
                       </Stack>
                     ));
                   })()
@@ -191,7 +202,7 @@ const ResponsibleList = ({
                 </Stack>
 
                 <Avatar sx={{ bgcolor: "#DDD6FF", color: "#5D0EC0" }}>
-                  {positionsCount}
+                  {responsible_people?.designations?.length}
                 </Avatar>
               </Stack>
 
@@ -205,31 +216,33 @@ const ResponsibleList = ({
                     Please assign a designation
                   </Typography>
                 ) : (
-                  responsible_people?.designations?.map(({ id, name }) => (
-                    <Fragment key={id}>
-                      <Box
-                        sx={{
-                          display: "flex",
-                          justifyContent: "space-between",
-                          alignItems: "center",
-                          p: 1,
-                          bgcolor: color.background.level1,
-                          borderRadius: 10,
-                        }}
-                      >
-                        <Typography level="title-sm">{name}</Typography>
-
-                        <IconButton
-                          onClick={() => handleDelete(id)}
-                          aria-label="Delete"
-                          size="sm"
-                          disabled={isAopDisabled(status)}
+                  responsible_people?.designations?.map(
+                    ({ id, responsible_person_id, name }) => (
+                      <Fragment key={id}>
+                        <Box
+                          sx={{
+                            display: "flex",
+                            justifyContent: "space-between",
+                            alignItems: "center",
+                            p: 1,
+                            bgcolor: color.background.level1,
+                            borderRadius: 10,
+                          }}
                         >
-                          <Close />
-                        </IconButton>
-                      </Box>
-                    </Fragment>
-                  ))
+                          <Typography level="title-sm">{name}</Typography>
+
+                          <IconButton
+                            onClick={() => handleDelete(responsible_person_id)}
+                            aria-label="Delete"
+                            size="sm"
+                            disabled={isAopDisabled(status)}
+                          >
+                            <Close />
+                          </IconButton>
+                        </Box>
+                      </Fragment>
+                    ),
+                  )
                 )}
               </Stack>
 
