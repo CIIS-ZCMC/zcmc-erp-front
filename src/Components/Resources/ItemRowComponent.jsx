@@ -12,6 +12,7 @@ export default function ItemRowComponent({
   showVariant = true,
   minHeight = 120,
   maxHeight = 200,
+  disableHoverTransform = false,
   sx = {},
 }) {
   const imgSrc = item?.image || defaultItem;
@@ -24,7 +25,7 @@ export default function ItemRowComponent({
         transition: "0.2s ease",
         "&:hover": {
           boxShadow: "lg",
-          transform: "scale(1.02)",
+          transform: disableHoverTransform ? "none" : "scale(1.02)",
         },
         ...sx,
       }}

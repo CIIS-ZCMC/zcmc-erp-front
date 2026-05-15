@@ -56,19 +56,16 @@ export default function SearchWithSuggestions({
         if (!text.trim()) return;
 
         try {
-          setLoading(true); // local autocomplete spinner
-          setDisplayLoading?.(true); // global display loader
+          setLoading(true);
 
-          await getSearchSuggestions((status, message) => {
+          await getSearchSuggestions(() => {
             setLoading(false);
-            setDisplayLoading?.(false);
           }, text);
         } catch (err) {
           setLoading(false);
-          setDisplayLoading?.(false);
         }
       }, debounceDelay),
-    [getSearchSuggestions, debounceDelay, setDisplayLoading],
+    [getSearchSuggestions, debounceDelay],
   );
 
   // Input change
@@ -77,23 +74,12 @@ export default function SearchWithSuggestions({
       setSearch(value);
 
       if (reason === "clear" || !value.trim()) {
-        // Cancel any pending fetch
         debouncedFetchSuggestions.cancel?.();
-
-        setDisplayLoading?.(true);
 
         setLoading(false);
 
-        // Notify parent if needed
         onClear?.();
 
-        // Reset items
-        getItems?.(
-          { mode: "selection", ...(isPPMP && { type: "ppmp_item" }) },
-          () => {
-            setDisplayLoading?.(false);
-          },
-        );
         return;
       }
 

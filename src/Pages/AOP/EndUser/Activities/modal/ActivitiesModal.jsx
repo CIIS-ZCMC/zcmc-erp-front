@@ -34,34 +34,31 @@ const ActivitiesModal = ({ selectedActivity }) => {
   } = useActivitiesActions();
 
   useEffect(() => {
-    if (selectedActivity) {
-      setActivity(selectedActivity.name);
-      setStartMonth(selectedActivity.start_month);
-      setEndMonth(selectedActivity.end_month);
-      setIsGadRelated(selectedActivity.is_gad_related);
+    if (!selectedActivity) return;
 
-      if (selectedActivity.target) {
-        console.log("selectedActivity.target", selectedActivity.target);
-        setTarget({
-          firstQuarter: selectedActivity.target.first_quarter || "",
-          secondQuarter: selectedActivity.target.second_quarter || "",
-          thirdQuarter: selectedActivity.target.third_quarter || "",
-          fourthQuarter: selectedActivity.target.fourth_quarter || "",
-        });
-      } else {
-        console.log("No target data found in selectedActivity");
-      }
+    setActivity(selectedActivity.name);
+    setStartMonth(selectedActivity.start_month);
+    setEndMonth(selectedActivity.end_month);
+    setIsGadRelated(selectedActivity.is_gad_related);
+
+    if (selectedActivity.target) {
+      setTarget({
+        firstQuarter: selectedActivity.target.first_quarter || "",
+        secondQuarter: selectedActivity.target.second_quarter || "",
+        thirdQuarter: selectedActivity.target.third_quarter || "",
+        fourthQuarter: selectedActivity.target.fourth_quarter || "",
+      });
     }
   }, [selectedActivity]);
 
   useEffect(() => {
-    if (!startMonth && !endMonth) {
-      const defaultYear = new Date().getFullYear() + 1; //set to next year or + 1
-      setStartMonth(`${defaultYear}-01`);
-      setEndMonth(`${defaultYear}-01`);
-    }
-    // console.log(startMonth)
-  }, [startMonth]);
+    if (selectedActivity) return; // 🧠 don't override existing data
+
+    const defaultYear = new Date().getFullYear() + 1;
+
+    setStartMonth(`${defaultYear}-01`);
+    setEndMonth(`${defaultYear}-12`);
+  }, []);
 
   const handleQuarterChange = (quarterKey) => (e) => {
     const value = e.target.value;

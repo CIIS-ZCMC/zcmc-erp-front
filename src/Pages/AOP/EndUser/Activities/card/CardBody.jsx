@@ -19,7 +19,18 @@ const CardBody = ({
           {objective}
         </Typography> */}
 
-        <Typography level={"title-lg"}>{activity}</Typography>
+        <Typography
+          level={"title-lg"}
+          sx={{
+            display: "-webkit-box",
+            WebkitLineClamp: 3,
+            WebkitBoxOrient: "vertical",
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+          }}
+        >
+          {activity}
+        </Typography>
 
         <Typography level={"body-sm"} sx={{ color: "black" }}>
           {timeframe}

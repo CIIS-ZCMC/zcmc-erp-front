@@ -354,7 +354,7 @@ function PPMPItems(props) {
       <ExpandableTable
         columns={columns}
         rows={localRows}
-        loading={pageLoader}
+        isLoading={pageLoader}
         stickyFooter
         editingRows={editingRows}
         renderExpanded={(row) => (

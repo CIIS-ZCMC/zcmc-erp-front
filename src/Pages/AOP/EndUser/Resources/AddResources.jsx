@@ -96,7 +96,7 @@ export default function AddResources() {
         description="The following below serves as the summary of your AOP request. You can open and update your request before the deadline as set by the administrators."
         items={breadcrumbs}
       />
-      <ContainerComponent sx={{ minHeight: "85vh", mt: 2 }}>
+      <ContainerComponent sx={{ mt: 2 }}>
         {" "}
         <Stack direction={"row"} justifyContent="space-between">
           <Stack>

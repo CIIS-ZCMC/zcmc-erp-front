@@ -38,21 +38,12 @@ import useAOPBreadcrumbs from "../../../../Hooks/AOP/AOPBreadcrumbs";
 import ChipComponent from "@Components/Common/ChipComponent";
 
 import { isAopDisabled } from "../../../../Utils/AopStatus";
-import { CheckCircle, Circle } from "@mui/icons-material";
+import { Add, CheckCircle, Circle } from "@mui/icons-material";
 import useSnackbarHook from "../../../../Hooks/SnackbarHook";
 import { socket } from "../../../../Services/Socket";
 import { nextYear } from "../../../../Utils/Functions";
 import { useAuth } from "../../../../Store/AuthStore";
 import PageLoader from "@Components/Loading/PageLoader";
-
-const centeredStyle = {
-  direction: "column",
-  alignItems: "center",
-  justifyContent: "center",
-  textAlign: "center",
-  height: "60vh",
-  my: 2,
-};
 
 const Activities = () => {
   const { objectiveId } = useParams();
@@ -440,7 +431,7 @@ const Activities = () => {
             onClick={() => setIsCountModal(true)}
             label={"Add Activity"}
             disabled={isAopDisabled(status)}
-            startDecorator={<CheckCircle />}
+            startDecorator={<Add />}
             // endDecorator={<Plus size={16} />}
             // disabled={!show || disabledEditMode(APPLICATION_OBJECTIVE_ID, remarks, comments, disabled)}
           />
@@ -481,17 +472,17 @@ const Activities = () => {
       {console.log(applicationActivities)}
 
       {isEditLoading ? (
-        <Stack sx={centeredStyle}>
+        <Stack>
           <PageLoader isLoading={isEditLoading} />
         </Stack>
       ) : isLoading ? (
-        <Stack sx={centeredStyle}>
+        <Stack>
           <ThreeDotsLoader />
         </Stack>
       ) : applicationActivities?.activities?.length === 0 ? (
         <>
           <BoxComponent mt={2}>
-            <Stack sx={centeredStyle}>
+            <Stack>
               <Typography sx={{ fontSize: 20, fontWeight: 600 }}>
                 {EMPTY_STATE_TITLE}
               </Typography>
@@ -503,7 +494,7 @@ const Activities = () => {
               <ButtonComponent
                 onClick={() => handleOpenCountModal()}
                 label={"Add Activity"}
-                startDecorator={<CheckCircle />}
+                startDecorator={<Add />}
                 // endDecorator={<Plus size={16} />}
               />
             </Stack>

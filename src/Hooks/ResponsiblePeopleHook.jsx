@@ -93,29 +93,30 @@ const useResponsibleHook = () => {
         success: (res) => {
           const {
             status,
-            data: { message },
+            data: { data, message },
           } = res;
 
           if (status === 200) {
             // Get current state from store
-            const currentResponsiblePeople = getResponsibleState();
+            const currentResponsiblePeople =
+              getResponsibleState().responsiblePeople;
 
             // Filter out the removed person from both users and designations
             const updatedUsers =
               currentResponsiblePeople.responsible_people?.users?.filter(
-                (person) => person.id !== params.id,
+                (person) => person.responsible_person_id !== params.id,
               ) || [];
 
             const updatedDesignations =
               currentResponsiblePeople.responsible_people?.designations?.filter(
-                (designation) => designation.id !== params.id,
+                (designation) =>
+                  designation.responsible_person_id !== params.id,
               ) || [];
 
             // Update store with filtered data
             const updatedData = {
               ...currentResponsiblePeople,
               responsible_people: {
-                ...currentResponsiblePeople.responsible_people,
                 users: updatedUsers,
                 designations: updatedDesignations,
               },

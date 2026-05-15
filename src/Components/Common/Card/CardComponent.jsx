@@ -32,7 +32,8 @@ const CardComponent = ({
       <Card
         sx={{
           textAlign: "center",
-          overflow: "auto",
+          overflow: "visible",
+          position: "relative",
           height: height,
           border: "none", // remove all borders
           borderLeft: `6px solid ${statusColor}`, // keep ONLY left border
@@ -75,12 +76,16 @@ const CardComponent = ({
             <CardActions
               sx={{
                 justifyContent: justifyContentActions ? "" : "flex-end",
+                zIndex: 1,
               }}
             >
               <Stack
                 direction={direction ? direction : "column"}
                 alignItems={"center"}
                 width={actionWidth}
+                sx={{
+                  zIndex: 1,
+                }}
               >
                 {cardActions}
               </Stack>

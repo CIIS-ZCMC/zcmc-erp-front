@@ -5,6 +5,7 @@ import { CssBaseline, GlobalStyles } from "@mui/joy";
 import AnimatedRoutes from "./Routes/AnimatedRoutes";
 import globalStyles from "./styles/globalStyles";
 import { Warning } from "@mui/icons-material";
+import { useSessionTimeout } from "./Hooks/SessionTimeout";
 
 const theme = extendTheme({
   colorSchemes: {

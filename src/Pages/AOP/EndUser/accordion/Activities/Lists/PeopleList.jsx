@@ -45,10 +45,11 @@ const PeopleList = ({ responsiblePeople, peopleCount }) => {
             </Typography>
           </Avatar>
         </Stack>
-        {console.log(responsiblePeople)}
         <BasicTableComponent
           columns={SUMMARY_PEOPLE()}
           rows={responsiblePeople}
+          maxHeight="300px"
+          stickyHeader
         />
       </BoxComponent>
     </>

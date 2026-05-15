@@ -6,6 +6,8 @@ const BasicTableComponent = ({
   columns = [],
   rows = [],
   emptyMessage = "No records found",
+  maxHeight = "none", // Optional max height for scrolling
+  stickyHeader = false, // Optional sticky header
 }) => {
   return (
     <Sheet
@@ -15,6 +17,8 @@ const BasicTableComponent = ({
         flexDirection: "column",
         height: "100%", // 🔑 fill available space
         minHeight: 0, // 🔑 allow flex scrolling
+        maxHeight: maxHeight, // Dynamic max height
+        overflowY: maxHeight !== "none" ? "auto" : "visible", // Dynamic overflow
       }}
     >
       <Table
@@ -23,8 +27,10 @@ const BasicTableComponent = ({
           "--TableCell-headBackground": "#E5E5E5",
 
           "--TableCell-borderColor": grey[200],
+          tableLayout: stickyHeader ? "fixed" : "auto",
         }}
         hoverRow
+        stickyHeader={stickyHeader}
       >
         <thead>
           <tr>

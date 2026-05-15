@@ -268,10 +268,6 @@ const AOPSummary = () => {
     }
   };
 
-  useEffect(() => {
-    console.log(status.id);
-  }, [status]);
-
   return (
     <>
       <PageTitle

@@ -3,6 +3,7 @@ import React from "react";
 import { Avatar, Box, Chip } from "@mui/joy";
 import { ArrowRight } from "lucide-react";
 import { blue } from "@mui/material/colors";
+import ChipComponent from "@Components/Common/ChipComponent";
 
 const CardActions = ({ handleActivities, count }) => {
   return (
@@ -12,6 +13,9 @@ const CardActions = ({ handleActivities, count }) => {
         color="primary"
         size="lg"
         p={2}
+        sx={{
+          zIndex: 2,
+        }}
         startDecorator={
           <Avatar
             size="md" // small avatar for chip

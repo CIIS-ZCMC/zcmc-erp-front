@@ -161,6 +161,7 @@ const usePPMPStoreHook = create((set, get) => ({
         form,
         failed: (status, message) => callBack(status, message),
         success: ({ data: { data, ppmp_total, message }, status }) => {
+          console.log(data);
           set((state) => ({
             ppmp: state.ppmp.map((item) =>
               item.id === data.id ? { ...item, ...data } : item,

@@ -42,10 +42,15 @@ export default function ExpandableTable({
     if (!node) return;
 
     const h = node.scrollHeight;
+    // Add extra height if the content contains activities-related elements
+    const hasActivities =
+      node.querySelector('[data-activities="true"]') ||
+      node.innerHTML.includes("Linked Activities");
+    const adjustedHeight = hasActivities ? h + 200 : h;
 
     setHeights((prev) => {
-      if (prev[id] === h) return prev;
-      return { ...prev, [id]: h };
+      if (prev[id] === adjustedHeight) return prev;
+      return { ...prev, [id]: adjustedHeight };
     });
   }, []);
 
@@ -171,16 +176,19 @@ export default function ExpandableTable({
                         <div
                           ref={expanded ? (node) => onRef(id, node) : null}
                           style={{
-                            overflow: "auto",
+                            overflowX: "hidden",
+                            overflowY: "auto",
                             maxHeight: expanded ? heights[id] : 0,
                             opacity: expanded ? 1 : 0,
-                            padding: expanded ? "10px" : "0px", // <--- avoid spacing when closed
+                            padding: expanded ? "10px" : "0px",
                             background: expanded && grey[50],
                             transition:
                               "max-height 0.35s ease, opacity 0.25s ease, padding 0.2s ease",
                           }}
                         >
-                          <Box>{renderExpanded(row)}</Box>
+                          <Box sx={{ minHeight: expanded ? 400 : 0 }}>
+                            {renderExpanded(row)}
+                          </Box>
                         </div>
                       </td>
                     </tr>

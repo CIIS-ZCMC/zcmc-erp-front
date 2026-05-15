@@ -42,12 +42,13 @@ import {
 import useObjectivesHook from "../../../../Hooks/AOP/ObjectivesHook";
 import PageTitle from "@Components/Common/PageTitle";
 import useAOPBreadcrumbs from "../../../../Hooks/AOP/AOPBreadcrumbs";
-import { CheckCircle } from "@mui/icons-material";
+import { Add, CheckCircle } from "@mui/icons-material";
 import useSnackbarHook from "../../../../Hooks/SnackbarHook";
 import { useAuth } from "../../../../Store/AuthStore";
 import { socket } from "../../../../Services/Socket";
 import SnackbarComponent from "@Components/Common/SnackbarComponent";
 import { nextYear } from "../../../../Utils/Functions";
+import PageLoader from "@Components/Loading/PageLoader";
 
 const Objectives = () => {
   const location = useLocation();
@@ -97,6 +98,7 @@ const Objectives = () => {
   const { user } = useAuth();
   const { name, id, assignedArea } = user ?? {};
   const [lockedRows, setLockedRows] = useState({});
+  const [isEditLoading, setIsEditLoading] = useState(false);
 
   useEffect(() => {
     getObjectivesBySector(search, (status, message) => {
@@ -201,21 +203,20 @@ const Objectives = () => {
 
   const handleOpenEditModal = async (objectiveId) => {
     setSelectedObjectiveId(objectiveId);
+    setIsEditMode(true);
+    setIsEditLoading(true);
 
     const params = { id: objectiveId };
 
     await showObjective(params, (status, message) => {
       if (!(status >= 200 && status < 300)) {
-        // if status not success
-        return; //Toast error
+        showSnack(500, message, "danger");
       }
     });
-    if (!isShowLoading) {
-      setIsEditMode(true);
-      setIsOpenObjectivesModal(true);
-    }
-  };
 
+    setIsEditLoading(false);
+    setIsOpenObjectivesModal(true);
+  };
   const handleConfirmDelete = async () => {
     if (!selectedObjectiveId) return;
 
@@ -375,7 +376,7 @@ const Objectives = () => {
             onClick={() => handleOpenObjectivesModal()}
             label={"Add an Objective"}
             disabled={status_id === 4 || status_id === 2}
-            startDecorator={<CheckCircle />}
+            startDecorator={<Add />}
             // endDecorator={<Plus size={16} />}
             // disabled={
             //   isApproved
@@ -384,8 +385,11 @@ const Objectives = () => {
           />
         </Stack>
       </BoxComponent>
-
-      {isLoading ? (
+      {isEditLoading ? (
+        <Stack>
+          <PageLoader isLoading={isEditLoading} />
+        </Stack>
+      ) : isLoading ? (
         <Stack
           direction={"column"}
           alignItems={"center"}
@@ -416,7 +420,7 @@ const Objectives = () => {
             <ButtonComponent
               onClick={() => handleOpenObjectivesModal()}
               label={"Add an Objective"}
-              startDecorator={<CheckCircle />}
+              startDecorator={<Add />}
               // endDecorator={<Plus size={16} />}
             />
           </Stack>

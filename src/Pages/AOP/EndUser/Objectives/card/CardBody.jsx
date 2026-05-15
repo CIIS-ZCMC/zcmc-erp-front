@@ -25,7 +25,7 @@ const CardBody = ({
 
   return (
     <Stack direction={"row"} justifyContent={"space-between"} width={"100%"}>
-      <Stack width={"100%"}>
+      <Stack width={"100%"} className="objectiveWrapper">
         {!status ? (
           <Typography
             level={"body-sm"}
@@ -44,6 +44,24 @@ const CardBody = ({
             sx={{
               // flex: 1,
               textAlign: "left",
+              color: grey[800],
+              display: "-webkit-box",
+              WebkitBoxOrient: "vertical",
+              WebkitLineClamp: 3,
+              overflow: "hidden",
+              transition: "all 0.2s ease",
+
+              ".objectiveWrapper:hover &": {
+                WebkitLineClamp: "unset",
+                display: "block",
+              },
+              WebkitLineClamp: 3,
+              maxHeight: "4.5em",
+              "&:hover": {
+                WebkitLineClamp: "unset",
+                maxHeight: "none",
+              },
+              cursor: "pointer",
             }}
           >
             {objective !== null
@@ -57,28 +75,68 @@ const CardBody = ({
 
       <Stack
         width={"100%"}
-        sx={{ textAlign: "left", bgcolor: "#F2F2F2", borderRadius: 10, p: 1.5 }}
+        sx={{
+          textAlign: "left",
+          bgcolor: "#F2F2F2",
+          borderRadius: 10,
+          p: 1.5,
+          position: "relative",
+        }}
+        className="successWrapper"
       >
         <Typography level="body-sm">Success Indicator</Typography>
-        {!status ? (
-          <Typography
-            level="title-md"
-            sx={{
-              display: "-webkit-box", // enables the line clamping
-              WebkitLineClamp: 3, // number of lines to show
-              WebkitBoxOrient: "vertical", // required for -webkit-box
-              overflow: "hidden", // hide overflowing text
-              textOverflow: "ellipsis", // show "..." at the end
-              color: grey[800],
-            }}
-          >
+
+        {/* COLLAPSED VIEW */}
+        <Typography
+          level="title-md"
+          sx={{
+            color: grey[800],
+
+            display: "-webkit-box",
+            WebkitLineClamp: 3,
+            WebkitBoxOrient: "vertical",
+            overflow: "hidden",
+          }}
+        >
+          {success_indicator !== null
+            ? success_indicator?.description
+            : other_success_indicator?.description}
+        </Typography>
+
+        {/* 🔥 EXPANDED OVERLAY */}
+        <Stack
+          className="successOverlay"
+          sx={{
+            display: "none",
+            position: "absolute",
+            top: 0,
+            left: 0,
+            zIndex: 999999,
+            width: "100%",
+            minHeight: "100%",
+            bgcolor: "#F2F2F2",
+            borderRadius: 10,
+            p: 1.5,
+            boxShadow: "lg",
+          }}
+        >
+          <Typography level="body-sm">Success Indicator</Typography>
+
+          <Typography level="body-sm" sx={{ color: grey[900] }}>
             {success_indicator !== null
               ? success_indicator?.description
               : other_success_indicator?.description}
           </Typography>
-        ) : (
-          <TextareaComponent placeholder={"Success indicator"} />
-        )}
+        </Stack>
+
+        {/* hover trigger */}
+        <style>
+          {`
+      .successWrapper:hover .successOverlay {
+        display: block;
+      }
+    `}
+        </style>
       </Stack>
     </Stack>
   );
