@@ -14,52 +14,78 @@ export default function ProductGrid({
   loading = false,
   items = [],
 }) {
-  const parentRef = useRef();
-  const rowRef = useRef(null);
+  const parentRef = useRef(null);
 
+  const [containerWidth, setContainerWidth] = useState(0);
   const [rowHeight, setRowHeight] = useState(360);
 
-  // Example: 3 columns
-  const theme = useTheme();
-  const isXs = useMediaQuery(theme.breakpoints.down("sm"));
-  const isSm = useMediaQuery(theme.breakpoints.between("sm", "md"));
-
-  const columns = isXs ? 1 : isSm ? 2 : 3;
-  const rowCount = Math.ceil(items.length / columns);
+  // --------------------------------------------------
+  // DETECT CONTAINER WIDTH
+  // --------------------------------------------------
 
   useEffect(() => {
-    if (rowRef.current) {
-      setRowHeight(rowRef.current.offsetHeight);
+    const updateWidth = () => {
+      if (parentRef.current) {
+        setContainerWidth(parentRef.current.offsetWidth);
+      }
+    };
+
+    updateWidth();
+
+    const resizeObserver = new ResizeObserver(updateWidth);
+
+    if (parentRef.current) {
+      resizeObserver.observe(parentRef.current);
     }
+
+    return () => resizeObserver.disconnect();
   }, []);
+
+  // --------------------------------------------------
+  // DYNAMIC COLUMN COUNT
+  // --------------------------------------------------
+
+  const columns = Math.max(1, Math.floor(containerWidth / columnWidth));
+
+  const rowCount = Math.ceil(items.length / columns);
+
+  // --------------------------------------------------
+  // VIRTUALIZER
+  // --------------------------------------------------
 
   const rowVirtualizer = useVirtualizer({
     count: rowCount,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => rowHeight, // estimated row height
-    overscan: 3, // render a few extra rows for smooth scrolling
+    estimateSize: () => rowHeight,
+    overscan: 3,
   });
+
   return (
     <Fragment>
       <BoxComponent
         mt={2}
-        height="100%"
+        height={height}
         boxShadow="sm"
-        sx={{ position: "relative" }}
+        sx={{ position: "relative", overflow: "hidden" }}
       >
         {loading ? (
-          <Grid container spacing={2}>
+          <Box
+            sx={{
+              display: "grid",
+              gridTemplateColumns: `repeat(auto-fit, minmax(${columnWidth}px, 1fr))`,
+              gap: 2,
+            }}
+          >
             {[...Array(9)].map((_, index) => (
-              <Grid xs={12} sm={6} md={4} key={index}>
-                <Skeleton
-                  variant="rectangular"
-                  animation="wave"
-                  height={180}
-                  sx={{ borderRadius: 10 }}
-                />
-              </Grid>
+              <Skeleton
+                key={index}
+                variant="rectangular"
+                animation="wave"
+                height={180}
+                sx={{ borderRadius: 10 }}
+              />
             ))}
-          </Grid>
+          </Box>
         ) : (
           <Box
             ref={parentRef}

@@ -333,16 +333,18 @@ function PPMPItems(props) {
               size="sm"
               fullWidth
             />
-            <AutocompleteComponent
-              placeholder="Filter by category"
-              options={dispensingCategories}
-              getOptionLabel={(opt) => opt?.name || ""}
-              value={selectedCategory}
-              setValue={(value) => {
-                setSelectedCategory(value);
-                setPage(1);
-              }}
-            />
+            {type === "dispensed" && (
+              <AutocompleteComponent
+                placeholder="Filter by category"
+                options={dispensingCategories}
+                getOptionLabel={(opt) => opt?.name || ""}
+                value={selectedCategory}
+                setValue={(value) => {
+                  setSelectedCategory(value);
+                  setPage(1);
+                }}
+              />
+            )}
           </Stack>
 
           <BoxComponent px={2} py={1} bgColor={"white"} borderRadius={10}>
