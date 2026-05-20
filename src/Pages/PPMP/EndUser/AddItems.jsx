@@ -18,18 +18,6 @@ import useSnackbarHook from "../../../Hooks/SnackbarHook";
 import AddItemRequest from "./AddItemRequest";
 
 function AddItems(props) {
-  const { user, loading } = useAuth();
-
-  if (loading) {
-    return null;
-  }
-
-  if (!user?.id) {
-    return null;
-  }
-
-  const cartStore = useCartStore(user.id, isPPMP);
-
   const navigate = useNavigate();
   const location = useLocation();
   const { type } = useParams();
@@ -44,6 +32,18 @@ function AddItems(props) {
   const { getItems } = useItemsHook();
   const { setAlertDialog, closeAlertDialog } = useModalHook();
   const { showSnack } = useSnackbarHook();
+
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return null;
+  }
+
+  if (!user?.id) {
+    return null;
+  }
+
+  const cartStore = useCartStore(user.id, isPPMP);
 
   const { cart, addActivityToItem, removeActivityFromItem, clearCart } =
     cartStore();
