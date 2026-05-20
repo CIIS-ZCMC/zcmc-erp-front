@@ -1279,13 +1279,17 @@ export const itemCols = (
     align: "left",
     render: (row) => (
       <>
-        <Chip
-          color="primary"
-          size="md"
-          startDecorator={<Circle sx={{ fontSize: 8 }} />}
-        >
-          {row.terminology}
-        </Chip>
+        {row?.terminology ? (
+          <Chip
+            color="primary"
+            size="md"
+            startDecorator={<Circle sx={{ fontSize: 8 }} />}
+          >
+            {row.terminology}
+          </Chip>
+        ) : (
+          <Typography level="body-sm">-</Typography>
+        )}
       </>
     ),
   },

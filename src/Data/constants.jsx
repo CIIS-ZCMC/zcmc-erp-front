@@ -235,7 +235,7 @@ export const PPMP_CONSTANTS = {
 };
 
 export const LIBRARY_CONSTANTS = {
-  LIBRARY_TITLE: "Item information management",
+  LIBRARY_TITLE: "Item Information management",
   LIBRARY_SUBTITLE:
     "All information used by end-users around the system, across different modules and areas can be managed here.",
   LIBRARY_HEADER: "List of records ready for AOP and PPMP",
@@ -436,8 +436,8 @@ export const happensNext = [
   {
     description: (
       <Typography level="body-sm" color="black">
-        ● <b>Planning Office Review:</b> Your AOP will be reviewed by the
-        Planning Office within 7–10 business days
+        ● <b>Planning Office Review:</b> Your AOP and PPMP will be reviewed by
+        the Planning Office within 7–10 business days
       </Typography>
     ),
   },
@@ -452,16 +452,16 @@ export const happensNext = [
   {
     description: (
       <Typography level="body-sm" color="black">
-        ● <b>Dashboard Updates:</b> Check your AOP Dashboard anytime to track
-        the status of your submission
+        ● <b>Dashboard Updates:</b> Check your AOP and PPMP Dashboard anytime to
+        track the status of your submission
       </Typography>
     ),
   },
   {
     description: (
       <Typography level="body-sm" color="black">
-        ● <b>Possible Outcomes:</b> Your AOP may be approved, returned for
-        revision, or require additional information
+        ● <b>Possible Outcomes:</b> Your AOP and PPMP may be approved, returned
+        for revision, or require additional information
       </Typography>
     ),
   },

@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState } from "react";
-import { Box, useTheme } from "@mui/joy";
+import { Box, Typography, useTheme } from "@mui/joy";
 import { useNavigate, useLocation } from "react-router-dom";
 import { usePPMPActions, usePPMPState } from "../../../../Hooks/PPMP/PPMPHook";
 import { nextYear } from "../../../../Utils/Functions";
@@ -48,6 +48,7 @@ function PPMPDashboard(props) {
 
   const [pageLoader, setPageLoader] = useState(false);
   const [openSave, setOpenSave] = useState(false);
+  const [buttonLoader, setButtonLoader] = useState(false);
   const [pin, setPin] = useState("");
   const [year, setYear] = useState(nextYear);
   const [openViewItemRequest, setOpenItemRequest] = useState();
@@ -104,10 +105,9 @@ function PPMPDashboard(props) {
             setButtonLoader(false);
             setAlertDialog({
               status: "error",
-              title: message,
-              description: "",
+              title: "Cannot submit PPMP",
+              description: message,
             });
-            return;
           }
         },
       );

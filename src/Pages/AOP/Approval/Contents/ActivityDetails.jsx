@@ -193,8 +193,9 @@ export const ActivityDetails = () => {
                 level={titleStyles.level}
                 fontWeight={titleStyles.fontWeight}
               >
-                Responsible person
+                Responsible people
               </Typography>
+
               {responsible_people?.map(
                 ({ name: person_name, designation = null }, index) => (
                   <Box

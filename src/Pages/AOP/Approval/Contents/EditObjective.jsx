@@ -76,17 +76,6 @@ const EditObjective = ({ onOpen, data, handleClose }) => {
                 )
               }
             />
-            {/* <Divider />
-            <InputComponent
-              isRequired
-              type="password"
-              label="Authorization pin"
-              helperText={
-                "Confirm you action by typing-in your authorization PIN."
-              }
-              setValue={setAuthPin}
-              value={authPin}
-            /> */}
           </Stack>
         }
       />

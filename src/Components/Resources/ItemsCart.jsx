@@ -109,13 +109,13 @@ const ItemsCart = ({
             label="Select Activity"
             placeholder="Select Activity"
             options={options}
-            getOptionLabel={(option) => option.activity_code}
+            getOptionLabel={(option) => option.activity_name}
             value={null}
             setValue={(val) => {
               if (!val) return;
 
               const alreadySelected = item.activities?.some(
-                (a) => a.code === val.activity_code,
+                (a) => a.id === val.activity_id,
               );
 
               if (alreadySelected) {
@@ -126,7 +126,7 @@ const ItemsCart = ({
 
               addActivityToItem(item.id, {
                 id: val.activity_id,
-                code: val.activity_code,
+                name: val.activity_name,
               });
             }}
           />
@@ -148,13 +148,14 @@ const ItemsCart = ({
             <Chip
               size="sm"
               color="primary"
+              sx={{ overflow: "hidden" }}
               endDecorator={
                 <ChipDelete
                   onDelete={() => removeActivityFromItem(item.id, act.id)}
                 />
               }
             >
-              {act.code}
+              {act.name}
             </Chip>
           ))}
         </Box>

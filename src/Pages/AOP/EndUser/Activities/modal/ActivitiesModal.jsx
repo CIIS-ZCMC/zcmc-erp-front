@@ -19,11 +19,13 @@ import useActivitiesStore, {
 } from "../../../../../Store/ActivitiesStore";
 import { Percent, Warning } from "@mui/icons-material";
 import { grey } from "@mui/material/colors";
+import { getNextYearRange } from "../../../../../Utils/Functions";
 
 const ActivitiesModal = ({ selectedActivity }) => {
   const { activity, startMonth, endMonth, isGadRelated, target } =
     useActivitiesStore();
   const { firstQuarter, secondQuarter, thirdQuarter, fourthQuarter } = target;
+  const { min, max } = getNextYearRange();
 
   const {
     setActivity,
@@ -34,31 +36,34 @@ const ActivitiesModal = ({ selectedActivity }) => {
   } = useActivitiesActions();
 
   useEffect(() => {
-    if (!selectedActivity) return;
-
-    setActivity(selectedActivity.name);
-    setStartMonth(selectedActivity.start_month);
-    setEndMonth(selectedActivity.end_month);
-    setIsGadRelated(selectedActivity.is_gad_related);
-
-    if (selectedActivity.target) {
-      setTarget({
-        firstQuarter: selectedActivity.target.first_quarter || "",
-        secondQuarter: selectedActivity.target.second_quarter || "",
-        thirdQuarter: selectedActivity.target.third_quarter || "",
-        fourthQuarter: selectedActivity.target.fourth_quarter || "",
-      });
-    }
-  }, [selectedActivity]);
-
-  useEffect(() => {
-    if (selectedActivity) return; // 🧠 don't override existing data
-
     const defaultYear = new Date().getFullYear() + 1;
 
+    // EDIT MODE
+    if (selectedActivity) {
+      setActivity(selectedActivity.name || "");
+
+      setStartMonth(selectedActivity.start_month || `${defaultYear}-01`);
+
+      setEndMonth(selectedActivity.end_month || `${defaultYear}-12`);
+
+      setIsGadRelated(selectedActivity.is_gad_related || false);
+
+      if (selectedActivity.target) {
+        setTarget({
+          firstQuarter: selectedActivity.target.first_quarter || "",
+          secondQuarter: selectedActivity.target.second_quarter || "",
+          thirdQuarter: selectedActivity.target.third_quarter || "",
+          fourthQuarter: selectedActivity.target.fourth_quarter || "",
+        });
+      }
+
+      return;
+    }
+
+    // CREATE MODE
     setStartMonth(`${defaultYear}-01`);
     setEndMonth(`${defaultYear}-12`);
-  }, []);
+  }, [selectedActivity]);
 
   const handleQuarterChange = (quarterKey) => (e) => {
     const value = e.target.value;
@@ -75,6 +80,7 @@ const ActivitiesModal = ({ selectedActivity }) => {
 
   return (
     <>
+      {console.log(selectedActivity)}
       <Stack spacing={2} overflow={"hidden"}>
         <TextareaComponent
           label={"Activity name"}

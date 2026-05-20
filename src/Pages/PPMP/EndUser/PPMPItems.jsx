@@ -33,6 +33,8 @@ import NoResultComponent from "@Components/Common/Table/NoResultComponent";
 import { nextYear } from "../../../Utils/Functions";
 import ExpandableTable from "@Components/Common/Table/ExpandableTable";
 import { ExpandableRow } from "./ExpandableRow";
+import AutocompleteComponent from "@Components/Form/AutocompleteComponent";
+import useItemsHook from "../../../Hooks/ItemManagementHook";
 
 function PPMPItems(props) {
   const navigate = useNavigate();
@@ -48,6 +50,7 @@ function PPMPItems(props) {
     getProcModes,
     getActivities,
   } = usePPMPActions();
+  const { dispensingCategories, getDispensingCategories } = useItemsHook();
   const { setAlertDialog } = useModalHook();
   const { errors, setError, clearErrors } = userErrorInputHook();
   const { getPPMPComments, postPPMPComment } = usePPMPCommentsActions();
@@ -67,6 +70,7 @@ function PPMPItems(props) {
   const [selectedRow, setSelectedRow] = useState({});
   const [localRows, setLocalRows] = useState([]);
   const [lockedRows, setLockedRows] = useState({});
+  const [selectedCategory, setSelectedCategory] = useState(null);
   const editingRowsRef = useRef({});
 
   useEffect(() => {
@@ -86,8 +90,9 @@ function PPMPItems(props) {
       page,
       perPage,
       search,
+      selectedCategory?.id,
     );
-  }, [page, perPage, search]);
+  }, [page, perPage, search, selectedCategory?.id]);
 
   useEffect(() => {
     if (ppmp) {
@@ -183,7 +188,12 @@ function PPMPItems(props) {
     getActivities((status, message) => {
       if (status !== 200) console.error("Failed to fetch items:", message);
     });
-  }, []);
+    if (type === "dispensed") {
+      getDispensingCategories((status, message) => {
+        if (status !== 200) console.error("Failed to fetch items:", message);
+      });
+    }
+  }, [type]);
 
   const handleEditToggle = (rowId, openRow, isSaveClick) => {
     const isEditing = editingRows[rowId];
@@ -315,12 +325,26 @@ function PPMPItems(props) {
           justifyContent={"space-between"}
           alignItems={"flex-end"}
         >
-          <SearchBarComponentv2
-            value={search}
-            setValue={setSearch}
-            placeholder="Search resources..."
-            fullWidth
-          />
+          <Stack direction={"row"} gap={2}>
+            <SearchBarComponentv2
+              value={search}
+              setValue={setSearch}
+              placeholder="Search resources..."
+              size="sm"
+              fullWidth
+            />
+            <AutocompleteComponent
+              placeholder="Filter by category"
+              options={dispensingCategories}
+              getOptionLabel={(opt) => opt?.name || ""}
+              value={selectedCategory}
+              setValue={(value) => {
+                setSelectedCategory(value);
+                setPage(1);
+              }}
+            />
+          </Stack>
+
           <BoxComponent px={2} py={1} bgColor={"white"} borderRadius={10}>
             <Typography
               textTransform={"uppercase"}

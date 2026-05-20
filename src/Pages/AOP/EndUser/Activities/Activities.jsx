@@ -41,19 +41,15 @@ import { isAopDisabled } from "../../../../Utils/AopStatus";
 import { Add, CheckCircle, Circle } from "@mui/icons-material";
 import useSnackbarHook from "../../../../Hooks/SnackbarHook";
 import { socket } from "../../../../Services/Socket";
-import { nextYear } from "../../../../Utils/Functions";
+import { getNextYearRange, nextYear } from "../../../../Utils/Functions";
 import { useAuth } from "../../../../Store/AuthStore";
 import PageLoader from "@Components/Loading/PageLoader";
 
 const Activities = () => {
   const { objectiveId } = useParams();
   const location = useLocation();
-
-  const { state } = location;
-
   const { aop } = useAOPStore();
   const { user } = useAuth();
-
   const {
     applicationActivities,
     applicationActivity,
@@ -67,9 +63,7 @@ const Activities = () => {
     isCreateLoading,
     isUpdateLoading,
   } = useActivitiesStore();
-
   const { clearFields } = useActivitiesActions();
-
   const {
     getActivities,
     createActivity,
@@ -82,7 +76,7 @@ const Activities = () => {
     useModalHook();
   const { showSnack } = useSnackbarHook();
   const breadcrumbs = useAOPBreadcrumbs();
-
+  const { min, max } = getNextYearRange();
   const {
     MANAGE_ACTIVITIES_HEADER,
     MANAGE_ACTIVITIES_SUBHEADER,
@@ -482,7 +476,13 @@ const Activities = () => {
       ) : applicationActivities?.activities?.length === 0 ? (
         <>
           <BoxComponent mt={2}>
-            <Stack>
+            <Stack
+              direction={"column"}
+              alignItems={"center"}
+              justifyContent={"center"}
+              textAlign={"center"}
+              height={"64vh"}
+            >
               <Typography sx={{ fontSize: 20, fontWeight: 600 }}>
                 {EMPTY_STATE_TITLE}
               </Typography>

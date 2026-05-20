@@ -238,17 +238,17 @@ function ManageResources(props) {
             <Grid xs={12} sm={6} md={3} key={index}>
               <ResourceCardComponent
                 status={status}
-                category={item.item.category}
-                name={item.item.name}
+                category={item?.item?.category}
+                name={item?.item?.name}
                 resource_id={item.id}
-                price={item.item.estimated_budget}
+                price={item?.item?.estimated_budget}
                 quantity={item.quantity}
-                unit={item.item.item_unit?.name}
-                specifications={item.item.item_specifications}
-                object_category={item.expense_class}
+                unit={item?.item?.item_unit?.name}
+                specifications={item?.item?.item_specifications}
+                object_category={item?.expense_class}
                 onQtyChange={handleUpdateResource}
                 options={purchase_types}
-                purchase_type={item.purchase_type}
+                purchase_type={item?.purchase_type}
                 onPurchaseTypeChange={(selectedType) =>
                   handlePurchaseTypeChange(selectedType, item.id)
                 }

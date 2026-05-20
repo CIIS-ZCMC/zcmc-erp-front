@@ -47,7 +47,6 @@ const CardBody = ({
               color: grey[800],
               display: "-webkit-box",
               WebkitBoxOrient: "vertical",
-              WebkitLineClamp: 3,
               overflow: "hidden",
               transition: "all 0.2s ease",
 

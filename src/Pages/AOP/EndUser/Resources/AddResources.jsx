@@ -15,6 +15,7 @@ import { useAuth } from "../../../../Store/AuthStore";
 import useSearchHook from "../../../../Hooks/SearchHook";
 import useAOPBreadcrumbs from "../../../../Hooks/AOP/AOpBreadcrumbs";
 import useSnackbarHook from "../../../../Hooks/SnackbarHook";
+import NewRequestModal from "../../../../Pages/PPMP/EndUser/Modal/AddItemRequest/NewRequestModal";
 
 export default function AddResources() {
   const { user } = useAuth();
@@ -44,6 +45,7 @@ export default function AddResources() {
 
   const [displayLoading, setDisplayLoading] = useState(false);
   const [openPreview, setOpenPreview] = useState(false);
+  const [openRequest, setOpenRequest] = useState(false);
 
   const handleOpenItemDialog = (item) => {
     console.log(item);
@@ -110,6 +112,11 @@ export default function AddResources() {
           </Stack>
           <Stack direction="row" spacing={1}>
             <ButtonComponent
+              label={"Request New Item"}
+              variant={"outlined"}
+              onClick={() => setOpenRequest(true)}
+            />
+            <ButtonComponent
               label="Cancel Selection"
               variant={"outlined"}
               onClick={() => {
@@ -137,6 +144,13 @@ export default function AddResources() {
         <Divider sx={{ my: 2, bgcolor: color.primary.fontLight }} />
         <AddToCartLayout loading={displayLoading} />
       </ContainerComponent>
+
+      {openRequest && (
+        <NewRequestModal
+          openNewRequest={openRequest}
+          setOpenNewRequest={setOpenRequest}
+        />
+      )}
     </Fragment>
   );
 }
