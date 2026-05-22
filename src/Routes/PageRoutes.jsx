@@ -9,13 +9,9 @@ import AOPOutlet from "../Pages/AOP/EndUser/AOPOutlet";
 import AddResources from "../Pages/AOP/EndUser/Resources/AddResources";
 import ResponsiblePerson from "../Pages/AOP/EndUser/Responsible/ResponsiblePerson";
 import ItemRequest from "../Pages/Consolidators/ItemManagement/ItemRequest/ItemRequest";
-import ItemLibrary from "../Pages/Consolidators/ItemManagement/Library/ItemLibrary";
+import ItemLibrary from "../Pages/Consolidators/ItemManagement/ItemLibrary/ItemLibrary";
 import ManageAOP from "../Pages/AOP/Approval/ManageAOP";
 import AOPApproval from "../Pages/AOP/Approval/AOPApproval";
-import { Items as ConsolidatorItems } from "../Pages/Consolidators/Tabs/Items";
-import { Classification } from "../Pages/Consolidators/Tabs/Classification";
-import { Category } from "../Pages/Consolidators/Tabs/Category";
-import { Variant } from "../Pages/Consolidators/Tabs/Variant";
 import {
   MdDashboard,
   MdLibraryBooks,
@@ -26,12 +22,21 @@ import PPMPDashboard from "../Pages/PPMP/EndUser/Dashboard/PPMPDashboard";
 import PPMPItems from "../Pages/PPMP/EndUser/PPMPItems";
 import AddItems from "../Pages/PPMP/EndUser/AddItems";
 import PPMPOutlet from "../Pages/PPMP/EndUser/PPMPOutlet";
-import All from "../Pages/Consolidators/ItemManagement/ItemRequest/All";
-import Pending from "../Pages/Consolidators/ItemManagement/ItemRequest/Pending";
-import Saved from "../Pages/Consolidators/ItemManagement/ItemRequest/Saved";
 import ViewPPMP from "../Pages/PPMP/Approval/ViewPPMP";
 import ManageObjectives from "../Pages/PlanningOps/ObjectiveManagement/Objectives";
 import ManageConsolidators from "../Pages/PlanningOps/ManageConsolidators/ManageConsolidators";
+import UserItemRequests from "../Pages/ItemRequests/UserItemRequests";
+import AllItemRequests from "../Pages/ItemRequests/Tabs/AllItemRequests";
+import PendingItemRequests from "../Pages/ItemRequests/Tabs/PendingItemRequests";
+import ApprovedItemRequests from "../Pages/ItemRequests/Tabs/ApprovedItemRequests";
+import DeclinedItemRequests from "../Pages/ItemRequests/Tabs/DeclinedItemRequests";
+import { Items } from "../Pages/Consolidators/ItemManagement/ItemLibrary/Tabs/Items";
+import All from "../Pages/Consolidators/ItemManagement/ItemRequest/All";
+import Pending from "../Pages/Consolidators/ItemManagement/ItemRequest/Pending";
+import Saved from "../Pages/Consolidators/ItemManagement/ItemRequest/Saved";
+import { Classification } from "../Pages/Consolidators/ItemManagement/ItemLibrary/Tabs/Classification";
+import { Category } from "../Pages/Consolidators/ItemManagement/ItemLibrary/Tabs/Category";
+import { Variant } from "../Pages/Consolidators/ItemManagement/ItemLibrary/Tabs/Variant";
 
 const iconStyles = {
   size: 24,
@@ -107,6 +112,31 @@ export const sidebarRoutes = [
           {
             path: "add-item/:type",
             element: <AddItems />,
+          },
+        ],
+      },
+
+      {
+        path: "/new-item-requests",
+        name: "My Item Requests",
+        element: <UserItemRequests />,
+        childPermissions: ["ERP-PPMP-MAN:write", "ERP-AOP-MAN:write"],
+        children: [
+          {
+            index: true,
+            element: <AllItemRequests />,
+          },
+          {
+            path: "pending",
+            element: <PendingItemRequests />,
+          },
+          {
+            path: "approved",
+            element: <ApprovedItemRequests />,
+          },
+          {
+            path: "declined",
+            element: <DeclinedItemRequests />,
           },
         ],
       },
@@ -228,7 +258,7 @@ export const sidebarRoutes = [
         children: [
           {
             index: true,
-            element: <ConsolidatorItems />,
+            element: <Items />,
           },
           {
             path: "classification",

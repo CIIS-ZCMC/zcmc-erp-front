@@ -1,111 +1,212 @@
-import { API } from "../../Data/constants";
-import { read, post, update, remove } from "../../Services/RequestMethods";
+// Store/ItemRequestStore.js
 
-import { useItemRequestActions } from "../../Store/ItemRequestStore";
+import { create } from "zustand";
+import { API } from "@Data/constants";
+import { post, read, update } from "@Services/RequestMethods";
 
-const useItemRequestsHook = () => {
-  const { setRequests, setRequestsByUser, setIsLoading } =
-    useItemRequestActions();
+const useItemRequestHook = create((set, get) => ({
+  requests: [],
+  requestsByUser: [],
+  isLoading: false,
 
-  const getItemRequests = (params, callBack) => {
-    setIsLoading(true);
-    read({
-      url: API.ITEM_REQUESTS,
-      failed: (error) => {
-        setIsLoading(false);
-        callBack?.(false, error?.message || "Request failed");
-      },
-      params: params,
-      success: (res) => {
-        try {
-          const {
-            status,
-            data: { data, message },
-          } = res;
-          setRequests(data);
-          callBack(status, message);
-        } catch (error) {
-          console.error("Error processing Item Requests:", error);
-          callBack?.(false, error.message);
-        } finally {
-          setIsLoading(false);
-        }
-      },
-    });
-  };
+  actions: {
+    setIsLoading: (isLoading) => set({ isLoading }),
 
-  const getItemRequestByUser = (params, callBack) => {
-    setIsLoading(true);
-    read({
-      url: API.ITEM_REQUESTS_BY_USER,
-      failed: (error) => {
-        setIsLoading(false);
-        callBack?.(false, error?.message || "Request failed");
-      },
-      params: params,
-      success: (res) => {
-        try {
-          const {
-            status,
-            data: { data, message },
-          } = res;
-          setRequestsByUser(data);
-          callBack(status, message);
-        } catch (error) {
-          console.error("Error processing Item Requests:", error);
-          callBack?.(false, error.message);
-        } finally {
-          setIsLoading(false);
-        }
-      },
-    });
-  };
+    getItemRequests: (params, callBack) => {
+      set({ isLoading: true });
 
-  const updateItemRequest = (item_request_id, body, callBack) => {
-    setIsLoading(true);
-    update({
-      url: `${API.APPROVAL_ITEM_REQUEST}/${item_request_id}`,
-      form: body,
-      failed: (error) => {
-        setIsLoading(false);
-        callBack?.(false, error?.message || "Update failed");
-      },
-      success: (res) => {
-        try {
-          const {
-            status,
-            data: { data, message },
-          } = res;
+      read({
+        url: API.ITEM_REQUESTS,
+        params,
+        failed: (error) => {
+          set({ isLoading: false });
+          callBack?.(false, error?.message || "Request failed");
+        },
+        success: (res) => {
+          try {
+            const {
+              status,
+              data: { data, message },
+            } = res;
+
+            set({ requests: data });
+            callBack?.(status, message);
+          } catch (error) {
+            console.error("Error processing Item Requests:", error);
+            callBack?.(false, error.message);
+          } finally {
+            set({ isLoading: false });
+          }
+        },
+      });
+    },
+
+    getItemRequestByUser: (params, callBack) => {
+      set({ isLoading: true });
+
+      read({
+        url: API.ITEM_REQUESTS_BY_USER,
+        params,
+        failed: (error) => {
+          set({ isLoading: false });
+          callBack?.(false, error?.message || "Request failed");
+        },
+        success: (res) => {
+          try {
+            const {
+              status,
+              data: { data, message },
+            } = res;
+
+            set({ requestsByUser: data });
+            callBack?.(status, message);
+          } catch (error) {
+            console.error("Error processing Item Requests:", error);
+            callBack?.(false, error.message);
+          } finally {
+            set({ isLoading: false });
+          }
+        },
+      });
+    },
+
+    updateItemRequest: (item_request_id, body, callBack) => {
+      set({ isLoading: true });
+
+      update({
+        url: `${API.APPROVAL_ITEM_REQUEST}/${item_request_id}`,
+        form: body,
+        failed: (error) => {
+          set({ isLoading: false });
+          callBack?.(false, error?.message || "Update failed");
+        },
+        success: (res) => {
+          try {
+            const {
+              status,
+              data: { data, message },
+            } = res;
+
+            set((state) => ({
+              requests: state.requests?.data
+                ? {
+                    ...state.requests,
+                    data: state.requests.data.map((item) =>
+                      item.id === data.id ? { ...item, ...data } : item,
+                    ),
+                  }
+                : state.requests,
+
+              requestsByUser: state.requestsByUser?.data
+                ? {
+                    ...state.requestsByUser,
+                    data: state.requestsByUser.data.map((item) =>
+                      item.id === data.id ? { ...item, ...data } : item,
+                    ),
+                  }
+                : state.requestsByUser,
+            }));
+
+            callBack?.(status, message, data);
+          } catch (error) {
+            console.error("Error processing update response:", error);
+            callBack?.(false, error.message);
+          } finally {
+            set({ isLoading: false });
+          }
+        },
+      });
+    },
+
+    postItmRequest: (body, callBack) => {
+      set({ isLoading: true });
+
+      post({
+        url: `item-request-store`,
+        form: body,
+        failed: (status, message) => {
+          set({ isLoading: false });
           callBack?.(status, message);
-        } catch (error) {
-          console.error("Error processing update response:", error);
-          callBack?.(false, error.message);
-        } finally {
-          setIsLoading(false);
-        }
-      },
-    });
-  };
+        },
+        success: ({ data: response, status }) => {
+          const newItem = response?.data?.data?.[0];
 
-  const postItmRequest = (body, callback) => {
-    post({
-      url: `item-request-store`,
-      form: body,
-      success: ({ data: { message, data }, status }) => {
-        callback && callback(status, message, data);
-      },
-      failed: (status, message) => {
-        callback && callback(status, message);
-      },
-    });
-  };
+          set((state) => ({
+            requestsByUser: {
+              ...state.requestsByUser,
 
-  return {
-    getItemRequests,
-    getItemRequestByUser,
-    updateItemRequest,
-    postItmRequest,
-  };
-};
+              data: newItem
+                ? [newItem, ...(state.requestsByUser?.data || [])]
+                : state.requestsByUser?.data || [],
 
-export default useItemRequestsHook;
+              total: (state.requestsByUser?.total || 0) + 1,
+            },
+
+            isLoading: false,
+          }));
+
+          callBack?.(status, response?.message, newItem);
+        },
+      });
+    },
+
+    cancelItemRequest: (item_request_id, body, callBack) => {
+      set({ isLoading: true });
+
+      update({
+        url: `cancel-item-request/${item_request_id}`,
+        form: body,
+
+        failed: (error) => {
+          set({ isLoading: false });
+
+          callBack?.(false, error?.message || "Failed to cancel item request");
+        },
+
+        success: ({ data: response, status }) => {
+          const cancelledItem = response?.data;
+          set((state) => ({
+            requestsByUser: {
+              ...state.requestsByUser,
+
+              data:
+                state.requestsByUser?.data?.filter(
+                  (item) => item.id !== cancelledItem?.id,
+                ) || [],
+
+              total: Math.max(0, (state.requestsByUser?.total || 1) - 1),
+            },
+
+            requests: {
+              ...state.requests,
+
+              data:
+                state.requests?.data?.filter(
+                  (item) => item.id !== cancelledItem?.id,
+                ) || [],
+
+              total: Math.max(0, (state.requests?.total || 1) - 1),
+            },
+
+            isLoading: false,
+          }));
+          callBack?.(status, response?.message, cancelledItem);
+        },
+      });
+    },
+  },
+}));
+
+export default useItemRequestHook;
+
+export const useItemRequests = () =>
+  useItemRequestHook((state) => state.requests);
+
+export const useItemRequestsByUser = () =>
+  useItemRequestHook((state) => state.requestsByUser);
+
+export const useItemRequestLoading = () =>
+  useItemRequestHook((state) => state.isLoading);
+
+export const useItemRequestActions = () =>
+  useItemRequestHook((state) => state.actions);

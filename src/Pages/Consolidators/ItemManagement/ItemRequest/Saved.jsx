@@ -1,26 +1,30 @@
 import React, { useState, useEffect } from "react";
-import { Typography, Box, Sheet } from "@mui/joy";
+import { Typography, Box, Sheet, Stack } from "@mui/joy";
 import { ExtensionOutlined } from "@mui/icons-material";
 import { grey } from "@mui/material/colors";
 import { useLocation } from "react-router-dom";
-
 import ExpandableTable from "@Components/Common/Table/ExpandableTable";
-
 import { ITEMS_REQUESTS } from "../../../../Data/Columns";
-
-import useItemRequestStore from "../../../../Store/ItemRequestStore";
-import useItemRequestsHook from "../../../../Hooks/ItemRequest/ItemRequestHook";
+import {
+  useItemRequestActions,
+  useItemRequestLoading,
+  useItemRequests,
+} from "../../../../Hooks/ItemRequest/ItemRequestHook";
+import ItemDetailsRow from "@Pages/ItemRequests/ItemDetailsRow";
+import SearchBarComponentv2 from "@Components/SearchBarWithdeBounce";
 
 const Saved = () => {
   const location = useLocation();
   const pathName = location.pathname;
 
-  const { requests, isLoading } = useItemRequestStore();
-  const { getItemRequests } = useItemRequestsHook();
+  const requests = useItemRequests();
+  const isLoading = useItemRequestLoading();
+  const { getItemRequests } = useItemRequestActions();
 
   const [openApprove, setOpenApprove] = useState(false);
   const [status, setStatus] = useState();
   const [row, setRow] = useState({});
+  const [search, setSearch] = useState("");
 
   const { data, current_page, next_page_url, per_page, prev_page_url, total } =
     requests || {};
@@ -32,17 +36,20 @@ const Saved = () => {
   };
 
   useEffect(() => {
-    const params = { status_id: 4 };
+    const params = { status_id: 4, search };
     getItemRequests(params, (status, message) => {
       // console.log(params)
       if (status !== 200) {
         console.error("Failed to fetch items:", message);
       }
     });
-  }, []);
+  }, [search]);
 
   return (
     <>
+      <Stack direction={"row"} my={2}>
+        <SearchBarComponentv2 value={search} setValue={setSearch} />
+      </Stack>
       <ExpandableTable
         columns={ITEMS_REQUESTS(handleOpen, pathName, false)}
         rows={data}
@@ -52,34 +59,7 @@ const Saved = () => {
         totalRows={per_page}
         onNextPage={next_page_url}
         onPrevPage={prev_page_url}
-        renderExpanded={(row) => (
-          <>
-            <Typography
-              level="body-sm"
-              startDecorator={
-                <ExtensionOutlined color="primary" sx={{ fontSize: 20 }} />
-              }
-              alignItems={"center"}
-              mb={2}
-              fontWeight={600}
-              sx={{ color: grey[800] }}
-            >
-              Specifications
-            </Typography>
-
-            <Box sx={{ display: "flex", gap: 2 }}>
-              {row?.item_specifications?.map((spec, i) => (
-                <Sheet
-                  key={i}
-                  variant="outlined"
-                  sx={{ p: 2, borderRadius: 15, minWidth: 260 }}
-                >
-                  {spec.description}
-                </Sheet>
-              ))}
-            </Box>
-          </>
-        )}
+        renderExpanded={(row) => <ItemDetailsRow row={row} />}
       />
     </>
   );

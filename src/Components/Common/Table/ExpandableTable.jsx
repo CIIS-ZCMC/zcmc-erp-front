@@ -23,6 +23,7 @@ export default function ExpandableTable({
   newItemId,
   hoverRow = true,
   editingRows,
+  minHeight = 0,
 }) {
   const [openId, setOpenId] = useState(null);
   const [heights, setHeights] = useState({}); // store row heights
@@ -137,7 +138,7 @@ export default function ExpandableTable({
                   <React.Fragment key={id}>
                     {/* Main Row */}
                     <tr>
-                      {columns.map((col) => (
+                      {columns?.map((col) => (
                         <td
                           key={col.key}
                           style={{
@@ -186,7 +187,7 @@ export default function ExpandableTable({
                               "max-height 0.35s ease, opacity 0.25s ease, padding 0.2s ease",
                           }}
                         >
-                          <Box sx={{ minHeight: expanded ? 400 : 0 }}>
+                          <Box sx={{ minHeight: expanded ? minHeight : 0 }}>
                             {renderExpanded(row)}
                           </Box>
                         </div>

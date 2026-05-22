@@ -1,38 +1,30 @@
 import React, { Fragment, useEffect, useState } from "react";
-import ScrollableTableComponent from "../../../Components/Common/Table/ScrollableTableComponent";
 import { Box, Checkbox, Chip, Divider, Textarea, Typography } from "@mui/joy";
 import { Stack, Link } from "@mui/joy";
-import { IoInformationOutline, IoOpen, IoOpenOutline } from "react-icons/io5";
-import useLibItemHook from "../../../Hooks/Libraries/LibItemHooks";
-import useModalHook from "../../../Hooks/ModalHook";
-import ServerTableComponent from "../../../Components/Common/Table/ServerTableComponent";
-import { itemCols } from "../../../Data/Columns";
-import ModalComponent from "../../../Components/Common/Dialog/ModalComponent";
-import TextareaComponent from "../../../Components/Form/TextareaComponent";
-import InputComponent from "../../../Components/Form/InputComponent";
-import { handleChangeInput } from "../../../Utils/HandleInput";
-import ConfirmationModalComponent from "../../../Components/Common/Dialog/ConfirmationModalComponent";
-import usePinHook from "../../../Hooks/PinHook";
-import ExpandableTable from "@Components/Common/Table/ExpandableTable";
-import SearchWithSuggestions from "@Components/SearchWithSuggestions";
-import ButtonComponent from "@Components/Common/ButtonComponent";
 import {
   Add,
   AddOutlined,
   TextSnippetOutlined,
   Today,
 } from "@mui/icons-material";
-import AutocompleteComponent from "@Components/Form/AutocompleteComponent";
-import { Plus } from "lucide-react";
-import TabComponent from "@Components/Common/TabComponent";
-import useItemsHook from "../../../Hooks/ItemManagementHook";
-import handleSingleChangeAutcomplete from "../../../Utils/HandleAutocomplete";
 import { grey } from "@mui/material/colors";
-import AuthorizationPinComponent from "@Components/AuthorizationPinComponent";
-import useSearchHook from "../../../Hooks/SearchHook";
-import useSnackbarHook from "../../../Hooks/SnackbarHook";
+import useModalHook from "@Hooks/ModalHook";
+import usePinHook from "@Hooks/PinHook";
+import useSnackbarHook from "@Hooks/SnackbarHook";
+import useItemsHook from "@Hooks/ItemManagementHook";
 import StatusSwitch from "@Components/StatusSwitchComponent";
 import SearchBarComponentv2 from "@Components/SearchBarWithdeBounce";
+import ButtonComponent from "@Components/Common/ButtonComponent";
+import ExpandableTable from "@Components/Common/Table/ExpandableTable";
+import ModalComponent from "@Components/Common/Dialog/ModalComponent";
+import { handleChangeInput } from "@Utils/HandleInput";
+import TabComponent from "@Components/Common/TabComponent";
+import AutocompleteComponent from "@Components/Form/AutocompleteComponent";
+import InputComponent from "@Components/Form/InputComponent";
+import TextareaComponent from "@Components/Form/TextareaComponent";
+import AuthorizationPinComponent from "@Components/AuthorizationPinComponent";
+import ConfirmationModalComponent from "@Components/Common/Dialog/ConfirmationModalComponent";
+import { itemCols } from "@Data/Columns";
 
 export const Items = () => {
   const {
@@ -69,8 +61,6 @@ export const Items = () => {
     getArchivedItems,
     setSearchQuery,
   } = useItemsHook();
-
-  const { getSearchSuggestions, suggestions } = useSearchHook();
 
   const [loading, setLoading] = useState(false);
   const [openUpdate, setOpenUpdate] = useState(false);
@@ -384,14 +374,6 @@ export const Items = () => {
           <StatusSwitch checked={active} onChange={setActive} />
         </Stack>
         <Stack direction={"row"} gap={1}>
-          {/* <SearchWithSuggestions
-            getSearchSuggestions={getSearchSuggestions}
-            getSearchResults={getSearchResults}
-            suggestions={suggestions}
-            getItems={active ? getItemsPaginated : getArchivedItems}
-            onSelect={(item) => console.log("Selected item:", item)}
-          /> */}
-
           <SearchBarComponentv2
             placeholder="Search items"
             setValue={setSearchQuery}

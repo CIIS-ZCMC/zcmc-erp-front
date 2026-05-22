@@ -235,7 +235,7 @@ export const PPMP_CONSTANTS = {
 };
 
 export const LIBRARY_CONSTANTS = {
-  LIBRARY_TITLE: "Item Information management",
+  LIBRARY_TITLE: "Item Information Management",
   LIBRARY_SUBTITLE:
     "All information used by end-users around the system, across different modules and areas can be managed here.",
   LIBRARY_HEADER: "List of records ready for AOP and PPMP",

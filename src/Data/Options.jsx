@@ -21,6 +21,13 @@ export const approvalPageTabs = [
   { id: 6, name: "Returned", value: 6 },
 ];
 
+export const userItmRequestTabs = [
+  { id: 1, name: "All requests", value: "all", path: "" },
+  { id: 2, name: "Pending", value: "pending", path: "pending" },
+  { id: 3, name: "Approved", value: "approved", path: "approved" },
+  { id: 4, name: "Declined", value: "declined", path: "declined" },
+];
+
 export const libaryTabs = [
   { id: 1, name: "Item", value: "", path: "" },
   {

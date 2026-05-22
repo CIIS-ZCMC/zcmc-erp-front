@@ -1,24 +1,21 @@
 import React, { Fragment, useEffect, useRef, useState } from "react";
-import { classificationCols } from "../../../Data/Columns";
-import useModalHook from "../../../Hooks/ModalHook";
-import ServerTableComponent from "../../../Components/Common/Table/ServerTableComponent";
-import ModalComponent from "../../../Components/Common/Dialog/ModalComponent";
 import { Divider, Stack, Typography } from "@mui/joy";
-import InputComponent from "../../../Components/Form/InputComponent";
-import TextareaComponent from "../../../Components/Form/TextareaComponent";
-import ConfirmationModalComponent from "../../../Components/Common/Dialog/ConfirmationModalComponent";
-import usePinHook from "../../../Hooks/PinHook";
-import useClassificationHook from "../../../Hooks/Libraries/LibClassificationHooks";
-import StatusSwitch from "@Components/StatusSwitchComponent";
-import SearchWithSuggestions from "@Components/SearchWithSuggestions";
-import ButtonComponent from "@Components/Common/ButtonComponent";
 import { AddOutlined } from "@mui/icons-material";
-import ExpandableTable from "@Components/Common/Table/ExpandableTable";
-import AuthorizationPinComponent from "@Components/AuthorizationPinComponent";
-import { handleChangeInput } from "../../../Utils/HandleInput";
-import useItemsHook from "../../../Hooks/ItemManagementHook";
-import useSnackbarHook from "../../../Hooks/SnackbarHook";
+import usePinHook from "@Hooks/PinHook";
+import useModalHook from "@Hooks/ModalHook";
+import useSnackbarHook from "@Hooks/SnackbarHook";
+import useItemsHook from "@Hooks/ItemManagementHook";
+import StatusSwitch from "@Components/StatusSwitchComponent";
 import SearchBarComponentv2 from "@Components/SearchBarWithdeBounce";
+import ButtonComponent from "@Components/Common/ButtonComponent";
+import ExpandableTable from "@Components/Common/Table/ExpandableTable";
+import { classificationCols } from "@Data/Columns";
+import ModalComponent from "@Components/Common/Dialog/ModalComponent";
+import InputComponent from "@Components/Form/InputComponent";
+import TextareaComponent from "@Components/Form/TextareaComponent";
+import AuthorizationPinComponent from "@Components/AuthorizationPinComponent";
+import ConfirmationModalComponent from "@Components/Common/Dialog/ConfirmationModalComponent";
+import { handleChangeInput } from "@Utils/HandleInput";
 
 export const Classification = () => {
   const { pin, setPin, resetPin } = usePinHook();
@@ -145,7 +142,7 @@ export const Classification = () => {
           } else {
             showSnack(500, message);
           }
-        }
+        },
       );
     } else {
       await archiveClassification(selectedData.id, form, (status, message) => {
@@ -230,7 +227,7 @@ export const Classification = () => {
           active,
           setSelectedData,
           handleUpdate,
-          handleDelete
+          handleDelete,
         )}
         currentPage={pagination?.current_page}
         totalPages={pagination?.last_page}
@@ -268,7 +265,7 @@ export const Classification = () => {
                     handleChangeInput(
                       "name",
                       setNewClassification,
-                      e.target.value
+                      e.target.value,
                     )
                   }
                 />
@@ -280,7 +277,7 @@ export const Classification = () => {
                     handleChangeInput(
                       "description",
                       setNewClassification,
-                      e.target.value
+                      e.target.value,
                     )
                   }
                 />
@@ -322,7 +319,7 @@ export const Classification = () => {
                     handleChangeInput(
                       "description",
                       setUpdatedData,
-                      e.target.value
+                      e.target.value,
                     )
                   }
                 />

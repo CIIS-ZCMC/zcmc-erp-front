@@ -383,6 +383,7 @@ function PPMPItems(props) {
         isLoading={pageLoader}
         stickyFooter
         editingRows={editingRows}
+        minHeight={400}
         renderExpanded={(row) => (
           <ExpandableRow
             row={row}

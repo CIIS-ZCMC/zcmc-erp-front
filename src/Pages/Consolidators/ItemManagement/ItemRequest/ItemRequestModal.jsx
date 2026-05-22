@@ -20,7 +20,7 @@ import IconLessRadioButtonComponent from "@Components/IconLessRadioButtonCompone
 import useModalHook from "../../../../Hooks/ModalHook";
 import useItemsHook from "../../../../Hooks/ItemManagementHook";
 // import useItemRequestHook from "..//ItemRequest/ItemRequestHook";
-import useItemRequestsHook from "../../../../Hooks/ItemRequest/ItemRequestHook";
+import { useItemRequestActions } from "../../../../Hooks/ItemRequest/ItemRequestHook";
 
 import useItemLibraryStore from "../../../../Store/Item/LibraryStore";
 import { useItemLibraryActions } from "../../../../Store/Item/LibraryStore";
@@ -31,7 +31,7 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
 
   const { setAlertDialog, setConfirmationModal, closeConfirmation } =
     useModalHook();
-  const { updateItemRequest } = useItemRequestsHook();
+  const { updateItemRequest } = useItemRequestActions();
 
   const {
     itemName,
@@ -213,11 +213,11 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
             description: "Please try again.",
           });
           setIsLoading(false);
-          console.error(" Failed to update activity:", message);
+          console.error(" Failed to update item request:", message);
         }
       });
     } catch (error) {
-      console.error("Error creating objective:", error);
+      console.error("Error updating item request:", error);
       setAlertDialog({
         status: "error",
         title: "Unexpected Error",

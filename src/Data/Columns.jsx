@@ -1338,6 +1338,146 @@ export const itemCols = (
   },
 ];
 
+export const itemRequestCols = (
+  setSelectedData,
+  setOpenCancel,
+  showActions = true,
+) =>
+  [
+    {
+      key: "item",
+      label: "Item & Unit",
+      align: "left",
+      width: !showActions ? "300px" : "250px",
+      render: (params) => {
+        return (
+          <>
+            <Typography level="body-md" fontWeight={600}>
+              {params.name}
+            </Typography>
+            <Typography level="body-sm">
+              {params.item_unit?.name || "-"}
+            </Typography>
+          </>
+        );
+      },
+      expandTrigger: true,
+    },
+    {
+      key: "category",
+      label: "Category & Project Type",
+      align: "left",
+      width: !showActions ? "250px" : "150px",
+      render: (params) => (
+        <>
+          <Typography level="body-md" fontWeight={600}>
+            {params?.item_category?.name || "-"}
+          </Typography>
+          <Typography fontSize={13} color="neutral">
+            {params?.item_classification?.name || "-"}
+          </Typography>
+        </>
+      ),
+      expandTrigger: true,
+    },
+    {
+      key: "high_ticket",
+      label: "High - ticket",
+      width: !showActions ? "150px" : "100px",
+      render: (params) => {
+        return (
+          <>
+            <Typography
+              level="body-md"
+              fontWeight={600}
+              color={params.is_high_ticket ? "success" : "danger"}
+            >
+              {params.is_high_ticket ? "YES" : "NO"}
+            </Typography>
+          </>
+        );
+      },
+      expandTrigger: true,
+    },
+    {
+      key: "estimated_budget",
+      label: "Unit Price",
+      align: "left",
+      width: !showActions ? "200px" : "150px",
+      render: (params) => (
+        <>
+          <Typography level="body-md" color="neutral">
+            {formattedPrice(params?.estimated_budget)}
+          </Typography>
+        </>
+      ),
+      expandTrigger: true,
+    },
+    {
+      key: "created_on",
+      label: "Date Requested",
+      width: "auto",
+      align: "left",
+      render: (params) => (
+        <>
+          <Typography level="body-md" color="neutral">
+            {moment(params.created_at).format("LL")}
+          </Typography>
+        </>
+      ),
+      expandTrigger: true,
+    },
+    {
+      key: "status",
+      label: "Status",
+      align: "center",
+      render: (params) => (
+        <>
+          <Chip
+            color="primary"
+            size="md"
+            startDecorator={<Circle sx={{ fontSize: 8 }} />}
+            sx={{ textTransform: "capitalize" }}
+          >
+            {params.status?.description || "-"}
+          </Chip>
+        </>
+      ),
+      expandTrigger: true,
+    },
+    {
+      key: "action",
+      label: "Actions",
+      align: "center",
+      hidden: !showActions,
+      render: (params) => {
+        return (
+          <>
+            <Stack
+              direction="row"
+              spacing={2}
+              alignItems="center"
+              justifyContent={"center"}
+            >
+              <Chip
+                onClick={() => {
+                  setSelectedData(params);
+                  setOpenCancel(true);
+                }}
+                size="md"
+                variant="soft"
+                color="neutral"
+                startDecorator={<DeleteOutlineOutlined />}
+              >
+                Cancel
+              </Chip>
+            </Stack>
+          </>
+        );
+      },
+    },
+  ].filter((col) => !col.hidden);
+
 export const myOwnItemRequestListCols = () => [
   {
     field: "code",
@@ -1788,7 +1928,7 @@ export const ITEMS_REQUESTS = (handleOpen, pathName, showActions = false) => [
         <Typography level="body-sm" fontWeight={600} sx={{ color: grey[800] }}>
           {row.name}
         </Typography>
-        <Typography level="body-xs">{row.unit}</Typography>
+        <Typography level="body-xs">{row.item_unit.name}</Typography>
       </div>
     ),
     expandTrigger: true, // ❗ only this column toggles expand

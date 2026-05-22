@@ -6,30 +6,28 @@ import { nextYear } from "../../../../Utils/Functions";
 import PageTitle from "@Components/Common/PageTitle";
 import ModalComponent from "@Components/Common/Dialog/ModalComponent";
 import useModalHook from "../../../../Hooks/ModalHook";
-
-import useItemRequestHook from "../../../../Hooks/ItemRequest/ItemRequestHook";
-import useItemRequestStore from "../../../../Store/ItemRequestStore";
+import {
+  useItemRequestActions,
+  useItemRequestsByUser,
+} from "../../../../Hooks/ItemRequest/ItemRequestHook";
 import userErrorInputHook from "../../../../Hooks/ErrorInputHook";
 import useAOPStore from "../../../../Store/AOPStore";
-
 // View Item Requests Modal Components
-import Content from "../Modal/ItemRequests/Content";
 import PPMPSummaryCards from "./PPMPSummaryCards";
 import DashboardHeader from "./DashboardHeader";
 import NewRequestModal from "../Modal/AddItemRequest/NewRequestModal";
 import PPMPSubmissionModal from "../Modal/Dashboard/PPMPSubmissionModal";
 import SuccessSubmissionModal from "../Modal/Dashboard/SuccessSubmissionModal";
 import { happensNext } from "../../../../Data/constants";
-import useItemRequestsHook from "../../../../Hooks/ItemRequest/ItemRequestHook";
 
 function PPMPDashboard(props) {
   const location = useLocation();
   const pathName = location.pathname;
 
-  const { requestsByUser } = useItemRequestStore();
+  const requestsByUser = useItemRequestsByUser();
   const { aop } = useAOPStore();
 
-  const { getItemRequestByUser, postItmRequest } = useItemRequestsHook();
+  const { getItemRequestByUser, postItmRequest } = useItemRequestActions();
   const { setError, clearErrors } = userErrorInputHook();
 
   const { data, current_page, per_page, next_page_url, prev_page_url, total } =
@@ -223,16 +221,6 @@ function PPMPDashboard(props) {
       {/* <PageLoader isLoading={pageLoader} /> */}
 
       {/* View Item Requests Modal */}
-      {openViewItemRequest && (
-        <ModalComponent
-          isOpen={openViewItemRequest}
-          title={"Items Requested"}
-          description={"Below are the items you’ve requested for this PPMP."}
-          minWidth={"85%"}
-          handleClose={() => setOpenItemRequest(false)}
-          content={<Content data={requestsByUser} path={pathName} />}
-        />
-      )}
 
       {openNewRequest && (
         <NewRequestModal

@@ -1,10 +1,6 @@
-import { useEffect } from "react";
-
 import { Stack, Typography } from "@mui/joy";
 
-import TextareaComponent from "@Components/Form/TextareaComponent";
 import InputComponent from "@Components/Form/InputComponent";
-
 import { ThreeDotsLoader } from "@Components/Common/Loading/ThreeDotsLoader";
 import { grey } from "@mui/material/colors";
 
@@ -14,53 +10,44 @@ const CardBody = ({
   other_objective,
   objective,
   other_success_indicator,
-  activities,
   type_of_function,
 }) => {
   if (!objective && !other_objective) {
-    return <ThreeDotsLoader />; // Still loading or not yet selected
+    return <ThreeDotsLoader />;
   }
 
-  // const { description, type_of_function } = objective;
-
   return (
-    <Stack direction={"row"} justifyContent={"space-between"} width={"100%"}>
-      <Stack width={"100%"} className="objectiveWrapper">
+    <Stack direction="row" justifyContent="space-between" width="100%" gap={2}>
+      <Stack
+        width="100%"
+        className="objectiveWrapper"
+        sx={{ textAlign: "left" }}
+      >
         {!status ? (
-          <Typography
-            level={"body-sm"}
-            textAlign={"left"}
-            // sx={{ flex: 1 }}
-          >
+          <Typography level="body-sm" textAlign="left">
             {type_of_function?.type}
           </Typography>
         ) : (
-          <InputComponent placeholder={"Function Type"} />
+          <InputComponent placeholder="Function Type" />
         )}
 
         {!status ? (
           <Typography
-            level={"title-md"}
+            level="title-md"
             sx={{
-              // flex: 1,
-              textAlign: "left",
               color: grey[800],
               display: "-webkit-box",
+              WebkitLineClamp: 3,
               WebkitBoxOrient: "vertical",
               overflow: "hidden",
-              transition: "all 0.2s ease",
+              transition: "all 0.25s ease",
+              cursor: "pointer",
 
               ".objectiveWrapper:hover &": {
-                WebkitLineClamp: "unset",
                 display: "block",
-              },
-              WebkitLineClamp: 3,
-              maxHeight: "4.5em",
-              "&:hover": {
                 WebkitLineClamp: "unset",
-                maxHeight: "none",
+                overflow: "visible",
               },
-              cursor: "pointer",
             }}
           >
             {objective !== null
@@ -68,74 +55,44 @@ const CardBody = ({
               : other_objective?.description}
           </Typography>
         ) : (
-          <InputComponent placeholder={"Objective Name"} />
+          <InputComponent placeholder="Objective Name" />
         )}
       </Stack>
 
       <Stack
-        width={"100%"}
+        width="100%"
+        className="successWrapper"
         sx={{
           textAlign: "left",
           bgcolor: "#F2F2F2",
           borderRadius: 10,
           p: 1.5,
-          position: "relative",
         }}
-        className="successWrapper"
       >
         <Typography level="body-sm">Success Indicator</Typography>
 
-        {/* COLLAPSED VIEW */}
         <Typography
           level="title-md"
           sx={{
             color: grey[800],
-
             display: "-webkit-box",
             WebkitLineClamp: 3,
             WebkitBoxOrient: "vertical",
             overflow: "hidden",
+            transition: "all 0.25s ease",
+            cursor: "pointer",
+
+            ".successWrapper:hover &": {
+              display: "block",
+              WebkitLineClamp: "unset",
+              overflow: "visible",
+            },
           }}
         >
           {success_indicator !== null
             ? success_indicator?.description
             : other_success_indicator?.description}
         </Typography>
-
-        {/* 🔥 EXPANDED OVERLAY */}
-        <Stack
-          className="successOverlay"
-          sx={{
-            display: "none",
-            position: "absolute",
-            top: 0,
-            left: 0,
-            zIndex: 999999,
-            width: "100%",
-            minHeight: "100%",
-            bgcolor: "#F2F2F2",
-            borderRadius: 10,
-            p: 1.5,
-            boxShadow: "lg",
-          }}
-        >
-          <Typography level="body-sm">Success Indicator</Typography>
-
-          <Typography level="body-sm" sx={{ color: grey[900] }}>
-            {success_indicator !== null
-              ? success_indicator?.description
-              : other_success_indicator?.description}
-          </Typography>
-        </Stack>
-
-        {/* hover trigger */}
-        <style>
-          {`
-      .successWrapper:hover .successOverlay {
-        display: block;
-      }
-    `}
-        </style>
       </Stack>
     </Stack>
   );

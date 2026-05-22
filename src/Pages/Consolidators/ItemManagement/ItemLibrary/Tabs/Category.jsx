@@ -1,25 +1,20 @@
 import React, { Fragment, useEffect, useState } from "react";
-import { categoryCols, classificationCols } from "../../../Data/Columns";
-import ScrollableTableComponent from "../../../Components/Common/Table/ScrollableTableComponent";
+import { categoryCols } from "../../../../../Data/Columns";
 import { Divider, Stack, Switch, Typography } from "@mui/joy";
-import useModalHook from "../../../Hooks/ModalHook";
-import useCategoryHooks from "../../../Hooks/Libraries/LibCategoryHooks";
-import ServerTableComponent from "../../../Components/Common/Table/ServerTableComponent";
-import ModalComponent from "../../../Components/Common/Dialog/ModalComponent";
-import InputComponent from "../../../Components/Form/InputComponent";
-import TextareaComponent from "../../../Components/Form/TextareaComponent";
-import ConfirmationModalComponent from "../../../Components/Common/Dialog/ConfirmationModalComponent";
-import usePinHook from "../../../Hooks/PinHook";
-import ExpandableTable from "@Components/Common/Table/ExpandableTable";
-import StatusSwitch from "@Components/StatusSwitchComponent";
-import SearchWithSuggestions from "@Components/SearchWithSuggestions";
-import ButtonComponent from "@Components/Common/ButtonComponent";
 import { AddOutlined } from "@mui/icons-material";
-import AuthorizationPinComponent from "@Components/AuthorizationPinComponent";
-import useItemsHook from "../../../Hooks/ItemManagementHook";
+import StatusSwitch from "@Components/StatusSwitchComponent";
 import SearchBarComponentv2 from "@Components/SearchBarWithdeBounce";
-import { handleChangeInput } from "../../../Utils/HandleInput";
-import useSnackbarHook from "../../../Hooks/SnackbarHook";
+import ButtonComponent from "@Components/Common/ButtonComponent";
+import ExpandableTable from "@Components/Common/Table/ExpandableTable";
+import ModalComponent from "@Components/Common/Dialog/ModalComponent";
+import InputComponent from "@Components/Form/InputComponent";
+import TextareaComponent from "@Components/Form/TextareaComponent";
+import AuthorizationPinComponent from "@Components/AuthorizationPinComponent";
+import { handleChangeInput } from "@Utils/HandleInput";
+import useItemsHook from "@Hooks/ItemManagementHook";
+import usePinHook from "@Hooks/PinHook";
+import useSnackbarHook from "@Hooks/SnackbarHook";
+import useModalHook from "@Hooks/ModalHook";
 
 export const Category = () => {
   const {
@@ -218,7 +213,7 @@ export const Category = () => {
           active,
           setSelectedData,
           handleUpdate,
-          handleDelete
+          handleDelete,
         )}
         currentPage={pagination?.current_page}
         totalPages={pagination?.last_page}
@@ -266,7 +261,7 @@ export const Category = () => {
                     handleChangeInput(
                       "description",
                       setNewCategory,
-                      e.target.value
+                      e.target.value,
                     )
                   }
                 />
@@ -308,7 +303,7 @@ export const Category = () => {
                     handleChangeInput(
                       "description",
                       setUpdatedData,
-                      e.target.value
+                      e.target.value,
                     )
                   }
                 />

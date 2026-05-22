@@ -10,35 +10,19 @@ import { Outlet, useNavigate } from "react-router-dom";
 import TabComponent from "../../../../Components/Common/TabComponent";
 import Typography from "@mui/joy/Typography";
 import { useLocation } from "react-router-dom";
-import useModalHook from "../../../../Hooks/ModalHook";
 import { libaryTabs } from "../../../../Data/Options";
-import ModalComponent from "../../../../Components/Common/Dialog/ModalComponent";
-import InputComponent from "../../../../Components/Form/InputComponent";
-import AutocompleteComponent from "../../../../Components/Form/AutocompleteComponent";
-import TextareaComponent from "../../../../Components/Form/TextareaComponent";
 import BoxComponent from "@Components/Common/Card/BoxComponent";
 
 const ItemLibrary = () => {
   const location = useLocation();
   const navigate = useNavigate();
-
-  const [newItem, setNewItem] = useState({
-    name: "",
-    classification: "",
-    category: "",
-    variant: "",
-    unitOfMeasurement: "",
-    estimatedBudget: "",
-    specs: ["", "", ""],
-  });
-  const [newData, setNewData] = useState({});
-  const [openNew, setOpenNew] = useState(false);
-
   const index = useMemo(() => {
     const path = location.pathname;
 
     const found = libaryTabs.find((tab) =>
-      tab.path === "" ? path.endsWith("/item-library") : path.includes(tab.path)
+      tab.path === ""
+        ? path.endsWith("/item-library")
+        : path.includes(tab.path),
     );
 
     return found?.value ?? libaryTabs[0].value;
@@ -51,9 +35,6 @@ const ItemLibrary = () => {
     const selectedTab = libaryTabs.find((tab) => tab.value === newValue);
     if (selectedTab) navigate(selectedTab.path);
   };
-
-  const { openModal, setOpenModal, successDialog, setSuccessDialog } =
-    useModalHook();
 
   return (
     <Fragment>
