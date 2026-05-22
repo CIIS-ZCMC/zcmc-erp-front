@@ -77,7 +77,6 @@ export default function NewRequestModal({ openNewRequest, setOpenNewRequest }) {
     pin: "",
   });
 
-  const [selectedActivities, setSelectedActivities] = useState([]);
   const { errors, setError, clearErrors } = userErrorInputHook();
 
   // === SPEC HANDLERS ===
@@ -189,14 +188,6 @@ export default function NewRequestModal({ openNewRequest, setOpenNewRequest }) {
 
     return !hasError;
   };
-
-  const steps = itemReq.is_high_ticket
-    ? ["general", "special_details", "authorization"]
-    : ["general", "authorization"];
-
-  const currentStep = steps[step - 1];
-  const finalStep = steps.length;
-
   const nextStep = () => {
     if (!validateStep()) return;
     setStep((prev) => Math.min(prev + 1, finalStep));
@@ -205,6 +196,13 @@ export default function NewRequestModal({ openNewRequest, setOpenNewRequest }) {
   const prevStep = () => {
     setStep((prev) => Math.max(prev - 1, 1));
   };
+
+  const steps = itemReq.is_high_ticket
+    ? ["general", "special_details", "authorization"]
+    : ["general", "authorization"];
+
+  const currentStep = steps[step - 1];
+  const finalStep = steps.length;
 
   const submit = () => {
     clearErrors();
@@ -320,6 +318,7 @@ export default function NewRequestModal({ openNewRequest, setOpenNewRequest }) {
   const { width, height } = modalConfig[currentStep];
   return (
     <Fragment>
+      {console.log(itemReq.is_high_ticket)}
       <ModalComponent
         isOpen={openNewRequest}
         handleClose={() => setOpenNewRequest(false)}
@@ -547,7 +546,7 @@ export default function NewRequestModal({ openNewRequest, setOpenNewRequest }) {
                       setValue={(value) =>
                         setItemReq((prev) => ({
                           ...prev,
-                          is_special: value,
+                          is_special: Number(value),
                         }))
                       }
                       actions={[
@@ -574,7 +573,7 @@ export default function NewRequestModal({ openNewRequest, setOpenNewRequest }) {
                       setValue={(value) =>
                         setItemReq((prev) => ({
                           ...prev,
-                          is_high_ticket: value,
+                          is_high_ticket: Boolean(value),
                         }))
                       }
                       actions={[

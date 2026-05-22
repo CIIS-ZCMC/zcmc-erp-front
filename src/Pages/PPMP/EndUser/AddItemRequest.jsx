@@ -725,7 +725,7 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
                         setValue={(value) =>
                           setItemReq((prev) => ({
                             ...prev,
-                            is_special: value,
+                            is_special: Number(value),
                           }))
                         }
                         actions={[
@@ -753,7 +753,7 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
                         setValue={(value) =>
                           setItemReq((prev) => ({
                             ...prev,
-                            is_high_ticket: value,
+                            is_high_ticket: Number(value),
                           }))
                         }
                         actions={[
