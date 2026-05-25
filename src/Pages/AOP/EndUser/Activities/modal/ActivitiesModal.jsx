@@ -19,12 +19,13 @@ import useActivitiesStore, {
 } from "../../../../../Store/ActivitiesStore";
 import { Percent, Warning } from "@mui/icons-material";
 import { grey } from "@mui/material/colors";
+import { getNextYearRange } from "../../../../../Utils/Functions";
 
 const ActivitiesModal = ({ selectedActivity }) => {
   const { activity, startMonth, endMonth, isGadRelated, target } =
     useActivitiesStore();
-  const { firstQuarter, secondQuarter, thirdQuarter, fourthQuarter } =
-    target ?? {};
+  const { firstQuarter, secondQuarter, thirdQuarter, fourthQuarter } = target;
+  const { min, max } = getNextYearRange();
 
   const {
     setActivity,
@@ -35,28 +36,34 @@ const ActivitiesModal = ({ selectedActivity }) => {
   } = useActivitiesActions();
 
   useEffect(() => {
-    if (selectedActivity) {
-      setActivity(selectedActivity.name);
-      setStartMonth(selectedActivity.start_month);
-      setEndMonth(selectedActivity.end_month);
-      setIsGadRelated(selectedActivity.is_gad_related);
-      setTarget({
-        firstQuarter: selectedActivity.target.first_quarter || "",
-        secondQuarter: selectedActivity.target.second_quarter || "",
-        thirdQuarter: selectedActivity.target.third_quarter || "",
-        fourthQuarter: selectedActivity.target.fourth_quarter || "",
-      });
-    }
-  }, [selectedActivity]);
+    const defaultYear = new Date().getFullYear() + 1;
 
-  useEffect(() => {
-    if (!startMonth && !endMonth) {
-      const defaultYear = new Date().getFullYear() + 1; //set to next year or + 1
-      setStartMonth(`${defaultYear}-01`);
-      setEndMonth(`${defaultYear}-01`);
+    // EDIT MODE
+    if (selectedActivity) {
+      setActivity(selectedActivity.name || "");
+
+      setStartMonth(selectedActivity.start_month || `${defaultYear}-01`);
+
+      setEndMonth(selectedActivity.end_month || `${defaultYear}-12`);
+
+      setIsGadRelated(selectedActivity.is_gad_related || false);
+
+      if (selectedActivity.target) {
+        setTarget({
+          firstQuarter: selectedActivity.target.first_quarter || "",
+          secondQuarter: selectedActivity.target.second_quarter || "",
+          thirdQuarter: selectedActivity.target.third_quarter || "",
+          fourthQuarter: selectedActivity.target.fourth_quarter || "",
+        });
+      }
+
+      return;
     }
-    // console.log(startMonth)
-  }, [startMonth]);
+
+    // CREATE MODE
+    setStartMonth(`${defaultYear}-01`);
+    setEndMonth(`${defaultYear}-12`);
+  }, [selectedActivity]);
 
   const handleQuarterChange = (quarterKey) => (e) => {
     const value = e.target.value;
@@ -73,6 +80,7 @@ const ActivitiesModal = ({ selectedActivity }) => {
 
   return (
     <>
+      {console.log(selectedActivity)}
       <Stack spacing={2} overflow={"hidden"}>
         <TextareaComponent
           label={"Activity name"}
@@ -118,7 +126,7 @@ const ActivitiesModal = ({ selectedActivity }) => {
                 label={"Quarter 1"}
                 min={0}
                 max={100}
-                value={firstQuarter || ""}
+                value={firstQuarter}
                 onChange={handleQuarterChange("firstQuarter")}
                 endDecorator={<Percent />}
               />
@@ -128,7 +136,7 @@ const ActivitiesModal = ({ selectedActivity }) => {
                 label={"Quarter 2"}
                 min={0}
                 max={100}
-                value={secondQuarter || ""}
+                value={secondQuarter}
                 onChange={handleQuarterChange("secondQuarter")}
                 endDecorator={<Percent />}
               />
@@ -145,7 +153,7 @@ const ActivitiesModal = ({ selectedActivity }) => {
                 label={"Quarter 3"}
                 min={0}
                 max={100}
-                value={thirdQuarter || ""}
+                value={thirdQuarter}
                 onChange={handleQuarterChange("thirdQuarter")}
                 endDecorator={<Percent />}
               />
@@ -155,7 +163,7 @@ const ActivitiesModal = ({ selectedActivity }) => {
                 label={"Quarter 4"}
                 min={0}
                 max={100}
-                value={fourthQuarter || ""}
+                value={fourthQuarter}
                 onChange={handleQuarterChange("fourthQuarter")}
                 endDecorator={<Percent />}
               />

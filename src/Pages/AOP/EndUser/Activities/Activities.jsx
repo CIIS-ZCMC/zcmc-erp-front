@@ -38,30 +38,18 @@ import useAOPBreadcrumbs from "../../../../Hooks/AOP/AOPBreadcrumbs";
 import ChipComponent from "@Components/Common/ChipComponent";
 
 import { isAopDisabled } from "../../../../Utils/AopStatus";
-import { CheckCircle, Circle } from "@mui/icons-material";
+import { Add, CheckCircle, Circle } from "@mui/icons-material";
 import useSnackbarHook from "../../../../Hooks/SnackbarHook";
 import { socket } from "../../../../Services/Socket";
-import { nextYear } from "../../../../Utils/Functions";
+import { getNextYearRange, nextYear } from "../../../../Utils/Functions";
 import { useAuth } from "../../../../Store/AuthStore";
-
-const centeredStyle = {
-  direction: "column",
-  alignItems: "center",
-  justifyContent: "center",
-  textAlign: "center",
-  height: "60vh",
-  my: 2,
-};
+import PageLoader from "@Components/Loading/PageLoader";
 
 const Activities = () => {
   const { objectiveId } = useParams();
   const location = useLocation();
-
-  const { state } = location;
-
   const { aop } = useAOPStore();
   const { user } = useAuth();
-
   const {
     applicationActivities,
     applicationActivity,
@@ -71,10 +59,11 @@ const Activities = () => {
     endMonth,
     isGadRelated,
     target,
+    isEditLoading,
+    isCreateLoading,
+    isUpdateLoading,
   } = useActivitiesStore();
-
   const { clearFields } = useActivitiesActions();
-
   const {
     getActivities,
     createActivity,
@@ -87,7 +76,7 @@ const Activities = () => {
     useModalHook();
   const { showSnack } = useSnackbarHook();
   const breadcrumbs = useAOPBreadcrumbs();
-
+  const { min, max } = getNextYearRange();
   const {
     MANAGE_ACTIVITIES_HEADER,
     MANAGE_ACTIVITIES_SUBHEADER,
@@ -160,19 +149,16 @@ const Activities = () => {
       userId: user.id,
       name: user.name,
     });
-    setIsLoading(true);
     setIsEditMode(true);
     setSelectedActivityId(activityId);
-    setIsOpenActivitiesModal(true);
 
     const params = { id: activityId };
 
     await showActivity(params, (status, message) => {
       if (!(status >= 200 && status < 300)) {
-        // if status not success
         return; //Toast error
       }
-      setIsLoading(false);
+      setIsOpenActivitiesModal(true);
     });
   };
 
@@ -439,7 +425,7 @@ const Activities = () => {
             onClick={() => setIsCountModal(true)}
             label={"Add Activity"}
             disabled={isAopDisabled(status)}
-            startDecorator={<CheckCircle />}
+            startDecorator={<Add />}
             // endDecorator={<Plus size={16} />}
             // disabled={!show || disabledEditMode(APPLICATION_OBJECTIVE_ID, remarks, comments, disabled)}
           />
@@ -479,14 +465,24 @@ const Activities = () => {
       </BoxComponent>
       {console.log(applicationActivities)}
 
-      {isLoading ? (
-        <Stack sx={centeredStyle}>
+      {isEditLoading ? (
+        <Stack>
+          <PageLoader isLoading={isEditLoading} />
+        </Stack>
+      ) : isLoading ? (
+        <Stack>
           <ThreeDotsLoader />
         </Stack>
       ) : applicationActivities?.activities?.length === 0 ? (
         <>
           <BoxComponent mt={2}>
-            <Stack sx={centeredStyle}>
+            <Stack
+              direction={"column"}
+              alignItems={"center"}
+              justifyContent={"center"}
+              textAlign={"center"}
+              height={"64vh"}
+            >
               <Typography sx={{ fontSize: 20, fontWeight: 600 }}>
                 {EMPTY_STATE_TITLE}
               </Typography>
@@ -498,7 +494,7 @@ const Activities = () => {
               <ButtonComponent
                 onClick={() => handleOpenCountModal()}
                 label={"Add Activity"}
-                startDecorator={<CheckCircle />}
+                startDecorator={<Add />}
                 // endDecorator={<Plus size={16} />}
               />
             </Stack>
@@ -518,7 +514,6 @@ const Activities = () => {
               <Grid key={activity.id} size={4} lg={4} md={6} sm={12}>
                 <ActivitiesList
                   status={status}
-                  isLoading={isLoading}
                   activity={activity}
                   handleAdd={() => handleOpenCountModal()}
                   handleEdit={() => handleOpenEditModal(activity.id)}

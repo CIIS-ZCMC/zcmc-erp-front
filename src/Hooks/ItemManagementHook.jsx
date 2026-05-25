@@ -11,6 +11,7 @@ const useItemsHook = create((set) => ({
   units: [],
   variants: [],
   terminology: [],
+  dispensingCategories: [],
   pagination: null,
   newItemId: null,
   selectedData: null,
@@ -33,6 +34,7 @@ const useItemsHook = create((set) => ({
       failed: callBack,
       success: (res) => {
         const { status, message, data } = res;
+        console.log("ITEMS DATA:", data);
         set({ items: data.data });
         callBack(status, message);
       },
@@ -782,6 +784,18 @@ const useItemsHook = create((set) => ({
       success: (res) => {
         const { status, message, data } = res;
         set({ items: data.data });
+        callBack(status, message);
+      },
+    });
+  },
+
+  getDispensingCategories: async (callBack) => {
+    read({
+      url: `get-dispensing-categories`,
+      failed: callBack,
+      success: (res) => {
+        const { status, message, data } = res;
+        set({ dispensingCategories: data });
         callBack(status, message);
       },
     });

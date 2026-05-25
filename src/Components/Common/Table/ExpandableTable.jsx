@@ -23,6 +23,7 @@ export default function ExpandableTable({
   newItemId,
   hoverRow = true,
   editingRows,
+  minHeight = 0,
 }) {
   const [openId, setOpenId] = useState(null);
   const [heights, setHeights] = useState({}); // store row heights
@@ -37,19 +38,22 @@ export default function ExpandableTable({
   const openRow = (id) => {
     setOpenId((prev) => (prev === id ? prev : id));
   };
-  const onRef = (id, node) => {
+
+  const onRef = React.useCallback((id, node) => {
     if (!node) return;
 
-    if (!measured.current[id]) {
-      measured.current[id] = true;
-      const h = node.scrollHeight;
+    const h = node.scrollHeight;
+    // Add extra height if the content contains activities-related elements
+    const hasActivities =
+      node.querySelector('[data-activities="true"]') ||
+      node.innerHTML.includes("Linked Activities");
+    const adjustedHeight = hasActivities ? h + 200 : h;
 
-      setHeights((prev) => ({
-        ...prev,
-        [id]: h,
-      }));
-    }
-  };
+    setHeights((prev) => {
+      if (prev[id] === adjustedHeight) return prev;
+      return { ...prev, [id]: adjustedHeight };
+    });
+  }, []);
 
   useEffect(() => {
     // console.log(isLoading)
@@ -134,7 +138,7 @@ export default function ExpandableTable({
                   <React.Fragment key={id}>
                     {/* Main Row */}
                     <tr>
-                      {columns.map((col) => (
+                      {columns?.map((col) => (
                         <td
                           key={col.key}
                           style={{
@@ -173,16 +177,17 @@ export default function ExpandableTable({
                         <div
                           ref={expanded ? (node) => onRef(id, node) : null}
                           style={{
-                            overflowY: expanded ? "auto" : "hidden", // ✅ KEY FIX
+                            overflowX: "hidden",
+                            overflowY: "auto",
                             maxHeight: expanded ? heights[id] : 0,
                             opacity: expanded ? 1 : 0,
-                            padding: expanded ? "10px" : "0px", // <--- avoid spacing when closed
+                            padding: expanded ? "10px" : "0px",
                             background: expanded && grey[50],
                             transition:
                               "max-height 0.35s ease, opacity 0.25s ease, padding 0.2s ease",
                           }}
                         >
-                          <Box sx={{ height: "100%" }}>
+                          <Box sx={{ minHeight: expanded ? minHeight : 0 }}>
                             {renderExpanded(row)}
                           </Box>
                         </div>

@@ -1,10 +1,13 @@
 import { API } from "../Data/constants";
-import { read, post, update, remove } from '../Services/RequestMethods';
+import { read, post, update, remove } from "../Services/RequestMethods";
 
-import useResponsibleStore, { useResponsiblePeopleActions } from "../Store/ResponsibleStore";
+import useResponsibleStore, {
+  useResponsiblePeopleActions,
+  getResponsibleState,
+} from "../Store/ResponsiblePeopleStore";
 
 const useResponsibleHook = () => {
-  const { responsiblePeople } = useResponsibleStore()
+  const { responsiblePeople } = useResponsibleStore();
   const { setResponsiblePeople } = useResponsiblePeopleActions();
 
   const getPeople = (params, callBack) => {
@@ -20,12 +23,12 @@ const useResponsibleHook = () => {
             data: { message },
           } = res;
           setResponsiblePeople(res.data);
-          callBack(status, message)
-        }
+          callBack(status, message);
+        },
       });
     } catch (error) {
-      console.error('Error fetching Responsible People:', error);
-      callBack?.(false, error.message)
+      console.error("Error fetching Responsible People:", error);
+      callBack?.(false, error.message);
     }
   };
 
@@ -41,23 +44,45 @@ const useResponsibleHook = () => {
             data: { data, message },
           } = res;
           if (status === 201) {
-            const fetchParams = { activity_id: data[0].activity_id };
+            // Get current responsible people from store
+            const currentResponsiblePeople =
+              getResponsibleState().responsiblePeople;
 
-            getPeople(fetchParams, (status, message) => {
-              if (!(status >= 200 && status < 300)) {
-                console.error("Failed to refresh activities:", message);
-              }
+            {
+              console.log(currentResponsiblePeople);
+            }
+            // Separate users and designations from response
+            const newUsers = data.users || [];
+            const newDesignations = data.designations || [];
+
+            // Append to existing arrays
+            const updatedUsers = [
+              ...(currentResponsiblePeople?.responsible_people?.users || []),
+              ...newUsers,
+            ];
+            const updatedDesignations = [
+              ...(currentResponsiblePeople?.responsible_people?.designations ||
+                []),
+              ...newDesignations,
+            ];
+
+            // Update store with merged data
+            setResponsiblePeople({
+              ...currentResponsiblePeople,
+              responsible_people: {
+                users: updatedUsers,
+                designations: updatedDesignations,
+              },
             });
           }
           callBack?.(status, message);
         },
-      })
-    }
-    catch (error) {
-      console.error("Error Creatin Objective:", error);
+      });
+    } catch (error) {
+      console.error("Error Creating Responsible:", error);
       callBack(false, error.message);
     }
-  }
+  };
 
   const removeResponsible = (params, callBack) => {
     try {
@@ -68,36 +93,51 @@ const useResponsibleHook = () => {
         success: (res) => {
           const {
             status,
-            data: { message },
+            data: { data, message },
           } = res;
 
           if (status === 200) {
+            // Get current state from store
+            const currentResponsiblePeople =
+              getResponsibleState().responsiblePeople;
+
+            // Filter out the removed person from both users and designations
+            const updatedUsers =
+              currentResponsiblePeople.responsible_people?.users?.filter(
+                (person) => person.responsible_person_id !== params.id,
+              ) || [];
+
+            const updatedDesignations =
+              currentResponsiblePeople.responsible_people?.designations?.filter(
+                (designation) =>
+                  designation.responsible_person_id !== params.id,
+              ) || [];
+
+            // Update store with filtered data
             const updatedData = {
-              ...responsiblePeople,
-              responsible_people: responsiblePeople.responsible_people.filter(
-                (person) => person.responsible_person_id !== params.id
-              ),
+              ...currentResponsiblePeople,
+              responsible_people: {
+                users: updatedUsers,
+                designations: updatedDesignations,
+              },
             };
-            // console.log('updated people', updatedData);
+
             setResponsiblePeople(updatedData);
           }
           callBack?.(status, message);
         },
-      })
-    }
-    catch (error) {
-      console.error("Error Deleting pEOPLE:", error);
+      });
+    } catch (error) {
+      console.error("Error Deleting Responsible:", error);
       callBack(false, error.message);
     }
-  }
-
+  };
 
   return {
     getPeople,
     createResponsible,
     removeResponsible,
-  }
+  };
+};
 
-}
-
-export default useResponsibleHook
+export default useResponsibleHook;

@@ -32,11 +32,18 @@ const usePPMPStoreHook = create((set, get) => ({
 
   // --- Actions ---
   actions: {
-    getPPMPItems: (type, callBack, page = 1, per_page = 15, search = "") => {
+    getPPMPItems: (
+      type,
+      callBack,
+      page = 1,
+      per_page = 15,
+      search = "",
+      category_id = null,
+    ) => {
       set({ isLoading: true });
       read({
         url: `${PATH}-items`,
-        params: { type, page, per_page, search },
+        params: { type, page, per_page, search, category_id },
         failed: () => {
           set({ isLoading: false });
           callBack && callBack();
@@ -161,6 +168,7 @@ const usePPMPStoreHook = create((set, get) => ({
         form,
         failed: (status, message) => callBack(status, message),
         success: ({ data: { data, ppmp_total, message }, status }) => {
+          console.log(data);
           set((state) => ({
             ppmp: state.ppmp.map((item) =>
               item.id === data.id ? { ...item, ...data } : item,

@@ -1,28 +1,33 @@
 import ExpandableTable from "@Components/Common/Table/ExpandableTable";
 import { ITEMS_REQUESTS } from "../../../../Data/Columns";
 import React, { useEffect, useState } from "react";
-// import useItemRequestHook from "../../../../Hooks/ItemRequest/ItemRequestHook";
-import useItemRequestHook from "../../../../Hooks/ItemRequest/ItemRequestHook";
-import useItemRequestStore from "../../../../Store/ItemRequestStore";
-
-import { Box, Sheet, Typography } from "@mui/joy";
+import { Box, Sheet, Stack, Typography } from "@mui/joy";
 import { ExtensionOutlined } from "@mui/icons-material";
 import { grey } from "@mui/material/colors";
 import { useLocation } from "react-router-dom";
 
 import ItemRequestModal from "./ItemRequestModal";
+import {
+  useItemRequestActions,
+  useItemRequestLoading,
+  useItemRequests,
+} from "@Hooks/ItemRequest/ItemRequestHook";
+import ItemDetailsRow from "@Pages/ItemRequests/ItemDetailsRow";
+import SearchBarComponentv2 from "@Components/SearchBarWithdeBounce";
 
 export default function Pending() {
   const location = useLocation();
   const pathName = location.pathname;
 
-  const { getItemRequests } = useItemRequestHook();
-  const { requests, isLoading } = useItemRequestStore();
+  const requests = useItemRequests();
+  const isLoading = useItemRequestLoading();
+  const { getItemRequests } = useItemRequestActions();
 
   const [openApprove, setOpenApprove] = useState(false);
   const [status, setStatus] = useState();
   const [row, setRow] = useState({});
   const [isDecline, setIsDecline] = useState(false);
+  const [search, setSearch] = useState("");
 
   // const data = requests?.data || []
   const { data, current_page, next_page_url, per_page, prev_page_url, total } =
@@ -39,14 +44,14 @@ export default function Pending() {
   };
 
   useEffect(() => {
-    const params = { status_id: 3 };
+    const params = { status_id: 3, search };
     getItemRequests(params, (status, message) => {
       // console.log(params)
       if (status !== 200) {
         console.error("Failed to fetch items:", message);
       }
     });
-  }, []);
+  }, [search]);
 
   useEffect(() => {
     console.log("request data", requests);
@@ -55,8 +60,11 @@ export default function Pending() {
 
   return (
     <div>
+      <Stack direction={"row"} my={2}>
+        <SearchBarComponentv2 value={search} setValue={setSearch} />
+      </Stack>
       <ExpandableTable
-        columns={ITEMS_REQUESTS(handleOpen, pathName)}
+        columns={ITEMS_REQUESTS(handleOpen, pathName, true)}
         rows={data}
         isLoading={isLoading}
         currentPage={current_page}
@@ -64,34 +72,7 @@ export default function Pending() {
         totalRows={per_page}
         onNextPage={next_page_url}
         onPrevPage={prev_page_url}
-        renderExpanded={(row) => (
-          <>
-            <Typography
-              level="body-sm"
-              startDecorator={
-                <ExtensionOutlined color="primary" sx={{ fontSize: 20 }} />
-              }
-              alignItems={"center"}
-              mb={2}
-              fontWeight={600}
-              sx={{ color: grey[800] }}
-            >
-              Specifications
-            </Typography>
-
-            <Box sx={{ display: "flex", gap: 2 }}>
-              {row?.item_specifications?.map((spec, i) => (
-                <Sheet
-                  key={i}
-                  variant="outlined"
-                  sx={{ p: 2, borderRadius: 15, minWidth: 260 }}
-                >
-                  {spec.description}
-                </Sheet>
-              ))}
-            </Box>
-          </>
-        )}
+        renderExpanded={(row) => <ItemDetailsRow row={row} />}
       />
 
       <ItemRequestModal

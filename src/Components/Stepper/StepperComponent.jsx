@@ -63,9 +63,9 @@ const StepperComponent = ({ data = [] }) => {
               key={key}
               isLast={key === data.length - 1}
               role={!isActor && approver_user.role}
-              position={isActor ? actor?.position : approver_user?.position}
+              position={isActor ? actor?.area : approver_user?.position}
               name={isActor ? actor?.name : approver_user?.name}
-              area_code={isActor ? actor?.area : approver_user?.area}
+              area_code={isActor ? actor?.area_code : approver_user?.area_code}
               area={isActor ? actor?.area : approver_user?.area}
               status={status}
               submitted_at={created_at}

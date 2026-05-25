@@ -99,8 +99,8 @@ const ObjectivesModal = ({
         />
 
         <AutocompleteComponent
-          placeholder="Select objectives"
-          label={"Objectives"}
+          placeholder="Select objective"
+          label={"Objective"}
           size="md"
           value={objective}
           setValue={(val) => {
@@ -142,8 +142,8 @@ const ObjectivesModal = ({
         ) : (
           <>
             <AutocompleteComponent
-              placeholder="Select success indicators"
-              label={"Success Indicators"}
+              placeholder="Select success indicator"
+              label={"Success Indicator"}
               size="md"
               value={successIndicator}
               setValue={(val) => {

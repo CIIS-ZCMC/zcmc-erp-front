@@ -1,16 +1,19 @@
 {
   "compilerOptions": {
-    "baseUrl": "src",
+    "baseUrl": ".",
+    "module": "ESNext",
+    "moduleResolution": "bundler",
     "paths": {
-      "@Components/*": ["Components/*"],
-      "@Pages/*": ["Pages/*"],
-      "@Layout/*": ["Layout/*"],
-      "@Hooks/*": ["Hooks/*"],
-      "@Data/*": ["Data/*"],
-      "@Utils/*": ["Utils/*"],
-      "@Store/*": ["Store/*"],
-      "@Services/*": ["Services/*"],
-      "@Routes/*": ["Routes/*"]
+      "@Components/*": ["src/Components/*"],
+      "@Pages/*": ["src/Pages/*"],
+      "@Layout/*": ["src/Layout/*"],
+      "@Hooks/*": ["src/Hooks/*"],
+      "@Data/*": ["src/Data/*"],
+      "@Utils/*": ["src/Utils/*"],
+      "@Store/*": ["src/Store/*"],
+      "@Services/*": ["src/Services/*"],
+      "@Routes/*": ["src/Routes/*"]
     }
-  }
+  },
+  "exclude": ["node_modules", "dist"]
 }

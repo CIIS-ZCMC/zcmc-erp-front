@@ -20,7 +20,7 @@ import useJobPositionsHook from "../../../../../Hooks/JobPositionsHook";
 
 import useResponsibleStore, {
   useResponsiblePeopleActions,
-} from "../../../../../Store/ResponsibleStore";
+} from "../../../../../Store/ResponsiblePeopleStore";
 import useUsersStore from "../../../../../Store/UsersStore";
 import useJobPositionStore from "../../../../../Store/JobPositionsStore";
 import { grey } from "@mui/material/colors";
@@ -62,7 +62,7 @@ const ResponsibleModal = () => {
   // Filter out users that are already selected
   const availableUsers = useMemo(() => {
     return users.filter(
-      (user) => !selectedPeople?.filter(Boolean).some((p) => p.id === user.id)
+      (user) => !selectedPeople?.filter(Boolean).some((p) => p.id === user.id),
     );
   }, [users, selectedPeople]);
 
@@ -70,13 +70,13 @@ const ResponsibleModal = () => {
   const availableJobPositions = useMemo(() => {
     return (jobPositions || []).filter(
       (position) =>
-        !selectedPeople?.filter(Boolean).some((p) => p.id === position.id)
+        !selectedPeople?.filter(Boolean).some((p) => p.id === position.id),
     );
   }, [jobPositions, selectedPeople]);
 
   const userCount = selectedPeople.filter((user) => user.sector_id).length;
   const jobPositionCount = selectedPeople.filter(
-    (position) => !position.sector_id
+    (position) => !position.sector_id,
   ).length;
 
   return (
@@ -101,6 +101,7 @@ const ResponsibleModal = () => {
 
         <TabPanel value={0}>
           <AutocompleteComponent
+            key={`users-${selectedPeople.length}`}
             label={"Select Person/People"}
             size={"md"}
             placeholder="Search by name or department"
@@ -112,6 +113,7 @@ const ResponsibleModal = () => {
 
         <TabPanel value={1}>
           <AutocompleteComponent
+            key={`users-${selectedPeople.length}`}
             label={"Select Job Position"}
             placeholder="Search by position or department"
             size={"md"}

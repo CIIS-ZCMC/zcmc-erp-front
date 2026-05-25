@@ -100,8 +100,7 @@ export const AOP = {
   AOP_EMPTY_OBJECTIVE_DESC: "Begin by adding a new objective.",
   EMPTY_STATE_TITLE: ` You don't have an AOP for this year yet.`,
   EMPTY_STATE_SUBTITLE: `Begin by creating a new AOP.`,
-  EMPTY_STATE_DESCRIPTION: `Nothing to show yet for this year’s PPMP. You may request new
-                    items for the meantime or create a new AOP request.`,
+  EMPTY_STATE_DESCRIPTION: `Nothing to show yet for this year’s AOP. You may create a new AOP request.`,
   EMPTY_TITLE_PAGE: "Enterprise Resource Planning System",
   EMPTY_TITLE_DESC: "Sample description",
 };
@@ -235,7 +234,7 @@ export const PPMP_CONSTANTS = {
 };
 
 export const LIBRARY_CONSTANTS = {
-  LIBRARY_TITLE: "Item information management",
+  LIBRARY_TITLE: "Item Information Management",
   LIBRARY_SUBTITLE:
     "All information used by end-users around the system, across different modules and areas can be managed here.",
   LIBRARY_HEADER: "List of records ready for AOP and PPMP",
@@ -436,8 +435,8 @@ export const happensNext = [
   {
     description: (
       <Typography level="body-sm" color="black">
-        ● <b>Planning Office Review:</b> Your AOP will be reviewed by the
-        Planning Office within 7–10 business days
+        ● <b>Planning Office Review:</b> Your AOP and PPMP will be reviewed by
+        the Planning Office within 7–10 business days
       </Typography>
     ),
   },
@@ -452,16 +451,16 @@ export const happensNext = [
   {
     description: (
       <Typography level="body-sm" color="black">
-        ● <b>Dashboard Updates:</b> Check your AOP Dashboard anytime to track
-        the status of your submission
+        ● <b>Dashboard Updates:</b> Check your AOP and PPMP Dashboard anytime to
+        track the status of your submission
       </Typography>
     ),
   },
   {
     description: (
       <Typography level="body-sm" color="black">
-        ● <b>Possible Outcomes:</b> Your AOP may be approved, returned for
-        revision, or require additional information
+        ● <b>Possible Outcomes:</b> Your AOP and PPMP may be approved, returned
+        for revision, or require additional information
       </Typography>
     ),
   },

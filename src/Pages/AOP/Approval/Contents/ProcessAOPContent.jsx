@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState } from "react";
-import { useAuth, useUserTypes } from "../../../../Store/AuthStore";
+import { useAuth } from "../../../../Store/AuthStore";
 import { approvalActions } from "../../../../Data/constants";
 import { handleChangeInput } from "../../../../Utils/HandleInput";
 import { Box, Divider, Stack, Typography } from "@mui/joy";
@@ -18,11 +18,21 @@ import ModalComponent from "../../../../Components/Common/Dialog/ModalComponent"
 import AlertDialogComponent from "../../../../Components/Common/Dialog/AlertDialogComponent";
 import { TEST_MODE } from "../../../../Services/Config";
 import { APPROVAL_TIMELINE } from "../../../../Data/TestData";
-import { useTimelineID } from "../../../../Hooks/AOP/AOPApplicationsHook";
+import {
+  useAOPApplicationObjectives,
+  useAOPPermissions,
+  useTimelineID,
+} from "../../../../Hooks/AOP/AOPApplicationsHook";
 
 const ProcessAOPContent = () => {
   // HOOKS
-  const { isDivisionHead, isPlanning, isMCC, isBudget } = useUserTypes();
+  const apiPermissions = useAOPPermissions();
+
+  const isDivisionChief = apiPermissions?.is_division_chief;
+  const isPlanningOfficer = apiPermissions?.is_planning;
+  const isMCCOfficer = !isDivisionChief && !isPlanningOfficer; // Keep this from user types for now
+
+  const AOPApplicationObjectives = useAOPApplicationObjectives();
   const { processApplication } = useApprovalActions();
   const {
     setAlertDialog,
@@ -45,8 +55,16 @@ const ProcessAOPContent = () => {
   const [openProcessModal, setOpenProcessModal] = useState(false);
   const [btnLoading, setBtnLoading] = useState(false);
 
+  // Add this after the existing state declarations (around line 46)
+  const areAllActivitiesReviewed =
+    AOPApplicationObjectives?.every((obj) =>
+      obj.activities?.every((activity) => activity.is_reviewed),
+    ) ?? true;
+
   // FUNCTIONS
   const handleProcessRequest = () => {
+    // Add validation for planning users
+
     setOpenProcessModal(true);
   };
 
@@ -54,12 +72,12 @@ const ProcessAOPContent = () => {
     !processData?.pin ||
     !processData?.action ||
     processData?.pin?.length !== 6 ||
-    (isDivisionHead && (!processData?.remarks || processData?.remarks === ""));
+    (isDivisionChief && (!processData?.remarks || processData?.remarks === ""));
 
   const getNextOffice = () => {
-    if (isDivisionHead) {
+    if (isDivisionChief) {
       return "Planning Unit";
-    } else if (isPlanning) {
+    } else if (isPlanningOfficer) {
       return "MCC/Budget";
     }
   };
@@ -92,7 +110,7 @@ const ProcessAOPContent = () => {
             processData.action === "returned"
               ? "The AOP request has been returned for revision"
               : "The AOP request successfully approved",
-          description: isMCC
+          description: isMCCOfficer
             ? `The AOP request has been successfully ${processData.action}. All parties involved will be notified of this update.`
             : processData.action === "returned"
               ? `The request has been returned to the requesting party for necessary revisions. They will be notified of your remarks and required changes.`
@@ -126,9 +144,12 @@ const ProcessAOPContent = () => {
     <Fragment>
       <ButtonComponent
         label={"Process request"}
-        disabled={disabledProcessRequest ?? true}
+        disabled={
+          disabledProcessRequest ||
+          (isPlanningOfficer && !areAllActivitiesReviewed)
+        }
         onClick={handleProcessRequest}
-      />{" "}
+      />
       {/* MODAL */}
       <ModalComponent
         hasActionButtons
@@ -145,9 +166,9 @@ const ProcessAOPContent = () => {
         rightButtonDisabled={confirmButtonDisabled}
         maxWidth={500}
         content={
-          <Stack gap={isDivisionHead && !isMCC && 1}>
-            <Stack py={isPlanning ? 2 : 1}>
-              {(isPlanning || isDivisionHead) && (
+          <Stack gap={isDivisionChief && 1}>
+            <Stack py={isPlanningOfficer ? 2 : 1}>
+              {(isPlanningOfficer || isDivisionChief) && (
                 <Box mb={2}>
                   <Typography level="title-sm" mb={1}>
                     Select the action you would like to take:
@@ -168,7 +189,7 @@ const ProcessAOPContent = () => {
               )}
 
               {/* IF OMCC, AUTH PIN */}
-              {isDivisionHead && !isMCC ? (
+              {isDivisionChief && !isMCCOfficer ? (
                 <TextareaComponent
                   minRows={3}
                   label={"Remarks"}
@@ -183,7 +204,7 @@ const ProcessAOPContent = () => {
               ) : null}
             </Stack>
 
-            {isDivisionHead && !isMCC && <Divider />}
+            {isDivisionChief && !isMCCOfficer && <Divider />}
             <InputComponent
               type="password"
               label="Authorization pin"

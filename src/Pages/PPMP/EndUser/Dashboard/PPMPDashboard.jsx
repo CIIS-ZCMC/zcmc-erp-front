@@ -1,35 +1,33 @@
 import React, { Fragment, useEffect, useState } from "react";
-import { Box, useTheme } from "@mui/joy";
+import { Box, Typography, useTheme } from "@mui/joy";
 import { useNavigate, useLocation } from "react-router-dom";
 import { usePPMPActions, usePPMPState } from "../../../../Hooks/PPMP/PPMPHook";
 import { nextYear } from "../../../../Utils/Functions";
 import PageTitle from "@Components/Common/PageTitle";
 import ModalComponent from "@Components/Common/Dialog/ModalComponent";
 import useModalHook from "../../../../Hooks/ModalHook";
-
-import useItemRequestHook from "../../../../Hooks/ItemRequest/ItemRequestHook";
-import useItemRequestStore from "../../../../Store/ItemRequestStore";
+import {
+  useItemRequestActions,
+  useItemRequestsByUser,
+} from "../../../../Hooks/ItemRequest/ItemRequestHook";
 import userErrorInputHook from "../../../../Hooks/ErrorInputHook";
 import useAOPStore from "../../../../Store/AOPStore";
-
 // View Item Requests Modal Components
-import Content from "../Modal/ItemRequests/Content";
 import PPMPSummaryCards from "./PPMPSummaryCards";
 import DashboardHeader from "./DashboardHeader";
 import NewRequestModal from "../Modal/AddItemRequest/NewRequestModal";
 import PPMPSubmissionModal from "../Modal/Dashboard/PPMPSubmissionModal";
 import SuccessSubmissionModal from "../Modal/Dashboard/SuccessSubmissionModal";
 import { happensNext } from "../../../../Data/constants";
-import useItemRequestsHook from "../../../../Hooks/ItemRequest/ItemRequestHook";
 
 function PPMPDashboard(props) {
   const location = useLocation();
   const pathName = location.pathname;
 
-  const { requestsByUser } = useItemRequestStore();
+  const requestsByUser = useItemRequestsByUser();
   const { aop } = useAOPStore();
 
-  const { getItemRequestByUser, postItmRequest } = useItemRequestsHook();
+  const { getItemRequestByUser, postItmRequest } = useItemRequestActions();
   const { setError, clearErrors } = userErrorInputHook();
 
   const { data, current_page, per_page, next_page_url, prev_page_url, total } =
@@ -48,12 +46,12 @@ function PPMPDashboard(props) {
 
   const [pageLoader, setPageLoader] = useState(false);
   const [openSave, setOpenSave] = useState(false);
+  const [buttonLoader, setButtonLoader] = useState(false);
   const [pin, setPin] = useState("");
   const [year, setYear] = useState(nextYear);
   const [openViewItemRequest, setOpenItemRequest] = useState();
   const [openNewRequest, setOpenNewRequest] = useState(false);
   const [step, setStep] = useState(1);
-  const [buttonLoader, setButtonLoader] = useState(false);
   const [openSuccessDialog, setOpenSuccessDialog] = useState(false);
   const [itemReq, setItemReq] = useState({
     classification: null,
@@ -105,10 +103,9 @@ function PPMPDashboard(props) {
             setButtonLoader(false);
             setAlertDialog({
               status: "error",
-              title: message,
-              description: "",
+              title: "Cannot submit PPMP",
+              description: message,
             });
-            return;
           }
         },
       );
@@ -162,87 +159,6 @@ function PPMPDashboard(props) {
 
   const handleNextStep = () => setStep((prev) => Math.min(prev + 1, 3));
   const handlePreviousStep = () => setStep((prev) => Math.max(prev - 1, 1));
-
-  const submit = async () => {
-    clearErrors();
-    let hasError = false;
-
-    itemReq.specs.forEach((spec, index) => {
-      if (!spec.value.trim()) {
-        setError(
-          `specs[${index}]`,
-          true,
-          `Specification ${index + 1} is required.`,
-        );
-        hasError = true;
-      }
-    });
-    if (!itemReq?.pin?.trim()) {
-      setError("pin", true, "Authorization PIN is required.");
-      hasError = true;
-    }
-    console.log(hasError);
-    if (hasError) return;
-
-    try {
-      setButtonLoader(true);
-      const payload = {
-        name: itemReq.item_name || "",
-        estimated_budget: itemReq?.estimated_budget ?? 0,
-        item_unit_id: itemReq.unit?.id ?? null,
-        item_category_id: itemReq.category?.id ?? null,
-        item_classification_id: itemReq.classification?.id ?? null,
-        market_research: itemReq?.market_research, // boolean
-        specifications: itemReq?.specs?.map((spec) => ({
-          description: spec?.value ?? "",
-        })),
-        authorization_pin: itemReq?.pin ?? "",
-        terminology_category_id: itemReq?.variant?.id ?? null, // not required
-      };
-
-      await postItmRequest(payload, (status, message, data) => {
-        if (status === 201) {
-          setItemReq({
-            classification: null,
-            category: null,
-            item_name: "",
-            unit: null,
-            estimated_budget: "",
-            variant: null,
-            market_research: false,
-            specs: [
-              { id: 1, value: "" },
-              { id: 2, value: "" }, // initial two specs
-            ],
-            pin: "",
-          });
-          setAlertDialog({
-            status: "success",
-            title: "Request for new item successfully submitted.",
-            description: message,
-          });
-          setButtonLoader(false);
-          setOpenNewRequest(false); // close modal
-          setStep(1); // reset to step 1 if using a stepper
-        } else {
-          setButtonLoader(false);
-          setAlertDialog({
-            status: "error",
-            title: "Request Failed",
-            description: message,
-          });
-        }
-      });
-    } catch (error) {
-      console.log(error);
-      setButtonLoader(false);
-      setAlertDialog({
-        status: "error",
-        title: "Request Failed",
-        description: "An unexpected error occurred. Please try again.",
-      });
-    }
-  };
 
   const isDispensing = dashboard?.is_dispensing;
 
@@ -305,30 +221,13 @@ function PPMPDashboard(props) {
       {/* <PageLoader isLoading={pageLoader} /> */}
 
       {/* View Item Requests Modal */}
-      {openViewItemRequest && (
-        <ModalComponent
-          isOpen={openViewItemRequest}
-          title={"Items Requested"}
-          description={"Below are the items you’ve requested for this PPMP."}
-          minWidth={"85%"}
-          handleClose={() => setOpenItemRequest(false)}
-          content={<Content data={requestsByUser} path={pathName} />}
-        />
-      )}
 
-      {openNewRequest && (
+      {/* {openNewRequest && (
         <NewRequestModal
           openNewRequest={openNewRequest}
           setOpenNewRequest={setOpenNewRequest}
-          step={step}
-          itemReq={itemReq}
-          setItemReq={setItemReq}
-          handlePreviousStep={handlePreviousStep}
-          handleNextStep={handleNextStep}
-          submit={submit}
-          buttonLoader={buttonLoader}
         />
-      )}
+      )} */}
 
       {/* call api item request by user first */}
       {openSave && (

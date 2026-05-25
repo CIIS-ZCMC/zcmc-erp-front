@@ -1,6 +1,9 @@
 import React, { Fragment, useEffect, useMemo, useState } from "react";
 import { localStorageGetter } from "../../../../Utils/LocalStorage";
-import { useAOPApplicationObjectives } from "../../../../Hooks/AOP/AOPApplicationsHook";
+import {
+  useAOPApplicationObjectives,
+  useAOPPermissions,
+} from "../../../../Hooks/AOP/AOPApplicationsHook";
 import { toCapitalize } from "../../../../Utils/Typography";
 import { Stack, Typography } from "@mui/joy";
 import CustomAccordionComponent from "../../../../Components/Common/Accordion/CustomAccordionComponent";
@@ -26,7 +29,10 @@ const ObjectivesList = () => {
   });
 
   // HOOKS
-  const { isPlanning } = useUserTypes();
+
+  const apiPermissions = useAOPPermissions();
+  const isPlanningOfficer = apiPermissions?.is_planning;
+
   const AOPApplicationObjectives = useAOPApplicationObjectives();
   const ApplicationObjectives = useMemo(
     () =>
@@ -93,8 +99,17 @@ const ObjectivesList = () => {
 
     const firstActivityId = AOPApplicationObjectives?.[0]?.activities?.[0]?.id;
 
-    if (firstActivityId && !activeActivity) {
-      handleClickActivity(firstActivityId);
+    // Always select the first activity when objectives load, regardless of current activeActivity
+    // This ensures we always have the correct activity for the current application
+    if (firstActivityId) {
+      // Check if the current activeActivity belongs to this application
+      const isActiveInCurrentApp = AOPApplicationObjectives.some((obj) =>
+        obj.activities.some((activity) => activity.id === activeActivity),
+      );
+
+      if (!isActiveInCurrentApp) {
+        handleClickActivity(firstActivityId);
+      }
     }
   }, [AOPApplicationObjectives]);
 
@@ -164,7 +179,7 @@ const ObjectivesList = () => {
                           label={`Activity #${activity_key + 1} `}
                           text={name}
                           withComment={with_comments}
-                          reviewed={isPlanning ? is_reviewed : false}
+                          reviewed={isPlanningOfficer ? is_reviewed : false}
                         />
                       ),
                     )}

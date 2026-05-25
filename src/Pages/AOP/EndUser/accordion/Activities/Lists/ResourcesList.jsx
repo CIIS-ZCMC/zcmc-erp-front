@@ -6,6 +6,7 @@ import {
   Stack,
   Typography,
   Avatar,
+  Box,
 } from "@mui/joy";
 
 import BoxComponent from "@Components/Common/Card/BoxComponent";
@@ -46,8 +47,12 @@ const ResourcesList = ({ resources, resourcesCount }) => {
             </Typography>
           </Avatar>
         </Stack>
-        {console.log(resources)}
-        <BasicTableComponent columns={SUMMARY_RESOURCES()} rows={resources} />
+        <BasicTableComponent
+          columns={SUMMARY_RESOURCES()}
+          rows={resources}
+          maxHeight="300px"
+          stickyHeader
+        />
       </BoxComponent>
     </>
   );

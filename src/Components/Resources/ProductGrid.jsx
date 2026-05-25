@@ -14,97 +14,126 @@ export default function ProductGrid({
   loading = false,
   items = [],
 }) {
-  const parentRef = useRef();
-  const rowRef = useRef(null);
+  const parentRef = useRef(null);
 
+  const [containerWidth, setContainerWidth] = useState(0);
   const [rowHeight, setRowHeight] = useState(360);
 
-  // Example: 3 columns
-  const theme = useTheme();
-  const isXs = useMediaQuery(theme.breakpoints.down("sm"));
-  const isSm = useMediaQuery(theme.breakpoints.between("sm", "md"));
-
-  const columns = isXs ? 1 : isSm ? 2 : 3;
-  const rowCount = Math.ceil(items.length / columns);
+  // --------------------------------------------------
+  // DETECT CONTAINER WIDTH
+  // --------------------------------------------------
 
   useEffect(() => {
-    if (rowRef.current) {
-      setRowHeight(rowRef.current.offsetHeight);
+    const updateWidth = () => {
+      if (parentRef.current) {
+        setContainerWidth(parentRef.current.offsetWidth);
+      }
+    };
+
+    updateWidth();
+
+    const resizeObserver = new ResizeObserver(updateWidth);
+
+    if (parentRef.current) {
+      resizeObserver.observe(parentRef.current);
     }
+
+    return () => resizeObserver.disconnect();
   }, []);
+
+  // --------------------------------------------------
+  // DYNAMIC COLUMN COUNT
+  // --------------------------------------------------
+
+  const columns = Math.max(1, Math.floor(containerWidth / columnWidth));
+
+  const rowCount = Math.ceil(items.length / columns);
+
+  // --------------------------------------------------
+  // VIRTUALIZER
+  // --------------------------------------------------
 
   const rowVirtualizer = useVirtualizer({
     count: rowCount,
     getScrollElement: () => parentRef.current,
-    estimateSize: () => rowHeight, // estimated row height
-    overscan: 3, // render a few extra rows for smooth scrolling
+    estimateSize: () => rowHeight,
+    overscan: 3,
   });
+
   return (
     <Fragment>
       <BoxComponent
         mt={2}
-        boxShadow="sm"
         height={height}
-        sx={{ position: "relative" }}
+        boxShadow="sm"
+        sx={{ position: "relative", overflow: "hidden" }}
       >
-        {loading && (
-          <Grid container spacing={2}>
-            {[...Array(9)].map((_, index) => (
-              <Grid xs={12} sm={6} md={4} key={index}>
-                <Skeleton
-                  variant="rectangular"
-                  animation="wave"
-                  height={180}
-                  sx={{ borderRadius: 10 }}
-                />
-              </Grid>
-            ))}
-          </Grid>
-        )}
-        <Box
-          ref={parentRef}
-          sx={{
-            overflow: "auto",
-            height,
-            position: "relative",
-          }}
-        >
+        {loading ? (
           <Box
             sx={{
-              height: `${rowVirtualizer.getTotalSize()}px`,
+              display: "grid",
+              gridTemplateColumns: `repeat(auto-fit, minmax(${columnWidth}px, 1fr))`,
+              gap: 2,
+            }}
+          >
+            {[...Array(9)].map((_, index) => (
+              <Skeleton
+                key={index}
+                variant="rectangular"
+                animation="wave"
+                height={180}
+                sx={{ borderRadius: 10 }}
+              />
+            ))}
+          </Box>
+        ) : (
+          <Box
+            ref={parentRef}
+            sx={{
+              overflow: "auto",
+              height: "100%",
               position: "relative",
             }}
           >
-            {rowVirtualizer.getVirtualItems().map((virtualRow) => {
-              const startIndex = virtualRow.index * columns;
-              const rowItems = items.slice(startIndex, startIndex + columns);
+            <Box
+              sx={{
+                height: `${rowVirtualizer.getTotalSize()}px`,
+                width: "100%",
+                position: "relative",
+              }}
+            >
+              {rowVirtualizer.getVirtualItems().map((virtualRow) => {
+                const startIndex = virtualRow.index * columns;
+                const rowItems = items.slice(startIndex, startIndex + columns);
 
-              return (
-                <Box
-                  key={virtualRow.key}
-                  sx={{
-                    display: "grid",
-                    gridTemplateColumns: `repeat(${columns}, 1fr)`,
-                    gap: 1,
-                    position: "absolute",
-                    top: 0,
-                    left: 0,
-                    transform: `translateY(${virtualRow.start}px)`,
-                    width: "100%",
-                  }}
-                >
-                  {rowItems.map((item, index) => (
-                    <ItemCardComponent
-                      item={item}
-                      btnAction={() => onAddToCart?.(item)}
-                      itemInfoAction={() => onItemInfo?.(item)}
-                    />
-                  ))}
-                </Box>
-              );
-            })}
+                return (
+                  <Box
+                    key={virtualRow.key}
+                    sx={{
+                      display: "grid",
+                      gridTemplateColumns: `repeat(${columns}, 1fr)`,
+                      gap: 1,
+                      position: "absolute",
+                      top: 0,
+                      left: 0,
+                      transform: `translateY(${virtualRow.start}px)`,
+                      width: "100%",
+                    }}
+                  >
+                    {rowItems.map((item, index) => (
+                      <ItemCardComponent
+                        key={item?.id || index}
+                        item={item}
+                        btnAction={() => onAddToCart?.(item)}
+                        itemInfoAction={() => onItemInfo?.(item)}
+                      />
+                    ))}
+                  </Box>
+                );
+              })}
+            </Box>
           </Box>
-        </Box>
+        )}
       </BoxComponent>
     </Fragment>
   );

@@ -39,7 +39,7 @@ export default function ProcurementSchedule({ editing, value, onChange }) {
   return (
     <>
       {/* Title */}
-      <Stack mb={2} gap={1}>
+      <Stack mb={2} spacing={1}>
         <Typography
           level="title-md"
           startDecorator={<TodayOutlined color="success" />}
@@ -62,9 +62,10 @@ export default function ProcurementSchedule({ editing, value, onChange }) {
         <Box
           sx={{
             display: "grid",
-            gridTemplateColumns: "repeat(12,1fr)",
+            gridTemplateColumns: "repeat(auto-fit, minmax(80px, 1fr))", // Responsive columns
             backgroundColor: grey[100],
             borderBottom: `1px solid ${grey[200]}`,
+            overflowX: "hidden", // Prevent horizontal scroll
           }}
         >
           {months.map((m) => (
@@ -75,6 +76,7 @@ export default function ProcurementSchedule({ editing, value, onChange }) {
                 textAlign: "center",
                 fontWeight: 600,
                 borderRight: `1px solid ${grey[300]}`,
+                minWidth: "80px", // Minimum width for each month
                 "&:last-child": { borderRight: "none" },
               }}
             >

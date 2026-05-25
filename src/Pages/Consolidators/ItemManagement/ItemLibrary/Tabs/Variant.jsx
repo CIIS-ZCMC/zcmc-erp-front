@@ -1,29 +1,30 @@
 import React, { Fragment, useEffect, useState } from "react";
-import { variantCols } from "../../../Data/Columns";
-import ScrollableTableComponent from "../../../Components/Common/Table/ScrollableTableComponent";
-import useModalHook from "../../../Hooks/ModalHook";
-import useVariantHooks from "../../../Hooks/Libraries/LibVarianHooks";
-import ServerTableComponent from "../../../Components/Common/Table/ServerTableComponent";
-import useTerminologyHooks from "../../../Hooks/Libraries/LibTerminology";
-import SearchBarComponentv2 from "../../../Components/SearchBarWithdeBounce";
-import { Stack } from "@mui/material";
-import ConfirmationModalComponent from "../../../Components/Common/Dialog/ConfirmationModalComponent";
-import usePinHook from "../../../Hooks/PinHook";
-import ExpandableTable from "@Components/Common/Table/ExpandableTable";
-import StatusSwitch from "@Components/StatusSwitchComponent";
-import SearchWithSuggestions from "@Components/SearchWithSuggestions";
-import ButtonComponent from "@Components/Common/ButtonComponent";
+import { variantCols } from "../../../../../Data/Columns";
 import { AddOutlined } from "@mui/icons-material";
-import { Chip, ChipDelete, Divider, IconButton, Typography } from "@mui/joy";
-import useItemsHook from "../../../Hooks/ItemManagementHook";
-import useSnackbarHook from "../../../Hooks/SnackbarHook";
+import {
+  Chip,
+  ChipDelete,
+  Divider,
+  IconButton,
+  Stack,
+  Typography,
+} from "@mui/joy";
+import { grey } from "@mui/material/colors";
+import useItemsHook from "@Hooks/ItemManagementHook";
+import useSnackbarHook from "@Hooks/SnackbarHook";
+import useModalHook from "@Hooks/ModalHook";
+import usePinHook from "@Hooks/PinHook";
+import SearchBarComponentv2 from "@Components/SearchBarWithdeBounce";
+import ButtonComponent from "@Components/Common/ButtonComponent";
+import ExpandableTable from "@Components/Common/Table/ExpandableTable";
 import ModalComponent from "@Components/Common/Dialog/ModalComponent";
 import InputComponent from "@Components/Form/InputComponent";
 import TextareaComponent from "@Components/Form/TextareaComponent";
-import AuthorizationPinComponent from "@Components/AuthorizationPinComponent";
-import { handleChangeInput } from "../../../Utils/HandleInput";
-import { grey } from "@mui/material/colors";
 import MultipleAutocompleteComponent from "@Components/Form/MultipleAutcompleteComponent";
+import AuthorizationPinComponent from "@Components/AuthorizationPinComponent";
+import ConfirmationModalComponent from "@Components/Common/Dialog/ConfirmationModalComponent";
+import { handleChangeInput } from "@Utils/HandleInput";
+import StatusSwitch from "@Components/StatusSwitchComponent";
 
 export const Variant = () => {
   const {

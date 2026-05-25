@@ -61,7 +61,12 @@ function TextareaComponent({
           py: 1.2,
           background: darkMode ? "transparent" : undefined,
           color: "neutral.700",
-          whiteSpace: "pre-wrap",
+
+          width: "100%",
+          minWidth: 0,
+          maxWidth: "100%",
+          wordBreak: "break-word",
+          overflowWrap: "break-word",
         }}
       />
       {(fieldError?.isError || helperText) && (

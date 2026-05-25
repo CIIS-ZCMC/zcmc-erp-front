@@ -12,8 +12,6 @@ import { ThreeDots } from "react-loader-spinner";
 import { useUserTypes } from "../../../../Store/AuthStore";
 import { localStorageGetter } from "../../../../Utils/LocalStorage";
 
-import { useNavigate } from "react-router-dom";
-
 export const FeedbackContent = ({
   openFeedbackModal,
   setOpenFeedbackModal,
@@ -26,7 +24,6 @@ export const FeedbackContent = ({
   useEffect(() => {
     // console.log(isDivisionHead);
   }, [isDivisionHead]);
-
 
   // COMMENTS HOOK
   const remarks = useRemarks();
@@ -66,7 +63,7 @@ export const FeedbackContent = ({
     // console.log(isDivisionHead)
     // console.log(allComments)
     // console.log(feedbackDisplay)
-  }, [isDivisionHead, feedbackDisplay, allComments])
+  }, [isDivisionHead, feedbackDisplay, allComments]);
 
   return (
     <DrawerComponent
@@ -135,7 +132,10 @@ export const FeedbackContent = ({
                         messages
                           ?.filter((m) => m.__type === "comment")
                           .map(
-                            ({ name, area, area_code, created_at, comment }, idx) => (
+                            (
+                              { name, area, area_code, created_at, comment },
+                              idx,
+                            ) => (
                               <CommentContainerComponent
                                 key={idx}
                                 name={name}
@@ -144,7 +144,7 @@ export const FeedbackContent = ({
                                 date={created_at}
                                 isActivity={isActivity}
                               />
-                            )
+                            ),
                           )}
 
                       {/* REMARKS TAB */}
@@ -159,9 +159,9 @@ export const FeedbackContent = ({
                                 area_name,
                                 created_at,
                                 remark,
-                                role
+                                role,
                               },
-                              idx
+                              idx,
                             ) => (
                               <CommentContainerComponent
                                 key={idx}
@@ -170,10 +170,10 @@ export const FeedbackContent = ({
                                 area_code={area_name}
                                 date={created_at}
                               />
-                            )
+                            ),
                           )}
                     </Fragment>
-                  )
+                  ),
                 )}
               </Stack>
             </>

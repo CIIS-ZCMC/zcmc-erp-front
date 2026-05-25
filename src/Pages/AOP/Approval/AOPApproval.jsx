@@ -36,6 +36,7 @@ import { CalendarToday, FileDownload } from "@mui/icons-material";
 import ButtonComponent from "@Components/Common/ButtonComponent";
 import useSnackbarHook from "../../../Hooks/SnackbarHook";
 import { useUserTypes } from "../../../Store/AuthStore";
+import { useActivityActions } from "../../../Hooks/AOP/ActivityHook";
 
 const AOPApproval = () => {
   const navigate = useNavigate();
@@ -45,6 +46,7 @@ const AOPApproval = () => {
     useAOPApplicationsActions();
   const AOPApplications = useAOPApplications();
   const { getAOPApprovalTimeline, generateWFP } = useApprovalActions();
+  const { clearActivityStore } = useActivityActions();
   const approvalTimeline = useApprovalTimeline();
   const isLoading = useApprovalLoading();
   const { isPlanning } = useUserTypes();
@@ -288,7 +290,7 @@ const AOPApproval = () => {
       <DrawerComponent
         open={openTimelineModal}
         setOpen={setOpenTimelineModal}
-        title={`Approval timeline for this AOP`}
+        title={`Approval timeline for this Application`}
         description={"The list below shows the current status of the request."}
         content={
           <Stack mt={2}>

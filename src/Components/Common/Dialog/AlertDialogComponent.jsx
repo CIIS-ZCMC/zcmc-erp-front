@@ -67,7 +67,10 @@ function AlertDialogComponent({
               }}
             >
               <DialogTitle
-                sx={{ alignItems: "start", justifyContent: "space-between" }}
+                sx={{
+                  alignItems: "start",
+                  justifyContent: "space-between",
+                }}
               >
                 <Stack gap={1}>
                   <Box mb={2}>{getStatusIcon(status)}</Box>
@@ -84,11 +87,11 @@ function AlertDialogComponent({
                     fontSize={{ xs: 12, lg: 13 }}
                     color="neutral"
                   > */}
-                  {description}
+
                   {/* </Typography> */}
                 </Stack>
               </DialogTitle>
-
+              {description}
               <DialogActions>
                 <Box
                   sx={{

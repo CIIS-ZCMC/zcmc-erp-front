@@ -18,8 +18,6 @@ import useSnackbarHook from "../../../Hooks/SnackbarHook";
 import AddItemRequest from "./AddItemRequest";
 
 function AddItems(props) {
-  const { user } = useAuth();
-
   const navigate = useNavigate();
   const location = useLocation();
   const { type } = useParams();
@@ -35,7 +33,18 @@ function AddItems(props) {
   const { setAlertDialog, closeAlertDialog } = useModalHook();
   const { showSnack } = useSnackbarHook();
 
-  const cartStore = useCartStore(user?.id || "guest", isPPMP);
+  const { user, loading } = useAuth();
+
+  if (loading) {
+    return null;
+  }
+
+  if (!user?.id) {
+    return null;
+  }
+
+  const cartStore = useCartStore(user.id, isPPMP);
+
   const { cart, addActivityToItem, removeActivityFromItem, clearCart } =
     cartStore();
   const [displayLoading, setDisplayLoading] = useState(false);
@@ -106,7 +115,10 @@ function AddItems(props) {
       try {
         setDisplayLoading(true);
 
-        const itemsResult = await getItems();
+        const itemsResult = await getItems({
+          mode: "selection",
+          ...(isPPMP && { type: "ppmp_item" }),
+        });
         if (itemsResult.status !== 200) {
           console.error("Failed to fetch items:", itemsResult.message);
           return;

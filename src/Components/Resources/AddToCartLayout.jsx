@@ -8,7 +8,7 @@ import {
   Stack,
   Typography,
 } from "@mui/joy";
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment, useEffect, useMemo, useState } from "react";
 import ProductGrid from "./ProductGrid";
 import CartPreviewComponent from "./CartPreviewComponent";
 import Cart from "./Cart";
@@ -59,41 +59,53 @@ export default function AddToCartLayout({
 
   // Filter values
 
-  const totalCost = cart.reduce(
-    (sum, i) => sum + i.estimated_budget * i.qty,
-    0,
-  );
-  const totalQty = cart.reduce((sum, i) => sum + i.qty, 0);
+  const totalCost = useMemo(() => {
+    return cart.reduce((sum, i) => sum + i.estimated_budget * i.qty, 0);
+  }, [cart]);
 
-  const handleSearch = (searchValue = search, filters = filterValues) => {
+  const totalQty = useMemo(() => {
+    return cart.reduce((sum, i) => sum + i.qty, 0);
+  }, [cart]);
+
+  const executeSearch = () => {
     setDisplayLoading(true);
 
-    // Extract filter IDs if they exist
-    const { classification, category, system } = filters || {};
+    const { classification, category, system } = filterValues;
+
     const filterParams = {
-      ...(classification?.id && { item_classification_id: classification.id }),
-      ...(category?.id && { item_category_id: category.id }),
-      ...(system?.id && { system_id: system.id }),
+      ...(classification?.id && {
+        item_classification_id: classification.id,
+      }),
+      ...(category?.id && {
+        item_category_id: category.id,
+      }),
+      ...(system?.id && {
+        system_id: system.id,
+      }),
     };
 
-    // Build main params
     const params = {
-      ...(searchValue && { search: searchValue }),
+      ...(search && { search }),
       ...(isPPMP && { type: "ppmp_item" }),
       ...filterParams,
     };
 
-    // If nothing is selected, add mode: 'selection'
-    if (!searchValue && Object.keys(filterParams).length === 0) {
+    if (!search && Object.keys(filterParams).length === 0) {
       params.mode = "selection";
-      isPPMP && (params.type = "ppmp_item");
     }
 
-    getItems(params, (status, message) => {
+    getItems(params, () => {
       setDisplayLoading(false);
-      if (status !== 200) console.error("Failed to fetch items:", message);
     });
   };
+
+  useEffect(() => {
+    const timeout = setTimeout(() => {
+      executeSearch();
+    }, 400);
+
+    return () => clearTimeout(timeout);
+  }, [search, filterValues]);
 
   useEffect(() => {
     setDisplayLoading(true);
@@ -112,7 +124,14 @@ export default function AddToCartLayout({
   return (
     <Fragment>
       <Grid container spacing={2} sx={{ flexGrow: 1 }}>
-        <Grid item xs={12} md={8.5}>
+        <Grid
+          item
+          xs={12}
+          md={8.5}
+          sx={{
+            height: "calc(100vh - 340px)",
+          }}
+        >
           <BoxComponent boxShadow="sm">
             <Stack
               direction={{ xs: "column", sm: "row" }}
@@ -120,20 +139,17 @@ export default function AddToCartLayout({
               justifyContent={"space-between"}
               p={1}
             >
-              <SearchWithSuggestions
+              <SearchBarComponentv2 value={search} setValue={setSearch} />
+              {/* <SearchWithSuggestions
                 placeholder="Search items..."
                 getSearchSuggestions={getSearchSuggestions}
                 suggestions={suggestions}
                 onSelect={(item) => handleSearch(item.name)}
                 onEnter={(value) => handleSearch(value)}
-                onClear={() => handleSearch(undefined)}
+                onClear={() => handleSearch("")}
                 search={search}
                 setSearch={setSearch}
-                getItems={getItems}
-                isPPMP={isPPMP}
-                setDisplayLoading={setDisplayLoading}
-                displayLoading={displayLoading}
-              />
+              /> */}
               <Typography
                 level="body-sm"
                 endDecorator={
@@ -235,7 +251,12 @@ export default function AddToCartLayout({
             items={items}
           />
         </Grid>
-        <Grid item xs={12} md={3.5}>
+        <Grid
+          item
+          xs={12}
+          md={3.5}
+          sx={{ flexGrow: 1, height: "calc(100vh - 200px)" }}
+        >
           <Cart
             cart={cart}
             removeFromCart={removeFromCart}

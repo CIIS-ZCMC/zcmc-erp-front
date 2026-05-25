@@ -193,7 +193,7 @@ const ExpandableRowComponent = ({
                   {editing ? (
                     <InputComponent
                       type="number"
-                      width="30%"
+                      width="auto"
                       size="sm"
                       value={act.resources_quantity}
                       onChange={(e) =>
@@ -204,9 +204,7 @@ const ExpandableRowComponent = ({
                   ) : (
                     <Typography level="body-sm">{`${act.resources_quantity} ${act.unit}(s)`}</Typography>
                   )}
-                  <Typography>
-                    • {formattedPrice(row?.item?.estimated_budget)}
-                  </Typography>
+                  <Typography>• {formattedPrice(act.total_amount)}</Typography>
                 </Stack>
               </Stack>
             </Stack>
@@ -281,22 +279,25 @@ const ExpandableRowComponent = ({
           index={activeTab}
           setIndex={setActiveTab}
           bgcolor={grey[50]}
+          stickyHeader={true}
+          height="100%"
         >
           {activeTab === "info" && (
-            <Grid container spacing={2} mt={1}>
+            <Grid container spacing={2} mt={2}>
               <Grid item xs={12} md={3}>
                 <BoxComponent p={2} minHeight={250}>
                   <ItemRowComponent
                     item={row?.item}
                     withContent={false}
                     minHeight={250}
+                    disableHoverTransform
                   />
                 </BoxComponent>
               </Grid>
 
               <Grid item xs={12} md={5}>
                 <BoxComponent p={2} minHeight={250}>
-                  <Stack spacing={2}>
+                  <Stack spacing={2} sx={{ height: "100%", overflow: "auto" }}>
                     <Typography
                       fontWeight={600}
                       startDecorator={
@@ -440,28 +441,11 @@ const ExpandableRowComponent = ({
             </Grid>
           )}
           {activeTab === "activities" && (
-            <Grid container spacing={2} sx={{ mt: 0.5 }}>
-              <Grid item xs={12} md={3}>
-                <Box>
-                  <ItemRowComponent
-                    item={row?.item}
-                    withContent={false}
-                    minHeight={250}
-                  />
-                </Box>
-              </Grid>
-
-              <Grid item xs={12} md={9}>
-                <Box
-                  p={2}
-                  sx={{
-                    minHeight: 250,
-                    maxHeight: 400, // 🔑 REQUIRED for scroll to activate
-                    display: "flex",
-                    flexDirection: "column",
-                  }}
-                >
-                  <Stack height={"100%"} spacing={1}>
+            <Grid container sx={{ mt: 1 }}>
+              <Grid item xs={12}>
+                <BoxComponent p={2} minHeight={350} data-activities="true">
+                  {" "}
+                  <Stack sx={{ height: "100%", minHeight: 0 }} spacing={1}>
                     <Typography
                       fontWeight={600}
                       startDecorator={
@@ -478,7 +462,7 @@ const ExpandableRowComponent = ({
                           position: "sticky",
                           top: 0,
                           zIndex: 1,
-                          backgroundColor: "white",
+                          bgcolor: "white",
                           pb: 1,
                         }}
                       >
@@ -486,7 +470,7 @@ const ExpandableRowComponent = ({
                           label="Select an activity"
                           options={activities}
                           value={activity}
-                          getOptionLabel={(option) => option.activity_code}
+                          getOptionLabel={(option) => option.activity_name}
                           handleSelect={handleAddActivity}
                           color="danger"
                           disabled={isLocked}
@@ -509,9 +493,9 @@ const ExpandableRowComponent = ({
             </Grid>
           )}
           {activeTab === "schedule" && (
-            <Grid container spacing={2} sx={{ mt: 1 }}>
+            <Grid container spacing={2} sx={{ mt: 2 }}>
               <Grid item xs={12} md={4}>
-                <BoxComponent minHeight={200}>
+                <BoxComponent minHeight={250}>
                   <ProcurementTimeline
                     timelines={timelineDates}
                     onChange={setProcTimeline}
@@ -521,7 +505,7 @@ const ExpandableRowComponent = ({
                 </BoxComponent>
               </Grid>
               <Grid item xs={12} md={8}>
-                <BoxComponent p={2} minHeight={200}>
+                <BoxComponent p={2} minHeight={250}>
                   <ProcurementSchedule
                     editing={editing}
                     value={scheduleData}

@@ -324,11 +324,6 @@ export default function PPMPSummaryCards({
                       description={`as found in (${regularPPMP?.summary?.items_with_comments_count}) items in total on this request`}
                     />
                   </Box>
-                  <FooterLinks
-                    handleItemRequest={handleItemRequest}
-                    setOpenNewRequest={setOpenNewRequest}
-                    status_id={regularPPMP?.status_id}
-                  />
                 </Box>
 
                 {isDispensing ? (

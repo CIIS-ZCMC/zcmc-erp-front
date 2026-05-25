@@ -17,6 +17,9 @@ export default function TabComponent({
   notificationView = false,
   handleTabChange,
   bgcolor = "white",
+  stickyHeader = false, // New prop for sticky header
+  scrollableContent = false, // New prop for scrollable content
+  height = "auto", // New prop for height control
 }) {
   const notifications = useNotifications();
 
@@ -35,21 +38,35 @@ export default function TabComponent({
       sx={{
         width: "100%",
         overflow: "visible",
+        display: stickyHeader || scrollableContent ? "flex" : "block",
+        flexDirection: stickyHeader || scrollableContent ? "column" : "row",
+        height: height,
       }}
     >
       <Tabs
-        aria-label="Pipeline"
+        aria-label="Tabs"
         value={index}
         onChange={(event, value) => {
           handleTabChange ? handleTabChange(value) : setIndex(value);
         }}
-        sx={{ bgcolor: bgcolor }}
+        sx={{
+          bgcolor: bgcolor,
+          display: stickyHeader || scrollableContent ? "flex" : "block",
+          flexDirection: stickyHeader || scrollableContent ? "column" : "row",
+          height: stickyHeader || scrollableContent ? "100%" : "auto",
+        }}
       >
         <TabList
           sx={{
             pt: 1,
             borderRadius: 0,
             fontSize: 14,
+            ...(stickyHeader && {
+              position: "sticky",
+              top: 0,
+              zIndex: 1,
+              bgcolor: bgcolor || "white",
+            }),
             [`&& .${tabClasses.root}`]: {
               color: "primary.800",
               width: "auto",
@@ -98,7 +115,17 @@ export default function TabComponent({
           )}
         </TabList>
 
-        <TabPanel value={index} sx={{ p: 0, overflow: "visible" }}>
+        <TabPanel
+          value={index}
+          sx={{
+            p: 0,
+            ...(scrollableContent && {
+              overflow: "visible",
+              flex: 1,
+              minHeight: 0,
+            }),
+          }}
+        >
           {children}
         </TabPanel>
       </Tabs>

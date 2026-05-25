@@ -24,6 +24,22 @@ function ChipComponent({
   const sxStyles = {
     fontWeight: 600,
     fontSize: fontSize,
+
+    maxWidth: {
+      xs: 300,
+      sm: 450,
+      md: 550,
+    },
+    overflow: "hidden",
+    textOverflow: "ellipsis",
+    whiteSpace: "nowrap",
+
+    "& .MuiChip-label": {
+      overflow: "hidden",
+      textOverflow: "ellipsis",
+      whiteSpace: "nowrap",
+    },
+
     ...(variant || color
       ? { color: color }
       : {
@@ -31,7 +47,6 @@ function ChipComponent({
           border: 1,
         }),
   };
-
   return (
     <Chip
       color={color}

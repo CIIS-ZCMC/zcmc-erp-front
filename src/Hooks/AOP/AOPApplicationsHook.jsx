@@ -61,6 +61,7 @@ const useAOPApplicationsHook = create((set) => ({
               application,
               latest_timeline_id,
               has_dispense,
+              permissions,
             },
             message,
           } = response.data;
@@ -71,6 +72,7 @@ const useAOPApplicationsHook = create((set) => ({
             aopApplication: application,
             isLoading: false,
             has_dispense: has_dispense,
+            permissions: permissions,
           });
           localStorageSetter("aopApplication", application); // STORE TO LOCALSTORAGE
           localStorageSetter("aopApplicationObjectives", objectives); // STORE TO LOCALSTORAGE
@@ -134,3 +136,6 @@ export const useHasDispense = () =>
 
 export const useTimelineID = () =>
   useAOPApplicationsHook((state) => state.timeline_id);
+
+export const useAOPPermissions = () =>
+  useAOPApplicationsHook((state) => state.permissions);

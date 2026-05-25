@@ -46,7 +46,8 @@ const ResponsibleList = ({
 
   return (
     <>
-      {responsible_people?.length === 0 ? (
+      {responsible_people?.users?.length === 0 &&
+      responsible_people?.designations?.length === 0 ? (
         <BoxComponent
           borderColor={grey[300]}
           height={"63vh"}
@@ -88,20 +89,22 @@ const ResponsibleList = ({
                   </Stack>
                 </Stack>
 
-                <Avatar color="primary">{usersCount}</Avatar>
+                <Avatar color="primary">
+                  {responsible_people?.users?.length}
+                </Avatar>
               </Stack>
 
-              <Stack spacing={1.5}>
-                {responsible_people?.filter(({ user }) => user !== null)
-                  .length === 0 ? (
+              <Stack
+                spacing={1.5}
+                sx={{ maxHeight: "50vh", overflowY: "auto" }}
+              >
+                {responsible_people?.users?.length === 0 ? (
                   <Typography p={2} textAlign="center" level="title-md">
                     Please assign a person
                   </Typography>
                 ) : (
                   (() => {
-                    const filteredPeople = responsible_people?.filter(
-                      ({ user }) => user !== null,
-                    );
+                    const filteredPeople = responsible_people?.users || [];
                     const rows = [];
 
                     // Group people in pairs
@@ -113,42 +116,47 @@ const ResponsibleList = ({
                       <Stack
                         key={rowIndex}
                         direction="row"
-                        spacing={2}
-                        sx={{ width: "100%", pt: 3 }}
+                        spacing={1}
+                        sx={{ width: "100%", pt: 1 }}
                       >
-                        {pair.map(({ user, responsible_person_id }) => (
-                          <Stack
-                            key={responsible_person_id}
-                            direction="row"
-                            justifyContent="space-between"
-                            alignItems="center"
-                            sx={{
-                              flex: 1,
-                              p: 1,
-                              bgcolor: color.background.level1,
-                              borderRadius: 10,
-                            }}
-                          >
-                            <Stack direction="column">
-                              <Typography level="title-sm">
-                                {user?.name}
-                              </Typography>
-                              <Typography level="body-sm">
-                                {user?.assignedArea?.name}
-                              </Typography>
-                            </Stack>
-                            <IconButton
-                              onClick={() =>
-                                handleDelete(responsible_person_id)
-                              }
-                              aria-label="Delete"
-                              size="sm"
-                              disabled={isAopDisabled(status)}
+                        {pair.map(
+                          ({
+                            id,
+                            responsible_person_id,
+                            name,
+                            assignedArea,
+                          }) => (
+                            <Stack
+                              key={id}
+                              direction="row"
+                              justifyContent="space-between"
+                              alignItems="center"
+                              sx={{
+                                flex: 1,
+                                p: 1,
+                                bgcolor: color.background.level1,
+                                borderRadius: 10,
+                              }}
                             >
-                              <Close />
-                            </IconButton>
-                          </Stack>
-                        ))}
+                              <Stack direction="column">
+                                <Typography level="title-sm">{name}</Typography>
+                                <Typography level="body-sm">
+                                  {assignedArea?.name}
+                                </Typography>
+                              </Stack>
+                              <IconButton
+                                onClick={() =>
+                                  handleDelete(responsible_person_id)
+                                }
+                                aria-label="Delete"
+                                size="sm"
+                                disabled={isAopDisabled(status)}
+                              >
+                                <Close />
+                              </IconButton>
+                            </Stack>
+                          ),
+                        )}
                       </Stack>
                     ));
                   })()
@@ -194,21 +202,23 @@ const ResponsibleList = ({
                 </Stack>
 
                 <Avatar sx={{ bgcolor: "#DDD6FF", color: "#5D0EC0" }}>
-                  {positionsCount}
+                  {responsible_people?.designations?.length}
                 </Avatar>
               </Stack>
 
-              <Stack spacing={1.5} pt={3}>
-                {responsible_people?.filter(({ user }) => user === null)
-                  .length === 0 ? (
+              <Stack
+                spacing={1.5}
+                pt={3}
+                sx={{ maxHeight: "50vh", overflowY: "auto" }}
+              >
+                {responsible_people?.designations?.length === 0 ? (
                   <Typography p={2} textAlign="center" level="title-md">
                     Please assign a designation
                   </Typography>
                 ) : (
-                  responsible_people
-                    ?.filter(({ user }) => user === null)
-                    .map(({ designation, responsible_person_id }) => (
-                      <Fragment key={responsible_person_id}>
+                  responsible_people?.designations?.map(
+                    ({ id, responsible_person_id, name }) => (
+                      <Fragment key={id}>
                         <Box
                           sx={{
                             display: "flex",
@@ -219,9 +229,7 @@ const ResponsibleList = ({
                             borderRadius: 10,
                           }}
                         >
-                          <Typography level="title-sm">
-                            {designation?.name}
-                          </Typography>
+                          <Typography level="title-sm">{name}</Typography>
 
                           <IconButton
                             onClick={() => handleDelete(responsible_person_id)}
@@ -233,7 +241,8 @@ const ResponsibleList = ({
                           </IconButton>
                         </Box>
                       </Fragment>
-                    ))
+                    ),
+                  )
                 )}
               </Stack>
 

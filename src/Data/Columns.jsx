@@ -1279,13 +1279,17 @@ export const itemCols = (
     align: "left",
     render: (row) => (
       <>
-        <Chip
-          color="primary"
-          size="md"
-          startDecorator={<Circle sx={{ fontSize: 8 }} />}
-        >
-          {row.terminology}
-        </Chip>
+        {row?.terminology ? (
+          <Chip
+            color="primary"
+            size="md"
+            startDecorator={<Circle sx={{ fontSize: 8 }} />}
+          >
+            {row.terminology}
+          </Chip>
+        ) : (
+          <Typography level="body-sm">-</Typography>
+        )}
       </>
     ),
   },
@@ -1333,6 +1337,146 @@ export const itemCols = (
     },
   },
 ];
+
+export const itemRequestCols = (
+  setSelectedData,
+  setOpenCancel,
+  showActions = true,
+) =>
+  [
+    {
+      key: "item",
+      label: "Item & Unit",
+      align: "left",
+      width: !showActions ? "300px" : "250px",
+      render: (params) => {
+        return (
+          <>
+            <Typography level="body-md" fontWeight={600}>
+              {params.name}
+            </Typography>
+            <Typography level="body-sm">
+              {params.item_unit?.name || "-"}
+            </Typography>
+          </>
+        );
+      },
+      expandTrigger: true,
+    },
+    {
+      key: "category",
+      label: "Category & Project Type",
+      align: "left",
+      width: !showActions ? "250px" : "150px",
+      render: (params) => (
+        <>
+          <Typography level="body-md" fontWeight={600}>
+            {params?.item_category?.name || "-"}
+          </Typography>
+          <Typography fontSize={13} color="neutral">
+            {params?.item_classification?.name || "-"}
+          </Typography>
+        </>
+      ),
+      expandTrigger: true,
+    },
+    {
+      key: "high_ticket",
+      label: "High - ticket",
+      width: !showActions ? "150px" : "100px",
+      render: (params) => {
+        return (
+          <>
+            <Typography
+              level="body-md"
+              fontWeight={600}
+              color={params.is_high_ticket ? "success" : "danger"}
+            >
+              {params.is_high_ticket ? "YES" : "NO"}
+            </Typography>
+          </>
+        );
+      },
+      expandTrigger: true,
+    },
+    {
+      key: "estimated_budget",
+      label: "Unit Price",
+      align: "left",
+      width: !showActions ? "200px" : "150px",
+      render: (params) => (
+        <>
+          <Typography level="body-md" color="neutral">
+            {formattedPrice(params?.estimated_budget)}
+          </Typography>
+        </>
+      ),
+      expandTrigger: true,
+    },
+    {
+      key: "created_on",
+      label: "Date Requested",
+      width: "auto",
+      align: "left",
+      render: (params) => (
+        <>
+          <Typography level="body-md" color="neutral">
+            {moment(params.created_at).format("LL")}
+          </Typography>
+        </>
+      ),
+      expandTrigger: true,
+    },
+    {
+      key: "status",
+      label: "Status",
+      align: "center",
+      render: (params) => (
+        <>
+          <Chip
+            color="primary"
+            size="md"
+            startDecorator={<Circle sx={{ fontSize: 8 }} />}
+            sx={{ textTransform: "capitalize" }}
+          >
+            {params.status?.description || "-"}
+          </Chip>
+        </>
+      ),
+      expandTrigger: true,
+    },
+    {
+      key: "action",
+      label: "Actions",
+      align: "center",
+      hidden: !showActions,
+      render: (params) => {
+        return (
+          <>
+            <Stack
+              direction="row"
+              spacing={2}
+              alignItems="center"
+              justifyContent={"center"}
+            >
+              <Chip
+                onClick={() => {
+                  setSelectedData(params);
+                  setOpenCancel(true);
+                }}
+                size="md"
+                variant="soft"
+                color="neutral"
+                startDecorator={<DeleteOutlineOutlined />}
+              >
+                Cancel
+              </Chip>
+            </Stack>
+          </>
+        );
+      },
+    },
+  ].filter((col) => !col.hidden);
 
 export const myOwnItemRequestListCols = () => [
   {
@@ -1775,16 +1919,17 @@ export const PPMP_HEADERS = (
   },
 ];
 
-export const ITEMS_REQUESTS = (handleOpen, pathName) => [
+export const ITEMS_REQUESTS = (handleOpen, pathName, showActions = false) => [
   {
     key: "item",
     label: "Item & Unit",
+    width: "250px",
     render: (row) => (
       <div>
         <Typography level="body-sm" fontWeight={600} sx={{ color: grey[800] }}>
           {row.name}
         </Typography>
-        <Typography level="body-xs">{row.unit}</Typography>
+        <Typography level="body-xs">{row.item_unit.name}</Typography>
       </div>
     ),
     expandTrigger: true, // ❗ only this column toggles expand
@@ -1792,6 +1937,7 @@ export const ITEMS_REQUESTS = (handleOpen, pathName) => [
   {
     key: "category",
     label: "Classification & Category",
+    width: "250px",
     render: (r) => (
       <div>
         <Typography level="body-sm" fontWeight={600} sx={{ color: grey[800] }}>
@@ -1800,23 +1946,29 @@ export const ITEMS_REQUESTS = (handleOpen, pathName) => [
         <Typography level="body-xs">{r.item_category.name}</Typography>
       </div>
     ),
+    expandTrigger: true, // ❗ only this column toggles expand
   },
   {
     key: "budget",
     label: "Estimated Budget",
+    width: "150px",
     render: (r) =>
       `₱${r.estimated_budget.toLocaleString(undefined, {
         minimumFractionDigits: 2,
       })}`,
+    expandTrigger: true, // ❗ only this column toggles expand
   },
   {
     key: "requested_on",
     label: "Requested On",
+    width: "150px",
     render: (r) => <Typography>{moment(r.created_at).format("ll")}</Typography>,
+    expandTrigger: true, // ❗ only this column toggles expand
   },
   {
     key: "variant",
     label: "Variant",
+    width: "150px",
     render: (r) => {
       return r.terminology_category ? (
         <ChipComponent
@@ -1829,141 +1981,169 @@ export const ITEMS_REQUESTS = (handleOpen, pathName) => [
         <>No Variant Available</>
       );
     },
+    expandTrigger: true, // ❗ only this column toggles expand
   },
-
   {
-    key: "actions",
-    label: "Actions",
-    render: (r) => (
-      <>
-        {pathName === "/ppmp" && (
-          <>
-            {r.status_id === 3 && (
-              <>
-                <ChipComponent
-                  size="lg"
-                  color="primary"
-                  variant={"soft"}
-                  label={"Pending"}
-                  startDecorator={<HourglassEmpty />}
-                />
-              </>
-            )}
-
-            {r.status_id === 4 && (
-              <>
-                <ChipComponent
-                  size="lg"
-                  color="success"
-                  variant={"soft"}
-                  label={"Saved to Library"}
-                  startDecorator={<CheckOutlined />}
-                />
-              </>
-            )}
-
-            {r.status_id === 5 && (
-              <>
-                <ChipComponent
-                  size="lg"
-                  color="danger"
-                  variant={"soft"}
-                  label={"Declined"}
-                  startDecorator={<Clear />}
-                />
-              </>
-            )}
-          </>
-        )}
-
-        {pathName === "/item-requests/" && (
-          <>
-            {r.status_id === 3 && (
-              <>
-                <ChipComponent
-                  size="lg"
-                  color="primary"
-                  variant={"soft"}
-                  label={"Pending"}
-                  startDecorator={<HourglassEmpty />}
-                />
-              </>
-            )}
-
-            {r.status_id === 4 && (
-              <>
-                <ChipComponent
-                  size="lg"
-                  color="success"
-                  variant={"soft"}
-                  label={"Saved to Library"}
-                  startDecorator={<CheckOutlined />}
-                />
-              </>
-            )}
-
-            {r.status_id === 5 && (
-              <>
-                <ChipComponent
-                  size="lg"
-                  color="danger"
-                  variant={"soft"}
-                  label={"Declined"}
-                  startDecorator={<Clear />}
-                />
-              </>
-            )}
-          </>
-        )}
-
-        {pathName === "/item-requests/pending" && (
-          <>
-            <div style={{ display: "flex", gap: "8px" }}>
-              <ChipComponent
-                size="lg"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleOpen(4, r); /* approve */
-                }}
-                color="success"
-                label={"Approve"}
-                variant={"soft"}
-                startDecorator={<CheckOutlined />}
-              />
-
-              <ChipComponent
-                size="lg"
-                color="danger"
-                variant={"soft"}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleOpen(5, r); /* decline */
-                }}
-                label={"Decline"}
-                startDecorator={<Clear />}
-              />
-            </div>
-          </>
-        )}
-
-        {pathName === "/item-requests/saved" && (
-          <>
-            {r.status_id === 4 && (
-              <>
-                <ChipComponent
-                  size="lg"
-                  color="success"
-                  variant={"soft"}
-                  label={"Approved"}
-                  startDecorator={<CheckOutlined />}
-                />
-              </>
-            )}
-          </>
-        )}
-      </>
-    ),
+    key: "status",
+    label: "Status",
+    width: "100px",
+    render: (r) => {
+      return (
+        <ChipComponent
+          size="md"
+          label={r.status?.description || ""}
+          startDecorator={<Circle sx={{ fontSize: 10 }} />}
+          color={
+            r.status?.description === "Approved"
+              ? "success"
+              : r.status?.description === "Rejected"
+                ? "danger"
+                : "warning"
+          }
+        />
+      );
+    },
+    expandTrigger: true, // ❗ only this column toggles expand
   },
+
+  ...(showActions
+    ? [
+        {
+          key: "actions",
+          label: "Actions",
+          width: "200px",
+          render: (r) => (
+            <>
+              {pathName === "/ppmp" && (
+                <>
+                  {r.status_id === 3 && (
+                    <>
+                      <ChipComponent
+                        size="lg"
+                        color="primary"
+                        variant={"soft"}
+                        label={"Pending"}
+                        startDecorator={<HourglassEmpty />}
+                      />
+                    </>
+                  )}
+
+                  {r.status_id === 4 && (
+                    <>
+                      <ChipComponent
+                        size="lg"
+                        color="success"
+                        variant={"soft"}
+                        label={"Saved to Library"}
+                        startDecorator={<CheckOutlined />}
+                      />
+                    </>
+                  )}
+
+                  {r.status_id === 5 && (
+                    <>
+                      <ChipComponent
+                        size="lg"
+                        color="danger"
+                        variant={"soft"}
+                        label={"Declined"}
+                        startDecorator={<Clear />}
+                      />
+                    </>
+                  )}
+                </>
+              )}
+
+              {pathName === "/item-requests/" && (
+                <>
+                  {r.status_id === 3 && (
+                    <>
+                      <ChipComponent
+                        size="lg"
+                        color="primary"
+                        variant={"soft"}
+                        label={"Pending"}
+                        startDecorator={<HourglassEmpty />}
+                      />
+                    </>
+                  )}
+
+                  {r.status_id === 4 && (
+                    <>
+                      <ChipComponent
+                        size="lg"
+                        color="success"
+                        variant={"soft"}
+                        label={"Saved to Library"}
+                        startDecorator={<CheckOutlined />}
+                      />
+                    </>
+                  )}
+
+                  {r.status_id === 5 && (
+                    <>
+                      <ChipComponent
+                        size="lg"
+                        color="danger"
+                        variant={"soft"}
+                        label={"Declined"}
+                        startDecorator={<Clear />}
+                      />
+                    </>
+                  )}
+                </>
+              )}
+
+              {pathName === "/item-requests/pending" && (
+                <>
+                  <div style={{ display: "flex", gap: "8px" }}>
+                    <ChipComponent
+                      size="lg"
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleOpen(4, r); /* approve */
+                      }}
+                      color="success"
+                      label={"Approve"}
+                      variant={"soft"}
+                      startDecorator={<CheckOutlined />}
+                    />
+
+                    <ChipComponent
+                      size="lg"
+                      color="danger"
+                      variant={"soft"}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        handleOpen(5, r); /* decline */
+                      }}
+                      label={"Decline"}
+                      startDecorator={<Clear />}
+                    />
+                  </div>
+                </>
+              )}
+
+              {pathName === "/item-requests/saved" && (
+                <>
+                  {r.status_id === 4 && (
+                    <>
+                      <ChipComponent
+                        size="lg"
+                        color="success"
+                        variant={"soft"}
+                        label={"Approved"}
+                        startDecorator={<CheckOutlined />}
+                      />
+                    </>
+                  )}
+                </>
+              )}
+            </>
+          ),
+        },
+      ]
+    : []),
 ];
 
 export const PPMP_APPROVER_HEADERS = (handleComments) => [
@@ -2174,8 +2354,8 @@ export const MANAGE_CONSOLIDATORS = (
 ) => [
   {
     id: "name",
-    label: "Dispensing Unit (Employee)",
-    width: "200px",
+    label: "Employee Name",
+    width: "300px",
     render: (row) => (
       <Stack>
         <Typography level="body-sm" fontWeight={600} color="black">
@@ -2190,7 +2370,7 @@ export const MANAGE_CONSOLIDATORS = (
   {
     id: "item_category",
     label: "Assigned Item Category",
-    width: "350px",
+    width: "250px",
     render: (row) => {
       const categories = row?.assigned_categories || [];
       const rowId = row?.user_id;
@@ -2239,9 +2419,19 @@ export const MANAGE_CONSOLIDATORS = (
     },
   },
   {
+    id: "type",
+    label: "Dispensing/Consolidator",
+    width: "250px",
+    render: (row) => (
+      <Typography level="body-sm" color="black">
+        {row?.is_dispensing ? "Dispensing" : "Consolidator"}
+      </Typography>
+    ),
+  },
+  {
     id: "updated_on",
     label: "Updated on",
-    width: "150px",
+    width: "200px",
     render: (row) => (
       <Typography level="body-sm" color="black">
         {row?.updated_at
