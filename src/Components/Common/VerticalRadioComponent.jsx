@@ -1,4 +1,11 @@
-import { Stack, Typography, RadioGroup, Radio } from "@mui/joy";
+import {
+  Stack,
+  Typography,
+  RadioGroup,
+  Radio,
+  FormControl,
+  FormLabel,
+} from "@mui/joy";
 import { grey } from "@mui/material/colors";
 
 function VerticalRadioComponent({
@@ -8,36 +15,40 @@ function VerticalRadioComponent({
   handleChange,
   disabled = false,
   name,
+  label,
 }) {
   return (
-    <RadioGroup
-      name={name}
-      value={value}
-      onChange={handleChange || ((e) => setValue?.(e.target.value))}
-    >
-      <Stack spacing={1.5}>
-        {actions.map((item) => (
-          <Radio
-            key={item.value}
-            value={item.value}
-            disabled={disabled}
-            label={
-              <Typography
-                fontSize={13}
-                color="neutral"
-                sx={{ lineHeight: 1.3 }}
-              >
-                {item.label}
-              </Typography>
-            }
-            sx={{
-              alignItems: "flex-start",
-              gap: 1.5,
-            }}
-          />
-        ))}
-      </Stack>
-    </RadioGroup>
+    <FormControl>
+      <FormLabel>{label}</FormLabel>
+      <RadioGroup
+        name={name}
+        value={value}
+        onChange={handleChange || ((e) => setValue?.(e.target.value))}
+      >
+        <Stack spacing={1.5}>
+          {actions.map((item) => (
+            <Radio
+              key={item.value}
+              value={item.value}
+              disabled={disabled}
+              label={
+                <Typography
+                  fontSize={13}
+                  color="neutral"
+                  sx={{ lineHeight: 1.3 }}
+                >
+                  {item.label}
+                </Typography>
+              }
+              sx={{
+                alignItems: "flex-start",
+                gap: 1.5,
+              }}
+            />
+          ))}
+        </Stack>
+      </RadioGroup>
+    </FormControl>
   );
 }
 

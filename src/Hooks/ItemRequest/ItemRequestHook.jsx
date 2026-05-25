@@ -76,9 +76,9 @@ const useItemRequestHook = create((set, get) => ({
       update({
         url: `${API.APPROVAL_ITEM_REQUEST}/${item_request_id}`,
         form: body,
-        failed: (error) => {
+        failed: (status, message) => {
           set({ isLoading: false });
-          callBack?.(false, error?.message || "Update failed");
+          callBack?.(status, message);
         },
         success: (res) => {
           try {
@@ -107,10 +107,10 @@ const useItemRequestHook = create((set, get) => ({
                 : state.requestsByUser,
             }));
 
-            callBack?.(status, message, data);
+            callBack?.(status, message);
           } catch (error) {
             console.error("Error processing update response:", error);
-            callBack?.(false, error.message);
+            callBack?.(false, error);
           } finally {
             set({ isLoading: false });
           }

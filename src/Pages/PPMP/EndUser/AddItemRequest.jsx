@@ -3,17 +3,7 @@ import AutocompleteComponent from "@Components/Form/AutocompleteComponent";
 import InputComponent from "@Components/Form/InputComponent";
 import TextareaComponent from "@Components/Form/TextareaComponent";
 import useModalHook from "../../../Hooks/ModalHook";
-import {
-  Box,
-  Checkbox,
-  Chip,
-  ChipDelete,
-  Divider,
-  Grid,
-  Link,
-  Stack,
-  Typography,
-} from "@mui/joy";
+import { Box, Chip, ChipDelete, Grid, Link, Stack, Typography } from "@mui/joy";
 import React, { Fragment, useEffect, useRef, useState } from "react";
 import useItemsHook from "../../../Hooks/ItemManagementHook";
 import { grey } from "@mui/material/colors";
@@ -647,19 +637,6 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
                         color="primary"
                         startDecorator={"₱"}
                       />
-
-                      {/* <Checkbox
-                      label="I have conducted a market research prior setting the budget estimates."
-                      sx={{ color: grey[900], fontSize: 13, pt: 1 }}
-                      size="sm"
-                      checked={itemReq?.market_research}
-                      onChange={(e) =>
-                        setItemReq((prev) => ({
-                          ...prev,
-                          market_research: e.target.checked,
-                        }))
-                      }
-                    /> */}
                     </Stack>
                   </Grid>
                   <Grid item xs={4}>

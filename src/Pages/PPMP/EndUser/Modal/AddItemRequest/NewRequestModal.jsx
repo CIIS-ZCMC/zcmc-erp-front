@@ -573,7 +573,7 @@ export default function NewRequestModal({ openNewRequest, setOpenNewRequest }) {
                       setValue={(value) =>
                         setItemReq((prev) => ({
                           ...prev,
-                          is_high_ticket: Boolean(value),
+                          is_high_ticket: Number(value),
                         }))
                       }
                       actions={[

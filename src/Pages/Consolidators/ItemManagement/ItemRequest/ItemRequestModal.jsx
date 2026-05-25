@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import { grey } from "@mui/material/colors";
 import {
   TextSnippetOutlined,
@@ -25,6 +25,7 @@ import { useItemRequestActions } from "../../../../Hooks/ItemRequest/ItemRequest
 import useItemLibraryStore from "../../../../Store/Item/LibraryStore";
 import { useItemLibraryActions } from "../../../../Store/Item/LibraryStore";
 import useSnackbarHook from "../../../../Hooks/SnackbarHook";
+import VerticalRadioComponent from "@Components/Common/VerticalRadioComponent";
 
 export default function ItemRequestModal({ open, handleClose, status, row }) {
   const navigate = useNavigate();
@@ -33,27 +34,7 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
     useModalHook();
   const { updateItemRequest } = useItemRequestActions();
 
-  const {
-    itemName,
-    classification: classificationObj,
-    category,
-    variant,
-    unit,
-    marketResearched,
-    estimatedBudget,
-    specification,
-  } = useItemLibraryStore();
-
-  const {
-    setItemName,
-    setClassification,
-    setCategory,
-    setVariant,
-    setUnit,
-    setMarketResearched,
-    setEstimatedBudget,
-    setSpecification,
-  } = useItemLibraryActions();
+  const { classification: classificationObj } = useItemLibraryStore();
 
   const { showSnack } = useSnackbarHook();
 
@@ -68,14 +49,21 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
 
   // Local editable state
   const [formData, setFormData] = useState({
+    id: null,
     name: "",
-    classification: "",
-    category: "",
-    unit: "",
+    classification: null,
+    category: null,
+    variant: null,
+    unit: null,
     estimated_budget: "",
-    item_specifications: [],
-    market_research_done: false,
-    is_special: false, // Add this
+    market_researched: false,
+    specifications: [],
+    is_special: 0,
+    is_high_ticket: 0,
+    is_ppmp_item_request: false,
+    market_scoping_document_link: "",
+    technical_specifications_document_link: "",
+    remarks: "",
   });
 
   const {
@@ -93,49 +81,64 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
   const tabs = [
     { name: "General info", value: "info", icon: <TextSnippetOutlined /> },
     { name: "Specifications", value: "specs", icon: <Today /> },
+    { name: "Special Details", value: "special_details", icon: <Today /> },
   ];
 
   useEffect(() => {
-    console.log(row);
-    if (row) {
-      setItemRequestId(row.id);
-      setItemName(row.name);
-      setClassification(row.item_classification || "");
-      setCategory(row.item_category || "");
-      setVariant(row.terminology_category || "");
-      setMarketResearched(row.market_researched || "");
-      setUnit(row.item_unit || "");
-      setEstimatedBudget(row.estimated_budget || "");
-      setSpecification(row.item_specifications || "");
-      setIsSpecialItem(row.is_special || false);
-      setIsPpmpItemRequest(row.is_ppmp_item_request || false);
-    }
+    if (!row) return;
+
+    setFormData({
+      id: row.id,
+      name: row.name || "",
+      classification: row.item_classification || null,
+      category: row.item_category || null,
+      variant: row.terminology_category || null,
+      unit: row.item_unit || null,
+      estimated_budget: row.estimated_budget || "",
+      market_researched: row.market_researched || false,
+      specifications: row.item_specifications?.length
+        ? row.item_specifications
+        : [{ id: Date.now(), description: "" }],
+      is_special: Number(row.is_special),
+      is_high_ticket: Number(row.is_high_ticket),
+      is_ppmp_item_request: !!row.is_ppmp_item_request,
+      market_scoping_document_link: row.market_scoping_link || "",
+      technical_specifications_document_link: row.tech_specs_link || "",
+      remarks: "",
+    });
   }, [row]);
 
   // === SPEC HANDLERS ===
   const addSpec = () => {
-    setSpecification([...specification, { id: Date.now(), description: "" }]);
+    setFormData((prev) => ({
+      ...prev,
+      specifications: [
+        ...prev.specifications,
+        { id: Date.now(), description: "" },
+      ],
+    }));
   };
 
   const removeSpec = (id) => {
-    setSpecification(specification.filter((spec) => spec.id !== id));
-  };
-
-  const handleChange = (field, value) => {
-    setFormData((prev) => ({ ...prev, [field]: value }));
+    setFormData((prev) => ({
+      ...prev,
+      specifications: prev.specifications.filter((spec) => spec.id !== id),
+    }));
   };
 
   const handleSpecChange = (index, value) => {
-    const newSpecs = [...specification];
-    newSpecs[index].description = value;
-    setSpecification(newSpecs);
-  };
-
-  const handleSpecialItemChange = (checked) => {
-    setIsSpecialItem(checked);
     setFormData((prev) => ({
       ...prev,
-      is_special: checked,
+      specifications: prev.specifications.map((spec, i) =>
+        i === index ? { ...spec, description: value } : spec,
+      ),
+    }));
+  };
+
+  const updateField = (field, value) => {
+    setFormData((prev) => ({
+      ...prev,
+      [field]: value,
     }));
   };
 
@@ -149,9 +152,9 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
     ];
 
     // Only fetch variants if category ID exists
-    if (category?.id) {
+    if (formData.category?.id) {
       apiCalls.push({
-        fn: (callback) => getVariantsByCategory(category.id, callback),
+        fn: (callback) => getVariantsByCategory(formData.category.id, callback),
         name: "variants",
       });
     }
@@ -170,7 +173,7 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
         checkDone();
       });
     });
-  }, [category.id]); // Re-run if category changes
+  }, [formData.category?.id]); // Re-run if category changes
 
   const handleSubmitItemRequest = () => {
     setIsLoading(true);
@@ -178,21 +181,24 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
     const approvedPayload = {
       status_id: status,
       authorization_pin: pin,
-      name: itemName,
-      estimated_budget: estimatedBudget,
-      item_unit_id: unit.id,
-      item_classification_id: classificationObj.id,
-      item_category_id: category.id,
-      terminology_category_id: variant.id,
-      market_research: marketResearched,
-      specifications: specification.map(({ description }) => ({ description })),
-      is_special: formData.is_special,
+      name: formData.name,
+      estimated_budget: formData.estimated_budget,
+      item_unit_id: formData.unit?.id,
+      item_classification_id: formData.classification?.id,
+      item_category_id: formData.category?.id,
+      terminology_category_id: formData.variant?.id,
+      market_research: formData.market_researched,
+      specifications: formData.specifications.map(({ description }) => ({
+        description,
+      })),
+      is_special: Boolean(formData.is_special),
+      is_high_ticket: Boolean(formData.is_high_ticket),
     };
 
     const declinePayload = {
       status_id: status,
       authorization_pin: pin,
-      reason: remarks,
+      reason: formData.remarks,
     };
 
     const payload = status === 4 ? approvedPayload : declinePayload;
@@ -200,20 +206,19 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
     // console.log(payload)
 
     try {
-      updateItemRequest(itemRequestId, payload, (status, message) => {
+      updateItemRequest(formData.id, payload, (status, message) => {
         if (status === 200) {
-          showSnack(message, "success");
+          showSnack("success", message);
           setIsLoading(false);
           handleClose();
-          navigate("/item-requests/saved");
         } else {
+          console.log(status, message);
           setAlertDialog({
             status: "error",
             title: message,
             description: "Please try again.",
           });
           setIsLoading(false);
-          console.error(" Failed to update item request:", message);
         }
       });
     } catch (error) {
@@ -242,7 +247,8 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
       <ModalComponent
         isOpen={open}
         handleClose={() => handleClose()}
-        maxWidth={"500px"}
+        maxWidth={"780px"}
+        height="auto"
         title={
           status === 4 ? (
             <Typography color="success">Approve Item Request</Typography>
@@ -278,8 +284,8 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
                   <Stack my={2} spacing={2}>
                     <InputComponent
                       label={"Item Name"}
-                      value={itemName}
-                      handleInput={(e) => setItemName(e.target.value)}
+                      value={formData.name}
+                      handleInput={(e) => updateField("name", e.target.value)}
                       helperText={
                         "Use a specific and descriptive naming convention for best results."
                       }
@@ -290,10 +296,10 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
                         name="classification"
                         options={classification}
                         getOptionLabel={(option) => option.name || ""}
-                        value={classificationObj}
+                        value={formData.classification}
                         setValue={(val) => {
                           // console.log(val)
-                          setClassification(val);
+                          updateField("classification", val);
                         }}
                       />
 
@@ -302,10 +308,10 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
                         name="category"
                         options={categories}
                         getOptionLabel={(option) => option.name || ""}
-                        value={category}
+                        value={formData.category}
                         setValue={(val) => {
                           // console.log(val)
-                          setCategory(val);
+                          updateField("category", val);
                         }}
                       />
                     </Stack>
@@ -316,10 +322,10 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
                         name="variant"
                         options={variants}
                         getOptionLabel={(option) => option.name || ""}
-                        value={variant}
+                        value={formData.variant}
                         setValue={(val) => {
                           // console.log(val)
-                          setVariant(val);
+                          updateField("variant", val);
                         }}
                       />
                     </Stack>
@@ -330,33 +336,24 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
                         name="unit"
                         options={units}
                         getOptionLabel={(option) => option.name || ""}
-                        value={unit}
+                        value={formData.unit}
                         setValue={(val) => {
                           // console.log(val)
-                          setUnit(val);
+                          updateField("unit", val);
                         }}
                       />
 
                       <InputComponent
                         label={"Estimated Budget"}
-                        value={estimatedBudget}
-                        handleInput={(e) => setEstimatedBudget(e.target.value)}
+                        value={formData.estimated_budget}
+                        handleInput={(e) =>
+                          updateField("estimated_budget", e.target.value)
+                        }
                         startDecorator={"₱"}
                       />
                     </Stack>
-
-                    <Checkbox
-                      label="I have conducted a market research prior setting the budget estimates."
-                      sx={{ color: grey[900], fontSize: 13, pt: 1 }}
-                      size="sm"
-                      checked={marketResearched}
-                      onChange={(e) => {
-                        console.log(e.target.checked);
-                        setMarketResearched(e.target.checked);
-                      }}
-                    />
                   </Stack>
-                ) : (
+                ) : index === "specs" ? (
                   <Stack
                     sx={{
                       overflowX: "hidden", // Hide horizontal overflow
@@ -368,7 +365,7 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
 
                       // ref={specsContainerRef}
                     >
-                      {specification?.map((spec, index) => (
+                      {formData.specifications?.map((spec, index) => (
                         <Box
                           key={spec.id}
                           sx={{
@@ -387,7 +384,7 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
                               }
                               size="sm"
                             />
-                            {specification?.length > 1 && (
+                            {formData.specifications?.length > 1 && (
                               <Link
                                 onClick={() => removeSpec(spec.id)}
                                 color="danger"
@@ -410,38 +407,139 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
                     >
                       Add another
                     </Link>
-                    {isPpmpItemRequest && (
-                      <>
-                        <Divider />
-                        <Stack sx={{ my: 1.5 }}>
-                          <Checkbox
-                            sx={{ fontSize: "13px", fontWeight: 500 }}
-                            label="Special Item"
-                            checked={formData.is_special}
-                            onChange={(e) =>
-                              handleSpecialItemChange(e.target.checked)
-                            }
-                          />
-                          <Typography fontSize={12} marginLeft={4}>
-                            Items under a dispensing unit that are only procured
-                            by the requesting unit.
-                          </Typography>
-                        </Stack>
-                      </>
-                    )}
                   </Stack>
+                ) : (
+                  <Fragment>
+                    <Stack mt={2} spacing={2}>
+                      <Stack
+                        direction={{ xs: "column", md: "row" }}
+                        spacing={3}
+                        alignItems="flex-start"
+                      >
+                        <Stack
+                          width={{ xs: "100%", md: 360 }}
+                          spacing={2}
+                          sx={{
+                            bgcolor: "#EFEFEF",
+                            padding: 2,
+                            borderRadius: 20,
+                          }}
+                        >
+                          <VerticalRadioComponent
+                            label={
+                              "Is this item exclusively procured by your unit?"
+                            }
+                            name="exclusive_procurement"
+                            value={formData.is_special}
+                            setValue={(value) =>
+                              setFormData((prev) => ({
+                                ...prev,
+                                is_special: Number(value),
+                              }))
+                            }
+                            actions={[
+                              {
+                                value: 1,
+                                label:
+                                  "Yes, my unit handles procurement for this item independently",
+                              },
+                              {
+                                value: 0,
+                                label:
+                                  "No, this item is part of the dispensing unit's common procurement list",
+                              },
+                            ]}
+                          />
+                          <VerticalRadioComponent
+                            label={
+                              "Is this a major or specialized high-ticket purchase?"
+                            }
+                            name="high_ticket"
+                            value={formData.is_high_ticket}
+                            setValue={(value) =>
+                              setFormData((prev) => ({
+                                ...prev,
+                                is_high_ticket: Number(value),
+                              }))
+                            }
+                            actions={[
+                              {
+                                value: 1,
+                                label: "Yes",
+                              },
+                              {
+                                value: 0,
+                                label: "No",
+                              },
+                            ]}
+                          />
+                        </Stack>
+                        <Stack flex={1} minWidth={0} spacing={3}>
+                          <Box>
+                            <Typography level="title-sm">
+                              Market Scoping Document Link
+                            </Typography>
+
+                            {formData.market_scoping_document_link ? (
+                              <Link
+                                level="body-sm"
+                                href={formData.market_scoping_document_link}
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                sx={{
+                                  display: "block",
+                                  wordBreak: "break-all",
+                                }}
+                              >
+                                {formData.market_scoping_document_link}
+                              </Link>
+                            ) : (
+                              <Typography level="body-sm">N/A</Typography>
+                            )}
+                          </Box>
+                          <Box>
+                            <Typography level="title-sm">
+                              Technical Specifications Document Link
+                            </Typography>
+
+                            {formData.technical_specifications_document_link ? (
+                              <Link
+                                level="body-sm"
+                                href={
+                                  formData.technical_specifications_document_link
+                                }
+                                target="_blank"
+                                rel="noopener noreferrer"
+                                sx={{
+                                  display: "block",
+                                  wordBreak: "break-all",
+                                }}
+                              >
+                                {
+                                  formData.technical_specifications_document_link
+                                }
+                              </Link>
+                            ) : (
+                              <Typography level="body-sm">N/A</Typography>
+                            )}
+                          </Box>
+                        </Stack>
+                      </Stack>
+                    </Stack>
+                  </Fragment>
                 )}
+                <AuthorizationPinComponent setPin={setPin} />
               </TabComponent>
-              <Divider />
-              <AuthorizationPinComponent setPin={setPin} />
             </>
           ) : (
             <>
               <TextareaComponent
                 label={"Remarks"}
                 placeholder="Enter your remarks here"
-                value={remarks}
-                onChange={(e) => setRemarks(e.target.value)}
+                value={formData.remarks}
+                onChange={(e) =>
+                  setFormData({ ...formData, remarks: e.target.value })
+                }
               />
               <AuthorizationPinComponent setPin={setPin} />
             </>
