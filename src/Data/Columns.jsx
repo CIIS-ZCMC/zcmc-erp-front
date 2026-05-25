@@ -1923,6 +1923,7 @@ export const ITEMS_REQUESTS = (handleOpen, pathName, showActions = false) => [
   {
     key: "item",
     label: "Item & Unit",
+    width: "250px",
     render: (row) => (
       <div>
         <Typography level="body-sm" fontWeight={600} sx={{ color: grey[800] }}>
@@ -1936,6 +1937,7 @@ export const ITEMS_REQUESTS = (handleOpen, pathName, showActions = false) => [
   {
     key: "category",
     label: "Classification & Category",
+    width: "250px",
     render: (r) => (
       <div>
         <Typography level="body-sm" fontWeight={600} sx={{ color: grey[800] }}>
@@ -1944,23 +1946,29 @@ export const ITEMS_REQUESTS = (handleOpen, pathName, showActions = false) => [
         <Typography level="body-xs">{r.item_category.name}</Typography>
       </div>
     ),
+    expandTrigger: true, // ❗ only this column toggles expand
   },
   {
     key: "budget",
     label: "Estimated Budget",
+    width: "150px",
     render: (r) =>
       `₱${r.estimated_budget.toLocaleString(undefined, {
         minimumFractionDigits: 2,
       })}`,
+    expandTrigger: true, // ❗ only this column toggles expand
   },
   {
     key: "requested_on",
     label: "Requested On",
+    width: "150px",
     render: (r) => <Typography>{moment(r.created_at).format("ll")}</Typography>,
+    expandTrigger: true, // ❗ only this column toggles expand
   },
   {
     key: "variant",
     label: "Variant",
+    width: "150px",
     render: (r) => {
       return r.terminology_category ? (
         <ChipComponent
@@ -1973,6 +1981,29 @@ export const ITEMS_REQUESTS = (handleOpen, pathName, showActions = false) => [
         <>No Variant Available</>
       );
     },
+    expandTrigger: true, // ❗ only this column toggles expand
+  },
+  {
+    key: "status",
+    label: "Status",
+    width: "100px",
+    render: (r) => {
+      return (
+        <ChipComponent
+          size="md"
+          label={r.status?.description || ""}
+          startDecorator={<Circle sx={{ fontSize: 10 }} />}
+          color={
+            r.status?.description === "Approved"
+              ? "success"
+              : r.status?.description === "Rejected"
+                ? "danger"
+                : "warning"
+          }
+        />
+      );
+    },
+    expandTrigger: true, // ❗ only this column toggles expand
   },
 
   ...(showActions
@@ -1980,6 +2011,7 @@ export const ITEMS_REQUESTS = (handleOpen, pathName, showActions = false) => [
         {
           key: "actions",
           label: "Actions",
+          width: "200px",
           render: (r) => (
             <>
               {pathName === "/ppmp" && (
@@ -2322,8 +2354,8 @@ export const MANAGE_CONSOLIDATORS = (
 ) => [
   {
     id: "name",
-    label: "Dispensing Unit (Employee)",
-    width: "200px",
+    label: "Employee Name",
+    width: "300px",
     render: (row) => (
       <Stack>
         <Typography level="body-sm" fontWeight={600} color="black">
@@ -2338,7 +2370,7 @@ export const MANAGE_CONSOLIDATORS = (
   {
     id: "item_category",
     label: "Assigned Item Category",
-    width: "350px",
+    width: "250px",
     render: (row) => {
       const categories = row?.assigned_categories || [];
       const rowId = row?.user_id;
@@ -2387,9 +2419,19 @@ export const MANAGE_CONSOLIDATORS = (
     },
   },
   {
+    id: "type",
+    label: "Dispensing/Consolidator",
+    width: "250px",
+    render: (row) => (
+      <Typography level="body-sm" color="black">
+        {row?.is_dispensing ? "Dispensing" : "Consolidator"}
+      </Typography>
+    ),
+  },
+  {
     id: "updated_on",
     label: "Updated on",
-    width: "150px",
+    width: "200px",
     render: (row) => (
       <Typography level="body-sm" color="black">
         {row?.updated_at

@@ -187,12 +187,9 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
       item_classification_id: formData.classification?.id,
       item_category_id: formData.category?.id,
       terminology_category_id: formData.variant?.id,
-      market_research: formData.market_researched,
       specifications: formData.specifications.map(({ description }) => ({
         description,
       })),
-      is_special: Boolean(formData.is_special),
-      is_high_ticket: Boolean(formData.is_high_ticket),
     };
 
     const declinePayload = {
@@ -208,7 +205,7 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
     try {
       updateItemRequest(formData.id, payload, (status, message) => {
         if (status === 200) {
-          showSnack("success", message);
+          showSnack(status, message);
           setIsLoading(false);
           handleClose();
         } else {

@@ -91,9 +91,10 @@ const useItemRequestHook = create((set, get) => ({
               requests: state.requests?.data
                 ? {
                     ...state.requests,
-                    data: state.requests.data.map((item) =>
-                      item.id === data.id ? { ...item, ...data } : item,
+                    data: state.requests.data.filter(
+                      (item) => item.id !== data.id,
                     ),
+                    total: Math.max(0, (state.requests.total || 1) - 1),
                   }
                 : state.requests,
 

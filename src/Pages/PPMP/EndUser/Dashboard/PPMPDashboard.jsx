@@ -222,12 +222,12 @@ function PPMPDashboard(props) {
 
       {/* View Item Requests Modal */}
 
-      {openNewRequest && (
+      {/* {openNewRequest && (
         <NewRequestModal
           openNewRequest={openNewRequest}
           setOpenNewRequest={setOpenNewRequest}
         />
-      )}
+      )} */}
 
       {/* call api item request by user first */}
       {openSave && (

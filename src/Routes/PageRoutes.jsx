@@ -37,6 +37,7 @@ import Saved from "../Pages/Consolidators/ItemManagement/ItemRequest/Saved";
 import { Classification } from "../Pages/Consolidators/ItemManagement/ItemLibrary/Tabs/Classification";
 import { Category } from "../Pages/Consolidators/ItemManagement/ItemLibrary/Tabs/Category";
 import { Variant } from "../Pages/Consolidators/ItemManagement/ItemLibrary/Tabs/Variant";
+import Declined from "@Pages/Consolidators/ItemManagement/ItemRequest/Declined";
 
 const iconStyles = {
   size: 24,
@@ -241,6 +242,10 @@ export const sidebarRoutes = [
           {
             path: "saved",
             element: <Saved />,
+          },
+          {
+            path: "declined",
+            element: <Declined />,
           },
         ],
       },
