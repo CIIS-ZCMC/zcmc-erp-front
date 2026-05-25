@@ -488,7 +488,7 @@ const ExpandableRowComponent = ({
                       </b>
                     </Typography>
                   </Stack>
-                </Box>
+                </BoxComponent>
               </Grid>
             </Grid>
           )}
