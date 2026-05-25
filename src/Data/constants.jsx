@@ -100,8 +100,7 @@ export const AOP = {
   AOP_EMPTY_OBJECTIVE_DESC: "Begin by adding a new objective.",
   EMPTY_STATE_TITLE: ` You don't have an AOP for this year yet.`,
   EMPTY_STATE_SUBTITLE: `Begin by creating a new AOP.`,
-  EMPTY_STATE_DESCRIPTION: `Nothing to show yet for this year’s PPMP. You may request new
-                    items for the meantime or create a new AOP request.`,
+  EMPTY_STATE_DESCRIPTION: `Nothing to show yet for this year’s AOP. You may create a new AOP request.`,
   EMPTY_TITLE_PAGE: "Enterprise Resource Planning System",
   EMPTY_TITLE_DESC: "Sample description",
 };

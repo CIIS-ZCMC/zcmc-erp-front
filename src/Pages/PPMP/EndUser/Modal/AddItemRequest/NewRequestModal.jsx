@@ -318,7 +318,6 @@ export default function NewRequestModal({ openNewRequest, setOpenNewRequest }) {
   const { width, height } = modalConfig[currentStep];
   return (
     <Fragment>
-      {console.log(itemReq.is_high_ticket)}
       <ModalComponent
         isOpen={openNewRequest}
         handleClose={() => setOpenNewRequest(false)}

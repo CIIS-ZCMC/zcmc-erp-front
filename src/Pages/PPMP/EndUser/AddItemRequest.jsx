@@ -403,7 +403,7 @@ export default function AddItemRequest({ openReq, setOpenReq }) {
   const modalConfig = {
     activity: {
       width: "480px",
-      height: "350px",
+      height: "auto",
     },
     general: {
       width: "1372px",

@@ -57,11 +57,11 @@ const AOPEmpty = ({ setOpenFiscalYearModal, setOpenNewRequest }) => {
           {EMPTY_STATE_DESCRIPTION}
         </Typography>
         <Stack direction="row" gap={1}>
-          <ButtonComponent
+          {/* <ButtonComponent
             label="Request new items"
             variant="outlined"
             onClick={() => setOpenNewRequest(true)}
-          />
+          /> */}
           <ButtonComponent
             label="Create New AOP"
             variant="solid"

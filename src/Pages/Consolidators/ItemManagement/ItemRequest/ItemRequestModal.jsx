@@ -56,7 +56,6 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
     variant: null,
     unit: null,
     estimated_budget: "",
-    market_researched: false,
     specifications: [],
     is_special: 0,
     is_high_ticket: 0,
@@ -95,7 +94,6 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
       variant: row.terminology_category || null,
       unit: row.item_unit || null,
       estimated_budget: row.estimated_budget || "",
-      market_researched: row.market_researched || false,
       specifications: row.item_specifications?.length
         ? row.item_specifications
         : [{ id: Date.now(), description: "" }],
@@ -525,6 +523,7 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
                     </Stack>
                   </Fragment>
                 )}
+                <Divider sx={{ my: 2 }} />
                 <AuthorizationPinComponent setPin={setPin} />
               </TabComponent>
             </>
