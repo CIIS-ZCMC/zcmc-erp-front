@@ -2,10 +2,11 @@
 
 import { useLocation, useNavigate } from "react-router-dom";
 import { BASE_URL, ROOT_PATH, SSO_SIGNING_PATH } from "../Services/Config";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import axios from "axios";
 import { localStorageGetter } from "../Utils/LocalStorage";
 import { useAuth, useAuthActions } from "../Store/AuthStore";
+import { useSessionTimeout } from "@Hooks/SessionTimeout";
 
 function ProtectedRoutes({ children }) {
   const navigate = useNavigate();
@@ -13,6 +14,10 @@ function ProtectedRoutes({ children }) {
   const { sessionValidation } = useAuthActions();
   const { permissions } = useAuth();
   // const [loading, setLoading] = useState(true);
+
+  const [isValidated, setIsValidated] = useState(false);
+
+  useSessionTimeout(isValidated);
 
   function initialize() {
     if (location.pathname.includes(SSO_SIGNING_PATH)) {
@@ -29,6 +34,7 @@ function ProtectedRoutes({ children }) {
         return;
       }
       if (status === 200) {
+        setIsValidated(true);
         const lastPath = localStorageGetter("path");
 
         // --- SAFELY CHECK PERMISSION ---

@@ -123,7 +123,7 @@ const ObjectivesModal = ({
           </Typography>
         </Stack>
 
-        {objective?.is_other ? (
+        {objective?.is_other && (
           <>
             <TextareaComponent
               label={"Other objective"}
@@ -132,39 +132,37 @@ const ObjectivesModal = ({
               onChange={(e) => setOtherObjective(e.target.value)}
             />
 
-            <TextareaComponent
+            {/* <TextareaComponent
               label={"Others success indicator"}
               placeholder={"Input other success indicator"}
               value={otherSuccessIndicator || ""}
               onChange={(e) => setOtherSuccessIndicator(e.target.value)}
-            />
-          </>
-        ) : (
-          <>
-            <AutocompleteComponent
-              placeholder="Select success indicator"
-              label={"Success Indicator"}
-              size="md"
-              value={successIndicator}
-              setValue={(val) => {
-                setSuccessIndicator(val);
-              }}
-              options={successIndicatorByObjective}
-              getOptionLabel={(opt) => opt?.description || ""}
-            />
-
-            <Stack sx={{ display: successIndicator ? "block" : "none" }}>
-              <Typography level="body-xs">Description:</Typography>
-              <Typography level="body-xs" fontWeight={600}>
-                {successIndicator?.description}
-              </Typography>
-            </Stack>
-
-            <Alert color="warning" startDecorator={<TriangleAlert />}>
-              {OBJECTIVE_ALERT}
-            </Alert>
+            /> */}
           </>
         )}
+
+        <AutocompleteComponent
+          placeholder="Select success indicator"
+          label={"Success Indicator"}
+          size="md"
+          value={successIndicator}
+          setValue={(val) => {
+            setSuccessIndicator(val);
+          }}
+          options={successIndicatorByObjective}
+          getOptionLabel={(opt) => opt?.description || ""}
+        />
+
+        <Stack sx={{ display: successIndicator ? "block" : "none" }}>
+          <Typography level="body-xs">Description:</Typography>
+          <Typography level="body-xs" fontWeight={600}>
+            {successIndicator?.description}
+          </Typography>
+        </Stack>
+
+        <Alert color="warning" startDecorator={<TriangleAlert />}>
+          {OBJECTIVE_ALERT}
+        </Alert>
       </Stack>
     </>
   );

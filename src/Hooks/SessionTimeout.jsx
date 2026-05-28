@@ -1,48 +1,68 @@
 import { useEffect } from "react";
 import { useAuthActions } from "../Store/AuthStore";
+import erp_api from "@Services/ERP_API";
 import useSnackbarHook from "./SnackbarHook";
 
-export const useSessionTimeout = () => {
+export const useSessionTimeout = (enabled = false) => {
   const { logout } = useAuthActions();
   const { showSnack } = useSnackbarHook();
 
   useEffect(() => {
-    // Check session every 5 minutes
-    const interval = setInterval(
-      () => {
-        try {
-          const user = localStorage.getItem("user");
-          if (user) {
-            const userData = JSON.parse(user);
-            const token = userData.token;
+    if (!enabled) return;
 
-            // Simple token expiry check (adjust as needed)
-            const tokenAge = Date.now() - (userData.timestamp || Date.now());
-            const maxAge = 8 * 60 * 60 * 1000; // 8 hours
+    let loggingOut = false;
 
-            if (tokenAge > maxAge) {
-              showSnack(
-                "Session will expire soon. Please save your work.",
-                "warning",
-                5000,
-              );
-              // Give user 5 seconds before logout
-              setTimeout(() => {
-                logout();
-              }, 5000);
-            }
-          }
-        } catch (error) {
-          console.error("Session check error:", error);
+    const checkSession = async () => {
+      try {
+        if (loggingOut) return;
+
+        const response = await erp_api.get("session_exp");
+
+        const { session_expire, token_expiration } = response.data;
+
+        const expiryTime = new Date(token_expiration).getTime();
+        const remaining = expiryTime - Date.now();
+
+        if (remaining <= 10 * 60 * 1000 && remaining > 0) {
+          showSnack(
+            500,
+            "Your session will expire soon. Please save your work.",
+          );
         }
-      },
-      5 * 60 * 1000,
-    ); // 5 minutes
 
-    return () => {
-      clearInterval(interval);
+        if (session_expire) {
+          loggingOut = true;
+
+          showSnack(500, "Your session has expired. Redirecting to login...");
+
+          setTimeout(() => {
+            logout();
+          }, 5000);
+        }
+      } catch (error) {
+        console.error("Session check failed:", error);
+
+        if (
+          error?.response?.status === 401 ||
+          error?.response?.status === 419
+        ) {
+          loggingOut = true;
+
+          showSnack(500, "Your session has expired. Redirecting to login...");
+
+          setTimeout(() => {
+            logout();
+          }, 5000);
+        }
+      }
     };
-  }, [logout, showSnack]);
+
+    checkSession();
+
+    const interval = setInterval(checkSession, 5 * 60 * 1000);
+
+    return () => clearInterval(interval);
+  }, [logout, showSnack, enabled]);
 
   return null;
 };

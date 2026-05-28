@@ -374,7 +374,7 @@ const Objectives = () => {
           />
           <ButtonComponent
             onClick={() => handleOpenObjectivesModal()}
-            label={"Add an Objective"}
+            label={"Add an entry"}
             disabled={status_id === 4 || status_id === 2}
             startDecorator={<Add />}
             // endDecorator={<Plus size={16} />}
@@ -419,7 +419,7 @@ const Objectives = () => {
 
             <ButtonComponent
               onClick={() => handleOpenObjectivesModal()}
-              label={"Add an Objective"}
+              label={"Add an entry"}
               startDecorator={<Add />}
               // endDecorator={<Plus size={16} />}
             />
