@@ -140,16 +140,6 @@ export default function AddToCartLayout({
               p={1}
             >
               <SearchBarComponentv2 value={search} setValue={setSearch} />
-              {/* <SearchWithSuggestions
-                placeholder="Search items..."
-                getSearchSuggestions={getSearchSuggestions}
-                suggestions={suggestions}
-                onSelect={(item) => handleSearch(item.name)}
-                onEnter={(value) => handleSearch(value)}
-                onClear={() => handleSearch("")}
-                search={search}
-                setSearch={setSearch}
-              /> */}
               <Typography
                 level="body-sm"
                 endDecorator={

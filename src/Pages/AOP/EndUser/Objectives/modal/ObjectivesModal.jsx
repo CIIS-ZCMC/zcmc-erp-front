@@ -131,13 +131,6 @@ const ObjectivesModal = ({
               value={otherObjective || ""}
               onChange={(e) => setOtherObjective(e.target.value)}
             />
-
-            {/* <TextareaComponent
-              label={"Others success indicator"}
-              placeholder={"Input other success indicator"}
-              value={otherSuccessIndicator || ""}
-              onChange={(e) => setOtherSuccessIndicator(e.target.value)}
-            /> */}
           </>
         )}
 
@@ -159,6 +152,17 @@ const ObjectivesModal = ({
             {successIndicator?.description}
           </Typography>
         </Stack>
+
+        {successIndicator?.is_other && (
+          <>
+            <TextareaComponent
+              label={"Other success indicator"}
+              placeholder={"Input other success indicator"}
+              value={otherSuccessIndicator || ""}
+              onChange={(e) => setOtherSuccessIndicator(e.target.value)}
+            />
+          </>
+        )}
 
         <Alert color="warning" startDecorator={<TriangleAlert />}>
           {OBJECTIVE_ALERT}

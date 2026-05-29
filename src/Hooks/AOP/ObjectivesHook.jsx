@@ -121,18 +121,18 @@ const useObjectivesHook = () => {
     }
   };
 
-  const getObjectivesBySector = async (query = "", callBack) => {
+  const getObjectivesBySector = async (params = {}, callBack) => {
     setIsLoading(true);
 
     try {
       await new Promise((resolve, reject) => {
         read({
           url: API.OBJECTIVE_BY_SECTOR,
-          params: query ? { search: query } : {},
+          params,
           success: (res) => {
             const {
               status,
-              data: { data, message },
+              data: { data, message, pagination },
             } = res;
 
             const { aop_application, application_objectives } = data;
@@ -140,7 +140,7 @@ const useObjectivesHook = () => {
             setAopApplication(aop_application);
             setApplicationObjectives(application_objectives);
 
-            callBack?.(status, message);
+            callBack?.(status, message, pagination);
             resolve(res);
           },
           failed: (err) => {
@@ -208,21 +208,23 @@ const useObjectivesHook = () => {
           form: body,
           success: resolve,
           failed: (res, message) => {
-            reject({ res, message }); // 👈 wrap BOTH
+            reject({ res, message });
           },
         });
       });
 
       const {
         status,
-        data: { message },
+        data: {
+          message,
+          data: { application_objective },
+        },
       } = res;
 
-      // Refresh the objectives list after successful creation
+      console.log("application_objective", application_objective);
       if (status === 201) {
-        await getObjectivesBySector();
+        setApplicationObjectives((prev) => [...prev, application_objective]);
       }
-
       callBack?.(status, message);
     } catch ({ res, message }) {
       console.error("Failed to create objective:", message);
@@ -241,24 +243,27 @@ const useObjectivesHook = () => {
           url: `${API.OBJECTIVE_EDIT}/${params.id}`,
           form: body,
           success: resolve,
-          failed: reject,
+          failed: (res, message) => {
+            reject({ res, message });
+          },
         });
       });
 
       const {
         status,
-        data: { message },
+        data: { message, data },
       } = res;
 
-      // Refresh the objectives list after successful update
       if (status === 200) {
-        await getObjectivesBySector();
+        setApplicationObjectives((prev) =>
+          prev.map((obj) => (obj.id === data.id ? data : obj)),
+        );
       }
 
       callBack?.(status, message);
-    } catch (error) {
-      console.error("Error updating objective:", error);
-      callBack?.(false, error.message);
+    } catch ({ res, message }) {
+      console.error("Error updating objective:", message);
+      callBack?.(res, message);
     } finally {
       setIsBtnLoading(false);
     }

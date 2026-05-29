@@ -33,9 +33,13 @@ const useObjectivesStore = create((set, get) => ({
     setObjectiveByType: (objectiveByType) => set({ objectiveByType }),
     setSuccessIndicatorByObjective: (successIndicatorByObjective) =>
       set({ successIndicatorByObjective }),
-
     setApplicationObjectives: (applicationObjectives) =>
-      set({ applicationObjectives }),
+      set((state) => ({
+        applicationObjectives:
+          typeof applicationObjectives === "function"
+            ? applicationObjectives(state.applicationObjectives)
+            : applicationObjectives,
+      })),
     setApplicationObjective: (applicationObjective) =>
       set({ applicationObjective }),
 

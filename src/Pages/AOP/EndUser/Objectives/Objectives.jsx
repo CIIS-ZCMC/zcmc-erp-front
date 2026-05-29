@@ -49,6 +49,7 @@ import { socket } from "../../../../Services/Socket";
 import SnackbarComponent from "@Components/Common/SnackbarComponent";
 import { nextYear } from "../../../../Utils/Functions";
 import PageLoader from "@Components/Loading/PageLoader";
+import ServerPaginationComponent from "@Components/ServerPaginationComponent";
 
 const Objectives = () => {
   const location = useLocation();
@@ -100,15 +101,6 @@ const Objectives = () => {
   const [lockedRows, setLockedRows] = useState({});
   const [isEditLoading, setIsEditLoading] = useState(false);
 
-  useEffect(() => {
-    getObjectivesBySector(search, (status, message) => {
-      if (status < 200 || status >= 300) {
-        // handle error (toast, snackbar, etc.)
-        return;
-      }
-    });
-  }, [search]);
-
   const { status_id } = aopApplication; //get status id on aop application object
 
   const {
@@ -151,7 +143,6 @@ const Objectives = () => {
         }
       });
     } catch (error) {
-      console.error("Error creating objective:", error);
       setAlertDialog({
         status: "error",
         title: "Unexpected Error",
@@ -350,7 +341,6 @@ const Objectives = () => {
         withArrowBack
         onClickArrow={() => navigate("/aop")}
       />
-
       <BoxComponent p={2} bgColor={"#F9FAFB"} boxShadow="xs" mt={2}>
         <Stack direction={"column"}>
           <Typography fontWeight={600}>{MANAGE_OBJECTIVES_HEADER}</Typography>
@@ -359,7 +349,6 @@ const Objectives = () => {
             {MANAGE_OBJECTIVES_SUBHEADER}
           </Typography>
         </Stack>
-
         <Stack
           direction={"row"}
           alignItems={"center"}
@@ -430,103 +419,109 @@ const Objectives = () => {
           {applicationObjectives.length === 0 ? (
             <NoResultComponent />
           ) : (
-            <Grid
-              mt={2}
-              container
-              direction="row"
-              spacing={2}
-              sx={{ flexGrow: 1 }}
-            >
-              {applicationObjectives.map((obj) => {
-                const {
-                  id,
-                  aop_application_id,
-                  success_indicator,
-                  objective,
-                  activities_count,
-                  other_success_indicator,
-                  other_objective,
-                  type_of_function,
-                } = obj;
+            <>
+              <Grid
+                mt={2}
+                container
+                direction="row"
+                spacing={2}
+                sx={{ flexGrow: 1 }}
+              >
+                {applicationObjectives.map((obj) => {
+                  const {
+                    id,
+                    aop_application_id,
+                    success_indicator,
+                    objective,
+                    activities_count,
+                    other_success_indicator,
+                    other_objective,
+                    type_of_function,
+                  } = obj;
 
-                const lock = lockedRows[id];
-                const isLockedByOther = lock && lock.editorId !== user.id;
+                  const lock = lockedRows[id];
+                  const isLockedByOther = lock && lock.editorId !== user.id;
 
-                return (
-                  <Grid key={id} size={4} lg={4} md={6} sm={12}>
-                    <CardComponent
-                      statusColor={null}
-                      bgcolor={"#F9FAFB"}
-                      boxShadow="sm"
-                      sx={{
-                        opacity: isLockedByOther ? 0.7 : 1,
-                        backgroundColor: isLockedByOther ? "#f5f5f5" : "#fff",
-                      }}
-                      cardHeader={
-                        <CardHeader
-                          status={status_id}
-                          handleEdit={() => {
-                            if (isLockedByOther) return;
+                  return (
+                    <Grid key={id} size={4} lg={4} md={6} sm={12}>
+                      <CardComponent
+                        statusColor={null}
+                        bgcolor={"#F9FAFB"}
+                        boxShadow="sm"
+                        sx={{
+                          opacity: isLockedByOther ? 0.7 : 1,
+                          backgroundColor: isLockedByOther ? "#f5f5f5" : "#fff",
+                        }}
+                        cardHeader={
+                          <CardHeader
+                            status={status_id}
+                            handleEdit={() => {
+                              if (isLockedByOther) return;
 
-                            socket.emit("aop:start-edit", {
-                              aopId,
-                              objectiveId: id,
-                              userId: user.id,
-                              name: user.name,
-                            });
-
-                            handleOpenEditModal(id);
-                          }}
-                          handleDelete={() => {
-                            if (isLockedByOther) return;
-
-                            socket.emit("aop:start-edit", {
-                              aopId,
-                              objectiveId: id,
-                              userId: user.id,
-                              name: user.name,
-                            });
-                            handleOpenDeleteModal(id);
-                          }}
-                          isLocked={isLockedByOther}
-                          lockedBy={lock?.editorName}
-                        />
-                      }
-                      cardBody={
-                        <CardBody
-                          success_indicator={success_indicator}
-                          objective={objective}
-                          other_success_indicator={other_success_indicator}
-                          other_objective={other_objective}
-                          status={false}
-                          type_of_function={type_of_function}
-                        />
-                      }
-                      cardActions={
-                        <CardActions
-                          count={activities_count}
-                          handleActivities={() =>
-                            navigate(`/aop/activities/${id}`, {
-                              state: {
+                              socket.emit("aop:start-edit", {
+                                aopId,
                                 objectiveId: id,
-                                aopId: aop_application_id,
-                                objective:
-                                  objective?.description ||
-                                  other_objective?.description,
-                              },
-                            })
-                          }
-                        />
-                      }
-                    />
-                  </Grid>
-                );
-              })}
-            </Grid>
+                                userId: user.id,
+                                name: user.name,
+                              });
+
+                              handleOpenEditModal(id);
+                            }}
+                            handleDelete={() => {
+                              if (isLockedByOther) return;
+
+                              socket.emit("aop:start-edit", {
+                                aopId,
+                                objectiveId: id,
+                                userId: user.id,
+                                name: user.name,
+                              });
+                              handleOpenDeleteModal(id);
+                            }}
+                            isLocked={isLockedByOther}
+                            lockedBy={lock?.editorName}
+                          />
+                        }
+                        cardBody={
+                          <CardBody
+                            success_indicator={success_indicator}
+                            objective={objective}
+                            other_success_indicator={other_success_indicator}
+                            other_objective={other_objective}
+                            status={false}
+                            type_of_function={type_of_function}
+                          />
+                        }
+                        cardActions={
+                          <CardActions
+                            count={activities_count}
+                            handleActivities={() =>
+                              navigate(`/aop/activities/${id}`, {
+                                state: {
+                                  objectiveId: id,
+                                  aopId: aop_application_id,
+                                  objective:
+                                    objective?.description ||
+                                    other_objective?.description,
+                                },
+                              })
+                            }
+                          />
+                        }
+                      />
+                    </Grid>
+                  );
+                })}
+              </Grid>
+            </>
           )}
         </>
       )}
-
+      <ServerPaginationComponent
+        fetchData={getObjectivesBySector}
+        search={search}
+        perPage={6}
+      />
       {/* edit and add objectives modal */}
       {isOpenObjectivesModal && (
         <ModalComponent
@@ -538,8 +533,8 @@ const Objectives = () => {
               : ADD_OBJECTIVE
           }
           description={ADD_OBJECTIVE_SUBHEADING}
-          maxWidth={500}
-          minWidth={500}
+          maxWidth={700}
+          minWidth={700}
           content={
             <ObjectivesModal
               isLoading={isShowLoading}
@@ -560,7 +555,6 @@ const Objectives = () => {
           isLoading={isBtnLoading}
         />
       )}
-
       {/* Delete Objectives Modal */}
       {openDeleteModal && (
         <ConfirmationModalComponent

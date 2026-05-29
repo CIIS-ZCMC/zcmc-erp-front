@@ -1,10 +1,9 @@
 import BoxComponent from "@Components/Common/Card/BoxComponent";
-import { Box, Grid, Skeleton, Typography, useTheme } from "@mui/joy";
-import React, { Fragment, useEffect, useMemo, useRef, useState } from "react";
+import { Box, Skeleton } from "@mui/joy";
+import React, { Fragment, useEffect, useRef, useState } from "react";
 import ItemCardComponent from "./ItemCardComponent";
-import useItemsHook from "../../Hooks/ItemManagementHook";
 import { useVirtualizer } from "@tanstack/react-virtual";
-import { useMediaQuery } from "@mui/material";
+import { useMemo } from "react";
 
 export default function ProductGrid({
   onAddToCart,
@@ -45,9 +44,13 @@ export default function ProductGrid({
   // DYNAMIC COLUMN COUNT
   // --------------------------------------------------
 
-  const columns = Math.max(1, Math.floor(containerWidth / columnWidth));
+  const columns = useMemo(() => {
+    return Math.max(1, Math.floor(containerWidth / columnWidth));
+  }, [containerWidth, columnWidth]);
 
-  const rowCount = Math.ceil(items.length / columns);
+  const rowCount = useMemo(() => {
+    return Math.ceil(items.length / columns);
+  }, [items.length, columns]);
 
   // --------------------------------------------------
   // VIRTUALIZER

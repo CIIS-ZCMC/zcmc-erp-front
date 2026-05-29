@@ -4,8 +4,9 @@ import { post, read, remove, update } from "../Services/RequestMethods";
 
 const PATH = "item";
 
-const useItemsHook = create((set) => ({
+const useItemsHook = create((set, get) => ({
   items: [],
+  itemsCache: {},
   categories: [],
   classification: [],
   units: [],
@@ -27,16 +28,35 @@ const useItemsHook = create((set) => ({
     set({ search_Query: query });
   },
 
-  getItems: async (params = {}, callBack) => {
+  getItems: async (params = {}, callBack, options = {}) => {
+    const cacheKey = JSON.stringify(params);
+    const { force = false } = options;
+
+    const cachedItems = get().itemsCache[cacheKey];
+
+    if (cachedItems && !force) {
+      set({ items: cachedItems });
+      callBack?.(200, "Loaded from cache");
+      return;
+    }
+
     read({
       url: `${PATH}s`,
       params: { ...params },
       failed: callBack,
       success: (res) => {
         const { status, message, data } = res;
-        console.log("ITEMS DATA:", data);
-        set({ items: data.data });
-        callBack(status, message);
+        const itemData = data.data;
+
+        set((state) => ({
+          items: itemData,
+          itemsCache: {
+            ...state.itemsCache,
+            [cacheKey]: itemData,
+          },
+        }));
+
+        callBack?.(status, message);
       },
     });
   },
@@ -106,7 +126,7 @@ const useItemsHook = create((set) => ({
         setTimeout(() => {
           set((state) => ({ ...state, newItemId: null }));
         }, 3000);
-        callback(response.status, message, data);
+        callback?.(response.status, message, data);
       },
       failed: callback,
     });
@@ -125,7 +145,7 @@ const useItemsHook = create((set) => ({
           ),
         }));
 
-        callback(response.status, message);
+        callback?.(response.status, message);
       },
       failed: callback,
     });
@@ -142,10 +162,10 @@ const useItemsHook = create((set) => ({
           items: state.items.filter((res) => res.id !== id),
         }));
 
-        callBack(status, message);
+        callBack?.(status, message);
       },
       failed: (status, message) => {
-        callBack(status, message);
+        callBack?.(status, message);
       },
     });
   },
@@ -160,10 +180,10 @@ const useItemsHook = create((set) => ({
           items: state.items.filter((res) => res.id !== id),
         }));
 
-        callBack(status, message);
+        callBack?.(status, message);
       },
       failed: (status, message) => {
-        callBack(status, message);
+        callBack?.(status, message);
       },
     });
   },
@@ -210,7 +230,7 @@ const useItemsHook = create((set) => ({
       success: (res) => {
         const { status, message, data } = res;
         set({ categories: data.data });
-        callBack(status, message);
+        callBack?.(status, message);
       },
     });
   },
@@ -321,7 +341,7 @@ const useItemsHook = create((set) => ({
         // setTimeout(() => {
         //   set((state) => ({ ...state, newItemId: null }));
         // }, 3000);
-        callback(response.status, message, data);
+        callback?.(response.status, message, data);
       },
       failed: callback,
     });
@@ -339,10 +359,10 @@ const useItemsHook = create((set) => ({
           ),
         }));
 
-        callback(response.status, message);
+        callback?.(response.status, message);
       },
       failed: (status, message) => {
-        callback(status, message);
+        callback?.(status, message);
       },
     });
   },
@@ -358,10 +378,10 @@ const useItemsHook = create((set) => ({
           categories: state.categories.filter((res) => res.id !== id),
         }));
 
-        callBack(status, message);
+        callBack?.(status, message);
       },
       failed: (status, message) => {
-        callBack(status, message);
+        callBack?.(status, message);
       },
     });
   },
@@ -376,10 +396,10 @@ const useItemsHook = create((set) => ({
           categories: state.categories.filter((res) => res.id !== id),
         }));
 
-        callBack(status, message);
+        callBack?.(status, message);
       },
       failed: (status, message) => {
-        callBack(status, message);
+        callBack?.(status, message);
       },
     });
   },
@@ -394,7 +414,7 @@ const useItemsHook = create((set) => ({
       success: (res) => {
         const { status, message, data } = res;
         set({ classification: data.data });
-        callBack(status, message);
+        callBack?.(status, message);
       },
     });
   },
@@ -464,7 +484,7 @@ const useItemsHook = create((set) => ({
         // setTimeout(() => {
         //   set((state) => ({ ...state, newItemId: null }));
         // }, 3000);
-        callback(response.status, message, data);
+        callback?.(response.status, message, data);
       },
       failed: callback,
     });
@@ -482,10 +502,10 @@ const useItemsHook = create((set) => ({
           ),
         }));
 
-        callback(response.status, message);
+        callback?.(response.status, message);
       },
       failed: (status, message) => {
-        callback(status, message);
+        callback?.(status, message);
       },
     });
   },
@@ -501,10 +521,10 @@ const useItemsHook = create((set) => ({
           classification: state.classification.filter((res) => res.id !== id),
         }));
 
-        callBack(status, message);
+        callBack?.(status, message);
       },
       failed: (status, message) => {
-        callBack(status, message);
+        callBack?.(status, message);
       },
     });
   },
@@ -519,10 +539,10 @@ const useItemsHook = create((set) => ({
           classification: state.classification.filter((res) => res.id !== id),
         }));
 
-        callBack(status, message);
+        callBack?.(status, message);
       },
       failed: (status, message) => {
-        callBack(status, message);
+        callBack?.(status, message);
       },
     });
   },
@@ -569,7 +589,7 @@ const useItemsHook = create((set) => ({
       success: (res) => {
         const { status, message, data } = res;
         set({ units: data.data });
-        callBack(status, message);
+        callBack?.(status, message);
       },
     });
   },
@@ -584,7 +604,7 @@ const useItemsHook = create((set) => ({
       success: (res) => {
         const { status, message, data } = res;
         set({ variants: data.data });
-        callBack(status, message);
+        callBack?.(status, message);
       },
     });
   },
@@ -597,7 +617,7 @@ const useItemsHook = create((set) => ({
       success: (res) => {
         const { status, message, data } = res;
         set({ variants: data.data });
-        callBack(status, message);
+        callBack?.(status, message);
       },
     });
   },
@@ -614,7 +634,7 @@ const useItemsHook = create((set) => ({
       failed: (err) => {
         set({ isLoading: false, error: err });
         if (callBack)
-          callBack(false, err?.message || "Failed to fetch categories");
+          callBack?.(false, err?.message || "Failed to fetch categories");
       },
       success: (res) => {
         const { status, message, data, meta } = res;
@@ -699,7 +719,7 @@ const useItemsHook = create((set) => ({
           };
         });
 
-        callback(response.status, message, data);
+        callback?.(response.status, message, data);
       },
       failed: callback,
     });
@@ -717,10 +737,10 @@ const useItemsHook = create((set) => ({
           ),
         }));
 
-        callback(response.status, message);
+        callback?.(response.status, message);
       },
       failed: (status, message) => {
-        callback(status, message);
+        callback?.(status, message);
       },
     });
   },
@@ -736,10 +756,10 @@ const useItemsHook = create((set) => ({
           terminology: state.terminology.filter((res) => res.id !== id),
         }));
 
-        callBack(status, message);
+        callBack?.(status, message);
       },
       failed: (status, message) => {
-        callBack(status, message);
+        callBack?.(status, message);
       },
     });
   },
@@ -754,10 +774,10 @@ const useItemsHook = create((set) => ({
           terminology: state.terminology.filter((res) => res.id !== id),
         }));
 
-        callBack(status, message);
+        callBack?.(status, message);
       },
       failed: (status, message) => {
-        callBack(status, message);
+        callBack?.(status, message);
       },
     });
   },
@@ -770,7 +790,7 @@ const useItemsHook = create((set) => ({
       success: (res) => {
         const { status, message, data } = res;
         set({ variants: data.data });
-        callBack(status, message);
+        callBack?.(status, message);
       },
     });
   },
@@ -784,7 +804,7 @@ const useItemsHook = create((set) => ({
       success: (res) => {
         const { status, message, data } = res;
         set({ items: data.data });
-        callBack(status, message);
+        callBack?.(status, message);
       },
     });
   },
@@ -796,7 +816,7 @@ const useItemsHook = create((set) => ({
       success: (res) => {
         const { status, message, data } = res;
         set({ dispensingCategories: data });
-        callBack(status, message);
+        callBack?.(status, message);
       },
     });
   },
