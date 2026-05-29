@@ -24,18 +24,11 @@ const CardBody = ({
         sx={{ textAlign: "left" }}
       >
         {!status ? (
-          <Typography level="body-sm" textAlign="left">
-            {type_of_function?.type}
-          </Typography>
-        ) : (
-          <InputComponent placeholder="Function Type" />
-        )}
-
-        {!status ? (
           <Typography
             level="title-md"
             sx={{
-              color: grey[800],
+              fontWeight: 600,
+              color: grey[900],
               display: "-webkit-box",
               WebkitLineClamp: 3,
               WebkitBoxOrient: "vertical",
@@ -50,9 +43,9 @@ const CardBody = ({
               },
             }}
           >
-            {objective !== null
-              ? objective?.description
-              : other_objective?.description}
+            {objective?.is_other
+              ? other_objective?.description
+              : objective?.description}
           </Typography>
         ) : (
           <InputComponent placeholder="Objective Name" />
@@ -89,9 +82,9 @@ const CardBody = ({
             },
           }}
         >
-          {success_indicator !== null
-            ? success_indicator?.description
-            : other_success_indicator?.description}
+          {success_indicator?.is_other
+            ? other_success_indicator?.description
+            : success_indicator?.description}
         </Typography>
       </Stack>
     </Stack>

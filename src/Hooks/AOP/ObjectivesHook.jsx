@@ -251,12 +251,17 @@ const useObjectivesHook = () => {
 
       const {
         status,
-        data: { message, data },
+        data: {
+          message,
+          data: { application_objective },
+        },
       } = res;
 
       if (status === 200) {
         setApplicationObjectives((prev) =>
-          prev.map((obj) => (obj.id === data.id ? data : obj)),
+          prev.map((obj) =>
+            obj.id === application_objective.id ? application_objective : obj,
+          ),
         );
       }
 

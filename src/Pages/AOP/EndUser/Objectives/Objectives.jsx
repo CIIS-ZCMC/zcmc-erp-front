@@ -1,6 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
 
-import { Stack, Divider, Typography, Breadcrumbs, Grid } from "@mui/joy";
+import { Stack, Divider, Typography, Breadcrumbs, Grid, Box } from "@mui/joy";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 
 import { ThreeDotsLoader } from "@Components/Common/Loading/ThreeDotsLoader";
@@ -331,7 +331,13 @@ const Objectives = () => {
   }, [socket, aopId]);
 
   return (
-    <div>
+    <Stack
+      sx={{
+        minHeight: "95vh",
+        display: "flex",
+        flexDirection: "column",
+      }}
+    >
       <PageTitle
         title={`AOP for Fiscal Year ${nextYear}`}
         description={
@@ -385,7 +391,7 @@ const Objectives = () => {
           justifyContent={"center"}
           textAlign={"center"}
           my={2}
-          height={"65vh"}
+          height={"62vh"}
         >
           <ThreeDotsLoader />
         </Stack>
@@ -452,6 +458,7 @@ const Objectives = () => {
                           opacity: isLockedByOther ? 0.7 : 1,
                           backgroundColor: isLockedByOther ? "#f5f5f5" : "#fff",
                         }}
+                        justifyContentHeader={"space-between"}
                         cardHeader={
                           <CardHeader
                             status={status_id}
@@ -480,6 +487,7 @@ const Objectives = () => {
                             }}
                             isLocked={isLockedByOther}
                             lockedBy={lock?.editorName}
+                            type_of_function={type_of_function}
                           />
                         }
                         cardBody={
@@ -517,11 +525,20 @@ const Objectives = () => {
           )}
         </>
       )}
-      <ServerPaginationComponent
-        fetchData={getObjectivesBySector}
-        search={search}
-        perPage={6}
-      />
+      <Box
+        sx={{
+          width: "100%",
+          display: "flex",
+          justifyContent: "center",
+        }}
+      >
+        <ServerPaginationComponent
+          fetchData={getObjectivesBySector}
+          search={search}
+          perPage={6}
+        />
+      </Box>
+
       {/* edit and add objectives modal */}
       {isOpenObjectivesModal && (
         <ModalComponent
@@ -576,7 +593,7 @@ const Objectives = () => {
           isLoading={isBtnLoading}
         />
       )}
-    </div>
+    </Stack>
   );
 };
 
