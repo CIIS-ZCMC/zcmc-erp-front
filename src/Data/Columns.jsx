@@ -45,6 +45,7 @@ import { grey, red } from "@mui/material/colors";
 import ButtonComponent from "@Components/Common/ButtonComponent";
 import { formatPeso } from "../Utils/FormatPeso";
 import formattedPrice from "../Utils/formattedPrice";
+import { isAopDisabled } from "@Utils/AopStatus";
 
 export const objHeaders = ({
   active,
@@ -2455,5 +2456,86 @@ export const MANAGE_CONSOLIDATORS = (
         </Chip>
       </Stack>
     ),
+  },
+];
+
+export const AOP_OBJECTIVES_COLUMNS = (
+  status,
+  handleEdit,
+  handleDelete,
+  lockedRows,
+  user,
+) => [
+  {
+    id: "type_of_function",
+    label: "Function Type",
+    width: "auto",
+    render: (row) => (
+      <ChipComponent
+        label={row?.type_of_function?.type || ""}
+        variant={"soft"}
+        color={
+          row?.type_of_function?.id === 1
+            ? "primary"
+            : row?.type_of_function?.id === 2
+              ? "success"
+              : "danger"
+        }
+      />
+    ),
+  },
+  {
+    id: "objective",
+    label: "Objective",
+    width: "auto",
+    render: (row) => (
+      <Typography level="body-sm" color="black">
+        {row?.objective?.description ||
+          row?.other_objective?.description ||
+          "-"}
+      </Typography>
+    ),
+  },
+  {
+    id: "success_indicator",
+    label: "Success Indicator",
+    width: "auto",
+    render: (row) => (
+      <Typography level="body-sm" color="black">
+        {row?.success_indicator?.description ||
+          row?.other_success_indicator?.description ||
+          "-"}
+      </Typography>
+    ),
+  },
+  {
+    id: "actions",
+    label: "Actions",
+    render: (row) => {
+      const lock = lockedRows?.[row.id];
+      const isLockedByOther = lock && lock.editorId !== user.id;
+      return (
+        <Stack direction={"row"} spacing={1}>
+          <Chip
+            variant="soft"
+            color="neutral"
+            startDecorator={<EditOutlined />}
+            onClick={() => handleEdit(row)}
+            disabled={isLockedByOther || isAopDisabled(status)}
+          >
+            Edit
+          </Chip>
+          <Chip
+            variant="soft"
+            color="neutral"
+            startDecorator={<DeleteOutlineOutlined />}
+            onClick={() => handleDelete(row)}
+            disabled={isLockedByOther || isAopDisabled(status)}
+          >
+            Delete
+          </Chip>
+        </Stack>
+      );
+    },
   },
 ];

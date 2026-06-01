@@ -5,8 +5,9 @@ export default function ServerPaginationComponent({
   fetchData,
   search = "",
   perPage = 15,
+  page,
+  setPage,
 }) {
-  const [page, setPage] = useState(1);
   const [pagination, setPagination] = useState({
     current_page: 1,
     last_page: 1,

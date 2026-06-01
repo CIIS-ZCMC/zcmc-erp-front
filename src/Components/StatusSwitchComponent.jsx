@@ -1,6 +1,30 @@
 import { Switch, Typography } from "@mui/joy";
 import React from "react";
 
+const switchSizes = {
+  sm: {
+    thumb: "14px",
+    width: "75px",
+    height: "22px",
+    font: "body-xs",
+    padding: 8,
+  },
+  md: {
+    thumb: "17px",
+    width: "100px",
+    height: "26px",
+    font: "body-sm",
+    padding: 12,
+  },
+  lg: {
+    thumb: "22px",
+    width: "130px",
+    height: "34px",
+    font: "body-md",
+    padding: 16,
+  },
+};
+
 export default function StatusSwitch({
   checked,
   onChange,
@@ -10,6 +34,7 @@ export default function StatusSwitch({
   size = "md",
 }) {
   const isActive = checked;
+  const config = switchSizes[size] || switchSizes.md;
 
   return (
     <Switch
@@ -24,12 +49,13 @@ export default function StatusSwitch({
             <>
               <Typography
                 component="span"
-                level="body-sm"
+                level={config.font}
                 sx={{
                   position: "absolute",
-                  left: 12,
-                  color: "#FFFFFF",
+                  left: config.padding,
+                  color: "#fff",
                   opacity: isActive ? 1 : 0,
+                  transition: "opacity 200ms ease",
                 }}
               >
                 {activeLabel}
@@ -37,12 +63,13 @@ export default function StatusSwitch({
 
               <Typography
                 component="span"
-                level="body-sm"
+                level={config.font}
                 sx={{
                   position: "absolute",
-                  right: 12,
-                  color: "#FFFFFF",
+                  right: config.padding,
+                  color: "#fff",
                   opacity: !isActive ? 1 : 0,
+                  transition: "opacity 200ms ease",
                 }}
               >
                 {inactiveLabel}
@@ -52,11 +79,10 @@ export default function StatusSwitch({
         },
       }}
       sx={{
-        "--Switch-thumbSize": "17px",
-        "--Switch-trackWidth": "100px",
-        "--Switch-trackHeight": "26px",
+        "--Switch-thumbSize": config.thumb,
+        "--Switch-trackWidth": config.width,
+        "--Switch-trackHeight": config.height,
 
-        // Smooth thumb + track motion
         "& .MuiSwitch-thumb": {
           transition: "transform 200ms ease",
         },

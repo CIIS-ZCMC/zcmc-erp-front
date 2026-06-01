@@ -198,7 +198,9 @@ const useObjectivesHook = () => {
     }
   };
 
-  const createObjective = async (body, callBack) => {
+  const createObjective = async (body, callBack, options = {}) => {
+    const { search = "", perPage = 6, setPage } = options;
+
     setIsBtnLoading(true);
 
     try {
@@ -221,9 +223,19 @@ const useObjectivesHook = () => {
         },
       } = res;
 
-      console.log("application_objective", application_objective);
       if (status === 201) {
-        setApplicationObjectives((prev) => [...prev, application_objective]);
+        await getObjectivesBySector(
+          {
+            search,
+            page: 1,
+            per_page: perPage,
+          },
+          (fetchStatus, fetchMessage, pagination) => {
+            if (pagination?.last_page) {
+              setPage?.(pagination.last_page);
+            }
+          },
+        );
       }
       callBack?.(status, message);
     } catch ({ res, message }) {
