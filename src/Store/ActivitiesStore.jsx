@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
 const useActivitiesStore = create((set, get) => ({
-  applicationActivities: {},
+  applicationActivities: [],
   applicationActivity: null,
   aopApplication: {},
 

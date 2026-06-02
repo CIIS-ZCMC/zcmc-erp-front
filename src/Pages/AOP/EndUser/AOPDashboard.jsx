@@ -351,14 +351,14 @@ function DashboardEndUser(props) {
                   mission={mission}
                   handleChange={handleChangeFiscalYear}
                   handleEdit={handleOpenEdit}
-                  status={aop?.status.id}
+                  status={aop?.status?.id}
                 />
 
                 {/* {aop?.status?.id !== 4 && (
                   
                 )} */}
 
-                <Draft status={aop?.status.id} />
+                <Draft status={aop?.status?.id} />
                 {/* 
                 {aop?.status?.id !== 1 && (
                   <>

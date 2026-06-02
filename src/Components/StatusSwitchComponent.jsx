@@ -4,32 +4,35 @@ import React from "react";
 const switchSizes = {
   sm: {
     thumb: "14px",
-    width: "75px",
+    width: "65px",
     height: "22px",
     font: "body-xs",
-    padding: 8,
+    padding: 6,
   },
   md: {
     thumb: "17px",
-    width: "100px",
+    width: "80px",
     height: "26px",
     font: "body-sm",
-    padding: 12,
+    padding: 8,
   },
   lg: {
     thumb: "22px",
-    width: "130px",
+    width: "110px",
     height: "34px",
     font: "body-md",
-    padding: 16,
+    padding: 12,
   },
 };
-
 export default function StatusSwitch({
   checked,
   onChange,
   activeLabel = "Active",
   inactiveLabel = "Archived",
+  activeColor = "success",
+  inactiveColor = "warning",
+  activeBg,
+  inactiveBg,
   disabled = false,
   size = "md",
 }) {
@@ -39,7 +42,7 @@ export default function StatusSwitch({
   return (
     <Switch
       size={size}
-      color={isActive ? "success" : "warning"}
+      color={isActive ? activeColor : inactiveColor}
       checked={isActive}
       disabled={disabled}
       onChange={(e) => onChange(e.target.checked)}
@@ -89,6 +92,15 @@ export default function StatusSwitch({
         "& .MuiSwitch-track": {
           transition: "background-color 200ms ease",
         },
+
+        ...(isActive
+          ? activeBg && {
+              "--Switch-trackBackground": activeBg,
+            }
+          : inactiveBg && {
+              "--Switch-trackBackground": inactiveBg,
+              "--Switch-trackHoverBackground": inactiveBg,
+            }),
       }}
     />
   );

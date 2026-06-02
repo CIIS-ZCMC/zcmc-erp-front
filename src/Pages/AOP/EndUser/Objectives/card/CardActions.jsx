@@ -13,9 +13,6 @@ const CardActions = ({ handleActivities, count }) => {
         color="primary"
         size="lg"
         p={2}
-        sx={{
-          zIndex: 2,
-        }}
         startDecorator={
           <Avatar
             size="md" // small avatar for chip

@@ -61,14 +61,6 @@ export default function ResourceCardComponent({
         }}
       >
         <CardOverflow>
-          <AspectRatio ratio="2">
-            <img
-              src={defaultItem}
-              srcSet="https://images.unsplash.com/photo-1593121925328-369cc8459c08?auto=format&fit=crop&w=286&dpr=2 2x"
-              loading="lazy"
-              alt=""
-            />
-          </AspectRatio>
           <IconButton
             aria-label="delete"
             size="md"

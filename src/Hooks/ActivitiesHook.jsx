@@ -24,7 +24,7 @@ const useActivitiesHook = () => {
         success: (res) => {
           const { status, data } = res;
           setApplicationActivities(data);
-          callBack(status, data.message);
+          callBack(status, data.message, data.pagination);
         },
       });
     } catch (error) {
@@ -62,28 +62,27 @@ const useActivitiesHook = () => {
         url: API.ACTIVITIES_STORE,
         form: body,
         failed: callBack,
-        success: async (res) => {
-          const {
-            status,
-            data: { data, message },
-          } = res;
-          if (status === 201) {
-            const fetchParams = {
-              application_objective_id: data[0].application_objective_id,
-            };
+        success: (res) => {
+          const { status, data } = res;
+          const newActivities = data.activities || [];
 
-            getActivities(fetchParams, (status, message) => {
-              if (!(status >= 200 && status < 300)) {
-                console.error("Failed to refresh activities:", message);
-              }
-            });
+          if (status === 201) {
+            setApplicationActivities((prev) => ({
+              ...prev,
+              activities: [...(prev?.activities || []), ...newActivities],
+              meta: {
+                ...prev?.meta,
+                ...data.meta,
+              },
+            }));
           }
-          callBack?.(status, message);
+
+          callBack?.(status, data.message);
         },
       });
     } catch (error) {
-      console.error("Error Creatin Objective:", error);
-      callBack(false, error.message);
+      console.error("Error Creating Activity:", error);
+      callBack?.(false, error.message);
     }
   };
 
@@ -93,30 +92,25 @@ const useActivitiesHook = () => {
         url: `${API.ACTIVITY_EDIT}/${params.id}`,
         form: body,
         failed: callBack,
-        success: async (res) => {
-          const {
-            status,
-            data: { data, message },
-          } = res;
+        success: (res) => {
+          const { status, data } = res;
+          const updatedActivity = data.activities?.[0];
 
-          if (status === 200) {
-            const fetchParams = {
-              application_objective_id: data.application_objective_id,
-            };
-
-            getActivities(fetchParams, (status, message) => {
-              if (!(status >= 200 && status < 300)) {
-                console.error("Failed to refresh activities:", message);
-              }
-            });
+          if (status === 200 && updatedActivity) {
+            setApplicationActivities((prev) => ({
+              ...prev,
+              activities: (prev?.activities || []).map((activity) =>
+                activity.id === updatedActivity.id ? updatedActivity : activity,
+              ),
+            }));
           }
 
-          callBack?.(status, message);
+          callBack?.(status, data.message);
         },
       });
     } catch (error) {
       console.error("Error Update Activity:", error);
-      callBack(false, error.message);
+      callBack?.(false, error.message);
     }
   };
 
@@ -126,28 +120,22 @@ const useActivitiesHook = () => {
         url: `${API.ACTIVITIES_DELETE}/${params.id}`,
         failed: callBack,
         success: (res) => {
-          const {
-            status,
-            data: { message },
-          } = res;
+          const { status, data } = res;
 
-          // Remove activity from state
-          const newActivities = applicationActivities.activities.filter(
-            (activity) => activity.id !== params.id,
-          );
+          if (status === 200) {
+            setApplicationActivities((prev) => ({
+              ...prev,
+              activities: (prev?.activities || []).filter(
+                (activity) => activity.id !== params.id,
+              ),
+              meta: {
+                ...prev?.meta,
+                ...data.meta,
+              },
+            }));
+          }
 
-          setApplicationActivities({
-            ...applicationActivities,
-            activities: newActivities,
-            meta: {
-              ...applicationActivities.meta,
-              total_activities: newActivities.length,
-            },
-          });
-
-          console.log("Deleting activity ID:", params.id);
-          console.log("New activities array:", newActivities);
-          callBack?.(status, message);
+          callBack?.(status, data.message);
         },
       });
     } catch (error) {

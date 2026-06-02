@@ -11,6 +11,7 @@ import {
   TriangleAlert,
 } from "lucide-react";
 import { getModeColorScheme } from "./ColorScheme";
+import { ArrowRight } from "lucide-react";
 // STATUS
 export const getStatusIcon = (status, iconOnly) => {
   const iconMap = {
@@ -30,6 +31,7 @@ export const getStatusIcon = (status, iconOnly) => {
     error: <CircleX />,
     danger: <CircleX />,
     logout: <LogOut />,
+    next: <ArrowRight />,
   };
 
   const icon = iconMap[status] || null;

@@ -282,6 +282,53 @@ const Objectives = () => {
     clearFields();
   };
 
+  const getRowLockState = (objectiveId) => {
+    const lock = lockedRows[objectiveId];
+
+    return {
+      lock,
+      isLockedByOther: lock && lock.editorId !== user.id,
+    };
+  };
+
+  const startEditLock = (objectiveId) => {
+    socket.emit("aop:start-edit", {
+      aopId,
+      objectiveId,
+      userId: user.id,
+      name: user.name,
+    });
+  };
+
+  const objectiveHandlers = {
+    activities: (row) => {
+      navigate(`/aop/activities/${row.id}`, {
+        state: {
+          objectiveId: row.id,
+          aopId: row.aop_application_id || aopApplication?.id,
+          objective:
+            row?.objective?.description || row?.other_objective?.description,
+        },
+      });
+    },
+
+    edit: (row) => {
+      const { isLockedByOther } = getRowLockState(row.id);
+      if (isLockedByOther) return;
+
+      startEditLock(row.id);
+      handleOpenEditModal(row.id);
+    },
+
+    delete: (row) => {
+      const { isLockedByOther } = getRowLockState(row.id);
+      if (isLockedByOther) return;
+
+      startEditLock(row.id);
+      handleOpenDeleteModal(row.id);
+    },
+  };
+
   useEffect(() => {
     if (!socket || !aopId) return;
 
@@ -380,6 +427,10 @@ const Objectives = () => {
             <StatusSwitch
               activeLabel="Card"
               inactiveLabel="Table"
+              activeColor="primary"
+              inactiveColor="neutral"
+              activeBg="#0086CC"
+              inactiveBg="#0086CC"
               checked={isCard}
               onChange={(value) => {
                 setIsCard(value);
@@ -493,29 +544,8 @@ const Objectives = () => {
                           cardHeader={
                             <CardHeader
                               status={status_id}
-                              handleEdit={() => {
-                                if (isLockedByOther) return;
-
-                                socket.emit("aop:start-edit", {
-                                  aopId,
-                                  objectiveId: id,
-                                  userId: user.id,
-                                  name: user.name,
-                                });
-
-                                handleOpenEditModal(id);
-                              }}
-                              handleDelete={() => {
-                                if (isLockedByOther) return;
-
-                                socket.emit("aop:start-edit", {
-                                  aopId,
-                                  objectiveId: id,
-                                  userId: user.id,
-                                  name: user.name,
-                                });
-                                handleOpenDeleteModal(id);
-                              }}
+                              handleEdit={() => objectiveHandlers.edit(obj)}
+                              handleDelete={() => objectiveHandlers.delete(obj)}
                               isLocked={isLockedByOther}
                               lockedBy={lock?.editorName}
                               type_of_function={type_of_function}
@@ -535,15 +565,7 @@ const Objectives = () => {
                             <CardActions
                               count={activities_count}
                               handleActivities={() =>
-                                navigate(`/aop/activities/${id}`, {
-                                  state: {
-                                    objectiveId: id,
-                                    aopId: aop_application_id,
-                                    objective:
-                                      objective?.description ||
-                                      other_objective?.description,
-                                  },
-                                })
+                                objectiveHandlers.activities(obj)
                               }
                             />
                           }
@@ -557,38 +579,9 @@ const Objectives = () => {
                   <BasicTableComponent
                     columns={AOP_OBJECTIVES_COLUMNS(
                       status_id,
-                      (row) => {
-                        const lock = lockedRows[row.id];
-                        const isLockedByOther =
-                          lock && lock.editorId !== user.id;
-
-                        if (isLockedByOther) return;
-
-                        socket.emit("aop:start-edit", {
-                          aopId,
-                          objectiveId: row.id,
-                          userId: user.id,
-                          name: user.name,
-                        });
-
-                        handleOpenEditModal(row.id);
-                      },
-                      (row) => {
-                        const lock = lockedRows[row.id];
-                        const isLockedByOther =
-                          lock && lock.editorId !== user.id;
-
-                        if (isLockedByOther) return;
-
-                        socket.emit("aop:start-edit", {
-                          aopId,
-                          objectiveId: row.id,
-                          userId: user.id,
-                          name: user.name,
-                        });
-
-                        handleOpenDeleteModal(row.id);
-                      },
+                      objectiveHandlers.activities,
+                      objectiveHandlers.edit,
+                      objectiveHandlers.delete,
                       lockedRows,
                       user,
                     )}
@@ -614,7 +607,7 @@ const Objectives = () => {
           setPage={setPage}
           fetchData={getObjectivesBySector}
           search={search}
-          perPage={isCard ? 6 : 10}
+          perPage={isCard ? 9 : 10}
         />
       </Box>
 

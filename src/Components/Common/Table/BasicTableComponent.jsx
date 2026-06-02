@@ -39,6 +39,7 @@ const BasicTableComponent = ({
                 key={col.field}
                 style={{
                   width: col.width,
+                  textAlign: col.align || "left",
                 }}
               >
                 {col.label}

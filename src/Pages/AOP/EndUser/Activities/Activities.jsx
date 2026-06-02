@@ -1,19 +1,8 @@
 import React, { useEffect, useState, useMemo } from "react";
-
-import {
-  Stack,
-  Typography,
-  Breadcrumbs,
-  Divider,
-  Grid,
-  Tooltip,
-} from "@mui/joy";
-
-import { useParams, useLocation } from "react-router-dom";
-
+import { Stack, Typography, Grid, Box } from "@mui/joy";
+import { useParams, useLocation, useNavigate } from "react-router-dom";
 import useModalHook from "../../../../Hooks/ModalHook";
 import useActivitiesHook from "../../../../Hooks/ActivitiesHook";
-
 import { ThreeDotsLoader } from "@Components/Common/Loading/ThreeDotsLoader";
 import BoxComponent from "@Components/Common/Card/BoxComponent";
 import ButtonComponent from "@Components/Common/ButtonComponent";
@@ -44,10 +33,14 @@ import { socket } from "../../../../Services/Socket";
 import { getNextYearRange, nextYear } from "../../../../Utils/Functions";
 import { useAuth } from "../../../../Store/AuthStore";
 import PageLoader from "@Components/Loading/PageLoader";
+import StatusSwitch from "@Components/StatusSwitchComponent";
+import BasicTableComponent from "@Components/Common/Table/BasicTableComponent";
+import { AOP_ACTIVITIES_COLUMNS } from "@Data/Columns";
+import ServerPaginationComponent from "@Components/ServerPaginationComponent";
 
 const Activities = () => {
   const { objectiveId } = useParams();
-  const location = useLocation();
+  const navigate = useNavigate();
   const { aop } = useAOPStore();
   const { user } = useAuth();
   const {
@@ -96,26 +89,12 @@ const Activities = () => {
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [selectedActivityId, setSelectedActivityId] = useState(null);
   const [search, setSearch] = useState("");
+  const [isCard, setIsCard] = useState(true);
+  const [page, setPage] = useState(1);
+
   const [lockedActivities, setLockedActivities] = useState({});
   const getActivityKey = (aopId, objectiveId, activityId) =>
     `${aopId}:${objectiveId}:${activityId}`;
-
-  useEffect(() => {
-    setIsLoading(true);
-    const params = {
-      application_objective_id: objectiveId,
-      ...(search && { search }),
-    };
-
-    getActivities(params, (status, message) => {
-      setIsLoading(false);
-
-      if (status < 200 || status >= 300) {
-        // handle error (toast, snackbar, etc.)
-        return;
-      }
-    });
-  }, [search, objectiveId]);
 
   const status = aop.status.id;
   const objectiveName = applicationActivities?.objective;
@@ -384,6 +363,47 @@ const Activities = () => {
     };
   }, [socket, objectiveId, aop?.id]);
 
+  const getActivityLockState = (activityId) => {
+    const activityKey = getActivityKey(aop.id, objectiveId, activityId);
+    const lock = lockedActivities[activityKey];
+
+    return {
+      lock,
+      isLockedByOther: lock && lock.editorId !== user.id,
+    };
+  };
+
+  const activityHandlers = {
+    add: () => {
+      handleOpenCountModal();
+    },
+
+    edit: (row) => {
+      const { isLockedByOther } = getActivityLockState(row.id);
+      if (isLockedByOther) return;
+
+      handleOpenEditModal(row.id);
+    },
+
+    delete: (row) => {
+      const { isLockedByOther } = getActivityLockState(row.id);
+      if (isLockedByOther) return;
+
+      handleOpenDeleteModal(row.id);
+    },
+
+    resources: (row) => {
+      navigate(`/aop/manage-resources/${row.id}`, {
+        state: { activityId: row.id },
+      });
+    },
+
+    resp_person: (row) => {
+      navigate(`/aop/responsible-person/${row.id}`, {
+        state: { activityId: row.id },
+      });
+    },
+  };
   return (
     <>
       <PageTitle
@@ -438,12 +458,29 @@ const Activities = () => {
           justifyContent={"space-between"}
           marginTop={3}
         >
-          <SearchBarComponentv2
-            value={search}
-            setValue={setSearch}
-            placeholder="Search activities..."
-            fullWidth
-          />
+          <Stack direction={"row"} spacing={2}>
+            <StatusSwitch
+              activeLabel="Card"
+              inactiveLabel="Table"
+              activeColor="primary"
+              inactiveColor="neutral"
+              activeBg="#0086CC"
+              inactiveBg="#0086CC"
+              checked={isCard}
+              onChange={(value) => {
+                setIsCard(value);
+                setPage(1);
+              }}
+              size="md"
+            />
+            <SearchBarComponentv2
+              value={search}
+              setValue={setSearch}
+              placeholder="Search activities..."
+              fullWidth
+            />
+          </Stack>
+
           <Stack display={"flex"} flexDirection={"col"} alignItems={"center"}>
             <Stack display={"flex"} flexDirection={"row"} gap={1}>
               <Circle size={12} color={"success"} />
@@ -463,7 +500,6 @@ const Activities = () => {
           </Stack>
         </Stack>
       </BoxComponent>
-      {console.log(applicationActivities)}
 
       {isEditLoading ? (
         <Stack>
@@ -500,7 +536,7 @@ const Activities = () => {
             </Stack>
           </BoxComponent>
         </>
-      ) : (
+      ) : isCard ? (
         <Grid mt={2} container direction="row" spacing={2} sx={{ flexGrow: 1 }}>
           {applicationActivities?.activities?.map((activity) => {
             const activityKey = getActivityKey(
@@ -515,9 +551,9 @@ const Activities = () => {
                 <ActivitiesList
                   status={status}
                   activity={activity}
-                  handleAdd={() => handleOpenCountModal()}
-                  handleEdit={() => handleOpenEditModal(activity.id)}
-                  handleDelete={() => handleOpenDeleteModal(activity.id)}
+                  handleAdd={activityHandlers.add}
+                  handleEdit={() => activityHandlers.edit(activity)}
+                  handleDelete={() => activityHandlers.delete(activity)}
                   isLockedByOther={isLockedByOther}
                   lockedBy={lock?.editorName}
                 />
@@ -525,7 +561,41 @@ const Activities = () => {
             );
           })}
         </Grid>
+      ) : (
+        <Box sx={{ mt: 2, flexGrow: 1 }}>
+          <BasicTableComponent
+            columns={AOP_ACTIVITIES_COLUMNS(
+              status,
+              activityHandlers.resources,
+              activityHandlers.resp_person,
+              activityHandlers.edit,
+              activityHandlers.delete,
+              getActivityLockState,
+            )}
+            rows={applicationActivities?.activities}
+          />
+        </Box>
       )}
+
+      <Box
+        sx={{
+          width: "100%",
+          display: "flex",
+          justifyContent: "center",
+          mt: 3,
+        }}
+      >
+        <ServerPaginationComponent
+          page={page}
+          setPage={setPage}
+          fetchData={getActivities}
+          search={search}
+          perPage={isCard ? 9 : 6}
+          extraParams={{
+            application_objective_id: objectiveId,
+          }}
+        />
+      </Box>
 
       {/* set count empty activities */}
       {isCountModal && (

@@ -8,6 +8,7 @@ import {
   Box,
   Chip,
   Button,
+  Avatar,
 } from "@mui/joy";
 import { DeleteIcon, DownloadCloud, ExternalLink } from "lucide-react";
 import { BsOpencollective } from "react-icons/bs";
@@ -46,6 +47,8 @@ import ButtonComponent from "@Components/Common/ButtonComponent";
 import { formatPeso } from "../Utils/FormatPeso";
 import formattedPrice from "../Utils/formattedPrice";
 import { isAopDisabled } from "@Utils/AopStatus";
+import { ArrowRight } from "lucide-react";
+import { TimeframeCell } from "@Components/Common/Table/TimeframeCell";
 
 export const objHeaders = ({
   active,
@@ -2461,6 +2464,7 @@ export const MANAGE_CONSOLIDATORS = (
 
 export const AOP_OBJECTIVES_COLUMNS = (
   status,
+  handleActivities,
   handleEdit,
   handleDelete,
   lockedRows,
@@ -2516,6 +2520,173 @@ export const AOP_OBJECTIVES_COLUMNS = (
       const isLockedByOther = lock && lock.editorId !== user.id;
       return (
         <Stack direction={"row"} spacing={1}>
+          <ChipComponent
+            variant={"soft"}
+            startDecorator={
+              <Avatar
+                size="md" // small avatar for chip
+                variant="solid"
+                color="primary"
+                sx={{
+                  fontSize: 13,
+                  fontWeight: 600,
+                }}
+              >
+                {row?.activities_count}
+              </Avatar>
+            }
+            label={"Activities"}
+            status={"next"}
+            onClick={() => handleActivities(row)}
+            endDecorator
+          />
+          <Chip
+            variant="soft"
+            color="neutral"
+            startDecorator={<EditOutlined />}
+            onClick={() => handleEdit(row)}
+            disabled={isLockedByOther || isAopDisabled(status)}
+          >
+            Edit
+          </Chip>
+          <Chip
+            variant="soft"
+            color="neutral"
+            startDecorator={<DeleteOutlineOutlined />}
+            onClick={() => handleDelete(row)}
+            disabled={isLockedByOther || isAopDisabled(status)}
+          >
+            Delete
+          </Chip>
+        </Stack>
+      );
+    },
+  },
+];
+
+export const AOP_ACTIVITIES_COLUMNS = (
+  status,
+  handleResources,
+  handleRespPerson,
+  handleEdit,
+  handleDelete,
+  getActivityLockState,
+) => [
+  {
+    id: "activity",
+    label: "Activity",
+    width: "auto",
+    render: (row) => <Typography>{row?.activity_name || "-"}</Typography>,
+  },
+  {
+    id: "timeframe",
+    label: "Timeframe",
+    width: "auto",
+    render: (row) => (
+      <Stack direction={"row"}>
+        <TimeframeCell
+          label="FROM"
+          value={moment(row?.start_month, "YYYY-MM").format("MMM YYYY")}
+        />
+        <TimeframeCell
+          label="TO"
+          value={moment(row?.end_month, "YYYY-MM").format("MMM YYYY")}
+        />
+      </Stack>
+    ),
+  },
+  {
+    id: "target",
+    label: "Target",
+    render: (row) => (
+      <Stack direction={"row"} spacing={2}>
+        <TimeframeCell label={"Q1"} value={row?.target?.first_quarter || "-"} />
+        <TimeframeCell
+          label={"Q2"}
+          value={row?.target?.second_quarter || "-"}
+        />
+        <TimeframeCell label={"Q3"} value={row?.target?.third_quarter || "-"} />
+        <TimeframeCell
+          label={"Q4"}
+          value={row?.target?.fourth_quarter || "-"}
+        />
+      </Stack>
+    ),
+  },
+  {
+    id: "total_cost",
+    label: "Total Cost",
+    render: (row) => (
+      <Typography level="title-sm">
+        {formattedPrice(row?.total_cost)}
+      </Typography>
+    ),
+  },
+  {
+    id: "gad",
+    label: "GAD-related Activity",
+    render: (row) => (
+      <Typography
+        level="title-sm"
+        textAlign={"center"}
+        color={row?.is_gad_related ? "success" : "danger"}
+      >
+        {row?.is_gad_related ? "YES" : "NO"}
+      </Typography>
+    ),
+  },
+  {
+    id: "actions",
+    label: "Actions",
+    align: "right",
+    render: (row) => {
+      const { isLockedByOther } = getActivityLockState(row.id);
+
+      return (
+        <Stack direction={"row"} spacing={1} alignItems={"center"}>
+          <Stack spacing={1}>
+            <ChipComponent
+              variant={"soft"}
+              startDecorator={
+                <Avatar
+                  size="md" // small avatar for chip
+                  variant="solid"
+                  color="primary"
+                  sx={{
+                    fontSize: 13,
+                    fontWeight: 600,
+                  }}
+                >
+                  {row?.resources_count}
+                </Avatar>
+              }
+              label={"Resources"}
+              status={"next"}
+              onClick={() => handleResources(row)}
+              endDecorator
+            />
+            <ChipComponent
+              variant={"soft"}
+              startDecorator={
+                <Avatar
+                  size="md" // small avatar for chip
+                  variant="solid"
+                  color="primary"
+                  sx={{
+                    fontSize: 13,
+                    fontWeight: 600,
+                  }}
+                >
+                  {row?.responsible_people_count}
+                </Avatar>
+              }
+              label={"Responsible Person"}
+              status={"next"}
+              onClick={() => handleRespPerson(row)}
+              endDecorator
+            />
+          </Stack>
+
           <Chip
             variant="soft"
             color="neutral"

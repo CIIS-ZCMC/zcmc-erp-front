@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import { Button, Stack, Typography } from "@mui/joy";
 
 export default function ServerPaginationComponent({
@@ -7,6 +7,7 @@ export default function ServerPaginationComponent({
   perPage = 15,
   page,
   setPage,
+  extraParams = {},
 }) {
   const [pagination, setPagination] = useState({
     current_page: 1,
@@ -16,9 +17,15 @@ export default function ServerPaginationComponent({
 
   const safeSearch = typeof search === "string" ? search : "";
 
+  const safeExtraParams = useMemo(
+    () => extraParams,
+    [JSON.stringify(extraParams)],
+  );
+
   useEffect(() => {
     fetchData(
       {
+        ...safeExtraParams,
         search: safeSearch,
         page,
         per_page: perPage,
@@ -29,7 +36,7 @@ export default function ServerPaginationComponent({
         }
       },
     );
-  }, [page, safeSearch, perPage]);
+  }, [page, safeSearch, perPage, safeExtraParams]);
 
   useEffect(() => {
     setPage(1);

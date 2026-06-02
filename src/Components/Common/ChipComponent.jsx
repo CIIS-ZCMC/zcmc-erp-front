@@ -14,7 +14,7 @@ function ChipComponent({
   color,
   label,
   status,
-  endDecorator,
+  endDecorator = true,
   variant,
   onClick,
   fontSize = 12,
