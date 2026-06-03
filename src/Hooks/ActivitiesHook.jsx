@@ -56,7 +56,7 @@ const useActivitiesHook = () => {
     }
   };
 
-  const createActivity = (body, callBack) => {
+  const createActivity = (body, callBack, options = {}) => {
     try {
       post({
         url: API.ACTIVITIES_STORE,
@@ -64,17 +64,28 @@ const useActivitiesHook = () => {
         failed: callBack,
         success: (res) => {
           const { status, data } = res;
-          const newActivities = data.activities || [];
 
           if (status === 201) {
-            setApplicationActivities((prev) => ({
-              ...prev,
-              activities: [...(prev?.activities || []), ...newActivities],
-              meta: {
-                ...prev?.meta,
-                ...data.meta,
+            const lastPage =
+              data?.pagination?.last_page ||
+              data?.meta?.last_page ||
+              options.page;
+
+            options.setPage?.(lastPage);
+
+            getActivities(
+              {
+                page: lastPage,
+                search: options.search || "",
+                per_page: options.perPage,
+                application_objective_id: options.application_objective_id,
               },
-            }));
+              () => {
+                callBack?.(status, data.message);
+              },
+            );
+
+            return;
           }
 
           callBack?.(status, data.message);
@@ -94,6 +105,8 @@ const useActivitiesHook = () => {
         failed: callBack,
         success: (res) => {
           const { status, data } = res;
+          console.log("Update Activity Response:", res);
+
           const updatedActivity = data.activities?.[0];
 
           if (status === 200 && updatedActivity) {
@@ -114,7 +127,7 @@ const useActivitiesHook = () => {
     }
   };
 
-  const removeActivity = (params, callBack) => {
+  const removeActivity = (params, callBack, options = {}) => {
     try {
       remove({
         url: `${API.ACTIVITIES_DELETE}/${params.id}`,
@@ -123,16 +136,19 @@ const useActivitiesHook = () => {
           const { status, data } = res;
 
           if (status === 200) {
-            setApplicationActivities((prev) => ({
-              ...prev,
-              activities: (prev?.activities || []).filter(
-                (activity) => activity.id !== params.id,
-              ),
-              meta: {
-                ...prev?.meta,
-                ...data.meta,
+            getActivities(
+              {
+                page: options.page,
+                search: options.search,
+                per_page: options.perPage,
+                application_objective_id: options.application_objective_id,
               },
-            }));
+              () => {
+                callBack?.(status, data.message);
+              },
+            );
+
+            return;
           }
 
           callBack?.(status, data.message);

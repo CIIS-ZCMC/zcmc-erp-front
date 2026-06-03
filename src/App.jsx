@@ -37,6 +37,10 @@ const theme = extendTheme({
 
           softColor: "#004366",
           softBg: "#DFF2FF", // <-- this sets the text color for plain buttons
+
+          // Add these
+          500: "#004366",
+          mainChannel: "0 67 102",
         },
       },
     },

@@ -52,7 +52,7 @@ const ItemCardComponent = ({
   return (
     <Fragment>
       <Card
-        variant="plain"
+        variant="outlined"
         sx={{
           borderRadius: "lg",
           transition: "0.2s ease",
@@ -60,74 +60,35 @@ const ItemCardComponent = ({
             boxShadow: "lg",
             transform: "scale(1.02)",
           },
+          bgcolor: "white",
           width: "100%",
           maxWidth: { xs: "100%", sm: 260, md: 290 },
-          height: 320, // ✅ ADD THIS
+          height: "auto", // ✅ ADD THIS
           display: "flex",
           flexDirection: "column",
           ...sx,
         }}
       >
-        <CardOverflow>
-          <AspectRatio ratio="4/3">
-            <img
-              src={imgSrc}
-              role="button"
-              loading="lazy"
-              alt={item?.name}
-              onClick={itemInfoAction}
-            />
-          </AspectRatio>
-
-          {/* Zoom Button */}
-          {showZoom && (
-            <Box
-              sx={{
-                position: "absolute",
-                top: 8,
-                left: 8,
-              }}
-            >
-              <IconButton
-                size="sm"
-                variant="soft"
-                sx={{ opacity: 0.7 }}
-                onClick={onZoom}
-              >
-                <ZoomOutMap />
-              </IconButton>
-            </Box>
-          )}
-
-          {/* Variant Badge */}
-          {showVariant && (
-            <Box
-              sx={{
-                position: "absolute",
-                bottom: 8,
-                left: 8,
-              }}
-            >
-              <ChipComponent
-                label={item?.terminology ?? "Variant not indicated"}
-                size="sm"
-                color={
-                  item?.terminology === "Variant-Regular"
-                    ? "success"
-                    : "warning"
-                }
-                startDecorator={<Circle sx={{ fontSize: 10 }} />}
-              />
-            </Box>
-          )}
-        </CardOverflow>
-
         {withContent && (
           <CardContent>
-            <Typography level="body-xs">
-              {item?.item_category?.name} <CircleSmall size={8} />{" "}
-              {item?.item_unit?.name}
-            </Typography>
+            <Stack direction={"row"} justifyContent={"space-between"}>
+              <Typography level="body-xs">
+                {item?.item_category?.name} <CircleSmall size={8} />{" "}
+                {item?.item_unit?.name}
+              </Typography>
+              {showVariant && (
+                <ChipComponent
+                  label={item?.terminology ?? "Variant not indicated"}
+                  size="sm"
+                  color={
+                    item?.terminology === "Variant-Regular"
+                      ? "success"
+                      : "warning"
+                  }
+                  startDecorator={<Circle sx={{ fontSize: 10 }} />}
+                />
+              )}
+            </Stack>
 
             <Tooltip title={item?.name}>
               <Typography level="title-sm" noWrap sx={{ cursor: "default" }}>

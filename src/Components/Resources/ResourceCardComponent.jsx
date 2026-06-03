@@ -60,40 +60,48 @@ export default function ResourceCardComponent({
           flexDirection: "column",
         }}
       >
-        <CardOverflow>
-          <IconButton
-            aria-label="delete"
-            size="md"
-            variant="solid"
-            color="danger"
-            sx={{
-              position: "absolute",
-              zIndex: 2,
-              borderRadius: "50%",
-              right: "1rem",
-              bottom: 0,
-              transform: "translateY(50%)",
-            }}
-            onClick={() => onDelete(resource_id)}
-            disabled={isAopDisabled(status)}
-          >
-            <Delete />
-          </IconButton>
-        </CardOverflow>
-
         <CardContent
           sx={{
             flex: 1, // fill remaining space
             display: "flex",
             flexDirection: "column",
             justifyContent: "space-between", // pushes prices to bottom
-            gap: 2,
+            gap: 3,
           }}
         >
+          <Stack direction={"row"} justifyContent={"space-between"}>
+            <ChipComponent
+              label={object_category}
+              fontSize={10}
+              variant={"soft"}
+              color={object_category === "MOOE" ? "primary" : "warning"}
+              chipRadius={"6px"}
+            />
+            <IconButton
+              aria-label="delete"
+              size="sm"
+              variant="solid"
+              color="danger"
+              sx={{
+                borderRadius: "50%",
+              }}
+              onClick={() => onDelete(resource_id)}
+              disabled={isAopDisabled(status)}
+            >
+              <Delete />
+            </IconButton>
+            <IconButtonComponent
+              icon={<NorthEast />}
+              size={"sm"}
+              color={"#323232"}
+              onClick={() => setOpenModal(true)}
+            />
+          </Stack>
+
           <Stack
             direction={"row"}
             justifyContent="space-between"
-            alignItems="flex-start"
+            alignItems="center"
             mt={2}
             spacing={1}
           >
@@ -118,12 +126,6 @@ export default function ResourceCardComponent({
                 >
                   {name}
                 </Typography>
-                <IconButtonComponent
-                  icon={<NorthEast />}
-                  size={"xs"}
-                  color={"#323232"}
-                  onClick={() => setOpenModal(true)}
-                />
               </Stack>
             </Box>
 
@@ -135,12 +137,6 @@ export default function ResourceCardComponent({
                 onDecrease={() => onQtyChange(resource_id, quantity - 1)}
                 onIncrease={() => onQtyChange(resource_id, quantity + 1)}
                 disabled={isAopDisabled(status)}
-              />
-              <ChipComponent
-                label={object_category}
-                fontSize={10}
-                variant={"soft"}
-                color={object_category === "MOOE" ? "primary" : "warning"}
               />
             </Stack>
           </Stack>
@@ -163,13 +159,17 @@ export default function ResourceCardComponent({
           {/* Prices */}
           <Stack direction="row" justifyContent="space-between">
             <Box>
-              <Typography level="body-lg" fontWeight={"bolder"}>
+              <Typography level="title-lg" fontWeight={"bolder"}>
                 {formatPeso(price)}
               </Typography>
               <Typography level="body-xs">per item</Typography>
             </Box>
             <Box textAlign="right">
-              <Typography level="body-lg" fontWeight={"bolder"} color="primary">
+              <Typography
+                level="title-lg"
+                fontWeight={"bolder"}
+                color="primary"
+              >
                 {formatPeso(total)}
               </Typography>
               <Typography level="body-xs">Total Cost</Typography>

@@ -230,23 +230,25 @@ const Objectives = () => {
 
     const params = { id: selectedObjectiveId };
 
-    await removeObjective(params, (status, message) => {
-      const isSuccess = status === 200 || status === true;
-
-      setAlertDialog({
-        status: isSuccess ? "success" : "error",
-        title: message,
-        description: isSuccess ? "" : "Please try again.",
-      });
-
-      if (!isSuccess) {
-        console.error("Failed to delete objective:", message);
-      }
-      setIsEditMode(false);
-      // setIsLoading(false);
-      setOpenDeleteModal(false);
-      setSelectedObjectiveId(null);
-    });
+    await removeObjective(
+      params,
+      (status, message) => {
+        if (status === 200) {
+          showSnack(200, message, "soft");
+        } else {
+          setAlertDialog({
+            status: "error",
+            title: "Error deleting",
+            description: "Please try again.",
+          });
+        }
+      },
+      {
+        page,
+        search,
+        perPage: 6,
+      },
+    );
   };
 
   const handleOpenDeleteModal = (objectiveId) => {

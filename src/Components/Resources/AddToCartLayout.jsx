@@ -2,6 +2,7 @@ import BoxComponent from "@Components/Common/Card/BoxComponent";
 import SearchBarComponentv2 from "@Components/SearchBarWithdeBounce";
 import {
   Autocomplete,
+  Box,
   Divider,
   Grid,
   IconButton,
@@ -21,6 +22,7 @@ import AutocompleteComponent from "@Components/Form/AutocompleteComponent";
 import ButtonComponent from "@Components/Common/ButtonComponent";
 import useItemsHook from "../../Hooks/ItemManagementHook";
 import useSearchHook from "../../Hooks/SearchHook";
+import ServerPaginationComponent from "@Components/ServerPaginationComponent";
 
 export default function AddToCartLayout({
   results,
@@ -56,6 +58,8 @@ export default function AddToCartLayout({
   });
   const [search, setSearch] = useState("");
   const [displayLoading, setDisplayLoading] = useState(false);
+  const [page, setPage] = useState(1);
+  const perPage = 12;
 
   // Filter values
 
@@ -67,44 +71,8 @@ export default function AddToCartLayout({
     return cart.reduce((sum, i) => sum + i.qty, 0);
   }, [cart]);
 
-  const executeSearch = () => {
-    setDisplayLoading(true);
-
-    const { classification, category, system } = filterValues;
-
-    const filterParams = {
-      ...(classification?.id && {
-        item_classification_id: classification.id,
-      }),
-      ...(category?.id && {
-        item_category_id: category.id,
-      }),
-      ...(system?.id && {
-        system_id: system.id,
-      }),
-    };
-
-    const params = {
-      ...(search && { search }),
-      ...(isPPMP && { type: "ppmp_item" }),
-      ...filterParams,
-    };
-
-    if (!search && Object.keys(filterParams).length === 0) {
-      params.mode = "selection";
-    }
-
-    getItems(params, () => {
-      setDisplayLoading(false);
-    });
-  };
-
   useEffect(() => {
-    const timeout = setTimeout(() => {
-      executeSearch();
-    }, 400);
-
-    return () => clearTimeout(timeout);
+    setPage(1);
   }, [search, filterValues]);
 
   useEffect(() => {
@@ -113,12 +81,6 @@ export default function AddToCartLayout({
     getItemCategories(() => {});
     getItemClassification(() => {});
     getSystems(() => {});
-    getItems(
-      { mode: "selection", ...(isPPMP && { type: "ppmp_item" }) },
-      () => {
-        setDisplayLoading(false);
-      },
-    );
   }, []);
 
   return (
@@ -129,10 +91,14 @@ export default function AddToCartLayout({
           xs={12}
           md={8.5}
           sx={{
-            height: "calc(100vh - 340px)",
+            height: "calc(100vh - 190px)",
+            display: "flex",
+            flexDirection: "column",
+            minHeight: 0,
+            overflow: "hidden",
           }}
         >
-          <BoxComponent boxShadow="sm">
+          <BoxComponent boxShadow="sm" sx={{ flexShrink: 0 }}>
             <Stack
               direction={{ xs: "column", sm: "row" }}
               alignItems={{ xs: "stretch", sm: "center" }}
@@ -181,7 +147,6 @@ export default function AddToCartLayout({
                   setValue={(val) => {
                     const newFilters = { ...filterValues, classification: val };
                     setFilterValues(newFilters);
-                    handleSearch(search.name, newFilters); // trigger search
                   }}
                   getOptionLabel={(opt) => opt?.name || ""}
                   placeholder="Select classification"
@@ -193,7 +158,6 @@ export default function AddToCartLayout({
                   setValue={(val) => {
                     const newFilters = { ...filterValues, category: val };
                     setFilterValues(newFilters);
-                    handleSearch(search.name, newFilters); // trigger search
                   }}
                   getOptionLabel={(opt) => opt?.name || ""}
                   placeholder="Select category"
@@ -206,7 +170,6 @@ export default function AddToCartLayout({
                   setValue={(val) => {
                     const newFilters = { ...filterValues, system: val };
                     setFilterValues(newFilters);
-                    handleSearch(search.name, newFilters); // trigger search
                   }}
                   getOptionLabel={(opt) => opt?.system || ""}
                 />
@@ -225,21 +188,51 @@ export default function AddToCartLayout({
                     setFilterValues(newFilters);
 
                     // Trigger search with current input (search string)
-                    handleSearch(search || "", newFilters);
                   }}
                 />
               </Stack>
             </Stack>
           </BoxComponent>
-          <ProductGrid
-            onItemInfo={(item) => {
-              setSelectedProduct(item);
-              setOpenPreview(true);
-            }}
-            onAddToCart={addToCart}
-            loading={displayLoading}
-            items={items}
-          />
+          <Box sx={{ flex: 1, minHeight: 0, overflow: "hidden", pt: 2 }}>
+            <ProductGrid
+              onItemInfo={(item) => {
+                setSelectedProduct(item);
+                setOpenPreview(true);
+              }}
+              onAddToCart={addToCart}
+              loading={displayLoading}
+              items={items}
+              height="100%"
+            />
+          </Box>
+          <Box sx={{ flexShrink: 0, pt: 1 }}>
+            <ServerPaginationComponent
+              page={page}
+              setPage={setPage}
+              fetchData={(params, callback) => {
+                setDisplayLoading(true);
+
+                getItems(params, (status, message, pagination) => {
+                  setDisplayLoading(false);
+                  callback?.(status, message, pagination);
+                });
+              }}
+              search={search}
+              perPage={perPage}
+              extraParams={{
+                ...(isPPMP && { type: "ppmp_item" }),
+                ...(filterValues?.classification?.id && {
+                  item_classification_id: filterValues.classification.id,
+                }),
+                ...(filterValues?.category?.id && {
+                  item_category_id: filterValues.category.id,
+                }),
+                ...(filterValues?.system?.id && {
+                  system_id: filterValues.system.id,
+                }),
+              }}
+            />
+          </Box>
         </Grid>
         <Grid
           item

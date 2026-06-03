@@ -19,6 +19,7 @@ function ChipComponent({
   onClick,
   fontSize = 12,
   startDecorator,
+  chipRadius,
   ...props
 }) {
   const sxStyles = {
@@ -39,6 +40,8 @@ function ChipComponent({
       textOverflow: "ellipsis",
       whiteSpace: "nowrap",
     },
+
+    "--Chip-radius": chipRadius,
 
     ...(variant || color
       ? { color: color }

@@ -207,30 +207,32 @@ const Activities = () => {
 
     const params = { id: selectedActivityId };
 
-    await removeActivity(params, (status, message) => {
-      console.log(status);
-      const isSuccess = status === 200;
+    await removeActivity(
+      params,
+      (status, message) => {
+        const isSuccess = status === 200;
 
-      if (!isSuccess) {
-        setAlertDialog({
-          status: "error",
-          title: "Error deleting",
-          description: "Please try again.",
-        });
-      } else {
-        socket.emit("aop:activity:stop-edit", {
-          aopId: aop.id,
-          objectiveId,
-          activityId: selectedActivityId,
-          userId: user.id,
-        });
-        showSnack(200, message, "soft");
-      }
+        if (!isSuccess) {
+          setAlertDialog({
+            status: "error",
+            title: "Error deleting",
+            description: "Please try again.",
+          });
+        } else {
+          showSnack(200, message, "soft");
+        }
 
-      setIsBtnLoading(false);
-      setOpenDeleteModal(false);
-      setSelectedActivityId(null);
-    });
+        setIsBtnLoading(false);
+        setOpenDeleteModal(false);
+        setSelectedActivityId(null);
+      },
+      {
+        page,
+        search,
+        perPage: isCard ? 9 : 6,
+        application_objective_id: objectiveId,
+      },
+    );
   };
 
   const handleOpenDeleteModal = (activityId) => {
@@ -264,23 +266,30 @@ const Activities = () => {
     };
 
     try {
-      await createActivity(payload, (status, message) => {
-        if (status === 201) {
-          showSnack(200, message);
-
-          setIsBtnLoading(false);
-          // handleCloseModal()
-          setIsCountModal(false);
-        } else {
-          setAlertDialog({
-            status: "error",
-            title: message,
-            description: "Please try again.",
-          });
-          setIsBtnLoading(false);
-          console.error(" Failed to update objectives:", message);
-        }
-      });
+      await createActivity(
+        payload,
+        (status, message) => {
+          if (status === 201) {
+            showSnack(200, message);
+            setIsBtnLoading(false);
+            setIsCountModal(false);
+          } else {
+            setAlertDialog({
+              status: "error",
+              title: message,
+              description: "Please try again.",
+            });
+            setIsBtnLoading(false);
+          }
+        },
+        {
+          page,
+          setPage,
+          search,
+          perPage: isCard ? 9 : 6,
+          application_objective_id: objectiveId,
+        },
+      );
     } catch (error) {
       console.error(error);
       setAlertDialog({
@@ -573,6 +582,9 @@ const Activities = () => {
               getActivityLockState,
             )}
             rows={applicationActivities?.activities}
+            getRowIndicatorColor={(row) =>
+              row?.is_draft ? "#dc2626" : "#16a34a"
+            }
           />
         </Box>
       )}

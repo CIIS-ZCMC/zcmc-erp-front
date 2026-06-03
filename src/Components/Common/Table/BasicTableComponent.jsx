@@ -8,6 +8,7 @@ const BasicTableComponent = ({
   emptyMessage = "No records found",
   maxHeight = "none", // Optional max height for scrolling
   stickyHeader = false, // Optional sticky header
+  getRowIndicatorColor,
 }) => {
   return (
     <Sheet
@@ -58,15 +59,28 @@ const BasicTableComponent = ({
               </td>
             </tr>
           ) : (
-            rows.map((row, index) => (
-              <tr key={row.id ?? index}>
-                {columns.map((col) => (
-                  <td key={col.field}>
-                    {col.render ? col.render(row) : row[col.field]}
-                  </td>
-                ))}
-              </tr>
-            ))
+            rows.map((row, index) => {
+              const indicatorColor = getRowIndicatorColor?.(row);
+
+              return (
+                <tr key={row.id ?? index}>
+                  {columns.map((col, colIndex) => (
+                    <td
+                      key={col.field}
+                      style={
+                        colIndex === 0
+                          ? {
+                              borderLeft: `4px solid ${indicatorColor}`,
+                            }
+                          : undefined
+                      }
+                    >
+                      {col.render ? col.render(row) : row[col.field]}
+                    </td>
+                  ))}
+                </tr>
+              );
+            })
           )}
         </tbody>
       </Table>

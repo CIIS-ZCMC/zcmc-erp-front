@@ -32,11 +32,11 @@ const useItemsHook = create((set, get) => ({
     const cacheKey = JSON.stringify(params);
     const { force = false } = options;
 
-    const cachedItems = get().itemsCache[cacheKey];
+    const cached = get().itemsCache[cacheKey];
 
-    if (cachedItems && !force) {
-      set({ items: cachedItems });
-      callBack?.(200, "Loaded from cache");
+    if (cached && !force) {
+      set({ items: cached.items });
+      callBack?.(200, "Loaded from cache", cached.pagination);
       return;
     }
 
@@ -46,17 +46,22 @@ const useItemsHook = create((set, get) => ({
       failed: callBack,
       success: (res) => {
         const { status, message, data } = res;
-        const itemData = data.data;
+
+        const itemData = data.data || [];
+        const pagination = data.pagination || data.meta;
 
         set((state) => ({
           items: itemData,
           itemsCache: {
             ...state.itemsCache,
-            [cacheKey]: itemData,
+            [cacheKey]: {
+              items: itemData,
+              pagination,
+            },
           },
         }));
 
-        callBack?.(status, message);
+        callBack?.(status, message, pagination);
       },
     });
   },

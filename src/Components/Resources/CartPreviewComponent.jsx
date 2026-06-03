@@ -70,7 +70,7 @@ export default function CartPreviewComponent({
             <Grid container spacing={2} sx={{ flexGrow: 1 }}>
               <Grid xs={6} p={2}>
                 <Box sx={{ position: "relative", width: "100%" }}>
-                  <AspectRatio
+                  {/* <AspectRatio
                     minHeight={isAddToCart ? 120 : "100%"}
                     maxHeight={isAddToCart ? 150 : "100%"}
                     sx={{
@@ -91,7 +91,7 @@ export default function CartPreviewComponent({
                         display: "block", // Remove default inline spacing
                       }}
                     />
-                  </AspectRatio>
+                  </AspectRatio> */}
 
                   {/* Floating Chip */}
                   {isAddToCart && (

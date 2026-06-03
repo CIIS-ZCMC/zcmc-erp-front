@@ -49,7 +49,9 @@ export default function ServerPaginationComponent({
     setPage(value);
   };
 
-  if (lastPage <= 1) return null;
+  const hasItems = pagination.total > 0;
+
+  if (!hasItems) return null;
 
   return (
     <Stack

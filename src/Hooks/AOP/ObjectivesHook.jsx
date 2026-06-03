@@ -286,7 +286,9 @@ const useObjectivesHook = () => {
     }
   };
 
-  const removeObjective = async (params, callBack) => {
+  const removeObjective = async (params, callBack, options = {}) => {
+    const { page = 1, search = "", perPage = 6 } = options;
+
     setIsBtnLoading(true);
 
     try {
@@ -294,16 +296,26 @@ const useObjectivesHook = () => {
         remove({
           url: `${API.OBJECTIVE_DELETE}/${params.id}`,
           params,
-          success: (res) => {
+          success: async (res) => {
             const {
               status,
               data: { message },
             } = res;
 
             if (status === 200) {
-              setApplicationObjectives(
-                applicationObjectives.filter((obj) => obj.id !== params.id),
+              await getObjectivesBySector(
+                {
+                  search,
+                  page,
+                  per_page: perPage,
+                },
+                () => {
+                  callBack?.(status, message);
+                },
               );
+
+              resolve(res);
+              return;
             }
 
             callBack?.(status, message);

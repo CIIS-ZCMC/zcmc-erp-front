@@ -1,7 +1,7 @@
 import { create } from "zustand";
 
 const useActivitiesStore = create((set, get) => ({
-  applicationActivities: [],
+  applicationActivities: {},
   applicationActivity: null,
   aopApplication: {},
 
@@ -24,7 +24,12 @@ const useActivitiesStore = create((set, get) => ({
 
   actions: {
     setApplicationActivities: (applicationActivities) =>
-      set({ applicationActivities }),
+      set((state) => ({
+        applicationActivities:
+          typeof applicationActivities === "function"
+            ? applicationActivities(state.applicationActivities)
+            : applicationActivities,
+      })),
     setApplicationActivity: (applicationActivity) =>
       set({ applicationActivity }),
 
