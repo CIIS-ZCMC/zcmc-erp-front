@@ -57,6 +57,14 @@ const useActivitiesHook = () => {
   };
 
   const createActivity = (body, callBack, options = {}) => {
+    const {
+      search = "",
+      perPage = 10,
+      application_objective_id,
+      setPage,
+      setPagination,
+    } = options;
+
     try {
       post({
         url: API.ACTIVITIES_STORE,
@@ -66,21 +74,21 @@ const useActivitiesHook = () => {
           const { status, data } = res;
 
           if (status === 201) {
-            const lastPage =
-              data?.pagination?.last_page ||
-              data?.meta?.last_page ||
-              options.page;
-
-            options.setPage?.(lastPage);
-
             getActivities(
               {
-                page: lastPage,
-                search: options.search || "",
-                per_page: options.perPage,
-                application_objective_id: options.application_objective_id,
+                page: 1,
+                search,
+                per_page: perPage,
+                application_objective_id,
               },
-              () => {
+              (fetchStatus, fetchMessage, pagination) => {
+                if (pagination) {
+                  setPagination?.(pagination);
+
+                  const lastPage = pagination.last_page || 1;
+                  setPage?.(lastPage);
+                }
+
                 callBack?.(status, data.message);
               },
             );
@@ -105,17 +113,18 @@ const useActivitiesHook = () => {
         failed: callBack,
         success: (res) => {
           const { status, data } = res;
-          console.log("Update Activity Response:", res);
 
           const updatedActivity = data.activities?.[0];
 
           if (status === 200 && updatedActivity) {
-            setApplicationActivities((prev) => ({
-              ...prev,
-              activities: (prev?.activities || []).map((activity) =>
-                activity.id === updatedActivity.id ? updatedActivity : activity,
+            setApplicationActivities({
+              ...applicationActivities,
+              activities: applicationActivities.activities.map((activity) =>
+                activity.id === updatedActivity.id
+                  ? { ...activity, ...updatedActivity }
+                  : activity,
               ),
-            }));
+            });
           }
 
           callBack?.(status, data.message);
@@ -128,6 +137,15 @@ const useActivitiesHook = () => {
   };
 
   const removeActivity = (params, callBack, options = {}) => {
+    const {
+      page = 1,
+      search = "",
+      perPage = 10,
+      application_objective_id,
+      setPage,
+      setPagination,
+    } = options;
+
     try {
       remove({
         url: `${API.ACTIVITIES_DELETE}/${params.id}`,
@@ -136,14 +154,27 @@ const useActivitiesHook = () => {
           const { status, data } = res;
 
           if (status === 200) {
+            const remainingActivities = (
+              applicationActivities?.activities || []
+            ).filter((activity) => activity.id !== params.id);
+
+            const nextPage =
+              remainingActivities.length === 0 && page > 1 ? page - 1 : page;
+
+            setPage?.(nextPage);
+
             getActivities(
               {
-                page: options.page,
-                search: options.search,
-                per_page: options.perPage,
-                application_objective_id: options.application_objective_id,
+                page: nextPage,
+                search,
+                per_page: perPage,
+                application_objective_id,
               },
-              () => {
+              (fetchStatus, fetchMessage, pagination) => {
+                if (pagination) {
+                  setPagination?.(pagination);
+                }
+
                 callBack?.(status, data.message);
               },
             );

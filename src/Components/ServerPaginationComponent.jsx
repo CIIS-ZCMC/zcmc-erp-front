@@ -1,57 +1,20 @@
-import { useEffect, useMemo, useState } from "react";
 import { Button, Stack, Typography } from "@mui/joy";
 
 export default function ServerPaginationComponent({
-  fetchData,
-  search = "",
-  perPage = 15,
   page,
   setPage,
-  extraParams = {},
+  perPage = 15,
+  pagination,
 }) {
-  const [pagination, setPagination] = useState({
-    current_page: 1,
-    last_page: 1,
-    total: 0,
-  });
-
-  const safeSearch = typeof search === "string" ? search : "";
-
-  const safeExtraParams = useMemo(
-    () => extraParams,
-    [JSON.stringify(extraParams)],
-  );
-
-  useEffect(() => {
-    fetchData(
-      {
-        ...safeExtraParams,
-        search: safeSearch,
-        page,
-        per_page: perPage,
-      },
-      (status, message, paginationData) => {
-        if (status >= 200 && status < 300 && paginationData) {
-          setPagination(paginationData);
-        }
-      },
-    );
-  }, [page, safeSearch, perPage, safeExtraParams]);
-
-  useEffect(() => {
-    setPage(1);
-  }, [safeSearch]);
-
   const lastPage = pagination?.last_page || 1;
+  const total = pagination?.total || 0;
 
   const goToPage = (value) => {
     if (value < 1 || value > lastPage || value === page) return;
     setPage(value);
   };
 
-  const hasItems = pagination.total > 0;
-
-  if (!hasItems) return null;
+  if (total === 0) return null;
 
   return (
     <Stack
@@ -67,7 +30,7 @@ export default function ServerPaginationComponent({
         backgroundColor: "#fff",
       }}
     >
-      {/* Left */}
+      {console.log("pagination", pagination)}
       <Button
         size="sm"
         variant="outlined"
@@ -77,20 +40,17 @@ export default function ServerPaginationComponent({
         Previous
       </Button>
 
-      {/* Center */}
       <Stack direction="row" spacing={3} alignItems="center">
         <Typography level="body-sm" color="primary">
           rows per page: {perPage}
         </Typography>
 
         <Typography level="body-sm" color="primary">
-          Showing {(page - 1) * perPage + 1}-
-          {Math.min(page * perPage, pagination.total)} out of {pagination.total}{" "}
-          items
+          Showing {(page - 1) * perPage + 1}-{Math.min(page * perPage, total)}{" "}
+          out of {total} items
         </Typography>
       </Stack>
 
-      {/* Right */}
       <Button
         size="sm"
         variant="outlined"

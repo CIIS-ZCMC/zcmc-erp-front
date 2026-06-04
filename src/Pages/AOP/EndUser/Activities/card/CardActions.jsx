@@ -65,6 +65,7 @@ const CardActions = ({
   resourcesCount,
   responsibleCount,
   comments,
+  is_draft,
 }) => {
   const navigate = useNavigate();
 
@@ -119,7 +120,7 @@ const CardActions = ({
             <Avatar
               size="md" // small avatar for chip
               variant="solid"
-              color="primary"
+              color={is_draft ? "neutral" : "primary"}
               sx={{
                 fontSize: 13,
                 fontWeight: 600,
@@ -134,6 +135,7 @@ const CardActions = ({
               state: { activityId: activityId }, // do not change state name
             })
           }
+          disabled={is_draft}
         >
           Resources
         </Chip>
@@ -147,7 +149,7 @@ const CardActions = ({
             <Avatar
               size="md" // small avatar for chip
               variant="solid"
-              color="primary"
+              color={is_draft ? "neutral" : "primary"}
               sx={{
                 fontSize: 13,
                 fontWeight: 600,
@@ -162,6 +164,7 @@ const CardActions = ({
               state: { activityId: activityId },
             })
           }
+          disabled={is_draft}
         >
           Responsible Person
         </Chip>

@@ -77,7 +77,7 @@ const ActivitiesList = ({
             activityId={id}
             resourcesCount={resources_count}
             responsibleCount={responsible_people_count}
-            handleActivities={() => console.log("activities")}
+            is_draft={is_draft}
           />
         }
       />

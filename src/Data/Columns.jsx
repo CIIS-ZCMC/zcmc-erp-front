@@ -41,6 +41,7 @@ import {
   EditOutlined,
   ArchiveOutlined,
   Edit,
+  Add,
 } from "@mui/icons-material";
 import { grey, red } from "@mui/material/colors";
 import ButtonComponent from "@Components/Common/ButtonComponent";
@@ -49,6 +50,7 @@ import formattedPrice from "../Utils/formattedPrice";
 import { isAopDisabled } from "@Utils/AopStatus";
 import { ArrowRight } from "lucide-react";
 import { TimeframeCell } from "@Components/Common/Table/TimeframeCell";
+import IconButtonComponent from "@Components/Common/IconButtonComponent";
 
 export const objHeaders = ({
   active,
@@ -2576,7 +2578,17 @@ export const AOP_ACTIVITIES_COLUMNS = (
     id: "activity",
     label: "Activity",
     width: "auto",
-    render: (row) => <Typography>{row?.activity_name || "-"}</Typography>,
+    render: (row) => (
+      <Typography
+        sx={{
+          whiteSpace: "normal",
+          wordBreak: "break-word",
+        }}
+      >
+        {row?.activity_name || "-"}
+      </Typography>
+    ),
+    width: "25%",
   },
   {
     id: "timeframe",
@@ -2586,11 +2598,19 @@ export const AOP_ACTIVITIES_COLUMNS = (
       <Stack direction={"row"}>
         <TimeframeCell
           label="FROM"
-          value={moment(row?.start_month, "YYYY-MM").format("MMM YYYY")}
+          value={
+            row?.start_month
+              ? moment(row?.start_month, "YYYY-MM").format("MMM YYYY")
+              : "--"
+          }
         />
         <TimeframeCell
           label="TO"
-          value={moment(row?.end_month, "YYYY-MM").format("MMM YYYY")}
+          value={
+            row?.end_month
+              ? moment(row?.end_month, "YYYY-MM").format("MMM YYYY")
+              : "--"
+          }
         />
       </Stack>
     ),
@@ -2706,6 +2726,81 @@ export const AOP_ACTIVITIES_COLUMNS = (
             Delete
           </Chip>
         </Stack>
+      );
+    },
+  },
+];
+
+export const ADD_TO_CART_COLUMNS = (onAddToCart) => [
+  {
+    id: "item",
+    label: "Item Description",
+    width: "auto",
+    render: (row) => (
+      <Typography
+        sx={{
+          whiteSpace: "normal",
+          wordBreak: "break-word",
+        }}
+        level="title-sm"
+        fontWeight={600}
+      >
+        {row?.name || "-"}
+      </Typography>
+    ),
+    width: "35%",
+  },
+  {
+    id: "classification",
+    label: "Classification & Category",
+    width: "auto",
+    render: (row) => (
+      <Stack>
+        <Typography level="title-sm" color="neutral" fontWeight={600}>
+          {row?.item_classification?.name ?? "-"}
+        </Typography>
+        <Typography level="body-sm">
+          {row?.item_category?.name ?? "-"}
+        </Typography>
+      </Stack>
+    ),
+    width: "20%",
+  },
+  {
+    id: "unit_price",
+    label: "Unit Price & Measure",
+    render: (row) => (
+      <Stack>
+        <Typography level="title-sm" fontWeight={600} color="primary">
+          {row?.estimated_budget ? formattedPrice(row?.estimated_budget) : "-"}
+        </Typography>
+        <Typography level="body-sm" color="neutral">
+          {row?.item_unit?.name ?? "-"}
+        </Typography>
+      </Stack>
+    ),
+    width: "15%",
+  },
+  {
+    id: "terminology",
+    label: "Variant",
+    render: (row) => (
+      <Typography level="title-sm">{row?.terminology ?? "-"}</Typography>
+    ),
+  },
+
+  {
+    id: "actions",
+    label: "",
+    align: "right",
+    render: (row) => {
+      return (
+        <IconButtonComponent
+          icon={<Add />}
+          variant={"outlined"}
+          color={"primary"}
+          onClick={() => onAddToCart?.(row)}
+        />
       );
     },
   },

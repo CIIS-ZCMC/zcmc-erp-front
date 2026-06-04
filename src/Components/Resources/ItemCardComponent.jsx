@@ -3,6 +3,7 @@ import {
   Box,
   Button,
   Card,
+  CardActions,
   CardContent,
   CardCover,
   CardOverflow,
@@ -54,52 +55,53 @@ const ItemCardComponent = ({
       <Card
         variant="outlined"
         sx={{
-          borderRadius: "lg",
-          transition: "0.2s ease",
-          "&:hover": {
-            boxShadow: "lg",
-            transform: "scale(1.02)",
-          },
-          bgcolor: "white",
           width: "100%",
-          maxWidth: { xs: "100%", sm: 260, md: 290 },
-          height: "auto", // ✅ ADD THIS
+          minWidth: 0,
+          minHeight: 130,
+          borderRadius: "md",
+          bgcolor: "white",
           display: "flex",
           flexDirection: "column",
+          justifyContent: "space-between",
+          p: 1.5,
+          overflow: "hidden",
+          boxSizing: "border-box",
+          "&:hover": {
+            boxShadow: "md",
+          },
           ...sx,
         }}
       >
         {withContent && (
-          <CardContent>
-            <Stack direction={"row"} justifyContent={"space-between"}>
-              <Typography level="body-xs">
-                {item?.item_category?.name} <CircleSmall size={8} />{" "}
-                {item?.item_unit?.name}
-              </Typography>
-              {showVariant && (
-                <ChipComponent
-                  label={item?.terminology ?? "Variant not indicated"}
-                  size="sm"
-                  color={
-                    item?.terminology === "Variant-Regular"
-                      ? "success"
-                      : "warning"
-                  }
-                  startDecorator={<Circle sx={{ fontSize: 10 }} />}
-                />
-              )}
-            </Stack>
-
-            <Tooltip title={item?.name}>
-              <Typography level="title-sm" noWrap sx={{ cursor: "default" }}>
+          <>
+            <CardContent sx={{ gap: 1 }}>
+              <Stack
+                direction={"row"}
+                justifyContent={"space-between"}
+                alignItems={"center"}
+              >
+                <Typography level="body-xs">
+                  {item?.item_category?.name} <CircleSmall size={8} />{" "}
+                  {item?.item_unit?.name}
+                </Typography>
+                {showVariant && (
+                  <ChipComponent
+                    label={item?.terminology ?? "Variant not indicated"}
+                    size="sm"
+                    color={
+                      item?.terminology === "Variant-Regular"
+                        ? "success"
+                        : "warning"
+                    }
+                    startDecorator={<Circle sx={{ fontSize: 10 }} />}
+                  />
+                )}
+              </Stack>
+              <Typography level="title-sm" sx={{ textWrap: "wrap" }}>
                 {item?.name}
               </Typography>
-            </Tooltip>
-            <Stack
-              direction={"row"}
-              justifyContent={"space-between"}
-              alignItems={"center"}
-            >
+            </CardContent>
+            <CardActions sx={{ justifyContent: "space-between" }}>
               <Typography
                 level="title-md"
                 fontWeight="bold"
@@ -117,8 +119,8 @@ const ItemCardComponent = ({
                 variant={"outlined"}
                 onClick={btnAction}
               />
-            </Stack>
-          </CardContent>
+            </CardActions>
+          </>
         )}
       </Card>
     </Fragment>

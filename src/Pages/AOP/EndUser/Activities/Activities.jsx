@@ -91,6 +91,11 @@ const Activities = () => {
   const [search, setSearch] = useState("");
   const [isCard, setIsCard] = useState(true);
   const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState({
+    current_page: 1,
+    last_page: 1,
+    total: 0,
+  });
 
   const [lockedActivities, setLockedActivities] = useState({});
   const getActivityKey = (aopId, objectiveId, activityId) =>
@@ -98,6 +103,24 @@ const Activities = () => {
 
   const status = aop.status.id;
   const objectiveName = applicationActivities?.objective;
+
+  const perPage = isCard ? 9 : 10;
+
+  const fetchActivities = () => {
+    getActivities(
+      {
+        page,
+        search,
+        per_page: perPage,
+        application_objective_id: objectiveId,
+      },
+      (status, message, paginationData) => {
+        if (status >= 200 && status < 300 && paginationData) {
+          setPagination(paginationData);
+        }
+      },
+    );
+  };
 
   const handleCloseModal = () => {
     if (selectedActivityId) {
@@ -145,7 +168,7 @@ const Activities = () => {
     setIsCountModal(true);
   };
 
-  const handleSaveActivity = async () => {
+  const handleUpdateActivity = async () => {
     setIsBtnLoading(true);
 
     const params = { id: selectedActivityId };
@@ -187,11 +210,9 @@ const Activities = () => {
             description: "Please try again.",
           });
           setIsBtnLoading(false);
-          console.error(" Failed to update activity:", message);
         }
       });
     } catch (error) {
-      console.error("Error creating objective:", error);
       setAlertDialog({
         status: "error",
         title: "Unexpected Error",
@@ -228,8 +249,10 @@ const Activities = () => {
       },
       {
         page,
+        setPage,
+        setPagination,
         search,
-        perPage: isCard ? 9 : 6,
+        perPage,
         application_objective_id: objectiveId,
       },
     );
@@ -257,7 +280,7 @@ const Activities = () => {
     setConfirmationModal(data);
   };
 
-  const handleCountActivities = async () => {
+  const handleSaveActivities = async () => {
     setIsBtnLoading(true);
 
     const payload = {
@@ -285,8 +308,9 @@ const Activities = () => {
         {
           page,
           setPage,
+          setPagination,
           search,
-          perPage: isCard ? 9 : 6,
+          perPage,
           application_objective_id: objectiveId,
         },
       );
@@ -413,6 +437,15 @@ const Activities = () => {
       });
     },
   };
+
+  useEffect(() => {
+    fetchActivities();
+  }, [page, search, perPage, objectiveId]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [search]);
+
   return (
     <>
       <PageTitle
@@ -421,6 +454,7 @@ const Activities = () => {
           "The following below serves as the summary of your AOP request. You can open and update your request before the deadline as set by the administrators."
         }
         items={breadcrumbs}
+        withArrowBack
       />
       <BoxComponent mt={2} p={2} bgColor={"#F9FAFB"} boxShadow="xs">
         <Stack
@@ -441,7 +475,7 @@ const Activities = () => {
                 color={"success"}
                 variant={"outlined"}
                 fontSize={13}
-                size={"lg"}
+                wrap
               />
             </Stack>
 
@@ -600,12 +634,8 @@ const Activities = () => {
         <ServerPaginationComponent
           page={page}
           setPage={setPage}
-          fetchData={getActivities}
-          search={search}
-          perPage={isCard ? 9 : 6}
-          extraParams={{
-            application_objective_id: objectiveId,
-          }}
+          perPage={perPage}
+          pagination={pagination}
         />
       </Box>
 
@@ -643,7 +673,7 @@ const Activities = () => {
           }
           hasActionButtons={true}
           rightButtonLabel={`Save`}
-          rightButtonAction={() => handleCountActivities()}
+          rightButtonAction={() => handleSaveActivities()}
           isLoading={btnLoading}
         />
       )}
@@ -668,7 +698,7 @@ const Activities = () => {
           }
           hasActionButtons={true}
           rightButtonLabel={`Save activity`}
-          rightButtonAction={() => handleSaveActivity()}
+          rightButtonAction={() => handleUpdateActivity()}
           isLoading={btnLoading}
         />
       )}

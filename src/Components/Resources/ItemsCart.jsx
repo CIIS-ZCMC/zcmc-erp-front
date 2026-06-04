@@ -37,7 +37,7 @@ const ItemsCart = ({
   return (
     <Fragment>
       <Box display={"flex"} gap={1}>
-        <Box
+        {/* <Box
           component="img"
           src={defaultItem}
           alt={name}
@@ -52,7 +52,7 @@ const ItemsCart = ({
             e.target.onerror = null;
             e.target.src = "/fallback-image.png";
           }}
-        />
+        /> */}
 
         <Box width={"100%"}>
           <Typography fontSize={13} fontWeight={600}>

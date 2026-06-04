@@ -186,7 +186,7 @@ function ManageResources(props) {
                 color={"success"}
                 variant={"outlined"}
                 fontSize={13}
-                size={"lg"}
+                wrap
               />
             </Stack>
             <Typography level="body-sm">

@@ -12,22 +12,25 @@ export default function ProductGrid({
   items = [],
 }) {
   return (
-    <BoxComponent
-      height={height}
-      boxShadow="sm"
+    <Box
       sx={{
-        overflow: "auto",
+        height: "100%",
+        overflowY: "auto",
         overflowX: "hidden",
         minHeight: 0,
+        px: 1,
+        pt: 1,
+        pb: 2,
       }}
     >
       <Box
         sx={{
           display: "grid",
-          gridTemplateColumns: `repeat(auto-fill, minmax(${columnWidth}px, 1fr))`,
-          gap: 3,
-          p: 1,
-          pb: 5, // add this
+          gridTemplateColumns: "repeat(3, minmax(0, 1fr))",
+          gap: "16px",
+          width: "100%",
+          boxSizing: "border-box",
+          pb: "24px", // add this
         }}
       >
         {loading
@@ -49,6 +52,6 @@ export default function ProductGrid({
               />
             ))}
       </Box>
-    </BoxComponent>
+    </Box>
   );
 }

@@ -28,21 +28,10 @@ const useItemsHook = create((set, get) => ({
     set({ search_Query: query });
   },
 
-  getItems: async (params = {}, callBack, options = {}) => {
-    const cacheKey = JSON.stringify(params);
-    const { force = false } = options;
-
-    const cached = get().itemsCache[cacheKey];
-
-    if (cached && !force) {
-      set({ items: cached.items });
-      callBack?.(200, "Loaded from cache", cached.pagination);
-      return;
-    }
-
+  getItems: async (params = {}, callBack) => {
     read({
       url: `${PATH}s`,
-      params: { ...params },
+      params,
       failed: callBack,
       success: (res) => {
         const { status, message, data } = res;
@@ -50,16 +39,9 @@ const useItemsHook = create((set, get) => ({
         const itemData = data.data || [];
         const pagination = data.pagination || data.meta;
 
-        set((state) => ({
+        set({
           items: itemData,
-          itemsCache: {
-            ...state.itemsCache,
-            [cacheKey]: {
-              items: itemData,
-              pagination,
-            },
-          },
-        }));
+        });
 
         callBack?.(status, message, pagination);
       },

@@ -20,6 +20,7 @@ function ChipComponent({
   fontSize = 12,
   startDecorator,
   chipRadius,
+  wrap = false,
   ...props
 }) {
   const sxStyles = {
@@ -27,21 +28,36 @@ function ChipComponent({
     fontSize: fontSize,
 
     maxWidth: {
-      xs: 300,
-      sm: 450,
-      md: 550,
-    },
-    overflow: "hidden",
-    textOverflow: "ellipsis",
-    whiteSpace: "nowrap",
-
-    "& .MuiChip-label": {
-      overflow: "hidden",
-      textOverflow: "ellipsis",
-      whiteSpace: "nowrap",
+      xs: 500,
+      sm: 700,
+      md: 1200,
     },
 
-    "--Chip-radius": chipRadius,
+    ...(wrap
+      ? {
+          height: "auto",
+          whiteSpace: "normal",
+
+          "& .MuiChip-label": {
+            whiteSpace: "normal",
+            overflow: "visible",
+            textOverflow: "unset",
+            display: "block",
+            paddingTop: "4px",
+            paddingBottom: "4px",
+          },
+        }
+      : {
+          overflow: "hidden",
+          textOverflow: "ellipsis",
+          whiteSpace: "nowrap",
+
+          "& .MuiChip-label": {
+            overflow: "hidden",
+            textOverflow: "ellipsis",
+            whiteSpace: "nowrap",
+          },
+        }),
 
     ...(variant || color
       ? { color: color }

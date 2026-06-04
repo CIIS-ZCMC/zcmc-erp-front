@@ -23,6 +23,9 @@ import ButtonComponent from "@Components/Common/ButtonComponent";
 import useItemsHook from "../../Hooks/ItemManagementHook";
 import useSearchHook from "../../Hooks/SearchHook";
 import ServerPaginationComponent from "@Components/ServerPaginationComponent";
+import StatusSwitch from "@Components/StatusSwitchComponent";
+import BasicTableComponent from "@Components/Common/Table/BasicTableComponent";
+import { ADD_TO_CART_COLUMNS } from "@Data/Columns";
 
 export default function AddToCartLayout({
   results,
@@ -58,7 +61,14 @@ export default function AddToCartLayout({
   });
   const [search, setSearch] = useState("");
   const [displayLoading, setDisplayLoading] = useState(false);
+  const [isCard, setIsCard] = useState(true);
   const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState({
+    current_page: 1,
+    last_page: 1,
+    total: 0,
+  });
+
   const perPage = 12;
 
   // Filter values
@@ -83,15 +93,50 @@ export default function AddToCartLayout({
     getSystems(() => {});
   }, []);
 
+  const fetchItems = () => {
+    setDisplayLoading(true);
+
+    getItems(
+      {
+        page,
+        search,
+        per_page: perPage,
+        ...(isPPMP && { type: "ppmp_item" }),
+        ...(filterValues?.classification?.id && {
+          item_classification_id: filterValues.classification.id,
+        }),
+        ...(filterValues?.category?.id && {
+          item_category_id: filterValues.category.id,
+        }),
+        ...(filterValues?.system?.id && {
+          system_id: filterValues.system.id,
+        }),
+      },
+      (status, message, paginationData) => {
+        setDisplayLoading(false);
+
+        if (status >= 200 && status < 300 && paginationData) {
+          setPagination(paginationData);
+        }
+      },
+    );
+  };
+
+  useEffect(() => {
+    fetchItems();
+  }, [page, search, filterValues, isPPMP]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [search, filterValues]);
   return (
     <Fragment>
       <Grid container spacing={2} sx={{ flexGrow: 1 }}>
         <Grid
-          item
           xs={12}
-          md={8.5}
+          md={8}
           sx={{
-            height: "calc(100vh - 190px)",
+            height: "calc(100vh - 210px)",
             display: "flex",
             flexDirection: "column",
             minHeight: 0,
@@ -105,8 +150,26 @@ export default function AddToCartLayout({
               justifyContent={"space-between"}
               p={1}
             >
-              <SearchBarComponentv2 value={search} setValue={setSearch} />
+              <Stack direction={"row"} alignItems={"center"} gap={1}>
+                <Typography level="body-sm">View:</Typography>
+                <StatusSwitch
+                  activeLabel="Card"
+                  inactiveLabel="Table"
+                  activeColor="primary"
+                  inactiveColor="neutral"
+                  activeBg="#0086CC"
+                  inactiveBg="#0086CC"
+                  checked={isCard}
+                  onChange={(value) => {
+                    setIsCard(value);
+                    setPage(1);
+                  }}
+                  size="md"
+                />{" "}
+                <SearchBarComponentv2 value={search} setValue={setSearch} />
+              </Stack>
               <Typography
+                component={"div"}
                 level="body-sm"
                 endDecorator={
                   <IconButtonComponent
@@ -193,52 +256,51 @@ export default function AddToCartLayout({
               </Stack>
             </Stack>
           </BoxComponent>
-          <Box sx={{ flex: 1, minHeight: 0, overflow: "hidden", pt: 2 }}>
-            <ProductGrid
-              onItemInfo={(item) => {
-                setSelectedProduct(item);
-                setOpenPreview(true);
-              }}
-              onAddToCart={addToCart}
-              loading={displayLoading}
-              items={items}
-              height="100%"
-            />
-          </Box>
-          <Box sx={{ flexShrink: 0, pt: 1 }}>
+          {isCard ? (
+            <Box sx={{ flex: 1, minHeight: 0, overflow: "hidden", pt: 2 }}>
+              <ProductGrid
+                onItemInfo={(item) => {
+                  setSelectedProduct(item);
+                  setOpenPreview(true);
+                }}
+                onAddToCart={addToCart}
+                loading={displayLoading}
+                items={items}
+              />
+            </Box>
+          ) : (
+            <Box sx={{ flex: 1, minHeight: 0, overflow: "hidden", pt: 2 }}>
+              <BasicTableComponent
+                columns={ADD_TO_CART_COLUMNS(addToCart)}
+                rows={items}
+                stickyHeader
+                maxHeight="100%"
+              />
+            </Box>
+          )}
+
+          <Box
+            sx={{
+              flexShrink: 0,
+              pt: 1.5,
+            }}
+          >
             <ServerPaginationComponent
               page={page}
               setPage={setPage}
-              fetchData={(params, callback) => {
-                setDisplayLoading(true);
-
-                getItems(params, (status, message, pagination) => {
-                  setDisplayLoading(false);
-                  callback?.(status, message, pagination);
-                });
-              }}
-              search={search}
               perPage={perPage}
-              extraParams={{
-                ...(isPPMP && { type: "ppmp_item" }),
-                ...(filterValues?.classification?.id && {
-                  item_classification_id: filterValues.classification.id,
-                }),
-                ...(filterValues?.category?.id && {
-                  item_category_id: filterValues.category.id,
-                }),
-                ...(filterValues?.system?.id && {
-                  system_id: filterValues.system.id,
-                }),
-              }}
+              pagination={pagination}
             />
           </Box>
         </Grid>
         <Grid
-          item
           xs={12}
-          md={3.5}
-          sx={{ flexGrow: 1, height: "calc(100vh - 200px)" }}
+          md={4}
+          sx={{
+            height: "calc(100vh - 210px)",
+            minHeight: 0,
+            overflow: "hidden",
+          }}
         >
           <Cart
             cart={cart}

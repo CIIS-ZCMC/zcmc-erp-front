@@ -37,10 +37,11 @@ const BasicTableComponent = ({
           <tr>
             {columns.map((col) => (
               <th
-                key={col.field}
+                key={col.field || col.id}
                 style={{
                   width: col.width,
                   textAlign: col.align || "left",
+                  textWrap: "wrap",
                 }}
               >
                 {col.label}

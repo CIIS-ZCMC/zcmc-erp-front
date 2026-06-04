@@ -199,7 +199,7 @@ const useObjectivesHook = () => {
   };
 
   const createObjective = async (body, callBack, options = {}) => {
-    const { search = "", perPage = 6, setPage } = options;
+    const { search = "", perPage = 9, setPage, setPagination } = options;
 
     setIsBtnLoading(true);
 
@@ -209,18 +209,13 @@ const useObjectivesHook = () => {
           url: API.OBJECTIVE_STORE,
           form: body,
           success: resolve,
-          failed: (res, message) => {
-            reject({ res, message });
-          },
+          failed: (res, message) => reject({ res, message }),
         });
       });
 
       const {
         status,
-        data: {
-          message,
-          data: { application_objective },
-        },
+        data: { message },
       } = res;
 
       if (status === 201) {
@@ -230,13 +225,30 @@ const useObjectivesHook = () => {
             page: 1,
             per_page: perPage,
           },
-          (fetchStatus, fetchMessage, pagination) => {
-            if (pagination?.last_page) {
-              setPage?.(pagination.last_page);
+          async (fetchStatus, fetchMessage, pagination) => {
+            if (fetchStatus >= 200 && fetchStatus < 300 && pagination) {
+              setPagination?.(pagination);
+
+              const lastPage = pagination.last_page || 1;
+              setPage?.(lastPage);
+
+              await getObjectivesBySector(
+                {
+                  search,
+                  page: lastPage,
+                  per_page: perPage,
+                },
+                (lastStatus, lastMessage, lastPagination) => {
+                  if (lastPagination) {
+                    setPagination?.(lastPagination);
+                  }
+                },
+              );
             }
           },
         );
       }
+
       callBack?.(status, message);
     } catch ({ res, message }) {
       console.error("Failed to create objective:", message);
@@ -270,11 +282,13 @@ const useObjectivesHook = () => {
       } = res;
 
       if (status === 200) {
-        setApplicationObjectives((prev) =>
-          prev.map((obj) =>
-            obj.id === application_objective.id ? application_objective : obj,
-          ),
+        const updatedObjectives = applicationObjectives.map((obj) =>
+          obj.id === application_objective.id
+            ? { ...obj, ...application_objective }
+            : obj,
         );
+
+        setApplicationObjectives(updatedObjectives);
       }
 
       callBack?.(status, message);
@@ -287,48 +301,59 @@ const useObjectivesHook = () => {
   };
 
   const removeObjective = async (params, callBack, options = {}) => {
-    const { page = 1, search = "", perPage = 6 } = options;
+    const {
+      page = 1,
+      search = "",
+      perPage = 9,
+      setPage,
+      setPagination,
+    } = options;
 
     setIsBtnLoading(true);
 
     try {
-      await new Promise((resolve, reject) => {
+      const res = await new Promise((resolve, reject) => {
         remove({
           url: `${API.OBJECTIVE_DELETE}/${params.id}`,
           params,
-          success: async (res) => {
-            const {
-              status,
-              data: { message },
-            } = res;
-
-            if (status === 200) {
-              await getObjectivesBySector(
-                {
-                  search,
-                  page,
-                  per_page: perPage,
-                },
-                () => {
-                  callBack?.(status, message);
-                },
-              );
-
-              resolve(res);
-              return;
-            }
-
-            callBack?.(status, message);
-            resolve(res);
-          },
-          failed: (err) => {
-            callBack?.(false, err?.message);
-            reject(err);
-          },
+          success: resolve,
+          failed: reject,
         });
       });
+
+      const {
+        status,
+        data: { message },
+      } = res;
+
+      if (status === 200) {
+        const remainingItems = applicationObjectives.filter(
+          (obj) => obj.id !== params.id,
+        );
+
+        const nextPage =
+          remainingItems.length === 0 && page > 1 ? page - 1 : page;
+
+        setPage?.(nextPage);
+
+        await getObjectivesBySector(
+          {
+            search,
+            page: nextPage,
+            per_page: perPage,
+          },
+          (fetchStatus, fetchMessage, pagination) => {
+            if (pagination) {
+              setPagination?.(pagination);
+            }
+          },
+        );
+      }
+
+      callBack?.(status, message);
     } catch (error) {
       console.error("Error Deleting Objective:", error);
+      callBack?.(false, error?.message);
     } finally {
       setIsBtnLoading(false);
     }

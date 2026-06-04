@@ -19,7 +19,7 @@ function PageTitle({
   title,
   description,
   items = [],
-  withArrowBack = false,
+  withArrowBack = items.length > 0 ? true : false,
   onClickArrow,
 }) {
   const theme = useTheme();
@@ -77,7 +77,7 @@ function PageTitle({
               >
                 {item.label}
               </Link>
-            )
+            ),
           )}
         </Breadcrumbs>
         <Typography level="body-sm" ml={1.5} mt={-2} width={"80%"}>

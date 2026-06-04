@@ -105,6 +105,11 @@ const Objectives = () => {
   const [isEditLoading, setIsEditLoading] = useState(false);
   const [isCard, setIsCard] = useState(true);
   const [page, setPage] = useState(1);
+  const [pagination, setPagination] = useState({
+    current_page: 1,
+    last_page: 1,
+    total: 0,
+  });
 
   const { status_id } = aopApplication; //get status id on aop application object
 
@@ -118,9 +123,24 @@ const Objectives = () => {
     MANAGE_OBJECTIVES_SUBHEADER,
   } = OBJECTIVES;
 
-  const handleSaveObjectives = async () => {
-    const perPage = isCard ? 6 : 10;
+  const perPage = isCard ? 9 : 10;
 
+  const fetchObjectives = async () => {
+    await getObjectivesBySector(
+      {
+        search,
+        page,
+        per_page: perPage,
+      },
+      (status, message, paginationData) => {
+        if (status >= 200 && status < 300 && paginationData) {
+          setPagination(paginationData);
+        }
+      },
+    );
+  };
+
+  const handleSaveObjectives = async () => {
     const payload = {
       aop_application_id: aopId,
       objective_id: objective?.id,
@@ -155,6 +175,7 @@ const Objectives = () => {
           search,
           perPage,
           setPage,
+          setPagination,
         },
       );
     } catch (error) {
@@ -223,18 +244,21 @@ const Objectives = () => {
     setIsEditLoading(false);
     setIsOpenObjectivesModal(true);
   };
+
   const handleConfirmDelete = async () => {
     if (!selectedObjectiveId) return;
 
-    // setIsLoading(true);
-
     const params = { id: selectedObjectiveId };
+    const perPage = isCard ? 9 : 10;
 
     await removeObjective(
       params,
       (status, message) => {
         if (status === 200) {
           showSnack(200, message, "soft");
+          setOpenDeleteModal(false);
+          closeConfirmation();
+          setSelectedObjectiveId(null);
         } else {
           setAlertDialog({
             status: "error",
@@ -246,7 +270,9 @@ const Objectives = () => {
       {
         page,
         search,
-        perPage: 6,
+        perPage,
+        setPage,
+        setPagination,
       },
     );
   };
@@ -393,6 +419,14 @@ const Objectives = () => {
       socket.off("aop:locked");
     };
   }, [socket, aopId]);
+
+  useEffect(() => {
+    fetchObjectives();
+  }, [page, search, perPage]);
+
+  useEffect(() => {
+    setPage(1);
+  }, [search]);
 
   return (
     <Stack
@@ -607,9 +641,8 @@ const Objectives = () => {
         <ServerPaginationComponent
           page={page}
           setPage={setPage}
-          fetchData={getObjectivesBySector}
-          search={search}
-          perPage={isCard ? 9 : 10}
+          perPage={perPage}
+          pagination={pagination}
         />
       </Box>
 
