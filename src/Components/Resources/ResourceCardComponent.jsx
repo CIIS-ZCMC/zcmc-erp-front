@@ -3,22 +3,16 @@ import IconButtonComponent from "@Components/Common/IconButtonComponent";
 import AutocompleteComponent from "@Components/Form/AutocompleteComponent";
 import { Delete, NorthEast } from "@mui/icons-material";
 import {
-  AspectRatio,
   Box,
   Card,
   CardContent,
-  CardOverflow,
   IconButton,
   Stack,
   Typography,
   useTheme,
 } from "@mui/joy";
-import { ArrowUpRightIcon } from "lucide-react";
-import React, { Fragment, useState } from "react";
-import CartPreviewComponent from "./CartPreviewComponent";
-
+import React, { Fragment, useEffect, useState } from "react";
 import { isAopDisabled } from "../../Utils/AopStatus";
-import defaultItem from "../../assets/item.jpg";
 import { formatPeso } from "../../Utils/FormatPeso";
 import ChipComponent from "@Components/Common/ChipComponent";
 
@@ -38,15 +32,18 @@ export default function ResourceCardComponent({
   options = [],
   purchase_type,
   onPurchaseTypeChange,
+  onPreview,
 }) {
   const theme = useTheme();
   const color = theme.palette;
 
   const total = quantity * price;
-  const [openModal, setOpenModal] = useState(false); // ← modal state
   const [selectedPurchaseType, setSelectedPurchaseType] =
     useState(purchase_type);
 
+  useEffect(() => {
+    setSelectedPurchaseType(purchase_type);
+  }, [purchase_type]);
   return (
     <Fragment>
       <Card
@@ -72,30 +69,32 @@ export default function ResourceCardComponent({
           <Stack direction={"row"} justifyContent={"space-between"}>
             <ChipComponent
               label={object_category}
-              fontSize={10}
+              fontSize={12}
               variant={"soft"}
               color={object_category === "MOOE" ? "primary" : "warning"}
-              chipRadius={"6px"}
+              chipRadius={"10px"}
             />
-            <IconButton
-              aria-label="delete"
-              size="sm"
-              variant="solid"
-              color="danger"
-              sx={{
-                borderRadius: "50%",
-              }}
-              onClick={() => onDelete(resource_id)}
-              disabled={isAopDisabled(status)}
-            >
-              <Delete />
-            </IconButton>
-            <IconButtonComponent
-              icon={<NorthEast />}
-              size={"sm"}
-              color={"#323232"}
-              onClick={() => setOpenModal(true)}
-            />
+            <Stack direction={"row"} spacing={1}>
+              <IconButton
+                aria-label="delete"
+                size="sm"
+                variant="solid"
+                color="danger"
+                sx={{
+                  borderRadius: "50%",
+                }}
+                onClick={() => onDelete(resource_id)}
+                disabled={isAopDisabled(status)}
+              >
+                <Delete />
+              </IconButton>
+              <IconButtonComponent
+                icon={<NorthEast />}
+                size={"sm"}
+                color={"#323232"}
+                onClick={onPreview}
+              />
+            </Stack>
           </Stack>
 
           <Stack
@@ -137,6 +136,7 @@ export default function ResourceCardComponent({
                 onDecrease={() => onQtyChange(resource_id, quantity - 1)}
                 onIncrease={() => onQtyChange(resource_id, quantity + 1)}
                 disabled={isAopDisabled(status)}
+                onChange={(value) => onQtyChange(resource_id, value)}
               />
             </Stack>
           </Stack>
@@ -177,18 +177,6 @@ export default function ResourceCardComponent({
           </Stack>
         </CardContent>
       </Card>
-
-      <CartPreviewComponent
-        open={openModal}
-        onClose={() => setOpenModal(false)}
-        price={price}
-        name={name}
-        category={category}
-        specifications={specifications}
-        unit={unit}
-        qty={quantity}
-        isAddToCart={false}
-      />
     </Fragment>
   );
 }

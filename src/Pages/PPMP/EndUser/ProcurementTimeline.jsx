@@ -17,6 +17,14 @@ export default function ProcurementTimeline({
     delivery_date: value?.delivery_date || "",
   });
 
+  const formatMonthYear = (date) => {
+    if (!date) return "";
+
+    const m = moment(date, "MM/YYYY", true);
+
+    return m.isValid() ? m.format("MMMM YYYY") : "";
+  };
+
   // Whenever values change, notify parent
   useEffect(() => {
     if (onChange) {
@@ -34,33 +42,29 @@ export default function ProcurementTimeline({
         Timeline of Procurement Activity{" "}
       </Typography>
       <Stack gap={3}>
-        <Stack spacing={editing ? 1 : 5} mt={editing ? 2 : 4} direction={"row"}>
+        <Stack
+          spacing={1}
+          mt={editing ? 1 : 3}
+          direction="row"
+          width="100%"
+          sx={{ minWidth: 0 }}
+        >
           {!editing ? (
             <>
               <Stack spacing={1}>
-                <Typography level="title-sm">Start</Typography>
-
                 <InputComponent
-                  level="body-md"
-                  fontWeight={500}
-                  value={
-                    values?.start_date
-                      ? moment(values.start_date, "MM/YYYY").format("MMMM YYYY")
-                      : ""
-                  }
+                  label={"Start"}
+                  value={formatMonthYear(values?.start_date)}
+                  width="100%"
+                  readOnly
                 />
               </Stack>
               <Stack spacing={1}>
-                <Typography level="title-sm">End</Typography>
-
                 <InputComponent
-                  level="body-md"
-                  fontWeight={500}
-                  value={
-                    values?.end_date
-                      ? moment(values.end_date, "MM/YYYY").format("MMMM YYYY")
-                      : ""
-                  }
+                  label={"End"}
+                  value={formatMonthYear(values?.end_date)}
+                  width="100%"
+                  readOnly
                 />
               </Stack>
             </>
@@ -77,6 +81,7 @@ export default function ProcurementTimeline({
                 disabled={!editing}
                 size="md"
                 color={editing ? "danger" : "neutral"}
+                sx={{ flex: 1, minWidth: 0 }}
               />
               <AutocompleteComponent
                 label={"End"}
@@ -87,6 +92,7 @@ export default function ProcurementTimeline({
                 disabled={!editing}
                 size="md"
                 color={editing ? "danger" : "neutral"}
+                sx={{ flex: 1, minWidth: 0 }}
               />
             </>
           )}
@@ -94,16 +100,10 @@ export default function ProcurementTimeline({
 
         {!editing ? (
           <Stack spacing={1}>
-            <Typography level="title-sm">Delivery</Typography>
-
             <InputComponent
-              level="body-md"
-              fontWeight={500}
-              value={
-                values?.end_date
-                  ? moment(values.delivery_date, "MM/YYYY").format("MMMM YYYY")
-                  : ""
-              }
+              label="Delivery"
+              value={formatMonthYear(values?.delivery_date)}
+              readOnly
             />
           </Stack>
         ) : (
@@ -113,7 +113,6 @@ export default function ProcurementTimeline({
             options={timelines.delivery || []}
             value={values?.delivery_date || null}
             handleSelect={(val) => setValues({ ...values, delivery_date: val })}
-            disabled={!editing}
             size="md"
             width="auto"
             color={editing ? "danger" : "neutral"}

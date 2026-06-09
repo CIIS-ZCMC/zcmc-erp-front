@@ -305,6 +305,7 @@ export const API = {
   AOP_YEAR_LIST: "aop-application-yearList ",
   AOP_UPDATE: "aop-application-update-status",
   AOP_UPDATE_MISSION: "aop-application-mission",
+  EXPORT_AOP: "export-aop",
 
   CONSOLIDATORS: "category-consolidators",
   UPDATE_CONSOLIDATOR: "update-consolidator",

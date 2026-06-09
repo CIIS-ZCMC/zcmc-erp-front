@@ -21,11 +21,25 @@ function PageTitle({
   items = [],
   withArrowBack = items.length > 0 ? true : false,
   onClickArrow,
+  backTo,
 }) {
   const theme = useTheme();
   const color = theme.palette.custom;
-
   const navigate = useNavigate();
+
+  const handleBack = () => {
+    if (onClickArrow) {
+      onClickArrow();
+      return;
+    }
+
+    if (backTo) {
+      navigate(backTo);
+      return;
+    }
+
+    navigate(-1);
+  };
 
   return (
     <Fragment>
@@ -39,10 +53,7 @@ function PageTitle({
         >
           <Box display="flex" alignItems="center" gap={1}>
             {withArrowBack && (
-              <IconButtonComponent
-                icon={<ArrowBack />}
-                onClick={onClickArrow ? onClickArrow : () => navigate(-1)}
-              />
+              <IconButtonComponent icon={<ArrowBack />} onClick={handleBack} />
             )}
             <Typography fontSize={30} fontWeight={600} sx={{ color: "black" }}>
               {title}

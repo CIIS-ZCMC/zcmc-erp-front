@@ -35,22 +35,23 @@ import {
   DeleteOutlineOutlined,
   ModeEditOutlineOutlined,
   WarningAmberOutlined,
-  WarningOutlined,
   HourglassEmpty,
   X,
   EditOutlined,
   ArchiveOutlined,
   Edit,
   Add,
+  NorthEast,
+  Delete,
 } from "@mui/icons-material";
 import { grey, red } from "@mui/material/colors";
-import ButtonComponent from "@Components/Common/ButtonComponent";
 import { formatPeso } from "../Utils/FormatPeso";
 import formattedPrice from "../Utils/formattedPrice";
 import { isAopDisabled } from "@Utils/AopStatus";
-import { ArrowRight } from "lucide-react";
 import { TimeframeCell } from "@Components/Common/Table/TimeframeCell";
 import IconButtonComponent from "@Components/Common/IconButtonComponent";
+import AutocompleteComponent from "@Components/Form/AutocompleteComponent";
+import QuantityControlComponent from "@Components/Cart/QuantityControlComponent";
 
 export const objHeaders = ({
   active,
@@ -447,7 +448,7 @@ export const ppmpHeaders = (handleOpenDel, items, modes, isEditing) => [
   },
   {
     field: "classification",
-    name: "Classification",
+    name: "Project Type",
     width: 110,
     align: "center",
   },
@@ -846,7 +847,7 @@ export const PPMP_VIEW_HEADER = [
   },
   {
     field: "classification",
-    name: "Item Classification",
+    name: "Project Type",
     width: 150,
     // align: "center",
   },
@@ -1126,7 +1127,7 @@ export const classificationCols = (
 ) => [
   {
     key: "name",
-    label: "Classification",
+    label: "Project Type",
     align: "left",
     render: (params) => (
       <Typography level="body-sm" fontWeight={600} sx={{ color: grey[800] }}>
@@ -1230,7 +1231,7 @@ export const itemCols = (
   },
   {
     key: "classification",
-    label: "Classification & Category",
+    label: "Project Type & Category",
     align: "left",
     width: "150px",
     render: (row) => (
@@ -1359,10 +1360,10 @@ export const itemRequestCols = (
         return (
           <>
             <Typography level="body-md" fontWeight={600}>
-              {params.name}
+              {params?.name}
             </Typography>
-            <Typography level="body-sm">
-              {params.item_unit?.name || "-"}
+            <Typography level="body-sm" fontStyle={"italic"}>
+              Requested by: {params?.requested_by?.area_code}
             </Typography>
           </>
         );
@@ -1396,9 +1397,9 @@ export const itemRequestCols = (
             <Typography
               level="body-md"
               fontWeight={600}
-              color={params.is_high_ticket ? "success" : "danger"}
+              color={params?.is_high_ticket ? "success" : "danger"}
             >
-              {params.is_high_ticket ? "YES" : "NO"}
+              {params?.is_high_ticket ? "YES" : "NO"}
             </Typography>
           </>
         );
@@ -1412,8 +1413,11 @@ export const itemRequestCols = (
       width: !showActions ? "200px" : "150px",
       render: (params) => (
         <>
-          <Typography level="body-md" color="neutral">
+          <Typography level="title-md">
             {formattedPrice(params?.estimated_budget)}
+          </Typography>
+          <Typography level="body-sm">
+            {params?.item_unit?.name || "-"}
           </Typography>
         </>
       ),
@@ -1426,8 +1430,8 @@ export const itemRequestCols = (
       align: "left",
       render: (params) => (
         <>
-          <Typography level="body-md" color="neutral">
-            {moment(params.created_at).format("LL")}
+          <Typography level="body-md">
+            {moment(params?.created_at).format("LL")}
           </Typography>
         </>
       ),
@@ -1445,7 +1449,7 @@ export const itemRequestCols = (
             startDecorator={<Circle sx={{ fontSize: 8 }} />}
             sx={{ textTransform: "capitalize" }}
           >
-            {params.status?.description || "-"}
+            {params?.status?.description || "-"}
           </Chip>
         </>
       ),
@@ -1505,7 +1509,7 @@ export const myOwnItemRequestListCols = () => [
   },
   {
     field: "classification",
-    name: "Classification",
+    name: "Project Type",
     width: "auto",
     align: "left",
   },
@@ -1605,7 +1609,7 @@ export const itemRequestDetailsCols = (onUpdate, openModal) => [
   },
   {
     field: "classification",
-    name: "Classification",
+    name: "Project Type",
     width: "auto",
     align: "left",
     render: (row) => row.item_classification?.name || row.classification,
@@ -1793,21 +1797,21 @@ export const PPMP_HEADERS = (
   {
     id: "name",
     label: "Item",
-    width: status?.name === "draft" ? "300px" : "400px",
+    width: "300px",
     render: renderItem,
     expandTrigger: true,
   },
   {
     id: "category",
     label: "Project Type & Category",
-    width: status?.name === "draft" ? "auto" : "auto",
+    width: "auto",
     render: renderCategory,
     expandTrigger: true,
   },
   {
     id: "cost",
     label: "Total Cost & Individual Cost",
-    width: status?.name === "draft" ? "200px" : "auto",
+    width: "auto",
     render: renderCost,
     expandTrigger: true,
   },
@@ -1816,8 +1820,7 @@ export const PPMP_HEADERS = (
     label: "Mode of Procurement",
     align: "center",
     expandTrigger: true,
-
-    width: status?.name === "draft" ? "200px" : "auto",
+    width: "auto",
     render: renderProcurement,
   },
   ...(status?.name === "draft"
@@ -1862,7 +1865,7 @@ export const PPMP_HEADERS = (
     id: "actions",
     label: "Actions",
     align: status?.name === "draft" ? "center" : "right",
-    width: status?.name === "draft" ? 200 : "auto",
+    width: "auto",
     render: (row, { openRow }) => {
       const isEditing = editingRows[row.id];
       const lockedByOther =
@@ -1942,7 +1945,7 @@ export const ITEMS_REQUESTS = (handleOpen, pathName, showActions = false) => [
   },
   {
     key: "category",
-    label: "Classification & Category",
+    label: "Project Type & Category",
     width: "250px",
     render: (r) => (
       <div>
@@ -2172,7 +2175,7 @@ export const PPMP_APPROVER_HEADERS = (handleComments) => [
   },
   {
     id: "category",
-    label: "Classification & Category",
+    label: "Project Type & Category",
     width: "200px",
     render: (row) => (
       <>
@@ -2285,7 +2288,7 @@ export const SUMMARY_RESOURCES = () => [
   },
   {
     id: "category",
-    label: "Classification & Category",
+    label: "Project Type & Category",
     width: "200px",
     render: (row) => (
       <>
@@ -2735,7 +2738,6 @@ export const ADD_TO_CART_COLUMNS = (onAddToCart) => [
   {
     id: "item",
     label: "Item Description",
-    width: "auto",
     render: (row) => (
       <Typography
         sx={{
@@ -2748,18 +2750,17 @@ export const ADD_TO_CART_COLUMNS = (onAddToCart) => [
         {row?.name || "-"}
       </Typography>
     ),
-    width: "35%",
+    width: "40%",
   },
   {
     id: "classification",
-    label: "Classification & Category",
-    width: "auto",
+    label: "Project Type & Category",
     render: (row) => (
       <Stack>
-        <Typography level="title-sm" color="neutral" fontWeight={600}>
+        <Typography level="title-sm">
           {row?.item_classification?.name ?? "-"}
         </Typography>
-        <Typography level="body-sm">
+        <Typography level="body-xs">
           {row?.item_category?.name ?? "-"}
         </Typography>
       </Stack>
@@ -2771,15 +2772,15 @@ export const ADD_TO_CART_COLUMNS = (onAddToCart) => [
     label: "Unit Price & Measure",
     render: (row) => (
       <Stack>
-        <Typography level="title-sm" fontWeight={600} color="primary">
+        <Typography level="title-sm">
           {row?.estimated_budget ? formattedPrice(row?.estimated_budget) : "-"}
         </Typography>
-        <Typography level="body-sm" color="neutral">
+        <Typography level="body-xs" color="neutral">
           {row?.item_unit?.name ?? "-"}
         </Typography>
       </Stack>
     ),
-    width: "15%",
+    width: "20%",
   },
   {
     id: "terminology",
@@ -2787,6 +2788,7 @@ export const ADD_TO_CART_COLUMNS = (onAddToCart) => [
     render: (row) => (
       <Typography level="title-sm">{row?.terminology ?? "-"}</Typography>
     ),
+    width: "10% ",
   },
 
   {
@@ -2801,6 +2803,152 @@ export const ADD_TO_CART_COLUMNS = (onAddToCart) => [
           color={"primary"}
           onClick={() => onAddToCart?.(row)}
         />
+      );
+    },
+    width: "10%",
+  },
+];
+
+export const AOP_RESOURCES_COLUMNS = ({
+  purchaseTypes = [],
+  onPurchaseTypeChange,
+  onQtyChange,
+  onDelete,
+  onPreview,
+  status,
+}) => [
+  {
+    id: "item",
+    label: "Item Description",
+    render: (row) => (
+      <Stack>
+        <Typography
+          sx={{
+            whiteSpace: "normal",
+            wordBreak: "break-word",
+          }}
+          level="title-sm"
+          fontWeight={600}
+        >
+          {row?.item?.name || "-"}
+        </Typography>
+        <Typography level="body-sm">Qty: {row?.quantity || "-"}</Typography>
+      </Stack>
+    ),
+    width: "25%",
+  },
+  {
+    id: "classification",
+    label: "Item Category & Project Type",
+    render: (row) => (
+      <Stack>
+        <Typography level="title-sm" fontWeight={600}>
+          {row?.item?.item_category?.name ?? "-"}
+        </Typography>
+        <Typography level="body-sm">
+          {row?.item?.item_classification?.name ?? "-"}
+        </Typography>
+      </Stack>
+    ),
+    width: "15%",
+  },
+  {
+    id: "unit_price",
+    label: "Total Cost & Unit Price",
+    render: (row) => {
+      const total_cost = row?.item?.estimated_budget * row?.quantity;
+      return (
+        <Stack>
+          <Typography level="title-sm" fontWeight={600} color="primary">
+            {row?.item?.estimated_budget ? formattedPrice(total_cost) : "-"}
+          </Typography>
+          <Typography
+            level="body-sm"
+            color="neutral"
+            textTransform={"lowercase"}
+          >
+            {row?.item?.estimated_budget
+              ? `${formattedPrice(row?.item?.estimated_budget)} per ${row?.item?.item_unit?.name ?? "-"}`
+              : "-"}
+          </Typography>
+        </Stack>
+      );
+    },
+    width: "15%",
+  },
+  {
+    id: "purchase_type",
+    label: "Purchase Type",
+    width: "10%",
+    render: (row) => (
+      <AutocompleteComponent
+        options={purchaseTypes}
+        value={row?.purchase_type || null}
+        setValue={(val) => {
+          onPurchaseTypeChange(val, row.id); // trigger parent update
+        }}
+        getOptionLabel={(opt) => opt?.description || ""}
+        placeholder="Select type"
+        disabled={isAopDisabled(status)}
+      />
+    ),
+  },
+  {
+    id: "expense_class",
+    label: "Expense Class",
+    align: "center",
+    render: (row) => (
+      <ChipComponent
+        variant={"soft"}
+        label={row?.expense_class ?? "-"}
+        color={row?.expense_class === "MOOE" ? "primary" : "warning"}
+        chipRadius={"10px"}
+      />
+    ),
+  },
+  {
+    id: "quantity",
+    label: "Quantity",
+    align: "center",
+    render: (row) => (
+      <QuantityControlComponent
+        quantity={row?.quantity}
+        onDecrease={() => onQtyChange(row?.id, row?.quantity - 1)}
+        onIncrease={() => onQtyChange(row?.id, row?.quantity + 1)}
+        disabled={isAopDisabled(status)}
+        onChange={(value) => onQtyChange(row?.id, value)}
+      />
+    ),
+  },
+
+  {
+    id: "actions",
+    label: "",
+    align: "right",
+    render: (row) => {
+      return (
+        <Stack direction={"row"} spacing={1}>
+          <IconButtonComponent
+            icon={<NorthEast />}
+            variant={"soft"}
+            color={"neutral"}
+            size={"sm"}
+            onClick={(e) => {
+              e.stopPropagation();
+              onPreview(row);
+            }}
+          />
+          <IconButtonComponent
+            icon={<Delete />}
+            variant={"soft"}
+            color={"danger"}
+            size={"sm"}
+            onClick={(e) => {
+              e.stopPropagation();
+              onDelete(row.id);
+            }}
+          />
+        </Stack>
       );
     },
   },

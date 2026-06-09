@@ -41,29 +41,17 @@ import useAOPBreadcrumbs from "../../../../Hooks/AOP/AOpBreadcrumbs";
 import useAOPStore from "../../../../Store/AOPStore";
 import { isAopDisabled } from "../../../../Utils/AopStatus";
 import ActivityDetailsSection from "../ActivityDetailsSection";
-
-const QuarterTarget = ({ label = "Q1", value }) => (
-  <>
-    <Stack
-      direction="row"
-      spacing={1}
-      alignItems="center"
-      bgcolor="#F2F2F2"
-      padding={0.5}
-      borderRadius={5}
-    >
-      <Typography level="body-xs">{label}</Typography>
-      <Typography sx={{ fontWeight: 600 }}>
-        {" "}
-        {value === null || value === undefined || value === "" ? "-" : value}
-      </Typography>
-    </Stack>
-  </>
-);
+import useAOPIdStore from "@Hooks/AOP/AOPIdStore";
+import StatusSwitch from "@Components/StatusSwitchComponent";
+import ServerPaginationComponent from "@Components/ServerPaginationComponent";
+import BasicTableComponent from "@Components/Common/Table/BasicTableComponent";
+import { AOP_RESOURCES_COLUMNS } from "@Data/Columns";
+import CartPreviewComponent from "@Components/Resources/CartPreviewComponent";
 
 function ManageResources(props) {
   const location = useLocation();
   const { activityId } = useParams();
+  const { objectiveId } = useAOPIdStore();
 
   const {
     getAOPResources,
@@ -72,6 +60,7 @@ function ManageResources(props) {
     updatePurchaseType,
     deleteResource,
     activity,
+    pagination,
   } = useResourcesHook();
   const { getPurchaseType, purchase_types } = usePurchaseTypeHook();
 
@@ -82,9 +71,8 @@ function ManageResources(props) {
   const { aop } = useAOPStore();
   const status = aop.status.id;
 
-  // useEffect(() => {
-  //   console.log(status)
-  // }, [aop])
+  const [page, setPage] = useState(1);
+  const [isCard, setIsCard] = useState(true);
 
   const color = theme.palette;
   const currentYear = new Date().getFullYear();
@@ -92,6 +80,10 @@ function ManageResources(props) {
 
   const [isLoading, setIsLoading] = useState(false);
   const [search, setSearch] = useState("");
+  const [openPreview, setOpenPreview] = useState(false);
+  const [selectedResource, setSelectedResource] = useState(null);
+
+  const perPage = isCard ? 12 : 20;
 
   // Filter results when search changes
   const filteredResources = useMemo(() => {
@@ -142,6 +134,11 @@ function ManageResources(props) {
     });
   };
 
+  const handlePreview = (resource) => {
+    setSelectedResource(resource);
+    setOpenPreview(true);
+  };
+
   useEffect(() => {
     if (!activityId) return; // prevent calling if id is not ready
     setIsLoading(true);
@@ -161,131 +158,194 @@ function ManageResources(props) {
   }, [activityId]);
   return (
     <Fragment>
-      <PageTitle
-        title={`AOP for Fiscal Year ${currentFiscalYear}`}
-        description={
-          "The following below serves as the summary of your AOP request. You can open and update your request before the deadline as set by the administrators."
-        }
-        items={breadcrumbs}
-      />
-
-      <BoxComponent
-        bgColor={color.background.surface}
-        boxShadow="xs"
-        my={2}
-        padding={2}
+      <Stack
+        sx={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}
       >
-        <Stack direction={"row"} justifyContent={"space-between"}>
-          <Stack>
-            <Stack direction={"row"} spacing={1} alignItems={"center"}>
-              <Typography level="body-md" sx={{ fontWeight: 600 }}>
-                Manage Resources for
+        <PageTitle
+          title={`AOP for Fiscal Year ${currentFiscalYear}`}
+          description={
+            "The following below serves as the summary of your AOP request. You can open and update your request before the deadline as set by the administrators."
+          }
+          items={breadcrumbs}
+          backTo={`/aop/activities/${objectiveId}`}
+        />
+
+        <BoxComponent
+          bgColor={color.background.surface}
+          boxShadow="xs"
+          my={2}
+          padding={2}
+        >
+          <Stack direction={"row"} justifyContent={"space-between"}>
+            <Stack>
+              <Stack direction={"row"} spacing={1} alignItems={"center"}>
+                <Typography level="body-md" sx={{ fontWeight: 600 }}>
+                  Manage Resources for
+                </Typography>
+                <ChipComponent
+                  label={`Activity: ${activity?.name}`} // change to dynamic activity name
+                  color={"success"}
+                  variant={"outlined"}
+                  fontSize={13}
+                  wrap
+                />
+              </Stack>
+              <Typography level="body-sm">
+                {" "}
+                Manage and allocate all resource requirements for this activity.
+                Add, edit, or review items to ensure accurate budgeting and
+                procurement details.
               </Typography>
-              <ChipComponent
-                label={`Activity: ${activity?.name}`} // change to dynamic activity name
-                color={"success"}
-                variant={"outlined"}
-                fontSize={13}
-                wrap
+            </Stack>
+
+            <Stack>
+              <ButtonComponent
+                label={"Add a resource"}
+                startDecorator={<PlusIcon />}
+                onClick={() =>
+                  navigate(`/aop/select-resources/${activityId}`, {
+                    state: { activityId: activityId },
+                  })
+                }
+                disabled={isAopDisabled(status)}
               />
             </Stack>
-            <Typography level="body-sm">
-              {" "}
-              Manage and allocate all resource requirements for this activity.
-              Add, edit, or review items to ensure accurate budgeting and
-              procurement details.
-            </Typography>
           </Stack>
 
-          <Stack>
+          <ActivityDetailsSection
+            start_month={activity?.start_month}
+            end_month={activity?.end_month}
+            cost={activity?.cost}
+            is_gad_related={activity?.is_gad_related}
+            target={activity?.target}
+          />
+          <Stack mt={3} direction={"row"} spacing={2}>
+            <StatusSwitch
+              activeLabel="Card"
+              inactiveLabel="Table"
+              activeColor="primary"
+              inactiveColor="neutral"
+              activeBg="#0086CC"
+              inactiveBg="#0086CC"
+              checked={isCard}
+              onChange={(value) => {
+                setIsCard(value);
+                setPage(1);
+              }}
+              size="md"
+            />
+            <SearchBarComponentv2
+              value={search}
+              setValue={setSearch}
+              placeholder="Search resources..."
+              fullWidth
+            />
+          </Stack>
+        </BoxComponent>
+
+        {isLoading ? (
+          <Stack height="60vh" alignItems="center" justifyContent="center">
+            <ThreeDotsLoader />
+          </Stack>
+        ) : filteredResources.length > 0 ? (
+          isCard ? (
+            <Grid container spacing={3}>
+              {filteredResources.map((item, index) => (
+                <Grid xs={12} sm={6} md={3} key={index}>
+                  <ResourceCardComponent
+                    status={status}
+                    category={item?.item?.category}
+                    name={item?.item?.name}
+                    resource_id={item.id}
+                    price={item?.item?.estimated_budget}
+                    quantity={item.quantity}
+                    unit={item?.item?.item_unit?.name}
+                    specifications={item?.item?.item_specifications}
+                    object_category={item?.expense_class}
+                    onQtyChange={handleUpdateResource}
+                    options={purchase_types}
+                    purchase_type={item?.purchase_type}
+                    onPurchaseTypeChange={(selectedType) =>
+                      handlePurchaseTypeChange(selectedType, item.id)
+                    }
+                    onDelete={handleDeleteResource}
+                    onPreview={() => handlePreview(item)}
+                  />
+                </Grid>
+              ))}
+            </Grid>
+          ) : (
+            <BasicTableComponent
+              columns={AOP_RESOURCES_COLUMNS({
+                purchaseTypes: purchase_types,
+                onPurchaseTypeChange: handlePurchaseTypeChange,
+                onQtyChange: handleUpdateResource,
+                onDelete: handleDeleteResource,
+                onPreview: (item) => handlePreview(item),
+                status,
+              })}
+              rows={filteredResources}
+            />
+          )
+        ) : (
+          <BoxComponent
+            borderColor={grey[300]}
+            height={"55vh"}
+            borderRadius={10}
+            justifyContent={"center"}
+            alignItems={"center"}
+            display={"flex"}
+            flexDirection={"column"}
+          >
+            <Typography level="title-md">No resources yet.</Typography>
+            <Typography level="body-sm">
+              Start by adding the materials, equipment, or other resources
+              needed for this activity.
+            </Typography>
+            <Typography level="body-sm" mb={1}>
+              Click “Add a Resource” to begin.
+            </Typography>
             <ButtonComponent
-              label={"Add a resource"}
               startDecorator={<PlusIcon />}
+              label={"Add a resource"}
               onClick={() =>
                 navigate(`/aop/select-resources/${activityId}`, {
                   state: { activityId: activityId },
                 })
               }
-              disabled={isAopDisabled(status)}
             />
-          </Stack>
-        </Stack>
+          </BoxComponent>
+        )}
 
-        <ActivityDetailsSection
-          start_month={activity?.start_month}
-          end_month={activity?.end_month}
-          cost={activity?.cost}
-          is_gad_related={activity?.is_gad_related}
-          target={activity?.target}
-        />
-        <Stack mt={3} width={"350px"}>
-          <SearchBarComponentv2
-            value={search}
-            setValue={setSearch}
-            placeholder="Search resources..."
-            fullWidth
-          />
-        </Stack>
-      </BoxComponent>
-
-      {isLoading ? (
-        <Stack height="60vh" alignItems="center" justifyContent="center">
-          <ThreeDotsLoader />
-        </Stack>
-      ) : resources.length > 0 ? (
-        <Grid container spacing={3}>
-          {filteredResources.map((item, index) => (
-            <Grid xs={12} sm={6} md={3} key={index}>
-              <ResourceCardComponent
-                status={status}
-                category={item?.item?.category}
-                name={item?.item?.name}
-                resource_id={item.id}
-                price={item?.item?.estimated_budget}
-                quantity={item.quantity}
-                unit={item?.item?.item_unit?.name}
-                specifications={item?.item?.item_specifications}
-                object_category={item?.expense_class}
-                onQtyChange={handleUpdateResource}
-                options={purchase_types}
-                purchase_type={item?.purchase_type}
-                onPurchaseTypeChange={(selectedType) =>
-                  handlePurchaseTypeChange(selectedType, item.id)
-                }
-                onDelete={handleDeleteResource}
-              />
-            </Grid>
-          ))}
-        </Grid>
-      ) : (
-        <BoxComponent
-          borderColor={grey[300]}
-          height={"55vh"}
-          borderRadius={10}
-          justifyContent={"center"}
-          alignItems={"center"}
-          display={"flex"}
-          flexDirection={"column"}
+        <Box
+          sx={{
+            width: "100%",
+            display: "flex",
+            justifyContent: "center",
+            mt: "auto",
+            pt: 3,
+          }}
         >
-          <Typography level="title-md">No resources yet.</Typography>
-          <Typography level="body-sm">
-            Start by adding the materials, equipment, or other resources needed
-            for this activity.
-          </Typography>
-          <Typography level="body-sm" mb={1}>
-            Click “Add a Resource” to begin.
-          </Typography>
-          <ButtonComponent
-            startDecorator={<PlusIcon />}
-            label={"Add a resource"}
-            onClick={() =>
-              navigate(`/aop/select-resources/${activityId}`, {
-                state: { activityId: activityId },
-              })
-            }
+          <ServerPaginationComponent
+            page={page}
+            setPage={setPage}
+            perPage={perPage}
+            pagination={pagination}
           />
-        </BoxComponent>
-      )}
+        </Box>
+      </Stack>
+
+      <CartPreviewComponent
+        open={openPreview}
+        onClose={() => setOpenPreview(false)}
+        price={selectedResource?.item?.estimated_budget}
+        name={selectedResource?.item?.name}
+        category={selectedResource?.item?.category}
+        specifications={selectedResource?.item?.item_specifications}
+        unit={selectedResource?.item?.item_unit?.name}
+        qty={selectedResource?.quantity}
+        isAddToCart={false}
+      />
     </Fragment>
   );
 }

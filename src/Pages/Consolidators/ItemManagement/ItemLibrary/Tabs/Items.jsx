@@ -408,8 +408,8 @@ export const Items = () => {
           title="Add New Item"
           isOpen={openNew}
           handleClose={() => setOpenNew(false)}
-          minWidth={"500px"}
-          maxWidth={"500px"}
+          minWidth={"700px"}
+          maxWidth={"700px"}
           rightButtonAction={() => addItem()}
           content={
             <>
@@ -421,11 +421,11 @@ export const Items = () => {
               >
                 {index === "info" ? (
                   <Stack my={2} spacing={2}>
-                    <InputComponent
+                    <TextareaComponent
                       label={"Item Name"}
                       name={"name"}
                       value={newItem.name}
-                      handleInput={(e) =>
+                      onChange={(e) =>
                         handleChangeInput("name", setNewItem, e.target.value)
                       }
                       helperText={
@@ -570,8 +570,6 @@ export const Items = () => {
                   </Stack>
                 )}
               </TabComponent>
-              <Divider />
-              <AuthorizationPinComponent setPin={setPin} />
             </>
           }
           hasActionButtons={true}

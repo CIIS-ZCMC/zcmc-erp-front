@@ -116,7 +116,6 @@ function AddItems(props) {
         setDisplayLoading(true);
 
         const itemsResult = await getItems({
-          mode: "selection",
           ...(isPPMP && { type: "ppmp_item" }),
         });
         if (itemsResult.status !== 200) {

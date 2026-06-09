@@ -76,16 +76,12 @@ const CardComponent = ({
             <CardActions
               sx={{
                 justifyContent: justifyContentActions ? "" : "flex-end",
-                zIndex: 1,
               }}
             >
               <Stack
                 direction={direction ? direction : "column"}
                 alignItems={"center"}
                 width={actionWidth}
-                sx={{
-                  zIndex: 1,
-                }}
               >
                 {cardActions}
               </Stack>

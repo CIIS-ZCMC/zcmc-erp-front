@@ -38,8 +38,9 @@ const AOPSummary = () => {
   const [pin, setPin] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [openModal, setOpenModal] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
 
-  const { updateAOP } = useAOPHook();
+  const { updateAOP, exportAOP } = useAOPHook();
   const {
     setAlertDialog,
     setConfirmationModal,
@@ -310,7 +311,21 @@ const AOPSummary = () => {
           usersCount={users_only}
           designationCount={designations_only}
         />
-
+        <Stack direction={"row"}>
+          <ButtonComponent
+            label={"Download AOP"}
+            loadingLabel={"Downloading..."}
+            onClick={() => {
+              setIsExporting(true);
+              exportAOP(aop, (status, message) => {
+                setIsExporting(false);
+                showSnack(status, message);
+              });
+            }}
+            isLoading={isExporting}
+            disabled={isExporting}
+          />
+        </Stack>
         {applicationsObjectives.length !== 0 && (
           <BoxComponent p={0}>
             <Grid

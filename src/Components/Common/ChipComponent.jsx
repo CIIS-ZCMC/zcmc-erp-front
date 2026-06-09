@@ -32,6 +32,10 @@ function ChipComponent({
       sm: 700,
       md: 1200,
     },
+    position: "relative",
+    zIndex: 1,
+
+    "--Chip-radius": chipRadius ? chipRadius : "24px",
 
     ...(wrap
       ? {

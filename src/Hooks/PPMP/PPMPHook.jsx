@@ -13,6 +13,7 @@ const PATH = "ppmp";
 const usePPMPStoreHook = create((set, get) => ({
   // --- State ---
   ppmp: [],
+  ppmp_items: [],
   ppmp_total: 0,
   ppmp_id: 0,
   dashboard: {},
@@ -49,8 +50,10 @@ const usePPMPStoreHook = create((set, get) => ({
           callBack && callBack();
         },
         success: ({ status, message, data }) => {
+          console.log(data.data.data);
           set({
-            ppmp: data.data.data,
+            ppmp: data.data,
+            ppmp_items: data.data.data,
             ppmp_total: data.data.ppmp_total,
             pagination: data.data.pagination,
             ppmp_id: data.data.id,
@@ -153,7 +156,9 @@ const usePPMPStoreHook = create((set, get) => ({
           const { deleted_ppmp_item, ppmp_total } = data.data;
           console.log("message", data.message);
           set((state) => ({
-            ppmp: state.ppmp.filter((item) => item.id !== deleted_ppmp_item.id),
+            ppmp_items: state.ppmp_items.filter(
+              (item) => item.id !== deleted_ppmp_item.id,
+            ),
             ppmp_total,
           }));
           callBack && callBack(status, data.message);
@@ -170,7 +175,7 @@ const usePPMPStoreHook = create((set, get) => ({
         success: ({ data: { data, ppmp_total, message }, status }) => {
           console.log(data);
           set((state) => ({
-            ppmp: state.ppmp.map((item) =>
+            ppmp_items: state.ppmp_items.map((item) =>
               item.id === data.id ? { ...item, ...data } : item,
             ),
             ppmp_total,
@@ -189,7 +194,7 @@ const usePPMPStoreHook = create((set, get) => ({
           status,
         }) => {
           set((state) => ({
-            ppmp: state.ppmp.map((item) =>
+            ppmp_items: state.ppmp_items.map((item) =>
               item.id === updatedItem.id
                 ? { ...item, activities: updatedItem.activities }
                 : item,
@@ -207,17 +212,17 @@ const usePPMPStoreHook = create((set, get) => ({
         params: { search: params },
         failed: callBack,
         success: ({ status, message, data }) => {
-          set({ ppmp: data.data });
+          set({ ppmp_items: data.data });
           callBack && callBack(status, message, data.data);
         },
       });
     },
 
-    exportPPMP: (callBack) => {
+    exportPPMP: (ppmp, callBack) => {
       download({
-        url: `${PATH}-item-export`,
+        url: `export-${PATH}/${ppmp.id}`,
         title: "PPMP-Items",
-        fileName: "ppmp_item.xlsx",
+        fileName: `PPMP_${ppmp.user.assignedArea.area_code} (${ppmp.year}).xlsx`,
         success: callBack,
         failed: callBack,
       });
@@ -256,6 +261,7 @@ export const usePPMPActions = () => usePPMPStoreHook((state) => state.actions);
 // --- Expose state separately ---
 export const usePPMPState = () => {
   const ppmp = usePPMPStoreHook((state) => state.ppmp);
+  const ppmp_items = usePPMPStoreHook((state) => state.ppmp_items);
   const ppmp_total = usePPMPStoreHook((state) => state.ppmp_total);
   const ppmp_id = usePPMPStoreHook((state) => state.ppmp_id);
   const dashboard = usePPMPStoreHook((state) => state.dashboard);
@@ -271,6 +277,7 @@ export const usePPMPState = () => {
 
   return {
     ppmp,
+    ppmp_items,
     ppmp_total,
     ppmp_id,
     dashboard,

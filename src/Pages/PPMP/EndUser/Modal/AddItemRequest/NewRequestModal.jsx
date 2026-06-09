@@ -179,13 +179,6 @@ export default function NewRequestModal({ openNewRequest, setOpenNewRequest }) {
       }
     }
 
-    if (currentStep === "authorization") {
-      if (!itemReq?.pin?.trim()) {
-        setError("pin", true, "Authorization PIN is required.");
-        hasError = true;
-      }
-    }
-
     return !hasError;
   };
   const nextStep = () => {
@@ -198,8 +191,8 @@ export default function NewRequestModal({ openNewRequest, setOpenNewRequest }) {
   };
 
   const steps = itemReq.is_high_ticket
-    ? ["general", "special_details", "authorization"]
-    : ["general", "authorization"];
+    ? ["general", "special_details"]
+    : ["general"];
 
   const currentStep = steps[step - 1];
   const finalStep = steps.length;
@@ -215,7 +208,6 @@ export default function NewRequestModal({ openNewRequest, setOpenNewRequest }) {
       item_unit_id: itemReq.unit?.id ?? null,
       variant: itemReq?.variant?.id ?? null, // not required
       estimated_budget: itemReq?.estimated_budget ?? 0,
-      authorization_pin: itemReq?.pin ?? "",
       specifications: itemReq?.specs?.map((spec) => ({
         description: spec?.value ?? "",
       })),
@@ -247,7 +239,6 @@ export default function NewRequestModal({ openNewRequest, setOpenNewRequest }) {
             { id: 1, value: "" },
             { id: 2, value: "" },
           ],
-          pin: "",
         });
         setOpenNewRequest(false); // close modal
         setStep(1); // reset to step 1 if using a stepper
@@ -308,11 +299,6 @@ export default function NewRequestModal({ openNewRequest, setOpenNewRequest }) {
       width: "480px",
       height: "600px",
     },
-
-    authorization: {
-      width: "480px",
-      height: "350px",
-    },
   };
 
   const { width, height } = modalConfig[currentStep];
@@ -324,16 +310,12 @@ export default function NewRequestModal({ openNewRequest, setOpenNewRequest }) {
         title={
           currentStep === "general"
             ? "General Information"
-            : currentStep === "special_details"
-              ? "Requirements Attachment"
-              : "Review & Confirm"
+            : "Requirements Attachment"
         }
         description={
           currentStep === "general"
             ? "Fill in the item information to create it."
-            : currentStep === "special_details"
-              ? "Please provide the secure cloud links (e.g., Google Drive, OneDrive) for the required documentation. "
-              : "Review your request before submitting. Once confirmed, your request will be forwarded to the appropriate offices for review and approval. This action cannot be undone."
+            : "Please provide the secure cloud links (e.g., Google Drive, OneDrive) for the required documentation. "
         }
         minWidth={width}
         maxWidth={width}
@@ -557,7 +539,7 @@ export default function NewRequestModal({ openNewRequest, setOpenNewRequest }) {
                         {
                           value: 0,
                           label:
-                            "No, this item is part of the dispensing unit's common procurement list",
+                            "No, this item is part of the dispensing unit's common-use supplies.",
                         },
                       ]}
                     />
@@ -615,19 +597,6 @@ export default function NewRequestModal({ openNewRequest, setOpenNewRequest }) {
                   onChange={(e) =>
                     handleInputValidation(e, setItemReq, setError)
                   }
-                />
-              </Stack>
-            )}
-
-            {currentStep === "authorization" && (
-              <Stack spacing={2}>
-                <InputComponent
-                  label={"Authorization PIN"}
-                  type="password"
-                  name="pin"
-                  value={itemReq.pin}
-                  helperText="Confirm you action by typing-in your authorization PIN."
-                  handleInput={(e) => handleInputValidation(e, setItemReq)}
                 />
               </Stack>
             )}

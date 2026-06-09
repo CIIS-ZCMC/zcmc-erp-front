@@ -29,6 +29,7 @@ function AutocompleteComponent({
   getOptionLabel,
   onClose,
   isRenderOption = false,
+  sx = {},
   ...props
 }) {
   const { errors } = userErrorInputHook(); // Get error state
@@ -38,7 +39,14 @@ function AutocompleteComponent({
   };
 
   return (
-    <FormControl sx={{ width: width }} error={fieldError?.isError} {...props}>
+    <FormControl
+      sx={{
+        width,
+        ...sx,
+      }}
+      error={fieldError?.isError}
+      {...props}
+    >
       {label && <FormLabel>{label}</FormLabel>}
       <Autocomplete
         disabled={disabled}

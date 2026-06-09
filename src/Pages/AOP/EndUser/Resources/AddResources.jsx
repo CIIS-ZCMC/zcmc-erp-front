@@ -97,6 +97,8 @@ export default function AddResources() {
         title={`AOP for Fiscal Year ${currentFiscalYear}`}
         description="The following below serves as the summary of your AOP request. You can open and update your request before the deadline as set by the administrators."
         items={breadcrumbs}
+        withArrowBack
+        backTo={`/aop/manage-resources/${activityId}`}
       />
       <ContainerComponent sx={{ mt: 2 }}>
         {" "}

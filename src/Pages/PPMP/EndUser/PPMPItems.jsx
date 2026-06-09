@@ -32,14 +32,22 @@ import {
 import NoResultComponent from "@Components/Common/Table/NoResultComponent";
 import { nextYear } from "../../../Utils/Functions";
 import ExpandableTable from "@Components/Common/Table/ExpandableTable";
-import { ExpandableRow } from "./ExpandableRow";
 import AutocompleteComponent from "@Components/Form/AutocompleteComponent";
 import useItemsHook from "../../../Hooks/ItemManagementHook";
+import { ExpandableRow } from "./ExpandableRow";
+import { FileDownload } from "@mui/icons-material";
 
 function PPMPItems(props) {
   const navigate = useNavigate();
-  const { status, ppmp_id, ppmp, ppmp_total, pagination, isLocked } =
-    usePPMPState();
+  const {
+    status,
+    ppmp_id,
+    ppmp,
+    ppmp_items,
+    ppmp_total,
+    pagination,
+    isLocked,
+  } = usePPMPState();
   const {
     getPPMPItems,
     exportPPMP,
@@ -62,6 +70,7 @@ function PPMPItems(props) {
 
   const [pageLoader, setPageLoader] = useState(false);
   const [openDrawer, setOpenDrawer] = useState(false);
+  const [isExporting, setIsExporting] = useState(false);
   const [editingRows, setEditingRows] = useState({});
   const [page, setPage] = useState(1);
   const [perPage, setPerPage] = useState(10);
@@ -95,10 +104,10 @@ function PPMPItems(props) {
   }, [page, perPage, search, selectedCategory?.id]);
 
   useEffect(() => {
-    if (ppmp) {
-      setLocalRows(ppmp);
+    if (ppmp_items) {
+      setLocalRows(ppmp_items);
     }
-  }, [ppmp]);
+  }, [ppmp_items]);
 
   useEffect(() => {
     if (openDrawer && selectedRow?.id) {
@@ -290,6 +299,7 @@ function PPMPItems(props) {
         withArrowBack
         onClickArrow={() => navigate("/ppmp")}
       />
+      {console.log(ppmp_items)}
       <BoxComponent my={2} bgColor={"#FAFAF9"} boxShadow="xs" p={2}>
         <Stack direction={"row"} justifyContent={"space-between"} mb={2}>
           <Stack>
@@ -311,14 +321,32 @@ function PPMPItems(props) {
             </Typography>
           </Stack>
 
-          {(isDraft || isReturned) && (
+          <Stack direction={"row"} gap={2}>
+            {(isDraft || isReturned) && (
+              <ButtonComponent
+                label={"Add an Item"}
+                startDecorator={<PlusIcon />}
+                onClick={() => navigate(`/ppmp/add-item/${type}`)}
+                disabled={isLocked || localRows.length === 0}
+              />
+            )}
+
             <ButtonComponent
-              label={"Add an Item"}
-              startDecorator={<PlusIcon />}
-              onClick={() => navigate(`/ppmp/add-item/${type}`)}
-              disabled={isLocked || localRows.length === 0}
+              label={"Download PPMP"}
+              loadingLabel={"Downloading..."}
+              startDecorator={<FileDownload />}
+              onClick={() => {
+                setIsExporting(true);
+                exportPPMP(ppmp, (status, message) => {
+                  setIsExporting(false);
+                  showSnack(status, message);
+                });
+              }}
+              variant={"outlined"}
+              isLoading={isExporting}
+              disabled={isExporting}
             />
-          )}
+          </Stack>
         </Stack>
         <Stack
           direction={"row"}

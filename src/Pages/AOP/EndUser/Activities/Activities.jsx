@@ -56,7 +56,7 @@ const Activities = () => {
     isCreateLoading,
     isUpdateLoading,
   } = useActivitiesStore();
-  const { clearFields } = useActivitiesActions();
+  const { clearFields, clearApplicationActivities } = useActivitiesActions();
   const {
     getActivities,
     createActivity,
@@ -105,22 +105,6 @@ const Activities = () => {
   const objectiveName = applicationActivities?.objective;
 
   const perPage = isCard ? 9 : 10;
-
-  const fetchActivities = () => {
-    getActivities(
-      {
-        page,
-        search,
-        per_page: perPage,
-        application_objective_id: objectiveId,
-      },
-      (status, message, paginationData) => {
-        if (status >= 200 && status < 300 && paginationData) {
-          setPagination(paginationData);
-        }
-      },
-    );
-  };
 
   const handleCloseModal = () => {
     if (selectedActivityId) {
@@ -439,8 +423,25 @@ const Activities = () => {
   };
 
   useEffect(() => {
-    fetchActivities();
-  }, [page, search, perPage, objectiveId]);
+    clearApplicationActivities();
+    setIsLoading(true);
+
+    getActivities(
+      {
+        page,
+        search,
+        per_page: perPage,
+        application_objective_id: objectiveId,
+      },
+      (status, message, paginationData) => {
+        if (status >= 200 && status < 300 && paginationData) {
+          setPagination(paginationData);
+        }
+
+        setIsLoading(false);
+      },
+    );
+  }, [objectiveId, page, search, perPage]);
 
   useEffect(() => {
     setPage(1);
@@ -455,6 +456,7 @@ const Activities = () => {
         }
         items={breadcrumbs}
         withArrowBack
+        backTo={`/aop/objectives/${aop?.id}`}
       />
       <BoxComponent mt={2} p={2} bgColor={"#F9FAFB"} boxShadow="xs">
         <Stack
@@ -544,91 +546,107 @@ const Activities = () => {
         </Stack>
       </BoxComponent>
 
-      {isEditLoading ? (
-        <Stack>
-          <PageLoader isLoading={isEditLoading} />
-        </Stack>
-      ) : isLoading ? (
-        <Stack>
-          <ThreeDotsLoader />
-        </Stack>
-      ) : applicationActivities?.activities?.length === 0 ? (
-        <>
-          <BoxComponent mt={2}>
-            <Stack
-              direction={"column"}
-              alignItems={"center"}
-              justifyContent={"center"}
-              textAlign={"center"}
-              height={"64vh"}
-            >
-              <Typography sx={{ fontSize: 20, fontWeight: 600 }}>
-                {EMPTY_STATE_TITLE}
-              </Typography>
-
-              <Typography mb={2} sx={{ fontSize: 20, fontWeight: 400 }}>
-                {ACTIVITY_CREATE_NEW}
-              </Typography>
-
-              <ButtonComponent
-                onClick={() => handleOpenCountModal()}
-                label={"Add Activity"}
-                startDecorator={<Add />}
-                // endDecorator={<Plus size={16} />}
-              />
+      <Stack
+        sx={{
+          minHeight: "calc(100vh - 250px)",
+          display: "flex",
+          flexDirection: "column",
+        }}
+      >
+        <Box sx={{ flexGrow: 1 }}>
+          {isEditLoading ? (
+            <Stack>
+              <PageLoader isLoading={isEditLoading} />
             </Stack>
-          </BoxComponent>
-        </>
-      ) : isCard ? (
-        <Grid mt={2} container direction="row" spacing={2} sx={{ flexGrow: 1 }}>
-          {applicationActivities?.activities?.map((activity) => {
-            const activityKey = getActivityKey(
-              aop.id,
-              objectiveId,
-              activity.id,
-            );
-            const lock = lockedActivities[activityKey];
-            const isLockedByOther = lock && lock.editorId !== user.id;
-            return (
-              <Grid key={activity.id} size={4} lg={4} md={6} sm={12}>
-                <ActivitiesList
-                  status={status}
-                  activity={activity}
-                  handleAdd={activityHandlers.add}
-                  handleEdit={() => activityHandlers.edit(activity)}
-                  handleDelete={() => activityHandlers.delete(activity)}
-                  isLockedByOther={isLockedByOther}
-                  lockedBy={lock?.editorName}
-                />
-              </Grid>
-            );
-          })}
-        </Grid>
-      ) : (
-        <Box sx={{ mt: 2, flexGrow: 1 }}>
-          <BasicTableComponent
-            columns={AOP_ACTIVITIES_COLUMNS(
-              status,
-              activityHandlers.resources,
-              activityHandlers.resp_person,
-              activityHandlers.edit,
-              activityHandlers.delete,
-              getActivityLockState,
-            )}
-            rows={applicationActivities?.activities}
-            getRowIndicatorColor={(row) =>
-              row?.is_draft ? "#dc2626" : "#16a34a"
-            }
-          />
-        </Box>
-      )}
+          ) : isLoading ? (
+            <Stack height="60vh" alignItems="center" justifyContent="center">
+              <ThreeDotsLoader />
+            </Stack>
+          ) : applicationActivities?.activities?.length === 0 ? (
+            <>
+              <BoxComponent mt={2}>
+                <Stack
+                  direction={"column"}
+                  alignItems={"center"}
+                  justifyContent={"center"}
+                  textAlign={"center"}
+                  height={"64vh"}
+                >
+                  <Typography sx={{ fontSize: 20, fontWeight: 600 }}>
+                    {EMPTY_STATE_TITLE}
+                  </Typography>
 
+                  <Typography mb={2} sx={{ fontSize: 20, fontWeight: 400 }}>
+                    {ACTIVITY_CREATE_NEW}
+                  </Typography>
+
+                  <ButtonComponent
+                    onClick={() => handleOpenCountModal()}
+                    label={"Add Activity"}
+                    startDecorator={<Add />}
+                    // endDecorator={<Plus size={16} />}
+                  />
+                </Stack>
+              </BoxComponent>
+            </>
+          ) : isCard ? (
+            <Grid
+              mt={2}
+              container
+              direction="row"
+              spacing={2}
+              sx={{ flexGrow: 1 }}
+            >
+              {applicationActivities?.activities?.map((activity) => {
+                const activityKey = getActivityKey(
+                  aop.id,
+                  objectiveId,
+                  activity.id,
+                );
+                const lock = lockedActivities[activityKey];
+                const isLockedByOther = lock && lock.editorId !== user.id;
+                return (
+                  <Grid key={activity.id} size={4} lg={4} md={6} sm={12}>
+                    <ActivitiesList
+                      status={status}
+                      activity={activity}
+                      handleAdd={activityHandlers.add}
+                      handleEdit={() => activityHandlers.edit(activity)}
+                      handleDelete={() => activityHandlers.delete(activity)}
+                      isLockedByOther={isLockedByOther}
+                      lockedBy={lock?.editorName}
+                    />
+                  </Grid>
+                );
+              })}
+            </Grid>
+          ) : (
+            <Box sx={{ mt: 2, flexGrow: 1 }}>
+              <BasicTableComponent
+                columns={AOP_ACTIVITIES_COLUMNS(
+                  status,
+                  activityHandlers.resources,
+                  activityHandlers.resp_person,
+                  activityHandlers.edit,
+                  activityHandlers.delete,
+                  getActivityLockState,
+                )}
+                rows={applicationActivities?.activities}
+                getRowIndicatorColor={(row) =>
+                  row?.is_draft ? "#dc2626" : "#16a34a"
+                }
+              />
+            </Box>
+          )}
+        </Box>
+      </Stack>
       <Box
         sx={{
           width: "100%",
+          mt: "auto",
+          pt: 2,
           display: "flex",
           justifyContent: "center",
-          mt: 3,
         }}
       >
         <ServerPaginationComponent

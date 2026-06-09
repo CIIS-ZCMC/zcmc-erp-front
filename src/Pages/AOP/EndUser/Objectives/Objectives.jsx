@@ -575,6 +575,17 @@ const Objectives = () => {
                             backgroundColor: isLockedByOther
                               ? "#f5f5f5"
                               : "#fff",
+                            overflow: "visible",
+                            position: "relative",
+
+                            "&:hover": {
+                              zIndex: 100,
+                            },
+
+                            "&:has(.successWrapper:hover) .cardActionsWrapper":
+                              {
+                                visibility: "hidden",
+                              },
                           }}
                           justifyContentHeader={"space-between"}
                           cardHeader={
@@ -598,12 +609,14 @@ const Objectives = () => {
                             />
                           }
                           cardActions={
-                            <CardActions
-                              count={activities_count}
-                              handleActivities={() =>
-                                objectiveHandlers.activities(obj)
-                              }
-                            />
+                            <Box className="cardActionsWrapper">
+                              <CardActions
+                                count={activities_count}
+                                handleActivities={() =>
+                                  objectiveHandlers.activities(obj)
+                                }
+                              />
+                            </Box>
                           }
                         />
                       </Grid>

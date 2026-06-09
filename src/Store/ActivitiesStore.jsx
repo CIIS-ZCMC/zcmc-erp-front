@@ -79,6 +79,14 @@ const useActivitiesStore = create((set, get) => ({
       clearIsGadRelated();
       clearTarget();
     },
+
+    clearApplicationActivities: () =>
+      set({
+        applicationActivities: {
+          objective: "",
+          activities: [],
+        },
+      }),
   },
 }));
 

@@ -67,6 +67,7 @@ const QuantityControlComponent = ({
         color="neutral"
         spacing="0.2rem"
         disabled={disabled}
+        sx={{ justifyContent: "center" }}
       >
         <IconButton onClick={onDecrease} disabled={disabled || quantity === 1}>
           <Minus />

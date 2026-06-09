@@ -1,5 +1,5 @@
 import { API } from "../../Data/constants";
-import { read, post, update } from "../../Services/RequestMethods";
+import { read, post, update, download } from "../../Services/RequestMethods";
 
 import { useAop, useAOPActions } from "../../Store/AOPStore";
 
@@ -157,6 +157,20 @@ const useAOPHook = () => {
     }
   };
 
+  const exportAOP = async (aop, callBack = () => {}) => {
+    try {
+      await download({
+        url: `${API.EXPORT_AOP}/${aop.id}`,
+        title: "AOP",
+        fileName: `AOP_${aop.prepared_by_code} (${aop.year}).xlsx`,
+        failed: callBack,
+        success: callBack,
+      });
+    } catch (error) {
+      console.error("Error exporting AOP:", error);
+      callBack(false, error.message);
+    }
+  };
   return {
     getAOP,
     getAopYearList,
@@ -165,6 +179,7 @@ const useAOPHook = () => {
     createAOP,
     updateAOP,
     updateMission,
+    exportAOP,
   };
 };
 

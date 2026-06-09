@@ -123,7 +123,7 @@ function DashboardEndUser(props) {
         }
       });
     } catch (error) {
-      console.error("Error creatinh aop:", error);
+      console.error("Error creating aop:", error);
       setAlertDialog({
         status: "error",
         title: "Unexpected Error",
@@ -169,86 +169,6 @@ function DashboardEndUser(props) {
         status: "error",
         title: "Unexpected Error",
         description: error.message || "Something went wrong.",
-      });
-    }
-  };
-
-  const handleNextStep = () => setStep((prev) => Math.min(prev + 1, 3));
-  const handlePreviousStep = () => setStep((prev) => Math.max(prev - 1, 1));
-
-  const submit = async () => {
-    clearErrors();
-    let hasError = false;
-
-    itemReq.specs.forEach((spec, index) => {
-      if (!spec.value.trim()) {
-        setError(
-          `specs[${index}]`,
-          true,
-          `Specification ${index + 1} is required.`,
-        );
-        hasError = true;
-      }
-    });
-    if (!itemReq?.pin?.trim()) {
-      setError("pin", true, "Authorization PIN is required.");
-      hasError = true;
-    }
-    console.log(hasError);
-    if (hasError) return;
-
-    try {
-      setButtonLoader(true);
-      const payload = {
-        name: itemReq.item_name || "",
-        estimated_budget: itemReq?.estimated_budget ?? 0,
-        item_unit_id: itemReq.unit?.id ?? null,
-        item_category_id: itemReq.category?.id ?? null,
-        item_classification_id: itemReq.classification?.id ?? null,
-        market_research: itemReq?.market_research, // boolean
-        specifications: itemReq?.specs?.map((spec) => ({
-          description: spec?.value ?? "",
-        })),
-        authorization_pin: itemReq?.pin ?? "",
-        terminology_category_id: itemReq?.variant?.id ?? null, // not required
-      };
-
-      await postItmRequest(payload, (status, message, data) => {
-        const alertData = {
-          status: status === 201 ? "success" : "error",
-          title: "Request for new item successfully submitted.",
-          description: message,
-        };
-
-        setAlertDialog(alertData);
-
-        if (status === 201) {
-          setItemReq({
-            classification: null,
-            category: null,
-            item_name: "",
-            unit: null,
-            estimated_budget: "",
-            variant: null,
-            market_research: false,
-            specs: [
-              { id: 1, value: "" },
-              { id: 2, value: "" }, // initial two specs
-            ],
-            pin: "",
-          });
-          setButtonLoader(false);
-          setOpenNewRequest(false); // close modal
-          setStep(1); // reset to step 1 if using a stepper
-        }
-      });
-    } catch (error) {
-      console.log(error);
-      setButtonLoader(false);
-      setAlertDialog({
-        status: "error",
-        title: "Request Failed",
-        description: "An unexpected error occurred. Please try again.",
       });
     }
   };

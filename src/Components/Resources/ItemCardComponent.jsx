@@ -65,6 +65,7 @@ const ItemCardComponent = ({
           justifyContent: "space-between",
           p: 1.5,
           overflow: "hidden",
+          boxShadow: "sm",
           boxSizing: "border-box",
           "&:hover": {
             boxShadow: "md",
@@ -81,12 +82,12 @@ const ItemCardComponent = ({
                 alignItems={"center"}
               >
                 <Typography level="body-xs">
-                  {item?.item_category?.name} <CircleSmall size={8} />{" "}
+                  {item?.item_category?.name} <Circle sx={{ fontSize: 5 }} />{" "}
                   {item?.item_unit?.name}
                 </Typography>
-                {showVariant && (
+                {showVariant && item?.terminology && (
                   <ChipComponent
-                    label={item?.terminology ?? "Variant not indicated"}
+                    label={item?.terminology}
                     size="sm"
                     color={
                       item?.terminology === "Variant-Regular"
@@ -104,7 +105,7 @@ const ItemCardComponent = ({
             <CardActions sx={{ justifyContent: "space-between" }}>
               <Typography
                 level="title-md"
-                fontWeight="bold"
+                fontWeight={600}
                 mt={0.5}
                 sx={{ color: color.custom.light }}
               >

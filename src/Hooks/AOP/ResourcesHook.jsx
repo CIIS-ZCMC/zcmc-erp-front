@@ -5,6 +5,7 @@ const PATH = "resources";
 const useResourcesHook = create((set) => ({
   resources: [],
   activity: {},
+  pagination: {},
 
   getAOPResources: async (callBack, id) => {
     read({
@@ -13,7 +14,11 @@ const useResourcesHook = create((set) => ({
       failed: callBack,
       success: (res) => {
         const { status, message, data } = res;
-        set({ resources: data.data, activity: data.activity });
+        set({
+          resources: data.data,
+          activity: data.activity,
+          pagination: data.pagination,
+        });
         callBack(status, message);
       },
     });

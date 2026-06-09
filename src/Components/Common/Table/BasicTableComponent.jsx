@@ -68,13 +68,13 @@ const BasicTableComponent = ({
                   {columns.map((col, colIndex) => (
                     <td
                       key={col.field}
-                      style={
-                        colIndex === 0
-                          ? {
-                              borderLeft: `4px solid ${indicatorColor}`,
-                            }
-                          : undefined
-                      }
+                      style={{
+                        textAlign: col.align || "left",
+
+                        ...(colIndex === 0 && {
+                          borderLeft: `4px solid ${indicatorColor}`,
+                        }),
+                      }}
                     >
                       {col.render ? col.render(row) : row[col.field]}
                     </td>

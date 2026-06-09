@@ -4,8 +4,8 @@ import TabComponent from "@Components/Common/TabComponent";
 import { userItmRequestTabs } from "../../Data/Options";
 import { Stack, Typography } from "@mui/joy";
 import React, { Fragment, useEffect, useMemo, useState } from "react";
-import { Outlet, useLocation, useNavigate } from "react-router-dom";
-import useItemRequestsHook, {
+import { useLocation, useNavigate } from "react-router-dom";
+import {
   useItemRequestActions,
   useItemRequestLoading,
   useItemRequestsByUser,
@@ -14,16 +14,10 @@ import ExpandableTable from "@Components/Common/Table/ExpandableTable";
 import { itemRequestCols } from "@Data/Columns";
 import SearchBarComponentv2 from "@Components/SearchBarWithdeBounce";
 import ButtonComponent from "@Components/Common/ButtonComponent";
-import {
-  Add,
-  InsertLinkOutlined,
-  ListOutlined,
-  PersonOutline,
-} from "@mui/icons-material";
+import { Add } from "@mui/icons-material";
 import NewRequestModal from "@Pages/PPMP/EndUser/Modal/AddItemRequest/NewRequestModal";
 import ItemDetailsRow from "./ItemDetailsRow";
 import ModalComponent from "@Components/Common/Dialog/ModalComponent";
-import InputComponent from "@Components/Form/InputComponent";
 import TextareaComponent from "@Components/Form/TextareaComponent";
 import AuthorizationPinComponent from "@Components/AuthorizationPinComponent";
 import useSnackbarHook from "@Hooks/SnackbarHook";

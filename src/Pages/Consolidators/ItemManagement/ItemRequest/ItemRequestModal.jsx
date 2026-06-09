@@ -33,19 +33,12 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
   const { setAlertDialog, setConfirmationModal, closeConfirmation } =
     useModalHook();
   const { updateItemRequest } = useItemRequestActions();
-
-  const { classification: classificationObj } = useItemLibraryStore();
-
   const { showSnack } = useSnackbarHook();
 
   const [pin, setPin] = useState("");
   const [displayLoading, setDisplayLoading] = useState(false);
   const [index, setIndex] = useState("info");
-  const [itemRequestId, setItemRequestId] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [remarks, setRemarks] = useState("");
-  const [isSpecialItem, setIsSpecialItem] = useState(false);
-  const [isPpmpItemRequest, setIsPpmpItemRequest] = useState(false);
 
   // Local editable state
   const [formData, setFormData] = useState({
@@ -178,7 +171,6 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
 
     const approvedPayload = {
       status_id: status,
-      authorization_pin: pin,
       name: formData.name,
       estimated_budget: formData.estimated_budget,
       item_unit_id: formData.unit?.id,
@@ -192,7 +184,6 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
 
     const declinePayload = {
       status_id: status,
-      authorization_pin: pin,
       reason: formData.remarks,
     };
 
@@ -226,17 +217,6 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
     }
   };
 
-  useEffect(() => {
-    // console.log(variants)
-    // console.log('classifications', classification)
-    // console.log('classifications object', classificationObj)
-    // console.log('rows', row.item_classification)
-    // console.log('variants', variants)
-    // console.log('unit object', unit)
-    // console.log(marketResearched)
-    // console.log(itemRequestId)
-  }, [classificationObj, row, variants, items, itemRequestId]);
-
   return (
     <div>
       <ModalComponent
@@ -255,14 +235,13 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
           status === 4 ? (
             <Typography>
               You are about to approve this item request. Update item
-              information if necessary and provide your authorization pin to
-              proceed.
+              information if necessary.
             </Typography>
           ) : (
             <Typography>
               You are about to deny this item request. Please provide
-              justification remarks and authorization details. The requesting
-              department will be notified of this decision.
+              justification remarks. The requesting department will be notified
+              of this decision.
             </Typography>
           )
         }
@@ -523,8 +502,6 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
                     </Stack>
                   </Fragment>
                 )}
-                <Divider sx={{ my: 2 }} />
-                <AuthorizationPinComponent setPin={setPin} />
               </TabComponent>
             </>
           ) : (
@@ -537,7 +514,6 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
                   setFormData({ ...formData, remarks: e.target.value })
                 }
               />
-              <AuthorizationPinComponent setPin={setPin} />
             </>
           )
         }

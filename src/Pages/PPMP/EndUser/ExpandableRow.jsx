@@ -284,18 +284,7 @@ const ExpandableRowComponent = ({
         >
           {activeTab === "info" && (
             <Grid container spacing={2} mt={2}>
-              <Grid item xs={12} md={3}>
-                <BoxComponent p={2} minHeight={250}>
-                  <ItemRowComponent
-                    item={row?.item}
-                    withContent={false}
-                    minHeight={250}
-                    disableHoverTransform
-                  />
-                </BoxComponent>
-              </Grid>
-
-              <Grid item xs={12} md={5}>
+              <Grid item xs={12} md={4}>
                 <BoxComponent p={2} minHeight={250}>
                   <Stack spacing={2} sx={{ height: "100%", overflow: "auto" }}>
                     <Typography
@@ -349,25 +338,38 @@ const ExpandableRowComponent = ({
                         </Typography>
                       )}
                     </Stack>
+                  </Stack>
+                </BoxComponent>
+              </Grid>
 
-                    <Stack spacing={0.5}>
-                      <Typography level="body-sm">Specifications</Typography>
-                      {row?.item?.item_specifications?.length > 0 ? (
-                        row?.item?.item_specifications?.map((spec, index) => (
-                          <Typography
-                            key={index}
-                            level="body-sm"
-                            sx={{ color: "black" }}
-                          >
-                            ● {spec?.description}
-                          </Typography>
-                        ))
-                      ) : (
-                        <Typography level="body-md">
-                          No specifications provided.
+              <Grid item xs={12} md={4}>
+                <BoxComponent p={2} minHeight={250}>
+                  <Stack spacing={0.5}>
+                    <Typography
+                      level="title-md"
+                      startDecorator={
+                        <TextSnippetOutlined
+                          sx={{ color: blue[800], fontSize: 20 }}
+                        />
+                      }
+                    >
+                      Specifications
+                    </Typography>
+                    {row?.item?.item_specifications?.length > 0 ? (
+                      row?.item?.item_specifications?.map((spec, index) => (
+                        <Typography
+                          key={index}
+                          level="body-sm"
+                          sx={{ color: "black" }}
+                        >
+                          ● {spec?.description}
                         </Typography>
-                      )}
-                    </Stack>
+                      ))
+                    ) : (
+                      <Typography level="body-md">
+                        No specifications provided.
+                      </Typography>
+                    )}
                   </Stack>
                 </BoxComponent>
               </Grid>

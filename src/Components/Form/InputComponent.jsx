@@ -33,6 +33,7 @@ const InputComponent = ({
   width = "100%",
   isRequired,
   color = "primary",
+  readOnly = false,
   ...props
 }) => {
   const isPassword = type == "password";
@@ -92,6 +93,13 @@ const InputComponent = ({
           background: darkMode && "none",
           color: darkMode ? "white" : "neutral.900",
           borderColor: fieldError?.isError ? "danger.300" : "neutral.300",
+          ...(readOnly && {
+            cursor: "default",
+
+            "& input": {
+              cursor: "default",
+            },
+          }),
         }}
         slotProps={
           type === "number" && {

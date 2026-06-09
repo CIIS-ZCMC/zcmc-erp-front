@@ -36,7 +36,7 @@ const centeredStyle = {
 
 const ResponsiblePerson = () => {
   const location = useLocation();
-  const { activityId } = useAOPIdStore();
+  const { activityId, objectiveId } = useAOPIdStore();
 
   const { MODAL_TITLE, MODAL_DESCRIPTION } = RESPONSIBLE;
 
@@ -166,7 +166,7 @@ const ResponsiblePerson = () => {
   return (
     <>
       <Stack spacing={2}>
-        <ResponsibleTitle activity={activity} />
+        <ResponsibleTitle activity={activity} objectiveId={objectiveId} />
         <ResponsibleStatus
           activity={activity}
           openResponsibleModal={handleOpenResponsibleModal}
