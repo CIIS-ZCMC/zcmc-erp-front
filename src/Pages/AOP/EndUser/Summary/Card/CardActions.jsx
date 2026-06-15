@@ -2,17 +2,19 @@ import React from "react";
 
 import { Stack, Typography } from "@mui/joy";
 import { formattedDate } from "../../../../../Utils/formattedLongDate";
+import ButtonComponent from "@Components/Common/ButtonComponent";
+import { FileDownload } from "@mui/icons-material";
 
-const CardActions = ({ datePrepared, dateToday, PreparedBySector }) => {
+const CardActions = ({
+  datePrepared,
+  dateToday,
+  PreparedBySector,
+  handleExport,
+  isLoading = false,
+}) => {
   return (
-    <Stack
-      ml={4}
-      direction="row"
-      justifyContent="space-between"
-      width="100%"
-      flex={1} // ⬅️ makes it fill available space
-    >
-      <Stack direction="column" textAlign="start">
+    <>
+      <Stack textAlign="start" ml={4}>
         <Typography level="body-sm">Prepared by:</Typography>
         <Typography level="title-md" color="primary">
           {PreparedBySector}
@@ -32,7 +34,15 @@ const CardActions = ({ datePrepared, dateToday, PreparedBySector }) => {
           {formattedDate(dateToday)}
         </Typography>
       </Stack>
-    </Stack>
+
+      <ButtonComponent
+        label={"Export"}
+        startDecorator={<FileDownload />}
+        onClick={() => handleExport()}
+        isLoading={isLoading}
+        loadingLabel={"Exporting..."}
+      />
+    </>
   );
 };
 

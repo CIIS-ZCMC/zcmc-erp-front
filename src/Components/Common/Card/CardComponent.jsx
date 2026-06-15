@@ -10,7 +10,7 @@ const CardComponent = ({
   cardActions,
   height,
   justifyContentHeader,
-  justifyContentActions,
+  justifyContentActions = "flex-end",
   direction,
   bgcolor,
   contentPadding,
@@ -64,14 +64,11 @@ const CardComponent = ({
               }}
             />
 
-            <CardActions
-              sx={{
-                justifyContent: justifyContentActions ? "" : "flex-end",
-              }}
-            >
+            <CardActions sx={{ justifyContent: "flex-end" }}>
               <Stack
                 direction={direction ? direction : "column"}
                 alignItems={"center"}
+                justifyContent={justifyContentActions}
                 width={actionWidth}
               >
                 {cardActions}

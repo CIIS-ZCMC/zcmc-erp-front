@@ -29,7 +29,7 @@ import { isAopDisabled } from "../../../Utils/AopStatus";
 import ModalComponent from "@Components/Common/Dialog/ModalComponent";
 import AuthorizationPinComponent from "@Components/AuthorizationPinComponent";
 import useSnackbarHook from "../../../Hooks/SnackbarHook";
-import { DownloadOutlined, FileDownload } from "@mui/icons-material";
+import { Add, DownloadOutlined, FileDownload } from "@mui/icons-material";
 
 const AOPSummary = () => {
   const navigate = useNavigate();
@@ -279,6 +279,15 @@ const AOPSummary = () => {
     }, aop);
   };
 
+  const handleNavigateToActivities = (id) => {
+    navigate(`/aop/activities/${id}`, {
+      state: {
+        objectiveId: id,
+        aopId: aop?.id || aopApplication?.id,
+      },
+    });
+  };
+
   return (
     <>
       <PageTitle
@@ -293,17 +302,19 @@ const AOPSummary = () => {
           bgcolor={blue[50]}
           contentPadding={"10px"}
           justifyContentHeader={"flex-start"}
-          justifyContentActions={"flex-start"}
+          justifyContentActions={"space-between"}
           direction={"row"}
           cardHeader={<CardHeader status={status.id} />}
           cardBody={status.id !== 4 && <CardBody />}
           withDividerStyle
-          actionWidth={"80%"}
+          actionWidth={"100%"}
           cardActions={
             <CardActions
               datePrepared={date_prepared}
               dateToday={date_today}
               PreparedBySector={prepared_by_sector}
+              handleExport={handleExportAOP}
+              isLoading={isExporting}
             />
           }
         />
@@ -321,17 +332,7 @@ const AOPSummary = () => {
           usersCount={users_only}
           designationCount={designations_only}
         />
-        <Stack direction={"row"} alignItems="center" justifyContent="flex-end">
-          <ButtonComponent
-            label={"Download AOP"}
-            loadingLabel={"Downloading..."}
-            variant={"outlined"}
-            startDecorator={<FileDownload />}
-            onClick={() => handleExportAOP}
-            isLoading={isExporting}
-            disabled={isExporting}
-          />
-        </Stack>
+
         {applicationsObjectives.length !== 0 && (
           <BoxComponent p={0}>
             <Grid
@@ -349,7 +350,7 @@ const AOPSummary = () => {
               <Grid xs={12}>
                 {/* map here */}
                 {applicationsObjectives?.map(
-                  ({ objective, counts, activities }, index) => {
+                  ({ id, objective, counts, activities }, index) => {
                     const { code } = objective;
                     const { activities_count, total_cost, comments_count } =
                       counts;
@@ -377,14 +378,26 @@ const AOPSummary = () => {
                           accordionDetails={
                             <>
                               {activities.length === 0 && (
-                                <Typography
-                                  p={4}
-                                  textAlign={"center"}
-                                  level="title-md"
-                                >
-                                  There are no activities for this
-                                  objective.{" "}
-                                </Typography>
+                                <Stack alignItems="center">
+                                  <Typography
+                                    p={4}
+                                    textAlign={"center"}
+                                    level="body-sm"
+                                    whiteSpace="pre-wrap"
+                                  >
+                                    No activities added yet.
+                                    <br />
+                                    Activities define what your unit will do to
+                                    achieve this objective.
+                                  </Typography>
+                                  <ButtonComponent
+                                    label={"Add an Activity"}
+                                    startDecorator={<Add />}
+                                    onClick={() =>
+                                      handleNavigateToActivities(id)
+                                    }
+                                  />
+                                </Stack>
                               )}
                               <AccordionDetails activities={activities} />
                             </>

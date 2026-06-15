@@ -21,7 +21,7 @@ import PageTitle from "@Components/Common/PageTitle";
 import useAOPBreadcrumbs from "../../../../Hooks/AOP/AOPBreadcrumbs";
 import ChipComponent from "@Components/Common/ChipComponent";
 import { isAopDisabled } from "../../../../Utils/AopStatus";
-import { Add, CheckCircle, Circle } from "@mui/icons-material";
+import { Add, Circle } from "@mui/icons-material";
 import useSnackbarHook from "../../../../Hooks/SnackbarHook";
 import { socket } from "../../../../Services/Socket";
 import { getNextYearRange, nextYear } from "../../../../Utils/Functions";
@@ -113,13 +113,9 @@ const Activities = () => {
     setIsEditMode(false);
     setSelectedActivityId(null);
     clearFields();
-
-    // console.log(applicationActivities);
   };
 
   const handleOpenEditModal = async (activityId) => {
-    // console.log(activityId);
-
     const aopId = aop.id;
 
     socket.emit("aop:activity:start-edit", {
@@ -174,11 +170,6 @@ const Activities = () => {
             userId: user.id,
           });
           showSnack(200, message);
-          // setAlertDialog({
-          //   status: "success",
-          //   title: `${message}`,
-          //   description: "",
-          // });
           setIsBtnLoading(false);
           handleCloseModal();
         } else {
@@ -293,7 +284,6 @@ const Activities = () => {
         },
       );
     } catch (error) {
-      console.error(error);
       setAlertDialog({
         status: "error",
         title: "Unexpected Error",

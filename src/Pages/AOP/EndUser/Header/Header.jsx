@@ -35,34 +35,27 @@ const Header = ({
             txtcolor="white"
           />
         </Box>
-        <Box display={"flex"} alignItems={"flex-end"}>
-          <Box width={"auto"}>
-            <Typography
-              level="body-sm"
-              sx={{ color: "white" }}
-              endDecorator={
-                !isAopDisabled(status) && (
-                  <ButtonComponent
-                    size={"xs"}
-                    label={
-                      <Typography
-                        fontStyle={"italic"}
-                        sx={{ color: "white" }}
-                        fontSize={13}
-                      >
-                        Edit
-                      </Typography>
-                    }
-                    startDecorator={<Edit />}
-                    onClick={() => handleEdit()}
-                  />
-                )
-              }
-            >
-              {MISSION_LABEL}: {mission}
-            </Typography>
-          </Box>
-        </Box>
+        <Stack direction={"row"} alignItems={"center"}>
+          <Typography level="body-sm" sx={{ color: "white" }}>
+            {MISSION_LABEL}: {mission}{" "}
+            {!isAopDisabled(status) && (
+              <ButtonComponent
+                size="xs"
+                label={
+                  <Typography
+                    fontStyle="italic"
+                    fontSize={13}
+                    sx={{ color: "white" }}
+                  >
+                    Edit
+                  </Typography>
+                }
+                startDecorator={<Edit fontSize="small" />}
+                onClick={handleEdit}
+              />
+            )}
+          </Typography>
+        </Stack>
       </Stack>
     </>
   );
