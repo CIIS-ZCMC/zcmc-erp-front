@@ -80,6 +80,7 @@ const ActivityAccordion = ({ activities }) => {
                 }
                 accordionDetails={
                   <AccordionDetails
+                    activity_id={id}
                     first_quarter={first_quarter}
                     second_quarter={second_quarter}
                     third_quarter={third_quarter}

@@ -6,6 +6,7 @@ const BasicTableComponent = ({
   columns = [],
   rows = [],
   emptyMessage = "No records found",
+  emptyButton,
   maxHeight = "none", // Optional max height for scrolling
   stickyHeader = false, // Optional sticky header
   getRowIndicatorColor,
@@ -53,10 +54,11 @@ const BasicTableComponent = ({
         <tbody>
           {rows.length === 0 ? (
             <tr>
-              <td colSpan={columns.length}>
+              <td colSpan={columns.length} style={{ textAlign: "center" }}>
                 <Typography level="body-sm" textAlign="center" sx={{ py: 2 }}>
                   {emptyMessage}
                 </Typography>
+                {emptyButton}
               </td>
             </tr>
           ) : (

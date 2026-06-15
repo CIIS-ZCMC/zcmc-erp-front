@@ -4,6 +4,7 @@ import ResourcesList from "./Lists/ResourcesList";
 import PeopleList from "./Lists/PeopleList";
 
 const AccordionDetails = ({
+  activity_id,
   first_quarter,
   second_quarter,
   third_quarter,
@@ -55,17 +56,19 @@ const AccordionDetails = ({
       </Stack>
 
       <Grid container spacing={2}>
-        <Grid xs={8}>
+        <Grid xs={7}>
           <ResourcesList
             resources={resources}
             resourcesCount={resourcesCount}
+            activity_id={activity_id}
           />
         </Grid>
 
-        <Grid xs={4}>
+        <Grid xs={5}>
           <PeopleList
             responsiblePeople={responsiblePeople}
             peopleCount={peopleCount}
+            activity_id={activity_id}
           />
         </Grid>
       </Grid>

@@ -1,11 +1,14 @@
 import React from "react";
 import { Stack, Typography, Avatar } from "@mui/joy";
 import BoxComponent from "@Components/Common/Card/BoxComponent";
-import { Handyman } from "@mui/icons-material";
+import { Add, Handyman } from "@mui/icons-material";
 import { SUMMARY_RESOURCES } from "../../../../../../Data/Columns";
 import BasicTableComponent from "@Components/Common/Table/BasicTableComponent";
+import ButtonComponent from "@Components/Common/ButtonComponent";
+import { useNavigate } from "react-router-dom";
 
-const ResourcesList = ({ resources, resourcesCount }) => {
+const ResourcesList = ({ resources, resourcesCount, activity_id }) => {
+  const navigate = useNavigate();
   return (
     <>
       <BoxComponent>
@@ -36,7 +39,19 @@ const ResourcesList = ({ resources, resourcesCount }) => {
         <BasicTableComponent
           columns={SUMMARY_RESOURCES()}
           rows={resources}
+          emptyMessage="No resources added yet. Resources are the items and material needed to carry out this activity."
           maxHeight="300px"
+          emptyButton={
+            <ButtonComponent
+              label={"Add Resources"}
+              startDecorator={<Add />}
+              onClick={() =>
+                navigate(`/aop/manage-resources/${activity_id}`, {
+                  state: { activityId: activity_id },
+                })
+              }
+            />
+          }
           stickyHeader
         />
       </BoxComponent>

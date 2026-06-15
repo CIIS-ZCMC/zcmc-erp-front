@@ -1,12 +1,15 @@
 import React from "react";
 import { Stack, Typography, Avatar } from "@mui/joy";
 import BoxComponent from "@Components/Common/Card/BoxComponent";
-import { PeopleAltOutlined } from "@mui/icons-material";
+import { Add, PeopleAltOutlined } from "@mui/icons-material";
 import { deepPurple, purple } from "@mui/material/colors";
 import { SUMMARY_PEOPLE } from "../../../../../../Data/Columns";
 import BasicTableComponent from "@Components/Common/Table/BasicTableComponent";
+import ButtonComponent from "@Components/Common/ButtonComponent";
+import { useNavigate } from "react-router-dom";
 
-const PeopleList = ({ responsiblePeople, peopleCount }) => {
+const PeopleList = ({ responsiblePeople, peopleCount, activity_id }) => {
+  const navigate = useNavigate();
   return (
     <>
       <BoxComponent>
@@ -38,6 +41,18 @@ const PeopleList = ({ responsiblePeople, peopleCount }) => {
           columns={SUMMARY_PEOPLE()}
           rows={responsiblePeople}
           maxHeight="300px"
+          emptyMessage="No responsible persons assigned yet. Each activity needs at least one person responsible for its completion."
+          emptyButton={
+            <ButtonComponent
+              label={"Assign Responsible Person"}
+              startDecorator={<Add />}
+              onClick={() => {
+                navigate(`/aop/responsible-person/${activity_id}`, {
+                  state: { activityId: activity_id },
+                });
+              }}
+            />
+          }
           stickyHeader
         />
       </BoxComponent>
