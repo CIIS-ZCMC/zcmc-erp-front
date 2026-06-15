@@ -1,8 +1,6 @@
-import React, { Fragment, useEffect, useState } from "react";
-
+import React, { Fragment, useState } from "react";
 import AccordionSummary from "../Activities/AccordionSummary";
 import AccordionDetails from "../Activities/AccordionDetails";
-
 import AccordionComponent from "@Components/Common/AccordionComponent";
 import { grey } from "@mui/material/colors";
 

@@ -7,10 +7,8 @@ import {
   Typography,
   useTheme,
 } from "@mui/joy";
-
 import { SYSTEM_NAME } from "../../Data/constants";
 import "./Sidebar.css";
-import { ChevronLeftIcon, MenuIcon } from "lucide-react";
 import { MdMenu, MdMenuOpen } from "react-icons/md";
 import useSidebarHook from "../../Hooks/SidebarHook";
 

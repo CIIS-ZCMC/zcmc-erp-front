@@ -1,40 +1,16 @@
 import React, { Fragment, use, useEffect, useMemo, useState } from "react";
-import PropTypes from "prop-types";
 import PageTitle from "@Components/Common/PageTitle";
-import {
-  Box,
-  Breadcrumbs,
-  Divider,
-  Grid,
-  Stack,
-  Typography,
-  useTheme,
-} from "@mui/joy";
+import { Box, Grid, Stack, Typography, useTheme } from "@mui/joy";
 import BoxComponent from "@Components/Common/Card/BoxComponent";
-import { blue, grey, red } from "@mui/material/colors";
+import { grey } from "@mui/material/colors";
 import ChipComponent from "@Components/Common/ChipComponent";
-import {
-  Book,
-  CalendarMonth,
-  CalendarMonthTwoTone,
-  CalendarToday,
-  CheckCircle,
-} from "@mui/icons-material";
-import {
-  Calendar1Icon,
-  CalendarIcon,
-  Circle,
-  PhilippinePeso,
-  PhilippinePesoIcon,
-  PlusIcon,
-} from "lucide-react";
+import { PlusIcon } from "lucide-react";
 import ButtonComponent from "@Components/Common/ButtonComponent";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import ResourceCardComponent from "@Components/Resources/ResourceCardComponent";
 import useResourcesHook from "../../../../Hooks/AOP/ResourcesHook";
 import usePurchaseTypeHook from "../../../../Hooks/PurchaseTypeHook";
 import { ThreeDotsLoader } from "@Components/Common/Loading/ThreeDotsLoader";
-import moment from "moment";
 import SearchBarComponentv2 from "@Components/SearchBarWithdeBounce";
 import useAOPBreadcrumbs from "../../../../Hooks/AOP/AOpBreadcrumbs";
 
@@ -47,9 +23,10 @@ import ServerPaginationComponent from "@Components/ServerPaginationComponent";
 import BasicTableComponent from "@Components/Common/Table/BasicTableComponent";
 import { AOP_RESOURCES_COLUMNS } from "@Data/Columns";
 import CartPreviewComponent from "@Components/Resources/CartPreviewComponent";
+import SelectComponent from "@Components/Form/YearSelectComponent";
+import AutocompleteComponent from "@Components/Form/AutocompleteComponent";
 
 function ManageResources(props) {
-  const location = useLocation();
   const { activityId } = useParams();
   const { objectiveId } = useAOPIdStore();
 
@@ -82,6 +59,7 @@ function ManageResources(props) {
   const [search, setSearch] = useState("");
   const [openPreview, setOpenPreview] = useState(false);
   const [selectedResource, setSelectedResource] = useState(null);
+  const [selectedPurchaseType, setSelectedPurchaseType] = useState(null);
 
   const perPage = isCard ? 12 : 20;
 
@@ -240,6 +218,16 @@ function ManageResources(props) {
               placeholder="Search resources..."
               fullWidth
             />
+            <AutocompleteComponent
+              options={purchase_types}
+              value={selectedPurchaseType}
+              setValue={(val) => {
+                setSelectedPurchaseType(val);
+              }}
+              getOptionLabel={(opt) => opt?.description || ""}
+              placeholder="Select type"
+            />{" "}
+            <ButtonComponent label={"Export"} />
           </Stack>
         </BoxComponent>
 

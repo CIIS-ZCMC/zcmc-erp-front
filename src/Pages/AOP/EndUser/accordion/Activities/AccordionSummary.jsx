@@ -1,15 +1,11 @@
-import React, { useEffect, useState } from "react";
-
+import React from "react";
 import { Avatar, Box, Stack, Typography, useTheme } from "@mui/joy";
-
 import { formattedLongDate } from "../../../../../Utils/formattedLongDate";
 import formattedPrice from "../../../../../Utils/formattedPrice";
-import { CircleIcon } from "lucide-react";
 import {
   Cancel,
   CheckCircle,
   Circle,
-  Comment,
   CommentOutlined,
   ExtensionOutlined,
 } from "@mui/icons-material";

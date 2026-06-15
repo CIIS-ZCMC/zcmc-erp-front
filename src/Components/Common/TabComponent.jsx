@@ -5,9 +5,8 @@ import Tabs from "@mui/joy/Tabs";
 import TabList from "@mui/joy/TabList";
 import Tab, { tabClasses } from "@mui/joy/Tab";
 import TabPanel from "@mui/joy/TabPanel";
-import { Badge, ListItemDecorator } from "@mui/joy";
+import { ListItemDecorator } from "@mui/joy";
 import { useNotifications } from "../../Hooks/NotificationsHook";
-// import useNotificationHook from "../../Hooks/NotificationHook";
 
 export default function TabComponent({
   tabs,

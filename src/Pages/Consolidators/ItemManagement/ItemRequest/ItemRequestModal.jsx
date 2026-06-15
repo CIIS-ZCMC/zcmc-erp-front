@@ -256,10 +256,10 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
               >
                 {index === "info" ? (
                   <Stack my={2} spacing={2}>
-                    <InputComponent
+                    <TextareaComponent
                       label={"Item Name"}
                       value={formData.name}
-                      handleInput={(e) => updateField("name", e.target.value)}
+                      onChange={(e) => updateField("name", e.target.value)}
                       helperText={
                         "Use a specific and descriptive naming convention for best results."
                       }

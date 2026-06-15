@@ -1,7 +1,5 @@
-import React, { useEffect } from "react";
-
+import React from "react";
 import PageTitle from "@Components/Common/PageTitle";
-
 import { RESPONSIBLE } from "../../../../Data/constants";
 import useAOPBreadcrumbs from "../../../../Hooks/AOP/AOPBreadcrumbs";
 

@@ -1,6 +1,6 @@
 import { Box, Divider, Sheet, Stack, styled, Typography } from "@mui/joy";
 import PropTypes from "prop-types";
-import { Bars, ThreeDots } from "react-loader-spinner";
+import { ThreeDots } from "react-loader-spinner";
 
 ContainerComponent.propTypes = {
   children: PropTypes.node, // Allow multiple children

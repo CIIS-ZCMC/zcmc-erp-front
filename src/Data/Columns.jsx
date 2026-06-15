@@ -1935,10 +1935,10 @@ export const ITEMS_REQUESTS = (handleOpen, pathName, showActions = false) => [
     width: "250px",
     render: (row) => (
       <div>
-        <Typography level="body-sm" fontWeight={600} sx={{ color: grey[800] }}>
-          {row.name}
+        <Typography level="title-sm">{row.name}</Typography>
+        <Typography level="body-sm" fontStyle={"italic"}>
+          Requested by: {row?.requested_by?.area_code}
         </Typography>
-        <Typography level="body-xs">{row.item_unit.name}</Typography>
       </div>
     ),
     expandTrigger: true, // ❗ only this column toggles expand
@@ -1949,10 +1949,8 @@ export const ITEMS_REQUESTS = (handleOpen, pathName, showActions = false) => [
     width: "250px",
     render: (r) => (
       <div>
-        <Typography level="body-sm" fontWeight={600} sx={{ color: grey[800] }}>
-          {r.item_category.name}
-        </Typography>
-        <Typography level="body-xs">{r.item_category.name}</Typography>
+        <Typography level="title-sm">{r.item_classification.name}</Typography>
+        <Typography level="body-sm">{r.item_category.name}</Typography>
       </div>
     ),
     expandTrigger: true, // ❗ only this column toggles expand
@@ -1961,17 +1959,26 @@ export const ITEMS_REQUESTS = (handleOpen, pathName, showActions = false) => [
     key: "budget",
     label: "Estimated Budget",
     width: "150px",
-    render: (r) =>
-      `₱${r.estimated_budget.toLocaleString(undefined, {
-        minimumFractionDigits: 2,
-      })}`,
+    render: (r) => (
+      <>
+        <Typography level="title-sm">
+          {formattedPrice(r.estimated_budget)}
+        </Typography>
+        <Typography level="body-sm">{r.item_unit.name}</Typography>
+      </>
+    ),
+
     expandTrigger: true, // ❗ only this column toggles expand
   },
   {
     key: "requested_on",
     label: "Requested On",
     width: "150px",
-    render: (r) => <Typography>{moment(r.created_at).format("ll")}</Typography>,
+    render: (r) => (
+      <Typography level="title-sm">
+        {moment(r.created_at).format("ll")}
+      </Typography>
+    ),
     expandTrigger: true, // ❗ only this column toggles expand
   },
   {
@@ -2591,7 +2598,6 @@ export const AOP_ACTIVITIES_COLUMNS = (
         {row?.activity_name || "-"}
       </Typography>
     ),
-    width: "25%",
   },
   {
     id: "timeframe",

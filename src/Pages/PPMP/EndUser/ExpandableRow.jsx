@@ -4,9 +4,11 @@ import { Typography, Box, Stack, Grid } from "@mui/joy";
 import { blue, grey, orange, red } from "@mui/material/colors";
 import {
   CancelOutlined,
+  CheckOutlined,
   ExtensionOutlined,
   InfoOutline,
   InfoOutlineRounded,
+  ModeEditOutlineOutlined,
   TextSnippetOutlined,
   TodayOutlined,
 } from "@mui/icons-material";
@@ -19,14 +21,12 @@ import { usePPMPState } from "../../../Hooks/PPMP/PPMPHook";
 import IconButtonComponent from "@Components/Common/IconButtonComponent";
 import useModalHook from "../../../Hooks/ModalHook";
 import useSnackbarHook from "../../../Hooks/SnackbarHook";
-import defaultItem from "../../../assets/item.jpg";
 import formattedPrice from "../../../Utils/formattedPrice";
 import ProcurementTimeline from "./ProcurementTimeline";
 import TextareaComponent from "@Components/Form/TextareaComponent";
-import ItemCardComponent from "@Components/Resources/ItemCardComponent";
-import ItemRowComponent from "@Components/Resources/ItemRowComponent";
 import TabComponent from "@Components/Common/TabComponent";
 import { usePPMP } from "../../../Hooks/PPMP/PPMPApplicationHook";
+import EditPPMPChip from "./EditPPMpChip";
 
 const ExpandableRowComponent = ({
   row,
@@ -36,6 +36,7 @@ const ExpandableRowComponent = ({
   isLocked = false,
   isBudget = false,
   onUpdateSource,
+  handleEditToggle,
 }) => {
   const { setAlertDialog } = useModalHook();
   const { modes, activities } = usePPMPState();
@@ -287,16 +288,23 @@ const ExpandableRowComponent = ({
               <Grid item xs={12} md={4}>
                 <BoxComponent p={2} minHeight={250}>
                   <Stack spacing={2} sx={{ height: "100%", overflow: "auto" }}>
-                    <Typography
-                      fontWeight={600}
-                      startDecorator={
-                        <TextSnippetOutlined
-                          style={{ color: blue[800], fontSize: 20 }}
-                        />
-                      }
-                    >
-                      Item Information
-                    </Typography>
+                    <Stack direction={"row"} gap={2}>
+                      <Typography
+                        fontWeight={600}
+                        startDecorator={
+                          <TextSnippetOutlined
+                            style={{ color: blue[800], fontSize: 20 }}
+                          />
+                        }
+                      >
+                        Item Information
+                      </Typography>
+                      <EditPPMPChip
+                        rowId={row.id}
+                        editing={editing}
+                        handleEditToggle={handleEditToggle}
+                      />
+                    </Stack>
 
                     <Stack spacing={1}>
                       <Typography level="body-sm">
@@ -414,17 +422,24 @@ const ExpandableRowComponent = ({
                   </BoxComponent>
                 )}
                 <BoxComponent p={2} minHeight={isBudget ? 115 : 250}>
-                  <Typography
-                    startDecorator={
-                      <TextSnippetOutlined
-                        sx={{ color: blue[800], fontSize: 20 }}
-                      />
-                    }
-                    level="title-md"
-                    mb={2}
-                  >
-                    Remarks
-                  </Typography>
+                  <Stack direction={"row"} gap={2} alignItems={"flex-start"}>
+                    <Typography
+                      startDecorator={
+                        <TextSnippetOutlined
+                          sx={{ color: blue[800], fontSize: 20 }}
+                        />
+                      }
+                      level="title-md"
+                      mb={2}
+                    >
+                      Remarks
+                    </Typography>
+                    <EditPPMPChip
+                      rowId={row.id}
+                      editing={editing}
+                      handleEditToggle={handleEditToggle}
+                    />
+                  </Stack>
 
                   {editing ? (
                     <TextareaComponent
@@ -448,16 +463,24 @@ const ExpandableRowComponent = ({
                 <BoxComponent p={2} minHeight={350} data-activities="true">
                   {" "}
                   <Stack sx={{ height: "100%", minHeight: 0 }} spacing={1}>
-                    <Typography
-                      fontWeight={600}
-                      startDecorator={
-                        <ExtensionOutlined
-                          style={{ color: orange[800], fontSize: 20 }}
-                        />
-                      }
-                    >
-                      Linked Activities ({linkedActivities?.length})
-                    </Typography>
+                    <Stack direction={"row"} gap={2}>
+                      <Typography
+                        fontWeight={600}
+                        startDecorator={
+                          <ExtensionOutlined
+                            style={{ color: orange[800], fontSize: 20 }}
+                          />
+                        }
+                      >
+                        Linked Activities ({linkedActivities?.length})
+                      </Typography>
+                      <EditPPMPChip
+                        rowId={row.id}
+                        editing={editing}
+                        handleEditToggle={handleEditToggle}
+                      />
+                    </Stack>
+
                     {editing && (
                       <Box
                         sx={{
@@ -503,6 +526,8 @@ const ExpandableRowComponent = ({
                     onChange={setProcTimeline}
                     value={procTimeline}
                     editing={editing}
+                    handleEditToggle={handleEditToggle}
+                    row={row}
                   />
                 </BoxComponent>
               </Grid>
@@ -512,6 +537,8 @@ const ExpandableRowComponent = ({
                     editing={editing}
                     value={scheduleData}
                     onChange={setScheduleData}
+                    handleEditToggle={handleEditToggle}
+                    row={row}
                   />
                 </BoxComponent>
               </Grid>

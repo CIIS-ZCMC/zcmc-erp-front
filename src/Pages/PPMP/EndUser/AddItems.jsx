@@ -11,7 +11,6 @@ import PageTitle from "@Components/Common/PageTitle";
 import AddToCartLayout from "@Components/Resources/AddToCartLayout";
 import useCartStore from "../../../Hooks/ItemCartHook";
 import { useAuth } from "../../../Store/AuthStore";
-import useSearchHook from "../../../Hooks/SearchHook";
 import { usePPMPActions, usePPMPState } from "../../../Hooks/PPMP/PPMPHook";
 import AlertDialogComponent from "@Components/Common/Dialog/AlertDialogComponent";
 import useSnackbarHook from "../../../Hooks/SnackbarHook";

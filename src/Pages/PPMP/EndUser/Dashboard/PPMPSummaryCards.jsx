@@ -1,7 +1,6 @@
 import ButtonComponent from "@Components/Common/ButtonComponent";
 import BoxComponent from "@Components/Common/Card/BoxComponent";
 import { ThreeDotsLoader } from "@Components/Common/Loading/ThreeDotsLoader";
-import StepperComponent from "@Components/Stepper/StepperComponent";
 import {
   Comment,
   East,

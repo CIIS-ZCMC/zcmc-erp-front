@@ -1,14 +1,9 @@
 import React, { useEffect } from "react";
-
 import moment from "moment";
-
 import CardComponent from "@Components/Common/Card/CardComponent";
-
 import CardHeader from "./card/CardHeader";
 import CardBody from "./card/CardBody";
 import CardActions from "./card/CardActions";
-
-import { ACTIVITIES } from "../../../../Data/constants";
 
 const ActivitiesList = ({
   status,
@@ -21,8 +16,6 @@ const ActivitiesList = ({
   isLockedByOther,
   lockedBy,
 }) => {
-  const { EMPTY_STATE_TITLE, ACTIVITY_CREATE_NEW } = ACTIVITIES;
-
   const {
     id,
     objective_code,

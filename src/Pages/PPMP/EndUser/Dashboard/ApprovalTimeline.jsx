@@ -1,4 +1,3 @@
-import BoxComponent from "@Components/Common/Card/BoxComponent";
 import StepperComponent from "@Components/Stepper/StepperComponent";
 import { Box, Divider, Stack, Typography, useTheme } from "@mui/joy";
 import React, { Fragment } from "react";

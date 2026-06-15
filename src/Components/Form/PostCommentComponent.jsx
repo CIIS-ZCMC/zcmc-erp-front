@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import PropTypes from "prop-types";
 import { Box, Stack } from "@mui/joy";
 import TextareaComponent from "./TextareaComponent";
 import ButtonComponent from "../Common/ButtonComponent";

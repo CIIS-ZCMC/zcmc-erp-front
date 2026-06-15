@@ -9,6 +9,7 @@ import {
 import { Fragment } from "react";
 import useUserHook from "../Hooks/UserHook";
 import { VisibilityOffOutlined, VisibilityOutlined } from "@mui/icons-material";
+
 export default function AuthorizationPinComponent({ setIsAuthorized, setPin }) {
   const { getAuthorized } = useUserHook();
   const [showPassword, setShowPassword] = useState(false);

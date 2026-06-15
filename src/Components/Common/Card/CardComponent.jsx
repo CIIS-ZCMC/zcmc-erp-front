@@ -1,15 +1,6 @@
 import React from "react";
 
-import {
-  Card,
-  CardContent,
-  CardActions,
-  Stack,
-  Typography,
-  Chip,
-  Divider,
-} from "@mui/joy";
-import IconButtonComponent from "../IconButtonComponent";
+import { Card, CardContent, CardActions, Stack, Divider } from "@mui/joy";
 import { blue } from "@mui/material/colors";
 
 const CardComponent = ({

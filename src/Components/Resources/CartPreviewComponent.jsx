@@ -5,9 +5,7 @@ import ChipComponent from "@Components/Common/ChipComponent";
 import ModalComponent from "@Components/Common/Dialog/ModalComponent";
 import { Circle } from "@mui/icons-material";
 import {
-  AspectRatio,
   Box,
-  Chip,
   Divider,
   Grid,
   IconButton,
@@ -16,11 +14,9 @@ import {
   useTheme,
 } from "@mui/joy";
 import { red } from "@mui/material/colors";
-import { color } from "framer-motion";
 import { CircleSmall, ShoppingCart } from "lucide-react";
 import React, { Fragment, useEffect, useState } from "react";
 import { BiX } from "react-icons/bi";
-import defaultItem from "../../assets/item.jpg";
 import { formatPeso } from "../../Utils/FormatPeso";
 
 export default function CartPreviewComponent({

@@ -1,4 +1,3 @@
-import BoxComponent from "@Components/Common/Card/BoxComponent";
 import {
   Box,
   Checkbox,

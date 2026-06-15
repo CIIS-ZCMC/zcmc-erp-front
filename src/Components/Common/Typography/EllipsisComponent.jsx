@@ -1,6 +1,5 @@
 import { Stack, Typography } from "@mui/joy";
 import React from "react";
-// eslint-disable-next-line no-unused-vars
 import { motion } from "framer-motion";
 
 function EllipsisComponent({ label, text }) {

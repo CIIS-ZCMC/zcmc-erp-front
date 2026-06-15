@@ -6,7 +6,6 @@ import {
   FormControl,
   FormLabel,
 } from "@mui/joy";
-import { grey } from "@mui/material/colors";
 
 function VerticalRadioComponent({
   actions = [],

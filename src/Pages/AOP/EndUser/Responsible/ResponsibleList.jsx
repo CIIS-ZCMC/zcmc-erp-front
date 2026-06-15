@@ -1,31 +1,19 @@
-import React, { Fragment, useEffect, useState } from "react";
+import React, { Fragment } from "react";
 
 import {
   Avatar,
   Box,
-  Divider,
   Grid,
   IconButton,
-  List,
-  ListItem,
-  ListItemContent,
   Stack,
   Typography,
   useTheme,
 } from "@mui/joy";
-import { blue, grey } from "@mui/material/colors";
+import { grey } from "@mui/material/colors";
 import { PlusIcon } from "lucide-react";
 
 import BoxComponent from "@Components/Common/Card/BoxComponent";
-
-import AccordionComponent from "@Components/Common/AccordionComponent";
 import ButtonComponent from "@Components/Common/ButtonComponent";
-
-import UserAccordionSummary from "./accordion/user/AccordionSummary";
-import UserAccordionDetails from "./accordion/user/AccordionDetails";
-
-import PositionAccordionSummary from "./accordion/positions/AccordionSummary";
-import PositionAccordionDetails from "./accordion/positions/AccordionDetails";
 
 import { RESPONSIBLE } from "../../../../Data/constants";
 import { Close, People, PersonPinCircle, X } from "@mui/icons-material";

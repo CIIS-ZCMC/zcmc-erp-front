@@ -1,18 +1,12 @@
-import React, { useEffect } from "react";
+import React from "react";
 
-import { Stack, Box, Divider, useTheme, Typography } from "@mui/joy";
-import { PhilippinePesoIcon, PlusIcon } from "lucide-react";
-import { CalendarToday, CheckCircle } from "@mui/icons-material";
-import { blue, grey } from "@mui/material/colors";
+import { Stack, useTheme, Typography } from "@mui/joy";
+import { PlusIcon } from "lucide-react";
 import moment from "moment";
-
 import ChipComponent from "@Components/Common/ChipComponent";
 import BoxComponent from "@Components/Common/Card/BoxComponent";
 import ButtonComponent from "@Components/Common/ButtonComponent";
-
 import { RESPONSIBLE } from "../../../../Data/constants";
-
-import formattedPrice from "../../../../Utils/formattedPrice";
 import { isAopDisabled } from "../../../../Utils/AopStatus";
 import SearchBarComponentv2 from "@Components/SearchBarWithdeBounce";
 import ActivityDetailsSection from "../ActivityDetailsSection";

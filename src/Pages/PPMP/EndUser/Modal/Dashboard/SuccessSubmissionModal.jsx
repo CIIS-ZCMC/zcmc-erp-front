@@ -57,6 +57,7 @@ export default function SuccessSubmissionModal({
         noRightButton={true}
         leftButtonLabel="Close"
         leftButtonAction={() => setOpenSuccessDialog(false)}
+        leftButtonVariant="solid"
       />
     </Fragment>
   );

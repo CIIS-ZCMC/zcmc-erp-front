@@ -7,12 +7,9 @@ import { ppmpReceivingTabs } from "../../../Data/Options";
 import InputComponent from "../../../Components/Form/InputComponent";
 import { Search } from "lucide-react";
 import TabComponent from "../../../Components/Common/TabComponent";
-import TableComponent from "../../../Components/Common/Table/TableComponent";
 import { PPMP_REQUEST_HEADER } from "../../../Data/Columns";
-import { PPMP_REQUESTS } from "../../../Data/TestData";
 import ScrollableTableComponent from "../../../Components/Common/Table/ScrollableTableComponent";
 import { useNavigate } from "react-router-dom";
-import ModalComponent from "../../../Components/Common/Dialog/ModalComponent";
 import YearSelectorComponent from "../../../Components/Form/YearSelectorComponent";
 import {
   usePPMP,

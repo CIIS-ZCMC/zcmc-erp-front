@@ -1,10 +1,8 @@
 import PropTypes from "prop-types";
 import { Box, Breadcrumbs, Link, Stack, Typography, useTheme } from "@mui/joy";
-import { ArrowLeftIcon, ChevronRightIcon } from "lucide-react";
+import { ChevronRightIcon } from "lucide-react";
 import { Link as RouterLink, useNavigate } from "react-router-dom";
-import { red } from "@mui/material/colors";
 import { Fragment } from "react";
-import path from "path";
 import IconButtonComponent from "./IconButtonComponent";
 import { ArrowBack } from "@mui/icons-material";
 

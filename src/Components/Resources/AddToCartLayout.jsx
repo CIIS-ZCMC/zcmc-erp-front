@@ -1,21 +1,12 @@
 import BoxComponent from "@Components/Common/Card/BoxComponent";
 import SearchBarComponentv2 from "@Components/SearchBarWithdeBounce";
-import {
-  Autocomplete,
-  Box,
-  Divider,
-  Grid,
-  IconButton,
-  Stack,
-  Typography,
-} from "@mui/joy";
+import { Box, Divider, Grid, Stack, Typography } from "@mui/joy";
 import React, { Fragment, useEffect, useMemo, useState } from "react";
 import ProductGrid from "./ProductGrid";
 import CartPreviewComponent from "./CartPreviewComponent";
 import Cart from "./Cart";
 import { useAuth } from "../../Store/AuthStore";
 import useCartStore from "../../Hooks/ItemCartHook";
-import SearchWithSuggestions from "@Components/SearchWithSuggestions";
 import IconButtonComponent from "@Components/Common/IconButtonComponent";
 import { ExpandLess, ExpandMore } from "@mui/icons-material";
 import AutocompleteComponent from "@Components/Form/AutocompleteComponent";

@@ -4,7 +4,6 @@ import { useNavigate, useLocation } from "react-router-dom";
 import { usePPMPActions, usePPMPState } from "../../../../Hooks/PPMP/PPMPHook";
 import { nextYear } from "../../../../Utils/Functions";
 import PageTitle from "@Components/Common/PageTitle";
-import ModalComponent from "@Components/Common/Dialog/ModalComponent";
 import useModalHook from "../../../../Hooks/ModalHook";
 import {
   useItemRequestActions,
@@ -15,7 +14,6 @@ import useAOPStore from "../../../../Store/AOPStore";
 // View Item Requests Modal Components
 import PPMPSummaryCards from "./PPMPSummaryCards";
 import DashboardHeader from "./DashboardHeader";
-import NewRequestModal from "../Modal/AddItemRequest/NewRequestModal";
 import PPMPSubmissionModal from "../Modal/Dashboard/PPMPSubmissionModal";
 import SuccessSubmissionModal from "../Modal/Dashboard/SuccessSubmissionModal";
 import { happensNext } from "../../../../Data/constants";

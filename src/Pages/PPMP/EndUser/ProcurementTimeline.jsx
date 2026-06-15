@@ -4,12 +4,15 @@ import { TodayOutlined } from "@mui/icons-material";
 import { Stack, Typography } from "@mui/joy";
 import moment from "moment";
 import React, { Fragment, useEffect, useState } from "react";
+import EditPPMPChip from "./EditPPMpChip";
 
 export default function ProcurementTimeline({
   timelines = { start: [], end: [], delivery: [] },
   onChange, // callback to parent
   value, // initial value from parent
   editing = false,
+  handleEditToggle,
+  row,
 }) {
   const [values, setValues] = useState({
     start_date: value?.start_date || "",
@@ -33,14 +36,22 @@ export default function ProcurementTimeline({
   }, [values, onChange]);
   return (
     <Fragment>
-      <Typography
-        level="title-md"
-        startDecorator={
-          <TodayOutlined color="success" style={{ fontSize: 20 }} />
-        }
-      >
-        Timeline of Procurement Activity{" "}
-      </Typography>
+      <Stack direction={"row"} gap={2}>
+        <Typography
+          level="title-md"
+          startDecorator={
+            <TodayOutlined color="success" style={{ fontSize: 20 }} />
+          }
+        >
+          Timeline of Procurement Activity{" "}
+        </Typography>
+        <EditPPMPChip
+          rowId={row.id}
+          editing={editing}
+          handleEditToggle={handleEditToggle}
+        />
+      </Stack>
+
       <Stack gap={3}>
         <Stack
           spacing={1}

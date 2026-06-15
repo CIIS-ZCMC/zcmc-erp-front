@@ -1,5 +1,4 @@
 import React from "react";
-
 import { Box, FormLabel, Radio, RadioGroup, Sheet } from "@mui/joy";
 
 const IconLessRadioButtonComponent = ({ data, onChange }) => {

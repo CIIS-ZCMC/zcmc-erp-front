@@ -1,21 +1,12 @@
-import React, { Fragment, useState, useEffect } from "react";
-
-import { Avatar, Chip, Stack, Tooltip, IconButton, Typography } from "@mui/joy";
+import React, { Fragment, useState } from "react";
+import { Avatar, Chip, Stack, Typography } from "@mui/joy";
 import { Comment } from "@mui/icons-material";
-
-import { ArrowRight, Info } from "lucide-react";
+import { ArrowRight } from "lucide-react";
 import { useNavigate } from "react-router-dom";
 import moment from "moment";
-
 import ModalComponent from "@Components/Common/Dialog/ModalComponent";
 
-import useAOPId from "../../../../../Hooks/AOP/AOPIDHook";
-
 const Content = ({ comments }) => {
-  // useEffect(() => {
-  //   console.log(comments)
-  // }, [comments])
-
   return (
     <>
       {comments?.map(

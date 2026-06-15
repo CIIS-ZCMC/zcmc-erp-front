@@ -2,11 +2,7 @@ import React from "react";
 
 import { Stack, Typography, Box, Avatar, useTheme } from "@mui/joy";
 import { formatPeso } from "../../../../../Utils/FormatPeso";
-import {
-  EmojiObjectsOutlined,
-  LightbulbCircleOutlined,
-  LightbulbOutline,
-} from "@mui/icons-material";
+import { EmojiObjectsOutlined } from "@mui/icons-material";
 
 const AccordionSummary = ({ objectiveName, activitiesCount, cost, index }) => {
   const theme = useTheme();

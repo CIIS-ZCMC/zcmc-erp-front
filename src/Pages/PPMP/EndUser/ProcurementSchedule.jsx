@@ -2,6 +2,7 @@ import React from "react";
 import { Box, Sheet, Stack, Typography } from "@mui/joy";
 import { TodayOutlined } from "@mui/icons-material";
 import { green, grey, red } from "@mui/material/colors";
+import EditPPMPChip from "./EditPPMpChip";
 
 const months = [
   { label: "Jan", key: "january" },
@@ -23,7 +24,13 @@ const defaultSchedule = months.reduce((acc, m) => {
   return acc;
 }, {});
 
-export default function ProcurementSchedule({ editing, value, onChange }) {
+export default function ProcurementSchedule({
+  editing,
+  value,
+  onChange,
+  handleEditToggle,
+  row,
+}) {
   const schedule = value || defaultSchedule;
 
   const handleMonthChange = (key, raw) => {
@@ -40,12 +47,20 @@ export default function ProcurementSchedule({ editing, value, onChange }) {
     <>
       {/* Title */}
       <Stack mb={2} spacing={1}>
-        <Typography
-          level="title-md"
-          startDecorator={<TodayOutlined color="success" />}
-        >
-          Procurement Schedule by Month
-        </Typography>
+        <Stack direction="row" alignItems="center" gap={1}>
+          <Typography
+            level="title-md"
+            startDecorator={<TodayOutlined color="success" />}
+          >
+            Procurement Schedule by Month
+          </Typography>
+          <EditPPMPChip
+            rowId={row.id}
+            editing={editing}
+            handleEditToggle={handleEditToggle}
+          />
+        </Stack>
+
         <Typography level="body-sm">
           Distribution of procurement across the fiscal year
         </Typography>

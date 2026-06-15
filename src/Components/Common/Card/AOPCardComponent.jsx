@@ -13,7 +13,7 @@ import CardInfoDisplay from "./CardInfoDisplay";
 import BoxComponent from "./BoxComponent";
 import { getStatusColorScheme } from "../../../Utils/ColorScheme";
 import ChipComponent from "../ChipComponent";
-import { Cloud, CloudDownload, ExternalLink, MapPin } from "lucide-react";
+import { ExternalLink, MapPin } from "lucide-react";
 import { toCapitalize } from "../../../Utils/Typography";
 
 AOPCardComponent.propTypes = {

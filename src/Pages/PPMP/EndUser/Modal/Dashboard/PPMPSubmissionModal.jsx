@@ -59,6 +59,7 @@ export default function PPMPSubmissionModal({
         hasActionButtons
         noRightButton={true}
         leftButtonLabel="Submit"
+        leftButtonVariant="solid"
         leftButtonAction={() => handleSubmit()}
         isLoading={buttonLoader}
       />

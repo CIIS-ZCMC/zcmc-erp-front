@@ -1,17 +1,6 @@
 import React from "react";
-
-import {
-  List,
-  ListItem,
-  ListItemContent,
-  Stack,
-  Typography,
-  Avatar,
-} from "@mui/joy";
-
+import { Stack, Typography, Avatar } from "@mui/joy";
 import BoxComponent from "@Components/Common/Card/BoxComponent";
-
-import PeopleIcon from "../../../../../../assets/responsible_people/People.svg";
 import { PeopleAltOutlined } from "@mui/icons-material";
 import { deepPurple, purple } from "@mui/material/colors";
 import { SUMMARY_PEOPLE } from "../../../../../../Data/Columns";

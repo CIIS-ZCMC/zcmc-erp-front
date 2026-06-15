@@ -29,6 +29,7 @@ import { isAopDisabled } from "../../../Utils/AopStatus";
 import ModalComponent from "@Components/Common/Dialog/ModalComponent";
 import AuthorizationPinComponent from "@Components/AuthorizationPinComponent";
 import useSnackbarHook from "../../../Hooks/SnackbarHook";
+import { DownloadOutlined, FileDownload } from "@mui/icons-material";
 
 const AOPSummary = () => {
   const navigate = useNavigate();
@@ -311,10 +312,12 @@ const AOPSummary = () => {
           usersCount={users_only}
           designationCount={designations_only}
         />
-        <Stack direction={"row"}>
+        <Stack direction={"row"} alignItems="center" justifyContent="flex-end">
           <ButtonComponent
             label={"Download AOP"}
             loadingLabel={"Downloading..."}
+            variant={"outlined"}
+            startDecorator={<FileDownload />}
             onClick={() => {
               setIsExporting(true);
               exportAOP(aop, (status, message) => {

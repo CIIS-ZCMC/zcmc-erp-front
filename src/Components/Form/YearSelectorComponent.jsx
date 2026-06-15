@@ -1,7 +1,6 @@
 import PropTypes from "prop-types";
 import { Autocomplete, FormControl, FormHelperText, FormLabel } from "@mui/joy";
 import { getFontSize } from "../../Utils/Typography";
-import { useEffect } from "react";
 
 function YearSelectorComponent({
   label,

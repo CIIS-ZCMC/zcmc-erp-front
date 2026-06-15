@@ -246,8 +246,9 @@ function PPMPItems(props) {
 
     setEditingRows((prev) => ({ ...prev, [rowId]: true }));
 
-    // ✅ FORCE OPEN — no toggle, no collapse
-    openRow(rowId);
+    if (openRow) {
+      openRow(rowId);
+    }
   };
 
   const handleDeleteItem = (id) => {
@@ -327,7 +328,7 @@ function PPMPItems(props) {
                 label={"Add an Item"}
                 startDecorator={<PlusIcon />}
                 onClick={() => navigate(`/ppmp/add-item/${type}`)}
-                disabled={isLocked || localRows.length === 0}
+                disabled={isLocked}
               />
             )}
 
@@ -427,6 +428,7 @@ function PPMPItems(props) {
             lockedRows={lockedRows}
             userId={id}
             isLocked={isLocked}
+            handleEditToggle={handleEditToggle}
           />
         )}
         currentPage={pagination?.current_page}

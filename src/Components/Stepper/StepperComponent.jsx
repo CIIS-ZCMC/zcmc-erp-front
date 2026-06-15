@@ -1,7 +1,6 @@
-import React, { act, Fragment, useEffect } from "react";
+import React from "react";
 import StepItem from "./StepItem";
-import { Stack, Step, StepIndicator, Stepper, Typography } from "@mui/joy";
-import { BiCheck, BiCircle } from "react-icons/bi";
+import { Stepper } from "@mui/joy";
 const StepperComponent = ({ data = [] }) => {
   // useEffect(() => {
   //   console.log(data)

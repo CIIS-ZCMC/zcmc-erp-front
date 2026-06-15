@@ -1,29 +1,15 @@
 import {
-  AspectRatio,
-  Box,
-  Button,
   Card,
   CardActions,
   CardContent,
-  CardCover,
-  CardOverflow,
-  Chip,
-  IconButton,
   Stack,
-  Tooltip,
   Typography,
   useTheme,
 } from "@mui/joy";
-import { CircleSmall, ZoomInIcon } from "lucide-react";
-import React, { Fragment, useState } from "react";
-
-import useResourceHook from "../../Hooks/ResourceHook";
-
+import React, { Fragment } from "react";
 import ButtonComponent from "../Common/ButtonComponent";
 import ChipComponent from "../Common/ChipComponent";
-import ModalComponent from "@Components/Common/Dialog/ModalComponent";
-import { Circle, RemoveCircle, ZoomOutMap } from "@mui/icons-material";
-import { blue } from "@mui/material/colors";
+import { Circle } from "@mui/icons-material";
 import defaultItem from "../../assets/item.jpg";
 
 const ItemCardComponent = ({

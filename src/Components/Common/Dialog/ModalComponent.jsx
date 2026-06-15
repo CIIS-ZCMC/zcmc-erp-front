@@ -15,7 +15,6 @@ import {
 } from "@mui/joy";
 import { BiX } from "react-icons/bi";
 import ButtonComponent from "../ButtonComponent";
-import { Fragment } from "react";
 
 ModalComponent.propTypes = {
   isOpen: PropTypes.bool.isRequired,
@@ -59,7 +58,8 @@ function ModalComponent({
   noDivider = false, // If set to true, the divider between the title and content is hidden
   hasActionButtons = false,
   padding = 3.5,
-  customActionFooter = false
+  leftButtonVariant = "outlined",
+  customActionFooter = false,
 }) {
   const theme = useTheme();
   const custom = theme.palette.custom;
@@ -169,7 +169,7 @@ function ModalComponent({
                 )}
 
                 <ButtonComponent
-                  variant="outlined"
+                  variant={leftButtonVariant}
                   color="primary"
                   label={leftButtonLabel}
                   fullWidth={!noRightButton}

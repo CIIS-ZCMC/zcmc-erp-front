@@ -8,24 +8,18 @@ import BoxComponent from "@Components/Common/Card/BoxComponent";
 import ButtonComponent from "@Components/Common/ButtonComponent";
 import ModalComponent from "@Components/Common/Dialog/ModalComponent";
 import InputComponent from "@Components/Form/InputComponent";
-import SearchBarComponent from "@Components/SearchBarComponent";
 import ConfirmationModalComponent from "@Components/Common/Dialog/ConfirmationModalComponent";
 import SearchBarComponentv2 from "@Components/SearchBarWithdeBounce";
-
 import ActivitiesModal from "./modal/ActivitiesModal";
 import ActivitiesList from "./ActivitiesList";
-
 import useActivitiesStore, {
   useActivitiesActions,
 } from "../../../../Store/ActivitiesStore";
-
 import useAOPStore from "../../../../Store/AOPStore";
-
 import { ACTIVITIES } from "../../../../Data/constants";
 import PageTitle from "@Components/Common/PageTitle";
 import useAOPBreadcrumbs from "../../../../Hooks/AOP/AOPBreadcrumbs";
 import ChipComponent from "@Components/Common/ChipComponent";
-
 import { isAopDisabled } from "../../../../Utils/AopStatus";
 import { Add, CheckCircle, Circle } from "@mui/icons-material";
 import useSnackbarHook from "../../../../Hooks/SnackbarHook";

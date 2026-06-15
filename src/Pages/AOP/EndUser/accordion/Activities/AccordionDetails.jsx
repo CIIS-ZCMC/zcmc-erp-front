@@ -55,14 +55,14 @@ const AccordionDetails = ({
       </Stack>
 
       <Grid container spacing={2}>
-        <Grid xs={6}>
+        <Grid xs={8}>
           <ResourcesList
             resources={resources}
             resourcesCount={resourcesCount}
           />
         </Grid>
 
-        <Grid xs={6}>
+        <Grid xs={4}>
           <PeopleList
             responsiblePeople={responsiblePeople}
             peopleCount={peopleCount}

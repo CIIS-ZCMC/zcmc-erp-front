@@ -15,9 +15,7 @@ import { useState } from "react";
 import useModalHook from "../../../Hooks/ModalHook";
 import { getStatusIcon } from "../../../Utils/StatusIcon";
 import InputComponent from "../../Form/InputComponent";
-// eslint-disable-next-line no-unused-vars
-import { AnimatePresence, motion } from "motion/react";
-import { LampFloor } from "lucide-react";
+import { motion } from "motion/react";
 
 ConfirmationModalComponent.propTypes = {
   content: PropTypes.node,

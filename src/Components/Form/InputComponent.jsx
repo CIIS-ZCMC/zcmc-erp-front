@@ -5,15 +5,11 @@ import {
   FormLabel,
   IconButton,
   Input,
-  Typography,
 } from "@mui/joy";
 import { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
 import userErrorInputHook from "../../Hooks/ErrorInputHook";
 import { getFontSize } from "../../Utils/Typography";
-// import { getFontSize } from "../../Utils/Typography";
-// import { BsEye, BsEyeSlash } from "react-icons/bs";
-// import userErrorInputHook from "../../Hooks/ErrorInputHook";
 
 const InputComponent = ({
   label,

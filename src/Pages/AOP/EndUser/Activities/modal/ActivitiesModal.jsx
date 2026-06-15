@@ -1,19 +1,7 @@
 import React, { useEffect } from "react";
-
-import {
-  Stack,
-  Typography,
-  FormControl,
-  FormLabel,
-  Alert,
-  Checkbox,
-  Input,
-} from "@mui/joy";
-import { TriangleAlert } from "lucide-react";
-
+import { Stack, Typography, Alert, Checkbox } from "@mui/joy";
 import TextareaComponent from "@Components/Form/TextareaComponent";
 import InputComponent from "@Components/Form/InputComponent";
-
 import useActivitiesStore, {
   useActivitiesActions,
 } from "../../../../../Store/ActivitiesStore";

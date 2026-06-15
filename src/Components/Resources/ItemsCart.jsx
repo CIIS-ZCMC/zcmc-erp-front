@@ -1,24 +1,11 @@
 import React, { Fragment } from "react";
 
-import {
-  Box,
-  Stack,
-  Typography,
-  Divider,
-  Autocomplete,
-  ChipDelete,
-  Chip,
-} from "@mui/joy";
-import { LucideDot, Minus, Plus, Trash } from "lucide-react";
-
+import { Box, Typography, Divider, ChipDelete, Chip } from "@mui/joy";
+import { LucideDot, Trash } from "lucide-react";
 import ButtonComponent from "@Components/Common/ButtonComponent";
 import QuantityControlComponent from "@Components/Cart/QuantityControlComponent";
-import IconButtonComponent from "@Components/Common/IconButtonComponent";
 import AutocompleteComponent from "@Components/Form/AutocompleteComponent";
-import ChipComponent from "@Components/Common/ChipComponent";
-import { CancelOutlined } from "@mui/icons-material";
 import useSnackbarHook from "../../Hooks/SnackbarHook";
-import defaultItem from "../../assets/item.jpg";
 
 const ItemsCart = ({
   item,

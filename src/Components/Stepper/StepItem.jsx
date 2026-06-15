@@ -8,16 +8,16 @@ import {
   Typography,
   useTheme,
 } from "@mui/joy";
-import { BiCheck, BiCircle } from "react-icons/bi";
+import { BiCircle } from "react-icons/bi";
 import moment from "moment";
-import PropTypes, { number } from "prop-types";
+import PropTypes from "prop-types";
 import { getStatusColorScheme } from "../../Utils/ColorScheme";
 import { Fragment, useState } from "react";
 import ModalComponent from "../Common/Dialog/ModalComponent";
 import ChipComponent from "../Common/ChipComponent";
 import { toCapitalize } from "../../Utils/Typography";
 import StepTextDisplay from "./StepDisplay";
-import { Check, CheckCheck } from "lucide-react";
+import { Check } from "lucide-react";
 
 StepItem.propTypes = {
   name: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),

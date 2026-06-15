@@ -2,7 +2,6 @@ import { Typography } from "@mui/joy";
 import RadioGroup from "@mui/joy/RadioGroup";
 import Sheet from "@mui/joy/Sheet";
 import Radio, { radioClasses } from "@mui/joy/Radio";
-import { MdCheckCircleOutline } from "react-icons/md";
 
 function RadioButtonComponent({
   actions,
