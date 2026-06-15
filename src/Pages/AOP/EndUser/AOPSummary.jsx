@@ -270,6 +270,15 @@ const AOPSummary = () => {
     }
   };
 
+  const handleExportAOP = () => {
+    setIsExporting(true);
+
+    exportAOP((status, message) => {
+      setIsExporting(false);
+      showSnack(status, message);
+    }, aop);
+  };
+
   return (
     <>
       <PageTitle
@@ -318,13 +327,7 @@ const AOPSummary = () => {
             loadingLabel={"Downloading..."}
             variant={"outlined"}
             startDecorator={<FileDownload />}
-            onClick={() => {
-              setIsExporting(true);
-              exportAOP(aop, (status, message) => {
-                setIsExporting(false);
-                showSnack(status, message);
-              });
-            }}
+            onClick={() => handleExportAOP}
             isLoading={isExporting}
             disabled={isExporting}
           />

@@ -1,5 +1,11 @@
 import { create } from "zustand";
-import { post, read, remove, update } from "../../Services/RequestMethods";
+import {
+  download,
+  post,
+  read,
+  remove,
+  update,
+} from "../../Services/RequestMethods";
 const PATH = "resources";
 
 const useResourcesHook = create((set) => ({
@@ -7,10 +13,10 @@ const useResourcesHook = create((set) => ({
   activity: {},
   pagination: {},
 
-  getAOPResources: async (callBack, id) => {
+  getAOPResources: async (callBack, params) => {
     read({
       url: `${PATH}`,
-      params: { activity_id: id },
+      params: params,
       failed: callBack,
       success: (res) => {
         const { status, message, data } = res;
@@ -98,6 +104,22 @@ const useResourcesHook = create((set) => ({
           },
         }));
         callBack(status, message);
+      },
+    });
+  },
+
+  downloadResource: async (params, callBack) => {
+    download({
+      url: `export-activity-${PATH}/${params.id}`,
+      params: {
+        purchase_type: params.purchase_type,
+      },
+      failed: (status, message) => {
+        callBack(status, message);
+      },
+      fileName: params.file_name,
+      success: (status) => {
+        callBack(status, "Resource downloaded successfully.");
       },
     });
   },

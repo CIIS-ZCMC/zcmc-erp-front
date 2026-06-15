@@ -30,7 +30,6 @@ export default function ServerPaginationComponent({
         backgroundColor: "#fff",
       }}
     >
-      {console.log("pagination", pagination)}
       <Button
         size="sm"
         variant="outlined"

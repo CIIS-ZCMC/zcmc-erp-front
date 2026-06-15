@@ -52,6 +52,9 @@ export const getAlertColor = (statusCode) => {
     case 200:
       color = "success";
       break;
+    case 400:
+      color = "danger";
+      break;
     case 401:
       color = "danger";
       break;

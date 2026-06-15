@@ -25,6 +25,9 @@ import { AOP_RESOURCES_COLUMNS } from "@Data/Columns";
 import CartPreviewComponent from "@Components/Resources/CartPreviewComponent";
 import SelectComponent from "@Components/Form/YearSelectComponent";
 import AutocompleteComponent from "@Components/Form/AutocompleteComponent";
+import { FileDownload } from "@mui/icons-material";
+import useAOPHook from "@Hooks/AOP/AOPHook";
+import useSnackbarHook from "@Hooks/SnackbarHook";
 
 function ManageResources(props) {
   const { activityId } = useParams();
@@ -36,10 +39,12 @@ function ManageResources(props) {
     updateResourceQty,
     updatePurchaseType,
     deleteResource,
+    downloadResource,
     activity,
     pagination,
   } = useResourcesHook();
   const { getPurchaseType, purchase_types } = usePurchaseTypeHook();
+  const { showSnack } = useSnackbarHook();
 
   const theme = useTheme();
   const navigate = useNavigate();
@@ -60,16 +65,9 @@ function ManageResources(props) {
   const [openPreview, setOpenPreview] = useState(false);
   const [selectedResource, setSelectedResource] = useState(null);
   const [selectedPurchaseType, setSelectedPurchaseType] = useState(null);
+  const [isExporting, setIsExporting] = useState(false);
 
   const perPage = isCard ? 12 : 20;
-
-  // Filter results when search changes
-  const filteredResources = useMemo(() => {
-    if (!search) return resources;
-    return resources.filter((item) =>
-      item.item.name.toLowerCase().includes(search.toLowerCase()),
-    );
-  }, [search, resources]);
 
   const handleUpdateResource = async (id, quantity) => {
     const body = { quantity: quantity };
@@ -117,23 +115,51 @@ function ManageResources(props) {
     setOpenPreview(true);
   };
 
+  const handleExportResources = () => {
+    if (!selectedPurchaseType?.id) {
+      showSnack(400, "Please select a purchase type before exporting.");
+      return;
+    }
+
+    setIsExporting(true);
+
+    downloadResource(
+      {
+        id: activityId,
+        purchase_type: selectedPurchaseType.id,
+        file_name: `AOP_${selectedPurchaseType.description}-Resources_${new Date().toISOString().split("T")[0]}.xlsx`,
+      },
+      (status, message) => {
+        setIsExporting(false);
+        showSnack(status, message);
+      },
+    );
+  };
+
   useEffect(() => {
     if (!activityId) return; // prevent calling if id is not ready
     setIsLoading(true);
 
-    getAOPResources((status, message) => {
-      if (status !== 200) {
-        console.error("Failed to fetch items:", message);
-      }
-      setIsLoading(false);
-    }, activityId);
+    getAOPResources(
+      (status, message) => {
+        if (status !== 200) {
+          console.error("Failed to fetch items:", message);
+        }
+        setIsLoading(false);
+      },
+      {
+        activity_id: activityId,
+        purchase_type: selectedPurchaseType?.id,
+        search: search,
+      },
+    );
 
     getPurchaseType((status, message) => {
       if (status !== 200) {
         console.error("Failed to fetch items:", message);
       }
     });
-  }, [activityId]);
+  }, [activityId, selectedPurchaseType, search]);
   return (
     <Fragment>
       <Stack
@@ -226,8 +252,16 @@ function ManageResources(props) {
               }}
               getOptionLabel={(opt) => opt?.description || ""}
               placeholder="Select type"
+              width="200px"
+              size="md"
             />{" "}
-            <ButtonComponent label={"Export"} />
+            <ButtonComponent
+              label={"Export"}
+              startDecorator={<FileDownload />}
+              isLoading={isExporting}
+              loadingLabel={"Exporting..."}
+              onClick={() => handleExportResources()}
+            />
           </Stack>
         </BoxComponent>
 
@@ -235,10 +269,10 @@ function ManageResources(props) {
           <Stack height="60vh" alignItems="center" justifyContent="center">
             <ThreeDotsLoader />
           </Stack>
-        ) : filteredResources.length > 0 ? (
+        ) : resources.length > 0 ? (
           isCard ? (
             <Grid container spacing={3}>
-              {filteredResources.map((item, index) => (
+              {resources.map((item, index) => (
                 <Grid xs={12} sm={6} md={3} key={index}>
                   <ResourceCardComponent
                     status={status}
@@ -272,7 +306,7 @@ function ManageResources(props) {
                 onPreview: (item) => handlePreview(item),
                 status,
               })}
-              rows={filteredResources}
+              rows={resources}
             />
           )
         ) : (

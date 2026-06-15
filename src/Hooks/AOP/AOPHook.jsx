@@ -157,7 +157,7 @@ const useAOPHook = () => {
     }
   };
 
-  const exportAOP = async (aop, callBack = () => {}) => {
+  const exportAOP = async (callBack = () => {}, aop) => {
     try {
       await download({
         url: `${API.EXPORT_AOP}/${aop.id}`,
