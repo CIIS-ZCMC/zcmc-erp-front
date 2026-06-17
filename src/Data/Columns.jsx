@@ -1237,17 +1237,17 @@ export const itemCols = (
     render: (row) => (
       <>
         <Typography level="body-sm" fontWeight={600} sx={{ color: grey[800] }}>
-          {row?.classification}
+          {row?.item_classification?.name}
         </Typography>
         <Typography
-          level={row?.category && "body-sm"}
+          level={row?.item_category?.name && "body-sm"}
           sx={{
-            fontSize: row?.classification && 13,
-            color: row?.classification ? grey[600] : grey[800],
+            fontSize: row?.item_classification?.name && 13,
+            color: row?.item_classification?.name ? grey[600] : grey[800],
           }}
-          fontWeight={row?.classification ? 500 : 600}
+          fontWeight={row?.item_classification?.name ? 500 : 600}
         >
-          {row?.category}
+          {row?.item_category?.name}
         </Typography>
       </>
     ),

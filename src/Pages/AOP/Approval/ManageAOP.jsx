@@ -66,7 +66,7 @@ export default function ManageAOP() {
 
   // STATES
   const [isRemarksLoading, setIsRemarksLoading] = useState(true);
-  const AREA_CODE = AOPApplication?.area_from;
+  const AREA_CODE = AOPApplication?.area_code;
   const FISCAL_YEAR = new Date().getFullYear() + 1;
   // MODAL
   const [openFeedbackModal, setOpenFeedbackModal] = useState(false);

@@ -44,12 +44,12 @@ const ProcessAOPContent = () => {
 
   const { user } = useAuth();
 
-  const canProcess = approvalTimeline?.some(
-    (item) => item.approver_user?.id === user?.id && item.status === "pending",
-  );
+  // const canProcess = approvalTimeline?.some(
+  //   (item) => item.approver_user?.id === user?.id && item.status === "pending",
+  // );
   // STATE
   const [processData, setProcessData] = useState({ action: "approved" });
-  const [disabledProcessRequest, setDisabledProcessRequest] = useState(true);
+  const [disabledProcessRequest, setDisabledProcessRequest] = useState(false);
 
   const AOP_APPLICATION_ID = localStorageGetter("aop_application_id");
   const [openProcessModal, setOpenProcessModal] = useState(false);
@@ -120,7 +120,7 @@ const ProcessAOPContent = () => {
         data = {
           status: "error",
           isGlobal: false,
-          title: "Failed to submit approval",
+          title: "Failed to approve application",
           description:
             message ??
             "An error occurred while updating the status of the AOP request. Please check your authorization PIN and try again. If the problem persists, contact the system administrator.",
@@ -137,17 +137,14 @@ const ProcessAOPContent = () => {
     closeAlertDialog();
   };
 
-  useEffect(() => {
-    setDisabledProcessRequest(!canProcess);
-  }, [canProcess]);
+  // useEffect(() => {
+  //   setDisabledProcessRequest(!canProcess);
+  // }, [canProcess]);
   return (
     <Fragment>
       <ButtonComponent
         label={"Process request"}
-        disabled={
-          disabledProcessRequest ||
-          (isPlanningOfficer && !areAllActivitiesReviewed)
-        }
+        disabled={disabledProcessRequest}
         onClick={handleProcessRequest}
       />
       {/* MODAL */}

@@ -240,6 +240,7 @@ const AOPApproval = () => {
                       id,
                       current_timeline,
                       fiscal_year,
+                      area_code,
                       // current_user,
                       ppmp_application,
                       aop_application_id,
@@ -269,7 +270,7 @@ const AOPApproval = () => {
                             total_cost={ppmp_total}
                             leftClick={onLeftClick(
                               aop_application_id,
-                              actor?.area,
+                              area_code,
                             )}
                             rightClick={() =>
                               handleViewTimeline(aop_application_id)

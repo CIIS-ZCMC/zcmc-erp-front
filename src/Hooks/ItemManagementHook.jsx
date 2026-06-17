@@ -61,7 +61,7 @@ const useItemsHook = create((set, get) => ({
     };
 
     read({
-      url: `${PATH}s`,
+      url: `${PATH}-library`,
       params,
       success: (res) => {
         const { status, message, data, meta } = res;

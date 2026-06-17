@@ -55,8 +55,8 @@ function AOPCardComponent({
     fontSize: 12.5,
     gap: 0.4,
     "&: hover": {
-      // textDecoration: "none",
-      // fontWeight: 500,
+      textDecoration: "none",
+      fontWeight: 500,
     },
   };
   return (
@@ -69,10 +69,10 @@ function AOPCardComponent({
         border: 1,
         borderColor: "neutral.100",
         boxShadow: "md",
-        // "&: hover": {
-        //   cursor: "pointer",
-        //   backgroundColor: `neutral.50`,
-        // },
+        "&: hover": {
+          cursor: "pointer",
+          backgroundColor: `neutral.50`,
+        },
       }}
       orientation="horizontal"
       // onClick={onClick}
@@ -85,16 +85,15 @@ function AOPCardComponent({
             alignItems: { xs: "start", md: "center" },
             justifyContent: "space-between",
             mt: 1,
-            gap: 1,
           }}
         >
           <Typography
             level="title-md"
             fontWeight={600}
             textColor={"primary.700"}
+            width={"70%"}
           >
             {area_code}
-            {/* [{area_code}: AOP and PPMP - {year}] */}
           </Typography>
           <ChipComponent
             status={statusLabel?.toLowerCase()}
