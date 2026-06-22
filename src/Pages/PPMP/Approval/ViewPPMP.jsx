@@ -32,6 +32,8 @@ import useSnackbarHook from "../../../Hooks/SnackbarHook";
 import useModalHook from "../../../Hooks/ModalHook";
 import EllipsisText from "../../../Utils/EllipsisText";
 import { ExpandableRow } from "../EndUser/ExpandableRow";
+import { useAOPPermissions } from "@Hooks/AOP/AOPApplicationsHook";
+import CommentsSkeleton from "@Components/Comments/CommentsSkeleton";
 
 function ViewPPMP() {
   const { id } = useParams();
@@ -50,6 +52,10 @@ function ViewPPMP() {
 
   const { getPPMPComments, postPPMPComment } = usePPMPCommentsActions();
   const { ppmpComments, isLoading: isCommentsLoading } = usePPMPComments();
+
+  const apiPermissions = useAOPPermissions();
+
+  const isBudgetOfficer = apiPermissions?.is_budget_officer;
 
   const AOP_APPLICATION_ID = localStorageGetter("aop_application_id");
   const AREA_CODE = localStorageGetter("aop_application_area_code");
@@ -281,7 +287,7 @@ function ViewPPMP() {
           <ExpandableRow
             row={row}
             editing={false}
-            isBudget={isBudget}
+            isBudget={isBudgetOfficer}
             sourceOfFunds={sourceOfFunds}
             onUpdateSource={handleUpdateSource}
           />
@@ -300,25 +306,16 @@ function ViewPPMP() {
       <DrawerComponent
         open={openDrawer}
         setOpen={setOpenDrawer}
-        title={<EllipsisText text={selectedRow?.item?.name} />}
+        title={<EllipsisText text={`PPMP Item: ${selectedRow?.item?.name}`} />}
         description={`The following are comments specifically commented in this item.`}
         size="md"
         content={
           isCommentsLoading ? (
-            <Box
-              sx={{
-                height: "45vh",
-                display: "flex",
-                alignItems: "center",
-                justifyContent: "center",
-              }}
-            >
-              <ThreeDotsLoader />
-            </Box>
+            <CommentsSkeleton />
           ) : ppmpComments.length > 0 ? (
             <Box
               sx={{
-                maxHeight: "460px", // adjust as needed
+                maxHeight: "65vh", // adjust as needed
                 overflowY: "auto",
                 pr: 1, // optional: add padding for scrollbar
               }}
@@ -350,7 +347,13 @@ function ViewPPMP() {
         }
         footer={
           <>
-            <Stack width={"100%"} spacing={2}>
+            <Stack
+              width={"100%"}
+              spacing={2}
+              bgcolor={"white"}
+              p={2}
+              sx={{ boxShadow: "rgba(26, 26, 26, 0.16) 0px 2px 8px 0px" }}
+            >
               <TextareaComponent
                 placeholder={"Comment here .. "}
                 maxRows={3}

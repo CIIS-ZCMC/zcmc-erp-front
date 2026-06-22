@@ -4,7 +4,16 @@ import {
   useActivityLoadingState,
 } from "../../../../Hooks/AOP/ActivityHook";
 import moment from "moment";
-import { Box, Divider, Grid, Link, Sheet, Stack, Typography } from "@mui/joy";
+import {
+  Box,
+  Checkbox,
+  Divider,
+  Grid,
+  Link,
+  Sheet,
+  Stack,
+  Typography,
+} from "@mui/joy";
 import { CornerDownRight, ExternalLink } from "lucide-react";
 import BoxComponent from "../../../../Components/Common/Card/BoxComponent";
 import ContainerComponent from "../../../../Components/Common/ContainerComponent";
@@ -58,11 +67,13 @@ export const ActivityDetails = () => {
         contentMinHeight={!isPlanningOfficer ? "55vh" : "50vh"}
         footer={
           isPlanningOfficer && (
-            <MarkReviewFooter
-              is_reviewed={is_reviewed}
-              openMarkModal={openMarkModal}
-              setOpenMarkModal={setOpenMarkModal}
-            />
+            <>
+              <MarkReviewFooter
+                is_reviewed={is_reviewed}
+                openMarkModal={openMarkModal}
+                setOpenMarkModal={setOpenMarkModal}
+              />
+            </>
           )
         }
       >

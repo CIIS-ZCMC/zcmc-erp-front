@@ -1,8 +1,14 @@
 import React from "react";
 
-import { Stack, Box, Typography, useTheme } from "@mui/joy";
+import { Stack, Box, Typography, useTheme, Avatar } from "@mui/joy";
 import { useNavigate } from "react-router-dom";
-import { Warning, WarningAmber, WarningOutlined } from "@mui/icons-material";
+import {
+  InsertComment,
+  PendingActions,
+  Warning,
+  WarningAmber,
+  WarningOutlined,
+} from "@mui/icons-material";
 
 import ButtonComponent from "@Components/Common/ButtonComponent";
 
@@ -11,51 +17,85 @@ import {
   STATUS_MESSAGES,
   AOP_BUTTON_LABEL,
 } from "../../../../Data/constants";
+import { orange } from "@mui/material/colors";
+import ChipComponent from "@Components/Common/ChipComponent";
 
-const Draft = ({ status }) => {
+const Draft = ({ status, commentsCount, setValue }) => {
   const theme = useTheme();
   const color = theme.palette.custom;
 
   const navigate = useNavigate();
 
+  const statusLabel = STATUS_LABELS[status] ?? "";
+  const isDraftOrReturned = ["Draft", "Returned"].includes(statusLabel);
+
   return (
     <>
-      <Stack
-        bgcolor={STATUS_LABELS[status] !== "Approved" ? "#FFF4E5" : ""}
-        borderRadius={5}
-        direction={"row"}
-        alignItems="center"
-        padding={2}
-        spacing={STATUS_LABELS[status] !== "Approved" ? 1.5 : 0}
-        width={"75%"}
-        justifyContent={STATUS_LABELS[status] === "Approved" && "right"}
-      >
-        <WarningAmber
-          sx={{
-            color: color.warning,
-            fontSize: 20,
-            display: STATUS_LABELS[status] !== "Approved" ? "flex" : "none",
-          }}
-        />
-        <Box
-          width={"100%"}
-          display={STATUS_LABELS[status] !== "Approved" ? "block" : "none"}
+      {isDraftOrReturned ? (
+        <Stack
+          bgcolor="#FFF4E5"
+          borderRadius={5}
+          direction="row"
+          alignItems="center"
+          padding={2}
+          spacing={1.5}
         >
-          <Typography level="body-sm" color="warning" sx={{ fontWeight: 600 }}>
-            Status: {STATUS_LABELS[status] ?? ""}
-          </Typography>
-          <Typography level="body-xs" color="warning">
-            {STATUS_MESSAGES[status] ?? "Unknown AOP status."}
-          </Typography>
-        </Box>
-        <Box width={"450px"}>
-          <ButtonComponent
-            label={AOP_BUTTON_LABEL[status] ?? "Submit AOP"}
-            onClick={() => navigate("/aop/summary")}
-            fullWidth={true}
+          <WarningAmber
+            sx={{
+              color: color.warning,
+              fontSize: 20,
+            }}
           />
-        </Box>
-      </Stack>
+
+          <Box width="100%">
+            <Typography
+              level="body-sm"
+              color="warning"
+              sx={{ fontWeight: 600 }}
+            >
+              Status: {statusLabel}
+            </Typography>
+
+            <Typography level="body-xs" color="warning">
+              {STATUS_MESSAGES[status] ?? "Unknown AOP status."}
+            </Typography>
+          </Box>
+
+          <Box width="450px">
+            <ButtonComponent
+              label={AOP_BUTTON_LABEL[status] ?? "Submit AOP"}
+              onClick={() => navigate("/aop/summary")}
+              fullWidth
+            />
+          </Box>
+        </Stack>
+      ) : (
+        <Stack gap={1}>
+          <ButtonComponent
+            label="AOP Overview"
+            variant={"soft"}
+            onClick={() => navigate("/aop/summary")}
+            startDecorator={<PendingActions />}
+            color="primary"
+            fullWidth
+          />
+          <ButtonComponent
+            label="All Feedback"
+            variant={"soft"}
+            onClick={() => setValue(true)}
+            startDecorator={<InsertComment />}
+            endDecorator={
+              <ChipComponent
+                label={commentsCount}
+                sx={{ bgcolor: orange[800], fontSize: 13 }}
+                variant={"solid"}
+              />
+            }
+            color="primary"
+            fullWidth
+          />
+        </Stack>
+      )}
     </>
   );
 };

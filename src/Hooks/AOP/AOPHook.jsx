@@ -157,10 +157,11 @@ const useAOPHook = () => {
     }
   };
 
-  const exportAOP = async (callBack = () => {}, aop) => {
+  const exportAOP = async (callBack = () => {}, aop, params) => {
     try {
       await download({
         url: `${API.EXPORT_AOP}/${aop.id}`,
+        params: params,
         title: "AOP",
         fileName: `AOP_${aop.prepared_by_code} (${aop.year}).xlsx`,
         failed: callBack,

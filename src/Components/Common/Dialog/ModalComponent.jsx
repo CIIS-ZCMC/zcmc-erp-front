@@ -54,6 +54,7 @@ function ModalComponent({
   withProgress, // Enables a linear progress bar, useful for multi-step processes
   progressValue, // Represents the progress step value, such as [10, 20, 30, 40]
   isLoading, // Indicates whether the right-side button is in a loading state
+  loadingLabel,
   noRightButton, // If set to true, the right button is not displayed Defaults to false
   noDivider = false, // If set to true, the divider between the title and content is hidden
   hasActionButtons = false,
@@ -165,6 +166,7 @@ function ModalComponent({
                     isLoading={isLoading}
                     onClick={rightButtonAction}
                     disabled={rightButtonDisabled || isLoading}
+                    loadingLabel={loadingLabel || "Loading..."}
                   />
                 )}
 
@@ -175,6 +177,7 @@ function ModalComponent({
                   fullWidth={!noRightButton}
                   onClick={leftButtonAction ?? handleClose}
                   disabled={isLoading}
+                  loadingLabel={loadingLabel}
                 />
               </Box>
             </DialogActions>

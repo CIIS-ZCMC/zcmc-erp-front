@@ -16,7 +16,10 @@ function CommentContainerComponent({
   date,
   area_code,
   handleClick,
+  activityName,
+  path,
   isActivity = false,
+  withActivityPath = false,
 }) {
   const fontSize = "body-xs";
   return (
@@ -40,9 +43,39 @@ function CommentContainerComponent({
         {!isActivity
           ? `${area_code} - ${name}`
           : // `${area_code} - ${name}`}
-          `${area_code} - ${name}`}
+            `${area_code} - ${name}`}
       </Typography>
-
+      {withActivityPath && (
+        <Stack
+          direction={"row"}
+          alignItems={"center"}
+          justifyContent={"space-between"}
+          sx={{ bgcolor: blue[50], padding: 0.5, borderRadius: 2, my: 1 }}
+        >
+          <Typography
+            level={fontSize}
+            sx={{
+              width: "70%",
+              overflow: "hidden",
+              textOverflow: "ellipsis",
+              whiteSpace: "nowrap",
+            }}
+            color="primary"
+          >
+            Activity: {activityName}
+          </Typography>
+          <Link
+            component={"button"}
+            level={fontSize}
+            gap={0.7}
+            textColor="primary.700"
+            color="primary"
+            onClick={() => handleClick()}
+          >
+            Go to activity <ExternalLink size={14} />
+          </Link>
+        </Stack>
+      )}
       <EllipsisComponent text={comment} />
 
       <Stack

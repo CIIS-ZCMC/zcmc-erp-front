@@ -28,6 +28,7 @@ function AutocompleteComponent({
   getOptionLabel,
   onClose,
   isRenderOption = false,
+  color,
   sx = {},
   ...props
 }) {
@@ -56,6 +57,7 @@ function AutocompleteComponent({
         startDecorator={startDecorator}
         size={size}
         placeholder={placeholder}
+        color={color}
         onChange={(_, newValue) => {
           if (fieldError?.isError) {
             const { setError } = userErrorInputHook.getState();

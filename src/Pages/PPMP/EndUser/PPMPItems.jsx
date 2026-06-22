@@ -8,7 +8,7 @@ import React, {
 } from "react";
 import PageTitle from "../../../Components/Common/PageTitle";
 import ButtonComponent from "../../../Components/Common/ButtonComponent";
-import { Stack, Typography, Box, Card } from "@mui/joy";
+import { Stack, Typography, Box, Card, CircularProgress } from "@mui/joy";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { usePPMPActions, usePPMPState } from "../../../Hooks/PPMP/PPMPHook";
 import useModalHook from "../../../Hooks/ModalHook";
@@ -36,6 +36,7 @@ import AutocompleteComponent from "@Components/Form/AutocompleteComponent";
 import useItemsHook from "../../../Hooks/ItemManagementHook";
 import { ExpandableRow } from "./ExpandableRow";
 import { FileDownload } from "@mui/icons-material";
+import CommentsSkeleton from "@Components/Comments/CommentsSkeleton";
 
 function PPMPItems(props) {
   const navigate = useNavigate();
@@ -62,7 +63,7 @@ function PPMPItems(props) {
   const { setAlertDialog } = useModalHook();
   const { errors, setError, clearErrors } = userErrorInputHook();
   const { getPPMPComments, postPPMPComment } = usePPMPCommentsActions();
-  const { ppmpComments } = usePPMPComments();
+  const { ppmpComments, isLoading } = usePPMPComments();
   const { showSnack } = useSnackbarHook();
   const { user } = useAuth();
   const { name, id, assignedArea } = user ?? {};
@@ -286,6 +287,9 @@ function PPMPItems(props) {
       isLocked,
     ],
   );
+
+  const skeletonCount = ppmpComments?.length || 3;
+
   return (
     <Fragment>
       <PageTitle
@@ -446,11 +450,17 @@ function PPMPItems(props) {
       <DrawerComponent
         open={openDrawer}
         setOpen={setOpenDrawer}
-        title={`${selectedRow?.item?.name}`}
-        description={`The following comments were submitted by reviewing offices regarding this resource item.`}
+        title={`PPMP Item: ${selectedRow?.item?.name}`}
+        description={`The following are comments specifically commented in this ppmp item.`}
         size="md"
         content={
-          ppmpComments?.length > 0 ? (
+          isLoading ? (
+            <Stack width="100%" gap={1.5}>
+              {Array.from({ length: skeletonCount }).map((_, index) => (
+                <CommentsSkeleton key={index} />
+              ))}
+            </Stack>
+          ) : ppmpComments?.length > 0 ? (
             <Box
               sx={{
                 maxHeight: "595px", // adjust as needed
@@ -458,7 +468,7 @@ function PPMPItems(props) {
                 pr: 1, // optional: add padding for scrollbar
               }}
             >
-              <Stack width="100%" py={1} spacing={1.5}>
+              <Stack width="100%" gap={1.5}>
                 {ppmpComments.map((c, index) => (
                   <CommentContainerComponent
                     key={index}

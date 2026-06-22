@@ -57,7 +57,7 @@ function DrawerComponent({
       <Sheet
         sx={{
           borderRadius: "md",
-          p: 1,
+
           display: "flex",
           flexDirection: "column",
           gap: 2,
@@ -116,6 +116,7 @@ function DrawerComponent({
               overflow: "hidden",
               minHeight: 0,
               p: 1,
+              overflowY: "auto",
             }}
           >
             {content}
@@ -124,10 +125,10 @@ function DrawerComponent({
         {footer && (
           <DialogActions
             sx={{
-              p: 2,
               mt: "auto",
               bottom: 0,
               zIndex: 1,
+              mb: 1,
             }}
           >
             {footer}

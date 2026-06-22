@@ -8,6 +8,7 @@ import {
 // import { APPLICATION_ID } from "./AOP/AOPApplicationsHook";
 
 export const COMMENT = "activity-comments";
+export const AOP_COMMENTS = "aop-comments";
 export const REMARKS = "aop-remarks";
 
 const useCommentHook = create((set, get) => ({
@@ -40,15 +41,14 @@ const useCommentHook = create((set, get) => ({
 
     getCommentsByApplication: (id, callback) => {
       read({
-        url: `${COMMENT}/${id}`,
-        // params: {
-        //   aop_application_id: id,
-        // },
+        url: `${AOP_COMMENTS}`,
+        params: {
+          aop_application_id: id,
+        },
         success: (response) => {
           const { data } = response.data;
-
-          set({ allComments: data.comments ?? [] });
-          localStorageSetter("all_comments", data.comments ?? []);
+          set({ allComments: data ?? [] });
+          localStorageSetter("all_comments", data ?? []);
           callback(response.status, data);
         },
         failed: () => {

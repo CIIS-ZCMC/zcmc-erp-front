@@ -2,8 +2,11 @@ import React from "react";
 import { Grid, Stack, Typography } from "@mui/joy";
 import ResourcesList from "./Lists/ResourcesList";
 import PeopleList from "./Lists/PeopleList";
+import ChipComponent from "@Components/Common/ChipComponent";
+import { useNavigate } from "react-router-dom";
 
 const AccordionDetails = ({
+  objId,
   activity_id,
   first_quarter,
   second_quarter,
@@ -21,38 +24,70 @@ const AccordionDetails = ({
     { label: "Q4", value: fourth_quarter },
   ];
 
+  const navigate = useNavigate();
+
+  const handleNavigateToActivities = () => {
+    navigate(`/aop/activities/${objId}`, {
+      state: {
+        objectiveId: objId,
+      },
+    });
+  };
   return (
     <div>
       <Stack
-        direction="row"
-        spacing={2}
-        alignItems="center"
-        justifyContent="center"
-        my={2}
+        my={1.5}
+        direction={"row"}
+        alignItems={"center"}
+        sx={{
+          display: "grid",
+          gridTemplateColumns: "1fr auto 1fr",
+          width: "100%",
+        }}
       >
-        <Typography level="body-xs" sx={{ fontWeight: 400, color: "black" }}>
-          Target (by quarter)
-        </Typography>
+        <Stack alignItems="flex-start">
+          <ChipComponent
+            label={"Go to Activities"}
+            variant={"soft"}
+            endDecorator
+            status={"next"}
+            color={"primary"}
+            onClick={handleNavigateToActivities}
+          />
+        </Stack>
 
-        {quarters.map((q) => (
-          <Stack
-            key={q.label}
-            direction="row"
-            spacing={1}
-            alignItems="center"
-            bgcolor="#F2F2F2"
-            padding={1}
-            borderRadius={10}
-          >
-            <Typography level="body-sm">{q.label}</Typography>
-            <Typography
-              level="body-sm"
-              sx={{ fontWeight: 600, color: "black" }}
+        <Stack
+          direction="row"
+          spacing={2}
+          alignItems="center"
+          justifyContent="center"
+          my={2}
+        >
+          <Typography level="body-xs" sx={{ fontWeight: 400, color: "black" }}>
+            Target (by quarter)
+          </Typography>
+
+          {quarters.map((q) => (
+            <Stack
+              key={q.label}
+              direction="row"
+              spacing={1}
+              alignItems="center"
+              bgcolor="#F2F2F2"
+              padding={1}
+              borderRadius={10}
             >
-              {q.value || "0"}
-            </Typography>
-          </Stack>
-        ))}
+              <Typography level="body-sm">{q.label}</Typography>
+              <Typography
+                level="body-sm"
+                sx={{ fontWeight: 600, color: "black" }}
+              >
+                {q.value || "0"}
+              </Typography>
+            </Stack>
+          ))}
+        </Stack>
+        <div />
       </Stack>
 
       <Grid container spacing={2}>

@@ -78,6 +78,7 @@ const useAOPApplicationsHook = create((set) => ({
           localStorageSetter("aopApplicationObjectives", objectives); // STORE TO LOCALSTORAGE
           localStorageSetter("timeline_id", latest_timeline_id); // STORE TO LOCALSTORAGE
           localStorageSetter("has_dispense", has_dispense); // STORE TO LOCALSTORAGE
+          localStorageSetter("permissions", permissions); // STORE TO LOCALSTORAGE
           // STORE TO LOCALSTORAGE
 
           callback(200, message);

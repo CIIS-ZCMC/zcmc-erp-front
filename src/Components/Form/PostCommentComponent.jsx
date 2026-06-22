@@ -67,7 +67,7 @@ const PostCommentComponent = ({ postCommentModal, setPostCommentModal }) => {
         <ButtonComponent
           label={"Post comment"}
           width="auto"
-          onClick={handleConfirmationModal}
+          onClick={submit}
           disabled={!comment}
         />
       </Box>

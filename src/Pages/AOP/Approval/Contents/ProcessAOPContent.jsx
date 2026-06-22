@@ -30,7 +30,9 @@ const ProcessAOPContent = () => {
 
   const isDivisionChief = apiPermissions?.is_division_chief;
   const isPlanningOfficer = apiPermissions?.is_planning;
-  const isMCCOfficer = !isDivisionChief && !isPlanningOfficer; // Keep this from user types for now
+  const isBudgetOfficer = apiPermissions?.is_budget_officer;
+  const isMCCOfficer = apiPermissions?.is_mcc;
+  const canProcess = apiPermissions?.can_approve;
 
   const AOPApplicationObjectives = useAOPApplicationObjectives();
   const { processApplication } = useApprovalActions();
@@ -137,15 +139,16 @@ const ProcessAOPContent = () => {
     closeAlertDialog();
   };
 
-  // useEffect(() => {
-  //   setDisabledProcessRequest(!canProcess);
-  // }, [canProcess]);
+  useEffect(() => {
+    setDisabledProcessRequest(!canProcess);
+  }, [canProcess]);
   return (
     <Fragment>
       <ButtonComponent
         label={"Process request"}
         disabled={disabledProcessRequest}
         onClick={handleProcessRequest}
+        fullWidth={true}
       />
       {/* MODAL */}
       <ModalComponent
@@ -165,7 +168,7 @@ const ProcessAOPContent = () => {
         content={
           <Stack gap={isDivisionChief && 1}>
             <Stack py={isPlanningOfficer ? 2 : 1}>
-              {(isPlanningOfficer || isDivisionChief) && (
+              {!isMCCOfficer && (
                 <Box mb={2}>
                   <Typography level="title-sm" mb={1}>
                     Select the action you would like to take:
@@ -185,8 +188,7 @@ const ProcessAOPContent = () => {
                 </Box>
               )}
 
-              {/* IF OMCC, AUTH PIN */}
-              {isDivisionChief && !isMCCOfficer ? (
+              {isDivisionChief ? (
                 <TextareaComponent
                   minRows={3}
                   label={"Remarks"}
@@ -201,7 +203,9 @@ const ProcessAOPContent = () => {
               ) : null}
             </Stack>
 
-            {isDivisionChief && !isMCCOfficer && <Divider />}
+            {/* IF OMCC, AUTH PIN */}
+
+            {isDivisionChief && <Divider />}
             <InputComponent
               type="password"
               label="Authorization pin"

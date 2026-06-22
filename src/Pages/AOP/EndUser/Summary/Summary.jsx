@@ -25,7 +25,6 @@ const Summary = ({
   const cards = [
     <ObjectivesCard
       {...cardProps}
-      hasFunction={false}
       objectiveCount={objectivesCount}
       successIndicatorCount={successIndicatorCount}
     />,

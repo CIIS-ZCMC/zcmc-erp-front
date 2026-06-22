@@ -6,6 +6,7 @@ import {
   Card,
   CardContent,
   useTheme,
+  Select,
 } from "@mui/joy";
 
 const StatusCard = ({
@@ -13,7 +14,7 @@ const StatusCard = ({
   count,
   title,
   description,
-  hasFunction,
+  hasFunction = false,
   functionHandler,
 }) => {
   const theme = useTheme();

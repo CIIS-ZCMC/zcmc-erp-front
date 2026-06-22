@@ -425,10 +425,10 @@ export const STATUS_MESSAGES = {
 };
 
 export const AOP_BUTTON_LABEL = {
-  1: "Submit AOP",
+  1: "Proceed to PPMP",
   2: "View AOP Summary",
   4: "View AOP Summary",
-  6: "Review AOP",
+  6: "Proceed to PPMP",
 };
 
 //PPMP AND AOP SUBMISSION

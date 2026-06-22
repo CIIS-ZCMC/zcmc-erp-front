@@ -36,6 +36,7 @@ import useSnackbarHook from "../../../Hooks/SnackbarHook";
 import userErrorInputHook from "../../../Hooks/ErrorInputHook";
 import useItemRequestsHook from "../../../Hooks/ItemRequest/ItemRequestHook";
 import NewRequestModal from "@Pages/PPMP/EndUser/Modal/AddItemRequest/NewRequestModal";
+import { useCommentActions, useComments, useRemarks } from "@Hooks/CommentHook";
 
 function DashboardEndUser(props) {
   const { header, description } = ANNUAL_OPS;
@@ -49,10 +50,10 @@ function DashboardEndUser(props) {
   const { showSnack } = useSnackbarHook();
 
   const { aop, mission, fiscalYear, yearDetails } = useAOPStore();
-  const { setMission, clearMission } = useAOPActions();
+  const { setMission } = useAOPActions();
   const { feedback } = useFeedbackStore();
-  const { postItmRequest } = useItemRequestsHook();
-  const { setError, clearErrors } = userErrorInputHook();
+  const { getCommentsByApplication, getRemarksByApplication } =
+    useCommentActions();
 
   const [openFiscalYearModal, setOpenFiscalYearModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
@@ -61,31 +62,9 @@ function DashboardEndUser(props) {
   const [openEditModal, setOpenEditModal] = useState(false);
   const [updateMissionValue, setUpdateMissionValue] = useState("");
   const [openNewRequest, setOpenNewRequest] = useState(false);
-  const [buttonLoader, setButtonLoader] = useState(false);
-  const [step, setStep] = useState(1);
-  const [itemReq, setItemReq] = useState({
-    classification: null,
-    category: null,
-    item_name: "",
-    unit: null,
-    quantity: 0,
-    estimated_budget: "",
-    variant: null,
-    market_research: false,
-    specs: [
-      { id: 1, value: "" },
-      { id: 2, value: "" },
-    ],
-    pin: "",
-  });
 
-  const { activity_comments, application_timelines, current_user } = feedback;
-
-  const { role } = current_user || {};
-
-  const remarksCount = application_timelines?.length || 0;
-  const commentCount = activity_comments?.length || 0;
-  const feedbackCount = commentCount + remarksCount;
+  const all_comments = useComments();
+  const remarks = useRemarks();
 
   const handleClose = () => {
     setOpenFiscalYearModal(false);
@@ -193,14 +172,11 @@ function DashboardEndUser(props) {
     setIsLoading(true);
 
     getAopYearList((status, message) => {
-      if (!(status >= 200 && status < 300)) {
-        // if status not success
-        setIsLoading(false);
-        return; //Toast error
-      }
-
       setIsLoading(false);
     });
+
+    getCommentsByApplication(aop?.id);
+    getRemarksByApplication(aop?.id);
   }, []);
 
   const { next_year_included, years } = yearDetails || {};
@@ -255,14 +231,13 @@ function DashboardEndUser(props) {
               xs={12}
               bgcolor="#006599"
               sx={{ borderTopRightRadius: 10, borderTopLeftRadius: 10 }}
-              p={2}
-              mb={1}
+              p={3}
             >
               <Stack
                 direction={"row"}
-                justifyContent={"space-between"}
-                alignItems={"center"}
-                spacing={1}
+                justifyContent="space-between"
+                alignItems="center"
+                width="100%"
               >
                 {/* Header here */}
                 <Header
@@ -274,34 +249,11 @@ function DashboardEndUser(props) {
                   status={aop?.status?.id}
                 />
 
-                {/* {aop?.status?.id !== 4 && (
-                  
-                )} */}
-
-                <Draft status={aop?.status?.id} />
-                {/* 
-                {aop?.status?.id !== 1 && (
-                  <>
-      
-                    <ButtonComponent
-                      variant={"soft"}
-                      label={"Feedback"}
-                      onClick={() => handleViewFeedback()}
-                      endDecorator={
-                        <ChipComponent
-                          variant={"soft"}
-                          size={"sm"}
-                          label={
-                            allComments?.length === 0
-                              ? remarks?.length
-                              : allComments?.length
-                          }
-                        />
-                      }
-                      startDecorator={<MessageSquareText size={16} />}
-                    />
-                  </>
-                )} */}
+                <Draft
+                  status={aop?.status?.id}
+                  commentsCount={aop?.counts?.feedbacks_count}
+                  setValue={setOpenFeedbackModal}
+                />
               </Stack>
             </Grid>
 
@@ -367,6 +319,8 @@ function DashboardEndUser(props) {
         />
       )}
 
+      {/* // MODAL */}
+
       {openFiscalYearModal && (
         <ModalComponent
           isOpen={openFiscalYearModal}
@@ -426,12 +380,6 @@ function DashboardEndUser(props) {
       <FeedbackContent
         openFeedbackModal={openFeedbackModal}
         setOpenFeedbackModal={setOpenFeedbackModal}
-        comments={activity_comments}
-        remarks={application_timelines}
-        feedbackCount={feedbackCount}
-        role={role}
-        isActivity={true}
-        // handleClick={() => navigate(`aop/activities/${activity_id}`)} // return objective id
       />
     </Fragment>
   );

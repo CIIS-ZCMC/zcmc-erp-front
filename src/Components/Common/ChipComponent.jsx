@@ -21,10 +21,11 @@ function ChipComponent({
   startDecorator,
   chipRadius,
   wrap = false,
+  fontWeight = 600,
   ...props
 }) {
   const sxStyles = {
-    fontWeight: 600,
+    fontWeight: fontWeight,
     fontSize: fontSize,
 
     maxWidth: {

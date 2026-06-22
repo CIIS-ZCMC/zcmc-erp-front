@@ -1,7 +1,7 @@
 import { Fragment, useEffect, useMemo, useState } from "react";
 import PageTitle from "../../../Components/Common/PageTitle";
 import { useNavigate, useParams } from "react-router-dom";
-import { Box, Grid, Stack, Typography } from "@mui/joy";
+import { Box, Checkbox, Grid, Stack, Typography } from "@mui/joy";
 import ContainerComponent from "../../../Components/Common/ContainerComponent";
 import ButtonComponent from "../../../Components/Common/ButtonComponent";
 import { ExternalLink } from "lucide-react";
@@ -25,11 +25,8 @@ import {
 import { ActivityDetails } from "./Contents/ActivityDetails";
 import { CommentsDetails } from "./Contents/CommentsDetails";
 import { FeedbackContent } from "./Contents/FeedbackContent";
-import { useUserTypes } from "../../../Store/AuthStore";
 import ProcessAOPContent from "./Contents/ProcessAOPContent";
 import { useApprovalActions } from "../../../Hooks/AOP/AOPApprovalHook";
-import BoxComponent from "@Components/Common/Card/BoxComponent";
-import { ThreeDotsLoader } from "@Components/Common/Loading/ThreeDotsLoader";
 import { OpenInNew } from "@mui/icons-material";
 
 export default function ManageAOP() {
@@ -39,7 +36,7 @@ export default function ManageAOP() {
 
   const isDivisionChief = apiPermissions?.is_division_chief;
   const isPlanningOfficer = apiPermissions?.is_planning;
-  const isMCCOfficer = !isDivisionChief && !isPlanningOfficer; // Keep this from user types for now
+  const isMCCOfficer = apiPermissions?.is_mcc;
 
   const { getAOPApprovalTimeline } = useApprovalActions();
   const { id: AOP_APPLICATION_ID } = useParams();
@@ -51,10 +48,9 @@ export default function ManageAOP() {
     getCommentsByApplication,
     getRemarksByApplication,
   } = useCommentActions();
-  const { getActivityById } = useActivityActions();
 
   const allComments = useComments() ?? localStorageGetter("comments");
-  const isLoading = useLoadingState();
+
   const AOPApplication = useAOPApplication();
   const objectives = useAOPApplicationObjectives();
   const remarks = useRemarks();
@@ -163,7 +159,7 @@ export default function ManageAOP() {
                 </Typography>
                 <Stack spacing={2} direction={!hasDispense ? "column" : "row"}>
                   <ButtonComponent
-                    label={`${AREA_CODE} PPMP`}
+                    label={`Open PPMP`}
                     fullWidth={true}
                     variant={"soft"}
                     onClick={() =>
@@ -191,20 +187,32 @@ export default function ManageAOP() {
               <ContainerComponent
                 title={"List of objectives and activities"}
                 description={
-                  "Collapse an objective and select one of its activities to view more information."
+                  <Stack>
+                    <Typography sx={{ mb: 1 }}>
+                      Collapse an objective and select one of its activities to
+                      view more information.
+                    </Typography>
+                    <Checkbox
+                      label="Mark all activity as “Reviewed”"
+                      size="sm"
+                      sx={{ fontSize: 12, color: "neutral.800" }}
+                      color="primary"
+                    />{" "}
+                  </Stack>
                 }
                 footer={
-                  <Stack direction={"row"} spacing={2}>
+                  <Stack
+                    direction={"row"}
+                    spacing={2}
+                    justifyContent={"space-between"}
+                  >
                     {isAllowedFeedbackViewing && (
                       <ButtonComponent
                         variant={"outlined"}
-                        label={`Go to feedback (${
-                          isPlanningOfficer
-                            ? remarks?.length
-                            : allComments?.length
-                        })`}
+                        label={`Go to feedback`}
                         endDecorator={<ExternalLink size={14} />}
                         onClick={handleViewFeedback}
+                        fullWidth={true}
                       />
                     )}
                     {/* PROCESS REQUEST */}

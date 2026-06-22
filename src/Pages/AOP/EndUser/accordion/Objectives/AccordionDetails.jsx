@@ -3,8 +3,10 @@ import AccordionSummary from "../Activities/AccordionSummary";
 import AccordionDetails from "../Activities/AccordionDetails";
 import AccordionComponent from "@Components/Common/AccordionComponent";
 import { grey } from "@mui/material/colors";
+import { Stack, Typography } from "@mui/joy";
+import ChipComponent from "@Components/Common/ChipComponent";
 
-const ActivityAccordion = ({ activities }) => {
+const ActivityAccordion = ({ objId, activities }) => {
   const [expandedActivity, setExpandedActivity] = useState(null);
 
   // Controlled drawer state per activity id
@@ -79,17 +81,20 @@ const ActivityAccordion = ({ activities }) => {
                   </Fragment>
                 }
                 accordionDetails={
-                  <AccordionDetails
-                    activity_id={id}
-                    first_quarter={first_quarter}
-                    second_quarter={second_quarter}
-                    third_quarter={third_quarter}
-                    fourth_quarter={fourth_quarter}
-                    resources={resources}
-                    responsiblePeople={responsible_people}
-                    resourcesCount={resources_count}
-                    peopleCount={responsible_people_count}
-                  />
+                  <>
+                    <AccordionDetails
+                      objId={objId}
+                      activity_id={id}
+                      first_quarter={first_quarter}
+                      second_quarter={second_quarter}
+                      third_quarter={third_quarter}
+                      fourth_quarter={fourth_quarter}
+                      resources={resources}
+                      responsiblePeople={responsible_people}
+                      resourcesCount={resources_count}
+                      peopleCount={responsible_people_count}
+                    />
+                  </>
                 }
               />
             </>

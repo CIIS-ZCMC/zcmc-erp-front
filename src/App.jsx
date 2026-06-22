@@ -31,12 +31,16 @@ const theme = extendTheme({
           neutralBg: "#F9FAFB",
 
           plainColor: "#004366",
+          plainHoverBg: "#EAF4FD",
+          plainActiveBg: "#D9ECFC",
 
           outlinedBorder: "#004366",
           outlinedColor: "#004366",
 
-          softColor: "#004366",
-          softBg: "#DFF2FF", // <-- this sets the text color for plain buttons
+          softColor: "#005A9C",
+          softBg: "#DFF2FF",
+          softHoverBg: "#D7EBFC",
+          softActiveBg: "#C7E3FB",
 
           // Add these
           500: "#004366",

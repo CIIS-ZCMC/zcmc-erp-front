@@ -48,7 +48,11 @@ const AOPDataSummary = ({ aop, handleNavigateObjectives }) => {
       />
 
       {/* 3 */}
-      <ResourcesCard totalCost={total_cost} resourcesCount={resources_count} />
+      <ResourcesCard
+        totalCost={total_cost}
+        resourcesCount={resources_count}
+        aop={aop}
+      />
 
       {/* 4 */}
       <ResponsiblePersonCard

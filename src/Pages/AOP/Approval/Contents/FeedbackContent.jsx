@@ -11,6 +11,8 @@ import DrawerComponent from "../../../../Components/Common/DrawerComponent";
 import { ThreeDots } from "react-loader-spinner";
 import { useUserTypes } from "../../../../Store/AuthStore";
 import { localStorageGetter } from "../../../../Utils/LocalStorage";
+import { useAOPPermissions } from "@Hooks/AOP/AOPApplicationsHook";
+import { useNavigate } from "react-router-dom";
 
 export const FeedbackContent = ({
   openFeedbackModal,
@@ -18,12 +20,11 @@ export const FeedbackContent = ({
   isLoading,
   isActivity = false,
 }) => {
-  const [activeTab, setActiveTab] = useState(0);
-  const { isDivisionHead, isPlanning } = useUserTypes();
+  const apiPermissions = useAOPPermissions();
+  const navigate = useNavigate();
 
-  useEffect(() => {
-    // console.log(isDivisionHead);
-  }, [isDivisionHead]);
+  const isPlanningOfficer = apiPermissions?.is_planning;
+  const [activeTab, setActiveTab] = useState(0);
 
   // COMMENTS HOOK
   const remarks = useRemarks();
@@ -33,7 +34,7 @@ export const FeedbackContent = ({
   const feedbackDisplay = useMemo(() => {
     let dataToDisplay;
 
-    if (isPlanning) {
+    if (isPlanningOfficer) {
       dataToDisplay = remarks?.map((r) => ({ ...r, __type: "remark" }));
     } else {
       if (activeTab === 0) {
@@ -44,7 +45,7 @@ export const FeedbackContent = ({
     }
 
     return groupByDate(dataToDisplay ?? []);
-  }, [activeTab, allComments, isPlanning, remarks]);
+  }, [activeTab, allComments, isPlanningOfficer, remarks]);
 
   const feedbackCount =
     activeTab === 0
@@ -54,16 +55,10 @@ export const FeedbackContent = ({
       : remarks?.length;
 
   useEffect(() => {
-    if (isPlanning) {
+    if (isPlanningOfficer) {
       setActiveTab(1); // Switch to Remarks tab
     }
-  }, [isPlanning]);
-
-  useEffect(() => {
-    // console.log(isDivisionHead)
-    // console.log(allComments)
-    // console.log(feedbackDisplay)
-  }, [isDivisionHead, feedbackDisplay, allComments]);
+  }, [isPlanningOfficer]);
 
   return (
     <DrawerComponent
@@ -74,7 +69,7 @@ export const FeedbackContent = ({
         "The following list of feedback are based on your comments per activity and the Division Chief's remarks for this request as a whole."
       }
       content={
-        <Stack gap={2} mt={2}>
+        <Stack gap={2}>
           {isLoading ? (
             <Box
               display="flex"
@@ -94,7 +89,7 @@ export const FeedbackContent = ({
             </Box>
           ) : (
             <>
-              {!isPlanning && (
+              {!isPlanningOfficer && (
                 <>
                   <CustomTabComponent
                     tabOptions={feedbackTabOptions}
@@ -133,7 +128,15 @@ export const FeedbackContent = ({
                           ?.filter((m) => m.__type === "comment")
                           .map(
                             (
-                              { name, area, area_code, created_at, comment },
+                              {
+                                name,
+                                area,
+                                area_code,
+                                created_at,
+                                comment,
+                                activity_name,
+                                path,
+                              },
                               idx,
                             ) => (
                               <CommentContainerComponent
@@ -143,6 +146,10 @@ export const FeedbackContent = ({
                                 area_code={area}
                                 date={created_at}
                                 isActivity={isActivity}
+                                activityName={activity_name}
+                                path={path}
+                                withActivityPath={true}
+                                handleClick={() => navigate(path)}
                               />
                             ),
                           )}

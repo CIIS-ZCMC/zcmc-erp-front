@@ -86,7 +86,7 @@ export default function DashboardHeader({
                     ? "Submit AOP and PPMP for Review"
                     : "Resubmit AOP and PPMP for Review"
                 }
-                width="250px"
+                width="auto"
                 onClick={() => setOpenSave(true)}
                 // disabled={!isChecklistComplete}
               />

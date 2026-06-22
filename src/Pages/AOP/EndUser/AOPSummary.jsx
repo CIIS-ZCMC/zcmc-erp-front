@@ -29,7 +29,14 @@ import { isAopDisabled } from "../../../Utils/AopStatus";
 import ModalComponent from "@Components/Common/Dialog/ModalComponent";
 import AuthorizationPinComponent from "@Components/AuthorizationPinComponent";
 import useSnackbarHook from "../../../Hooks/SnackbarHook";
-import { Add, DownloadOutlined, FileDownload } from "@mui/icons-material";
+import {
+  Add,
+  DownloadOutlined,
+  FileDownload,
+  WarningAmber,
+} from "@mui/icons-material";
+import ChipComponent from "@Components/Common/ChipComponent";
+import SubmissionValidationContent from "./Summary/SubmissionValidationContent";
 
 const AOPSummary = () => {
   const navigate = useNavigate();
@@ -40,6 +47,12 @@ const AOPSummary = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
+  const [selectedPurchaseType, setSelectedPurchaseType] = useState(null);
+
+  const [validationModal, setValidationModal] = useState({
+    open: false,
+    data: null,
+  });
 
   const { updateAOP, exportAOP } = useAOPHook();
   const {
@@ -98,8 +111,8 @@ const AOPSummary = () => {
   };
 
   const SUBMIT_ALERT_DESC = {
-    1: `You are about to officially create PMMP for Fiscal Year ${year}.`,
-    6: `You are about to resubmit PMMP for Fiscal Year ${year}.`,
+    1: `You are about to officially submit your Annual Operations Plan for Fiscal Year ${year} to the approving bodies for review and approval.`,
+    6: `You are about to resubmit your Annual Operations Plan for Fiscal Year for Fiscal Year ${year}.`,
   };
 
   const handleOpenSubmitAopModal = () => {
@@ -131,8 +144,6 @@ const AOPSummary = () => {
       authorization_pin: pin,
     };
 
-    // console.log(payload)
-
     try {
       await updateAOP(params, payload, (status, message) => {
         if (status === 200) {
@@ -140,116 +151,10 @@ const AOPSummary = () => {
           navigate("/aop");
           setIsLoading(false);
         } else if (status === 422) {
-          // console.log(message)
-          const {
-            statusMessage,
-            activities_without_resources,
-            activities_without_responsible_people,
-            activities_without_target,
-            objectives_without_activities,
-            mission_missing,
-          } = message;
-
-          const MISSING_DATA_SECTIONS = [
-            {
-              title: "These activities do not contain any resources:",
-              data: activities_without_resources,
-            },
-            {
-              title: "These activities do not contain any responsible people:",
-              data: activities_without_responsible_people,
-            },
-            {
-              title: "These activities do not contain any target quarter:",
-              data: activities_without_target,
-            },
-          ];
-
-          const data = {
-            status: status,
-            title: statusMessage,
-            description: (
-              <>
-                {mission_missing && (
-                  <>
-                    {mission_missing?.map((mission, idx) => (
-                      <Typography key={idx} level="body-xs">
-                        {mission}
-                      </Typography>
-                    ))}
-                  </>
-                )}
-                {objectives_without_activities && (
-                  <>
-                    <Typography level="title-sm">
-                      These objectives do not contain any activities :
-                    </Typography>
-                    {objectives_without_activities.map((objective, idx) => (
-                      <Typography key={idx} level="body-xs">
-                        {objective}
-                      </Typography>
-                    ))}
-                  </>
-                )}
-
-                <Divider
-                  sx={{
-                    my: 1,
-                  }}
-                />
-
-                {MISSING_DATA_SECTIONS.map(({ title, data }, idx) =>
-                  data?.length > 0 ? (
-                    <Fragment key={idx}>
-                      <Typography level="title-sm">{title}</Typography>
-
-                      <Box
-                        display="flex"
-                        flexWrap="wrap"
-                        gap={1}
-                        sx={{
-                          maxWidth: "100%",
-                          overflowX: "hidden",
-                        }}
-                      >
-                        {data.map(({ objective, activities }, i) => (
-                          <>
-                            {activities.map((activity) => (
-                              <Typography
-                                key={i}
-                                level="body-xs"
-                                sx={{
-                                  flex: "0 1 auto",
-                                  bgcolor: "#F5F5F5",
-                                  borderRadius: "8px",
-                                  px: 1.5,
-                                  py: 0.5,
-                                  whiteSpace: "nowrap",
-                                }}
-                              >
-                                {activity}
-                              </Typography>
-                            ))}
-                            <Typography level="body-xs">
-                              From objective: {objective}
-                            </Typography>
-                          </>
-                        ))}
-                      </Box>
-
-                      <Divider
-                        sx={{
-                          my: 1,
-                        }}
-                      />
-                    </Fragment>
-                  ) : null,
-                )}
-              </>
-            ),
-          };
-
-          setAlertDialog(data);
+          setValidationModal({
+            open: true,
+            data: message,
+          });
           setIsLoading(false);
         } else {
           setAlertDialog({
@@ -288,6 +193,11 @@ const AOPSummary = () => {
     });
   };
 
+  const handleNavigateObjectives = () => {
+    navigate(`/aop/objectives/${aop?.id}`, {
+      state: { aopId: aop?.id }, // do not change state name
+    });
+  };
   return (
     <>
       <PageTitle
@@ -399,7 +309,21 @@ const AOPSummary = () => {
                                   />
                                 </Stack>
                               )}
-                              <AccordionDetails activities={activities} />
+                              <Stack my={1.5} direction={"row"}>
+                                <ChipComponent
+                                  label={"Go to Objectives"}
+                                  variant={"soft"}
+                                  endDecorator
+                                  status={"next"}
+                                  color={"primary"}
+                                  onClick={handleNavigateObjectives}
+                                />
+                              </Stack>
+
+                              <AccordionDetails
+                                objId={id}
+                                activities={activities}
+                              />
                             </>
                           }
                         />
@@ -430,7 +354,7 @@ const AOPSummary = () => {
                   </Typography>
 
                   <ButtonComponent
-                    label={status.id === 6 ? "Resubmit AOP" : "Submit AOP"}
+                    label={"Proceed to PPMP"}
                     size={"lg"}
                     onClick={() => handleOpenSubmitAopModal()}
                     color="primary"
@@ -463,7 +387,7 @@ const AOPSummary = () => {
             <>
               <BoxComponent bgColor={"#F5F5F5"}>
                 <Stack p={1} spacing={1}>
-                  <Typography level="title-md">
+                  <Typography level="title-md" sx={{ color: grey[800] }}>
                     Please confirm the following:
                   </Typography>
 
@@ -472,7 +396,7 @@ const AOPSummary = () => {
                       <Typography
                         level="body-sm"
                         startDecorator={"✓"}
-                        sx={{ color: grey[900] }}
+                        sx={{ color: grey[700] }}
                       >
                         {title}
                       </Typography>
@@ -491,6 +415,27 @@ const AOPSummary = () => {
           rightButtonLabel={status.id === 6 ? "Resubmit" : "Submit"}
           rightButtonAction={() => handleSubmitAop()}
           isLoading={isLoading}
+          loadingLabel={"Submitting..."}
+          rightButtonDisabled={!pin}
+        />
+      )}
+
+      {validationModal.open && (
+        <ModalComponent
+          isOpen={validationModal.open}
+          onClose={() => setValidationModal({ open: false, data: null })}
+          title={
+            <Typography color="danger">
+              {validationModal.data?.statusMessage}
+            </Typography>
+          }
+          handleClose={() => setValidationModal({ open: false, data: null })}
+          description={
+            "Fix the issues below before your AOP can be submitted for review."
+          }
+          maxWidth="700px"
+          minWidth="700px"
+          content={<SubmissionValidationContent data={validationModal.data} />}
         />
       )}
     </>

@@ -5,17 +5,27 @@ import { API } from "../../Data/constants";
 const usePPMPCommentsHook = create((set) => ({
   ppmpComments: [], // ⬅️ NEW: Store comments
   isLoading: false,
+  currentItemId: null,
 
   actions: {
     /* ----------- GET PPMP COMMENTS ----------- */
     getPPMPComments: (ppmp_item_id, callback) => {
-      set(() => ({ isLoading: true }));
+      set(() => ({
+        isLoading: true,
+        ppmpComments: [],
+        currentItemId: ppmp_item_id,
+      }));
 
       read({
         url: `${API.PPMP_COMMENTS}`, // <-- Change this to your actual API
         params: { ppmp_item_id },
         success: (res) => {
           const { data, message } = res.data;
+
+          const currentItemId = usePPMPCommentsHook.getState().currentItemId;
+
+          if (currentItemId !== ppmp_item_id) return;
+
           set(() => ({
             ppmpComments: data.comments, // store the comments
             isLoading: false,

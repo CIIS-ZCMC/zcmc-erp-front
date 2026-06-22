@@ -31,7 +31,7 @@ export const getStatusIcon = (status, iconOnly) => {
     error: <CircleX />,
     danger: <CircleX />,
     logout: <LogOut />,
-    next: <ArrowRight />,
+    next: <ArrowRight size={16} />,
   };
 
   const icon = iconMap[status] || null;

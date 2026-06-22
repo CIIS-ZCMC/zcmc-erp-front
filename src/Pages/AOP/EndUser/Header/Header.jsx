@@ -21,7 +21,7 @@ const Header = ({
 
   return (
     <>
-      <Stack width={"100%"} spacing={1}>
+      <Stack spacing={1} alignItems={"flex-start"}>
         <Box display="flex" alignItems="center" gap={1}>
           <Typography sx={{ color: "white", fontSize: 28, fontWeight: 600 }}>
             {HEADER_TITLE}

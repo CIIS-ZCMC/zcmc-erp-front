@@ -59,6 +59,7 @@ const Checklist = ({ fiscalYear }) => {
                     <Checkbox
                       checked={!!status}
                       color={!!status && "success"}
+                      variant="soft"
                     />
                   </ListItemDecorator>
                   <Stack>
