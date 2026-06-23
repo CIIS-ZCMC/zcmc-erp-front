@@ -129,27 +129,7 @@ export const ActivityDetails = () => {
                   </Grid>
                 ))}
               </Grid>
-              {/* <Grid container columns={{ xs: 2, sm: 4 }} spacing={1}>
-                {[q1, q2, q3, q4]?.map((element, index) => (
-                  <Grid xs={1} key={index}>
-                    <BoxComponent>
-                      <Stack gap={1}>
-                        <Typography level={titleStyles.level}>
-                          Q{index + 1}:
-                        </Typography>
 
-                        <Typography
-                          level={valueStyles.level}
-                          textColor={valueStyles.textColor}
-                          fontWeight={valueStyles.fontWeight}
-                        >
-                          {element}
-                        </Typography>
-                      </Stack>
-                    </BoxComponent>
-                  </Grid>
-                ))}
-              </Grid> */}
               <Divider />
               {/* TIMEFRAME */}
               <Typography
@@ -178,7 +158,7 @@ export const ActivityDetails = () => {
                 <Link
                   gap={0.5}
                   fontSize={13}
-                  onClick={setOpenResourcesModal}
+                  onClick={() => setOpenResourcesModal(true)}
                   // onClick={() =>
                   //   navigate(
                   //     `/aop-approval/view-ppmp/${Application.ppmp_application_id}`

@@ -23,12 +23,18 @@ import { useAuth } from "../../../../Store/AuthStore";
 export const MarkReviewFooter = ({
   openMarkModal,
   setOpenMarkModal,
-  // isApproved,
+  isMarkAll = false,
+  allReviewed = false, // NEW
 }) => {
   // HOOKS
   const { setConfirmationModal, closeConfirmation } = useModalHook();
-  const { markAsReviewed, getActivityById, markAsUnreviewed } =
-    useActivityActions();
+  const {
+    markAsReviewed,
+    getActivityById,
+    markAsUnreviewed,
+    markAllAsReviewed,
+    markAllAsUnreviewed,
+  } = useActivityActions();
   const { showSnack } = useSnackbarHook();
   const { getAOPApplicationById } = useAOPApplicationsActions();
   const { user } = useAuth();
@@ -47,14 +53,24 @@ export const MarkReviewFooter = ({
   // FUNCTIONS
   const handleClickMarkCheckbox = () => {
     setOpenMarkModal(true);
+
     const data = {
       status: "info",
-      title: is_reviewed
-        ? "Remove review mark from this activity?"
-        : "Mark this activity as reviewed?",
-      description: is_reviewed
-        ? "Are you sure you want to remove the review mark? You can mark this activity as reviewed again later if needed."
-        : "Showing marks helps you determine which among all activities has successfully passed your double-checking so that you don't have to double-check again. Don’t worry, you can uncheck this later.",
+      title: isMarkAll
+        ? allReviewed
+          ? "Remove review marks from all activities?"
+          : "Mark all activities as reviewed?"
+        : is_reviewed
+          ? "Remove review mark from this activity?"
+          : "Mark this activity as reviewed?",
+
+      description: isMarkAll
+        ? allReviewed
+          ? "This will remove the review mark from all activities. You can mark them as reviewed again later if needed."
+          : "This will mark all activities as reviewed so you can easily identify which activities have already been double-checked."
+        : is_reviewed
+          ? "Are you sure you want to remove the review mark? You can mark this activity as reviewed again later if needed."
+          : "Showing marks helps you determine which among all activities has successfully passed your double-checking so that you don't have to double-check again. Don’t worry, you can uncheck this later.",
     };
 
     setConfirmationModal(data);
@@ -64,12 +80,27 @@ export const MarkReviewFooter = ({
     setIsReviewed(true);
     setBtnLoading(true);
 
+    if (isMarkAll) {
+      const action = allReviewed ? markAllAsUnreviewed : markAllAsReviewed;
+
+      action(AOP_APPLICATION_ID, (status, message) => {
+        setBtnLoading(false);
+        closeConfirmation();
+        setOpenMarkModal(false);
+
+        getAOPApplicationById(AOP_APPLICATION_ID, () => {});
+        showSnack(status, message);
+      });
+
+      return;
+    }
+
     if (is_reviewed) {
       markAsUnreviewed(activeActivity, (status, message) => {
         setBtnLoading(false);
         closeConfirmation();
         setOpenMarkModal(false);
-        getActivityById(activeActivity, () => {}), showSnack(status, message);
+        (getActivityById(activeActivity, () => {}), showSnack(status, message));
         getAOPApplicationById(AOP_APPLICATION_ID, () => {});
       });
     } else {
@@ -77,7 +108,7 @@ export const MarkReviewFooter = ({
         setBtnLoading(false);
         closeConfirmation();
         setOpenMarkModal(false);
-        getActivityById(activeActivity, () => {}), showSnack(status, message);
+        (getActivityById(activeActivity, () => {}), showSnack(status, message));
         getAOPApplicationById(AOP_APPLICATION_ID, () => {});
       });
     }
@@ -91,7 +122,7 @@ export const MarkReviewFooter = ({
     if (!Array.isArray(approvalTimeline) || !user?.id) return;
 
     const isApproved = approvalTimeline.some(
-      (item) => item.approver_user_id === user.id && item.status === "approved"
+      (item) => item.approver_user_id === user.id && item.status === "approved",
     );
 
     // console.log("isApproved", approvalTimeline);
@@ -103,28 +134,36 @@ export const MarkReviewFooter = ({
       {/* {JSON.stringify(is_reviewed)} */}
       <Stack gap={2}>
         {/* REVIEW */}
-        <Typography
-          level={titleStyles.level}
-          fontWeight={titleStyles.fontWeight}
-        >
-          Double-checking support
-        </Typography>
+        {!isMarkAll && (
+          <Typography
+            level={titleStyles.level}
+            fontWeight={titleStyles.fontWeight}
+          >
+            Double-checking support
+          </Typography>
+        )}
+
         <Box sx={{ gap: 1 }}>
           <FormControl>
             <Checkbox
-              label="Mark activity as “Reviewed”"
+              label={
+                isMarkAll
+                  ? allReviewed
+                    ? 'Mark all activities as "Unreviewed"'
+                    : 'Mark all activities as "Reviewed"'
+                  : 'Mark activity as "Reviewed"'
+              }
               size="sm"
               sx={{ fontSize: 12, color: "neutral.800" }}
               color="primary"
-              checked={isReviewed} // ✅ controlled
+              checked={isMarkAll ? allReviewed : Boolean(is_reviewed)}
               disabled={disabledCheckbox}
               onChange={handleClickMarkCheckbox}
             />
 
             <FormHelperText sx={{ fontSize: 11, color: "neutral.400" }}>
-              Showing marks helps you determine which among all activities has
-              successfully passed your double-checking so that you don't have to
-              double-check again.
+              {!isMarkAll &&
+                "Showing marks helps you determine which among all activities has successfully passed your double-checking so that you don't have to double-check again."}
             </FormHelperText>
           </FormControl>
 
@@ -144,8 +183,16 @@ export const MarkReviewFooter = ({
             closeConfirmation();
             setOpenMarkModal(false);
           }}
-          leftButtonLabel="No, back to request"
-          rightButtonLabel={is_reviewed ? "Remove mark" : 'Mark as "Reviewed"'}
+          leftButtonLabel="Cancel"
+          rightButtonLabel={
+            isMarkAll
+              ? allReviewed
+                ? "Remove all marks"
+                : 'Mark all as "Reviewed"'
+              : is_reviewed
+                ? "Remove mark"
+                : 'Mark as "Reviewed"'
+          }
           rightButtonAction={handleMarkAsReviewed}
           isLoading={btnLoading}
         />

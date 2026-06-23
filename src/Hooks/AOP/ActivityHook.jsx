@@ -75,6 +75,34 @@ const useActivityHook = create(
           });
         },
 
+        markAllAsReviewed: (aop_id, callback) => {
+          post({
+            url: `/mark-all-reviewed/${aop_id}`,
+            success: (response) => {
+              const { message } = response.data;
+              callback(response.status, message);
+            },
+            failed: () => {
+              callback();
+              set({ isLoading: false });
+            },
+          });
+        },
+
+        markAllAsUnreviewed: (aop_id, callback) => {
+          post({
+            url: `/mark-all-unreviewed/${aop_id}`,
+            success: (response) => {
+              const { message } = response.data;
+              callback(response.status, message);
+            },
+            failed: () => {
+              callback();
+              set({ isLoading: false });
+            },
+          });
+        },
+
         // ---------------------------------------------------
         // CLEAR ACTIVITY STORE
         // ---------------------------------------------------

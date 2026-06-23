@@ -115,7 +115,7 @@ const ObjectivesList = () => {
 
   return (
     <Fragment>
-      <Stack width={400} gap={2} sx={{ width: "100%" }}>
+      <Stack width={400} gap={1} sx={{ width: "100%" }}>
         {ApplicationObjectives?.map(
           (
             {
@@ -146,7 +146,7 @@ const ObjectivesList = () => {
               name="parent"
               onClickEdit={() => handeEditObjective(id)}
             >
-              <Stack gap={3} px={0.5}>
+              <Stack gap={2} px={0.5}>
                 <EllipsisComponent
                   label={"Objective:"}
                   text={is_editable ? other_objective : objective}

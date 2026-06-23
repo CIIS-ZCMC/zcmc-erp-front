@@ -28,13 +28,13 @@ import { FeedbackContent } from "./Contents/FeedbackContent";
 import ProcessAOPContent from "./Contents/ProcessAOPContent";
 import { useApprovalActions } from "../../../Hooks/AOP/AOPApprovalHook";
 import { OpenInNew } from "@mui/icons-material";
+import { MarkReviewFooter } from "./Contents/MarkReviewFooter";
 
 export default function ManageAOP() {
   // const { isPlanning, isMCC } = useUserTypes();
 
   const apiPermissions = useAOPPermissions();
 
-  const isDivisionChief = apiPermissions?.is_division_chief;
   const isPlanningOfficer = apiPermissions?.is_planning;
   const isMCCOfficer = apiPermissions?.is_mcc;
 
@@ -43,11 +43,8 @@ export default function ManageAOP() {
   const { getAOPApplicationById } = useAOPApplicationsActions();
   const navigate = useNavigate();
   // COMMENTS HOOK
-  const {
-    getCommentsByActivity,
-    getCommentsByApplication,
-    getRemarksByApplication,
-  } = useCommentActions();
+  const { getCommentsByApplication, getRemarksByApplication } =
+    useCommentActions();
 
   const allComments = useComments() ?? localStorageGetter("comments");
 
@@ -56,12 +53,24 @@ export default function ManageAOP() {
   const remarks = useRemarks();
   const hasDispense = useHasDispense();
 
+  const allReviewed = Boolean(
+    objectives?.length &&
+    objectives.every(
+      (obj) =>
+        Array.isArray(obj.activities) &&
+        obj.activities.length > 0 &&
+        obj.activities.every((a) => a.is_reviewed),
+    ),
+  );
+
   // ACTIVITY ID
   // ✅ SAFE DERIVATION
   const defaultActivityId = objectives?.[0]?.activities?.[0]?.id ?? null;
 
   // STATES
   const [isRemarksLoading, setIsRemarksLoading] = useState(true);
+  const [openMarkModal, setOpenMarkModal] = useState(false);
+
   const AREA_CODE = AOPApplication?.area_code;
   const FISCAL_YEAR = new Date().getFullYear() + 1;
   // MODAL
@@ -135,7 +144,6 @@ export default function ManageAOP() {
             border: 1,
             borderColor: "neutral.100",
             padding: 0,
-            pr: 1.5,
           }}
         >
           <Grid
@@ -153,7 +161,7 @@ export default function ManageAOP() {
             {/* OBJECTIVES  */}
             <Grid item="true" xs={4} height={{ md: "auto", lg: "100%" }}>
               <ContainerComponent sx={{ mb: 1 }}>
-                <Typography level="body-sm" mb={2}>
+                <Typography level="body-xs" mb={1}>
                   To view the Project Procurement Management Plan for this AOP,
                   click the button below.
                 </Typography>
@@ -162,6 +170,7 @@ export default function ManageAOP() {
                     label={`Open PPMP`}
                     fullWidth={true}
                     variant={"soft"}
+                    size={"sm"}
                     onClick={() =>
                       navigate(
                         `/approval/view-ppmp/${AOP_APPLICATION_ID}/${"regular"}`,
@@ -192,12 +201,14 @@ export default function ManageAOP() {
                       Collapse an objective and select one of its activities to
                       view more information.
                     </Typography>
-                    <Checkbox
-                      label="Mark all activity as “Reviewed”"
-                      size="sm"
-                      sx={{ fontSize: 12, color: "neutral.800" }}
-                      color="primary"
-                    />{" "}
+                    {isPlanningOfficer && (
+                      <MarkReviewFooter
+                        setOpenMarkModal={setOpenMarkModal}
+                        openMarkModal={openMarkModal}
+                        allReviewed={allReviewed}
+                        isMarkAll
+                      />
+                    )}
                   </Stack>
                 }
                 footer={

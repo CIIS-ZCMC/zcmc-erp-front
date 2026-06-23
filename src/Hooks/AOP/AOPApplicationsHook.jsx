@@ -6,116 +6,112 @@ import {
 } from "../../Utils/LocalStorage";
 import { read, update } from "../../Services/RequestMethods";
 import { API } from "../../Data/constants";
+import { persist } from "zustand/middleware";
 
-const useAOPApplicationsHook = create((set) => ({
-  aopApplications: [],
-  aopApplicationObjectives: [],
-  aopApplication: null,
-  timeline_id: "",
-  has_dispense: false,
+const useAOPApplicationsHook = create(
+  persist(
+    (set) => ({
+      aopApplications: [],
+      aopApplicationObjectives: [],
+      aopApplication: null,
 
-  // approvalTimeline: [],
-  isLoading: false,
+      timeline_id: "",
+      has_dispense: false,
+      permissions: {},
 
-  actions: {
-    // GET ALL AOP APPLICATIONS
-    // getAOPApplications: (params, callback) => {
-    //   read({
-    //     url: API.AOP_REQUESTS,
-    //     params: params,
-    //     failed: callback,
-    //     success: (response) => {
-    //       const { data, message } = response.data;
-    //       set({ aopApplications: data });
-    //       callback(200, message);
-    //     },
-    //   });
-    // },
-    getAOPApplications: (params, callback) => {
-      read({
-        url: `requests-approver`,
-        params: params,
-        failed: callback,
-        success: (response) => {
-          const { data, message } = response.data;
-          set({ aopApplications: data.applications ?? [] });
-          callback(200, message);
-        },
-      });
-    },
+      isLoading: false,
 
-    // GET AOP APPLICATION BY ID
-    getAOPApplicationById: (id, callback) => {
-      set({ isLoading: true });
-
-      read({
-        url: `${API.MANAGE_AOP_REQUEST}/${id}`,
-        failed: () => {
-          callback();
-          set({ isLoading: false });
-        },
-        success: (response) => {
-          const {
-            data: {
-              objectives = [],
-              application,
-              latest_timeline_id,
-              has_dispense,
-              permissions,
+      actions: {
+        // GET ALL AOP APPLICATIONS
+        getAOPApplications: (params, callback) => {
+          read({
+            url: `requests-approver`,
+            params: params,
+            failed: callback,
+            success: (response) => {
+              const { data, message } = response.data;
+              set({ aopApplications: data.applications ?? [] });
+              callback(200, message);
             },
-            message,
-          } = response.data;
-
-          set({
-            timeline_id: latest_timeline_id,
-            aopApplicationObjectives: objectives,
-            aopApplication: application,
-            isLoading: false,
-            has_dispense: has_dispense,
-            permissions: permissions,
           });
-          localStorageSetter("aopApplication", application); // STORE TO LOCALSTORAGE
-          localStorageSetter("aopApplicationObjectives", objectives); // STORE TO LOCALSTORAGE
-          localStorageSetter("timeline_id", latest_timeline_id); // STORE TO LOCALSTORAGE
-          localStorageSetter("has_dispense", has_dispense); // STORE TO LOCALSTORAGE
-          localStorageSetter("permissions", permissions); // STORE TO LOCALSTORAGE
-          // STORE TO LOCALSTORAGE
-
-          callback(200, message);
         },
-      });
+
+        // GET BY ID
+        getAOPApplicationById: (id, callback) => {
+          set({ isLoading: true });
+
+          read({
+            url: `${API.MANAGE_AOP_REQUEST}/${id}`,
+            failed: () => {
+              callback;
+              set({ isLoading: false });
+            },
+            success: (response) => {
+              const {
+                data: {
+                  objectives = [],
+                  application,
+                  latest_timeline_id,
+                  has_dispense,
+                  permissions,
+                },
+                message,
+              } = response.data;
+
+              set({
+                timeline_id: latest_timeline_id,
+                aopApplicationObjectives: objectives,
+                aopApplication: application,
+                has_dispense,
+                permissions, // ✅ persisted automatically
+                isLoading: false,
+              });
+
+              callback(200, message);
+            },
+          });
+        },
+
+        // UPDATE OBJECTIVE
+        updateObjectiveSuccessIndicator: (body, callback) => {
+          try {
+            const { other_success_indicator, other_objective, index } = body;
+
+            const dataToSubmit = new FormData();
+
+            dataToSubmit.append("application_objective_id", index);
+            dataToSubmit.append("other_objective_description", other_objective);
+            dataToSubmit.append(
+              "other_success_indicator_description",
+              other_success_indicator,
+            );
+
+            update({
+              url: API.EDIT_OBJECTIVE,
+              form: dataToSubmit,
+              success: (response) => {
+                const { message } = response.data;
+                callback(200, message);
+              },
+              failed: callback,
+            });
+          } catch (e) {
+            console.log(e);
+          }
+        },
+      },
+    }),
+
+    {
+      name: "aop-applications-store", // localStorage key
+      partialize: (state) => ({
+        permissions: state.permissions,
+        timeline_id: state.timeline_id,
+        has_dispense: state.has_dispense,
+      }),
     },
-
-    // EDIT SUCCESS INDICATORS AND OBJECTIVE
-    updateObjectiveSuccessIndicator: (body, callback) => {
-      try {
-        const { other_success_indicator, other_objective, index } = body;
-
-        const dataToSubmit = new FormData();
-
-        dataToSubmit.append("application_objective_id", index);
-        dataToSubmit.append("other_objective_description", other_objective);
-        dataToSubmit.append(
-          "other_success_indicator_description",
-          other_success_indicator,
-        );
-
-        update({
-          url: API.EDIT_OBJECTIVE,
-          form: dataToSubmit,
-          success: (response) => {
-            const { data, message } = response.data;
-            // set({ aopApplications: data });
-            callback(200, message);
-          },
-          failed: callback,
-        });
-      } catch (e) {
-        console.log(e);
-      }
-    },
-  },
-}));
+  ),
+);
 
 export const useAOPApplications = () =>
   useAOPApplicationsHook((state) => state.aopApplications);

@@ -70,11 +70,10 @@ function ViewPPMP() {
   const [isPostingComment, setIsPostingComment] = useState(false);
   const [localRows, setLocalRows] = useState([]);
   const [activeTab, setActiveTab] = useState("all");
-  const { isBudget } = useUserTypes();
   const { showSnack } = useSnackbarHook();
   const { setAlertDialog } = useModalHook();
 
-  const effectiveTab = isBudget ? activeTab : "proc";
+  const effectiveTab = isBudgetOfficer ? activeTab : "proc";
 
   const [debouncedSearch] = useDebounce(search, 500);
 
@@ -100,7 +99,7 @@ function ViewPPMP() {
       perPage,
       effectiveTab,
     );
-    if (isBudget) getSourceOfFunds(() => {});
+    if (isBudgetOfficer) getSourceOfFunds(() => {});
   }, [id, effectiveTab, page, perPage, debouncedSearch]);
 
   // Keep localRows in sync for optimistic updates
@@ -191,6 +190,9 @@ function ViewPPMP() {
             current: true,
           },
         ]}
+        onClickArrow={() =>
+          navigate(`/approval/objectives/${AOP_APPLICATION_ID}`)
+        }
       />
 
       <BoxComponent my={2} bgColor={"#FAFAF9"} boxShadow="xs" p={2}>
@@ -265,7 +267,7 @@ function ViewPPMP() {
           </BoxComponent>
         </Stack>
       </BoxComponent>
-      {isBudget && (
+      {isBudgetOfficer && (
         <>
           <TabComponent
             tabs={tabs}
