@@ -13,6 +13,7 @@ import { useUserTypes } from "../../../../Store/AuthStore";
 import { localStorageGetter } from "../../../../Utils/LocalStorage";
 import { useAOPPermissions } from "@Hooks/AOP/AOPApplicationsHook";
 import { useNavigate } from "react-router-dom";
+import CommentsSkeleton from "@Components/Comments/CommentsSkeleton";
 
 export const FeedbackContent = ({
   openFeedbackModal,
@@ -71,22 +72,7 @@ export const FeedbackContent = ({
       content={
         <Stack gap={2}>
           {isLoading ? (
-            <Box
-              display="flex"
-              alignItems={"center"}
-              justifyContent={"center"}
-              height={"80vh"}
-            >
-              <ThreeDots
-                visible={true}
-                width="80"
-                color="#4fa94d"
-                radius="9"
-                ariaLabel="three-dots-loading"
-                wrapperStyle={{}}
-                wrapperClass=""
-              />
-            </Box>
+            <CommentsSkeleton />
           ) : (
             <>
               {!isPlanningOfficer && (
@@ -99,7 +85,13 @@ export const FeedbackContent = ({
                 </>
               )}
 
-              <Stack gap={1.8} maxHeight={"60vh"} overflow={"auto"} pr={1}>
+              <Stack
+                gap={1.8}
+                maxHeight={"65vh"}
+                overflow={"auto"}
+                pr={1}
+                pb={3}
+              >
                 {feedbackCount === 0 && (
                   <Box
                     sx={{
@@ -166,6 +158,7 @@ export const FeedbackContent = ({
                                 area_name,
                                 created_at,
                                 remark,
+                                action,
                                 role,
                               },
                               idx,
@@ -176,6 +169,7 @@ export const FeedbackContent = ({
                                 comment={remark}
                                 area_code={area_name}
                                 date={created_at}
+                                action={action}
                               />
                             ),
                           )}

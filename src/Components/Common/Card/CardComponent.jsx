@@ -40,6 +40,7 @@ const CardComponent = ({
             justifyContent={
               justifyContentHeader ? justifyContentHeader : "flex-end"
             }
+            sx={{ zIndex: 0 }}
           >
             {cardHeader}
           </Stack>
@@ -64,7 +65,7 @@ const CardComponent = ({
               }}
             />
 
-            <CardActions sx={{ justifyContent: "flex-end" }}>
+            <CardActions sx={{ justifyContent: "flex-end", zIndex: 0 }}>
               <Stack
                 direction={direction ? direction : "column"}
                 alignItems={"center"}

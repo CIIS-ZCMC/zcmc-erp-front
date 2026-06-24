@@ -171,13 +171,17 @@ function DashboardEndUser(props) {
   useEffect(() => {
     setIsLoading(true);
 
-    getAopYearList((status, message) => {
+    getAopYearList(() => {
       setIsLoading(false);
     });
-
-    getCommentsByApplication(aop?.id);
-    getRemarksByApplication(aop?.id);
   }, []);
+
+  useEffect(() => {
+    if (!aop?.id) return;
+
+    getCommentsByApplication(aop.id);
+    getRemarksByApplication(aop.id);
+  }, [aop?.id]);
 
   const { next_year_included, years } = yearDetails || {};
 
@@ -377,10 +381,12 @@ function DashboardEndUser(props) {
         isLoading={isLoading}
       />
 
-      <FeedbackContent
-        openFeedbackModal={openFeedbackModal}
-        setOpenFeedbackModal={setOpenFeedbackModal}
-      />
+      {openFeedbackModal && (
+        <FeedbackContent
+          openFeedbackModal={openFeedbackModal}
+          setOpenFeedbackModal={setOpenFeedbackModal}
+        />
+      )}
     </Fragment>
   );
 }

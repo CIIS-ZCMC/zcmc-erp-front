@@ -56,7 +56,7 @@ function CustomTabComponent({ onChange, tabOptions }) {
               <Typography
                 fontSize={12}
                 sx={{
-                  color: activeTab === key ? "success.600" : "neutral",
+                  color: activeTab === key ? "primary.600" : "neutral",
                   fontWeight: activeTab === key ? 600 : 500,
                 }}
               >

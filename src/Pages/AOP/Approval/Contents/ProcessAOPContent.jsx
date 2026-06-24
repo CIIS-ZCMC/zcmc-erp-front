@@ -10,14 +10,11 @@ import {
   useApprovalActions,
   useApprovalTimeline,
 } from "../../../../Hooks/AOP/AOPApprovalHook";
-// import { useAOPApplication } from "../../../../Hooks/AOP/AOPApplicationsHook";
 import { localStorageGetter } from "../../../../Utils/LocalStorage";
 import useModalHook from "../../../../Hooks/ModalHook";
 import ButtonComponent from "../../../../Components/Common/ButtonComponent";
 import ModalComponent from "../../../../Components/Common/Dialog/ModalComponent";
 import AlertDialogComponent from "../../../../Components/Common/Dialog/AlertDialogComponent";
-import { TEST_MODE } from "../../../../Services/Config";
-import { APPROVAL_TIMELINE } from "../../../../Data/TestData";
 import {
   useAOPApplicationObjectives,
   useAOPPermissions,
@@ -41,32 +38,17 @@ const ProcessAOPContent = () => {
     closeAlertDialog,
     alertDialogState: { status },
   } = useModalHook();
-  const approvalTimeline = useApprovalTimeline();
-  const timeline_id = localStorageGetter("timeline_id");
+  const timeline_id = useTimelineID();
 
-  const { user } = useAuth();
-
-  // const canProcess = approvalTimeline?.some(
-  //   (item) => item.approver_user?.id === user?.id && item.status === "pending",
-  // );
-  // STATE
   const [processData, setProcessData] = useState({ action: "approved" });
   const [disabledProcessRequest, setDisabledProcessRequest] = useState(false);
 
-  const AOP_APPLICATION_ID = localStorageGetter("aop_application_id");
   const [openProcessModal, setOpenProcessModal] = useState(false);
   const [btnLoading, setBtnLoading] = useState(false);
-
-  // Add this after the existing state declarations (around line 46)
-  const areAllActivitiesReviewed =
-    AOPApplicationObjectives?.every((obj) =>
-      obj.activities?.every((activity) => activity.is_reviewed),
-    ) ?? true;
 
   // FUNCTIONS
   const handleProcessRequest = () => {
     // Add validation for planning users
-
     setOpenProcessModal(true);
   };
 
@@ -80,7 +62,9 @@ const ProcessAOPContent = () => {
     if (isDivisionChief) {
       return "Planning Unit";
     } else if (isPlanningOfficer) {
-      return "MCC/Budget";
+      return "Budget Section";
+    } else if (isBudgetOfficer) {
+      return "MCC";
     }
   };
 
@@ -88,11 +72,6 @@ const ProcessAOPContent = () => {
   const handleProcessAOP = () => {
     setBtnLoading(true);
     const form = {
-      //       "action": 4, // 4 for approve, 6 for return
-      // "application_timeline_id": 21,
-      // "remarks": "i am planning unit lol.", //nullable
-      // "authorization_pin": "123456"
-
       application_timeline_id: timeline_id,
       action: processData?.action === "approved" ? 4 : 6,
       remarks: processData?.remarks ?? null,
@@ -142,6 +121,7 @@ const ProcessAOPContent = () => {
   useEffect(() => {
     setDisabledProcessRequest(!canProcess);
   }, [canProcess]);
+
   return (
     <Fragment>
       <ButtonComponent

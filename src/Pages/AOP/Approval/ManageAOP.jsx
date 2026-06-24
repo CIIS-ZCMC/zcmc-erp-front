@@ -138,13 +138,13 @@ export default function ManageAOP() {
         />
         {/* CONTENT */}
         <Box
-          sx={{
-            backgroundColor: "white",
-            borderRadius: 12,
-            border: 1,
-            borderColor: "neutral.100",
-            padding: 0,
-          }}
+        // sx={{
+        //   backgroundColor: "white",
+        //   borderRadius: 12,
+        //   border: 1,
+        //   borderColor: "neutral.100",
+        //   padding: 0,
+        // }}
         >
           <Grid
             container

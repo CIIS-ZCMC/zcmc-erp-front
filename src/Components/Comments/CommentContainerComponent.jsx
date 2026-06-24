@@ -7,6 +7,7 @@ import { Dot, ExternalLink } from "lucide-react";
 import EllipsisComponent from "../Common/Typography/EllipsisComponent";
 import { blue, grey } from "@mui/material/colors";
 import { Circle } from "@mui/icons-material";
+import ChipComponent from "@Components/Common/ChipComponent";
 
 CommentContainerComponent.propTypes = {};
 
@@ -18,6 +19,7 @@ function CommentContainerComponent({
   handleClick,
   activityName,
   path,
+  action,
   isActivity = false,
   withActivityPath = false,
 }) {
@@ -32,19 +34,36 @@ function CommentContainerComponent({
         borderRadius: 8,
         borderLeft: `6px solid ${blue[800]}`,
         boxShadow: "0 3px 10px -3px rgba(131, 129, 129, 0.2)",
-        // borderColor: "neutral.200",
-        // "&: hover": {
-        //   border: 1,
-        //   borderColor: "neutral.400",
-        // },
+        "&: hover": {
+          boxShadow: "md",
+        },
       }}
     >
-      <Typography fontWeight={600} level="title-sm">
-        {!isActivity
-          ? `${area_code} - ${name}`
-          : // `${area_code} - ${name}`}
-            `${area_code} - ${name}`}
-      </Typography>
+      <Stack
+        direction={"row"}
+        alignItems={"center"}
+        justifyContent={"space-between"}
+      >
+        <Typography
+          fontWeight={600}
+          level="title-sm"
+          width={action ? "80%" : "100%"}
+        >
+          {!isActivity
+            ? `${area_code} - ${name}`
+            : // `${area_code} - ${name}`}
+              `${area_code} - ${name}`}
+        </Typography>
+        {action && (
+          <ChipComponent
+            label={action}
+            fontSize={10}
+            variant={"outlined"}
+            color={action === "Approved" ? "success" : "warning"}
+          />
+        )}
+      </Stack>
+
       {withActivityPath && (
         <Stack
           direction={"row"}
@@ -91,18 +110,6 @@ function CommentContainerComponent({
           <Circle sx={{ fontSize: 12, mx: 1, color: grey[400] }} />
           {moment(date).format("h:mm a")}
         </Typography>
-
-        {/* {isActivity && (
-          <Link
-            level={fontSize}
-            gap={0.7}
-            textColor="success.700"
-            color="success"
-            handleClick={handleClick}
-          >
-            Go to activity <ExternalLink size={14} />
-          </Link>
-        )} */}
       </Stack>
     </Box>
   );
