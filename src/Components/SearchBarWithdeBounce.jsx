@@ -13,6 +13,7 @@ import React from "react";
 const SearchBarComponentv2 = ({
   value,
   setValue,
+  onClear,
   placeholder = "Search...",
   debounceTime = 300,
   onSearch,
@@ -24,9 +25,11 @@ const SearchBarComponentv2 = ({
   startDecorator,
   endDecorator,
   label,
+  withDesc = true,
 }) => {
   const handleClear = () => {
     setValue("");
+    onClear?.();
   };
 
   return (
@@ -52,7 +55,7 @@ const SearchBarComponentv2 = ({
         }
         fullWidth={fullWidth}
       />
-      {value && (
+      {withDesc && value && (
         <Typography level="body-xs" sx={{ mt: 1 }}>
           Searching for: {value}
         </Typography>

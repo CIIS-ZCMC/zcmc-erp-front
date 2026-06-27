@@ -187,7 +187,7 @@ export const sidebarRoutes = [
       },
       {
         path: "/manage-consolidators",
-        name: "Manage Dispensing Units",
+        name: "Manage Dispensing Units and Consolidators",
         element: <ManageConsolidators />,
         childPermissions: [
           // change to item consolidators permissions

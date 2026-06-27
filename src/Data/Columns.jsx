@@ -2506,9 +2506,9 @@ export const AOP_OBJECTIVES_COLUMNS = (
     width: "auto",
     render: (row) => (
       <Typography level="body-sm" color="black">
-        {row?.objective?.description ||
-          row?.other_objective?.description ||
-          "-"}
+        {row?.objective?.is_other
+          ? row?.other_objective?.description
+          : row?.objective?.description}
       </Typography>
     ),
   },
@@ -2518,9 +2518,9 @@ export const AOP_OBJECTIVES_COLUMNS = (
     width: "auto",
     render: (row) => (
       <Typography level="body-sm" color="black">
-        {row?.success_indicator?.description ||
-          row?.other_success_indicator?.description ||
-          "-"}
+        {row?.success_indicator?.is_other
+          ? row?.other_success_indicator?.description
+          : row?.success_indicator?.description}
       </Typography>
     ),
   },

@@ -8,6 +8,7 @@ import {
   IconButton,
   LinearProgress,
   Modal,
+  ModalClose,
   ModalDialog,
   Stack,
   Typography,
@@ -107,13 +108,13 @@ function ModalComponent({
         maxWidth={maxWidth}
       >
         {/* TITLE */}
-        {title && (
-          <DialogTitle
-            sx={{
-              alignItems: "start",
-              justifyContent: title ? "space-between" : "right",
-            }}
-          >
+        <DialogTitle
+          sx={{
+            alignItems: "start",
+            justifyContent: title ? "space-between" : "right",
+          }}
+        >
+          {title && (
             <Stack gap={0.3}>
               <Typography fontSize={{ xs: 15, lg: 18 }} fontWeight={600}>
                 {title}
@@ -126,12 +127,12 @@ function ModalComponent({
                 {description}
               </Typography>
             </Stack>
-
-            <IconButton variant="plain" onClick={handleClose}>
-              <BiX fontSize={27} />
-            </IconButton>
-          </DialogTitle>
-        )}
+          )}
+          <ModalClose />
+          {/* <IconButton variant="plain" onClick={handleClose}>
+            <BiX fontSize={27} />
+          </IconButton> */}
+        </DialogTitle>
         {withProgress && (
           <LinearProgress
             determinate

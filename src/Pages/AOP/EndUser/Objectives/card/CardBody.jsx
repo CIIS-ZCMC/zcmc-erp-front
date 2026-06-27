@@ -26,7 +26,7 @@ const CardBody = ({
 
   const ellipsisText = {
     display: "-webkit-box",
-    WebkitLineClamp: 3,
+    WebkitLineClamp: 4,
     WebkitBoxOrient: "vertical",
     overflow: "hidden",
     cursor: "pointer",
@@ -74,7 +74,7 @@ const CardBody = ({
         }}
       >
         <Typography
-          level="title-md"
+          level="title-sm"
           sx={{
             fontWeight: 600,
             color: grey[900],
@@ -86,7 +86,7 @@ const CardBody = ({
 
         <Box className="objectivePopup" sx={popupStyle}>
           <Typography
-            level="title-md"
+            level="title-sm"
             sx={{
               fontWeight: 600,
               color: grey[900],
@@ -126,7 +126,7 @@ const CardBody = ({
         <Typography level="body-sm">Success Indicator</Typography>
         <Typography
           className="successText"
-          level="title-md"
+          level="title-sm"
           sx={{
             color: grey[800],
             ...ellipsisText,
@@ -139,7 +139,7 @@ const CardBody = ({
           <Typography level="body-sm">Success Indicator</Typography>
 
           <Typography
-            level="title-md"
+            level="title-sm"
             sx={{
               color: grey[800],
               whiteSpace: "normal",

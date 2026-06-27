@@ -13,7 +13,7 @@ import {
   Typography,
   useTheme,
 } from "@mui/joy";
-import { red } from "@mui/material/colors";
+import { grey, red } from "@mui/material/colors";
 import { CircleSmall, ShoppingCart } from "lucide-react";
 import React, { Fragment, useEffect, useState } from "react";
 import { BiX } from "react-icons/bi";
@@ -59,56 +59,48 @@ export default function CartPreviewComponent({
       <ModalComponent
         isOpen={open}
         handleClose={onClose}
-        minWidth={766}
+        minWidth={780}
+        maxWidth={780}
         noDivider
         content={
           <>
             <Grid container spacing={2} sx={{ flexGrow: 1 }}>
-              <Grid xs={6} p={2}>
-                <Box sx={{ position: "relative", width: "100%" }}>
-                  {/* <AspectRatio
-                    minHeight={isAddToCart ? 120 : "100%"}
-                    maxHeight={isAddToCart ? 150 : "100%"}
-                    sx={{
-                      flexGrow: isAddToCart ? 0 : 1,
-                      borderRadius: "md",
-                      overflow: "hidden",
-                    }}
+              <Grid xs={6} p={1}>
+                {/* Floating Chip */}
+
+                <Stack spacing={0.5}>
+                  <Typography level="title-lg">{name}</Typography>
+                  <Stack
+                    direction={"row"}
+                    justifyContent={"space-between"}
+                    alignItems={"center"}
                   >
-                    <img
-                      src={defaultItem}
-                      loading="lazy"
-                      alt={name}
-                      style={{
-                        width: "100%", // Fill the width of the container
-                        height: "100%", // Fill the height of the container
-                        objectFit: "contain", // Maintain aspect ratio, crop if necessary
-                        borderRadius: 10,
-                        display: "block", // Remove default inline spacing
-                      }}
-                    />
-                  </AspectRatio> */}
-
-                  {/* Floating Chip */}
-                  {isAddToCart && (
-                    <ChipComponent
-                      size="sm"
-                      color={
-                        variant === "Variant-Regular" ? "success" : "warning"
-                      }
-                      label={variant ?? "Variant not indicated"}
-                      sx={{
-                        position: "absolute",
-                        bottom: 8,
-                        left: 8, // you can also use 'right' if you prefer top-right corner
-                        boxShadow: "sm",
-                        zIndex: 2,
-                      }}
-                      startDecorator={<Circle style={{ fontSize: 11 }} />}
-                    />
-                  )}
-                </Box>
-
+                    <Typography
+                      level="body-xs"
+                      sx={{ color: color.custom.main }}
+                    >
+                      {category}
+                      {isAddToCart && (
+                        <>
+                          <CircleSmall size={8} style={{ margin: "0 4px" }} />
+                          {unit}
+                        </>
+                      )}
+                    </Typography>
+                  </Stack>
+                  <Typography
+                    level="title-md"
+                    mt={0.5}
+                    sx={{ color: red[900] }}
+                    fontWeight={600}
+                  >
+                    ₱
+                    {price?.toLocaleString("en-PH", {
+                      minimumFractionDigits: 2,
+                      maximumFractionDigits: 2,
+                    })}
+                  </Typography>
+                </Stack>
                 {/* Add-to-cart section (only if true) */}
                 {isAddToCart && (
                   <BoxComponent mt={2} p={2}>
@@ -159,52 +151,31 @@ export default function CartPreviewComponent({
                 )}
               </Grid>
               <Grid xs={6}>
-                <Stack spacing={0.5}>
-                  <Stack
-                    direction={"row"}
-                    justifyContent={"space-between"}
-                    alignItems={"center"}
-                  >
-                    <Typography
-                      level="body-xs"
-                      sx={{ color: color.custom.main }}
-                    >
-                      {category}
-                      {isAddToCart && (
-                        <>
-                          <CircleSmall size={8} style={{ margin: "0 4px" }} />
-                          {unit}
-                        </>
-                      )}
-                    </Typography>
-                    <IconButton variant="plain" onClick={onClose}>
-                      <BiX fontSize={27} />
-                    </IconButton>
-                  </Stack>
-
-                  <Typography level="title-lg">{name}</Typography>
-                  <Typography
-                    level="title-md"
-                    mt={0.5}
-                    sx={{ color: red[900] }}
-                    fontWeight={600}
-                  >
-                    ₱
-                    {price?.toLocaleString("en-PH", {
-                      minimumFractionDigits: 2,
-                      maximumFractionDigits: 2,
-                    })}
-                  </Typography>
-                </Stack>
+                {isAddToCart && (
+                  <ChipComponent
+                    size="sm"
+                    color={
+                      variant === "Variant-Regular" ? "success" : "warning"
+                    }
+                    label={variant === null ? "Variant not indicated" : variant}
+                    sx={{
+                      boxShadow: "sm",
+                    }}
+                    startDecorator={<Circle style={{ fontSize: 11 }} />}
+                  />
+                )}
                 <Divider sx={{ my: 2 }} />
+
                 {!isAddToCart && (
-                  <Stack mb={1}>
-                    <Typography level="body-sm">Quantity</Typography>
-                    <Typography level="title-md">
-                      {qty} {unit}
-                      {qty > 1 ? "(s)" : ""}
-                    </Typography>
-                  </Stack>
+                  <>
+                    <Stack mb={1}>
+                      <Typography level="body-sm">Quantity</Typography>
+                      <Typography level="title-md">
+                        {qty} {unit}
+                        {qty > 1 ? "(s)" : ""}
+                      </Typography>
+                    </Stack>
+                  </>
                 )}
 
                 <Stack spacing={1}>
@@ -221,7 +192,7 @@ export default function CartPreviewComponent({
                         <Typography
                           key={index}
                           level="body-sm"
-                          sx={{ color: "black", display: "block" }}
+                          sx={{ color: grey[900], display: "block" }}
                         >
                           ● {spec.description}
                         </Typography>

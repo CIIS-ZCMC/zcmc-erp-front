@@ -2,6 +2,7 @@ import {
   Card,
   CardActions,
   CardContent,
+  Link,
   Stack,
   Typography,
   useTheme,
@@ -84,9 +85,15 @@ const ItemCardComponent = ({
                   />
                 )}
               </Stack>
-              <Typography level="title-sm" sx={{ textWrap: "wrap" }}>
+              <Link
+                component={"button"}
+                level="title-sm"
+                sx={{ textWrap: "wrap", textAlign: "left" }}
+                underline="none"
+                onClick={itemInfoAction}
+              >
                 {item?.name}
-              </Typography>
+              </Link>
             </CardContent>
             <CardActions sx={{ justifyContent: "space-between" }}>
               <Typography

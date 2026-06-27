@@ -50,6 +50,7 @@ export default function AddToCartLayout({
     category: null,
     system: null,
   });
+  const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
   const [displayLoading, setDisplayLoading] = useState(false);
   const [isCard, setIsCard] = useState(true);
@@ -71,10 +72,6 @@ export default function AddToCartLayout({
   const totalQty = useMemo(() => {
     return cart.reduce((sum, i) => sum + i.qty, 0);
   }, [cart]);
-
-  useEffect(() => {
-    setPage(1);
-  }, [search, filterValues]);
 
   useEffect(() => {
     setDisplayLoading(true);
@@ -117,9 +114,6 @@ export default function AddToCartLayout({
     fetchItems();
   }, [page, search, filterValues, isPPMP]);
 
-  useEffect(() => {
-    setPage(1);
-  }, [search, filterValues]);
   return (
     <Fragment>
       <Grid container spacing={2} sx={{ flexGrow: 1 }}>
@@ -157,7 +151,23 @@ export default function AddToCartLayout({
                   }}
                   size="md"
                 />{" "}
-                <SearchBarComponentv2 value={search} setValue={setSearch} />
+                <SearchBarComponentv2
+                  value={searchInput}
+                  setValue={setSearchInput}
+                  onClear={() => {
+                    setSearchInput("");
+                    setSearch("");
+                    setPage(1);
+                  }}
+                  withDesc={false}
+                />
+                <ButtonComponent
+                  label={"Search"}
+                  onClick={() => {
+                    setPage(1);
+                    setSearch(searchInput);
+                  }}
+                />
               </Stack>
               <Typography
                 component={"div"}
@@ -233,15 +243,15 @@ export default function AddToCartLayout({
                   variant="soft"
                   color="primary"
                   onClick={() => {
-                    // Reset all filters
-                    const newFilters = {
+                    setFilterValues({
                       classification: null,
                       category: null,
                       system: null,
-                    };
-                    setFilterValues(newFilters);
+                    });
 
-                    // Trigger search with current input (search string)
+                    setSearchInput("");
+                    setSearch("");
+                    setPage(1);
                   }}
                 />
               </Stack>
@@ -312,7 +322,7 @@ export default function AddToCartLayout({
         onClose={() => setOpenPreview(false)}
         item={selectedProduct}
         price={selectedProduct?.estimated_budget}
-        category={selectedProduct?.item_category?.description}
+        category={selectedProduct?.item_category?.name}
         unit={selectedProduct?.item_unit?.name}
         specifications={selectedProduct?.item_specifications}
         name={selectedProduct?.name}

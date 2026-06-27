@@ -37,7 +37,7 @@ const CardHeader = ({
               : "danger"
         }
       />
-      <Stack direction={"row"}>
+      <Stack direction={"row"} sx={{ zIndex: 0 }}>
         <IconButtonComponent
           size={"sm"}
           icon={<EditOutlined size={18} />}

@@ -91,7 +91,7 @@ export default function ManageConsolidators() {
   return (
     <Fragment>
       <PageTitle
-        title={"Manage Dispensing Units"}
+        title={"Manage Dispensing Units and Consolidators"}
         description={
           "Create, update, and maintain dispensing unit assignments to ensure accurate and timely data consolidation."
         }
@@ -139,7 +139,7 @@ export default function ManageConsolidators() {
 
       {openUpdate && (
         <ModalComponent
-          title={"Update Consolidator"}
+          title={"Update Dispensing Unit/Consolidator"}
           description={
             "Update the assigned categories or details for this consolidator"
           }
@@ -152,7 +152,7 @@ export default function ManageConsolidators() {
           content={
             <Stack spacing={2.5}>
               <InputComponent
-                label={"Dispensing Unit (Employee)"}
+                label={"Dispensing Unit/Consolidator"}
                 helperText={
                   "Type to search for an employee or select from the list"
                 }

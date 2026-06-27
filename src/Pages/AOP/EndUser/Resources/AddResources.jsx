@@ -27,34 +27,16 @@ export default function AddResources() {
 
   const breadcrumbs = useAOPBreadcrumbs();
 
-  const { items, getItems, getSearchResults } = useItemsHook();
   const { postAOPResources } = useResourcesHook();
   const cartStore = useCartStore(user?.id || "guest");
   const { cart, clearCart } = cartStore();
-  const {
-    setAlertDialog,
-    setConfirmationModal,
-    closeConfirmation,
-    closeAlertDialog,
-  } = useModalHook();
+  const { setAlertDialog } = useModalHook();
   const { showSnack } = useSnackbarHook();
 
   const currentYear = new Date().getFullYear();
   const currentFiscalYear = currentYear + 1;
 
-  const [displayLoading, setDisplayLoading] = useState(false);
-  const [openPreview, setOpenPreview] = useState(false);
   const [openRequest, setOpenRequest] = useState(false);
-
-  const handleOpenItemDialog = (item) => {
-    console.log(item);
-    setSelectedItem(item);
-    setOpenPreview(true);
-  };
-  const handleCloseItemDialog = () => {
-    setOpenPreview(false);
-    setSelectedItem(null);
-  };
 
   const handleSaveItems = async () => {
     const formData = new FormData();
@@ -68,13 +50,8 @@ export default function AddResources() {
 
     await postAOPResources(formData, (status, message) => {
       if (status === 201) {
-        showSnack(200, message);
-        // setAlertDialog({
-        //   status: "success",
-        //   title: `${message}`,
-        //   description: "",
-        // });
         clearCart();
+        showSnack(200, message);
         navigate(`/aop/manage-resources/${activityId}`, {
           state: { activityId: activityId },
         });
@@ -143,7 +120,7 @@ export default function AddResources() {
           </Stack>
         </Stack>
         <Divider sx={{ my: 2, bgcolor: color.primary.fontLight }} />
-        <AddToCartLayout loading={displayLoading} />
+        <AddToCartLayout />
       </ContainerComponent>
 
       {openRequest && (

@@ -36,7 +36,10 @@ const Header = ({
           />
         </Box>
         <Stack direction={"row"} alignItems={"center"}>
-          <Typography level="body-sm" sx={{ color: "white" }}>
+          <Typography
+            level="body-sm"
+            sx={{ color: "white", textTransform: "capitalize" }}
+          >
             {MISSION_LABEL}: {mission}{" "}
             {!isAopDisabled(status) && (
               <ButtonComponent

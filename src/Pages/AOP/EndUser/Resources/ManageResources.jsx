@@ -180,19 +180,33 @@ function ManageResources(props) {
           my={2}
           padding={2}
         >
-          <Stack direction={"row"} justifyContent={"space-between"}>
+          <Stack
+            direction={"row"}
+            alignItems="flex-start"
+            justifyContent={"space-between"}
+            spacing={5}
+          >
             <Stack>
-              <Stack direction={"row"} spacing={1} alignItems={"center"}>
-                <Typography level="body-md" sx={{ fontWeight: 600 }}>
+              <Stack direction={"row"} spacing={1} alignItems={"flex-start"}>
+                <Typography
+                  level="title-md"
+                  sx={{
+                    fontWeight: 600,
+                    whiteSpace: "nowrap",
+                    flexShrink: 0,
+                  }}
+                >
                   Manage Resources for
                 </Typography>
-                <ChipComponent
-                  label={`Activity: ${activity?.name}`} // change to dynamic activity name
-                  color={"success"}
-                  variant={"outlined"}
-                  fontSize={13}
-                  wrap
-                />
+                <Box sx={{ minWidth: 0 }}>
+                  <ChipComponent
+                    label={`Activity: ${activity?.name}`}
+                    color="success"
+                    variant="outlined"
+                    fontSize={13}
+                    wrap
+                  />
+                </Box>
               </Stack>
               <Typography level="body-sm">
                 {" "}
@@ -261,6 +275,7 @@ function ManageResources(props) {
               isLoading={isExporting}
               loadingLabel={"Exporting..."}
               onClick={() => handleExportResources()}
+              disabled={resources.length === 0}
             />
           </Stack>
         </BoxComponent>
