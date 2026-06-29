@@ -22,7 +22,6 @@ export default function AddResources() {
   const theme = useTheme();
   const color = theme.palette;
   const navigate = useNavigate();
-  const location = useLocation();
   const { activityId } = useParams();
 
   const breadcrumbs = useAOPBreadcrumbs();

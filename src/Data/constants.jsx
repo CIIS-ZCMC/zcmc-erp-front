@@ -86,7 +86,7 @@ export const AOP_SUMMARY = {
     "Detailed Breakdown: Objectives, Activities, Resources, & Personnel",
   SUMMARY_FOOTER_TITLE: "Official Submission of Annual Operations Plan",
   SUMMARY_FOOTER_CONTENT:
-    'By clicking "Submit for Official Review", you certify that all information contained in this Annual Operations Plan is true, accurate, and complete to the best of your knowledge. This document will be officially submitted to the Approving Bodies for review and approval in accordance with government procurement and planning procedures.',
+    'By clicking "Proceed to PPMP", you certify that all information contained in this Annual Operations Plan is true, accurate, and complete to the best of your knowledge. A Project Procurement Management Plan (PPMP) will be generated based on the procurable resources identified in this plan. This document, together with the generated PPMP, will be submitted to the appropriate Approving Bodies for review and approval in accordance with government planning and procurement procedures.',
 };
 
 export const AOP = {
@@ -418,10 +418,10 @@ export const STATUS_LABELS = {
 };
 
 export const STATUS_MESSAGES = {
-  1: "This AOP is currently in draft mode. You may click this button and confirm to submit this AOP for review.",
-  2: "This AOP has been submitted and is pending for review.",
-  4: "This AOP has been approved.",
-  6: "AOP Returned for review.",
+  1: "This AOP is currently in draft mode. You may proceed to generate a PPMP from the procurable resources identified in this plan.",
+  2: "A PPMP has been generated from this AOP and is pending review.",
+  4: "The PPMP generated from this AOP has been approved.",
+  6: "The AOP and PPMP has been returned for revision.",
 };
 
 export const AOP_BUTTON_LABEL = {

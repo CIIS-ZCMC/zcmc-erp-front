@@ -2654,6 +2654,7 @@ export const AOP_ACTIVITIES_COLUMNS = (
   {
     id: "gad",
     label: "GAD-related Activity",
+    align: "center",
     render: (row) => (
       <Typography
         level="title-sm"
@@ -2673,7 +2674,7 @@ export const AOP_ACTIVITIES_COLUMNS = (
 
       return (
         <Stack direction={"row"} spacing={1} alignItems={"center"}>
-          <Stack spacing={1}>
+          <Stack spacing={1} alignItems={"flex-start"}>
             <ChipComponent
               variant={"soft"}
               startDecorator={

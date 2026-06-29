@@ -53,6 +53,8 @@ import ServerPaginationComponent from "@Components/ServerPaginationComponent";
 import StatusSwitch from "@Components/StatusSwitchComponent";
 import BasicTableComponent from "@Components/Common/Table/BasicTableComponent";
 import { AOP_OBJECTIVES_COLUMNS } from "@Data/Columns";
+import useSwitchViewHook from "@Hooks/AOP/SwitchViewHook";
+import usePageNumberHook from "@Hooks/PageNumberHook";
 
 const Objectives = () => {
   const location = useLocation();
@@ -103,8 +105,6 @@ const Objectives = () => {
   const { name, id, assignedArea } = user ?? {};
   const [lockedRows, setLockedRows] = useState({});
   const [isEditLoading, setIsEditLoading] = useState(false);
-  const [isCard, setIsCard] = useState(true);
-  const [page, setPage] = useState(1);
   const [pagination, setPagination] = useState({
     current_page: 1,
     last_page: 1,
@@ -112,6 +112,17 @@ const Objectives = () => {
   });
 
   const { status_id } = aopApplication; //get status id on aop application object
+
+  //card view
+  const isCard = useSwitchViewHook((state) => state.isCard);
+  const setIsCard = useSwitchViewHook((state) => state.setIsCard);
+
+  const page =
+    usePageNumberHook((state) => state.pages[`objectives-${aopId}`]) || 1;
+
+  const setPageStore = usePageNumberHook((state) => state.setPage);
+
+  const setPage = (value) => setPageStore(`objectives-${aopId}`, value);
 
   const {
     OBJECTIVES_EMPTY_STATE_TITLE,
@@ -424,10 +435,6 @@ const Objectives = () => {
     fetchObjectives();
   }, [page, search, perPage]);
 
-  useEffect(() => {
-    setPage(1);
-  }, [search]);
-
   return (
     <Stack
       sx={{
@@ -531,7 +538,6 @@ const Objectives = () => {
               onClick={() => handleOpenObjectivesModal()}
               label={"Add an entry"}
               startDecorator={<Add />}
-              // endDecorator={<Plus size={16} />}
             />
           </Stack>
         </BoxComponent>

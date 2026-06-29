@@ -17,6 +17,8 @@ import ServerPaginationComponent from "@Components/ServerPaginationComponent";
 import StatusSwitch from "@Components/StatusSwitchComponent";
 import BasicTableComponent from "@Components/Common/Table/BasicTableComponent";
 import { ADD_TO_CART_COLUMNS } from "@Data/Columns";
+import useSwitchViewHook from "@Hooks/AOP/SwitchViewHook";
+import usePageNumberHook from "@Hooks/PageNumberHook";
 
 export default function AddToCartLayout({
   results,
@@ -53,8 +55,6 @@ export default function AddToCartLayout({
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
   const [displayLoading, setDisplayLoading] = useState(false);
-  const [isCard, setIsCard] = useState(true);
-  const [page, setPage] = useState(1);
   const [pagination, setPagination] = useState({
     current_page: 1,
     last_page: 1,
@@ -62,6 +62,16 @@ export default function AddToCartLayout({
   });
 
   const perPage = 12;
+
+  const isCard = useSwitchViewHook((state) => state.isCard);
+  const setIsCard = useSwitchViewHook((state) => state.setIsCard);
+
+  const page =
+    usePageNumberHook((state) => state.pages[`select-resources`]) || 1;
+
+  const setPageStore = usePageNumberHook((state) => state.setPage);
+
+  const setPage = (value) => setPageStore(`select-resources`, value);
 
   // Filter values
 

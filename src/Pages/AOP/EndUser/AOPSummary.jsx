@@ -106,13 +106,13 @@ const AOPSummary = () => {
   const applicationsObjectives = application_objectives;
 
   const SUBMIT_ALERT_MESSAGES = {
-    1: "Official Submission Confirmation",
-    6: "Official Resubmission Confirmation",
+    1: "Generate PPMP Confirmation",
+    6: "Generate PPMP Confirmation",
   };
 
   const SUBMIT_ALERT_DESC = {
-    1: `You are about to officially submit your Annual Operations Plan for Fiscal Year ${year} to the approving bodies for review and approval.`,
-    6: `You are about to resubmit your Annual Operations Plan for Fiscal Year for Fiscal Year ${year}.`,
+    1: `You are about to generate a Project Procurement Management Plan (PPMP) based on the procurable resources identified in this Annual Operations Plan (AOP) for Fiscal Year ${year}.`,
+    6: `You are about to generate a Project Procurement Management Plan (PPMP) based on the procurable resources identified in this Annual Operations Plan (AOP) for Fiscal Year ${year}.`,
   };
 
   const handleOpenSubmitAopModal = () => {

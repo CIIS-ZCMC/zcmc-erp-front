@@ -52,6 +52,7 @@ const AOPDataSummary = ({ aop, handleNavigateObjectives }) => {
         totalCost={total_cost}
         resourcesCount={resources_count}
         aop={aop}
+        hasFunction
       />
 
       {/* 4 */}

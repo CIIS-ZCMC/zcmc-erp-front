@@ -28,6 +28,8 @@ import AutocompleteComponent from "@Components/Form/AutocompleteComponent";
 import { FileDownload } from "@mui/icons-material";
 import useAOPHook from "@Hooks/AOP/AOPHook";
 import useSnackbarHook from "@Hooks/SnackbarHook";
+import useSwitchViewHook from "@Hooks/AOP/SwitchViewHook";
+import usePageNumberHook from "@Hooks/PageNumberHook";
 
 function ManageResources(props) {
   const { activityId } = useParams();
@@ -53,9 +55,6 @@ function ManageResources(props) {
   const { aop } = useAOPStore();
   const status = aop.status.id;
 
-  const [page, setPage] = useState(1);
-  const [isCard, setIsCard] = useState(true);
-
   const color = theme.palette;
   const currentYear = new Date().getFullYear();
   const currentFiscalYear = currentYear + 1;
@@ -67,7 +66,16 @@ function ManageResources(props) {
   const [selectedPurchaseType, setSelectedPurchaseType] = useState(null);
   const [isExporting, setIsExporting] = useState(false);
 
+  const isCard = useSwitchViewHook((state) => state.isCard);
+  const setIsCard = useSwitchViewHook((state) => state.setIsCard);
   const perPage = isCard ? 12 : 20;
+
+  const page =
+    usePageNumberHook((state) => state.pages[`resources-${activityId}`]) || 1;
+
+  const setPageStore = usePageNumberHook((state) => state.setPage);
+
+  const setPage = (value) => setPageStore(`resources-${activityId}`, value);
 
   const handleUpdateResource = async (id, quantity) => {
     const body = { quantity: quantity };

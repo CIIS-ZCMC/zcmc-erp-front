@@ -31,6 +31,8 @@ import StatusSwitch from "@Components/StatusSwitchComponent";
 import BasicTableComponent from "@Components/Common/Table/BasicTableComponent";
 import { AOP_ACTIVITIES_COLUMNS } from "@Data/Columns";
 import ServerPaginationComponent from "@Components/ServerPaginationComponent";
+import useSwitchViewHook from "@Hooks/AOP/SwitchViewHook";
+import usePageNumberHook from "@Hooks/PageNumberHook";
 
 const Activities = () => {
   const { objectiveId } = useParams();
@@ -83,8 +85,6 @@ const Activities = () => {
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
   const [selectedActivityId, setSelectedActivityId] = useState(null);
   const [search, setSearch] = useState("");
-  const [isCard, setIsCard] = useState(true);
-  const [page, setPage] = useState(1);
   const [pagination, setPagination] = useState({
     current_page: 1,
     last_page: 1,
@@ -96,7 +96,18 @@ const Activities = () => {
     `${aopId}:${objectiveId}:${activityId}`;
 
   const status = aop.status.id;
+
   const objectiveName = applicationActivities?.objective;
+
+  const isCard = useSwitchViewHook((state) => state.isCard);
+  const setIsCard = useSwitchViewHook((state) => state.setIsCard);
+
+  const page =
+    usePageNumberHook((state) => state.pages[`activities-${objectiveId}`]) || 1;
+
+  const setPageStore = usePageNumberHook((state) => state.setPage);
+
+  const setPage = (value) => setPageStore(`activities-${objectiveId}`, value);
 
   const perPage = isCard ? 9 : 10;
 
@@ -426,10 +437,6 @@ const Activities = () => {
       },
     );
   }, [objectiveId, page, search, perPage]);
-
-  useEffect(() => {
-    setPage(1);
-  }, [search]);
 
   return (
     <>
