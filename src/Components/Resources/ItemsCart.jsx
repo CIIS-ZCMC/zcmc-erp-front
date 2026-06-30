@@ -6,6 +6,7 @@ import ButtonComponent from "@Components/Common/ButtonComponent";
 import QuantityControlComponent from "@Components/Cart/QuantityControlComponent";
 import AutocompleteComponent from "@Components/Form/AutocompleteComponent";
 import useSnackbarHook from "../../Hooks/SnackbarHook";
+import formattedPrice from "@Utils/formattedPrice";
 
 const ItemsCart = ({
   item,
@@ -36,16 +37,16 @@ const ItemsCart = ({
             ) : (
               ""
             )}{" "}
-            {item?.category}{" "}
-            {item?.unit && (
+            {item?.item_category?.name}{" "}
+            {item?.item_unit?.name && (
               <>
                 <LucideDot />
-                {item?.unit}
+                {item?.item_unit?.name}
               </>
             )}
           </Typography>
-          <Typography fontSize={12} fontWeight={600} textColor={"primary.500"}>
-            &#8369; {item?.estimated_budget?.toLocaleString()}
+          <Typography fontSize={13} fontWeight={600} textColor={"primary.500"}>
+            {formattedPrice(item?.estimated_budget)}
           </Typography>
           <Box
             display={"flex"}
@@ -65,7 +66,7 @@ const ItemsCart = ({
             <ButtonComponent
               label={"Remove"}
               variant={"plain"}
-              color="black"
+              color="neutral"
               endDecorator={<Trash size={12} style={{ paddingLeft: 3 }} />}
               size={"xs"}
               onClick={onRemove}

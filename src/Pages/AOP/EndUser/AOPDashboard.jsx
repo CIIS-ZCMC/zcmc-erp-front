@@ -240,6 +240,7 @@ function DashboardEndUser(props) {
               <Stack
                 direction={"row"}
                 justifyContent="space-between"
+                spacing={1}
                 alignItems="center"
                 width="100%"
               >

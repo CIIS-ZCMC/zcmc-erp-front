@@ -385,7 +385,7 @@ function ManageResources(props) {
         onClose={() => setOpenPreview(false)}
         price={selectedResource?.item?.estimated_budget}
         name={selectedResource?.item?.name}
-        category={selectedResource?.item?.category}
+        category={selectedResource?.item?.item_category.name}
         specifications={selectedResource?.item?.item_specifications}
         unit={selectedResource?.item?.item_unit?.name}
         qty={selectedResource?.quantity}
