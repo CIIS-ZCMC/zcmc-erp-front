@@ -7,7 +7,6 @@ import {
   useObjectivesActions,
 } from "../../Store/ObjectivesStore";
 import { useFeedbackStoreActions } from "../../Store/FeedbackStore";
-// import { GetUserObjectives } from "@Services/ObjectiveServices";
 
 const useObjectivesHook = () => {
   const applicationObjectives = useApplicationObjectives();
@@ -215,38 +214,17 @@ const useObjectivesHook = () => {
 
       const {
         status,
-        data: { message },
+        data: {
+          message,
+          data: { application_objective },
+        },
       } = res;
 
       if (status === 201) {
-        await getObjectivesBySector(
-          {
-            search,
-            page: 1,
-            per_page: perPage,
-          },
-          async (fetchStatus, fetchMessage, pagination) => {
-            if (fetchStatus >= 200 && fetchStatus < 300 && pagination) {
-              setPagination?.(pagination);
-
-              const lastPage = pagination.last_page || 1;
-              setPage?.(lastPage);
-
-              await getObjectivesBySector(
-                {
-                  search,
-                  page: lastPage,
-                  per_page: perPage,
-                },
-                (lastStatus, lastMessage, lastPagination) => {
-                  if (lastPagination) {
-                    setPagination?.(lastPagination);
-                  }
-                },
-              );
-            }
-          },
-        );
+        setApplicationObjectives([
+          ...applicationObjectives,
+          application_objective,
+        ]);
       }
 
       callBack?.(status, message);
@@ -300,7 +278,7 @@ const useObjectivesHook = () => {
     }
   };
 
-  const removeObjective = async (params, callBack, options = {}) => {
+  const removeObjective = (params, callBack, options = {}) => {
     const {
       page = 1,
       search = "",
@@ -309,53 +287,51 @@ const useObjectivesHook = () => {
       setPagination,
     } = options;
 
-    setIsBtnLoading(true);
-
     try {
-      const res = await new Promise((resolve, reject) => {
-        remove({
-          url: `${API.OBJECTIVE_DELETE}/${params.id}`,
-          params,
-          success: resolve,
-          failed: reject,
-        });
+      remove({
+        url: `${API.OBJECTIVE_DELETE}/${params.id}`,
+        params,
+        failed: callBack,
+        success: (res) => {
+          const {
+            status,
+            data: { message },
+          } = res;
+
+          if (status === 200) {
+            const remainingObjectives = applicationObjectives.filter(
+              (objective) => objective.id !== params.id,
+            );
+
+            const nextPage =
+              remainingObjectives.length === 0 && page > 1 ? page - 1 : page;
+
+            setPage?.(nextPage);
+
+            getObjectivesBySector(
+              {
+                page: nextPage,
+                search,
+                per_page: perPage,
+              },
+              (fetchStatus, fetchMessage, pagination) => {
+                if (pagination) {
+                  setPagination?.(pagination);
+                }
+
+                callBack?.(status, message);
+              },
+            );
+
+            return;
+          }
+
+          callBack?.(status, message);
+        },
       });
-
-      const {
-        status,
-        data: { message },
-      } = res;
-
-      if (status === 200) {
-        const remainingItems = applicationObjectives.filter(
-          (obj) => obj.id !== params.id,
-        );
-
-        const nextPage =
-          remainingItems.length === 0 && page > 1 ? page - 1 : page;
-
-        setPage?.(nextPage);
-
-        await getObjectivesBySector(
-          {
-            search,
-            page: nextPage,
-            per_page: perPage,
-          },
-          (fetchStatus, fetchMessage, pagination) => {
-            if (pagination) {
-              setPagination?.(pagination);
-            }
-          },
-        );
-      }
-
-      callBack?.(status, message);
     } catch (error) {
       console.error("Error Deleting Objective:", error);
       callBack?.(false, error?.message);
-    } finally {
-      setIsBtnLoading(false);
     }
   };
 

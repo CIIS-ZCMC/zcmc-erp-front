@@ -1,8 +1,6 @@
 import { useEffect, useState, useMemo } from "react";
-
 import { Stack, Divider, Typography, Breadcrumbs, Grid, Box } from "@mui/joy";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
-
 import { ThreeDotsLoader } from "@Components/Common/Loading/ThreeDotsLoader";
 import BoxComponent from "@Components/Common/Card/BoxComponent";
 import ButtonComponent from "@Components/Common/ButtonComponent";
@@ -12,14 +10,10 @@ import CardComponent from "@Components/Common/Card/CardComponent";
 import ConfirmationModalComponent from "@Components/Common/Dialog/ConfirmationModalComponent";
 import SearchBarComponentv2 from "@Components/SearchBarWithdeBounce";
 import NoResultComponent from "@Components/Common/Table/NoResultComponent";
-
 import useModalHook from "../../../../Hooks/ModalHook";
-import useSocket from "../../../../Hooks/Socket/SocketHook";
-
 import CardHeader from "./card/CardHeader";
 import CardBody from "./card/CardBody";
 import CardActions from "./card/CardActions";
-
 import { OBJECTIVES } from "../../../../Data/constants";
 
 import {
@@ -38,15 +32,13 @@ import {
   useIsShowLoading,
   useIsBtnLoading,
 } from "../../../../Store/ObjectivesStore";
-
 import useObjectivesHook from "../../../../Hooks/AOP/ObjectivesHook";
 import PageTitle from "@Components/Common/PageTitle";
 import useAOPBreadcrumbs from "../../../../Hooks/AOP/AOPBreadcrumbs";
-import { Add, CheckCircle } from "@mui/icons-material";
+import { Add } from "@mui/icons-material";
 import useSnackbarHook from "../../../../Hooks/SnackbarHook";
 import { useAuth } from "../../../../Store/AuthStore";
 import { socket } from "../../../../Services/Socket";
-import SnackbarComponent from "@Components/Common/SnackbarComponent";
 import { nextYear } from "../../../../Utils/Functions";
 import PageLoader from "@Components/Loading/PageLoader";
 import ServerPaginationComponent from "@Components/ServerPaginationComponent";
@@ -87,6 +79,7 @@ const Objectives = () => {
     removeObjective,
   } = useObjectivesHook();
   const { showSnack } = useSnackbarHook();
+  const { setIsBtnLoading } = useObjectivesActions();
   const breadcrumbs = useAOPBreadcrumbs();
 
   // const [isLoading, setIsLoading] = useState(false);
@@ -262,6 +255,8 @@ const Objectives = () => {
     const params = { id: selectedObjectiveId };
     const perPage = isCard ? 9 : 10;
 
+    setIsBtnLoading(true);
+
     await removeObjective(
       params,
       (status, message) => {
@@ -270,6 +265,7 @@ const Objectives = () => {
           setOpenDeleteModal(false);
           closeConfirmation();
           setSelectedObjectiveId(null);
+          setIsEditMode(false);
         } else {
           setAlertDialog({
             status: "error",
@@ -277,6 +273,7 @@ const Objectives = () => {
             description: "Please try again.",
           });
         }
+        setIsBtnLoading(false);
       },
       {
         page,
@@ -435,6 +432,10 @@ const Objectives = () => {
     fetchObjectives();
   }, [page, search, perPage]);
 
+  useEffect(() => {
+    console.log("aopId changed:", aopId);
+  }, [aopId]);
+
   return (
     <Stack
       sx={{
@@ -541,113 +542,95 @@ const Objectives = () => {
             />
           </Stack>
         </BoxComponent>
+      ) : isCard ? (
+        <Grid mt={2} container direction="row" spacing={2} sx={{ flexGrow: 1 }}>
+          {applicationObjectives.map((obj) => {
+            const {
+              id,
+              aop_application_id,
+              success_indicator,
+              objective,
+              activities_count,
+              other_success_indicator,
+              other_objective,
+              type_of_function,
+            } = obj;
+
+            const lock = lockedRows[id];
+            const isLockedByOther = lock && lock.editorId !== user.id;
+
+            return (
+              <Grid key={id} size={4} lg={4} md={6} sm={12}>
+                <CardComponent
+                  statusColor={null}
+                  bgcolor={"#F9FAFB"}
+                  boxShadow="sm"
+                  sx={{
+                    opacity: isLockedByOther ? 0.7 : 1,
+                    backgroundColor: isLockedByOther ? "#f5f5f5" : "#fff",
+                    overflow: "visible",
+                    position: "relative",
+
+                    "&:hover": {
+                      zIndex: 100,
+                    },
+
+                    "&:has(.successWrapper:hover) .cardActionsWrapper": {
+                      visibility: "hidden",
+                    },
+                  }}
+                  justifyContentHeader={"space-between"}
+                  cardHeader={
+                    <CardHeader
+                      status={status_id}
+                      handleEdit={() => objectiveHandlers.edit(obj)}
+                      handleDelete={() => objectiveHandlers.delete(obj)}
+                      isLocked={isLockedByOther}
+                      lockedBy={lock?.editorName}
+                      type_of_function={type_of_function}
+                    />
+                  }
+                  cardBody={
+                    <CardBody
+                      success_indicator={success_indicator}
+                      objective={objective}
+                      other_success_indicator={other_success_indicator}
+                      other_objective={other_objective}
+                      status={false}
+                      type_of_function={type_of_function}
+                    />
+                  }
+                  cardActions={
+                    <Box className="cardActionsWrapper">
+                      <CardActions
+                        count={activities_count}
+                        handleActivities={() =>
+                          objectiveHandlers.activities(obj)
+                        }
+                      />
+                    </Box>
+                  }
+                />
+              </Grid>
+            );
+          })}
+        </Grid>
       ) : (
-        <>
-          {applicationObjectives.length === 0 ? (
-            <NoResultComponent />
-          ) : (
-            <>
-              {isCard ? (
-                <Grid
-                  mt={2}
-                  container
-                  direction="row"
-                  spacing={2}
-                  sx={{ flexGrow: 1 }}
-                >
-                  {applicationObjectives.map((obj) => {
-                    const {
-                      id,
-                      aop_application_id,
-                      success_indicator,
-                      objective,
-                      activities_count,
-                      other_success_indicator,
-                      other_objective,
-                      type_of_function,
-                    } = obj;
-
-                    const lock = lockedRows[id];
-                    const isLockedByOther = lock && lock.editorId !== user.id;
-
-                    return (
-                      <Grid key={id} size={4} lg={4} md={6} sm={12}>
-                        <CardComponent
-                          statusColor={null}
-                          bgcolor={"#F9FAFB"}
-                          boxShadow="sm"
-                          sx={{
-                            opacity: isLockedByOther ? 0.7 : 1,
-                            backgroundColor: isLockedByOther
-                              ? "#f5f5f5"
-                              : "#fff",
-                            overflow: "visible",
-                            position: "relative",
-
-                            "&:hover": {
-                              zIndex: 100,
-                            },
-
-                            "&:has(.successWrapper:hover) .cardActionsWrapper":
-                              {
-                                visibility: "hidden",
-                              },
-                          }}
-                          justifyContentHeader={"space-between"}
-                          cardHeader={
-                            <CardHeader
-                              status={status_id}
-                              handleEdit={() => objectiveHandlers.edit(obj)}
-                              handleDelete={() => objectiveHandlers.delete(obj)}
-                              isLocked={isLockedByOther}
-                              lockedBy={lock?.editorName}
-                              type_of_function={type_of_function}
-                            />
-                          }
-                          cardBody={
-                            <CardBody
-                              success_indicator={success_indicator}
-                              objective={objective}
-                              other_success_indicator={other_success_indicator}
-                              other_objective={other_objective}
-                              status={false}
-                              type_of_function={type_of_function}
-                            />
-                          }
-                          cardActions={
-                            <Box className="cardActionsWrapper">
-                              <CardActions
-                                count={activities_count}
-                                handleActivities={() =>
-                                  objectiveHandlers.activities(obj)
-                                }
-                              />
-                            </Box>
-                          }
-                        />
-                      </Grid>
-                    );
-                  })}
-                </Grid>
-              ) : (
-                <Box sx={{ mt: 2, flexGrow: 1 }}>
-                  <BasicTableComponent
-                    columns={AOP_OBJECTIVES_COLUMNS(
-                      status_id,
-                      objectiveHandlers.activities,
-                      objectiveHandlers.edit,
-                      objectiveHandlers.delete,
-                      lockedRows,
-                      user,
-                    )}
-                    rows={applicationObjectives}
-                  />
-                </Box>
-              )}
-            </>
-          )}
-        </>
+        <Box sx={{ mt: 2, flexGrow: 1 }}>
+          <BasicTableComponent
+            columns={AOP_OBJECTIVES_COLUMNS(
+              status_id,
+              objectiveHandlers.activities,
+              objectiveHandlers.edit,
+              objectiveHandlers.delete,
+              lockedRows,
+              user,
+            )}
+            rows={applicationObjectives}
+          />
+        </Box>
       )}
+
       <Box
         sx={{
           width: "100%",

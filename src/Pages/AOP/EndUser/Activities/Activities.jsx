@@ -458,7 +458,7 @@ const Activities = () => {
           justifyContent={"space-between"}
         >
           <Stack>
-            <Stack direction={"row"} spacing={1}>
+            <Stack direction={"row"} spacing={1} alignItems={"center"}>
               <Typography fontWeight={600}>
                 {MANAGE_ACTIVITIES_HEADER}
               </Typography>

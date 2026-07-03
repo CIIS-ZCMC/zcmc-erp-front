@@ -3,12 +3,12 @@ import { create } from "zustand";
 const useSnackbarHook = create((set) => ({
   statusCode: null,
   title: "",
-  variant: "solid",
+  variant: "soft",
   description: "",
   isOpen: false,
 
   // SHOW SNACKBAR
-  showSnack: (statusCode, title, variant = "solid", description) => {
+  showSnack: (statusCode, title, variant = "soft", description) => {
     set(() => ({
       isOpen: true,
       title: title,

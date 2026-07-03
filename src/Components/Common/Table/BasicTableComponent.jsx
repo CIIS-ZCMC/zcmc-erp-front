@@ -31,7 +31,6 @@ const BasicTableComponent = ({
           "--TableCell-borderColor": grey[200],
           tableLayout: stickyHeader ? "fixed" : "auto",
         }}
-        hoverRow
         stickyHeader={stickyHeader}
       >
         <thead>

@@ -114,11 +114,11 @@ const ResponsiblePerson = () => {
             description: "Please try again",
           });
           setIsSubmitting(false);
-          console.error(" Failed to create responsible people:", message);
+          console.error(" Failed to add responsible person(s):", message);
         }
       });
     } catch (error) {
-      console.error("Error creating responsible people:", error);
+      console.error("Error adding responsible person(s):", error);
       setAlertDialog({
         status: "error",
         title: "Unexpected Error",

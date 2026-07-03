@@ -37,7 +37,7 @@ const Timeline = ({ aopId }) => {
 
   return (
     <Fragment>
-      <BoxComponent height="60vh">
+      <BoxComponent height="58vh">
         <Typography level="title-lg">{TITLE}</Typography>
 
         <Typography
@@ -59,7 +59,7 @@ const Timeline = ({ aopId }) => {
 
         <Box
           sx={{
-            height: "calc(60vh - 80px)", // adjust for title, subtitle, divider
+            height: "calc(58vh - 80px)", // adjust for title, subtitle, divider
             overflowY: "auto",
             overflowX: "hidden", // prevent horizontal overflow
             pr: 1, // optional padding for scrollbar

@@ -47,7 +47,6 @@ export default function CartPreviewComponent({
   };
   return (
     <Fragment>
-      {console.log(unit)}
       <ModalComponent
         isOpen={open}
         handleClose={onClose}

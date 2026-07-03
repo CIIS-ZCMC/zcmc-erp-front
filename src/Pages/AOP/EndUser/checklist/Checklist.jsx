@@ -41,13 +41,13 @@ const Checklist = ({ fiscalYear }) => {
 
   return (
     <>
-      <BoxComponent height="60vh" padding={2}>
+      <BoxComponent height="58vh" padding={2}>
         <Typography level="title-lg">AOP Submission Checklist</Typography>
 
         <Stack
           mt={2}
           sx={{
-            height: "calc(60vh - 56px)", // subtract the height of the title + margin
+            height: "calc(58vh - 56px)", // subtract the height of the title + margin
             overflowY: "auto",
           }}
         >

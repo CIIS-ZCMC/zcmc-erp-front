@@ -2587,7 +2587,6 @@ export const AOP_ACTIVITIES_COLUMNS = (
   {
     id: "activity",
     label: "Activity",
-    width: "auto",
     render: (row) => (
       <Typography
         sx={{
@@ -2602,7 +2601,6 @@ export const AOP_ACTIVITIES_COLUMNS = (
   {
     id: "timeframe",
     label: "Timeframe",
-    width: "auto",
     render: (row) => (
       <Stack direction={"row"}>
         <TimeframeCell

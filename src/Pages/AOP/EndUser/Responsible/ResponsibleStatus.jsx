@@ -51,17 +51,25 @@ const ResponsibleStatus = ({
         <Stack
           direction={"row"}
           justifyContent={"space-between"}
-          alignItems={"flex-end"}
+          alignItems={"flex-start"}
+          spacing={5}
         >
           <Stack>
-            <Stack direction={"row"} spacing={1} alignItems={"center"}>
-              <Typography level="body-md" sx={{ fontWeight: 600 }}>
+            <Stack direction={"row"} spacing={1} alignItems={"flex-start"}>
+              <Typography
+                level="title-md"
+                sx={{
+                  fontWeight: 600,
+                }}
+              >
                 {MANAGE_RESPONSIBLE_HEADER}
               </Typography>
               <ChipComponent
                 label={`Activity: ${name}`}
                 color={"success"}
                 variant={"outlined"}
+                fontSize={13}
+                wrap
               />
             </Stack>
 

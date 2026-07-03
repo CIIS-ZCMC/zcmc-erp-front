@@ -200,8 +200,6 @@ function ManageResources(props) {
                   level="title-md"
                   sx={{
                     fontWeight: 600,
-                    whiteSpace: "nowrap",
-                    flexShrink: 0,
                   }}
                 >
                   Manage Resources for
