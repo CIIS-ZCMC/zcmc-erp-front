@@ -33,6 +33,7 @@ import { AOP_ACTIVITIES_COLUMNS } from "@Data/Columns";
 import ServerPaginationComponent from "@Components/ServerPaginationComponent";
 import useSwitchViewHook from "@Hooks/AOP/SwitchViewHook";
 import usePageNumberHook from "@Hooks/PageNumberHook";
+import { grey } from "@mui/material/colors";
 
 const Activities = () => {
   const { objectiveId } = useParams();
@@ -98,6 +99,7 @@ const Activities = () => {
   const status = aop.status.id;
 
   const objectiveName = applicationActivities?.objective;
+  const successIndicator = applicationActivities?.success_indicator;
 
   const isCard = useSwitchViewHook((state) => state.isCard);
   const setIsCard = useSwitchViewHook((state) => state.setIsCard);
@@ -418,7 +420,6 @@ const Activities = () => {
   };
 
   useEffect(() => {
-    clearApplicationActivities();
     setIsLoading(true);
 
     getActivities(
@@ -437,6 +438,11 @@ const Activities = () => {
       },
     );
   }, [objectiveId, page, search, perPage]);
+
+  useEffect(() => {
+    clearApplicationActivities();
+    setPage(1);
+  }, [objectiveId]);
 
   return (
     <>
@@ -457,7 +463,7 @@ const Activities = () => {
           alignItems={"flex-end"}
           justifyContent={"space-between"}
         >
-          <Stack>
+          <Stack gap={1}>
             <Stack direction={"row"} spacing={1} alignItems={"center"}>
               <Typography fontWeight={600}>
                 {MANAGE_ACTIVITIES_HEADER}
@@ -472,8 +478,8 @@ const Activities = () => {
               />
             </Stack>
 
-            <Typography level="body-xs" fontWeight={400}>
-              {MANAGE_ACTIVITIES_SUBHEADER}
+            <Typography level="body-sm" sx={{ color: grey[900] }}>
+              Success Indicator: {successIndicator}
             </Typography>
           </Stack>
 
@@ -714,6 +720,7 @@ const Activities = () => {
 
       {openDeleteModal && (
         <ConfirmationModalComponent
+          btnColor={"danger"}
           leftButtonLabel="Cancel"
           leftButtonAction={() => {
             if (selectedActivityId) {

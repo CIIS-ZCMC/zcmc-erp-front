@@ -13,7 +13,7 @@ export const TimeframeCell = ({ label, value }) => {
         borderRadius: "8px",
         px: 1.5,
         py: 1,
-        width: "fit-content",
+        width: "100%",
       }}
     >
       <Stack>

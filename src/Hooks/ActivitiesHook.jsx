@@ -7,13 +7,8 @@ import useActivitiesStore, {
 
 const useActivitiesHook = () => {
   const { applicationActivities } = useActivitiesStore();
-  const {
-    setApplicationActivities,
-    setApplicationActivity,
-    setIsEditLoading,
-    setIsCreateLoading,
-    setIsUpdateLoading,
-  } = useActivitiesActions();
+  const { setApplicationActivities, setApplicationActivity, setIsEditLoading } =
+    useActivitiesActions();
 
   const getActivities = (params, callBack) => {
     try {

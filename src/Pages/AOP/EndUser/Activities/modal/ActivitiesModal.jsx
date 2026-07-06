@@ -116,7 +116,7 @@ const ActivitiesModal = ({ selectedActivity }) => {
                 max={100}
                 value={firstQuarter}
                 onChange={handleQuarterChange("firstQuarter")}
-                endDecorator={<Percent />}
+                endDecorator={<Percent sx={{ fontSize: 18 }} />}
               />
 
               <InputComponent
@@ -126,7 +126,7 @@ const ActivitiesModal = ({ selectedActivity }) => {
                 max={100}
                 value={secondQuarter}
                 onChange={handleQuarterChange("secondQuarter")}
-                endDecorator={<Percent />}
+                endDecorator={<Percent sx={{ fontSize: 18 }} />}
               />
             </Stack>
             <Stack
@@ -143,7 +143,7 @@ const ActivitiesModal = ({ selectedActivity }) => {
                 max={100}
                 value={thirdQuarter}
                 onChange={handleQuarterChange("thirdQuarter")}
-                endDecorator={<Percent />}
+                endDecorator={<Percent sx={{ fontSize: 18 }} />}
               />
 
               <InputComponent
@@ -153,7 +153,7 @@ const ActivitiesModal = ({ selectedActivity }) => {
                 max={100}
                 value={fourthQuarter}
                 onChange={handleQuarterChange("fourthQuarter")}
-                endDecorator={<Percent />}
+                endDecorator={<Percent sx={{ fontSize: 18 }} />}
               />
             </Stack>
           </Stack>
@@ -164,6 +164,7 @@ const ActivitiesModal = ({ selectedActivity }) => {
             checked={isGadRelated}
             label="GAD related activity"
             onChange={(e) => setIsGadRelated(e.target.checked)}
+            size="sm"
           />
         </Stack>
 

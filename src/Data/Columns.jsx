@@ -2587,14 +2587,16 @@ export const AOP_ACTIVITIES_COLUMNS = (
   {
     id: "activity",
     label: "Activity",
+    width: "30%",
     render: (row) => (
       <Typography
+        level="title-sm"
         sx={{
           whiteSpace: "normal",
           wordBreak: "break-word",
         }}
       >
-        {row?.activity_name || "-"}
+        {row?.activity_name || row?.activity_code}
       </Typography>
     ),
   },
@@ -2608,7 +2610,7 @@ export const AOP_ACTIVITIES_COLUMNS = (
           value={
             row?.start_month
               ? moment(row?.start_month, "YYYY-MM").format("MMM YYYY")
-              : "--"
+              : "-"
           }
         />
         <TimeframeCell
@@ -2616,7 +2618,7 @@ export const AOP_ACTIVITIES_COLUMNS = (
           value={
             row?.end_month
               ? moment(row?.end_month, "YYYY-MM").format("MMM YYYY")
-              : "--"
+              : "-"
           }
         />
       </Stack>
@@ -2665,56 +2667,72 @@ export const AOP_ACTIVITIES_COLUMNS = (
   },
   {
     id: "actions",
-    label: "Actions",
-    align: "right",
+    label: "",
     render: (row) => {
       const { isLockedByOther } = getActivityLockState(row.id);
 
       return (
-        <Stack direction={"row"} spacing={1} alignItems={"center"}>
-          <Stack spacing={1} alignItems={"flex-start"}>
-            <ChipComponent
-              variant={"soft"}
-              startDecorator={
-                <Avatar
-                  size="md" // small avatar for chip
-                  variant="solid"
-                  color="primary"
-                  sx={{
-                    fontSize: 13,
-                    fontWeight: 600,
-                  }}
-                >
-                  {row?.resources_count}
-                </Avatar>
-              }
-              label={"Resources"}
-              status={"next"}
-              onClick={() => handleResources(row)}
-              endDecorator
-            />
-            <ChipComponent
-              variant={"soft"}
-              startDecorator={
-                <Avatar
-                  size="md" // small avatar for chip
-                  variant="solid"
-                  color="primary"
-                  sx={{
-                    fontSize: 13,
-                    fontWeight: 600,
-                  }}
-                >
-                  {row?.responsible_people_count}
-                </Avatar>
-              }
-              label={"Responsible Person"}
-              status={"next"}
-              onClick={() => handleRespPerson(row)}
-              endDecorator
-            />
-          </Stack>
+        <Stack spacing={1} alignItems={"flex-start"}>
+          <ChipComponent
+            variant={"soft"}
+            startDecorator={
+              <Avatar
+                size="md" // small avatar for chip
+                variant="solid"
+                color={row?.is_draft ? "neutral" : "primary"}
+                sx={{
+                  fontSize: 13,
+                  fontWeight: 600,
+                }}
+              >
+                {row?.resources_count}
+              </Avatar>
+            }
+            label={"Resources"}
+            status={"next"}
+            onClick={() => handleResources(row)}
+            disabled={row?.is_draft}
+            endDecorator
+          />
+          <ChipComponent
+            variant={"soft"}
+            startDecorator={
+              <Avatar
+                size="md" // small avatar for chip
+                variant="solid"
+                color={row?.is_draft ? "neutral" : "primary"}
+                sx={{
+                  fontSize: 13,
+                  fontWeight: 600,
+                }}
+              >
+                {row?.responsible_people_count}
+              </Avatar>
+            }
+            label={"Responsible Person"}
+            status={"next"}
+            onClick={() => handleRespPerson(row)}
+            disabled={row?.is_draft}
+            endDecorator
+          />
+        </Stack>
+      );
+    },
+  },
+  {
+    id: "actions",
+    label: "Actions",
+    align: "center",
+    render: (row) => {
+      const { isLockedByOther } = getActivityLockState(row.id);
 
+      return (
+        <Stack
+          direction={"row"}
+          spacing={1}
+          alignItems={"center"}
+          justifyContent={"center"}
+        >
           <Chip
             variant="soft"
             color="neutral"

@@ -10,7 +10,6 @@ import { useFeedbackStoreActions } from "../../Store/FeedbackStore";
 
 const useObjectivesHook = () => {
   const applicationObjectives = useApplicationObjectives();
-  const objectiveByType = useObjectiveByType();
 
   const {
     setApplicationObjectives,
@@ -156,8 +155,6 @@ const useObjectivesHook = () => {
   };
 
   const showObjective = async (params, callBack) => {
-    setIsShowLoading(true);
-
     try {
       await new Promise((resolve, reject) => {
         read({
@@ -192,8 +189,6 @@ const useObjectivesHook = () => {
       });
     } catch (error) {
       console.error("Error fetching objective:", error);
-    } finally {
-      setIsShowLoading(false);
     }
   };
 
@@ -214,17 +209,28 @@ const useObjectivesHook = () => {
 
       const {
         status,
-        data: {
-          message,
-          data: { application_objective },
-        },
+        data: { message },
       } = res;
 
       if (status === 201) {
-        setApplicationObjectives([
-          ...applicationObjectives,
-          application_objective,
-        ]);
+        const targetPage = 1;
+
+        setPage?.(targetPage);
+
+        getObjectivesBySector(
+          {
+            page: targetPage,
+            search,
+            per_page: perPage,
+          },
+          (fetchStatus, fetchMessage, pagination) => {
+            setPagination?.(pagination);
+
+            callBack?.(status, message);
+          },
+        );
+
+        return;
       }
 
       callBack?.(status, message);
@@ -235,7 +241,6 @@ const useObjectivesHook = () => {
       setIsBtnLoading(false);
     }
   };
-
   const updateObjective = async (params, body, callBack) => {
     setIsBtnLoading(true);
 

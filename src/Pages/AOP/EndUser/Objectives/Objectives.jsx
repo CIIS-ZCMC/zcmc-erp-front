@@ -79,7 +79,7 @@ const Objectives = () => {
     removeObjective,
   } = useObjectivesHook();
   const { showSnack } = useSnackbarHook();
-  const { setIsBtnLoading } = useObjectivesActions();
+  const { setIsBtnLoading, setIsLoading } = useObjectivesActions();
   const breadcrumbs = useAOPBreadcrumbs();
 
   // const [isLoading, setIsLoading] = useState(false);
@@ -128,21 +128,6 @@ const Objectives = () => {
   } = OBJECTIVES;
 
   const perPage = isCard ? 9 : 10;
-
-  const fetchObjectives = async () => {
-    await getObjectivesBySector(
-      {
-        search,
-        page,
-        per_page: perPage,
-      },
-      (status, message, paginationData) => {
-        if (status >= 200 && status < 300 && paginationData) {
-          setPagination(paginationData);
-        }
-      },
-    );
-  };
 
   const handleSaveObjectives = async () => {
     const payload = {
@@ -429,12 +414,22 @@ const Objectives = () => {
   }, [socket, aopId]);
 
   useEffect(() => {
-    fetchObjectives();
-  }, [page, search, perPage]);
+    setIsLoading(true);
 
-  useEffect(() => {
-    console.log("aopId changed:", aopId);
-  }, [aopId]);
+    getObjectivesBySector(
+      {
+        search,
+        page,
+        per_page: perPage,
+      },
+      (status, message, paginationData) => {
+        if (status >= 200 && status < 300 && paginationData) {
+          setPagination(paginationData);
+        }
+        setIsLoading(false);
+      },
+    );
+  }, [page, search, perPage]);
 
   return (
     <Stack
