@@ -39,6 +39,7 @@ const Draft = ({ status, commentsCount, setValue }) => {
           alignItems="center"
           padding={2}
           spacing={1.5}
+          width={"80%"}
         >
           <WarningAmber
             sx={{
@@ -70,14 +71,14 @@ const Draft = ({ status, commentsCount, setValue }) => {
           </Box>
         </Stack>
       ) : (
-        <Stack gap={1}>
+        <Stack gap={1} width={"80%"} alignItems="flex-end">
           <ButtonComponent
             label="AOP Overview"
             variant={"soft"}
             onClick={() => navigate("/aop/summary")}
             startDecorator={<PendingActions />}
             color="primary"
-            fullWidth
+            width="200px"
           />
           <ButtonComponent
             label="All Feedback"
@@ -92,7 +93,7 @@ const Draft = ({ status, commentsCount, setValue }) => {
               />
             }
             color="primary"
-            fullWidth
+            width="200px"
           />
         </Stack>
       )}

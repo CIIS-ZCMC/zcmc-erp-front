@@ -155,6 +155,12 @@ export const sidebarRoutes = [
       "ERP-OBJ-MAN:view",
       "ERP-OBJ-MAN:update",
       "ERP-OBJ-MAN:view-all",
+      "ERP-CONSO-MAN:write",
+      "ERP-CONSO-MAN:view-all",
+      "ERP-CONSO-MAN:update",
+      "ERP-CONSO-MAN:approve",
+      "ERP-CONSO-MAN:delete",
+      "ERP-CONSO-MAN:download",
     ],
     children: [
       {
@@ -191,10 +197,12 @@ export const sidebarRoutes = [
         element: <ManageConsolidators />,
         childPermissions: [
           // change to item consolidators permissions
-          "ERP-OBJ-MAN:write",
-          "ERP-OBJ-MAN:view",
-          "ERP-OBJ-MAN:update",
-          "ERP-OBJ-MAN:view-all",
+          "ERP-CONSO-MAN:write",
+          "ERP-CONSO-MAN:view-all",
+          "ERP-CONSO-MAN:update",
+          "ERP-CONSO-MAN:approve",
+          "ERP-CONSO-MAN:delete",
+          "ERP-CONSO-MAN:download",
         ],
       },
       // {

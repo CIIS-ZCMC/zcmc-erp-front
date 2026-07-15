@@ -21,7 +21,7 @@ const Header = ({
 
   return (
     <>
-      <Stack spacing={1} alignItems={"flex-start"}>
+      <Stack spacing={1} alignItems={"flex-start"} width={"100%"}>
         <Box display="flex" alignItems="center" gap={1}>
           <Typography sx={{ color: "white", fontSize: 28, fontWeight: 600 }}>
             {HEADER_TITLE}
@@ -36,10 +36,7 @@ const Header = ({
           />
         </Box>
         <Stack direction={"row"} alignItems={"center"}>
-          <Typography
-            level="body-sm"
-            sx={{ color: "white", textTransform: "capitalize" }}
-          >
+          <Typography level="body-sm" sx={{ color: "white" }}>
             {MISSION_LABEL}: {mission}{" "}
             {!isAopDisabled(status) && (
               <ButtonComponent

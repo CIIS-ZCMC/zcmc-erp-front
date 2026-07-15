@@ -83,7 +83,7 @@ const AOPSummary = () => {
     counts,
     application_objectives,
     date_prepared,
-    date_today,
+    date_submitted,
     prepared_by_sector,
     year,
     status,
@@ -221,7 +221,7 @@ const AOPSummary = () => {
           cardActions={
             <CardActions
               datePrepared={date_prepared}
-              dateToday={date_today}
+              dateSubmitted={date_submitted}
               PreparedBySector={prepared_by_sector}
               handleExport={handleExportAOP}
               isLoading={isExporting}
@@ -259,78 +259,86 @@ const AOPSummary = () => {
             <Grid container>
               <Grid xs={12}>
                 {/* map here */}
-                {applicationsObjectives?.map(
-                  ({ id, objective, counts, activities }, index) => {
-                    const { code } = objective;
-                    const { activities_count, total_cost, comments_count } =
-                      counts;
+                <Box
+                  sx={{
+                    maxHeight: "600px", // adjust to your preference
+                    overflowY: "auto",
+                    p: 1,
+                  }}
+                >
+                  {applicationsObjectives?.map(
+                    ({ id, objective, counts, activities }, index) => {
+                      const { code, description } = objective;
+                      const { activities_count, total_cost, comments_count } =
+                        counts;
 
-                    const objectiveIndex = index + 1;
+                      const objectiveIndex = index + 1;
 
-                    return (
-                      <>
-                        <AccordionComponent
-                          defaultExpanded={false}
-                          expandedStyles={{ mb: 2 }}
-                          summaryStyles={(expanded) => ({
-                            bgcolor: expanded ? "#E0F5FF" : "background.body",
-                          })}
-                          accordionSummary={
-                            <>
-                              <AccordionSummary
-                                index={objectiveIndex}
-                                objectiveName={code}
-                                activitiesCount={activities_count}
-                                cost={total_cost}
-                              />
-                            </>
-                          }
-                          accordionDetails={
-                            <>
-                              {activities.length === 0 && (
-                                <Stack alignItems="center">
-                                  <Typography
-                                    p={4}
-                                    textAlign={"center"}
-                                    level="body-sm"
-                                    whiteSpace="pre-wrap"
-                                  >
-                                    No activities added yet.
-                                    <br />
-                                    Activities define what your unit will do to
-                                    achieve this objective.
-                                  </Typography>
-                                  <ButtonComponent
-                                    label={"Add an Activity"}
-                                    startDecorator={<Add />}
-                                    onClick={() =>
-                                      handleNavigateToActivities(id)
-                                    }
+                      return (
+                        <>
+                          <AccordionComponent
+                            defaultExpanded={false}
+                            expandedStyles={{ mb: 2 }}
+                            summaryStyles={(expanded) => ({
+                              bgcolor: expanded ? "#E0F5FF" : "background.body",
+                            })}
+                            accordionSummary={
+                              <>
+                                <AccordionSummary
+                                  index={objectiveIndex}
+                                  objectiveName={description}
+                                  activitiesCount={activities_count}
+                                  cost={total_cost}
+                                />
+                              </>
+                            }
+                            accordionDetails={
+                              <>
+                                {activities.length === 0 && (
+                                  <Stack alignItems="center">
+                                    <Typography
+                                      p={4}
+                                      textAlign={"center"}
+                                      level="body-sm"
+                                      whiteSpace="pre-wrap"
+                                    >
+                                      No activities added yet.
+                                      <br />
+                                      Activities define what your unit will do
+                                      to achieve this objective.
+                                    </Typography>
+                                    <ButtonComponent
+                                      label={"Add an Activity"}
+                                      startDecorator={<Add />}
+                                      onClick={() =>
+                                        handleNavigateToActivities(id)
+                                      }
+                                    />
+                                  </Stack>
+                                )}
+                                <Stack my={1.5} direction={"row"}>
+                                  <ChipComponent
+                                    label={"Go to Objectives"}
+                                    variant={"soft"}
+                                    endDecorator
+                                    status={"next"}
+                                    color={"primary"}
+                                    onClick={handleNavigateObjectives}
                                   />
                                 </Stack>
-                              )}
-                              <Stack my={1.5} direction={"row"}>
-                                <ChipComponent
-                                  label={"Go to Objectives"}
-                                  variant={"soft"}
-                                  endDecorator
-                                  status={"next"}
-                                  color={"primary"}
-                                  onClick={handleNavigateObjectives}
-                                />
-                              </Stack>
 
-                              <AccordionDetails
-                                objId={id}
-                                activities={activities}
-                              />
-                            </>
-                          }
-                        />
-                      </>
-                    );
-                  },
-                )}
+                                <AccordionDetails
+                                  objId={id}
+                                  activities={activities}
+                                />
+                              </>
+                            }
+                          />
+                        </>
+                      );
+                    },
+                  )}
+                </Box>
               </Grid>
             </Grid>
           </BoxComponent>

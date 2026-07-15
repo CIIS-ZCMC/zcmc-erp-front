@@ -47,6 +47,7 @@ export default function Checklist({ checklist = [], isDispensing = false }) {
                   <Checkbox
                     checked={!!list.status}
                     color={!!list.status && "success"}
+                    variant="soft"
                   />
                 </ListItemDecorator>
                 <Stack>

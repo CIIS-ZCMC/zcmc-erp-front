@@ -35,8 +35,9 @@ export const useSessionTimeout = (enabled = false) => {
 
           showSnack(500, "Your session has expired. Redirecting to login...");
 
-          setTimeout(() => {
-            logout();
+          setTimeout(async () => {
+            const redirectTo = await logout();
+            window.location.href = redirectTo || "/";
           }, 5000);
         }
       } catch (error) {
@@ -50,8 +51,9 @@ export const useSessionTimeout = (enabled = false) => {
 
           showSnack(500, "Your session has expired. Redirecting to login...");
 
-          setTimeout(() => {
-            logout();
+          setTimeout(async () => {
+            const redirectTo = await logout();
+            window.location.href = redirectTo || "/";
           }, 5000);
         }
       }

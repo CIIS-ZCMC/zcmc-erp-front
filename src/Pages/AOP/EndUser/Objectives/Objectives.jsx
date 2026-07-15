@@ -1,4 +1,4 @@
-import { useEffect, useState, useMemo } from "react";
+﻿import { useEffect, useState, useMemo, useCallback } from "react";
 import { Stack, Divider, Typography, Breadcrumbs, Grid, Box } from "@mui/joy";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { ThreeDotsLoader } from "@Components/Common/Loading/ThreeDotsLoader";
@@ -82,7 +82,6 @@ const Objectives = () => {
   const { setIsBtnLoading, setIsLoading } = useObjectivesActions();
   const breadcrumbs = useAOPBreadcrumbs();
 
-  // const [isLoading, setIsLoading] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [isOpenObjectivesModal, setIsOpenObjectivesModal] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
@@ -104,7 +103,7 @@ const Objectives = () => {
     total: 0,
   });
 
-  const { status_id } = aopApplication; //get status id on aop application object
+  const { status_id } = aopApplication;
 
   //card view
   const isCard = useSwitchViewHook((state) => state.isCard);
@@ -112,10 +111,11 @@ const Objectives = () => {
 
   const page =
     usePageNumberHook((state) => state.pages[`objectives-${aopId}`]) || 1;
-
   const setPageStore = usePageNumberHook((state) => state.setPage);
-
-  const setPage = (value) => setPageStore(`objectives-${aopId}`, value);
+  const setPage = useCallback(
+    (value) => setPageStore(`objectives-${aopId}`, value),
+    [setPageStore, aopId],
+  );
 
   const {
     OBJECTIVES_EMPTY_STATE_TITLE,
@@ -129,7 +129,12 @@ const Objectives = () => {
 
   const perPage = isCard ? 9 : 10;
 
-  const handleSaveObjectives = async () => {
+  // Reset to page 1 when search changes
+  useEffect(() => {
+    setPage(1);
+  }, [search]);
+
+  const handleSaveObjectives = useCallback(async () => {
     const payload = {
       aop_application_id: aopId,
       objective_id: objective?.id,
@@ -174,9 +179,22 @@ const Objectives = () => {
         description: error.message || "Something went wrong.",
       });
     }
-  };
+  }, [
+    aopId,
+    objective,
+    successIndicator,
+    otherObjective,
+    otherSuccessIndicator,
+    search,
+    perPage,
+    setPage,
+    createObjective,
+    showSnack,
+    clearFields,
+    setAlertDialog,
+  ]);
 
-  const handleUpdateObjectives = async () => {
+  const handleUpdateObjectives = useCallback(async () => {
     const payload = {
       objective_id: objective?.id,
       success_indicator_id: successIndicator?.id,
@@ -215,9 +233,21 @@ const Objectives = () => {
         description: error.message || "Something went wrong.",
       });
     }
-  };
+  }, [
+    objective,
+    successIndicator,
+    otherObjective,
+    otherSuccessIndicator,
+    selectedObjectiveId,
+    aopId,
+    id,
+    updateObjective,
+    showSnack,
+    clearFields,
+    setAlertDialog,
+  ]);
 
-  const handleOpenEditModal = async (objectiveId) => {
+  const handleOpenEditModal = useCallback(async (objectiveId) => {
     setSelectedObjectiveId(objectiveId);
     setIsEditMode(true);
     setIsEditLoading(true);
@@ -232,13 +262,13 @@ const Objectives = () => {
 
     setIsEditLoading(false);
     setIsOpenObjectivesModal(true);
-  };
+  }, [showObjective, showSnack]);
 
-  const handleConfirmDelete = async () => {
+  const handleConfirmDelete = useCallback(async () => {
     if (!selectedObjectiveId) return;
 
     const params = { id: selectedObjectiveId };
-    const perPage = isCard ? 9 : 10;
+    // Use the outer perPage — no need to redeclare inside
 
     setIsBtnLoading(true);
 
@@ -268,28 +298,36 @@ const Objectives = () => {
         setPagination,
       },
     );
-  };
+  }, [
+    selectedObjectiveId,
+    page,
+    search,
+    perPage,
+    setPage,
+    removeObjective,
+    showSnack,
+    closeConfirmation,
+    setAlertDialog,
+    setIsBtnLoading,
+  ]);
 
-  const handleOpenDeleteModal = (objectiveId) => {
+  const handleOpenDeleteModal = useCallback((objectiveId) => {
     setIsEditMode(true);
-
     setOpenDeleteModal(true);
     setSelectedObjectiveId(objectiveId);
 
-    const data = {
+    setConfirmationModal({
       status: "warning",
       title: ` Are you sure you want to delete this objective ? `,
       description: "The selected objective will be removed",
-    };
+    });
+  }, [setConfirmationModal]);
 
-    setConfirmationModal(data);
-  };
-
-  const handleOpenObjectivesModal = () => {
+  const handleOpenObjectivesModal = useCallback(() => {
     setIsOpenObjectivesModal(true);
-  };
+  }, []);
 
-  const handleCloseModal = () => {
+  const handleCloseModal = useCallback(() => {
     if (isEditMode && selectedObjectiveId) {
       socket.emit("aop:stop-edit", {
         aopId,
@@ -301,27 +339,26 @@ const Objectives = () => {
     setIsEditMode(false);
     setSelectedObjectiveId(null);
     clearFields();
-  };
+  }, [isEditMode, selectedObjectiveId, aopId, id, clearFields]);
 
-  const getRowLockState = (objectiveId) => {
+  const getRowLockState = useCallback((objectiveId) => {
     const lock = lockedRows[objectiveId];
-
     return {
       lock,
       isLockedByOther: lock && lock.editorId !== user.id,
     };
-  };
+  }, [lockedRows, user?.id]);
 
-  const startEditLock = (objectiveId) => {
+  const startEditLock = useCallback((objectiveId) => {
     socket.emit("aop:start-edit", {
       aopId,
       objectiveId,
       userId: user.id,
       name: user.name,
     });
-  };
+  }, [aopId, user?.id, user?.name]);
 
-  const objectiveHandlers = {
+  const objectiveHandlers = useMemo(() => ({
     activities: (row) => {
       navigate(`/aop/activities/${row.id}`, {
         state: {
@@ -348,7 +385,28 @@ const Objectives = () => {
       startEditLock(row.id);
       handleOpenDeleteModal(row.id);
     },
-  };
+  }), [
+    navigate,
+    aopApplication?.id,
+    getRowLockState,
+    startEditLock,
+    handleOpenEditModal,
+    handleOpenDeleteModal,
+  ]);
+
+  // Memoize columns to avoid rebuilding the array on every render
+  const tableColumns = useMemo(
+    () =>
+      AOP_OBJECTIVES_COLUMNS(
+        status_id,
+        objectiveHandlers.activities,
+        objectiveHandlers.edit,
+        objectiveHandlers.delete,
+        lockedRows,
+        user,
+      ),
+    [status_id, objectiveHandlers, lockedRows, user],
+  );
 
   useEffect(() => {
     if (!socket || !aopId) return;
@@ -356,7 +414,6 @@ const Objectives = () => {
     // Register with the AOP
     socket.emit("aop:register", { aopId });
 
-    // Helper to add a locked objective
     const addLock = ({ objectiveId, editorId, editorName }) => {
       setLockedRows((prev) => ({
         ...prev,
@@ -364,7 +421,6 @@ const Objectives = () => {
       }));
     };
 
-    // Helper to remove a lock
     const removeLock = ({ objectiveId }) => {
       setLockedRows((prev) => {
         const updated = { ...prev };
@@ -373,7 +429,6 @@ const Objectives = () => {
       });
     };
 
-    // 🔔 Notifications
     const handleEditing = ({ editorName, objectiveId }) => {
       showSnack(
         401,
@@ -387,13 +442,10 @@ const Objectives = () => {
       showSnack(200, "Editing finished", "soft");
     };
 
-    // Event listeners
     socket.on("aop:editing", handleEditing);
     socket.on("aop:editing-stopped", handleEditingStopped);
-
     socket.on("aop:lock", addLock);
     socket.on("aop:unlock", removeLock);
-
     socket.on("aop:locked", (data) => {
       addLock(data);
       showSnack(
@@ -403,7 +455,6 @@ const Objectives = () => {
       );
     });
 
-    // Cleanup on unmount
     return () => {
       socket.off("aop:editing", handleEditing);
       socket.off("aop:editing-stopped", handleEditingStopped);
@@ -452,7 +503,7 @@ const Objectives = () => {
         <Stack direction={"column"}>
           <Typography fontWeight={600}>{MANAGE_OBJECTIVES_HEADER}</Typography>
 
-          <Typography level="body-xs" fontWeight={400}>
+          <Typography level="body-sm" fontWeight={400}>
             {MANAGE_OBJECTIVES_SUBHEADER}
           </Typography>
         </Stack>
@@ -486,15 +537,10 @@ const Objectives = () => {
           </Stack>
 
           <ButtonComponent
-            onClick={() => handleOpenObjectivesModal()}
+            onClick={handleOpenObjectivesModal}
             label={"Add an entry"}
             disabled={status_id === 4 || status_id === 2}
             startDecorator={<Add />}
-            // endDecorator={<Plus size={16} />}
-            // disabled={
-            //   isApproved
-            //   // !show || disabledEditMode(APPLICATION_OBJECTIVE_ID, remarks, comments, disabled) for socket
-            // }
           />
         </Stack>
       </BoxComponent>
@@ -531,7 +577,7 @@ const Objectives = () => {
             </Typography>
 
             <ButtonComponent
-              onClick={() => handleOpenObjectivesModal()}
+              onClick={handleOpenObjectivesModal}
               label={"Add an entry"}
               startDecorator={<Add />}
             />
@@ -613,14 +659,7 @@ const Objectives = () => {
       ) : (
         <Box sx={{ mt: 2, flexGrow: 1 }}>
           <BasicTableComponent
-            columns={AOP_OBJECTIVES_COLUMNS(
-              status_id,
-              objectiveHandlers.activities,
-              objectiveHandlers.edit,
-              objectiveHandlers.delete,
-              lockedRows,
-              user,
-            )}
+            columns={tableColumns}
             rows={applicationObjectives}
           />
         </Box>
@@ -670,8 +709,8 @@ const Objectives = () => {
           }
           hasActionButtons={true}
           rightButtonLabel={`${isEditMode ? "Update" : "Save"} Objective`}
-          rightButtonAction={() =>
-            isEditMode ? handleUpdateObjectives() : handleSaveObjectives()
+          rightButtonAction={
+            isEditMode ? handleUpdateObjectives : handleSaveObjectives
           }
           isLoading={isBtnLoading}
         />
@@ -693,7 +732,7 @@ const Objectives = () => {
             closeConfirmation();
           }}
           rightButtonLabel="Delete"
-          rightButtonAction={() => handleConfirmDelete()}
+          rightButtonAction={handleConfirmDelete}
           isLoading={isBtnLoading}
         />
       )}
@@ -702,3 +741,4 @@ const Objectives = () => {
 };
 
 export default Objectives;
+

@@ -3,7 +3,13 @@ import {
   usePPMP,
   usePPMPApplicationActions,
 } from "../../../Hooks/PPMP/PPMPApplicationHook";
-import React, { Fragment, useEffect, useMemo, useState } from "react";
+import React, {
+  Fragment,
+  useCallback,
+  useEffect,
+  useMemo,
+  useState,
+} from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { PPMP_APPROVER_HEADERS } from "../../../Data/Columns";
 import { Box, Stack, Typography } from "@mui/joy";
@@ -16,9 +22,7 @@ import CommentContainerComponent from "@Components/Comments/CommentContainerComp
 import TextareaComponent from "@Components/Form/TextareaComponent";
 import ButtonComponent from "@Components/Common/ButtonComponent";
 import TabComponent from "@Components/Common/TabComponent";
-
 import ChipComponent from "@Components/Common/ChipComponent";
-import { ThreeDotsLoader } from "@Components/Common/Loading/ThreeDotsLoader";
 import {
   usePPMPComments,
   usePPMPCommentsActions,
@@ -26,8 +30,6 @@ import {
 import NoResultComponent from "@Components/Common/Table/NoResultComponent";
 import { useDebounce } from "use-debounce";
 import CountUp from "react-countup";
-import { useUserTypes } from "../../../Store/AuthStore";
-
 import useSnackbarHook from "../../../Hooks/SnackbarHook";
 import useModalHook from "../../../Hooks/ModalHook";
 import EllipsisText from "../../../Utils/EllipsisText";
@@ -35,9 +37,17 @@ import { ExpandableRow } from "../EndUser/ExpandableRow";
 import { useAOPPermissions } from "@Hooks/AOP/AOPApplicationsHook";
 import CommentsSkeleton from "@Components/Comments/CommentsSkeleton";
 
+// Static constant — defined outside the component so it's never recreated on re-render
+const TABS = [
+  { name: "All items", value: "all" },
+  { name: "Procurable", value: "proc" },
+  { name: "Non-procurable", value: "non-proc" },
+];
+
 function ViewPPMP() {
-  const { id } = useParams();
-  const { type } = useParams();
+  // Merged two separate useParams() calls into one
+  const { id, type } = useParams();
+
   const { getPPMPApplicationByID, getSourceOfFunds, updateSourceOfFunds } =
     usePPMPApplicationActions();
   const {
@@ -54,76 +64,69 @@ function ViewPPMP() {
   const { ppmpComments, isLoading: isCommentsLoading } = usePPMPComments();
 
   const apiPermissions = useAOPPermissions();
-
   const isBudgetOfficer = apiPermissions?.is_budget_officer;
 
-  const AOP_APPLICATION_ID = localStorageGetter("aop_application_id");
-  const AREA_CODE = localStorageGetter("aop_application_area_code");
-  const FISCAL_YEAR = new Date().getFullYear() + 1;
+  // Stable localStorage reads — memoized so they don't re-run on every render
+  const AOP_APPLICATION_ID = useMemo(
+    () => localStorageGetter("aop_application_id"),
+    [],
+  );
+  const AREA_CODE = useMemo(
+    () => localStorageGetter("aop_application_area_code"),
+    [],
+  );
+  const FISCAL_YEAR = useMemo(() => new Date().getFullYear() + 1, []);
 
   const [search, setSearch] = useState("");
   const [openDrawer, setOpenDrawer] = useState(false);
   const [selectedRow, setSelectedRow] = useState({});
   const [newComment, setNewComment] = useState("");
   const [page, setPage] = useState(1);
-  const [perPage, setPerPage] = useState(10);
+  const [perPage] = useState(10); // setter removed — value is never changed
   const [isPostingComment, setIsPostingComment] = useState(false);
   const [localRows, setLocalRows] = useState([]);
   const [activeTab, setActiveTab] = useState("all");
+
   const { showSnack } = useSnackbarHook();
   const { setAlertDialog } = useModalHook();
 
   const effectiveTab = isBudgetOfficer ? activeTab : "proc";
-
   const [debouncedSearch] = useDebounce(search, 500);
 
-  const tabs = [
-    { name: "All items", value: "all" },
-    { name: "Procurable", value: "proc" },
-    { name: "Non-procurable", value: "non-proc" },
-  ];
-
-  // Reset page when tab or search changes
+  // Reset page on tab or search change (single effect — removed duplicate)
   useEffect(() => {
     setPage(1);
   }, [activeTab, debouncedSearch]);
 
-  // Always fetch data when relevant params change
+  // Fetch PPMP data when relevant params change
   useEffect(() => {
     if (!id) return;
-    getPPMPApplicationByID(
-      id,
-      type,
-      debouncedSearch,
-      page,
-      perPage,
-      effectiveTab,
-    );
-    if (isBudgetOfficer) getSourceOfFunds(() => {});
+    getPPMPApplicationByID(id, type, debouncedSearch, page, perPage, effectiveTab);
   }, [id, effectiveTab, page, perPage, debouncedSearch]);
+
+  // Fetch source of funds only once (or when budget officer status is determined)
+  useEffect(() => {
+    if (isBudgetOfficer) getSourceOfFunds(() => {});
+  }, [isBudgetOfficer]);
 
   // Keep localRows in sync for optimistic updates
   useEffect(() => {
     setLocalRows(ppmpApplicationItems || []);
   }, [ppmpApplicationItems]);
 
-  useEffect(() => setPage(1), [activeTab, debouncedSearch]);
-
-  // Fetch comments when drawer opens
+  // Fetch comments when selected row changes
   useEffect(() => {
     if (selectedRow?.id) getPPMPComments(selectedRow.id);
   }, [selectedRow?.id]);
 
-  const handleComments = (row) => {
+  const handleComments = useCallback((row) => {
     setSelectedRow(row);
     setOpenDrawer(true);
-  };
+  }, []);
 
-  const handleAddComment = async () => {
+  const handleAddComment = useCallback(async () => {
     if (!newComment.trim() || isPostingComment || !selectedRow) return;
-
     setIsPostingComment(true);
-
     try {
       await postPPMPComment({
         ppmp_item_id: selectedRow.id,
@@ -141,28 +144,46 @@ function ViewPPMP() {
     } finally {
       setIsPostingComment(false);
     }
-  };
+  }, [newComment, isPostingComment, selectedRow, postPPMPComment]);
 
-  const handleUpdateSource = (row, sourceOfFund) => {
-    updateSourceOfFunds(
-      row.id,
-      {
-        source_of_fund_id: sourceOfFund.id,
-      },
-      (status, message) => {
-        if (status === 200) {
-          // Refresh data
-          showSnack(200, message);
-        } else {
-          setAlertDialog({
-            status: "danger",
-            title: message,
-            description: "",
-          });
-        }
-      },
-    );
-  };
+  const handleUpdateSource = useCallback(
+    (row, sourceOfFund) => {
+      updateSourceOfFunds(
+        row.id,
+        { source_of_fund_id: sourceOfFund.id },
+        (status, message) => {
+          if (status === 200) {
+            showSnack(200, message);
+          } else {
+            setAlertDialog({ status: "danger", title: message, description: "" });
+          }
+        },
+      );
+    },
+    [updateSourceOfFunds, showSnack, setAlertDialog],
+  );
+
+  // Memoize columns — avoids rebuilding the array on every render
+  const columns = useMemo(
+    () => PPMP_APPROVER_HEADERS(handleComments),
+    [handleComments],
+  );
+
+  const isBudgetForRow = isBudgetOfficer && effectiveTab !== "non-proc";
+
+  // Memoize renderExpanded to keep ExpandableTable stable
+  const renderExpanded = useCallback(
+    (row) => (
+      <ExpandableRow
+        row={row}
+        editing={false}
+        isBudget={isBudgetForRow}
+        sourceOfFunds={sourceOfFunds}
+        onUpdateSource={handleUpdateSource}
+      />
+    ),
+    [isBudgetForRow, sourceOfFunds, handleUpdateSource],
+  );
 
   return (
     <Fragment>
@@ -181,14 +202,8 @@ function ViewPPMP() {
           </Typography>
         }
         items={[
-          {
-            label: "AOP",
-            to: `/approval/objectives/${AOP_APPLICATION_ID}`,
-          },
-          {
-            label: "PPMP",
-            current: true,
-          },
+          { label: "AOP", to: `/approval/objectives/${AOP_APPLICATION_ID}` },
+          { label: "PPMP", current: true },
         ]}
         onClickArrow={() =>
           navigate(`/approval/objectives/${AOP_APPLICATION_ID}`)
@@ -257,7 +272,7 @@ function ViewPPMP() {
               <CountUp
                 start={0}
                 end={ppmpApplication?.ppmp_total || 0}
-                duration={1.5} // duration in seconds
+                duration={1.5}
                 separator=","
                 decimals={2}
                 decimal="."
@@ -267,13 +282,12 @@ function ViewPPMP() {
           </BoxComponent>
         </Stack>
       </BoxComponent>
+
       {isBudgetOfficer && (
         <>
           <TabComponent
-            tabs={tabs}
-            handleTabChange={(val) => {
-              setActiveTab(val);
-            }}
+            tabs={TABS}
+            handleTabChange={setActiveTab}
             index={activeTab}
           />
           <br />
@@ -281,19 +295,11 @@ function ViewPPMP() {
       )}
 
       <ExpandableTable
-        columns={PPMP_APPROVER_HEADERS(handleComments)}
+        columns={columns}
         rows={localRows}
-        loading={isLoading}
+        isLoading={isLoading}
         stickyFooter
-        renderExpanded={(row) => (
-          <ExpandableRow
-            row={row}
-            editing={false}
-            isBudget={isBudgetOfficer}
-            sourceOfFunds={sourceOfFunds}
-            onUpdateSource={handleUpdateSource}
-          />
-        )}
+        renderExpanded={renderExpanded}
         currentPage={pagination?.current_page}
         totalPages={pagination?.last_page}
         totalRows={pagination?.total}
@@ -317,9 +323,9 @@ function ViewPPMP() {
           ) : ppmpComments.length > 0 ? (
             <Box
               sx={{
-                maxHeight: "65vh", // adjust as needed
+                maxHeight: "65vh",
                 overflowY: "auto",
-                pr: 1, // optional: add padding for scrollbar
+                pr: 1,
               }}
             >
               <Stack width="100%" py={1} spacing={1.5}>
@@ -367,7 +373,7 @@ function ViewPPMP() {
                 <ButtonComponent
                   label={"Post Comment"}
                   width="200px"
-                  onClick={() => handleAddComment()}
+                  onClick={handleAddComment}
                   isLoading={isPostingComment}
                   loadingLabel={"posting..."}
                 />

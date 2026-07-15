@@ -8,13 +8,17 @@ import React, { Fragment, useEffect, useState } from "react";
 import ContainerComponent from "@Components/Common/ContainerComponent";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import AddToCartLayout from "@Components/Resources/AddToCartLayout";
-import useResourcesHook from "../../../../Hooks/AOP/ResourcesHook";
+import {
+  useActivityResource,
+  useResourcesActions,
+} from "../../../../Hooks/AOP/ResourcesHook";
 import useCartStore from "../../../../Hooks/ItemCartHook";
 import useModalHook from "../../../../Hooks/ModalHook";
 import { useAuth } from "../../../../Store/AuthStore";
 import useAOPBreadcrumbs from "../../../../Hooks/AOP/AOpBreadcrumbs";
 import useSnackbarHook from "../../../../Hooks/SnackbarHook";
 import NewRequestModal from "../../../../Pages/PPMP/EndUser/Modal/AddItemRequest/NewRequestModal";
+import ChipComponent from "@Components/Common/ChipComponent";
 
 export default function AddResources() {
   const { user } = useAuth();
@@ -23,10 +27,11 @@ export default function AddResources() {
   const color = theme.palette;
   const navigate = useNavigate();
   const { activityId } = useParams();
+  const activity = useActivityResource();
 
   const breadcrumbs = useAOPBreadcrumbs();
 
-  const { postAOPResources } = useResourcesHook();
+  const { postAOPResources } = useResourcesActions();
   const cartStore = useCartStore(user?.id || "guest");
   const { cart, clearCart } = cartStore();
   const { setAlertDialog } = useModalHook();
@@ -77,14 +82,23 @@ export default function AddResources() {
       />
       <ContainerComponent sx={{ mt: 2 }}>
         {" "}
-        <Stack direction={"row"} justifyContent="space-between">
+        <Stack direction={"row"} justifyContent="space-between" spacing={3}>
           <Stack>
-            <Typography level="body-md" fontWeight={600}>
-              Select resources (items) to add
-            </Typography>
+            <Stack direction={"row"} spacing={1} alignItems={"center"}>
+              <Typography level="body-md" fontWeight={600}>
+                Select resources (items) to add
+              </Typography>
+              <ChipComponent
+                label={"Activity: " + activity?.name}
+                color={"success"}
+                variant={"outlined"}
+                wrap
+              />
+            </Stack>
+
             <Typography level="body-sm">
               All resources you'll select here only applies to this selected
-              activity
+              activity.
             </Typography>
           </Stack>
           <Stack direction="row" spacing={1}>

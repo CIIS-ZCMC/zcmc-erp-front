@@ -40,7 +40,7 @@ const ResponsiblePerson = () => {
 
   const { MODAL_TITLE, MODAL_DESCRIPTION } = RESPONSIBLE;
 
-  const { clearSelectedPeople, setIsSubmitting, setIsDeleting } =
+  const { clearSelectedPeople, setIsSubmitting, setIsDeleting, clearResponsiblePeople } =
     useResponsiblePeopleActions();
 
   const { aop } = useAOPStore();
@@ -49,7 +49,9 @@ const ResponsiblePerson = () => {
   const { selectedPeople, responsiblePeople, isSubmitting, isDeleting } =
     useResponsibleStore();
   const { activity, responsible_people, users_only, designations_only } =
-    responsiblePeople;
+    responsiblePeople || {};
+
+  const isStale = activity && String(activity.id) !== String(activityId);
 
   const { setAlertDialog, setConfirmationModal, closeConfirmation } =
     useModalHook();
@@ -77,6 +79,7 @@ const ResponsiblePerson = () => {
   };
 
   useEffect(() => {
+    clearResponsiblePeople();
     setIsLoading(true);
 
     const params = { activity_id: activityId, search: search };
@@ -166,16 +169,16 @@ const ResponsiblePerson = () => {
   return (
     <>
       <Stack spacing={2}>
-        <ResponsibleTitle activity={activity} objectiveId={objectiveId} />
+        <ResponsibleTitle activity={isStale ? undefined : activity} objectiveId={objectiveId} />
         <ResponsibleStatus
-          activity={activity}
+          activity={isStale ? undefined : activity}
           openResponsibleModal={handleOpenResponsibleModal}
           status={status}
           search={search}
           setSearch={setSearch}
         />
 
-        {isLoading ? (
+        {isLoading || isStale ? (
           <Stack sx={centeredStyle}>
             <ThreeDotsLoader />
           </Stack>

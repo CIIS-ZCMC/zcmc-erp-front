@@ -8,7 +8,12 @@ import { PlusIcon } from "lucide-react";
 import ButtonComponent from "@Components/Common/ButtonComponent";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import ResourceCardComponent from "@Components/Resources/ResourceCardComponent";
-import useResourcesHook from "../../../../Hooks/AOP/ResourcesHook";
+import {
+  useActivityResource,
+  usePaginationResource,
+  useResources,
+  useResourcesActions,
+} from "../../../../Hooks/AOP/ResourcesHook";
 import usePurchaseTypeHook from "../../../../Hooks/PurchaseTypeHook";
 import { ThreeDotsLoader } from "@Components/Common/Loading/ThreeDotsLoader";
 import SearchBarComponentv2 from "@Components/SearchBarWithdeBounce";
@@ -37,14 +42,14 @@ function ManageResources(props) {
 
   const {
     getAOPResources,
-    resources,
     updateResourceQty,
     updatePurchaseType,
     deleteResource,
     downloadResource,
-    activity,
-    pagination,
-  } = useResourcesHook();
+  } = useResourcesActions();
+  const activity = useActivityResource();
+  const resources = useResources();
+  const pagination = usePaginationResource();
   const { getPurchaseType, purchase_types } = usePurchaseTypeHook();
   const { showSnack } = useSnackbarHook();
 
@@ -228,7 +233,10 @@ function ManageResources(props) {
                 startDecorator={<PlusIcon />}
                 onClick={() =>
                   navigate(`/aop/select-resources/${activityId}`, {
-                    state: { activityId: activityId },
+                    state: {
+                      activityId: activityId,
+                      activityName: activity?.name,
+                    },
                   })
                 }
                 disabled={isAopDisabled(status)}
@@ -353,7 +361,10 @@ function ManageResources(props) {
               label={"Add a resource"}
               onClick={() =>
                 navigate(`/aop/select-resources/${activityId}`, {
-                  state: { activityId: activityId },
+                  state: {
+                    activityId: activityId,
+                    activityName: activity?.name,
+                  },
                 })
               }
             />

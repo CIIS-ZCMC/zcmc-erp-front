@@ -213,17 +213,17 @@ const useObjectivesHook = () => {
       } = res;
 
       if (status === 201) {
-        const targetPage = 1;
-
-        setPage?.(targetPage);
-
+        // Fetch first to know how many pages there are now
         getObjectivesBySector(
           {
-            page: targetPage,
+            page: 1,
             search,
             per_page: perPage,
           },
           (fetchStatus, fetchMessage, pagination) => {
+            // Navigate to the last page — that's where the new item landed
+            const lastPage = pagination?.last_page ?? 1;
+            setPage?.(lastPage);
             setPagination?.(pagination);
 
             callBack?.(status, message);
@@ -241,6 +241,7 @@ const useObjectivesHook = () => {
       setIsBtnLoading(false);
     }
   };
+
   const updateObjective = async (params, body, callBack) => {
     setIsBtnLoading(true);
 

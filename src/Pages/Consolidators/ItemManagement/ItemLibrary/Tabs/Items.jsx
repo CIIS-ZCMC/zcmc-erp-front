@@ -25,6 +25,7 @@ import TextareaComponent from "@Components/Form/TextareaComponent";
 import AuthorizationPinComponent from "@Components/AuthorizationPinComponent";
 import ConfirmationModalComponent from "@Components/Common/Dialog/ConfirmationModalComponent";
 import { itemCols } from "@Data/Columns";
+import handleSingleChangeAutcomplete from "@Utils/HandleAutocomplete";
 
 export const Items = () => {
   const {
@@ -112,7 +113,7 @@ export const Items = () => {
     });
 
     if (row.item_category?.id) {
-      getVariantsByCategory(row.item_category.id, () => {});
+      getVariantsByCategory(row.item_category.id, () => { });
     }
 
     setOpenUpdate(true);
@@ -532,7 +533,7 @@ export const Items = () => {
                     <Box
                       height={"280px"}
                       overflow="auto"
-                      // ref={specsContainerRef}
+                    // ref={specsContainerRef}
                     >
                       {newItem.specs.map((spec, index) => (
                         <Stack key={index} spacing={1} my={2}>
@@ -728,7 +729,7 @@ export const Items = () => {
                     <Box
                       height={"280px"}
                       overflow="auto"
-                      // ref={specsContainerRef}
+                    // ref={specsContainerRef}
                     >
                       {(updatedData.specs.length > 0
                         ? updatedData.specs

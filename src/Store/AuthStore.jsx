@@ -3,8 +3,9 @@
 import { create } from "zustand";
 import erp_api from "../Services/ERP_API";
 import { read } from "../Services/RequestMethods";
-import { localStorageGetter, localStorageSetter } from "../Utils/LocalStorage";
+import { localStorageGetter, localStorageSetter, clearLocalStorage } from "../Utils/LocalStorage";
 import { AREA_ID } from "../Data/constants";
+import { BASE_URL } from "../Services/Config";
 
 const useAuthStore = create((set) => ({
   user: localStorageGetter("user") ?? null,
@@ -65,11 +66,23 @@ const useAuthStore = create((set) => ({
             permissions: [],
           });
 
-          localStorageSetter("user", null);
+          clearLocalStorage();
 
-          return data.meta.redirect_to;
+          return data?.meta?.redirect_to || BASE_URL.umis_landing_page;
         })
-        .catch((err) => set({ error: err.cause }));
+        .catch((err) => {
+          set({
+            user: null,
+            meta: null,
+            isAuthenticated: false,
+            permissions: [],
+            error: err?.cause || err?.message || err,
+          });
+
+          clearLocalStorage();
+
+          return BASE_URL.umis_landing_page;
+        });
     },
 
     sessionValidation: (token, callBack) => {

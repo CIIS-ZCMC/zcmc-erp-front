@@ -9,7 +9,7 @@ import { ThreeDotsLoader } from "../Loading/ThreeDotsLoader";
 export default function ExpandableTable({
   columns = [],
   rows = [],
-  renderExpanded = () => {}, // (row) => JSX
+  renderExpanded = () => { }, // (row) => JSX
   getRowId = (row) => row.id,
   isLoading,
   currentPage,
@@ -96,7 +96,7 @@ export default function ExpandableTable({
             <tr>
               {columns.map((col) => (
                 <th
-                  key={col.key}
+                  key={col.id || col.key}
                   style={{
                     textAlign: col.align ?? "left",
                     backgroundColor: grey[200],
@@ -140,7 +140,7 @@ export default function ExpandableTable({
                     <tr>
                       {columns?.map((col) => (
                         <td
-                          key={col.key}
+                          key={col.id || col.key}
                           style={{
                             paddingTop: "10px",
                             paddingBottom: "10px",
@@ -163,7 +163,7 @@ export default function ExpandableTable({
                         >
                           {col.render
                             ? col.render(row, { toggle, openRow, expanded })
-                            : row[col.key]}
+                            : row[col.id || col.key]}
                         </td>
                       ))}
                     </tr>

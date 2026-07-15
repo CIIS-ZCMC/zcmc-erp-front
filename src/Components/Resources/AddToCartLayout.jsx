@@ -19,6 +19,7 @@ import BasicTableComponent from "@Components/Common/Table/BasicTableComponent";
 import { ADD_TO_CART_COLUMNS } from "@Data/Columns";
 import useSwitchViewHook from "@Hooks/AOP/SwitchViewHook";
 import usePageNumberHook from "@Hooks/PageNumberHook";
+import { red } from "@mui/material/colors";
 
 export default function AddToCartLayout({
   results,
@@ -55,6 +56,7 @@ export default function AddToCartLayout({
   const [searchInput, setSearchInput] = useState("");
   const [search, setSearch] = useState("");
   const [displayLoading, setDisplayLoading] = useState(false);
+  const [searchLoading, setSearchLoading] = useState(false);
   const [pagination, setPagination] = useState({
     current_page: 1,
     last_page: 1,
@@ -91,7 +93,7 @@ export default function AddToCartLayout({
     getSystems(() => {});
   }, []);
 
-  const fetchItems = () => {
+  const fetchItems = (isSearch = false) => {
     setDisplayLoading(true);
 
     getItems(
@@ -113,6 +115,10 @@ export default function AddToCartLayout({
       (status, message, paginationData) => {
         setDisplayLoading(false);
 
+        if (isSearch) {
+          setSearchLoading(false);
+        }
+
         if (status >= 200 && status < 300 && paginationData) {
           setPagination(paginationData);
         }
@@ -121,7 +127,7 @@ export default function AddToCartLayout({
   };
 
   useEffect(() => {
-    fetchItems();
+    fetchItems(searchLoading);
   }, [page, search, filterValues, isPPMP]);
 
   return (
@@ -173,10 +179,17 @@ export default function AddToCartLayout({
                 />
                 <ButtonComponent
                   label={"Search"}
+                  isLoading={searchLoading}
+                  loadingLabel={"Searching..."}
+                  disabled={
+                    searchLoading || searchInput.trim() === search.trim()
+                  }
                   onClick={() => {
+                    setSearchLoading(true);
                     setPage(1);
-                    setSearch(searchInput);
+                    setSearch(searchInput.trim());
                   }}
+                  width="110px"
                 />
               </Stack>
               <Typography

@@ -189,9 +189,9 @@ function PPMPItems(props) {
   }, [socket, ppmp_id]);
 
   useEffect(() => {
-    getProcTimelines("start", () => {});
-    getProcTimelines("end", () => {});
-    getProcTimelines("delivery", () => {});
+    getProcTimelines("start", () => { });
+    getProcTimelines("end", () => { });
+    getProcTimelines("delivery", () => { });
     getProcModes((status, message) => {
       if (status !== 200) console.error("Failed to fetch items:", message);
     });
@@ -337,8 +337,8 @@ function PPMPItems(props) {
             )}
 
             <ButtonComponent
-              label={"Download PPMP"}
-              loadingLabel={"Downloading..."}
+              label={"Export PPMP"}
+              loadingLabel={"Exporting..."}
               startDecorator={<FileDownload />}
               onClick={() => {
                 setIsExporting(true);
@@ -494,21 +494,21 @@ function PPMPItems(props) {
           )
         }
 
-        //no post for END - USER
-        // footer={
-        //   <>
-        //     <Stack width={"100%"} spacing={2}>
-        //       <TextareaComponent
-        //         placeholder={"Comment here .. "}
-        //         maxRows={3}
-        //         label={"Add a comment"}
-        //       />
-        //       <Stack direction={"row"} justifyContent={"right"}>
-        //         <ButtonComponent label={"Post Comment"} width="200px" />
-        //       </Stack>
-        //     </Stack>
-        //   </>
-        // }
+      //no post for END - USER
+      // footer={
+      //   <>
+      //     <Stack width={"100%"} spacing={2}>
+      //       <TextareaComponent
+      //         placeholder={"Comment here .. "}
+      //         maxRows={3}
+      //         label={"Add a comment"}
+      //       />
+      //       <Stack direction={"row"} justifyContent={"right"}>
+      //         <ButtonComponent label={"Post Comment"} width="200px" />
+      //       </Stack>
+      //     </Stack>
+      //   </>
+      // }
       />
     </Fragment>
   );

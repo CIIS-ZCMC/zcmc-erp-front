@@ -37,9 +37,8 @@ const ResponsibleStatus = ({
   );
   const formattedEndMonth = moment(end_month, "YYYY-MM").format("MMMM YYYY");
 
-  const timeframe = `${start_month ? formattedStartMonth : ""} - ${
-    end_month ? formattedEndMonth : ""
-  }`;
+  const timeframe = `${start_month ? formattedStartMonth : ""} - ${end_month ? formattedEndMonth : ""
+    }`;
 
   return (
     <>
@@ -73,7 +72,7 @@ const ResponsibleStatus = ({
               />
             </Stack>
 
-            <Typography level="body-xs">
+            <Typography level="body-sm">
               {MANAGE_RESPONSIBLE_SUBHEADER}
             </Typography>
           </Stack>

@@ -126,7 +126,8 @@ export default function ProcurementSchedule({
                   <input
                     inputMode="numeric"
                     pattern="[0-9]*"
-                    value={val}
+                    value={val === 0 ? "" : val}
+                    placeholder="0"
                     onChange={(e) => handleMonthChange(m.key, e.target.value)}
                     style={{
                       width: "100%",

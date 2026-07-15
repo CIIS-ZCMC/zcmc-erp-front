@@ -59,131 +59,131 @@ export const objHeaders = ({
   onDelete,
   onViewIndicators,
 }) => [
-  {
-    field: "function",
-    label: "Function",
-    width: "100px",
-    align: "left",
-    render: (params) => {
-      return (
-        <Stack>
-          <Typography fontWeight={600} level="body-sm" color="black">
-            {params?.function?.type}
-          </Typography>
-        </Stack>
-      );
-    },
-  },
-  {
-    field: "objective",
-    label: "Objective",
-    width: "350px",
-    align: "left",
-    render: (params) => {
-      return (
-        <Stack>
-          <Typography fontWeight={600} level="body-sm" color="black">
-            {params?.objective?.description}
-          </Typography>
-        </Stack>
-      );
-    },
-  },
-  {
-    field: "success_indicators",
-    label: "Success Indicators",
-    align: "center",
-    render: (params) => {
-      return (
-        <Chip
-          onClick={() => onViewIndicators(params)}
-          size="md"
-          variant="soft"
-          color="neutral"
-          underline="hover"
-          level="body-sm"
-          startDecorator={<IoOpenOutline />}
-        >
-          {params.success_indicator?.length || 0} success indicator
-          {params.success_indicator?.length > 1 ? "s" : ""}
-        </Chip>
-      );
-    },
-  },
-  {
-    field: "created_at",
-    label: "Created on",
-    align: "center",
-    width: "150px",
-    render: (params) => {
-      return (
-        <Stack>
-          <Typography level="body-sm">
-            {moment(params?.meta?.created_at).format("LL")}
-          </Typography>
-        </Stack>
-      );
-    },
-  },
-  {
-    field: "updated_at",
-    label: "Updated on",
-    align: "center",
-    width: "150px",
-    render: (params) => {
-      return (
-        <Stack>
-          <Typography level="body-sm">
-            {moment(params?.meta?.updated_at).format("LL")}
-          </Typography>
-        </Stack>
-      );
-    },
-  },
-  {
-    field: "action",
-    label: "Actions",
-    position: "sticky",
-    align: "center",
-    render: (params) => {
-      return (
-        <>
-          <Stack
-            direction="row"
-            sx={{ alignItems: "center", justifyContent: "center" }}
-            gap={2}
-          >
-            <Chip
-              onClick={() => onUpdate(params)}
-              size="md"
-              variant="soft"
-              color="neutral"
-              underline="hover"
-              fontSize={14}
-              startDecorator={<EditOutlined />}
-              sx={{
-                display: active ? "flex" : "none",
-              }}
-            >
-              Edit
-            </Chip>
-            <Chip
-              onClick={() => onDelete(params)}
-              size="md"
-              variant="soft"
-              color="neutral"
-              underline="hover"
-              fontSize={14}
-              startDecorator={<DeleteOutlineOutlined />}
-            >
-              {active ? "Archive" : "Unarchive"}
-            </Chip>
+    {
+      field: "function",
+      label: "Function",
+      width: "100px",
+      align: "left",
+      render: (params) => {
+        return (
+          <Stack>
+            <Typography fontWeight={600} level="body-sm" color="black">
+              {params?.function?.type}
+            </Typography>
           </Stack>
-        </>
-      );
+        );
+      },
     },
-  },
-];
+    {
+      field: "objective",
+      label: "Objective",
+      width: "350px",
+      align: "left",
+      render: (params) => {
+        return (
+          <Stack>
+            <Typography fontWeight={600} level="body-sm" color="black">
+              {params?.objective?.description}
+            </Typography>
+          </Stack>
+        );
+      },
+    },
+    {
+      field: "success_indicators",
+      label: "Success Indicators",
+      align: "center",
+      render: (params) => {
+        return (
+          <Chip
+            onClick={() => onViewIndicators(params)}
+            size="md"
+            variant="soft"
+            color="neutral"
+            underline="hover"
+            level="body-sm"
+            startDecorator={<IoOpenOutline />}
+          >
+            {params.success_indicator?.length || 0} success indicator
+            {params.success_indicator?.length > 1 ? "s" : ""}
+          </Chip>
+        );
+      },
+    },
+    {
+      field: "created_at",
+      label: "Created on",
+      align: "center",
+      width: "150px",
+      render: (params) => {
+        return (
+          <Stack>
+            <Typography level="body-sm">
+              {moment(params?.meta?.created_at).format("LL")}
+            </Typography>
+          </Stack>
+        );
+      },
+    },
+    {
+      field: "updated_at",
+      label: "Updated on",
+      align: "center",
+      width: "150px",
+      render: (params) => {
+        return (
+          <Stack>
+            <Typography level="body-sm">
+              {moment(params?.meta?.updated_at).format("LL")}
+            </Typography>
+          </Stack>
+        );
+      },
+    },
+    {
+      field: "action",
+      label: "Actions",
+      position: "sticky",
+      align: "center",
+      render: (params) => {
+        return (
+          <>
+            <Stack
+              direction="row"
+              sx={{ alignItems: "center", justifyContent: "center" }}
+              gap={2}
+            >
+              <Chip
+                onClick={() => onUpdate(params)}
+                size="md"
+                variant="soft"
+                color="neutral"
+                underline="hover"
+                fontSize={14}
+                startDecorator={<EditOutlined />}
+                sx={{
+                  display: active ? "flex" : "none",
+                }}
+              >
+                Edit
+              </Chip>
+              <Chip
+                onClick={() => onDelete(params)}
+                size="md"
+                variant="soft"
+                color="neutral"
+                underline="hover"
+                fontSize={14}
+                startDecorator={<DeleteOutlineOutlined />}
+              >
+                {active ? "Archive" : "Unarchive"}
+              </Chip>
+            </Stack>
+          </>
+        );
+      },
+    },
+  ];
 
 export const successIndicator = [
   { field: "code", name: "Code", width: "90px", align: "center" },
@@ -925,120 +925,120 @@ export const variantCols = (
   expandedCategories,
   expandCategory,
 ) => [
-  {
-    key: "system",
-    label: "System",
-    width: 150,
-    align: "left",
-    render: (params) => {
-      return <Typography fontWeight={600}>{params.system}</Typography>;
+    {
+      key: "system",
+      label: "System",
+      width: 150,
+      align: "left",
+      render: (params) => {
+        return <Typography fontWeight={600}>{params.system}</Typography>;
+      },
     },
-  },
-  { key: "code", label: "Code", align: "left", width: 100 },
-  {
-    key: "category",
-    label: "Category",
-    align: "left",
-    width: 300,
-    render: (params) => {
-      const categories = params?.categories || [];
-      const isExpanded = expandedCategories[params.id];
+    { key: "code", label: "Code", align: "left", width: 100 },
+    {
+      key: "category",
+      label: "Category",
+      align: "left",
+      width: 300,
+      render: (params) => {
+        const categories = params?.categories || [];
+        const isExpanded = expandedCategories[params.id];
 
-      if (!categories.length) return "-";
+        if (!categories.length) return "-";
 
-      // Collapsed: first 2 categories
-      const collapsedCount = 2;
-      const visible = isExpanded
-        ? categories
-        : categories.slice(0, collapsedCount);
+        // Collapsed: first 2 categories
+        const collapsedCount = 2;
+        const visible = isExpanded
+          ? categories
+          : categories.slice(0, collapsedCount);
 
-      const remaining = categories.length - collapsedCount;
+        const remaining = categories.length - collapsedCount;
 
-      return (
-        <div
-          style={{ cursor: "pointer" }}
-          onClick={() => expandCategory(params.id)}
-        >
-          {isExpanded ? (
-            // Expanded view: multiline
-
-            categories.map((cat, index) => (
-              <Typography key={cat.id || index} level="body-xs">
-                {cat.name}
-              </Typography>
-            ))
-          ) : (
-            // Collapsed view: single line
-            <Typography level="body-xs">
-              {visible.map((cat) => cat.name).join(", ")}
-              {remaining > 0 && `, +${remaining} more`}
-            </Typography>
-          )}
-        </div>
-      );
-    },
-  },
-  {
-    key: "created_at",
-    label: "Created on",
-    width: 100,
-    align: "left",
-    render: (params) => {
-      return moment(params?.meta?.created_at).format("LL");
-    },
-  },
-  {
-    key: "updated_at",
-    label: "Updated on",
-    width: 100,
-    align: "left",
-    render: (params) => {
-      return moment(params?.meta?.updated_at).format("LL");
-    },
-  },
-  {
-    key: "action",
-    label: "Actions",
-    align: "center",
-    render: (params) => {
-      return (
-        <>
-          <Stack
-            direction="row"
-            spacing={2}
-            sx={{ justifyContent: "center", alignItems: "center" }}
+        return (
+          <div
+            style={{ cursor: "pointer" }}
+            onClick={() => expandCategory(params.id)}
           >
-            <Chip
-              onClick={() => {
-                setSelectedData(params);
-                updateCallBack(params);
-              }}
-              size="md"
-              variant="soft"
-              color="neutral"
-              startDecorator={<EditOutlined />}
-              sx={{ display: !active && "none" }}
-            >
-              Edit
-            </Chip>
-            <Chip
-              onClick={() => {
-                setSelectedData(params);
-                delCallback(params);
-              }}
-              size="md"
-              variant="soft"
-              color="neutral"
-              startDecorator={<ArchiveOutlined />}
-            >
-              {active ? "Archive" : "Unarchive"}
-            </Chip>
-          </Stack>
-        </>
-      );
+            {isExpanded ? (
+              // Expanded view: multiline
+
+              categories.map((cat, index) => (
+                <Typography key={cat.id || index} level="body-xs">
+                  {cat.name}
+                </Typography>
+              ))
+            ) : (
+              // Collapsed view: single line
+              <Typography level="body-xs">
+                {visible.map((cat) => cat.name).join(", ")}
+                {remaining > 0 && `, +${remaining} more`}
+              </Typography>
+            )}
+          </div>
+        );
+      },
     },
-  },
-];
+    {
+      key: "created_at",
+      label: "Created on",
+      width: 100,
+      align: "left",
+      render: (params) => {
+        return moment(params?.meta?.created_at).format("LL");
+      },
+    },
+    {
+      key: "updated_at",
+      label: "Updated on",
+      width: 100,
+      align: "left",
+      render: (params) => {
+        return moment(params?.meta?.updated_at).format("LL");
+      },
+    },
+    {
+      key: "action",
+      label: "Actions",
+      align: "center",
+      render: (params) => {
+        return (
+          <>
+            <Stack
+              direction="row"
+              spacing={2}
+              sx={{ justifyContent: "center", alignItems: "center" }}
+            >
+              <Chip
+                onClick={() => {
+                  setSelectedData(params);
+                  updateCallBack(params);
+                }}
+                size="md"
+                variant="soft"
+                color="neutral"
+                startDecorator={<EditOutlined />}
+                sx={{ display: !active && "none" }}
+              >
+                Edit
+              </Chip>
+              <Chip
+                onClick={() => {
+                  setSelectedData(params);
+                  delCallback(params);
+                }}
+                size="md"
+                variant="soft"
+                color="neutral"
+                startDecorator={<ArchiveOutlined />}
+              >
+                {active ? "Archive" : "Unarchive"}
+              </Chip>
+            </Stack>
+          </>
+        );
+      },
+    },
+  ];
 
 export const categoryCols = (
   active,
@@ -1046,78 +1046,78 @@ export const categoryCols = (
   updateCallBack,
   delCallback,
 ) => [
-  {
-    key: "name",
-    label: "Category",
-    align: "left",
-    render: (params) => (
-      <Typography level="body-sm" fontWeight={600} sx={{ color: grey[800] }}>
-        {params.name}
-      </Typography>
-    ),
-  },
-  {
-    key: "created_at",
-    label: "Created at",
-
-    align: "left",
-    render: (params) => {
-      return moment(params.meta.created_at).format("LL");
+    {
+      key: "name",
+      label: "Category",
+      align: "left",
+      render: (params) => (
+        <Typography level="body-sm" fontWeight={600} sx={{ color: grey[800] }}>
+          {params.name}
+        </Typography>
+      ),
     },
-  },
-  {
-    key: "updated_at",
-    label: "Updated at",
+    {
+      key: "created_at",
+      label: "Created at",
 
-    align: "left",
-    render: (params) => {
-      return moment(params.meta.created_at).format("LL");
+      align: "left",
+      render: (params) => {
+        return moment(params.meta.created_at).format("LL");
+      },
     },
-  },
-  {
-    key: "action",
-    label: "Actions",
+    {
+      key: "updated_at",
+      label: "Updated at",
 
-    align: "center",
-    render: (params) => {
-      return (
-        <>
-          <Stack
-            direction="row"
-            spacing={2}
-            sx={{ justifyContent: "center", alignItems: "center" }}
-          >
-            <Chip
-              onClick={() => {
-                setSelectedData(params);
-                updateCallBack(params);
-              }}
-              size="md"
-              variant="soft"
-              color="neutral"
-              startDecorator={<EditOutlined />}
-              sx={{ display: !active && "none" }}
+      align: "left",
+      render: (params) => {
+        return moment(params.meta.created_at).format("LL");
+      },
+    },
+    {
+      key: "action",
+      label: "Actions",
+
+      align: "center",
+      render: (params) => {
+        return (
+          <>
+            <Stack
+              direction="row"
+              spacing={2}
+              sx={{ justifyContent: "center", alignItems: "center" }}
             >
-              Edit
-            </Chip>
-            <Chip
-              onClick={() => {
-                setSelectedData(params);
-                delCallback(params);
-              }}
-              size="md"
-              variant="soft"
-              color="neutral"
-              startDecorator={<ArchiveOutlined />}
-            >
-              {active ? "Archive" : "Unarchive"}
-            </Chip>
-          </Stack>
-        </>
-      );
+              <Chip
+                onClick={() => {
+                  setSelectedData(params);
+                  updateCallBack(params);
+                }}
+                size="md"
+                variant="soft"
+                color="neutral"
+                startDecorator={<EditOutlined />}
+                sx={{ display: !active && "none" }}
+              >
+                Edit
+              </Chip>
+              <Chip
+                onClick={() => {
+                  setSelectedData(params);
+                  delCallback(params);
+                }}
+                size="md"
+                variant="soft"
+                color="neutral"
+                startDecorator={<ArchiveOutlined />}
+              >
+                {active ? "Archive" : "Unarchive"}
+              </Chip>
+            </Stack>
+          </>
+        );
+      },
     },
-  },
-];
+  ];
 
 export const classificationCols = (
   active,
@@ -1125,225 +1125,225 @@ export const classificationCols = (
   updateCallBack,
   delCallback,
 ) => [
-  {
-    key: "name",
-    label: "Project Type",
-    align: "left",
-    render: (params) => (
-      <Typography level="body-sm" fontWeight={600} sx={{ color: grey[800] }}>
-        {params.name}
-      </Typography>
-    ),
-  },
-  {
-    key: "description",
-    label: "Description",
-    align: "left",
-    render: (params) => params.description,
-  },
-  {
-    key: "created_at",
-    label: "Created at",
+    {
+      key: "name",
+      label: "Project Type",
+      align: "left",
+      render: (params) => (
+        <Typography level="body-sm" fontWeight={600} sx={{ color: grey[800] }}>
+          {params.name}
+        </Typography>
+      ),
+    },
+    {
+      key: "description",
+      label: "Description",
+      align: "left",
+      render: (params) => params.description,
+    },
+    {
+      key: "created_at",
+      label: "Created at",
 
-    align: "left",
-    render: (params) => {
-      return moment(params.meta.created_at).format("LL");
+      align: "left",
+      render: (params) => {
+        return moment(params.meta.created_at).format("LL");
+      },
     },
-  },
-  {
-    key: "updated_at",
-    label: "Updated at",
+    {
+      key: "updated_at",
+      label: "Updated at",
 
-    align: "left",
-    render: (params) => {
-      return moment(params.meta.updated_at).format("LL");
+      align: "left",
+      render: (params) => {
+        return moment(params.meta.updated_at).format("LL");
+      },
     },
-  },
-  {
-    key: "action",
-    label: "Actions",
-    align: "center",
-    render: (params) => {
-      return (
-        <>
-          <Stack
-            direction="row"
-            spacing={2}
-            sx={{ justifyContent: "center", alignItems: "center" }}
-          >
-            <Chip
-              onClick={() => {
-                setSelectedData(params);
-                updateCallBack(params);
-              }}
-              size="md"
-              variant="soft"
-              color="neutral"
-              startDecorator={<EditOutlined />}
-              sx={{ display: !active && "none" }}
+    {
+      key: "action",
+      label: "Actions",
+      align: "center",
+      render: (params) => {
+        return (
+          <>
+            <Stack
+              direction="row"
+              spacing={2}
+              sx={{ justifyContent: "center", alignItems: "center" }}
             >
-              Edit
-            </Chip>
-            <Chip
-              onClick={() => {
-                setSelectedData(params);
-                delCallback(params);
-              }}
-              size="md"
-              variant="soft"
-              color="neutral"
-              startDecorator={<ArchiveOutlined />}
-            >
-              {active ? "Archive" : "Unarchive"}
-            </Chip>
-          </Stack>
-        </>
-      );
+              <Chip
+                onClick={() => {
+                  setSelectedData(params);
+                  updateCallBack(params);
+                }}
+                size="md"
+                variant="soft"
+                color="neutral"
+                startDecorator={<EditOutlined />}
+                sx={{ display: !active && "none" }}
+              >
+                Edit
+              </Chip>
+              <Chip
+                onClick={() => {
+                  setSelectedData(params);
+                  delCallback(params);
+                }}
+                size="md"
+                variant="soft"
+                color="neutral"
+                startDecorator={<ArchiveOutlined />}
+              >
+                {active ? "Archive" : "Unarchive"}
+              </Chip>
+            </Stack>
+          </>
+        );
+      },
     },
-  },
-];
+  ];
 
 export const itemCols = (
   active,
   setSelectedData,
-  handleUpdate = () => {},
-  handleDelete = () => {},
+  handleUpdate = () => { },
+  handleDelete = () => { },
 ) => [
-  {
-    key: "name",
-    label: "Item name",
-    align: "left",
-    width: "250px",
-    render: (params) => {
-      return (
+    {
+      key: "name",
+      label: "Item name",
+      align: "left",
+      width: "250px",
+      render: (params) => {
+        return (
+          <>
+            <Typography
+              level="body-sm"
+              fontWeight={600}
+              sx={{ color: grey[800] }}
+            >
+              {params.name}
+            </Typography>
+            <Typography level="body-sm">{params.unit}</Typography>
+          </>
+        );
+      },
+    },
+    {
+      key: "classification",
+      label: "Project Type & Category",
+      align: "left",
+      width: "150px",
+      render: (row) => (
         <>
+          <Typography level="body-sm" fontWeight={600} sx={{ color: grey[800] }}>
+            {row?.item_classification?.name}
+          </Typography>
           <Typography
-            level="body-sm"
-            fontWeight={600}
-            sx={{ color: grey[800] }}
+            level={row?.item_category?.name && "body-sm"}
+            sx={{
+              fontSize: row?.item_classification?.name && 13,
+              color: row?.item_classification?.name ? grey[600] : grey[800],
+            }}
+            fontWeight={row?.item_classification?.name ? 500 : 600}
           >
-            {params.name}
-          </Typography>
-          <Typography level="body-sm">{params.unit}</Typography>
-        </>
-      );
-    },
-  },
-  {
-    key: "classification",
-    label: "Project Type & Category",
-    align: "left",
-    width: "150px",
-    render: (row) => (
-      <>
-        <Typography level="body-sm" fontWeight={600} sx={{ color: grey[800] }}>
-          {row?.item_classification?.name}
-        </Typography>
-        <Typography
-          level={row?.item_category?.name && "body-sm"}
-          sx={{
-            fontSize: row?.item_classification?.name && 13,
-            color: row?.item_classification?.name ? grey[600] : grey[800],
-          }}
-          fontWeight={row?.item_classification?.name ? 500 : 600}
-        >
-          {row?.item_category?.name}
-        </Typography>
-      </>
-    ),
-  },
-  {
-    key: "estimated_budget",
-    label: "Estimated Budget",
-    width: "100px",
-    render: (params) => {
-      return (
-        <>
-          <Typography level="body-sm">
-            {formatPeso(params.estimated_budget)}
+            {row?.item_category?.name}
           </Typography>
         </>
-      );
+      ),
     },
-  },
-  {
-    key: "created_on",
-    label: "Created on",
-    width: "100px",
-    align: "left",
-    render: (row) => (
-      <>
-        <Typography level="body-xs">
-          {moment(row.created_at).format("LL")}
-        </Typography>
-      </>
-    ),
-  },
-  {
-    key: "terminology",
-    label: "Variant",
-    width: "100px",
-    align: "left",
-    render: (row) => (
-      <>
-        {row?.terminology ? (
-          <Chip
-            color="primary"
-            size="md"
-            startDecorator={<Circle sx={{ fontSize: 8 }} />}
-          >
-            {row.terminology}
-          </Chip>
-        ) : (
-          <Typography level="body-sm">-</Typography>
-        )}
-      </>
-    ),
-  },
-  {
-    key: "action",
-    label: "Actions",
-    align: "center",
-    render: (params) => {
-      return (
+    {
+      key: "estimated_budget",
+      label: "Estimated Budget",
+      width: "100px",
+      render: (params) => {
+        return (
+          <>
+            <Typography level="body-sm">
+              {formatPeso(params.estimated_budget)}
+            </Typography>
+          </>
+        );
+      },
+    },
+    {
+      key: "created_on",
+      label: "Created on",
+      width: "100px",
+      align: "left",
+      render: (row) => (
         <>
-          <Stack
-            direction="row"
-            spacing={2}
-            alignItems="center"
-            justifyContent={"center"}
-          >
-            <Chip
-              onClick={() => {
-                setSelectedData(params);
-                handleUpdate(params);
-              }}
-              size="md"
-              variant="soft"
-              color="neutral"
-              startDecorator={<EditOutlined />}
-              sx={{ display: !active && "none" }}
-            >
-              Edit
-            </Chip>
-            <Chip
-              onClick={() => {
-                setSelectedData(params);
-                handleDelete(params);
-              }}
-              size="md"
-              variant="soft"
-              color="neutral"
-              startDecorator={<DeleteOutlineOutlined />}
-            >
-              {active ? "Archive" : "Unarchive"}
-            </Chip>
-          </Stack>
+          <Typography level="body-xs">
+            {moment(row.created_at).format("LL")}
+          </Typography>
         </>
-      );
+      ),
     },
-  },
-];
+    {
+      key: "terminology",
+      label: "Variant",
+      width: "100px",
+      align: "left",
+      render: (row) => (
+        <>
+          {row?.terminology ? (
+            <Chip
+              color="primary"
+              size="md"
+              startDecorator={<Circle sx={{ fontSize: 8 }} />}
+            >
+              {row.terminology}
+            </Chip>
+          ) : (
+            <Typography level="body-sm">-</Typography>
+          )}
+        </>
+      ),
+    },
+    {
+      key: "action",
+      label: "Actions",
+      align: "center",
+      render: (params) => {
+        return (
+          <>
+            <Stack
+              direction="row"
+              spacing={2}
+              alignItems="center"
+              justifyContent={"center"}
+            >
+              <Chip
+                onClick={() => {
+                  setSelectedData(params);
+                  handleUpdate(params);
+                }}
+                size="md"
+                variant="soft"
+                color="neutral"
+                startDecorator={<EditOutlined />}
+                sx={{ display: !active && "none" }}
+              >
+                Edit
+              </Chip>
+              <Chip
+                onClick={() => {
+                  setSelectedData(params);
+                  handleDelete(params);
+                }}
+                size="md"
+                variant="soft"
+                color="neutral"
+                startDecorator={<DeleteOutlineOutlined />}
+              >
+                {active ? "Archive" : "Unarchive"}
+              </Chip>
+            </Stack>
+          </>
+        );
+      },
+    },
+  ];
 
 export const itemRequestCols = (
   setSelectedData,
@@ -1794,37 +1794,37 @@ export const PPMP_HEADERS = (
   userId,
   isLocked,
 ) => [
-  {
-    id: "name",
-    label: "Item",
-    width: "300px",
-    render: renderItem,
-    expandTrigger: true,
-  },
-  {
-    id: "category",
-    label: "Project Type & Category",
-    width: "auto",
-    render: renderCategory,
-    expandTrigger: true,
-  },
-  {
-    id: "cost",
-    label: "Total Cost & Individual Cost",
-    width: "auto",
-    render: renderCost,
-    expandTrigger: true,
-  },
-  {
-    id: "procurement",
-    label: "Mode of Procurement",
-    align: "center",
-    expandTrigger: true,
-    width: "auto",
-    render: renderProcurement,
-  },
-  ...(status?.name === "draft"
-    ? [
+    {
+      id: "name",
+      label: "Item",
+      width: "300px",
+      render: renderItem,
+      expandTrigger: true,
+    },
+    {
+      id: "category",
+      label: "Project Type & Category",
+      width: "auto",
+      render: renderCategory,
+      expandTrigger: true,
+    },
+    {
+      id: "cost",
+      label: "Total Cost & Individual Cost",
+      width: "auto",
+      render: renderCost,
+      expandTrigger: true,
+    },
+    {
+      id: "procurement",
+      label: "Mode of Procurement",
+      align: "center",
+      expandTrigger: true,
+      width: "auto",
+      render: renderProcurement,
+    },
+    ...(status?.name === "draft" || status?.name === "returned"
+      ? [
         {
           id: "is_complete",
           label: "",
@@ -1860,73 +1860,75 @@ export const PPMP_HEADERS = (
             ),
         },
       ]
-    : []),
-  {
-    id: "actions",
-    label: "Actions",
-    align: status?.name === "draft" ? "center" : "right",
-    width: "auto",
-    render: (row, { openRow }) => {
-      const isEditing = editingRows[row.id];
-      const lockedByOther =
-        lockedRows[row.id] && lockedRows[row.id].editorId !== userId;
+      : []),
+    {
+      id: "actions",
+      label: "Actions",
+      align: (status?.name === "draft" || status?.name === "returned") ? "center" : "right",
+      width: "auto",
+      render: (row, { openRow }) => {
+        const isEditing = editingRows[row.id];
+        const lockedByOther =
+          lockedRows[row.id] && lockedRows[row.id].editorId !== userId;
 
-      return (
-        <Stack
-          direction="row"
-          spacing={1}
-          justifyContent={status?.name === "draft" ? "center" : "flex-end"}
-        >
-          {/* Show comments only if status is not draft */}
-          {status?.name !== "draft" && (
-            <ChipComponent
-              label={row.comments_count}
-              startDecorator={<CommentOutlined />}
-              variant="soft"
-              onClick={(e) => {
-                e.stopPropagation();
-                handleComments(row);
-              }}
-            />
-          )}
+        const isEditable = status?.name === "draft" || status?.name === "returned";
 
-          {/* Show edit/remove only if draft */}
-          {status?.name === "draft" && (
-            <>
-              <ChipComponent
-                label={isEditing ? "Save" : "Edit"}
-                startDecorator={
-                  isEditing ? <CheckOutlined /> : <ModeEditOutlineOutlined />
-                }
-                color={isEditing ? "success" : "neutral"}
-                variant="soft"
-                disabled={lockedByOther}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  handleEditToggle(row.id, openRow, isEditing);
-                }}
-              />
-
-              {/* Show Remove only if the row is not globally locked */}
-              {!isLocked && (
+        return (
+          <Stack
+            direction="row"
+            spacing={1}
+            justifyContent={isEditable ? "center" : "flex-end"}
+          >
+            {/* Show edit/remove only if draft or returned */}
+            {isEditable && (
+              <>
                 <ChipComponent
-                  label="Remove"
-                  startDecorator={<DeleteOutlineOutlined />}
+                  // label={isEditing ? "Save" : "Edit"}
+                  startDecorator={
+                    isEditing ? <CheckOutlined /> : <ModeEditOutlineOutlined />
+                  }
+                  color={isEditing ? "success" : "neutral"}
                   variant="soft"
                   disabled={lockedByOther}
                   onClick={(e) => {
                     e.stopPropagation();
-                    handleDeletePPMP(row.id);
+                    handleEditToggle(row.id, openRow, isEditing);
                   }}
                 />
-              )}
-            </>
-          )}
-        </Stack>
-      );
+
+                {/* Show Remove only if the row is not globally locked */}
+                {!isLocked && (
+                  <ChipComponent
+                    // label="Remove"
+                    startDecorator={<DeleteOutlineOutlined />}
+                    variant="soft"
+                    disabled={lockedByOther}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleDeletePPMP(row.id);
+                    }}
+                  />
+                )}
+              </>
+            )}
+
+            {/* Show comments only if status is not draft */}
+            {status?.name !== "draft" && (
+              <ChipComponent
+                label={row.comments_count}
+                startDecorator={<CommentOutlined />}
+                variant="soft"
+                onClick={(e) => {
+                  e.stopPropagation();
+                  handleComments(row);
+                }}
+              />
+            )}
+          </Stack>
+        );
+      },
     },
-  },
-];
+  ];
 
 export const ITEMS_REQUESTS = (handleOpen, pathName, showActions = false) => [
   {
@@ -2024,141 +2026,141 @@ export const ITEMS_REQUESTS = (handleOpen, pathName, showActions = false) => [
 
   ...(showActions
     ? [
-        {
-          key: "actions",
-          label: "Actions",
-          width: "200px",
-          render: (r) => (
-            <>
-              {pathName === "/ppmp" && (
-                <>
-                  {r.status_id === 3 && (
-                    <>
-                      <ChipComponent
-                        size="lg"
-                        color="primary"
-                        variant={"soft"}
-                        label={"Pending"}
-                        startDecorator={<HourglassEmpty />}
-                      />
-                    </>
-                  )}
-
-                  {r.status_id === 4 && (
-                    <>
-                      <ChipComponent
-                        size="lg"
-                        color="success"
-                        variant={"soft"}
-                        label={"Saved to Library"}
-                        startDecorator={<CheckOutlined />}
-                      />
-                    </>
-                  )}
-
-                  {r.status_id === 5 && (
-                    <>
-                      <ChipComponent
-                        size="lg"
-                        color="danger"
-                        variant={"soft"}
-                        label={"Declined"}
-                        startDecorator={<Clear />}
-                      />
-                    </>
-                  )}
-                </>
-              )}
-
-              {pathName === "/item-requests/" && (
-                <>
-                  {r.status_id === 3 && (
-                    <>
-                      <ChipComponent
-                        size="lg"
-                        color="primary"
-                        variant={"soft"}
-                        label={"Pending"}
-                        startDecorator={<HourglassEmpty />}
-                      />
-                    </>
-                  )}
-
-                  {r.status_id === 4 && (
-                    <>
-                      <ChipComponent
-                        size="lg"
-                        color="success"
-                        variant={"soft"}
-                        label={"Saved to Library"}
-                        startDecorator={<CheckOutlined />}
-                      />
-                    </>
-                  )}
-
-                  {r.status_id === 5 && (
-                    <>
-                      <ChipComponent
-                        size="lg"
-                        color="danger"
-                        variant={"soft"}
-                        label={"Declined"}
-                        startDecorator={<Clear />}
-                      />
-                    </>
-                  )}
-                </>
-              )}
-
-              {pathName === "/item-requests/pending" && (
-                <>
-                  <div style={{ display: "flex", gap: "8px" }}>
+      {
+        key: "actions",
+        label: "Actions",
+        width: "200px",
+        render: (r) => (
+          <>
+            {pathName === "/ppmp" && (
+              <>
+                {r.status_id === 3 && (
+                  <>
                     <ChipComponent
                       size="lg"
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleOpen(4, r); /* approve */
-                      }}
-                      color="success"
-                      label={"Approve"}
+                      color="primary"
                       variant={"soft"}
+                      label={"Pending"}
+                      startDecorator={<HourglassEmpty />}
+                    />
+                  </>
+                )}
+
+                {r.status_id === 4 && (
+                  <>
+                    <ChipComponent
+                      size="lg"
+                      color="success"
+                      variant={"soft"}
+                      label={"Saved to Library"}
                       startDecorator={<CheckOutlined />}
                     />
+                  </>
+                )}
 
+                {r.status_id === 5 && (
+                  <>
                     <ChipComponent
                       size="lg"
                       color="danger"
                       variant={"soft"}
-                      onClick={(e) => {
-                        e.stopPropagation();
-                        handleOpen(5, r); /* decline */
-                      }}
-                      label={"Decline"}
+                      label={"Declined"}
                       startDecorator={<Clear />}
                     />
-                  </div>
-                </>
-              )}
+                  </>
+                )}
+              </>
+            )}
 
-              {pathName === "/item-requests/saved" && (
-                <>
-                  {r.status_id === 4 && (
-                    <>
-                      <ChipComponent
-                        size="lg"
-                        color="success"
-                        variant={"soft"}
-                        label={"Approved"}
-                        startDecorator={<CheckOutlined />}
-                      />
-                    </>
-                  )}
-                </>
-              )}
-            </>
-          ),
-        },
-      ]
+            {pathName === "/item-requests/" && (
+              <>
+                {r.status_id === 3 && (
+                  <>
+                    <ChipComponent
+                      size="lg"
+                      color="primary"
+                      variant={"soft"}
+                      label={"Pending"}
+                      startDecorator={<HourglassEmpty />}
+                    />
+                  </>
+                )}
+
+                {r.status_id === 4 && (
+                  <>
+                    <ChipComponent
+                      size="lg"
+                      color="success"
+                      variant={"soft"}
+                      label={"Saved to Library"}
+                      startDecorator={<CheckOutlined />}
+                    />
+                  </>
+                )}
+
+                {r.status_id === 5 && (
+                  <>
+                    <ChipComponent
+                      size="lg"
+                      color="danger"
+                      variant={"soft"}
+                      label={"Declined"}
+                      startDecorator={<Clear />}
+                    />
+                  </>
+                )}
+              </>
+            )}
+
+            {pathName === "/item-requests/pending" && (
+              <>
+                <div style={{ display: "flex", gap: "8px" }}>
+                  <ChipComponent
+                    size="lg"
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleOpen(4, r); /* approve */
+                    }}
+                    color="success"
+                    label={"Approve"}
+                    variant={"soft"}
+                    startDecorator={<CheckOutlined />}
+                  />
+
+                  <ChipComponent
+                    size="lg"
+                    color="danger"
+                    variant={"soft"}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleOpen(5, r); /* decline */
+                    }}
+                    label={"Decline"}
+                    startDecorator={<Clear />}
+                  />
+                </div>
+              </>
+            )}
+
+            {pathName === "/item-requests/saved" && (
+              <>
+                {r.status_id === 4 && (
+                  <>
+                    <ChipComponent
+                      size="lg"
+                      color="success"
+                      variant={"soft"}
+                      label={"Approved"}
+                      startDecorator={<CheckOutlined />}
+                    />
+                  </>
+                )}
+              </>
+            )}
+          </>
+        ),
+      },
+    ]
     : []),
 ];
 
@@ -2368,111 +2370,111 @@ export const MANAGE_CONSOLIDATORS = (
   setExpandedCategories,
   handleUpdate,
 ) => [
-  {
-    id: "name",
-    label: "Employee Name",
-    width: "300px",
-    render: (row) => (
-      <Stack>
-        <Typography level="body-sm" fontWeight={600} color="black">
-          {row?.user_name}
-        </Typography>
-        <Typography level="body-xs" color="neutral">
-          {row?.area_name}
-        </Typography>
-      </Stack>
-    ),
-  },
-  {
-    id: "item_category",
-    label: "Assigned Item Category",
-    width: "250px",
-    render: (row) => {
-      const categories = row?.assigned_categories || [];
-      const rowId = row?.user_id;
-
-      if (!categories.length) {
-        return (
+    {
+      id: "name",
+      label: "Employee Name",
+      width: "300px",
+      render: (row) => (
+        <Stack>
+          <Typography level="body-sm" fontWeight={600} color="black">
+            {row?.user_name}
+          </Typography>
           <Typography level="body-xs" color="neutral">
-            —
+            {row?.area_name}
+          </Typography>
+        </Stack>
+      ),
+    },
+    {
+      id: "item_category",
+      label: "Assigned Item Category",
+      width: "250px",
+      render: (row) => {
+        const categories = row?.assigned_categories || [];
+        const rowId = row?.user_id;
+
+        if (!categories.length) {
+          return (
+            <Typography level="body-xs" color="neutral">
+              —
+            </Typography>
+          );
+        }
+
+        const isExpanded = expandedCategories[rowId];
+        const visibleCount = 2;
+
+        const visible = isExpanded
+          ? categories
+          : categories.slice(0, visibleCount);
+
+        const remaining = categories.length - visibleCount;
+
+        const label = visible.map((c) => c.item_category_name).join(", ");
+
+        return (
+          <Typography
+            level="body-sm"
+            color="neutral"
+            sx={{
+              cursor: categories.length > visibleCount ? "pointer" : "default",
+              userSelect: "none",
+              color: "black",
+            }}
+            onClick={() => {
+              if (categories.length > visibleCount) {
+                setExpandedCategories((prev) => ({
+                  ...prev,
+                  [rowId]: !prev[rowId],
+                }));
+              }
+            }}
+          >
+            {label}
+            {!isExpanded && remaining > 0 && `… +${remaining} more`}
           </Typography>
         );
-      }
-
-      const isExpanded = expandedCategories[rowId];
-      const visibleCount = 2;
-
-      const visible = isExpanded
-        ? categories
-        : categories.slice(0, visibleCount);
-
-      const remaining = categories.length - visibleCount;
-
-      const label = visible.map((c) => c.item_category_name).join(", ");
-
-      return (
-        <Typography
-          level="body-sm"
-          color="neutral"
-          sx={{
-            cursor: categories.length > visibleCount ? "pointer" : "default",
-            userSelect: "none",
-            color: "black",
-          }}
-          onClick={() => {
-            if (categories.length > visibleCount) {
-              setExpandedCategories((prev) => ({
-                ...prev,
-                [rowId]: !prev[rowId],
-              }));
-            }
-          }}
-        >
-          {label}
-          {!isExpanded && remaining > 0 && `… +${remaining} more`}
-        </Typography>
-      );
+      },
     },
-  },
-  {
-    id: "type",
-    label: "Dispensing/Consolidator",
-    width: "250px",
-    render: (row) => (
-      <Typography level="body-sm" color="black">
-        {row?.is_dispensing ? "Dispensing" : "Consolidator"}
-      </Typography>
-    ),
-  },
-  {
-    id: "updated_on",
-    label: "Updated on",
-    width: "200px",
-    render: (row) => (
-      <Typography level="body-sm" color="black">
-        {row?.updated_at
-          ? moment(row?.updated_at).format("MMMM DD, YYYY")
-          : "-"}
-      </Typography>
-    ),
-  },
-  {
-    id: "actions",
-    label: "Actions",
-    render: (row) => (
-      <Stack>
-        <Chip
-          variant="soft"
-          color="neutral"
-          startDecorator={<EditOutlined />}
-          onClick={() => handleUpdate(row)}
-        >
-          Edit
-        </Chip>
-      </Stack>
-    ),
-  },
-];
+    {
+      id: "type",
+      label: "Dispensing/Consolidator",
+      width: "250px",
+      render: (row) => (
+        <Typography level="body-sm" color="black">
+          {row?.is_dispensing ? "Dispensing" : "Consolidator"}
+        </Typography>
+      ),
+    },
+    {
+      id: "updated_on",
+      label: "Updated on",
+      width: "200px",
+      render: (row) => (
+        <Typography level="body-sm" color="black">
+          {row?.updated_at
+            ? moment(row?.updated_at).format("MMMM DD, YYYY")
+            : "-"}
+        </Typography>
+      ),
+    },
+    {
+      id: "actions",
+      label: "Actions",
+      render: (row) => (
+        <Stack>
+          <Chip
+            variant="soft"
+            color="neutral"
+            startDecorator={<EditOutlined />}
+            onClick={() => handleUpdate(row)}
+          >
+            Edit
+          </Chip>
+        </Stack>
+      ),
+    },
+  ];
 
 export const AOP_OBJECTIVES_COLUMNS = (
   status,
@@ -2482,99 +2484,99 @@ export const AOP_OBJECTIVES_COLUMNS = (
   lockedRows,
   user,
 ) => [
-  {
-    id: "type_of_function",
-    label: "Function Type",
-    width: "auto",
-    render: (row) => (
-      <ChipComponent
-        label={row?.type_of_function?.type || ""}
-        variant={"soft"}
-        color={
-          row?.type_of_function?.id === 1
-            ? "primary"
-            : row?.type_of_function?.id === 2
-              ? "success"
-              : "danger"
-        }
-      />
-    ),
-  },
-  {
-    id: "objective",
-    label: "Objective",
-    width: "auto",
-    render: (row) => (
-      <Typography level="body-sm" color="black">
-        {row?.objective?.is_other
-          ? row?.other_objective?.description
-          : row?.objective?.description}
-      </Typography>
-    ),
-  },
-  {
-    id: "success_indicator",
-    label: "Success Indicator",
-    width: "auto",
-    render: (row) => (
-      <Typography level="body-sm" color="black">
-        {row?.success_indicator?.is_other
-          ? row?.other_success_indicator?.description
-          : row?.success_indicator?.description}
-      </Typography>
-    ),
-  },
-  {
-    id: "actions",
-    label: "Actions",
-    render: (row) => {
-      const lock = lockedRows?.[row.id];
-      const isLockedByOther = lock && lock.editorId !== user.id;
-      return (
-        <Stack direction={"row"} spacing={1}>
-          <ChipComponent
-            variant={"soft"}
-            startDecorator={
-              <Avatar
-                size="md" // small avatar for chip
-                variant="solid"
-                color="primary"
-                sx={{
-                  fontSize: 13,
-                  fontWeight: 600,
-                }}
-              >
-                {row?.activities_count}
-              </Avatar>
-            }
-            label={"Activities"}
-            status={"next"}
-            onClick={() => handleActivities(row)}
-            endDecorator
-          />
-          <Chip
-            variant="soft"
-            color="neutral"
-            startDecorator={<EditOutlined />}
-            onClick={() => handleEdit(row)}
-            disabled={isLockedByOther || isAopDisabled(status)}
-          >
-            Edit
-          </Chip>
-          <Chip
-            variant="soft"
-            color="neutral"
-            startDecorator={<DeleteOutlineOutlined />}
-            onClick={() => handleDelete(row)}
-            disabled={isLockedByOther || isAopDisabled(status)}
-          >
-            Delete
-          </Chip>
-        </Stack>
-      );
+    {
+      id: "type_of_function",
+      label: "Function Type",
+      width: "auto",
+      render: (row) => (
+        <ChipComponent
+          label={row?.type_of_function?.type || ""}
+          variant={"soft"}
+          color={
+            row?.type_of_function?.id === 1
+              ? "primary"
+              : row?.type_of_function?.id === 2
+                ? "success"
+                : "danger"
+          }
+        />
+      ),
     },
-  },
-];
+    {
+      id: "objective",
+      label: "Objective",
+      width: "auto",
+      render: (row) => (
+        <Typography level="body-sm" color="black">
+          {row?.objective?.is_other
+            ? row?.other_objective?.description
+            : row?.objective?.description}
+        </Typography>
+      ),
+    },
+    {
+      id: "success_indicator",
+      label: "Success Indicator",
+      width: "auto",
+      render: (row) => (
+        <Typography level="body-sm" color="black">
+          {row?.success_indicator?.is_other
+            ? row?.other_success_indicator?.description
+            : row?.success_indicator?.description}
+        </Typography>
+      ),
+    },
+    {
+      id: "actions",
+      label: "Actions",
+      render: (row) => {
+        const lock = lockedRows?.[row.id];
+        const isLockedByOther = lock && lock.editorId !== user.id;
+        return (
+          <Stack direction={"row"} spacing={1}>
+            <ChipComponent
+              variant={"soft"}
+              startDecorator={
+                <Avatar
+                  size="md" // small avatar for chip
+                  variant="solid"
+                  color="primary"
+                  sx={{
+                    fontSize: 13,
+                    fontWeight: 600,
+                  }}
+                >
+                  {row?.activities_count}
+                </Avatar>
+              }
+              label={"Activities"}
+              status={"next"}
+              onClick={() => handleActivities(row)}
+              endDecorator
+            />
+            <Chip
+              variant="soft"
+              color="neutral"
+              startDecorator={<EditOutlined />}
+              onClick={() => handleEdit(row)}
+              disabled={isLockedByOther || isAopDisabled(status)}
+            >
+              Edit
+            </Chip>
+            <Chip
+              variant="soft"
+              color="neutral"
+              startDecorator={<DeleteOutlineOutlined />}
+              onClick={() => handleDelete(row)}
+              disabled={isLockedByOther || isAopDisabled(status)}
+            >
+              Delete
+            </Chip>
+          </Stack>
+        );
+      },
+    },
+  ];
 
 export const AOP_ACTIVITIES_COLUMNS = (
   status,
@@ -2584,178 +2586,178 @@ export const AOP_ACTIVITIES_COLUMNS = (
   handleDelete,
   getActivityLockState,
 ) => [
-  {
-    id: "activity",
-    label: "Activity",
-    width: "30%",
-    render: (row) => (
-      <Typography
-        level="title-sm"
-        sx={{
-          whiteSpace: "normal",
-          wordBreak: "break-word",
-        }}
-      >
-        {row?.activity_name || row?.activity_code}
-      </Typography>
-    ),
-  },
-  {
-    id: "timeframe",
-    label: "Timeframe",
-    render: (row) => (
-      <Stack direction={"row"}>
-        <TimeframeCell
-          label="FROM"
-          value={
-            row?.start_month
-              ? moment(row?.start_month, "YYYY-MM").format("MMM YYYY")
-              : "-"
-          }
-        />
-        <TimeframeCell
-          label="TO"
-          value={
-            row?.end_month
-              ? moment(row?.end_month, "YYYY-MM").format("MMM YYYY")
-              : "-"
-          }
-        />
-      </Stack>
-    ),
-  },
-  {
-    id: "target",
-    label: "Target",
-    render: (row) => (
-      <Stack direction={"row"} spacing={2}>
-        <TimeframeCell label={"Q1"} value={row?.target?.first_quarter || "-"} />
-        <TimeframeCell
-          label={"Q2"}
-          value={row?.target?.second_quarter || "-"}
-        />
-        <TimeframeCell label={"Q3"} value={row?.target?.third_quarter || "-"} />
-        <TimeframeCell
-          label={"Q4"}
-          value={row?.target?.fourth_quarter || "-"}
-        />
-      </Stack>
-    ),
-  },
-  {
-    id: "total_cost",
-    label: "Total Cost",
-    render: (row) => (
-      <Typography level="title-sm">
-        {formattedPrice(row?.total_cost)}
-      </Typography>
-    ),
-  },
-  {
-    id: "gad",
-    label: "GAD-related Activity",
-    align: "center",
-    render: (row) => (
-      <Typography
-        level="title-sm"
-        textAlign={"center"}
-        color={row?.is_gad_related ? "success" : "danger"}
-      >
-        {row?.is_gad_related ? "YES" : "NO"}
-      </Typography>
-    ),
-  },
-  {
-    id: "actions",
-    label: "",
-    render: (row) => {
-      const { isLockedByOther } = getActivityLockState(row.id);
-
-      return (
-        <Stack spacing={1} alignItems={"flex-start"}>
-          <ChipComponent
-            variant={"soft"}
-            startDecorator={
-              <Avatar
-                size="md" // small avatar for chip
-                variant="solid"
-                color={row?.is_draft ? "neutral" : "primary"}
-                sx={{
-                  fontSize: 13,
-                  fontWeight: 600,
-                }}
-              >
-                {row?.resources_count}
-              </Avatar>
-            }
-            label={"Resources"}
-            status={"next"}
-            onClick={() => handleResources(row)}
-            disabled={row?.is_draft}
-            endDecorator
-          />
-          <ChipComponent
-            variant={"soft"}
-            startDecorator={
-              <Avatar
-                size="md" // small avatar for chip
-                variant="solid"
-                color={row?.is_draft ? "neutral" : "primary"}
-                sx={{
-                  fontSize: 13,
-                  fontWeight: 600,
-                }}
-              >
-                {row?.responsible_people_count}
-              </Avatar>
-            }
-            label={"Responsible Person"}
-            status={"next"}
-            onClick={() => handleRespPerson(row)}
-            disabled={row?.is_draft}
-            endDecorator
-          />
-        </Stack>
-      );
-    },
-  },
-  {
-    id: "actions",
-    label: "Actions",
-    align: "center",
-    render: (row) => {
-      const { isLockedByOther } = getActivityLockState(row.id);
-
-      return (
-        <Stack
-          direction={"row"}
-          spacing={1}
-          alignItems={"center"}
-          justifyContent={"center"}
+    {
+      id: "activity",
+      label: "Activity",
+      width: "30%",
+      render: (row) => (
+        <Typography
+          level="title-sm"
+          sx={{
+            whiteSpace: "normal",
+            wordBreak: "break-word",
+          }}
         >
-          <Chip
-            variant="soft"
-            color="neutral"
-            startDecorator={<EditOutlined />}
-            onClick={() => handleEdit(row)}
-            disabled={isLockedByOther || isAopDisabled(status)}
-          >
-            Edit
-          </Chip>
-          <Chip
-            variant="soft"
-            color="neutral"
-            startDecorator={<DeleteOutlineOutlined />}
-            onClick={() => handleDelete(row)}
-            disabled={isLockedByOther || isAopDisabled(status)}
-          >
-            Delete
-          </Chip>
-        </Stack>
-      );
+          {row?.activity_name || row?.activity_code}
+        </Typography>
+      ),
     },
-  },
-];
+    {
+      id: "timeframe",
+      label: "Timeframe",
+      render: (row) => (
+        <Stack direction={"row"}>
+          <TimeframeCell
+            label="FROM"
+            value={
+              row?.start_month
+                ? moment(row?.start_month, "YYYY-MM").format("MMM YYYY")
+                : "-"
+            }
+          />
+          <TimeframeCell
+            label="TO"
+            value={
+              row?.end_month
+                ? moment(row?.end_month, "YYYY-MM").format("MMM YYYY")
+                : "-"
+            }
+          />
+        </Stack>
+      ),
+    },
+    {
+      id: "target",
+      label: "Target",
+      render: (row) => (
+        <Stack direction={"row"} spacing={2}>
+          <TimeframeCell label={"Q1"} value={row?.target?.first_quarter || "-"} />
+          <TimeframeCell
+            label={"Q2"}
+            value={row?.target?.second_quarter || "-"}
+          />
+          <TimeframeCell label={"Q3"} value={row?.target?.third_quarter || "-"} />
+          <TimeframeCell
+            label={"Q4"}
+            value={row?.target?.fourth_quarter || "-"}
+          />
+        </Stack>
+      ),
+    },
+    {
+      id: "total_cost",
+      label: "Total Cost",
+      render: (row) => (
+        <Typography level="title-sm">
+          {formattedPrice(row?.total_cost)}
+        </Typography>
+      ),
+    },
+    {
+      id: "gad",
+      label: "GAD-related Activity",
+      align: "center",
+      render: (row) => (
+        <Typography
+          level="title-sm"
+          textAlign={"center"}
+          color={row?.is_gad_related ? "success" : "danger"}
+        >
+          {row?.is_gad_related ? "YES" : "NO"}
+        </Typography>
+      ),
+    },
+    {
+      id: "actions",
+      label: "",
+      render: (row) => {
+        const { isLockedByOther } = getActivityLockState(row.id);
+
+        return (
+          <Stack spacing={1} alignItems={"flex-start"}>
+            <ChipComponent
+              variant={"soft"}
+              startDecorator={
+                <Avatar
+                  size="md" // small avatar for chip
+                  variant="solid"
+                  color={row?.is_draft ? "neutral" : "primary"}
+                  sx={{
+                    fontSize: 13,
+                    fontWeight: 600,
+                  }}
+                >
+                  {row?.resources_count}
+                </Avatar>
+              }
+              label={"Resources"}
+              status={"next"}
+              onClick={() => handleResources(row)}
+              disabled={row?.is_draft}
+              endDecorator
+            />
+            <ChipComponent
+              variant={"soft"}
+              startDecorator={
+                <Avatar
+                  size="md" // small avatar for chip
+                  variant="solid"
+                  color={row?.is_draft ? "neutral" : "primary"}
+                  sx={{
+                    fontSize: 13,
+                    fontWeight: 600,
+                  }}
+                >
+                  {row?.responsible_people_count}
+                </Avatar>
+              }
+              label={"Responsible Person"}
+              status={"next"}
+              onClick={() => handleRespPerson(row)}
+              disabled={row?.is_draft}
+              endDecorator
+            />
+          </Stack>
+        );
+      },
+    },
+    {
+      id: "actions",
+      label: "Actions",
+      align: "center",
+      render: (row) => {
+        const { isLockedByOther } = getActivityLockState(row.id);
+
+        return (
+          <Stack
+            direction={"row"}
+            spacing={1}
+            alignItems={"center"}
+            justifyContent={"center"}
+          >
+            <Chip
+              variant="soft"
+              color="neutral"
+              startDecorator={<EditOutlined />}
+              onClick={() => handleEdit(row)}
+              disabled={isLockedByOther || isAopDisabled(status)}
+            >
+              Edit
+            </Chip>
+            <Chip
+              variant="soft"
+              color="neutral"
+              startDecorator={<DeleteOutlineOutlined />}
+              onClick={() => handleDelete(row)}
+              disabled={isLockedByOther || isAopDisabled(status)}
+            >
+              Delete
+            </Chip>
+          </Stack>
+        );
+      },
+    },
+  ];
 
 export const ADD_TO_CART_COLUMNS = (onAddToCart) => [
   {
@@ -2840,139 +2842,139 @@ export const AOP_RESOURCES_COLUMNS = ({
   onPreview,
   status,
 }) => [
-  {
-    id: "item",
-    label: "Item Description",
-    render: (row) => (
-      <Stack>
-        <Typography
-          sx={{
-            whiteSpace: "normal",
-            wordBreak: "break-word",
-          }}
-          level="title-sm"
-          fontWeight={600}
-        >
-          {row?.item?.name || "-"}
-        </Typography>
-        <Typography level="body-sm">Qty: {row?.quantity || "-"}</Typography>
-      </Stack>
-    ),
-    width: "25%",
-  },
-  {
-    id: "classification",
-    label: "Item Category & Project Type",
-    render: (row) => (
-      <Stack>
-        <Typography level="title-sm" fontWeight={600}>
-          {row?.item?.item_category?.name ?? "-"}
-        </Typography>
-        <Typography level="body-sm">
-          {row?.item?.item_classification?.name ?? "-"}
-        </Typography>
-      </Stack>
-    ),
-    width: "15%",
-  },
-  {
-    id: "unit_price",
-    label: "Total Cost & Unit Price",
-    render: (row) => {
-      const total_cost = row?.item?.estimated_budget * row?.quantity;
-      return (
+    {
+      id: "item",
+      label: "Item Description",
+      render: (row) => (
         <Stack>
-          <Typography level="title-sm" fontWeight={600} color="primary">
-            {row?.item?.estimated_budget ? formattedPrice(total_cost) : "-"}
-          </Typography>
           <Typography
-            level="body-sm"
-            color="neutral"
-            textTransform={"lowercase"}
+            sx={{
+              whiteSpace: "normal",
+              wordBreak: "break-word",
+            }}
+            level="title-sm"
+            fontWeight={600}
           >
-            {row?.item?.estimated_budget
-              ? `${formattedPrice(row?.item?.estimated_budget)} per ${row?.item?.item_unit?.name ?? "-"}`
-              : "-"}
+            {row?.item?.name || "-"}
+          </Typography>
+          <Typography level="body-sm">Qty: {row?.quantity || "-"}</Typography>
+        </Stack>
+      ),
+      width: "25%",
+    },
+    {
+      id: "classification",
+      label: "Item Category & Project Type",
+      render: (row) => (
+        <Stack>
+          <Typography level="title-sm" fontWeight={600}>
+            {row?.item?.item_category?.name ?? "-"}
+          </Typography>
+          <Typography level="body-sm">
+            {row?.item?.item_classification?.name ?? "-"}
           </Typography>
         </Stack>
-      );
+      ),
+      width: "15%",
     },
-    width: "15%",
-  },
-  {
-    id: "purchase_type",
-    label: "Purchase Type",
-    width: "10%",
-    render: (row) => (
-      <AutocompleteComponent
-        options={purchaseTypes}
-        value={row?.purchase_type || null}
-        setValue={(val) => {
-          onPurchaseTypeChange(val, row.id); // trigger parent update
-        }}
-        getOptionLabel={(opt) => opt?.description || ""}
-        placeholder="Select type"
-        disabled={isAopDisabled(status)}
-      />
-    ),
-  },
-  {
-    id: "expense_class",
-    label: "Expense Class",
-    align: "center",
-    render: (row) => (
-      <ChipComponent
-        variant={"soft"}
-        label={row?.expense_class ?? "-"}
-        color={row?.expense_class === "MOOE" ? "primary" : "warning"}
-        chipRadius={"10px"}
-      />
-    ),
-  },
-  {
-    id: "quantity",
-    label: "Quantity",
-    align: "center",
-    render: (row) => (
-      <QuantityControlComponent
-        quantity={row?.quantity}
-        onDecrease={() => onQtyChange(row?.id, row?.quantity - 1)}
-        onIncrease={() => onQtyChange(row?.id, row?.quantity + 1)}
-        disabled={isAopDisabled(status)}
-        onChange={(value) => onQtyChange(row?.id, value)}
-      />
-    ),
-  },
+    {
+      id: "unit_price",
+      label: "Total Cost & Unit Price",
+      render: (row) => {
+        const total_cost = row?.item?.estimated_budget * row?.quantity;
+        return (
+          <Stack>
+            <Typography level="title-sm" fontWeight={600} color="primary">
+              {row?.item?.estimated_budget ? formattedPrice(total_cost) : "-"}
+            </Typography>
+            <Typography
+              level="body-sm"
+              color="neutral"
+              textTransform={"lowercase"}
+            >
+              {row?.item?.estimated_budget
+                ? `${formattedPrice(row?.item?.estimated_budget)} per ${row?.item?.item_unit?.name ?? "-"}`
+                : "-"}
+            </Typography>
+          </Stack>
+        );
+      },
+      width: "15%",
+    },
+    {
+      id: "purchase_type",
+      label: "Purchase Type",
+      width: "10%",
+      render: (row) => (
+        <AutocompleteComponent
+          options={purchaseTypes}
+          value={row?.purchase_type || null}
+          setValue={(val) => {
+            onPurchaseTypeChange(val, row.id); // trigger parent update
+          }}
+          getOptionLabel={(opt) => opt?.description || ""}
+          placeholder="Select type"
+          disabled={isAopDisabled(status)}
+        />
+      ),
+    },
+    {
+      id: "expense_class",
+      label: "Expense Class",
+      align: "center",
+      render: (row) => (
+        <ChipComponent
+          variant={"soft"}
+          label={row?.expense_class ?? "-"}
+          color={row?.expense_class === "MOOE" ? "primary" : "warning"}
+          chipRadius={"10px"}
+        />
+      ),
+    },
+    {
+      id: "quantity",
+      label: "Quantity",
+      align: "center",
+      render: (row) => (
+        <QuantityControlComponent
+          quantity={row?.quantity}
+          onDecrease={() => onQtyChange(row?.id, row?.quantity - 1)}
+          onIncrease={() => onQtyChange(row?.id, row?.quantity + 1)}
+          disabled={isAopDisabled(status)}
+          onChange={(value) => onQtyChange(row?.id, value)}
+        />
+      ),
+    },
 
-  {
-    id: "actions",
-    label: "",
-    align: "right",
-    render: (row) => {
-      return (
-        <Stack direction={"row"} spacing={1}>
-          <IconButtonComponent
-            icon={<NorthEast />}
-            variant={"soft"}
-            color={"neutral"}
-            size={"sm"}
-            onClick={(e) => {
-              e.stopPropagation();
-              onPreview(row);
-            }}
-          />
-          <IconButtonComponent
-            icon={<Delete />}
-            variant={"soft"}
-            color={"danger"}
-            size={"sm"}
-            onClick={(e) => {
-              e.stopPropagation();
-              onDelete(row.id);
-            }}
-          />
-        </Stack>
-      );
+    {
+      id: "actions",
+      label: "",
+      align: "right",
+      render: (row) => {
+        return (
+          <Stack direction={"row"} spacing={1}>
+            <IconButtonComponent
+              icon={<NorthEast />}
+              variant={"soft"}
+              color={"neutral"}
+              size={"sm"}
+              onClick={(e) => {
+                e.stopPropagation();
+                onPreview(row);
+              }}
+            />
+            <IconButtonComponent
+              icon={<Delete />}
+              variant={"soft"}
+              color={"danger"}
+              size={"sm"}
+              onClick={(e) => {
+                e.stopPropagation();
+                onDelete(row.id);
+              }}
+            />
+          </Stack>
+        );
+      },
     },
-  },
-];
+  ];

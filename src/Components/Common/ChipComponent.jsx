@@ -12,7 +12,7 @@ ChipComponent.propTypes = {
 
 function ChipComponent({
   color,
-  label,
+  label = "",
   status,
   endDecorator = true,
   variant,
@@ -40,36 +40,36 @@ function ChipComponent({
 
     ...(wrap
       ? {
-          height: "auto",
-          whiteSpace: "normal",
+        height: "auto",
+        whiteSpace: "normal",
 
-          "& .MuiChip-label": {
-            whiteSpace: "normal",
-            overflow: "visible",
-            textOverflow: "unset",
-            display: "block",
-            paddingTop: "4px",
-            paddingBottom: "4px",
-          },
-        }
+        "& .MuiChip-label": {
+          whiteSpace: "normal",
+          overflow: "visible",
+          textOverflow: "unset",
+          display: "block",
+          paddingTop: "4px",
+          paddingBottom: "4px",
+        },
+      }
       : {
+        overflow: "hidden",
+        textOverflow: "ellipsis",
+        whiteSpace: "nowrap",
+
+        "& .MuiChip-label": {
           overflow: "hidden",
           textOverflow: "ellipsis",
           whiteSpace: "nowrap",
-
-          "& .MuiChip-label": {
-            overflow: "hidden",
-            textOverflow: "ellipsis",
-            whiteSpace: "nowrap",
-          },
-        }),
+        },
+      }),
 
     ...(variant || color
       ? { color: color }
       : {
-          fontWeight: 600,
-          border: 1,
-        }),
+        fontWeight: 600,
+        border: 1,
+      }),
   };
   return (
     <Chip

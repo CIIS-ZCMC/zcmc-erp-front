@@ -17,6 +17,8 @@ import DashboardHeader from "./DashboardHeader";
 import PPMPSubmissionModal from "../Modal/Dashboard/PPMPSubmissionModal";
 import SuccessSubmissionModal from "../Modal/Dashboard/SuccessSubmissionModal";
 import { happensNext } from "../../../../Data/constants";
+import ButtonComponent from "@Components/Common/ButtonComponent";
+import { ArrowForward, ArrowRight } from "@mui/icons-material";
 
 function PPMPDashboard(props) {
   const location = useLocation();
@@ -40,7 +42,7 @@ function PPMPDashboard(props) {
     getPPMPTimeline,
     postItemRequest,
   } = usePPMPActions();
-  const { setAlertDialog } = useModalHook();
+  const { setAlertDialog, closeAlertDialog } = useModalHook();
 
   const [pageLoader, setPageLoader] = useState(false);
   const [openSave, setOpenSave] = useState(false);
@@ -102,7 +104,12 @@ function PPMPDashboard(props) {
             setAlertDialog({
               status: "error",
               title: "Cannot submit PPMP",
-              description: message,
+              description: <>
+                <Typography>
+                  {message}
+                </Typography>
+                <ButtonComponent label={"Go to Item Management"} onClick={() => { closeAlertDialog(); handleNavigate() }} endDecorator={<ArrowForward />} />
+              </>,
             });
           }
         },
@@ -155,9 +162,6 @@ function PPMPDashboard(props) {
       });
   };
 
-  const handleNextStep = () => setStep((prev) => Math.min(prev + 1, 3));
-  const handlePreviousStep = () => setStep((prev) => Math.max(prev - 1, 1));
-
   const isDispensing = dashboard?.is_dispensing;
 
   return (
@@ -201,6 +205,7 @@ function PPMPDashboard(props) {
             pb: 2,
           }}
         >
+
           <PPMPSummaryCards
             pageLoader={pageLoader}
             dashboard={dashboard}
@@ -216,16 +221,6 @@ function PPMPDashboard(props) {
           />
         </Box>
       </Box>
-      {/* <PageLoader isLoading={pageLoader} /> */}
-
-      {/* View Item Requests Modal */}
-
-      {/* {openNewRequest && (
-        <NewRequestModal
-          openNewRequest={openNewRequest}
-          setOpenNewRequest={setOpenNewRequest}
-        />
-      )} */}
 
       {/* call api item request by user first */}
       {openSave && (

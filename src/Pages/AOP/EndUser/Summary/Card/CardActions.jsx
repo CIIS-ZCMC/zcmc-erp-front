@@ -7,7 +7,7 @@ import { FileDownload } from "@mui/icons-material";
 
 const CardActions = ({
   datePrepared,
-  dateToday,
+  dateSubmitted,
   PreparedBySector,
   handleExport,
   isLoading = false,
@@ -29,14 +29,14 @@ const CardActions = ({
       </Stack>
 
       <Stack textAlign="start">
-        <Typography level="body-sm">Date Today:</Typography>
+        <Typography level="body-sm">Date Submitted:</Typography>
         <Typography level="title-md" color="primary">
-          {formattedDate(dateToday)}
+          {formattedDate(dateSubmitted)}
         </Typography>
       </Stack>
 
       <ButtonComponent
-        label={"Export"}
+        label={"Export AOP"}
         startDecorator={<FileDownload />}
         onClick={() => handleExport()}
         isLoading={isLoading}

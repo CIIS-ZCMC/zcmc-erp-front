@@ -1,24 +1,18 @@
-import { Box, Button, Grid, Stack, Typography } from "@mui/joy";
+import { Box, Grid, Stack } from "@mui/joy";
 
-import React, { Fragment, useEffect, useState } from "react";
+import { Fragment, useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import ButtonComponent from "@Components/Common/ButtonComponent";
 import AlertDialogComponent from "@Components/Common/Dialog/AlertDialogComponent";
-import ConfirmationModalComponent from "@Components/Common/Dialog/ConfirmationModalComponent";
 
 import ModalComponent from "@Components/Common/Dialog/ModalComponent";
 import BoxComponent from "@Components/Common/Card/BoxComponent";
 import { ThreeDotsLoader } from "@Components/Common/Loading/ThreeDotsLoader";
-import ChipComponent from "@Components/Common/ChipComponent";
 import { FeedbackContent } from "../Approval/Contents/FeedbackContent";
 
 import useAOPHook from "../../../Hooks/AOP/AOPHook";
 import useModalHook from "../../../Hooks/ModalHook";
-import useObjectivesHook from "../../../Hooks/AOP/ObjectivesHook";
 
-import useObjectivesStore from "../../../Store/ObjectivesStore";
 import useAOPStore, { useAOPActions } from "../../../Store/AOPStore";
-import useFeedbackStore from "../../../Store/FeedbackStore";
 
 import Title from "./Title/Title";
 import Header from "./Header/Header";
@@ -33,17 +27,14 @@ import AOPDataSummary from "./AOPDataSummary";
 import { ANNUAL_OPS } from "../../../Data/constants";
 import TextareaComponent from "@Components/Form/TextareaComponent";
 import useSnackbarHook from "../../../Hooks/SnackbarHook";
-import userErrorInputHook from "../../../Hooks/ErrorInputHook";
-import useItemRequestsHook from "../../../Hooks/ItemRequest/ItemRequestHook";
 import NewRequestModal from "@Pages/PPMP/EndUser/Modal/AddItemRequest/NewRequestModal";
-import { useCommentActions, useComments, useRemarks } from "@Hooks/CommentHook";
+import { useCommentActions } from "@Hooks/CommentHook";
 
 function DashboardEndUser(props) {
   const { header, description } = ANNUAL_OPS;
 
   const navigate = useNavigate();
 
-  const { getObjectives } = useObjectivesHook();
   const { createAOP, getAopBySectorAndYear, getAopYearList, updateMission } =
     useAOPHook();
   const { setAlertDialog, closeAlertDialog } = useModalHook();
@@ -51,7 +42,6 @@ function DashboardEndUser(props) {
 
   const { aop, mission, fiscalYear, yearDetails } = useAOPStore();
   const { setMission } = useAOPActions();
-  const { feedback } = useFeedbackStore();
   const { getCommentsByApplication, getRemarksByApplication } =
     useCommentActions();
 
@@ -62,9 +52,6 @@ function DashboardEndUser(props) {
   const [openEditModal, setOpenEditModal] = useState(false);
   const [updateMissionValue, setUpdateMissionValue] = useState("");
   const [openNewRequest, setOpenNewRequest] = useState(false);
-
-  const all_comments = useComments();
-  const remarks = useRemarks();
 
   const handleClose = () => {
     setOpenFiscalYearModal(false);
