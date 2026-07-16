@@ -189,9 +189,9 @@ function PPMPItems(props) {
   }, [socket, ppmp_id]);
 
   useEffect(() => {
-    getProcTimelines("start", () => { });
-    getProcTimelines("end", () => { });
-    getProcTimelines("delivery", () => { });
+    getProcTimelines("start", () => {});
+    getProcTimelines("end", () => {});
+    getProcTimelines("delivery", () => {});
     getProcModes((status, message) => {
       if (status !== 200) console.error("Failed to fetch items:", message);
     });
@@ -304,7 +304,6 @@ function PPMPItems(props) {
         withArrowBack
         onClickArrow={() => navigate("/ppmp")}
       />
-      {console.log(ppmp_items)}
       <BoxComponent my={2} bgColor={"#FAFAF9"} boxShadow="xs" p={2}>
         <Stack direction={"row"} justifyContent={"space-between"} mb={2}>
           <Stack>
@@ -494,21 +493,21 @@ function PPMPItems(props) {
           )
         }
 
-      //no post for END - USER
-      // footer={
-      //   <>
-      //     <Stack width={"100%"} spacing={2}>
-      //       <TextareaComponent
-      //         placeholder={"Comment here .. "}
-      //         maxRows={3}
-      //         label={"Add a comment"}
-      //       />
-      //       <Stack direction={"row"} justifyContent={"right"}>
-      //         <ButtonComponent label={"Post Comment"} width="200px" />
-      //       </Stack>
-      //     </Stack>
-      //   </>
-      // }
+        //no post for END - USER
+        // footer={
+        //   <>
+        //     <Stack width={"100%"} spacing={2}>
+        //       <TextareaComponent
+        //         placeholder={"Comment here .. "}
+        //         maxRows={3}
+        //         label={"Add a comment"}
+        //       />
+        //       <Stack direction={"row"} justifyContent={"right"}>
+        //         <ButtonComponent label={"Post Comment"} width="200px" />
+        //       </Stack>
+        //     </Stack>
+        //   </>
+        // }
       />
     </Fragment>
   );

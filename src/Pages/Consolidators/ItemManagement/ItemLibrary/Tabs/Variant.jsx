@@ -116,7 +116,7 @@ export const Variant = () => {
     setOpenDel(true);
     const data = {
       status: "error",
-      title: `Archive this terminology (${params?.name}) ?`,
+      title: `Archive this terminology (${params?.code}) ?`,
       description:
         "This action cannot be undone. However, you may still restore the item anytime from the Archived view.",
     };
@@ -399,7 +399,7 @@ export const Variant = () => {
           title="Update a terminology"
           description={"Keep the terminology up-to-date"}
           isOpen={openUpdate}
-          maxWidth={"500px"}
+          maxWidth={"580px"}
           handleClose={() => setOpenUpdate(false)}
           hasActionButtons
           rightButtonLabel="Confirm and Save"
@@ -407,7 +407,7 @@ export const Variant = () => {
           // rightButtonAction={() => addCategory()}
           content={
             <>
-              <Stack mt={2} spacing={2}>
+              <Stack mt={2} spacing={2} mr={1}>
                 <InputComponent
                   name={"name"}
                   label={"System Label"}

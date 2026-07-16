@@ -15,6 +15,7 @@ import useItemsHook from "@Hooks/ItemManagementHook";
 import usePinHook from "@Hooks/PinHook";
 import useSnackbarHook from "@Hooks/SnackbarHook";
 import useModalHook from "@Hooks/ModalHook";
+import ConfirmationModalComponent from "@Components/Common/Dialog/ConfirmationModalComponent";
 
 export const Category = () => {
   const {

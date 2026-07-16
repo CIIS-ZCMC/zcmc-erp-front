@@ -113,7 +113,7 @@ export const Items = () => {
     });
 
     if (row.item_category?.id) {
-      getVariantsByCategory(row.item_category.id, () => { });
+      getVariantsByCategory(row.item_category.id, () => {});
     }
 
     setOpenUpdate(true);
@@ -533,7 +533,7 @@ export const Items = () => {
                     <Box
                       height={"280px"}
                       overflow="auto"
-                    // ref={specsContainerRef}
+                      // ref={specsContainerRef}
                     >
                       {newItem.specs.map((spec, index) => (
                         <Stack key={index} spacing={1} my={2}>
@@ -584,7 +584,7 @@ export const Items = () => {
               <Typography>Edit item </Typography>
               <Chip
                 sx={{
-                  maxWidth: 200, // adjust as needed
+                  maxWidth: 400, // adjust as needed
                   "& .MuiChip-label": {
                     overflow: "hidden",
                     textOverflow: "ellipsis",
@@ -599,8 +599,8 @@ export const Items = () => {
             </Stack>
           }
           height="auto"
-          minWidth={"480px"}
-          maxWidth={"480px"}
+          minWidth={"600px"}
+          maxWidth={"600px"}
           isOpen={openUpdate}
           handleClose={() => setOpenUpdate(false)}
           rightButtonAction={() => update()}
@@ -729,7 +729,7 @@ export const Items = () => {
                     <Box
                       height={"280px"}
                       overflow="auto"
-                    // ref={specsContainerRef}
+                      // ref={specsContainerRef}
                     >
                       {(updatedData.specs.length > 0
                         ? updatedData.specs

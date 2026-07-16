@@ -38,6 +38,7 @@ import { Classification } from "../Pages/Consolidators/ItemManagement/ItemLibrar
 import { Category } from "../Pages/Consolidators/ItemManagement/ItemLibrary/Tabs/Category";
 import { Variant } from "../Pages/Consolidators/ItemManagement/ItemLibrary/Tabs/Variant";
 import Declined from "@Pages/Consolidators/ItemManagement/ItemRequest/Declined";
+import BudgetDeliberation from "@Pages/PPMP/Approval/BudgetDeliberation";
 
 const iconStyles = {
   size: 24,
@@ -204,6 +205,13 @@ export const sidebarRoutes = [
           "ERP-CONSO-MAN:delete",
           "ERP-CONSO-MAN:download",
         ],
+      },
+
+      {
+        path: "/budget-deliberation",
+        name: "Budget Deliberation",
+        element: <BudgetDeliberation />,
+        childPermissions: ["ERP-PPMP-MAN:approve"],
       },
       // {
       //   path: "/dealine-management",
