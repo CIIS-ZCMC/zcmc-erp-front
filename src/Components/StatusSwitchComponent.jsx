@@ -17,11 +17,11 @@ const switchSizes = {
     padding: 8,
   },
   lg: {
-    thumb: "22px",
-    width: "110px",
-    height: "34px",
-    font: "body-md",
-    padding: 12,
+    thumb: "18px",
+    width: "100px",
+    height: "26px",
+    font: "body-sm",
+    padding: 10,
   },
 };
 export default function StatusSwitch({

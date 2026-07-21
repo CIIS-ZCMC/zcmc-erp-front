@@ -140,6 +140,7 @@ export default function AddResources() {
         <NewRequestModal
           openNewRequest={openRequest}
           setOpenNewRequest={setOpenRequest}
+          activity_id={activityId}
         />
       )}
     </Fragment>

@@ -40,7 +40,7 @@ function BudgetDeliberation() {
             </Typography>
           </Stack>
 
-          <Stack direction={"row"} spacing={2} alignItems={"center"}>
+          <Stack direction={"row"} spacing={2} alignItems={"end"}>
             <SearchBarComponentv2 size="sm" fullWidth />
             <AutocompleteComponent placeholder="Filter by category" />
           </Stack>

@@ -86,6 +86,7 @@ const Content = ({ sidebarWidth }) => {
     <Stack
       mt={4}
       gap={1}
+      mb={1}
       flexGrow={1}
       width={isCollapsed ? "auto" : "100%"}
       sx={{

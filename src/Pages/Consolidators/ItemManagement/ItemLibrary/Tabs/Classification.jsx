@@ -205,7 +205,7 @@ export const Classification = () => {
           justifyContent={"flex-start"}
         >
           <Typography level="body-sm">View:</Typography>
-          <StatusSwitch checked={active} onChange={setActive} />
+          <StatusSwitch checked={active} onChange={setActive} size="lg" />
         </Stack>
         <Stack direction={"row"} spacing={2} alignItems={"center"}>
           <SearchBarComponentv2

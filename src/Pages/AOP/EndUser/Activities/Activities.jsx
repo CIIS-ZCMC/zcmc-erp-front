@@ -34,6 +34,8 @@ import ServerPaginationComponent from "@Components/ServerPaginationComponent";
 import useSwitchViewHook from "@Hooks/AOP/SwitchViewHook";
 import usePageNumberHook from "@Hooks/PageNumberHook";
 import { grey } from "@mui/material/colors";
+import { useCommentActions } from "@Hooks/CommentHook";
+import { FeedbackContent } from "@Pages/AOP/Approval/Contents/FeedbackContent";
 
 const Activities = () => {
   const { objectiveId } = useParams();
@@ -61,6 +63,7 @@ const Activities = () => {
     removeActivity,
     showActivity,
   } = useActivitiesHook();
+  const { getCommentsByActivity } = useCommentActions();
 
   const { setAlertDialog, setConfirmationModal, closeConfirmation } =
     useModalHook();
@@ -84,6 +87,7 @@ const Activities = () => {
   const [isOpenActivitiesModal, setIsOpenActivitiesModal] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
   const [openDeleteModal, setOpenDeleteModal] = useState(false);
+  const [openFeedbackModal, setOpenFeedbackModal] = useState(false);
   const [selectedActivityId, setSelectedActivityId] = useState(null);
   const [search, setSearch] = useState("");
   const [pagination, setPagination] = useState({
@@ -303,6 +307,20 @@ const Activities = () => {
         description: error.message || "Something went wrong.",
       });
     }
+  };
+
+  const handleViewComments = (activityId) => {
+    getCommentsByActivity(activityId, (status, message) => {
+      if (status === 200) {
+        setOpenFeedbackModal(true);
+      } else {
+        setAlertDialog({
+          status: "error",
+          title: message,
+          description: "Please try again.",
+        });
+      }
+    });
   };
 
   useEffect(() => {
@@ -542,7 +560,6 @@ const Activities = () => {
           </Stack>
         </Stack>
       </BoxComponent>
-
       <Stack
         sx={{
           minHeight: "calc(100vh - 250px)",
@@ -610,6 +627,7 @@ const Activities = () => {
                       handleAdd={activityHandlers.add}
                       handleEdit={() => activityHandlers.edit(activity)}
                       handleDelete={() => activityHandlers.delete(activity)}
+                      handleViewComments={() => handleViewComments(activity.id)}
                       isLockedByOther={isLockedByOther}
                       lockedBy={lock?.editorName}
                     />
@@ -626,6 +644,7 @@ const Activities = () => {
                   activityHandlers.resp_person,
                   activityHandlers.edit,
                   activityHandlers.delete,
+                  handleViewComments,
                   getActivityLockState,
                 )}
                 rows={applicationActivities?.activities}
@@ -653,7 +672,6 @@ const Activities = () => {
           pagination={pagination}
         />
       </Box>
-
       {/* set count empty activities */}
       {isCountModal && (
         <ModalComponent
@@ -692,7 +710,6 @@ const Activities = () => {
           isLoading={btnLoading}
         />
       )}
-
       {/* Edit exisitng empty activities */}
       {isOpenActivitiesModal && (
         <ModalComponent
@@ -717,7 +734,6 @@ const Activities = () => {
           isLoading={btnLoading}
         />
       )}
-
       {openDeleteModal && (
         <ConfirmationModalComponent
           btnColor={"danger"}
@@ -739,6 +755,13 @@ const Activities = () => {
           isLoading={btnLoading}
         />
       )}
+      {openFeedbackModal && (
+        <FeedbackContent
+          openFeedbackModal={openFeedbackModal}
+          setOpenFeedbackModal={setOpenFeedbackModal}
+          showRemarks={false}
+        />
+      )}{" "}
     </>
   );
 };

@@ -20,6 +20,7 @@ export const FeedbackContent = ({
   setOpenFeedbackModal,
   isLoading,
   isActivity = false,
+  showRemarks = true,
 }) => {
   const apiPermissions = useAOPPermissions();
   const navigate = useNavigate();
@@ -33,20 +34,27 @@ export const FeedbackContent = ({
 
   // DATA
   const feedbackDisplay = useMemo(() => {
-    let dataToDisplay;
+    let data = [];
 
-    if (isPlanningOfficer) {
-      dataToDisplay = remarks?.map((r) => ({ ...r, __type: "remark" }));
+    if (!showRemarks) {
+      data = allComments.map((c) => ({
+        ...c,
+        __type: "comment",
+      }));
+    } else if (isPlanningOfficer) {
+      data = remarks.map((r) => ({
+        ...r,
+        __type: "remark",
+      }));
     } else {
-      if (activeTab === 0) {
-        dataToDisplay = allComments?.map((c) => ({ ...c, __type: "comment" }));
-      } else {
-        dataToDisplay = remarks?.map((r) => ({ ...r, __type: "remark" }));
-      }
+      data =
+        activeTab === 0
+          ? allComments.map((c) => ({ ...c, __type: "comment" }))
+          : remarks.map((r) => ({ ...r, __type: "remark" }));
     }
 
-    return groupByDate(dataToDisplay ?? []);
-  }, [activeTab, allComments, isPlanningOfficer, remarks]);
+    return groupByDate(data);
+  }, [allComments, remarks, activeTab, showRemarks]);
 
   const feedbackCount =
     activeTab === 0
@@ -75,7 +83,7 @@ export const FeedbackContent = ({
             <CommentsSkeleton />
           ) : (
             <>
-              {!isPlanningOfficer && (
+              {showRemarks && !isPlanningOfficer && (
                 <>
                   <CustomTabComponent
                     tabOptions={feedbackTabOptions}
@@ -140,7 +148,7 @@ export const FeedbackContent = ({
                                 isActivity={isActivity}
                                 activityName={activity_name}
                                 path={path}
-                                withActivityPath={true}
+                                withActivityPath={showRemarks ? true : false}
                                 handleClick={() => navigate(path)}
                               />
                             ),

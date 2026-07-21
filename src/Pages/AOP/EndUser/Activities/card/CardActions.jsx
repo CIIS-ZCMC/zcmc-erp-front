@@ -55,6 +55,7 @@ const CardActions = ({
   activityId,
   resourcesCount,
   responsibleCount,
+  handleViewComments,
   comments,
   is_draft,
 }) => {
@@ -95,7 +96,7 @@ const CardActions = ({
                 </Avatar>
               }
               endDecorator={<Comment />}
-              onClick={() => handleOpenModal()}
+              onClick={() => handleViewComments()}
             >
               Comments
             </Chip>

@@ -25,11 +25,6 @@ import PPMPOutlet from "../Pages/PPMP/EndUser/PPMPOutlet";
 import ViewPPMP from "../Pages/PPMP/Approval/ViewPPMP";
 import ManageObjectives from "../Pages/PlanningOps/ObjectiveManagement/Objectives";
 import ManageConsolidators from "../Pages/PlanningOps/ManageConsolidators/ManageConsolidators";
-import UserItemRequests from "../Pages/ItemRequests/UserItemRequests";
-import AllItemRequests from "../Pages/ItemRequests/Tabs/AllItemRequests";
-import PendingItemRequests from "../Pages/ItemRequests/Tabs/PendingItemRequests";
-import ApprovedItemRequests from "../Pages/ItemRequests/Tabs/ApprovedItemRequests";
-import DeclinedItemRequests from "../Pages/ItemRequests/Tabs/DeclinedItemRequests";
 import { Items } from "../Pages/Consolidators/ItemManagement/ItemLibrary/Tabs/Items";
 import All from "../Pages/Consolidators/ItemManagement/ItemRequest/All";
 import Pending from "../Pages/Consolidators/ItemManagement/ItemRequest/Pending";
@@ -39,6 +34,7 @@ import { Category } from "../Pages/Consolidators/ItemManagement/ItemLibrary/Tabs
 import { Variant } from "../Pages/Consolidators/ItemManagement/ItemLibrary/Tabs/Variant";
 import Declined from "@Pages/Consolidators/ItemManagement/ItemRequest/Declined";
 import BudgetDeliberation from "@Pages/PPMP/Approval/BudgetDeliberation";
+import UserItemRequests from "@Pages/AOP/EndUser/UserItemRequests";
 
 const iconStyles = {
   size: 24,
@@ -123,24 +119,6 @@ export const sidebarRoutes = [
         name: "My Item Requests",
         element: <UserItemRequests />,
         childPermissions: ["ERP-PPMP-MAN:write", "ERP-AOP-MAN:write"],
-        children: [
-          {
-            index: true,
-            element: <AllItemRequests />,
-          },
-          {
-            path: "pending",
-            element: <PendingItemRequests />,
-          },
-          {
-            path: "approved",
-            element: <ApprovedItemRequests />,
-          },
-          {
-            path: "declined",
-            element: <DeclinedItemRequests />,
-          },
-        ],
       },
     ],
   },
@@ -213,12 +191,6 @@ export const sidebarRoutes = [
         element: <BudgetDeliberation />,
         childPermissions: ["ERP-PPMP-MAN:approve"],
       },
-      // {
-      //   path: "/dealine-management",
-      //   name: "Deadline Management",
-      //   children: [{ index: true, element: <>Deadline Management</> }],
-      //   childPermissions: ["ERP-DEAD-MAN:write"],
-      // },
     ],
   },
 

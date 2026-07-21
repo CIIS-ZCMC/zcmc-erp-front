@@ -1,4 +1,4 @@
-﻿import { useEffect, useState, useMemo, useCallback } from "react";
+import { useEffect, useState, useMemo, useCallback, useRef } from "react";
 import { Stack, Divider, Typography, Breadcrumbs, Grid, Box } from "@mui/joy";
 import { useLocation, useNavigate, useParams } from "react-router-dom";
 import { ThreeDotsLoader } from "@Components/Common/Loading/ThreeDotsLoader";
@@ -129,8 +129,14 @@ const Objectives = () => {
 
   const perPage = isCard ? 9 : 10;
 
+  const isFirstSearch = useRef(true);
+
   // Reset to page 1 when search changes
   useEffect(() => {
+    if (isFirstSearch.current) {
+      isFirstSearch.current = false;
+      return;
+    }
     setPage(1);
   }, [search]);
 

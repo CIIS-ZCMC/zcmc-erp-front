@@ -10,7 +10,7 @@ import {
   useItemRequestLoading,
   useItemRequests,
 } from "../../../../Hooks/ItemRequest/ItemRequestHook";
-import ItemDetailsRow from "@Pages/ItemRequests/ItemDetailsRow";
+import ItemDetailsRow from "@Pages/Consolidators/ItemManagement/ItemRequest/ItemDetailsRow";
 import SearchBarComponentv2 from "@Components/SearchBarWithdeBounce";
 
 const Saved = () => {

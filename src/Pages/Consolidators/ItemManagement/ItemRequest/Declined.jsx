@@ -7,7 +7,7 @@ import {
   useItemRequests,
 } from "@Hooks/ItemRequest/ItemRequestHook";
 import { Stack } from "@mui/joy";
-import ItemDetailsRow from "@Pages/ItemRequests/ItemDetailsRow";
+import ItemDetailsRow from "@Pages/Consolidators/ItemManagement/ItemRequest/ItemDetailsRow";
 import React, { Fragment, useEffect, useState } from "react";
 import { useLocation } from "react-router-dom";
 

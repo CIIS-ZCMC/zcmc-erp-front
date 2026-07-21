@@ -42,8 +42,11 @@ function DashboardEndUser(props) {
 
   const { aop, mission, fiscalYear, yearDetails } = useAOPStore();
   const { setMission } = useAOPActions();
-  const { getCommentsByApplication, getRemarksByApplication } =
-    useCommentActions();
+  const {
+    getCommentsByActivity,
+    getCommentsByApplication,
+    getRemarksByApplication,
+  } = useCommentActions();
 
   const [openFiscalYearModal, setOpenFiscalYearModal] = useState(false);
   const [isLoading, setIsLoading] = useState(false);

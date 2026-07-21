@@ -20,7 +20,11 @@ import useSnackbarHook from "../../../../../Hooks/SnackbarHook";
 import { useItemRequestActions } from "../../../../../Hooks/ItemRequest/ItemRequestHook";
 import VerticalRadioComponent from "@Components/Common/VerticalRadioComponent";
 
-export default function NewRequestModal({ openNewRequest, setOpenNewRequest }) {
+export default function NewRequestModal({
+  openNewRequest,
+  setOpenNewRequest,
+  activity_id,
+}) {
   const [displayLoading, setDisplayLoading] = useState(false);
   const { setAlertDialog } = useModalHook();
   const { showSnack } = useSnackbarHook();
@@ -39,8 +43,7 @@ export default function NewRequestModal({ openNewRequest, setOpenNewRequest }) {
   } = useItemsHook();
 
   const { activities } = usePPMPState();
-  const { getActivities } = usePPMPActions();
-  const { postItmRequest } = useItemRequestActions();
+  const { postItemRequest, getActivities } = usePPMPActions();
   const [buttonLoader, setButtonLoader] = useState(false);
 
   const specsContainerRef = useRef(null);
@@ -126,6 +129,11 @@ export default function NewRequestModal({ openNewRequest, setOpenNewRequest }) {
         hasError = true;
       }
 
+      if (!itemReq.quantity || itemReq.quantity <= 0) {
+        setError("quantity", true, "Quantity is required and must be greater than 0.");
+        hasError = true;
+      }
+
       if (variants?.length > 0 && !itemReq.variant) {
         setError("variant", true, "Variant is required.");
         hasError = true;
@@ -194,6 +202,8 @@ export default function NewRequestModal({ openNewRequest, setOpenNewRequest }) {
       name: itemReq.item_name || "",
       item_classification_id: itemReq.classification?.id ?? null,
       item_category_id: itemReq.category?.id ?? null,
+      activity_id: Array.isArray(activity_id) ? activity_id : (activity_id ? [activity_id] : []),
+      quantity: itemReq.quantity,
       item_unit_id: itemReq.unit?.id ?? null,
       variant: itemReq?.variant?.id ?? null, // not required
       estimated_budget: itemReq?.estimated_budget ?? 0,
@@ -207,7 +217,7 @@ export default function NewRequestModal({ openNewRequest, setOpenNewRequest }) {
       technical_requirements: itemReq.technical_requirements || "",
     };
 
-    postItmRequest(payload, (status, message) => {
+    postItemRequest(payload, (status, message) => {
       setButtonLoader(false);
 
       if (status === 201) {
@@ -216,6 +226,7 @@ export default function NewRequestModal({ openNewRequest, setOpenNewRequest }) {
           category: null,
           item_name: "",
           unit: null,
+          quantity: 0,
           estimated_budget: "",
           variant: null,
           market_research: false,
@@ -389,23 +400,38 @@ export default function NewRequestModal({ openNewRequest, setOpenNewRequest }) {
                       />
                     </Stack>
 
-                    <AutocompleteComponent
-                      label="Unit of measure"
-                      name="unit"
-                      value={
-                        units?.find((el) => el.id === itemReq?.unit?.id) || null
-                      }
-                      options={units}
-                      getOptionLabel={(option) => option.name || ""}
-                      handleSelect={(value) => {
-                        handleSingleChangeAutcomplete(
-                          value,
-                          setItemReq,
-                          "unit",
-                          setError,
-                        );
-                      }}
-                    />
+                    <Stack direction={"row"} gap={1} width="100%">
+                      <InputComponent
+                        label="Quantity"
+                        name="quantity"
+                        size="sm"
+                        value={itemReq?.quantity}
+                        handleInput={(e) =>
+                          handleInputValidation(e, setItemReq, setError)
+                        }
+                        color="primary"
+                        fontWeight={500}
+                        helperText={"Quantity to add"}
+                      />
+
+                      <AutocompleteComponent
+                        label="Unit of measure"
+                        name="unit"
+                        value={
+                          units?.find((el) => el.id === itemReq?.unit?.id) || null
+                        }
+                        options={units}
+                        getOptionLabel={(option) => option.name || ""}
+                        handleSelect={(value) => {
+                          handleSingleChangeAutcomplete(
+                            value,
+                            setItemReq,
+                            "unit",
+                            setError,
+                          );
+                        }}
+                      />
+                    </Stack>
 
                     <AutocompleteComponent
                       label="Variant"

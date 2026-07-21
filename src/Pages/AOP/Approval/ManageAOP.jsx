@@ -100,8 +100,6 @@ export default function ManageAOP() {
 
     getAOPApplicationById(AOP_APPLICATION_ID);
     getAOPApprovalTimeline(AOP_APPLICATION_ID);
-    getCommentsByApplication(AOP_APPLICATION_ID);
-    getRemarksByApplication(AOP_APPLICATION_ID);
   }, [AOP_APPLICATION_ID]);
 
   // useEffect(() => {
@@ -257,12 +255,14 @@ export default function ManageAOP() {
         </Box>
       </Stack>
 
-      <FeedbackContent
-        openFeedbackModal={openFeedbackModal}
-        setOpenFeedbackModal={setOpenFeedbackModal}
-        isLoading={isRemarksLoading}
-        isActivity={false}
-      />
+      {openFeedbackModal && (
+        <FeedbackContent
+          openFeedbackModal={openFeedbackModal}
+          setOpenFeedbackModal={setOpenFeedbackModal}
+          isLoading={isRemarksLoading}
+          isActivity={false}
+        />
+      )}
     </Fragment>
   );
 }

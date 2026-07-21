@@ -1,5 +1,5 @@
 import React, { Fragment, useEffect, useState } from "react";
-import { Box, Typography, useTheme } from "@mui/joy";
+import { Box, Link, Stack, Typography, useTheme } from "@mui/joy";
 import { useNavigate, useLocation } from "react-router-dom";
 import { usePPMPActions, usePPMPState } from "../../../../Hooks/PPMP/PPMPHook";
 import { nextYear } from "../../../../Utils/Functions";
@@ -104,12 +104,32 @@ function PPMPDashboard(props) {
             setAlertDialog({
               status: "error",
               title: "Cannot submit PPMP",
-              description: <>
-                <Typography>
-                  {message}
-                </Typography>
-                <ButtonComponent label={"Go to Item Management"} onClick={() => { closeAlertDialog(); handleNavigate() }} endDecorator={<ArrowForward />} />
-              </>,
+              description: (
+                <>
+                  {status === 400 ? (
+                    <Typography>{message}</Typography>
+                  ) : (
+                    <Stack spacing={2} alignItems={"flex-end"} mt={1}>
+                      <Typography>{message}</Typography>
+                      <Link
+                        component={"button"}
+                        onClick={() => {
+                          closeAlertDialog();
+                          handleNavigate("regular");
+                        }}
+                        endDecorator={<ArrowForward />}
+                        sx={{
+                          cursor: "pointer",
+                          fontSize: 14,
+                        }}
+                        variant="soft"
+                      >
+                        Go to Item Management
+                      </Link>
+                    </Stack>
+                  )}
+                </>
+              ),
             });
           }
         },
@@ -205,7 +225,6 @@ function PPMPDashboard(props) {
             pb: 2,
           }}
         >
-
           <PPMPSummaryCards
             pageLoader={pageLoader}
             dashboard={dashboard}

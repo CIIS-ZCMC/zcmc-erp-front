@@ -77,7 +77,7 @@ const Footer = () => {
 
   return (
     <div style={{ width: "100%" }}>
-      <Sheet
+      {/* <Sheet
         sx={{
           p: 1.5,
           borderRadius: "10px",
@@ -117,7 +117,7 @@ const Footer = () => {
             </IconButton>
           </Stack>
         )}
-      </Sheet>
+      </Sheet> */}
 
       <Divider sx={{ my: 2 }} />
 

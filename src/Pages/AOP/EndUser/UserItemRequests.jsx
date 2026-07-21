@@ -1,7 +1,7 @@
 import BoxComponent from "@Components/Common/Card/BoxComponent";
 import PageTitle from "@Components/Common/PageTitle";
 import TabComponent from "@Components/Common/TabComponent";
-import { userItmRequestTabs } from "../../Data/Options";
+import { userItmRequestTabs } from "@Data/Options";
 import { Stack, Typography } from "@mui/joy";
 import React, { Fragment, useEffect, useMemo, useState } from "react";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -16,7 +16,7 @@ import SearchBarComponentv2 from "@Components/SearchBarWithdeBounce";
 import ButtonComponent from "@Components/Common/ButtonComponent";
 import { Add } from "@mui/icons-material";
 import NewRequestModal from "@Pages/PPMP/EndUser/Modal/AddItemRequest/NewRequestModal";
-import ItemDetailsRow from "./ItemDetailsRow";
+import ItemDetailsRow from "@Pages/Consolidators/ItemManagement/ItemRequest/ItemDetailsRow";
 import ModalComponent from "@Components/Common/Dialog/ModalComponent";
 import TextareaComponent from "@Components/Form/TextareaComponent";
 import AuthorizationPinComponent from "@Components/AuthorizationPinComponent";

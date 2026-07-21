@@ -372,7 +372,7 @@ export const Items = () => {
           justifyContent={"flex-start"}
         >
           <Typography level="body-sm">View:</Typography>
-          <StatusSwitch checked={active} onChange={setActive} />
+          <StatusSwitch checked={active} onChange={setActive} size="lg" />
         </Stack>
         <Stack direction={"row"} gap={1}>
           <SearchBarComponentv2
@@ -409,8 +409,8 @@ export const Items = () => {
           title="Add New Item"
           isOpen={openNew}
           handleClose={() => setOpenNew(false)}
-          minWidth={"700px"}
-          maxWidth={"700px"}
+          minWidth={"600px"}
+          maxWidth={"600px"}
           rightButtonAction={() => addItem()}
           content={
             <>
@@ -729,6 +729,7 @@ export const Items = () => {
                     <Box
                       height={"280px"}
                       overflow="auto"
+
                       // ref={specsContainerRef}
                     >
                       {(updatedData.specs.length > 0

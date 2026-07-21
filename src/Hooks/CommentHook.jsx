@@ -29,7 +29,9 @@ const useCommentHook = create((set, get) => ({
           const {
             data: { comments },
           } = response.data;
-          set({ comments: comments });
+          set({ allComments: comments });
+          localStorageSetter("all_comments", comments);
+
           callback(response.status, comments);
         },
         failed: () => {
@@ -40,51 +42,53 @@ const useCommentHook = create((set, get) => ({
     },
 
     getCommentsByApplication: (id, callback) => {
-        read({
-          url: `${AOP_COMMENTS}`,
-          params: {
-            aop_application_id: id,
-          },
-          success: (response) => {
-            // API may return an array or an object with a 'comments' field.
-            const payload = response.data?.data;
-            const comments = Array.isArray(payload) ? payload : payload?.comments ?? [];
-            set({ allComments: comments });
-            // Persist the fresh comment list (empty array clears previous data)
-            localStorageSetter("all_comments", comments);
-            callback?.(response.status, comments);
-          },
-          failed: () => {
-            // Ensure stale comments are cleared on failure
-            set({ allComments: [] });
-            localStorageRemove("all_comments");
-            if (typeof callback === "function") {
-              callback(500, []);
-            }
-          },
-        });
+      read({
+        url: `${AOP_COMMENTS}`,
+        params: {
+          aop_application_id: id,
+        },
+        success: (response) => {
+          // API may return an array or an object with a 'comments' field.
+          const payload = response.data?.data;
+          const comments = Array.isArray(payload)
+            ? payload
+            : (payload?.comments ?? []);
+          set({ allComments: comments });
+          // Persist the fresh comment list (empty array clears previous data)
+          localStorageSetter("all_comments", comments);
+          callback?.(response.status, comments);
+        },
+        failed: () => {
+          // Ensure stale comments are cleared on failure
+          set({ allComments: [] });
+          localStorageRemove("all_comments");
+          if (typeof callback === "function") {
+            callback(500, []);
+          }
+        },
+      });
     },
 
     getRemarksByApplication: (id, callback) => {
-        read({
-          url: `${REMARKS}/${id}`,
-          success: (response) => {
-            const payload = response.data?.data;
-            const remarks = payload?.remarks ?? [];
-            set({ remarks });
-            // Store the raw remarks array (empty clears previous)
-            localStorageSetter("remarks", remarks);
-            callback?.(response.status, remarks);
-          },
-          failed: (response) => {
-            // Clear stale remarks on failure
-            set({ remarks: [] });
-            localStorageRemove("remarks");
-            if (typeof callback === "function") {
-              callback(response?.status ?? 500, []);
-            }
-          },
-        });
+      read({
+        url: `${REMARKS}/${id}`,
+        success: (response) => {
+          const payload = response.data?.data;
+          const remarks = payload?.remarks ?? [];
+          set({ remarks });
+          // Store the raw remarks array (empty clears previous)
+          localStorageSetter("remarks", remarks);
+          callback?.(response.status, remarks);
+        },
+        failed: (response) => {
+          // Clear stale remarks on failure
+          set({ remarks: [] });
+          localStorageRemove("remarks");
+          if (typeof callback === "function") {
+            callback(response?.status ?? 500, []);
+          }
+        },
+      });
     },
 
     postComment: (body, callback) => {

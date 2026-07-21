@@ -13,6 +13,7 @@ const ActivitiesList = ({
   handleAdd,
   handleEdit,
   handleDelete,
+  handleViewComments,
   isLockedByOther,
   lockedBy,
 }) => {
@@ -56,7 +57,6 @@ const ActivitiesList = ({
           <CardBody
             objective={objective_name}
             status={status}
-            comments={comments}
             activity={activity_name ? activity_name : activity_code}
             cost={total_cost}
             timeframe={`${start_month ? formattedStartMonth : ""} - ${
@@ -68,6 +68,7 @@ const ActivitiesList = ({
           <CardActions
             comments={comments}
             activityId={id}
+            handleViewComments={handleViewComments}
             resourcesCount={resources_count}
             responsibleCount={responsible_people_count}
             is_draft={is_draft}

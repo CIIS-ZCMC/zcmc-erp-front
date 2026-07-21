@@ -12,12 +12,14 @@ import {
 } from "lucide-react";
 import { getModeColorScheme } from "./ColorScheme";
 import { ArrowRight } from "lucide-react";
+import { Check, CheckOutlined, Clear, Close } from "@mui/icons-material";
 // STATUS
 export const getStatusIcon = (status, iconOnly) => {
   const iconMap = {
     submitted: <Hourglass size={13} />,
     pending: <Hourglass size={13} />,
-    approved: <CheckCircle size={13} />,
+    approved: <CheckOutlined size={13} />,
+    rejected: <Clear size={13} />,
     received: <CheckCircle size={13} />,
     returned: <CornerDownLeft size={13} />,
     info: <InfoIcon />,
