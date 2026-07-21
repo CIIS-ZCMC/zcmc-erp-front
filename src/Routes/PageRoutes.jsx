@@ -34,7 +34,11 @@ import { Category } from "../Pages/Consolidators/ItemManagement/ItemLibrary/Tabs
 import { Variant } from "../Pages/Consolidators/ItemManagement/ItemLibrary/Tabs/Variant";
 import Declined from "@Pages/Consolidators/ItemManagement/ItemRequest/Declined";
 import BudgetDeliberation from "@Pages/PPMP/Approval/BudgetDeliberation";
-import UserItemRequests from "@Pages/AOP/EndUser/UserItemRequests";
+import ItemRequestsLayout from "@Pages/AOP/EndUser/ItemRequests/ItemRequestsLayout";
+import AllRequests from "@Pages/AOP/EndUser/ItemRequests/AllRequests";
+import PendingRequests from "@Pages/AOP/EndUser/ItemRequests/PendingRequests";
+import ApprovedRequests from "@Pages/AOP/EndUser/ItemRequests/ApprovedRequests";
+import DeclinedRequests from "@Pages/AOP/EndUser/ItemRequests/DeclinedRequests";
 
 const iconStyles = {
   size: 24,
@@ -117,8 +121,26 @@ export const sidebarRoutes = [
       {
         path: "/new-item-requests",
         name: "My Item Requests",
-        element: <UserItemRequests />,
+        element: <ItemRequestsLayout />,
         childPermissions: ["ERP-PPMP-MAN:write", "ERP-AOP-MAN:write"],
+        children: [
+          {
+            index: true,
+            element: <AllRequests />,
+          },
+          {
+            path: "pending",
+            element: <PendingRequests />,
+          },
+          {
+            path: "approved",
+            element: <ApprovedRequests />,
+          },
+          {
+            path: "declined",
+            element: <DeclinedRequests />,
+          },
+        ],
       },
     ],
   },

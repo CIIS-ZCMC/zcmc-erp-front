@@ -1443,7 +1443,13 @@ export const itemRequestCols = (
       render: (params) => (
         <>
           <Chip
-            color="primary"
+            color={
+              params?.status?.name === "approved"
+                ? "success"
+                : params?.status?.name === "rejected"
+                  ? "danger"
+                  : "warning"
+            }
             size="md"
             startDecorator={<Circle sx={{ fontSize: 8 }} />}
             sx={{ textTransform: "capitalize" }}
