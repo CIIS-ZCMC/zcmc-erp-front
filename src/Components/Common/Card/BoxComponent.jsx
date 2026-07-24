@@ -26,7 +26,7 @@ function BoxComponent({
         maxHeight: maxHeight,
         overflowY: height || maxHeight ? "auto" : "visible",
         border: 1,
-        borderColor: "neutral.100",
+        borderColor: "neutral.200",
         bgcolor: bgColor || "white", // Use default color when bgColor is not passed
         borderRadius: 8,
         overflowX: "hidden", // Hide horizontal overflow
