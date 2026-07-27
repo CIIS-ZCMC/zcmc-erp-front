@@ -41,6 +41,7 @@ function DashboardEndUser(props) {
   const { showSnack } = useSnackbarHook();
 
   const { aop, mission, fiscalYear, yearDetails } = useAOPStore();
+  const { setFiscalYear } = useAOPActions();
   const { setMission } = useAOPActions();
   const {
     getCommentsByActivity,
@@ -177,14 +178,14 @@ function DashboardEndUser(props) {
 
   const handleNavigateObjectives = () => {
     navigate(`/aop/objectives/${aop.id}`, {
-      state: { aopId: aop.id }, // do not change state name
+      state: { aopId: aop.id, year: fiscalYear }, // do not change state name
     });
   };
 
-  const handleChangeFiscalYear = (e) => {
-    // console.log(e)
+  const handleChangeFiscalYear = (year) => {
+    setFiscalYear(year);
     setIsLoading(true);
-    const params = { year: e };
+    const params = { year: year };
 
     getAopBySectorAndYear(params, (status, message) => {
       if (!(status >= 200 && status < 300)) {
@@ -242,6 +243,7 @@ function DashboardEndUser(props) {
                   handleChange={handleChangeFiscalYear}
                   handleEdit={handleOpenEdit}
                   status={aop?.status?.id}
+                  fiscalYear={fiscalYear}
                 />
 
                 <Draft

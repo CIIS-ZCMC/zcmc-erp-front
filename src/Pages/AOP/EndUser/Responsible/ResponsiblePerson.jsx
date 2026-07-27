@@ -24,6 +24,8 @@ import useModalHook from "../../../../Hooks/ModalHook";
 import { RESPONSIBLE } from "../../../../Data/constants";
 import useSnackbarHook from "../../../../Hooks/SnackbarHook";
 import useAOPIdStore from "../../../../Hooks/AOP/AOPIdStore";
+import { useAuth } from "../../../../Store/AuthStore";
+import { useRowEditingLock } from "../../../../Hooks/Socket/useRowEditingLock";
 
 const centeredStyle = {
   direction: "column",
@@ -56,6 +58,26 @@ const ResponsiblePerson = () => {
   const { setAlertDialog, setConfirmationModal, closeConfirmation } =
     useModalHook();
   const { showSnack } = useSnackbarHook();
+  const { user } = useAuth();
+  const { isLockedByOther } = useRowEditingLock({
+    room: {
+      joinEvent: "aop:register",
+      payload: { aopId: aop?.id },
+    },
+    events: {
+      lock: "aop:activity-lock",
+      unlock: "aop:activity-unlock",
+      editing: "aop:activity-editing",
+      editingStopped: "aop:activity-editing-stopped",
+      locked: "aop:activity-locked",
+    },
+    idKey: "activityId",
+    currentUserId: user?.id,
+    currentUserName: user?.name,
+    onNotify: (status, msg) => showSnack(status, msg, "soft"),
+    enabled: Boolean(activityId && aop?.id),
+  });
+
   const { getPeople, createResponsible, removeResponsible } =
     useResponsibleHook();
 

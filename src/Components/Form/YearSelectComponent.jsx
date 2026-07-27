@@ -10,6 +10,7 @@ export default function SelectComponent({
   onChange,
   width = "auto",
   years,
+  fiscalYear,
 }) {
   const currentYear = new Date().getFullYear();
   const nextYear = currentYear + 1;
@@ -17,7 +18,7 @@ export default function SelectComponent({
   //   { length: nextYear - startYear + 1 },
   //   (_, i) => nextYear - i
   // );
-  const [value, setValue] = React.useState(nextYear);
+  const [value, setValue] = React.useState(fiscalYear || nextYear);
   const handleChange = (event, newValue) => {
     setValue(newValue); // update internal state
     if (onChange) onChange(newValue); // send value to parent if provided

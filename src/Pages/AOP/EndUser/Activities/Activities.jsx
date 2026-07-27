@@ -23,7 +23,7 @@ import ChipComponent from "@Components/Common/ChipComponent";
 import { isAopDisabled } from "../../../../Utils/AopStatus";
 import { Add, Circle } from "@mui/icons-material";
 import useSnackbarHook from "../../../../Hooks/SnackbarHook";
-import { socket } from "../../../../Services/Socket";
+import { useRowEditingLock } from "../../../../Hooks/Socket/useRowEditingLock";
 import { getNextYearRange, nextYear } from "../../../../Utils/Functions";
 import { useAuth } from "../../../../Store/AuthStore";
 import PageLoader from "@Components/Loading/PageLoader";
@@ -96,7 +96,36 @@ const Activities = () => {
     total: 0,
   });
 
-  const [lockedActivities, setLockedActivities] = useState({});
+  const {
+    lockedRows: lockedActivities,
+    startEditLock,
+    stopEditLock,
+    getLockState: getActivityLockState,
+  } = useRowEditingLock({
+    room: {
+      joinEvent: "aop:register",
+      payload: { aopId: aop?.id },
+    },
+    events: {
+      lock: "aop:activity-lock",
+      unlock: "aop:activity-unlock",
+      editing: "aop:activity-editing",
+      editingStopped: "aop:activity-editing-stopped",
+      locked: "aop:activity-locked",
+    },
+    idKey: "activityId",
+    startEditEvent: "aop:activity:start-edit",
+    stopEditEvent: "aop:activity:stop-edit",
+    currentUserId: user?.id,
+    currentUserName: user?.name,
+    onNotify: (status, msg) => showSnack(status, msg, "soft"),
+    getItemKey: (data) =>
+      data.aopId && data.objectiveId && data.activityId
+        ? `${data.aopId}:${data.objectiveId}:${data.activityId}`
+        : data.activityId,
+    enabled: Boolean(objectiveId && aop?.id),
+  });
+
   const getActivityKey = (aopId, objectiveId, activityId) =>
     `${aopId}:${objectiveId}:${activityId}`;
 
@@ -119,12 +148,7 @@ const Activities = () => {
 
   const handleCloseModal = () => {
     if (selectedActivityId) {
-      socket.emit("aop:activity:stop-edit", {
-        aopId: aop.id,
-        objectiveId,
-        activityId: selectedActivityId,
-        userId: user.id,
-      });
+      stopEditLock(selectedActivityId, { objectiveId });
     }
     setIsOpenActivitiesModal(false);
     setIsEditMode(false);
@@ -133,15 +157,7 @@ const Activities = () => {
   };
 
   const handleOpenEditModal = async (activityId) => {
-    const aopId = aop.id;
-
-    socket.emit("aop:activity:start-edit", {
-      aopId,
-      objectiveId,
-      activityId,
-      userId: user.id,
-      name: user.name,
-    });
+    startEditLock(activityId, { objectiveId });
     setIsEditMode(true);
     setSelectedActivityId(activityId);
 
@@ -180,12 +196,7 @@ const Activities = () => {
     try {
       await updateActivity(params, payload, (status, message) => {
         if (status === 200) {
-          socket.emit("aop:activity:stop-edit", {
-            aopId: aop.id,
-            objectiveId,
-            activityId: selectedActivityId,
-            userId: user.id,
-          });
+          stopEditLock(selectedActivityId, { objectiveId });
           showSnack(200, message);
           setIsBtnLoading(false);
           handleCloseModal();
@@ -245,15 +256,7 @@ const Activities = () => {
   };
 
   const handleOpenDeleteModal = (activityId) => {
-    const aopId = aop.id;
-
-    socket.emit("aop:activity:start-edit", {
-      aopId,
-      objectiveId,
-      activityId,
-      userId: user.id,
-      name: user.name,
-    });
+    startEditLock(activityId, { objectiveId });
 
     setOpenDeleteModal(true);
     setSelectedActivityId(activityId);
@@ -321,88 +324,6 @@ const Activities = () => {
         });
       }
     });
-  };
-
-  useEffect(() => {
-    if (!socket || !objectiveId || !aop?.id) return;
-
-    const aopId = aop.id;
-
-    socket.emit("aop:register", { aopId });
-
-    const addLock = ({
-      aopId,
-      objectiveId,
-      activityId,
-      editorId,
-      editorName,
-    }) => {
-      const key = getActivityKey(aopId, objectiveId, activityId);
-
-      setLockedActivities((prev) => ({
-        ...prev,
-        [key]: { editorId, editorName },
-      }));
-    };
-
-    const removeLock = ({ aopId, objectiveId, activityId }) => {
-      const key = getActivityKey(aopId, objectiveId, activityId);
-
-      setLockedActivities((prev) => {
-        const copy = { ...prev };
-        delete copy[key];
-        return copy;
-      });
-    };
-
-    const handleEditing = ({ activityId, editorName }) => {
-      showSnack(
-        401,
-        `${editorName} is editing Activity #${activityId}`,
-        "soft",
-      );
-    };
-
-    const handleEditingStopped = ({ aopId, objectiveId, activityId }) => {
-      if (!aopId || !objectiveId || !activityId) return;
-
-      removeLock({ aopId, objectiveId, activityId });
-
-      showSnack(200, "Activity editing finished", "soft");
-    };
-
-    // 🔔 Activity events only
-    socket.on("aop:activity-lock", addLock);
-    socket.on("aop:activity-unlock", removeLock);
-    socket.on("aop:activity-editing", handleEditing);
-    socket.on("aop:activity-editing-stopped", handleEditingStopped);
-
-    socket.on("aop:activity-locked", (data) => {
-      addLock(data);
-      showSnack(
-        401,
-        `Activity #${data.activityId} is being edited by ${data.editorName}`,
-        "soft",
-      );
-    });
-
-    return () => {
-      socket.off("aop:activity-lock", addLock);
-      socket.off("aop:activity-unlock", removeLock);
-      socket.off("aop:activity-editing", handleEditing);
-      socket.off("aop:activity-editing-stopped", handleEditingStopped);
-      socket.off("aop:activity-locked");
-    };
-  }, [socket, objectiveId, aop?.id]);
-
-  const getActivityLockState = (activityId) => {
-    const activityKey = getActivityKey(aop.id, objectiveId, activityId);
-    const lock = lockedActivities[activityKey];
-
-    return {
-      lock,
-      isLockedByOther: lock && lock.editorId !== user.id,
-    };
   };
 
   const activityHandlers = {
@@ -740,12 +661,7 @@ const Activities = () => {
           leftButtonLabel="Cancel"
           leftButtonAction={() => {
             if (selectedActivityId) {
-              socket.emit("aop:activity:stop-edit", {
-                aopId: aop.id,
-                objectiveId,
-                activityId: selectedActivityId,
-                userId: user.id,
-              });
+              stopEditLock(selectedActivityId, { objectiveId });
             }
             setOpenDeleteModal(false);
             closeConfirmation();

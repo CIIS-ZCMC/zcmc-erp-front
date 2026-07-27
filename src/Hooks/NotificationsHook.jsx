@@ -1,6 +1,7 @@
 // src/hooks/useNotifications.js
 import { create } from "zustand";
 import useSocketStore from "./Socket/SocketHook";
+import { useSocketEvent } from "./Socket/useSocketEvent";
 import { useAuth } from "../Store/AuthStore";
 import { useEffect } from "react";
 import { read } from "../Services/RequestMethods";
@@ -76,7 +77,6 @@ export const useNotificationActions = () =>
 
 // Hook to register for socket events
 export const useNotificationEvents = () => {
-  const { socket } = useSocketStore();
   const addNotification = useNotificationsHook(
     (state) => state.addNotification,
   );
@@ -88,41 +88,22 @@ export const useNotificationEvents = () => {
   const { user } = useAuth();
 
   useEffect(() => {
-    if (user) {
+    if (user?.id) {
       fetchNotifications(user.id);
     }
+  }, [user?.id]);
 
-    if (socket && user) {
-      socket.on(`erp-notification-${user.id}`, (data) => {
+  const eventName = user?.id ? `erp-notification-${user.id}` : null;
+
+  useSocketEvent(
+    eventName,
+    (data) => {
+      if (data) {
         addNotification(data);
-      });
-    }
-
-    return () => {
-      socket.off(`erp-notification-${user.id}`);
-    };
-  }, [socket, user]);
-  // useEffect(() => {
-  //   if (!socket || !user) return;
-
-  //   // 1️⃣ Fetch existing notifications from DB
-  //   fetchNotifications(user.id);
-
-  //   // 2️⃣ Register this socket for real-time notifications
-  //   socket.emit("register-user", { userId: user.id });
-
-  //   // 3️⃣ Listen for ERP notifications
-  //   const handler = (notification) => {
-  //     addNotification(notification);
-  //     console.log("New ERP notification:", notification);
-  //   };
-
-  //   socket.on("erp-notification", handler);
-
-  //   return () => {
-  //     socket.off("erp-notification", handler);
-  //   };
-  // }, [socket, user]);
+      }
+    },
+    Boolean(user?.id),
+  );
 };
 
 export const useUnseenCount = () => {

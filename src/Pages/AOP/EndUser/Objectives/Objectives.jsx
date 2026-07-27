@@ -38,7 +38,7 @@ import useAOPBreadcrumbs from "../../../../Hooks/AOP/AOPBreadcrumbs";
 import { Add } from "@mui/icons-material";
 import useSnackbarHook from "../../../../Hooks/SnackbarHook";
 import { useAuth } from "../../../../Store/AuthStore";
-import { socket } from "../../../../Services/Socket";
+import { useRowEditingLock } from "../../../../Hooks/Socket/useRowEditingLock";
 import { nextYear } from "../../../../Utils/Functions";
 import PageLoader from "@Components/Loading/PageLoader";
 import ServerPaginationComponent from "@Components/ServerPaginationComponent";
@@ -47,12 +47,14 @@ import BasicTableComponent from "@Components/Common/Table/BasicTableComponent";
 import { AOP_OBJECTIVES_COLUMNS } from "@Data/Columns";
 import useSwitchViewHook from "@Hooks/AOP/SwitchViewHook";
 import usePageNumberHook from "@Hooks/PageNumberHook";
+import useAOPStore from "@Store/AOPStore";
 
 const Objectives = () => {
   const location = useLocation();
   const navigate = useNavigate();
 
   const { aopId } = useParams();
+  const { fiscalYear } = useAOPStore();
 
   const aopApplication = useAopApplication();
   const functionType = useFunctionType();
@@ -95,7 +97,33 @@ const Objectives = () => {
 
   const { user } = useAuth();
   const { name, id, assignedArea } = user ?? {};
-  const [lockedRows, setLockedRows] = useState({});
+
+  const {
+    lockedRows,
+    startEditLock,
+    stopEditLock,
+    getLockState: getRowLockState,
+  } = useRowEditingLock({
+    room: {
+      joinEvent: "aop:register",
+      payload: { aopId },
+    },
+    events: {
+      lock: "aop:lock",
+      unlock: "aop:unlock",
+      editing: "aop:editing",
+      editingStopped: "aop:editing-stopped",
+      locked: "aop:locked",
+    },
+    idKey: "objectiveId",
+    startEditEvent: "aop:start-edit",
+    stopEditEvent: "aop:stop-edit",
+    currentUserId: user?.id,
+    currentUserName: user?.name,
+    onNotify: (status, msg) => showSnack(status, msg, "soft"),
+    enabled: Boolean(aopId),
+  });
+
   const [isEditLoading, setIsEditLoading] = useState(false);
   const [pagination, setPagination] = useState({
     current_page: 1,
@@ -210,11 +238,7 @@ const Objectives = () => {
     try {
       await updateObjective(params, payload, (status, message) => {
         if (status === 200) {
-          socket.emit("aop:stop-edit", {
-            aopId,
-            objectiveId: selectedObjectiveId,
-            userId: id,
-          });
+          stopEditLock(selectedObjectiveId);
 
           showSnack(200, message);
           handleCloseModal();
@@ -250,22 +274,25 @@ const Objectives = () => {
     setAlertDialog,
   ]);
 
-  const handleOpenEditModal = useCallback(async (objectiveId) => {
-    setSelectedObjectiveId(objectiveId);
-    setIsEditMode(true);
-    setIsEditLoading(true);
+  const handleOpenEditModal = useCallback(
+    async (objectiveId) => {
+      setSelectedObjectiveId(objectiveId);
+      setIsEditMode(true);
+      setIsEditLoading(true);
 
-    const params = { id: objectiveId };
+      const params = { id: objectiveId };
 
-    await showObjective(params, (status, message) => {
-      if (!(status >= 200 && status < 300)) {
-        showSnack(500, message, "danger");
-      }
-    });
+      await showObjective(params, (status, message) => {
+        if (!(status >= 200 && status < 300)) {
+          showSnack(500, message, "danger");
+        }
+      });
 
-    setIsEditLoading(false);
-    setIsOpenObjectivesModal(true);
-  }, [showObjective, showSnack]);
+      setIsEditLoading(false);
+      setIsOpenObjectivesModal(true);
+    },
+    [showObjective, showSnack],
+  );
 
   const handleConfirmDelete = useCallback(async () => {
     if (!selectedObjectiveId) return;
@@ -314,17 +341,20 @@ const Objectives = () => {
     setIsBtnLoading,
   ]);
 
-  const handleOpenDeleteModal = useCallback((objectiveId) => {
-    setIsEditMode(true);
-    setOpenDeleteModal(true);
-    setSelectedObjectiveId(objectiveId);
+  const handleOpenDeleteModal = useCallback(
+    (objectiveId) => {
+      setIsEditMode(true);
+      setOpenDeleteModal(true);
+      setSelectedObjectiveId(objectiveId);
 
-    setConfirmationModal({
-      status: "warning",
-      title: ` Are you sure you want to delete this objective ? `,
-      description: "The selected objective will be removed",
-    });
-  }, [setConfirmationModal]);
+      setConfirmationModal({
+        status: "warning",
+        title: ` Are you sure you want to delete this objective ? `,
+        description: "The selected objective will be removed",
+      });
+    },
+    [setConfirmationModal],
+  );
 
   const handleOpenObjectivesModal = useCallback(() => {
     setIsOpenObjectivesModal(true);
@@ -332,70 +362,52 @@ const Objectives = () => {
 
   const handleCloseModal = useCallback(() => {
     if (isEditMode && selectedObjectiveId) {
-      socket.emit("aop:stop-edit", {
-        aopId,
-        objectiveId: selectedObjectiveId,
-        userId: id,
-      });
+      stopEditLock(selectedObjectiveId);
     }
     setIsOpenObjectivesModal(false);
     setIsEditMode(false);
     setSelectedObjectiveId(null);
     clearFields();
-  }, [isEditMode, selectedObjectiveId, aopId, id, clearFields]);
+  }, [isEditMode, selectedObjectiveId, stopEditLock, clearFields]);
 
-  const getRowLockState = useCallback((objectiveId) => {
-    const lock = lockedRows[objectiveId];
-    return {
-      lock,
-      isLockedByOther: lock && lock.editorId !== user.id,
-    };
-  }, [lockedRows, user?.id]);
+  const objectiveHandlers = useMemo(
+    () => ({
+      activities: (row) => {
+        navigate(`/aop/activities/${row.id}`, {
+          state: {
+            objectiveId: row.id,
+            aopId: row.aop_application_id || aopApplication?.id,
+            objective:
+              row?.objective?.description || row?.other_objective?.description,
+          },
+        });
+      },
 
-  const startEditLock = useCallback((objectiveId) => {
-    socket.emit("aop:start-edit", {
-      aopId,
-      objectiveId,
-      userId: user.id,
-      name: user.name,
-    });
-  }, [aopId, user?.id, user?.name]);
+      edit: (row) => {
+        const { isLockedByOther } = getRowLockState(row.id);
+        if (isLockedByOther) return;
 
-  const objectiveHandlers = useMemo(() => ({
-    activities: (row) => {
-      navigate(`/aop/activities/${row.id}`, {
-        state: {
-          objectiveId: row.id,
-          aopId: row.aop_application_id || aopApplication?.id,
-          objective:
-            row?.objective?.description || row?.other_objective?.description,
-        },
-      });
-    },
+        startEditLock(row.id);
+        handleOpenEditModal(row.id);
+      },
 
-    edit: (row) => {
-      const { isLockedByOther } = getRowLockState(row.id);
-      if (isLockedByOther) return;
+      delete: (row) => {
+        const { isLockedByOther } = getRowLockState(row.id);
+        if (isLockedByOther) return;
 
-      startEditLock(row.id);
-      handleOpenEditModal(row.id);
-    },
-
-    delete: (row) => {
-      const { isLockedByOther } = getRowLockState(row.id);
-      if (isLockedByOther) return;
-
-      startEditLock(row.id);
-      handleOpenDeleteModal(row.id);
-    },
-  }), [
-    navigate,
-    aopApplication?.id,
-    getRowLockState,
-    startEditLock,
-    handleOpenEditModal,
-    handleOpenDeleteModal,
-  ]);
+        startEditLock(row.id);
+        handleOpenDeleteModal(row.id);
+      },
+    }),
+    [
+      navigate,
+      aopApplication?.id,
+      getRowLockState,
+      startEditLock,
+      handleOpenEditModal,
+      handleOpenDeleteModal,
+    ],
+  );
 
   // Memoize columns to avoid rebuilding the array on every render
   const tableColumns = useMemo(
@@ -412,62 +424,6 @@ const Objectives = () => {
   );
 
   useEffect(() => {
-    if (!socket || !aopId) return;
-
-    // Register with the AOP
-    socket.emit("aop:register", { aopId });
-
-    const addLock = ({ objectiveId, editorId, editorName }) => {
-      setLockedRows((prev) => ({
-        ...prev,
-        [objectiveId]: { editorId, editorName },
-      }));
-    };
-
-    const removeLock = ({ objectiveId }) => {
-      setLockedRows((prev) => {
-        const updated = { ...prev };
-        delete updated[objectiveId];
-        return updated;
-      });
-    };
-
-    const handleEditing = ({ editorName, objectiveId }) => {
-      showSnack(
-        401,
-        `${editorName} is editing Objective #${objectiveId}`,
-        "soft",
-      );
-    };
-
-    const handleEditingStopped = ({ objectiveId }) => {
-      if (objectiveId) removeLock({ objectiveId });
-      showSnack(200, "Editing finished", "soft");
-    };
-
-    socket.on("aop:editing", handleEditing);
-    socket.on("aop:editing-stopped", handleEditingStopped);
-    socket.on("aop:lock", addLock);
-    socket.on("aop:unlock", removeLock);
-    socket.on("aop:locked", (data) => {
-      addLock(data);
-      showSnack(
-        401,
-        `Objective #${data.objectiveId} is currently being edited by ${data.editorName}`,
-        "soft",
-      );
-    });
-
-    return () => {
-      socket.off("aop:editing", handleEditing);
-      socket.off("aop:editing-stopped", handleEditingStopped);
-      socket.off("aop:lock", addLock);
-      socket.off("aop:unlock", removeLock);
-      socket.off("aop:locked");
-    };
-  }, [socket, aopId]);
-
-  useEffect(() => {
     setIsLoading(true);
 
     getObjectivesBySector(
@@ -475,6 +431,7 @@ const Objectives = () => {
         search,
         page,
         per_page: perPage,
+        year: fiscalYear,
       },
       (status, message, paginationData) => {
         if (status >= 200 && status < 300 && paginationData) {
@@ -483,7 +440,7 @@ const Objectives = () => {
         setIsLoading(false);
       },
     );
-  }, [page, search, perPage]);
+  }, [page, search, perPage, fiscalYear]);
 
   return (
     <Stack
@@ -725,11 +682,7 @@ const Objectives = () => {
           leftButtonLabel="Cancel"
           leftButtonAction={() => {
             if (isEditMode && selectedObjectiveId) {
-              socket.emit("aop:stop-edit", {
-                aopId,
-                objectiveId: selectedObjectiveId,
-                userId: id,
-              });
+              stopEditLock(selectedObjectiveId);
             }
             setOpenDeleteModal(false);
             closeConfirmation();
@@ -744,4 +697,3 @@ const Objectives = () => {
 };
 
 export default Objectives;
-

@@ -22,22 +22,19 @@ const Checklist = ({ fiscalYear }) => {
   const [isLoading, setIsLoading] = useState(false);
 
   useEffect(() => {
+    if (!fiscalYear) return;
     setIsLoading(true);
 
     const params = { year: fiscalYear };
 
     getAopChecklist(params, (status, message) => {
+      setIsLoading(false);
       if (!(status >= 200 && status < 300)) {
         // if status not success
         return; //Toast error
       }
-      setIsLoading(false);
     });
-  }, []);
-
-  useEffect(() => {
-    // console.log('aop check list:', aopChecklist)
-  }, [aopChecklist]);
+  }, [fiscalYear]);
 
   return (
     <>

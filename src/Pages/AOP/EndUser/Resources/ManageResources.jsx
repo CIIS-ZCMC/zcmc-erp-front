@@ -35,6 +35,8 @@ import useAOPHook from "@Hooks/AOP/AOPHook";
 import useSnackbarHook from "@Hooks/SnackbarHook";
 import useSwitchViewHook from "@Hooks/AOP/SwitchViewHook";
 import usePageNumberHook from "@Hooks/PageNumberHook";
+import { useAuth } from "../../../../Store/AuthStore";
+import { useRowEditingLock } from "../../../../Hooks/Socket/useRowEditingLock";
 
 function ManageResources(props) {
   const { activityId } = useParams();

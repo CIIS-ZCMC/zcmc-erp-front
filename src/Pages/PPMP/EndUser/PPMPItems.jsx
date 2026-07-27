@@ -16,7 +16,7 @@ import userErrorInputHook from "../../../Hooks/ErrorInputHook";
 import AlertDialogComponent from "../../../Components/Common/Dialog/AlertDialogComponent";
 import { InfoIcon, PlusIcon } from "lucide-react";
 import { useAuth } from "../../../Store/AuthStore";
-import { socket } from "../../../Services/Socket";
+import { useRowEditingLock } from "../../../Hooks/Socket/useRowEditingLock";
 import BoxComponent from "@Components/Common/Card/BoxComponent";
 import ChipComponent from "@Components/Common/ChipComponent";
 import { PPMP_HEADERS } from "../../../Data/Columns";
@@ -79,7 +79,6 @@ function PPMPItems(props) {
   const updatedRowData = React.useRef({});
   const [selectedRow, setSelectedRow] = useState({});
   const [localRows, setLocalRows] = useState([]);
-  const [lockedRows, setLockedRows] = useState({});
   const [selectedCategory, setSelectedCategory] = useState(null);
   const editingRowsRef = useRef({});
 
@@ -116,77 +115,27 @@ function PPMPItems(props) {
     }
   }, [openDrawer, selectedRow?.id]);
 
-  useEffect(() => {
-    if (!socket || !ppmp_id) return;
-
-    // Reset locks on PPMP change
-    setLockedRows({});
-
-    // Register with PPMP
-    socket.emit("ppmp:join", { ppmpId: ppmp_id });
-
-    const handleReconnect = () => {
-      socket.emit("ppmp:join", { ppmpId: ppmp_id });
-    };
-
-    socket.on("connect", handleReconnect);
-
-    // 🔒 Add lock
-    const addLock = ({ rowId, editorId, editorName }) => {
-      setLockedRows((prev) => ({
-        ...prev,
-        [rowId]: { editorId, editorName },
-      }));
-    };
-
-    // 🔓 Remove lock
-    const removeLock = ({ rowId }) => {
-      setLockedRows((prev) => {
-        const updated = { ...prev };
-        delete updated[rowId];
-        return updated;
-      });
-    };
-
-    // 🔔 Someone started editing
-    const handleEditing = ({ rowId, editorName }) => {
-      showSnack(401, `${editorName} is editing Row #${rowId}`, "soft");
-    };
-
-    // 🔔 Someone stopped editing
-    const handleEditingStopped = ({ rowId }) => {
-      if (rowId) removeLock({ rowId });
-      showSnack(200, "Editing finished", "soft");
-    };
-
-    // 🚫 Lock rejection
-    const handleLocked = ({ rowId, editorId, editorName }) => {
-      addLock({ rowId, editorId, editorName });
-      showSnack(
-        401,
-        `Row #${rowId} is currently being edited by ${editorName}`,
-        "soft",
-      );
-    };
-
-    // Listeners
-    socket.on("ppmp:editing", handleEditing);
-    socket.on("ppmp:editing-stopped", handleEditingStopped);
-    socket.on("ppmp:lock", addLock);
-    socket.on("ppmp:unlock", removeLock);
-    socket.on("ppmp:locked", handleLocked);
-
-    return () => {
-      socket.emit("ppmp:leave", { ppmpId: ppmp_id });
-
-      socket.off("connect", handleReconnect);
-      socket.off("ppmp:editing", handleEditing);
-      socket.off("ppmp:editing-stopped", handleEditingStopped);
-      socket.off("ppmp:lock", addLock);
-      socket.off("ppmp:unlock", removeLock);
-      socket.off("ppmp:locked", handleLocked);
-    };
-  }, [socket, ppmp_id]);
+  const { lockedRows, startEditLock, stopEditLock } = useRowEditingLock({
+    room: {
+      joinEvent: "ppmp:join",
+      leaveEvent: "ppmp:leave",
+      payload: { ppmpId: ppmp_id },
+    },
+    events: {
+      lock: "ppmp:lock",
+      unlock: "ppmp:unlock",
+      editing: "ppmp:editing",
+      editingStopped: "ppmp:editing-stopped",
+      locked: "ppmp:locked",
+    },
+    idKey: "rowId",
+    startEditEvent: "ppmp:start-edit",
+    stopEditEvent: "ppmp:stop-edit",
+    currentUserId: id,
+    currentUserName: name,
+    onNotify: (status, msg) => showSnack(status, msg, "soft"),
+    enabled: Boolean(ppmp_id),
+  });
 
   useEffect(() => {
     getProcTimelines("start", () => {});
@@ -221,7 +170,7 @@ function PPMPItems(props) {
       const updatedData = getDataFunc();
       updatePPMP(rowId, updatedData, (status, message) => {
         if (status === 200) {
-          socket.emit("ppmp:stop-edit", { ppmpId: ppmp_id, rowId, userId: id });
+          stopEditLock(rowId);
           showSnack(status, message);
           setEditingRows((prev) => ({ ...prev, [rowId]: false }));
           // 🔴 DO NOT TOUCH EXPANSION
@@ -238,12 +187,7 @@ function PPMPItems(props) {
     }
 
     // START EDITING
-    socket.emit("ppmp:start-edit", {
-      ppmpId: ppmp_id,
-      rowId,
-      userId: id,
-      name,
-    });
+    startEditLock(rowId);
 
     setEditingRows((prev) => ({ ...prev, [rowId]: true }));
 

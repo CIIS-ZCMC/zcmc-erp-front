@@ -16,6 +16,7 @@ const Header = ({
   handleChange,
   handleEdit,
   status,
+  fiscalYear,
 }) => {
   const { HEADER_TITLE, MISSION_LABEL } = AOP;
 
@@ -33,6 +34,7 @@ const Header = ({
             width="120px"
             bgcolor="#004366"
             txtcolor="white"
+            fiscalYear={fiscalYear}
           />
         </Box>
         <Stack direction={"row"} alignItems={"center"}>

@@ -22,13 +22,14 @@ const Timeline = ({ aopId }) => {
   const { getTimelines } = useTimelineHook();
 
   useEffect(() => {
+    if (!aopId) return;
     getTimelines(aopId, "aop", (status, message) => {
       // console.log(status)
       if (!(status >= 200 && status < 300)) {
         return; //Toast error
       }
     });
-  }, []);
+  }, [aopId]);
 
   useEffect(() => {
     // console.log(isTimelineLoading);
