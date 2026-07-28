@@ -62,6 +62,11 @@ function ModalComponent({
   padding = 3.5,
   leftButtonVariant = "outlined",
   customActionFooter = false,
+  actionJustify,
+  footerLayout,
+  fullWidthButtons = true,
+  leftButtonProps = {},
+  rightButtonProps = {},
 }) {
   const theme = useTheme();
   const custom = theme.palette.custom;
@@ -150,36 +155,111 @@ function ModalComponent({
           <>
             <Divider sx={{ mx: 0.2 }} />
 
-            <DialogActions>
+            <DialogActions sx={{ p: 0, mt: 1.5 }}>
               <Box
                 sx={{
-                  width:
-                    minWidth > "70vw" || maxWidth > "70vw" ? "20%" : "100%",
+                  width: "100%",
                   display: "flex",
-                  gap: 1,
-                  flexDirection: { xs: "column", sm: "row-reverse" },
+                  gap: 1.5,
+                  alignItems: "center",
+                  justifyContent:
+                    footerLayout === "equal" ||
+                    footerLayout === "full-width" ||
+                    fullWidthButtons
+                      ? "stretch"
+                      : actionJustify ||
+                        (footerLayout === "space-between"
+                          ? "space-between"
+                          : minWidth > "70vw" || maxWidth > "70vw"
+                            ? "flex-end"
+                            : "flex-end"),
+                  flexDirection:
+                    footerLayout === "equal" ||
+                    footerLayout === "full-width" ||
+                    fullWidthButtons ||
+                    actionJustify ||
+                    footerLayout === "space-between"
+                      ? "row"
+                      : { xs: "column", sm: "row-reverse" },
                 }}
               >
-                {!noRightButton && (
-                  <ButtonComponent
-                    label={rightButtonLabel}
-                    fullWidth
-                    isLoading={isLoading}
-                    onClick={rightButtonAction}
-                    disabled={rightButtonDisabled || isLoading}
-                    loadingLabel={loadingLabel || "Loading..."}
-                  />
-                )}
+                {footerLayout === "equal" ||
+                footerLayout === "full-width" ||
+                fullWidthButtons ? (
+                  <>
+                    <ButtonComponent
+                      variant={leftButtonVariant}
+                      color="primary"
+                      label={leftButtonLabel}
+                      onClick={leftButtonAction ?? handleClose}
+                      disabled={isLoading}
+                      loadingLabel={loadingLabel}
+                      fullWidth={true}
+                      {...leftButtonProps}
+                    />
 
-                <ButtonComponent
-                  variant={leftButtonVariant}
-                  color="primary"
-                  label={leftButtonLabel}
-                  fullWidth={!noRightButton}
-                  onClick={leftButtonAction ?? handleClose}
-                  disabled={isLoading}
-                  loadingLabel={loadingLabel}
-                />
+                    {!noRightButton && (
+                      <ButtonComponent
+                        label={rightButtonLabel}
+                        isLoading={isLoading}
+                        onClick={rightButtonAction}
+                        disabled={rightButtonDisabled || isLoading}
+                        loadingLabel={loadingLabel || "Loading..."}
+                        fullWidth={true}
+                        {...rightButtonProps}
+                      />
+                    )}
+                  </>
+                ) : actionJustify === "space-between" ||
+                  footerLayout === "space-between" ? (
+                  <>
+                    <ButtonComponent
+                      variant={leftButtonVariant}
+                      color="primary"
+                      label={leftButtonLabel}
+                      onClick={leftButtonAction ?? handleClose}
+                      disabled={isLoading}
+                      loadingLabel={loadingLabel}
+                      {...leftButtonProps}
+                    />
+
+                    {!noRightButton && (
+                      <ButtonComponent
+                        label={rightButtonLabel}
+                        isLoading={isLoading}
+                        onClick={rightButtonAction}
+                        disabled={rightButtonDisabled || isLoading}
+                        loadingLabel={loadingLabel || "Loading..."}
+                        {...rightButtonProps}
+                      />
+                    )}
+                  </>
+                ) : (
+                  <>
+                    {!noRightButton && (
+                      <ButtonComponent
+                        label={rightButtonLabel}
+                        fullWidth={minWidth <= "70vw"}
+                        isLoading={isLoading}
+                        onClick={rightButtonAction}
+                        disabled={rightButtonDisabled || isLoading}
+                        loadingLabel={loadingLabel || "Loading..."}
+                        {...rightButtonProps}
+                      />
+                    )}
+
+                    <ButtonComponent
+                      variant={leftButtonVariant}
+                      color="primary"
+                      label={leftButtonLabel}
+                      fullWidth={!noRightButton && minWidth <= "70vw"}
+                      onClick={leftButtonAction ?? handleClose}
+                      disabled={isLoading}
+                      loadingLabel={loadingLabel}
+                      {...leftButtonProps}
+                    />
+                  </>
+                )}
               </Box>
             </DialogActions>
           </>

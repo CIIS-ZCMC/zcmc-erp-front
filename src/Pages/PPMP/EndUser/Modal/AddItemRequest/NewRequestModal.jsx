@@ -130,7 +130,11 @@ export default function NewRequestModal({
       }
 
       if (!itemReq.quantity || itemReq.quantity <= 0) {
-        setError("quantity", true, "Quantity is required and must be greater than 0.");
+        setError(
+          "quantity",
+          true,
+          "Quantity is required and must be greater than 0.",
+        );
         hasError = true;
       }
 
@@ -202,7 +206,11 @@ export default function NewRequestModal({
       name: itemReq.item_name || "",
       item_classification_id: itemReq.classification?.id ?? null,
       item_category_id: itemReq.category?.id ?? null,
-      activity_id: Array.isArray(activity_id) ? activity_id : (activity_id ? [activity_id] : []),
+      activity_id: Array.isArray(activity_id)
+        ? activity_id
+        : activity_id
+          ? [activity_id]
+          : [],
       quantity: itemReq.quantity,
       item_unit_id: itemReq.unit?.id ?? null,
       variant: itemReq?.variant?.id ?? null, // not required
@@ -307,22 +315,12 @@ export default function NewRequestModal({
       <ModalComponent
         isOpen={openNewRequest}
         handleClose={() => setOpenNewRequest(false)}
-        title={
-          currentStep === "general"
-            ? "General Information"
-            : "Requirements Attachment"
-        }
-        description={
-          currentStep === "general"
-            ? "Fill in the item information to create it."
-            : "Please provide the secure cloud links (e.g., Google Drive, OneDrive) for the required documentation. "
-        }
+        title="Request New Item"
+        description="Fill-in the information of the item you'd like to request. Ensure accuracy of details as this will be subject to approval by the appropriate offices."
         minWidth={width}
         maxWidth={width}
         height={height}
-        leftButtonLabel={
-          currentStep !== "general" ? "Back to previous" : "Cancel"
-        }
+        leftButtonLabel={currentStep !== "general" ? "Previous" : "Previous"}
         leftButtonAction={() => {
           if (currentStep !== "general") {
             prevStep();
@@ -330,7 +328,7 @@ export default function NewRequestModal({
             setOpenNewRequest(false);
           }
         }}
-        rightButtonLabel={step < finalStep ? "Next step" : "Confirm and save"}
+        rightButtonLabel={step < finalStep ? "Next Step" : "Confirm and save"}
         rightButtonAction={() => {
           if (step < finalStep) {
             nextStep();
@@ -338,14 +336,43 @@ export default function NewRequestModal({
             submit();
           }
         }}
+        actionJustify="space-between"
+        leftButtonProps={{
+          sx: {
+            minWidth: "180px",
+            height: 42,
+            borderRadius: 10,
+            borderColor: "#004366",
+            color: "#004366",
+            fontSize: 14,
+            "&:hover": {
+              borderColor: "#00324d",
+              bgcolor: "rgba(0, 67, 102, 0.05)",
+            },
+          },
+        }}
+        rightButtonProps={{
+          sx: {
+            minWidth: "180px",
+            height: 42,
+            borderRadius: 10,
+            bgcolor: "#004366",
+            color: "white",
+            fontSize: 14,
+            "&:hover": {
+              bgcolor: "#00324d",
+            },
+          },
+        }}
         isLoading={buttonLoader}
+        fullWidthButtons={false}
         hasActionButtons
         content={
           <>
             {currentStep === "general" && (
               <Grid container gap={2} mt={2}>
                 <Grid item xs={4.5}>
-                  <Stack spacing={1.5} mb={1}>
+                  <Stack spacing={2.5}>
                     <TextareaComponent
                       label="Item name"
                       name="item_name"
@@ -418,7 +445,8 @@ export default function NewRequestModal({
                         label="Unit of measure"
                         name="unit"
                         value={
-                          units?.find((el) => el.id === itemReq?.unit?.id) || null
+                          units?.find((el) => el.id === itemReq?.unit?.id) ||
+                          null
                         }
                         options={units}
                         getOptionLabel={(option) => option.name || ""}
@@ -484,7 +512,7 @@ export default function NewRequestModal({
                     <Stack>
                       <Box
                         overflow="auto"
-                        height={"400px"}
+                        height={"410px"}
                         ref={specsContainerRef}
                       >
                         {itemReq?.specs?.map((spec, index) => (
@@ -518,8 +546,9 @@ export default function NewRequestModal({
                       <Link
                         onClick={addSpec}
                         fontSize={13}
-                        color="success"
+                        color="primary"
                         endDecorator={<MdAdd />}
+                        underline="always"
                         sx={{ my: 1 }}
                       >
                         Add another
@@ -532,7 +561,7 @@ export default function NewRequestModal({
                   xs={3}
                   sx={{ bgcolor: "#EFEFEF", borderRadius: 20, padding: 3 }}
                 >
-                  <Stack spacing={2}>
+                  <Stack>
                     <Typography level="title-sm">
                       Is this item exclusively procured by your unit?
                     </Typography>
@@ -559,7 +588,7 @@ export default function NewRequestModal({
                       ]}
                     />
                   </Stack>
-                  <Stack spacing={2} mt={3}>
+                  <Stack mt={2}>
                     <Typography level="title-sm">
                       Is this a major or specialized high-ticket purchase?{" "}
                     </Typography>

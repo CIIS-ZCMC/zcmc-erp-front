@@ -1,48 +1,57 @@
-import React, { useEffect, useMemo } from "react";
-import { Box, Stack, Tooltip, useTheme } from "@mui/joy";
+import React, { useMemo } from "react";
+import { Stack, useTheme, CircularProgress } from "@mui/joy";
 import MenuItemWithChildren from "./MenuItemComponent/MenuItemWithChildren";
 import SimpleMenuItem from "./MenuItemComponent/SimpleMenuItem";
 import useSidebarHook from "../../../Hooks/SidebarHook";
-import { sidebarRoutes } from "../../../Routes/PageRoutes";
+import { sidebarConfig } from "../../../Routes/sidebarConfig";
 import { useAuth } from "../../../Store/AuthStore";
-import { CircularProgress } from "@mui/joy";
 
-const Content = ({ sidebarWidth }) => {
+const checkPermission = (requiredPermissions, userPermSet) => {
+  if (!requiredPermissions || requiredPermissions.length === 0) return true;
+  if (requiredPermissions[0] === "*") return true;
+  return requiredPermissions.some((perm) => userPermSet.has(perm));
+};
+
+const Content = () => {
   const { isCollapsed } = useSidebarHook();
-  const { permissions, isAuthenticated } = useAuth(); // Add isAuthenticated
+  const { permissions, isAuthenticated } = useAuth();
   const theme = useTheme();
   const color = theme.palette.custom;
 
-  // Use useMemo to recalculate when permissions change
+  // Use useMemo to recalculate when permissions or auth state changes
   const filteredRoutes = useMemo(() => {
-    // If not authenticated yet, don't filter (or show loading)
-    if (!isAuthenticated) {
-      return [];
-    }
-    // If permissions are still loading, return empty
-    if (!permissions || permissions.length === 0) {
+    if (!isAuthenticated || !permissions || permissions.length === 0) {
       return [];
     }
 
-    return (
-      sidebarRoutes?.filter((route) => {
-        // If route has no permissions specified, show it
-        if (!route.permissions || route.permissions.length === 0) {
-          return true;
-        }
-        // If route has wildcard, show it
-        if (route.permissions[0] === "*") {
-          return true;
-        }
-        // Check if user has any of the required permissions
-        const hasPermission = route.permissions.some((permission) =>
-          permissions.includes(permission),
-        );
+    const permSet = new Set(permissions);
 
-        return hasPermission;
-      }) || []
-    );
-  }, [permissions, isAuthenticated]); // Re-run when permissions or auth state changes
+    return sidebarConfig
+      .map((route) => {
+        // Top-level permission check
+        const topPerm = route.permissions || route.childPermissions;
+        if (!checkPermission(topPerm, permSet)) {
+          return null;
+        }
+
+        // If route has children, filter children that user has access to
+        if (route.children && route.children.length > 0) {
+          const childrenItems = route.children.filter((child) =>
+            checkPermission(child.childPermissions || child.permissions, permSet)
+          );
+
+          // If user has no access to any child items, prune the parent section
+          if (childrenItems.length === 0) {
+            return null;
+          }
+
+          return { ...route, childrenItems };
+        }
+
+        return route;
+      })
+      .filter(Boolean);
+  }, [permissions, isAuthenticated]);
 
   // Show loading state if not authenticated or no permissions yet
   if (!isAuthenticated || !permissions || permissions.length === 0) {
@@ -84,43 +93,47 @@ const Content = ({ sidebarWidth }) => {
 
   return (
     <Stack
-      mt={4}
+      mt={3}
       gap={1}
       mb={1}
       flexGrow={1}
       width={isCollapsed ? "auto" : "100%"}
+      px={isCollapsed ? 0.5 : 0}
       sx={{
-        overflowY: isCollapsed ? "none" : "auto",
+        overflowY: isCollapsed ? "hidden" : "auto",
+        overflowX: isCollapsed ? "visible" : "hidden",
         maxHeight: "100%",
         "&::-webkit-scrollbar": {
-          width: "8px",
+          width: "5px",
+          height: "0px",
         },
         "&::-webkit-scrollbar-thumb": {
-          backgroundColor: "#1E5978",
+          backgroundColor: "rgba(255, 255, 255, 0.25)",
           borderRadius: "4px",
         },
         "&::-webkit-scrollbar-thumb:hover": {
-          backgroundColor: "#555",
+          backgroundColor: "rgba(255, 255, 255, 0.45)",
         },
         "&::-webkit-scrollbar-track": {
-          backgroundColor: color.main,
+          backgroundColor: "transparent",
         },
       }}
     >
-      {filteredRoutes.map((item, index) =>
-        item.children ? (
+      {filteredRoutes.map((item) => {
+        const itemKey = item.path || item.parentPath || item.name;
+        return item.childrenItems ? (
           <MenuItemWithChildren
-            key={index}
+            key={itemKey}
             {...item}
+            childrenItems={item.childrenItems}
             isCollapsed={isCollapsed}
-            sidebarWidth={sidebarWidth}
           />
         ) : (
-          <SimpleMenuItem key={index} {...item} isCollapsed={isCollapsed} />
-        ),
-      )}
+          <SimpleMenuItem key={itemKey} {...item} isCollapsed={isCollapsed} />
+        );
+      })}
     </Stack>
   );
 };
 
-export default Content;
+export default React.memo(Content);

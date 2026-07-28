@@ -59,12 +59,10 @@ function ManageResources(props) {
   const navigate = useNavigate();
   const breadcrumbs = useAOPBreadcrumbs();
 
-  const { aop } = useAOPStore();
+  const { aop, fiscalYear } = useAOPStore();
   const status = aop.status.id;
 
   const color = theme.palette;
-  const currentYear = new Date().getFullYear();
-  const currentFiscalYear = currentYear + 1;
 
   const [isLoading, setIsLoading] = useState(false);
   const [search, setSearch] = useState("");
@@ -181,7 +179,7 @@ function ManageResources(props) {
         sx={{ minHeight: "100vh", display: "flex", flexDirection: "column" }}
       >
         <PageTitle
-          title={`AOP for Fiscal Year ${currentFiscalYear}`}
+          title={`AOP for Fiscal Year ${fiscalYear}`}
           description={
             "The following below serves as the summary of your AOP request. You can open and update your request before the deadline as set by the administrators."
           }

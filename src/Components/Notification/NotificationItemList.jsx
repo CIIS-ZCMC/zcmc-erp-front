@@ -13,6 +13,11 @@ function NotificationItemList({
   onClick,
   module_path,
 }) {
+  const handleLinkClick = (e) => {
+    e.stopPropagation();
+    if (onClick) onClick();
+  };
+
   return (
     <Stack
       direction={"row"}
@@ -20,13 +25,13 @@ function NotificationItemList({
       sx={{
         padding: 2,
         borderRadius: 8,
+        cursor: "pointer",
+        transition: "background-color 0.2s",
         "&:hover": {
-          // cursor: "pointer",
           bgcolor: "neutral.100",
         },
       }}
       alignItems={"start"}
-      borderRadius={0}
       onClick={onClick}
     >
       <Box>
@@ -53,19 +58,25 @@ function NotificationItemList({
             {description}
           </Typography>
         </Stack>
-        <Stack direction={"row"} justifyContent={"space-between"}>
+        <Stack direction={"row"} justifyContent={"space-between"} alignItems="center">
           <Typography fontWeight={400} textColor={"neutral.500"} fontSize={11}>
             {moment(date).fromNow()} • {moment(date).format("h:mm a")}
           </Typography>
-          <Link
-            fontSize={12}
-            gap={0.67}
-            textColor={"primary.500"}
-            fontWeight={500}
-            // href={module_path}
-          >
-            Go to request <ExternalLink size={12} />
-          </Link>
+          {module_path && (
+            <Link
+              fontSize={12}
+              gap={0.67}
+              textColor={"primary.500"}
+              fontWeight={500}
+              onClick={handleLinkClick}
+              sx={{
+                cursor: "pointer",
+                "&:hover": { textDecoration: "underline" },
+              }}
+            >
+              Go to request <ExternalLink size={12} />
+            </Link>
+          )}
         </Stack>
       </Stack>{" "}
     </Stack>

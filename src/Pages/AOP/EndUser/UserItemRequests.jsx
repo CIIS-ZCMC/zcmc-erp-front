@@ -101,7 +101,7 @@ export default function UserItemRequests() {
       >
         <Stack>
           <Typography level="body-md" sx={{ fontWeight: 600 }}>
-            My Item Requests{" "}
+            Item Requests{" "}
           </Typography>
           <Typography level="body-xs">
             Track the approval status of new items you have requested from

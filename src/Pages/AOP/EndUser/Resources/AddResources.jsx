@@ -19,6 +19,7 @@ import useAOPBreadcrumbs from "../../../../Hooks/AOP/AOpBreadcrumbs";
 import useSnackbarHook from "../../../../Hooks/SnackbarHook";
 import NewRequestModal from "../../../../Pages/PPMP/EndUser/Modal/AddItemRequest/NewRequestModal";
 import ChipComponent from "@Components/Common/ChipComponent";
+import useAOPStore from "@Store/AOPStore";
 
 export default function AddResources() {
   const { user } = useAuth();
@@ -36,9 +37,7 @@ export default function AddResources() {
   const { cart, clearCart } = cartStore();
   const { setAlertDialog } = useModalHook();
   const { showSnack } = useSnackbarHook();
-
-  const currentYear = new Date().getFullYear();
-  const currentFiscalYear = currentYear + 1;
+  const { fiscalYear } = useAOPStore();
 
   const [openRequest, setOpenRequest] = useState(false);
 
@@ -74,7 +73,7 @@ export default function AddResources() {
   return (
     <Fragment>
       <PageTitle
-        title={`AOP for Fiscal Year ${currentFiscalYear}`}
+        title={`AOP for Fiscal Year ${fiscalYear}`}
         description="The following below serves as the summary of your AOP request. You can open and update your request before the deadline as set by the administrators."
         items={breadcrumbs}
         withArrowBack

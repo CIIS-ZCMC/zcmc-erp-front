@@ -198,20 +198,7 @@ function DashboardEndUser(props) {
 
   return (
     <Fragment>
-      {isAopLoading ? (
-        <>
-          <Stack
-            direction={"column"}
-            alignItems={"center"}
-            justifyContent={"center"}
-            textAlign={"center"}
-            my={2}
-            height={"85vh"}
-          >
-            <ThreeDotsLoader />
-          </Stack>
-        </>
-      ) : aop ? (
+      {aop || isAopLoading ? (
         <Fragment>
           {/* Title here */}
           <Title />
@@ -269,10 +256,10 @@ function DashboardEndUser(props) {
               }}
               height={"65vh"}
             >
-              {aop?.application_objectives.length === 0 ? (
+              {aop?.application_objectives?.length === 0 ? (
                 <Grid xs={12}>
                   <AOPEmptyObjectives
-                    isLoading={isLoading}
+                    isLoading={isLoading || isAopLoading}
                     handleNavigate={handleNavigateObjectives}
                   />
                 </Grid>
@@ -284,24 +271,31 @@ function DashboardEndUser(props) {
                       sx={{
                         width: "100%",
                         maxWidth: "100%",
-                        overflow: "hidden", // critical
+                        overflow: "hidden",
                       }}
                     >
                       <AOPDataSummary
                         aop={aop}
                         handleNavigateObjectives={handleNavigateObjectives}
+                        isAopLoading={isAopLoading}
                       />
                     </Box>
                   </Grid>
 
                   {/* MIDDLE – CHECKLIST */}
                   <Grid xs={12} md={3.5}>
-                    <Checklist fiscalYear={fiscalYear} />
+                    <Checklist
+                      fiscalYear={fiscalYear}
+                      isAopLoading={isAopLoading}
+                    />
                   </Grid>
 
                   {/* RIGHT – TIMELINE */}
                   <Grid xs={12} md={3.5}>
-                    <Timeline aopId={aop.id} />
+                    <Timeline
+                      aopId={aop?.id}
+                      isAopLoading={isAopLoading}
+                    />
                   </Grid>
                 </>
               )}

@@ -1,5 +1,7 @@
 import React from "react";
 import { Box } from "@mui/joy";
+import BoxComponent from "@Components/Common/Card/BoxComponent";
+import { ThreeDotsLoader } from "@Components/Common/Loading/ThreeDotsLoader";
 
 // Status Cards
 import ObjectivesCard from "./Status/ObjectivesCard";
@@ -7,7 +9,20 @@ import ActivitiesCard from "./Status/ActivitiesCard";
 import ResourcesCard from "./Status/ResourcesCard";
 import ResponsiblePersonCard from "./Status/ResponsiblePersonCard";
 
-const AOPDataSummary = ({ aop, handleNavigateObjectives }) => {
+const AOPDataSummary = ({ aop, handleNavigateObjectives, isAopLoading = false }) => {
+  if (isAopLoading) {
+    return (
+      <BoxComponent
+        height="58vh"
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+      >
+        <ThreeDotsLoader />
+      </BoxComponent>
+    );
+  }
+
   const {
     objectives_count,
     activities_count,

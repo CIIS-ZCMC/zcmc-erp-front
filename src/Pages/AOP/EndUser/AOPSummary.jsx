@@ -363,7 +363,7 @@ const AOPSummary = () => {
                   </Typography>
 
                   <ButtonComponent
-                    label={"Proceed to PPMP"}
+                    label={"Generate PPMP"}
                     size={"lg"}
                     onClick={() => handleOpenSubmitAopModal()}
                     color="primary"

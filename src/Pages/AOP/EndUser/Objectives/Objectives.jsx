@@ -451,7 +451,7 @@ const Objectives = () => {
       }}
     >
       <PageTitle
-        title={`AOP for Fiscal Year ${nextYear}`}
+        title={`AOP for Fiscal Year ${fiscalYear}`}
         description={
           "The following below serves as the summary of your AOP request. You can open and update your request before the deadline as set by the administrators."
         }

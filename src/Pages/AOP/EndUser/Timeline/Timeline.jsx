@@ -11,7 +11,7 @@ import { ThreeDotsLoader } from "@Components/Common/Loading/ThreeDotsLoader";
 
 import { AOP_TIMELINE } from "../../../../Data/constants";
 
-const Timeline = ({ aopId }) => {
+const Timeline = ({ aopId, isAopLoading = false }) => {
   const { TITLE, SUBTITLE, EMPTY_STATE } = AOP_TIMELINE;
 
   const theme = useTheme();
@@ -24,17 +24,11 @@ const Timeline = ({ aopId }) => {
   useEffect(() => {
     if (!aopId) return;
     getTimelines(aopId, "aop", (status, message) => {
-      // console.log(status)
       if (!(status >= 200 && status < 300)) {
         return; //Toast error
       }
     });
   }, [aopId]);
-
-  useEffect(() => {
-    // console.log(isTimelineLoading);
-    // console.log('current timeline', timelines)
-  }, [timelines, isTimelineLoading]);
 
   return (
     <Fragment>
@@ -60,15 +54,24 @@ const Timeline = ({ aopId }) => {
 
         <Box
           sx={{
-            height: "calc(58vh - 80px)", // adjust for title, subtitle, divider
+            height: "calc(58vh - 80px)",
             overflowY: "auto",
-            overflowX: "hidden", // prevent horizontal overflow
-            pr: 1, // optional padding for scrollbar
+            overflowX: "hidden",
+            pr: 1,
             mt: 3,
           }}
         >
-          {isTimelineLoading ? (
-            <ThreeDotsLoader />
+          {isTimelineLoading || isAopLoading ? (
+            <Box
+              sx={{
+                display: "flex",
+                justifyContent: "center",
+                alignItems: "center",
+                height: "100%",
+              }}
+            >
+              <ThreeDotsLoader />
+            </Box>
           ) : (
             <Fragment>
               {timelines?.length === 0 ? (

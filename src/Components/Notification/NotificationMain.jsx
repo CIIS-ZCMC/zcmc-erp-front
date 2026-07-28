@@ -71,12 +71,15 @@ const NotificationMain = () => {
   };
 
   const handleOpenNotif = (id, module_path) => {
-    seen(id, () => {
-      navigate(module_path);
-      setIsOpen(false);
-      // localStorageSetter("path", module_path);
-      // window.location.href = module_path;
-    });
+    if (id) {
+      seen(id, () => {});
+    }
+    setIsOpen(false);
+    if (module_path) {
+      navigate(module_path, {
+        state: { fromNotification: true },
+      });
+    }
   };
 
   const handleMarkAllAsRead = () => {

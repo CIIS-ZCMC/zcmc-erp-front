@@ -155,13 +155,10 @@ export default function PPMPSummaryCards({
 
   return (
     <Fragment>
-      {pageLoader ? (
-        <Stack height="70vh" alignItems="center" justifyContent="center">
-          <ThreeDotsLoader />
-        </Stack>
-      ) : dashboard &&
-        Object.keys(dashboard).length === 0 &&
-        dashboard.constructor === Object ? (
+      {!pageLoader &&
+      dashboard &&
+      Object.keys(dashboard).length === 0 &&
+      dashboard.constructor === Object ? (
         <>
           {" "}
           <Grid
@@ -272,57 +269,73 @@ export default function PPMPSummaryCards({
                     </Typography>
                   </Box>
 
-                  <Box
-                    sx={{
-                      flex: 1, // 🔑 this is the fix
-                      display: "grid",
-                      gridTemplateColumns: "1fr 1fr",
-                      gridTemplateRows: "1fr 1fr",
-                      gap: 2,
-                      minHeight: 0,
-                    }}
-                  >
-                    <PPMPCard
-                      icon={
-                        <Handyman sx={{ fontSize: 25, color: color.main }} />
-                      }
-                      label={"   Total Items"}
-                      value={regularPPMP?.summary?.total_items_count}
-                      description={`Contained from (${regularPPMP?.summary?.activity_count}) total combined activities`}
-                      btnAction={() => handleNavigate("regular")}
-                      btnLabel={"Go to Item Management"}
-                      isDispensing={isDispensing}
-                    />
-                    <PPMPCard
-                      bgColor="#C7EBC9"
-                      icon={
-                        <FormatListNumbered
-                          sx={{ fontSize: 25, color: "green" }}
-                        />
-                      }
-                      label={"Total Item Quantity"}
-                      value={regularPPMP?.summary?.total_quantity}
-                      description={`With a total cost of (${formattedPrice(regularPPMP?.summary?.total_cost)})`}
-                    />
-                    <PPMPCard
-                      bgColor="#FFD2D2"
-                      icon={
-                        <PhilippinePesoIcon
-                          style={{ fontSize: 25, color: "red" }}
-                        />
-                      }
-                      label={"TOTAL COST"}
-                      value={formattedPrice(regularPPMP?.summary?.total_cost)}
-                      description={`as found in (${regularPPMP?.summary?.total_items_count}) items in total on this request`}
-                    />
-                    <PPMPCard
-                      bgColor="#FBE2CC"
-                      icon={<Comment sx={{ fontSize: 25, color: "orange" }} />}
-                      label={"COMMENTS"}
-                      value={regularPPMP?.summary?.comments_count}
-                      description={`as found in (${regularPPMP?.summary?.items_with_comments_count}) items in total on this request`}
-                    />
-                  </Box>
+                  {pageLoader ? (
+                    <Box
+                      sx={{
+                        flex: 1,
+                        display: "flex",
+                        alignItems: "center",
+                        justifyContent: "center",
+                        bgcolor: "white",
+                        borderRadius: 10,
+                        minHeight: 200,
+                      }}
+                    >
+                      <ThreeDotsLoader />
+                    </Box>
+                  ) : (
+                    <Box
+                      sx={{
+                        flex: 1, // 🔑 this is the fix
+                        display: "grid",
+                        gridTemplateColumns: "1fr 1fr",
+                        gridTemplateRows: "1fr 1fr",
+                        gap: 2,
+                        minHeight: 0,
+                      }}
+                    >
+                      <PPMPCard
+                        icon={
+                          <Handyman sx={{ fontSize: 25, color: color.main }} />
+                        }
+                        label={"   Total Items"}
+                        value={regularPPMP?.summary?.total_items_count}
+                        description={`Contained from (${regularPPMP?.summary?.activity_count}) total combined activities`}
+                        btnAction={() => handleNavigate("regular")}
+                        btnLabel={"Go to Item Management"}
+                        isDispensing={isDispensing}
+                      />
+                      <PPMPCard
+                        bgColor="#C7EBC9"
+                        icon={
+                          <FormatListNumbered
+                            sx={{ fontSize: 25, color: "green" }}
+                          />
+                        }
+                        label={"Total Item Quantity"}
+                        value={regularPPMP?.summary?.total_quantity}
+                        description={`With a total cost of (${formattedPrice(regularPPMP?.summary?.total_cost)})`}
+                      />
+                      <PPMPCard
+                        bgColor="#FFD2D2"
+                        icon={
+                          <PhilippinePesoIcon
+                            style={{ fontSize: 25, color: "red" }}
+                          />
+                        }
+                        label={"TOTAL COST"}
+                        value={formattedPrice(regularPPMP?.summary?.total_cost)}
+                        description={`as found in (${regularPPMP?.summary?.total_items_count}) items in total on this request`}
+                      />
+                      <PPMPCard
+                        bgColor="#FBE2CC"
+                        icon={<Comment sx={{ fontSize: 25, color: "orange" }} />}
+                        label={"COMMENTS"}
+                        value={regularPPMP?.summary?.comments_count}
+                        description={`as found in (${regularPPMP?.summary?.items_with_comments_count}) items in total on this request`}
+                      />
+                    </Box>
+                  )}
                 </Box>
 
                 {isDispensing ? (
@@ -346,64 +359,81 @@ export default function PPMPSummaryCards({
                         {PPMP_CONSTANTS.PPMP_DISPENSING}{" "}
                       </Typography>
                     </Box>
-                    <Box
-                      sx={{
-                        flex: 1, // 🔑 this is the fix
-                        display: "grid",
-                        gridTemplateColumns: "1fr 1fr",
-                        gridTemplateRows: "1fr 1fr",
-                        gap: 2,
-                        minHeight: 0,
-                      }}
-                    >
-                      <PPMPCard
-                        icon={
-                          <Handyman sx={{ fontSize: 25, color: color.main }} />
-                        }
-                        label={"   Total Items"}
-                        value={dispensingPPMP?.summary?.total_items_count}
-                        description={`Contained from (${dispensingPPMP?.summary?.activity_count}) total combined activities`}
-                        btnAction={() => handleNavigate("dispensed")}
-                        btnLabel={"Go to Item Management"}
-                        isDispensing={isDispensing}
-                      />
-                      <PPMPCard
-                        bgColor="#C7EBC9"
-                        icon={
-                          <FormatListNumbered
-                            sx={{ fontSize: 25, color: "green" }}
-                          />
-                        }
-                        label={"Total Item Quantity"}
-                        value={dispensingPPMP?.summary?.total_quantity}
-                        description={`With a total cost of (${formattedPrice(dispensingPPMP?.summary?.total_cost)})`}
-                      />
-                      <PPMPCard
-                        bgColor="#FFD2D2"
-                        icon={
-                          <PhilippinePesoIcon
-                            style={{ fontSize: 25, color: "red" }}
-                          />
-                        }
-                        label={"TOTAL COST"}
-                        value={formattedPrice(
-                          dispensingPPMP?.summary?.total_cost,
-                        )}
-                        description={`as found in (${dispensingPPMP?.summary?.total_items_count}) items in total on this request`}
-                      />
-                      <PPMPCard
-                        bgColor="#FBE2CC"
-                        icon={
-                          <Comment sx={{ fontSize: 25, color: "orange" }} />
-                        }
-                        label={"COMMENTS"}
-                        value={dispensingPPMP?.summary?.comments_count}
-                        description={`as found in (${dispensingPPMP?.summary?.items_with_comments_count}) items in total on this request`}
-                      />
-                    </Box>
+
+                    {pageLoader ? (
+                      <Box
+                        sx={{
+                          flex: 1,
+                          display: "flex",
+                          alignItems: "center",
+                          justifyContent: "center",
+                          bgcolor: "white",
+                          borderRadius: 10,
+                          minHeight: 200,
+                        }}
+                      >
+                        <ThreeDotsLoader />
+                      </Box>
+                    ) : (
+                      <Box
+                        sx={{
+                          flex: 1, // 🔑 this is the fix
+                          display: "grid",
+                          gridTemplateColumns: "1fr 1fr",
+                          gridTemplateRows: "1fr 1fr",
+                          gap: 2,
+                          minHeight: 0,
+                        }}
+                      >
+                        <PPMPCard
+                          icon={
+                            <Handyman sx={{ fontSize: 25, color: color.main }} />
+                          }
+                          label={"   Total Items"}
+                          value={dispensingPPMP?.summary?.total_items_count}
+                          description={`Contained from (${dispensingPPMP?.summary?.activity_count}) total combined activities`}
+                          btnAction={() => handleNavigate("dispensed")}
+                          btnLabel={"Go to Item Management"}
+                          isDispensing={isDispensing}
+                        />
+                        <PPMPCard
+                          bgColor="#C7EBC9"
+                          icon={
+                            <FormatListNumbered
+                              sx={{ fontSize: 25, color: "green" }}
+                            />
+                          }
+                          label={"Total Item Quantity"}
+                          value={dispensingPPMP?.summary?.total_quantity}
+                          description={`With a total cost of (${formattedPrice(dispensingPPMP?.summary?.total_cost)})`}
+                        />
+                        <PPMPCard
+                          bgColor="#FFD2D2"
+                          icon={
+                            <PhilippinePesoIcon
+                              style={{ fontSize: 25, color: "red" }}
+                            />
+                          }
+                          label={"TOTAL COST"}
+                          value={formattedPrice(
+                            dispensingPPMP?.summary?.total_cost,
+                          )}
+                          description={`as found in (${dispensingPPMP?.summary?.total_items_count}) items in total on this request`}
+                        />
+                        <PPMPCard
+                          bgColor="#FBE2CC"
+                          icon={
+                            <Comment sx={{ fontSize: 25, color: "orange" }} />
+                          }
+                          label={"COMMENTS"}
+                          value={dispensingPPMP?.summary?.comments_count}
+                          description={`as found in (${dispensingPPMP?.summary?.items_with_comments_count}) items in total on this request`}
+                        />
+                      </Box>
+                    )}
                   </Box>
                 ) : (
-                  <Checklist checklist={checklist} />
+                  <Checklist checklist={checklist} pageLoader={pageLoader} />
                 )}
               </Box>
             </Grid>
@@ -419,11 +449,13 @@ export default function PPMPSummaryCards({
               <ApprovalTimeline
                 timeline={timeline}
                 isDispensing={isDispensing}
+                pageLoader={pageLoader}
               />
               {isDispensing && (
                 <Checklist
                   checklist={dashboard?.checklist}
                   isDispensing={true}
+                  pageLoader={pageLoader}
                 />
               )}
             </Grid>

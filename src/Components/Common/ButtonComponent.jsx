@@ -16,6 +16,7 @@ const ButtonComponent = ({
   isLoading,
   loadingLabel,
   boxShadow,
+  sx,
 }) => {
   return (
     <Button
@@ -32,11 +33,12 @@ const ButtonComponent = ({
       loadingIndicator={loadingLabel}
       sx={{
         width: fullWidth ? "100%" : width,
-        fontWeight: 400,
+        fontWeight: 500,
         borderRadius: 8,
         height: size ?? 38,
         fontSize: size ?? 13,
         boxShadow: boxShadow,
+        ...sx,
       }}
     >
       {label}

@@ -119,42 +119,42 @@ export default function CartPreviewComponent({
             </Stack>
 
             {/* Add-to-cart section (only if true) */}
-            <BoxComponent mt={2} p={2}>
-              {isAddToCart && (
+
+            {isAddToCart && (
+              <BoxComponent mt={2} p={2}>
                 <ButtonComponent
                   label="Add to Cart"
                   endDecorator={<ShoppingCart />}
                   onClick={handleAddToCart}
                   fullWidth
                 />
-              )}
-
-              <Stack
-                direction="row"
-                justifyContent="space-between"
-                alignItems={"flex-end"}
-                mt={isAddToCart && 2}
-              >
-                <Stack width="100%" alignItems={"flex-start"} spacing={1}>
-                  <Typography level="body-sm">Quantity:</Typography>
-                  <QuantityControlComponent
-                    quantity={quantity}
-                    onDecrease={() => setQuantity((q) => Math.max(1, q - 1))}
-                    onIncrease={() => setQuantity((q) => q + 1)}
-                  />
+                <Stack
+                  direction="row"
+                  justifyContent="space-between"
+                  alignItems={"flex-end"}
+                  mt={isAddToCart && 2}
+                >
+                  <Stack width="100%" alignItems={"flex-start"} spacing={1}>
+                    <Typography level="body-sm">Quantity:</Typography>
+                    <QuantityControlComponent
+                      quantity={quantity}
+                      onDecrease={() => setQuantity((q) => Math.max(1, q - 1))}
+                      onIncrease={() => setQuantity((q) => q + 1)}
+                    />
+                  </Stack>
+                  <Stack width="100%" alignItems={"flex-end"} spacing={1}>
+                    <Typography level="body-sm">Item subtotal:</Typography>
+                    <Typography
+                      fontWeight={600}
+                      sx={{ color: color.custom.main }}
+                    >
+                      {formatPeso(subTotal)}
+                    </Typography>
+                  </Stack>
                 </Stack>
-                <Stack width="100%" alignItems={"flex-end"} spacing={1}>
-                  <Typography level="body-sm">Item subtotal:</Typography>
-                  <Typography
-                    fontWeight={600}
-                    sx={{ color: color.custom.main }}
-                  >
-                    {formatPeso(subTotal)}
-                  </Typography>
-                </Stack>
-              </Stack>
-              <Divider sx={{ mt: 2, color: color.custom.fontLight }} />
-            </BoxComponent>
+                <Divider sx={{ mt: 2, color: color.custom.fontLight }} />
+              </BoxComponent>
+            )}
           </>
         }
       />

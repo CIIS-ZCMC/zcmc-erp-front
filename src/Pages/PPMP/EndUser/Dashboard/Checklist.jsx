@@ -11,8 +11,9 @@ import {
 } from "@mui/joy";
 import { grey } from "@mui/material/colors";
 import React from "react";
+import { ThreeDotsLoader } from "@Components/Common/Loading/ThreeDotsLoader";
 
-export default function Checklist({ checklist = [], isDispensing = false }) {
+export default function Checklist({ checklist = [], isDispensing = false, pageLoader = false }) {
   const theme = useTheme();
   const color = theme.palette.custom;
   return (
@@ -37,9 +38,15 @@ export default function Checklist({ checklist = [], isDispensing = false }) {
           overflowY: "auto", // ✅ only this scrolls
           pr: 1,
           mb: 2,
+          display: pageLoader ? "flex" : "block",
+          alignItems: pageLoader ? "center" : "stretch",
+          justifyContent: pageLoader ? "center" : "flex-start",
         }}
       >
-        <List size="lg" component="nav" variant="">
+        {pageLoader ? (
+          <ThreeDotsLoader />
+        ) : (
+          <List size="lg" component="nav" variant="">
           {checklist?.map((list, key) => (
             <>
               <ListItem>
@@ -75,6 +82,7 @@ export default function Checklist({ checklist = [], isDispensing = false }) {
             </>
           ))}
         </List>
+        )}
       </Box>
     </Box>
   );

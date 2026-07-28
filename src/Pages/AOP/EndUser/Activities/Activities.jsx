@@ -40,7 +40,7 @@ import { FeedbackContent } from "@Pages/AOP/Approval/Contents/FeedbackContent";
 const Activities = () => {
   const { objectiveId } = useParams();
   const navigate = useNavigate();
-  const { aop } = useAOPStore();
+  const { aop, fiscalYear } = useAOPStore();
   const { user } = useAuth();
   const {
     applicationActivities,
@@ -386,7 +386,7 @@ const Activities = () => {
   return (
     <>
       <PageTitle
-        title={`AOP for Fiscal Year ${nextYear}`}
+        title={`AOP for Fiscal Year ${fiscalYear}`}
         description={
           "The following below serves as the summary of your AOP request. You can open and update your request before the deadline as set by the administrators."
         }

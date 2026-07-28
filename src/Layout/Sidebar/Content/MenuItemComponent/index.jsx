@@ -2,8 +2,9 @@ import React from "react";
 import { styled } from "@mui/joy";
 import { Link as RouterLink } from "react-router-dom";
 
-const MenuItemComponent = styled(RouterLink)(({ theme, color = {} }) => ({
-  width: "auto",
+const MenuItemComponent = styled(RouterLink)(({ theme }) => ({
+  width: "100%",
+  boxSizing: "border-box",
   display: "flex",
   alignItems: "center",
   justifyContent: "flex-start",
@@ -17,7 +18,6 @@ const MenuItemComponent = styled(RouterLink)(({ theme, color = {} }) => ({
     bgcolor: "neutral.50",
     transition: "background 0.2s",
   },
-  // If you want to handle active state, you can use the 'active' class added by React Router
 }));
 
 export default MenuItemComponent;

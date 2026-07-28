@@ -1,10 +1,12 @@
 import StepperComponent from "@Components/Stepper/StepperComponent";
+import { ThreeDotsLoader } from "@Components/Common/Loading/ThreeDotsLoader";
 import { Box, Divider, Stack, Typography, useTheme } from "@mui/joy";
 import React, { Fragment } from "react";
 
 export default function ApprovalTimeline({
   timeline = [],
   isDispensing = false,
+  pageLoader = false,
 }) {
   const theme = useTheme();
   const color = theme.palette.custom;
@@ -38,13 +40,17 @@ export default function ApprovalTimeline({
             minHeight: 0,
             overflowY: "auto", // ✅ only this scrolls
             p: 2,
-            display: timeline?.length > 0 ? "block" : "flex",
-            alignItems: timeline?.length > 0 ? "none" : "center",
-            justifyContent: timeline?.length > 0 ? "none" : "center",
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "center",
           }}
         >
-          {timeline?.length > 0 ? (
-            <StepperComponent data={timeline} />
+          {pageLoader ? (
+            <ThreeDotsLoader />
+          ) : timeline?.length > 0 ? (
+            <Box sx={{ width: "100%" }}>
+              <StepperComponent data={timeline} />
+            </Box>
           ) : (
             <Typography level="body-sm" sx={{ color: color.fontLight }}>
               No transactions done yet.

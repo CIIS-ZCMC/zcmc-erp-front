@@ -1,6 +1,6 @@
 // Utils/routeUtils.js
 
-import { sidebarRoutes } from "../Routes/PageRoutes";
+import { sidebarConfig } from "../Routes/sidebarConfig";
 
 // Build a map of only the routes that users can actually navigate to
 export const routePermissionMap = {};
@@ -27,17 +27,15 @@ const buildRouteMap = (routes) => {
       };
     }
 
-    // Handle nested children (like /aop/summary)
+    // Handle nested children
     if (route.children) {
       route.children.forEach((child) => {
-        // Skip index routes (they use parent path)
         if (child.index) return;
 
-        if (child.path && route.path) {
-          // Build full path for nested routes
+        if (child.path) {
           const fullPath = child.path.startsWith("/")
             ? child.path
-            : `${route.path}/${child.path}`;
+            : `${route.path || ""}/${child.path}`;
 
           const permissions = child.childPermissions || child.permissions || [];
 
@@ -46,28 +44,12 @@ const buildRouteMap = (routes) => {
             name: child.name || fullPath,
           };
         }
-
-        // Handle deeper nesting if needed
-        if (child.children) {
-          child.children.forEach((deepChild) => {
-            if (deepChild.path && !deepChild.index) {
-              const deepPath = `${route.path}/${child.path}/${deepChild.path}`;
-              const permissions =
-                deepChild.childPermissions || deepChild.permissions || [];
-
-              routePermissionMap[deepPath] = {
-                permissions: permissions,
-                name: deepChild.name || deepPath,
-              };
-            }
-          });
-        }
       });
     }
   });
 };
 
-buildRouteMap(sidebarRoutes);
+buildRouteMap(sidebarConfig);
 
 // Simple function to check if user can access a path
 export const canAccessRoute = (pathname, userPermissions) => {

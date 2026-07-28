@@ -33,7 +33,7 @@ export default function DashboardHeader({
         spacing={2}
       >
         <Stack width={"100%"}>
-          <Box display="flex" alignItems="center" gap={1}>
+          <Box display="flex" alignItems="center" gap={1} mb={1}>
             <Typography sx={{ color: "white", fontSize: 28, fontWeight: 600 }}>
               PPMP for Fiscal year
             </Typography>

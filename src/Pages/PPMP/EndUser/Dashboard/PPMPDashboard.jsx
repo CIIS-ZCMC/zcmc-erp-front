@@ -19,6 +19,11 @@ import SuccessSubmissionModal from "../Modal/Dashboard/SuccessSubmissionModal";
 import { happensNext } from "../../../../Data/constants";
 import ButtonComponent from "@Components/Common/ButtonComponent";
 import { ArrowForward, ArrowRight } from "@mui/icons-material";
+import CardComponent from "@Components/Common/Card/CardComponent";
+import { blue } from "@mui/material/colors";
+
+import { IconButton } from "@mui/joy";
+import { Info, X } from "lucide-react";
 
 function PPMPDashboard(props) {
   const location = useLocation();
@@ -42,9 +47,32 @@ function PPMPDashboard(props) {
     getPPMPTimeline,
     postItemRequest,
   } = usePPMPActions();
-  const { setAlertDialog, closeAlertDialog } = useModalHook();
+  const searchParams = new URLSearchParams(location.search);
+  const fromNotification =
+    location.state?.fromNotification ||
+    searchParams.get("fromNotification") === "true";
+  const forceShowBanner =
+    location.state?.showDispensingBanner ||
+    searchParams.get("dispensing") === "true";
 
   const [pageLoader, setPageLoader] = useState(false);
+  const [showDispensingBanner, setShowDispensingBanner] = useState(() => {
+    const isDismissed = localStorage.getItem(
+      "ppmp_dispensing_banner_dismissed",
+    );
+    return isDismissed !== "true";
+  });
+
+  useEffect(() => {
+    if (fromNotification || forceShowBanner) {
+      setShowDispensingBanner(true);
+    }
+  }, [fromNotification, forceShowBanner]);
+
+  const handleDismissBanner = () => {
+    setShowDispensingBanner(false);
+    localStorage.setItem("ppmp_dispensing_banner_dismissed", "true");
+  };
   const [openSave, setOpenSave] = useState(false);
   const [buttonLoader, setButtonLoader] = useState(false);
   const [pin, setPin] = useState("");
@@ -182,7 +210,10 @@ function PPMPDashboard(props) {
       });
   };
 
-  const isDispensing = dashboard?.is_dispensing;
+  const isDispensing =
+    dashboard?.is_dispensing !== undefined
+      ? Boolean(dashboard?.is_dispensing)
+      : true;
 
   return (
     <Fragment>
@@ -192,7 +223,72 @@ function PPMPDashboard(props) {
           " The following below serves as the summary of your AOP request. You can open and update your request before the deadline as set by the administrators."
         }
       />
-
+      {isDispensing && showDispensingBanner && (
+        <Box mt={2}>
+          <CardComponent
+            statusColor={blue[600]}
+            bgcolor={blue[50]}
+            cardBody={
+              <Stack
+                direction="row"
+                alignItems="flex-start"
+                spacing={1.5}
+                width="100%"
+              >
+                <Info
+                  style={{ color: blue[600], marginTop: 2, flexShrink: 0 }}
+                  size={20}
+                />
+                <Stack spacing={0.5} width="100%">
+                  <Stack
+                    direction="row"
+                    alignItems="center"
+                    justifyContent="space-between"
+                    width="100%"
+                  >
+                    <Typography
+                      level="title-sm"
+                      sx={{ color: blue[800], fontWeight: 600 }}
+                    >
+                      You are designated as a Dispensing Unit
+                    </Typography>
+                    <IconButton
+                      size="sm"
+                      variant="plain"
+                      color="neutral"
+                      onClick={handleDismissBanner}
+                      sx={{
+                        color: "neutral.600",
+                        "&:hover": { bgcolor: "rgba(0, 0, 0, 0.05)" },
+                        p: 0.5,
+                        minHeight: 0,
+                        minWidth: 0,
+                      }}
+                    >
+                      <X size={16} />
+                    </IconButton>
+                  </Stack>
+                  <Typography
+                    level="body-xs"
+                    sx={{
+                      color: "neutral.600",
+                      lineHeight: 1.5,
+                      textAlign: "left",
+                    }}
+                  >
+                    Your office manages two procurement plans: your own PPMP
+                    covering resources from your office's activities, and a
+                    separate Dispensing Supply PPMP covering common-use supply
+                    requests from other offices that rely on your office for
+                    dispensing. Both will be submitted together and reviewed
+                    under a single approval process.
+                  </Typography>
+                </Stack>
+              </Stack>
+            }
+          />
+        </Box>
+      )}
       <Box
         mt={3}
         height="83vh"
