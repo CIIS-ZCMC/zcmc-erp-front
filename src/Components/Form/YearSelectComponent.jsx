@@ -19,6 +19,13 @@ export default function SelectComponent({
   //   (_, i) => nextYear - i
   // );
   const [value, setValue] = React.useState(fiscalYear || nextYear);
+
+  React.useEffect(() => {
+    if (fiscalYear) {
+      setValue(fiscalYear);
+    }
+  }, [fiscalYear]);
+
   const handleChange = (event, newValue) => {
     setValue(newValue); // update internal state
     if (onChange) onChange(newValue); // send value to parent if provided

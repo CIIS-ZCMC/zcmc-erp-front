@@ -21,12 +21,14 @@ import {
 } from "@mui/joy";
 import { PhilippinePesoIcon } from "lucide-react";
 import React, { Fragment } from "react";
+import { useNavigate } from "react-router-dom";
 import Checklist from "./Checklist";
 import ApprovalTimeline from "./ApprovalTimeline";
 import { nextYear } from "../../../../Utils/Functions";
 import { useAuth } from "../../../../Store/AuthStore";
 import { PPMP_CONSTANTS } from "../../../../Data/constants";
 import formattedPrice from "../../../../Utils/formattedPrice";
+import useAOPStore from "@Store/AOPStore";
 
 const PPMPCard = ({
   bgColor = "#CCEEFF",
@@ -94,47 +96,6 @@ const PPMPCard = ({
   );
 };
 
-const FooterLinks = ({ setOpenNewRequest, handleItemRequest, status_id }) => {
-  return (
-    <>
-      <Stack
-        width={"100%"}
-        direction={"row"}
-        alignItems={"center"}
-        justifyContent={"space-between"}
-        mt={2}
-      >
-        {(status_id === 1 || status_id === 6) && (
-          <Link
-            color="primary"
-            sx={{
-              fontSize: 14,
-              textDecoration: "none",
-              gap: 0.5,
-            }}
-            onClick={() => setOpenNewRequest(true)}
-            endDecorator={<Launch size={18} />}
-          >
-            Request new item
-          </Link>
-        )}
-
-        <Link
-          sx={{
-            fontSize: 14,
-            textDecoration: "none",
-            gap: 0.5,
-          }}
-          onClick={() => handleItemRequest()}
-          endDecorator={<Launch size={18} />}
-        >
-          View Item Request
-        </Link>
-      </Stack>
-    </>
-  );
-};
-
 export default function PPMPSummaryCards({
   pageLoader,
   dashboard = {},
@@ -150,17 +111,20 @@ export default function PPMPSummaryCards({
 }) {
   const theme = useTheme();
   const color = theme.palette.custom;
+  const navigate = useNavigate();
+
+  const { fiscalYear } = useAOPStore();
 
   const { user } = useAuth();
 
+  const isDashboardEmpty =
+    !dashboard ||
+    (Object.keys(dashboard).length === 0 && dashboard.constructor === Object);
+
   return (
     <Fragment>
-      {!pageLoader &&
-      dashboard &&
-      Object.keys(dashboard).length === 0 &&
-      dashboard.constructor === Object ? (
+      {isDashboardEmpty ? (
         <>
-          {" "}
           <Grid
             container
             bgcolor={"#FAFAFA"}
@@ -180,22 +144,26 @@ export default function PPMPSummaryCards({
                 display="flex"
                 padding={2}
               >
-                <Box textAlign="center">
-                  <Stack mb={1}>
-                    <Typography level="body-lg">
-                      {" "}
-                      AOP for {nextYear} is missing
-                    </Typography>
-                    <Typography level="title-lg">
-                      Submit the AOP first to generate and update the PPMP.
-                    </Typography>
-                  </Stack>
+                {pageLoader ? (
+                  <ThreeDotsLoader />
+                ) : (
+                  <Box textAlign="center">
+                    <Stack mb={1}>
+                      <Typography level="body-lg">
+                        {" "}
+                        AOP for {fiscalYear} is missing
+                      </Typography>
+                      <Typography level="title-lg">
+                        Submit the AOP first to generate and update the PPMP.
+                      </Typography>
+                    </Stack>
 
-                  <ButtonComponent
-                    label={"Go to AOP"}
-                    onClick={() => navigate("/aop")}
-                  />
-                </Box>
+                    <ButtonComponent
+                      label={"Go to AOP"}
+                      onClick={() => navigate("/aop")}
+                    />
+                  </Box>
+                )}
               </BoxComponent>
             </Grid>
 
@@ -219,9 +187,13 @@ export default function PPMPSummaryCards({
                   }}
                   height={"57vh"}
                 >
-                  <Typography level="body-sm" sx={{ color: color.fontLight }}>
-                    No transactions done yet.
-                  </Typography>
+                  {pageLoader ? (
+                    <ThreeDotsLoader />
+                  ) : (
+                    <Typography level="body-sm" sx={{ color: color.fontLight }}>
+                      No transactions done yet.
+                    </Typography>
+                  )}
                 </Box>
               </BoxComponent>
             </Grid>
@@ -329,7 +301,9 @@ export default function PPMPSummaryCards({
                       />
                       <PPMPCard
                         bgColor="#FBE2CC"
-                        icon={<Comment sx={{ fontSize: 25, color: "orange" }} />}
+                        icon={
+                          <Comment sx={{ fontSize: 25, color: "orange" }} />
+                        }
                         label={"COMMENTS"}
                         value={regularPPMP?.summary?.comments_count}
                         description={`as found in (${regularPPMP?.summary?.items_with_comments_count}) items in total on this request`}
@@ -387,7 +361,9 @@ export default function PPMPSummaryCards({
                       >
                         <PPMPCard
                           icon={
-                            <Handyman sx={{ fontSize: 25, color: color.main }} />
+                            <Handyman
+                              sx={{ fontSize: 25, color: color.main }}
+                            />
                           }
                           label={"   Total Items"}
                           value={dispensingPPMP?.summary?.total_items_count}

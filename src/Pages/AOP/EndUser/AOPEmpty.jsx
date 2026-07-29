@@ -8,7 +8,9 @@ import no_result from "../../../assets/empty-state-icon-base.svg";
 
 import { AOP } from "../../../Data/constants";
 
-const AOPEmpty = ({ setOpenFiscalYearModal, setOpenNewRequest }) => {
+import { ThreeDotsLoader } from "@Components/Common/Loading/ThreeDotsLoader";
+
+const AOPEmpty = ({ setOpenFiscalYearModal, setOpenNewRequest, isLoading = false }) => {
   const {
     EMPTY_STATE_TITLE,
     EMPTY_STATE_SUBTITLE,
@@ -39,35 +41,41 @@ const AOPEmpty = ({ setOpenFiscalYearModal, setOpenNewRequest }) => {
         mt={3}
         gap={2}
       >
-        <img src={no_result} alt="not-found-img" width={300} />
+        {isLoading ? (
+          <ThreeDotsLoader />
+        ) : (
+          <>
+            <img src={no_result} alt="not-found-img" width={300} />
 
-        <Box>
-          <Typography fontSize={24} textAlign="center">
-            {EMPTY_STATE_TITLE}
-          </Typography>
-          <Typography
-            sx={{ color: "#003049", fontSize: 24, fontWeight: "bold" }}
-            textAlign="center"
-          >
-            {EMPTY_STATE_SUBTITLE}
-          </Typography>
-        </Box>
+            <Box>
+              <Typography fontSize={24} textAlign="center">
+                {EMPTY_STATE_TITLE}
+              </Typography>
+              <Typography
+                sx={{ color: "#003049", fontSize: 24, fontWeight: "bold" }}
+                textAlign="center"
+              >
+                {EMPTY_STATE_SUBTITLE}
+              </Typography>
+            </Box>
 
-        <Typography width={"35%"} textAlign="center">
-          {EMPTY_STATE_DESCRIPTION}
-        </Typography>
-        <Stack direction="row" gap={1}>
-          {/* <ButtonComponent
-            label="Request new items"
-            variant="outlined"
-            onClick={() => setOpenNewRequest(true)}
-          /> */}
-          <ButtonComponent
-            label="Create New AOP"
-            variant="solid"
-            onClick={() => setOpenFiscalYearModal(true)}
-          />
-        </Stack>
+            <Typography width={"35%"} textAlign="center">
+              {EMPTY_STATE_DESCRIPTION}
+            </Typography>
+            <Stack direction="row" gap={1}>
+              {/* <ButtonComponent
+                label="Request new items"
+                variant="outlined"
+                onClick={() => setOpenNewRequest(true)}
+              /> */}
+              <ButtonComponent
+                label="Create New AOP"
+                variant="solid"
+                onClick={() => setOpenFiscalYearModal(true)}
+              />
+            </Stack>
+          </>
+        )}
       </Stack>
     </>
   );

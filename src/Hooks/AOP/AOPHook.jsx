@@ -52,19 +52,25 @@ const useAOPHook = () => {
       await read({
         url: `${API.AOP_BY_SECTOR_AND_YEAR}`,
         params,
-        failed: callBack,
+        failed: (status, message) => {
+          setAop(null);
+          setMission("");
+          callBack?.(status, message);
+        },
         success: (res) => {
           const {
             status,
             data: { data, message },
           } = res;
           setAop(data);
-          setMission(data.mission);
+          setMission(data?.mission || "");
           callBack(status, message);
         },
       });
     } catch (error) {
       console.error("Error fetching application objectives:", error);
+      setAop(null);
+      setMission("");
       callBack?.(false, error.message);
     }
   };

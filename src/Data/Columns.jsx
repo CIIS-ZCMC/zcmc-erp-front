@@ -927,21 +927,90 @@ export const variantCols = (
   {
     key: "system",
     label: "System",
-    width: 150,
+    width: 140,
     align: "left",
     render: (params) => {
-      return <Typography fontWeight={600}>{params.system}</Typography>;
+      return (
+        <Typography fontWeight={600} level="body-sm" color="black">
+          {params.system}
+        </Typography>
+      );
     },
   },
-  { key: "code", label: "Code", align: "left", width: 100 },
+  {
+    key: "code",
+    label: "Code",
+    align: "left",
+    width: 260,
+    render: (params) => {
+      let codeList = params?.code;
+      if (typeof codeList === "string") {
+        try {
+          const parsed = JSON.parse(codeList);
+          if (Array.isArray(parsed)) codeList = parsed;
+          else codeList = codeList.split(",").map((s) => s.trim());
+        } catch (e) {
+          codeList = codeList.split(",").map((s) => s.trim());
+        }
+      }
+
+      const colors = [
+        { bg: "#FEE2E2", text: "#991B1B", dot: "#EF4444" },
+        { bg: "#E0F2FE", text: "#075985", dot: "#0284C7" },
+        { bg: "#FEF3C7", text: "#92400E", dot: "#F59E0B" },
+        { bg: "#DCFCE7", text: "#166534", dot: "#22C55E" },
+        { bg: "#F3E8FF", text: "#6B21A8", dot: "#A855F7" },
+      ];
+
+      if (Array.isArray(codeList) && codeList.length > 0) {
+        return (
+          <Stack direction="row" spacing={1} flexWrap="wrap" gap={0.5}>
+            {codeList.map((c, i) => {
+              const themeColor = colors[i % colors.length];
+              return (
+                <Chip
+                  key={i}
+                  size="sm"
+                  variant="soft"
+                  sx={{
+                    bgcolor: themeColor.bg,
+                    color: themeColor.text,
+                    fontWeight: 500,
+                    fontSize: 12,
+                    px: 1,
+                    py: 0.25,
+                    borderRadius: "12px",
+                  }}
+                  startDecorator={
+                    <Box
+                      sx={{
+                        width: 6,
+                        height: 6,
+                        borderRadius: "50%",
+                        bgcolor: themeColor.dot,
+                      }}
+                    />
+                  }
+                >
+                  {c}
+                </Chip>
+              );
+            })}
+          </Stack>
+        );
+      }
+
+      return <Typography level="body-sm">{params?.code || "-"}</Typography>;
+    },
+  },
   {
     key: "category",
     label: "Category",
     align: "left",
-    width: 300,
+    width: 280,
     render: (params) => {
       const categories = params?.categories || [];
-      const isExpanded = expandedCategories[params.id];
+      const isExpanded = expandedCategories?.[params.id];
 
       if (!categories.length) return "-";
 
@@ -956,11 +1025,10 @@ export const variantCols = (
       return (
         <div
           style={{ cursor: "pointer" }}
-          onClick={() => expandCategory(params.id)}
+          onClick={() => expandCategory && expandCategory(params.id)}
         >
           {isExpanded ? (
             // Expanded view: multiline
-
             categories.map((cat, index) => (
               <Typography key={cat.id || index} level="body-xs">
                 {cat.name}
@@ -968,7 +1036,7 @@ export const variantCols = (
             ))
           ) : (
             // Collapsed view: single line
-            <Typography level="body-xs">
+            <Typography level="body-xs" sx={{ color: "neutral.700" }}>
               {visible.map((cat) => cat.name).join(", ")}
               {remaining > 0 && `, +${remaining} more`}
             </Typography>
@@ -980,7 +1048,7 @@ export const variantCols = (
   {
     key: "created_at",
     label: "Created on",
-    width: 100,
+    width: 120,
     align: "left",
     render: (params) => {
       return moment(params?.meta?.created_at).format("LL");
@@ -989,7 +1057,7 @@ export const variantCols = (
   {
     key: "updated_at",
     label: "Updated on",
-    width: 100,
+    width: 120,
     align: "left",
     render: (params) => {
       return moment(params?.meta?.updated_at).format("LL");
@@ -1004,7 +1072,7 @@ export const variantCols = (
         <>
           <Stack
             direction="row"
-            spacing={2}
+            spacing={1}
             sx={{ justifyContent: "center", alignItems: "center" }}
           >
             <Chip
@@ -1016,7 +1084,7 @@ export const variantCols = (
               variant="soft"
               color="neutral"
               startDecorator={<EditOutlined />}
-              sx={{ display: !active && "none" }}
+              sx={{ display: !active && "none", borderRadius: "8px" }}
             >
               Edit
             </Chip>
@@ -1029,6 +1097,7 @@ export const variantCols = (
               variant="soft"
               color="neutral"
               startDecorator={<ArchiveOutlined />}
+              sx={{ borderRadius: "8px" }}
             >
               {active ? "Archive" : "Unarchive"}
             </Chip>
@@ -2231,17 +2300,13 @@ export const PPMP_APPROVER_HEADERS = (handleComments) => [
     render: (row) => (
       <>
         <Typography level="body-sm" fontWeight={600} sx={{ color: "black" }}>
-          ₱{row?.total_amount?.toLocaleString()}
+          {formatPeso(row?.total_amount)}
         </Typography>
         <Typography
           sx={{ fontSize: 14, color: grey[600], textTransform: "lowercase" }}
         >
-          ₱{" "}
-          {(row?.item?.estimated_budget).toLocaleString("en-PH", {
-            minimumFractionDigits: 2,
-            maximumFractionDigits: 2,
-          })}{" "}
-          per {row?.item?.item_unit?.name}
+          {formatPeso(row?.item?.estimated_budget)} per{" "}
+          {row?.item?.item_unit?.name}
         </Typography>
       </>
     ),

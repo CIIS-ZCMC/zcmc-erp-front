@@ -15,6 +15,7 @@ import { usePPMPActions, usePPMPState } from "../../../Hooks/PPMP/PPMPHook";
 import AlertDialogComponent from "@Components/Common/Dialog/AlertDialogComponent";
 import useSnackbarHook from "../../../Hooks/SnackbarHook";
 import AddItemRequest from "./AddItemRequest";
+import useAOPStore from "@Store/AOPStore";
 
 function AddItems(props) {
   const navigate = useNavigate();
@@ -28,6 +29,7 @@ function AddItems(props) {
 
   const { activities } = usePPMPState();
   const { getActivities, postItems } = usePPMPActions();
+  const { fiscalYear } = useAOPStore();
   const { getItems } = useItemsHook();
   const { setAlertDialog, closeAlertDialog } = useModalHook();
   const { showSnack } = useSnackbarHook();
@@ -48,9 +50,6 @@ function AddItems(props) {
     cartStore();
   const [displayLoading, setDisplayLoading] = useState(false);
   const [openReq, setOpenReq] = useState(false); // modal visibility state
-
-  const currentYear = new Date().getFullYear();
-  const currentFiscalYear = currentYear + 1;
 
   const handleSaveItems = async () => {
     if (!cart || cart.length === 0) {
@@ -143,7 +142,7 @@ function AddItems(props) {
   return (
     <Fragment>
       <PageTitle
-        title={`PPMP for Fiscal Year ${currentFiscalYear}`}
+        title={`PPMP for Fiscal Year ${fiscalYear}`}
         description={
           "The following below serves as the summary of your AOP request. You can open and update your request before the deadline as set by the administrators."
         }

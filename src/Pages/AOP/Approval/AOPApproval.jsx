@@ -52,7 +52,7 @@ const AOPApproval = () => {
   const { isPlanning } = useUserTypes();
 
   //ADDED HOOKS
-  const { getAopYearList } = useAOPHook();
+  const { getAopYearList, exportAOP } = useAOPHook();
   const { showSnack } = useSnackbarHook();
   const { timelines, approverTimelines } = useTimelinesStore();
   const { yearDetails } = useAOPStore();
@@ -75,6 +75,31 @@ const AOPApproval = () => {
     localStorageSetter("aop_application_area_code", area_code);
 
     navigate(`/approval/objectives/${id}`);
+  };
+
+  const handleExportAOP = (item) => {
+    const aopId = item?.aop_application_id || item?.id;
+    const preparedByCode =
+      item?.current_timeline?.actor?.area || item?.area_code || "AOP";
+    const aopYear = item?.fiscal_year || year;
+
+    if (!aopId) {
+      showSnack(400, "No AOP Application found to export.");
+      return;
+    }
+
+    const aopData = {
+      id: aopId,
+      prepared_by_code: preparedByCode,
+      year: aopYear,
+    };
+
+    exportAOP(
+      (status, message) => {
+        showSnack(status, message);
+      },
+      aopData
+    );
   };
 
   const handleGenerate = () => {
@@ -169,7 +194,7 @@ const AOPApproval = () => {
               setIndex={setIndex}
             />
 
-            <Stack direction={"row"} justifyContent={"space-between"}>
+            <Stack direction={"row"} justifyContent={"space-between"} alignItems={"center"}>
               <InputComponent
                 label={"Search"}
                 placeholder="Find records by document number, year, items, etc."
@@ -182,13 +207,31 @@ const AOPApproval = () => {
               <Stack direction={"row"} gap={2} alignItems={"center"}>
                 {years?.length > 0 && (
                   <YearSelectorComponent
-                    width="130px"
+                    width="150px"
                     label={"Select year"}
                     setValue={setYear}
                     options={years}
                     value={{ year }}
                     startDecorator={<CalendarToday sx={{ fontSize: 15 }} />}
                   />
+                )}
+                {(search || year) && (
+                  <Link
+                    component="button"
+                    onClick={() => {
+                      setSearch("");
+                      setYear(nextYear);
+                    }}
+                    sx={{
+                      fontSize: 13,
+                      color: "primary.600",
+                      fontWeight: 500,
+                      textDecoration: "none",
+                      "&:hover": { textDecoration: "underline" },
+                    }}
+                  >
+                    Clear filters
+                  </Link>
                 )}
               </Stack>
             </Stack>
@@ -268,6 +311,16 @@ const AOPApproval = () => {
                             statusLabel={status_name}
                             status={status_id}
                             total_cost={ppmp_total}
+                            handlePrint={() =>
+                              handleExportAOP({
+                                id,
+                                current_timeline,
+                                fiscal_year,
+                                area_code,
+                                aop_application_id,
+                                ppmp_application,
+                              })
+                            }
                             leftClick={onLeftClick(
                               aop_application_id,
                               area_code,

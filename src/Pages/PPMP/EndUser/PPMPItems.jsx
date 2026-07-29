@@ -37,6 +37,7 @@ import useItemsHook from "../../../Hooks/ItemManagementHook";
 import { ExpandableRow } from "./ExpandableRow";
 import { FileDownload } from "@mui/icons-material";
 import CommentsSkeleton from "@Components/Comments/CommentsSkeleton";
+import useAOPStore from "@Store/AOPStore";
 
 function PPMPItems(props) {
   const navigate = useNavigate();
@@ -59,10 +60,10 @@ function PPMPItems(props) {
     getProcModes,
     getActivities,
   } = usePPMPActions();
+  const { fiscalYear } = useAOPStore();
   const { dispensingCategories, getDispensingCategories } = useItemsHook();
   const { setAlertDialog } = useModalHook();
-  const { errors, setError, clearErrors } = userErrorInputHook();
-  const { getPPMPComments, postPPMPComment } = usePPMPCommentsActions();
+  const { getPPMPComments } = usePPMPCommentsActions();
   const { ppmpComments, isLoading } = usePPMPComments();
   const { showSnack } = useSnackbarHook();
   const { user } = useAuth();
@@ -237,7 +238,7 @@ function PPMPItems(props) {
   return (
     <Fragment>
       <PageTitle
-        title={`PPMP for Fiscal Year ${nextYear}`}
+        title={`PPMP for Fiscal Year ${fiscalYear}`}
         description={""}
         items={[
           {

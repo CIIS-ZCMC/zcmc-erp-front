@@ -185,20 +185,22 @@ function DashboardEndUser(props) {
   const handleChangeFiscalYear = (year) => {
     setFiscalYear(year);
     setIsLoading(true);
+    setIsAopLoading(true);
     const params = { year: year };
 
     getAopBySectorAndYear(params, (status, message) => {
+      setIsLoading(false);
+      setIsAopLoading(false);
       if (!(status >= 200 && status < 300)) {
         // if status not success
         return; //Toast error
       }
-      setIsLoading(false);
     });
   };
 
   return (
     <Fragment>
-      {aop || isAopLoading ? (
+      {aop ? (
         <Fragment>
           {/* Title here */}
           <Title />
@@ -305,6 +307,7 @@ function DashboardEndUser(props) {
       ) : (
         // aop empty state
         <AOPEmpty
+          isLoading={isAopLoading}
           setOpenFiscalYearModal={setOpenFiscalYearModal}
           setOpenNewRequest={setOpenNewRequest}
         />

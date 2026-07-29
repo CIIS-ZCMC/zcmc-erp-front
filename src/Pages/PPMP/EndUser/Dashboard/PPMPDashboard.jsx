@@ -10,7 +10,7 @@ import {
   useItemRequestsByUser,
 } from "../../../../Hooks/ItemRequest/ItemRequestHook";
 import userErrorInputHook from "../../../../Hooks/ErrorInputHook";
-import useAOPStore from "../../../../Store/AOPStore";
+import useAOPStore, { useAOPActions } from "../../../../Store/AOPStore";
 // View Item Requests Modal Components
 import PPMPSummaryCards from "./PPMPSummaryCards";
 import DashboardHeader from "./DashboardHeader";
@@ -29,14 +29,9 @@ function PPMPDashboard(props) {
   const location = useLocation();
   const pathName = location.pathname;
 
-  const requestsByUser = useItemRequestsByUser();
-  const { aop } = useAOPStore();
-
-  const { getItemRequestByUser, postItmRequest } = useItemRequestActions();
-  const { setError, clearErrors } = userErrorInputHook();
-
-  const { data, current_page, per_page, next_page_url, prev_page_url, total } =
-    requestsByUser || {};
+  const { getItemRequestByUser } = useItemRequestActions();
+  const { fiscalYear } = useAOPStore();
+  const { setFiscalYear } = useAOPActions();
 
   const navigate = useNavigate();
   const { dashboard, years, timeline } = usePPMPState();
@@ -76,7 +71,6 @@ function PPMPDashboard(props) {
   const [openSave, setOpenSave] = useState(false);
   const [buttonLoader, setButtonLoader] = useState(false);
   const [pin, setPin] = useState("");
-  const [year, setYear] = useState(nextYear);
   const [openViewItemRequest, setOpenItemRequest] = useState();
   const [openNewRequest, setOpenNewRequest] = useState(false);
   const [step, setStep] = useState(1);
@@ -184,8 +178,8 @@ function PPMPDashboard(props) {
         // show toast error
       }
       setPageLoader(false); // always hide loader
-    }, year);
-  }, [year]);
+    }, fiscalYear);
+  }, [fiscalYear]);
 
   useEffect(() => {
     if (!AOP_ID) return;
@@ -304,7 +298,8 @@ function PPMPDashboard(props) {
         {/* FIXED HEADER */}
         <Box sx={{ flexShrink: 0 }}>
           <DashboardHeader
-            setYear={setYear}
+            setYear={setFiscalYear}
+            fiscalYear={fiscalYear}
             setOpenSave={setOpenSave}
             years={years}
             dashboard={dashboard}

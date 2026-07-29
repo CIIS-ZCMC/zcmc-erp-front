@@ -71,12 +71,12 @@ const usePPMPStoreHook = create((set, get) => ({
       read({
         url: `${PATH}-application-dashboard`,
         params: { year },
-        failed: () => {
-          set({ isLoading: false });
-          callBack && callBack();
+        failed: (resStatus, resMessage) => {
+          set({ dashboard: {}, isLoading: false });
+          callBack && callBack(resStatus, resMessage);
         },
         success: ({ status, message, data }) => {
-          set({ dashboard: data.data, isLoading: false });
+          set({ dashboard: data?.data || {}, isLoading: false });
           callBack && callBack(status, message, data);
         },
       });

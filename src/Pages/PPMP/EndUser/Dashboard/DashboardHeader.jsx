@@ -10,6 +10,7 @@ export default function DashboardHeader({
   dashboard = {},
   setYear,
   setOpenSave,
+  fiscalYear,
 }) {
   const theme = useTheme();
   const color = theme.palette.custom;
@@ -41,7 +42,8 @@ export default function DashboardHeader({
               width="150px"
               bgcolor="#004366"
               txtcolor="white"
-              years={years.years}
+              years={years?.years}
+              fiscalYear={fiscalYear}
               onChange={(value) => {
                 setYear(value);
               }}

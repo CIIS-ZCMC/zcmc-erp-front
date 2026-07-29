@@ -78,16 +78,49 @@ export const Variant = () => {
     // 1. Store selected row
     setSelectedData(params);
 
+    let parsedCode = params.code;
+    if (typeof parsedCode === "string") {
+      try {
+        const arr = JSON.parse(parsedCode);
+        if (Array.isArray(arr)) parsedCode = arr;
+        else parsedCode = parsedCode.split(",").map((s) => s.trim());
+      } catch (e) {
+        parsedCode = parsedCode.split(",").map((s) => s.trim());
+      }
+    } else if (!Array.isArray(parsedCode)) {
+      parsedCode = [];
+    }
+
     // 2. Normalize + hydrate form state
     setUpdateTerm({
       name: params.system ?? "",
-      code: params.code,
+      code: parsedCode,
+      tempCode: "",
       item_category: Array.isArray(params.categories) ? params.categories : [],
       description: params.description ?? "",
     });
 
     // 3. Open modal
     setOpenUpdate(true);
+  };
+
+  const addUpdateCode = () => {
+    if (!updateTerm.tempCode?.trim()) return;
+
+    if (!updateTerm.code.includes(updateTerm.tempCode.trim())) {
+      setUpdateTerm((prev) => ({
+        ...prev,
+        code: [...prev.code, prev.tempCode.trim()],
+        tempCode: "",
+      }));
+    }
+  };
+
+  const removeUpdateCode = (code) => {
+    setUpdateTerm((prev) => ({
+      ...prev,
+      code: prev.code.filter((c) => c !== code),
+    }));
   };
 
   const updateTerminologyHandler = () => {
@@ -113,12 +146,14 @@ export const Variant = () => {
   };
 
   const handleDelete = (params) => {
+    setSelectedData(params);
     setOpenDel(true);
     const data = {
       status: "error",
-      title: `Archive this terminology (${params?.code}) ?`,
-      description:
-        "This action cannot be undone. However, you may still restore the item anytime from the Archived view.",
+      title: active ? "Archive this terminology?" : "Restore this terminology?",
+      description: active
+        ? `Are you sure you want to archive ${params?.system || "Variant"}? This will make it inactive but can be restored later if needed.`
+        : `Are you sure you want to restore ${params?.system || "Variant"}?`,
     };
     setConfirmationModal(data);
   };
@@ -129,8 +164,6 @@ export const Variant = () => {
     };
     if (!active) {
       await unarchiveTerminology(selectedData.id, form, (status, message) => {
-        // setLoading(false);
-
         if (status === 200) {
           setOpenDel(false);
           showSnack(200, message);
@@ -140,8 +173,6 @@ export const Variant = () => {
       });
     } else {
       await archiveTerminology(selectedData.id, form, (status, message) => {
-        // setLoading(false);
-
         if (status === 200) {
           setOpenDel(false);
           showSnack(200, message);
@@ -215,8 +246,7 @@ export const Variant = () => {
 
   useEffect(() => {
     if (!active) {
-      // When switching to archived, fetch page 1 of archived classifications
-      setPage(1); // optional: reset page to first page for archived
+      setPage(1);
       setLoading(true);
 
       getArchivedTerminology({
@@ -302,7 +332,6 @@ export const Variant = () => {
           hasActionButtons
           rightButtonLabel="Confirm and Save"
           rightButtonAction={() => addTerminology()}
-          // rightButtonAction={() => addCategory()}
           content={
             <>
               <Stack mt={2} spacing={2}>
@@ -318,23 +347,11 @@ export const Variant = () => {
                     handleChangeInput("name", setNewTerm, e.target.value)
                   }
                 />
-                <TextareaComponent
-                  name={"description"}
-                  label={"Description"}
-                  placeholder={"Enter description"}
-                  helperText={
-                    "Use a specific and descriptive naming convention for best results."
-                  }
-                  value={newTerm.description}
-                  onChange={(e) =>
-                    handleChangeInput("description", setNewTerm, e.target.value)
-                  }
-                />
 
                 <InputComponent
                   name="code"
-                  label="Code"
-                  placeholder={"Enter code"}
+                  label="Add Codes"
+                  placeholder={"Enter Code Name"}
                   value={newTerm.tempCode || ""}
                   handleInput={(e) =>
                     setNewTerm((prev) => ({
@@ -375,9 +392,10 @@ export const Variant = () => {
                 <MultipleAutocompleteComponent
                   label="Category"
                   placeholder="Select categories"
-                  name="name" // or whatever field you want to display
+                  name="name"
                   options={categories}
                   value={newTerm.item_category}
+                  helperText="Use a specific and descriptive naming convention for best results."
                   setValue={(val) =>
                     setNewTerm((prev) => ({
                       ...prev,
@@ -399,15 +417,14 @@ export const Variant = () => {
           title="Update a terminology"
           description={"Keep the terminology up-to-date"}
           isOpen={openUpdate}
-          maxWidth={"580px"}
+          maxWidth={"500px"}
           handleClose={() => setOpenUpdate(false)}
           hasActionButtons
           rightButtonLabel="Confirm and Save"
           rightButtonAction={() => updateTerminologyHandler()}
-          // rightButtonAction={() => addCategory()}
           content={
             <>
-              <Stack mt={2} spacing={2} mr={1}>
+              <Stack mt={2} spacing={2}>
                 <InputComponent
                   name={"name"}
                   label={"System Label"}
@@ -420,39 +437,56 @@ export const Variant = () => {
                     handleChangeInput("name", setUpdateTerm, e.target.value)
                   }
                 />
-                <TextareaComponent
-                  name={"description"}
-                  label={"Description"}
-                  placeholder={"Enter description"}
-                  helperText={
-                    "Use a specific and descriptive naming convention for best results."
-                  }
-                  value={updateTerm.description}
-                  onChange={(e) =>
-                    handleChangeInput(
-                      "description",
-                      setUpdateTerm,
-                      e.target.value,
-                    )
-                  }
-                />
 
                 <InputComponent
                   name="code"
-                  label="Code"
-                  placeholder={"Enter code"}
-                  value={updateTerm.code}
+                  label="Add Codes"
+                  placeholder={"Enter Code Name"}
+                  value={updateTerm.tempCode || ""}
                   handleInput={(e) =>
-                    handleChangeInput("code", setUpdateTerm, e.target.value)
+                    setUpdateTerm((prev) => ({
+                      ...prev,
+                      tempCode: e.target.value,
+                    }))
+                  }
+                  endDecorator={
+                    <IconButton onClick={addUpdateCode}>
+                      <AddOutlined />
+                    </IconButton>
                   }
                 />
+                <Stack
+                  direction="row"
+                  spacing={1}
+                  flexWrap="wrap"
+                  sx={{
+                    border:
+                      updateTerm.code.length > 0 && `1px dashed ${grey[400]}`,
+                    borderRadius: 10,
+                    padding: updateTerm.code.length > 0 && 1,
+                  }}
+                >
+                  {updateTerm.code.map((code) => (
+                    <Chip
+                      key={code}
+                      variant="soft"
+                      color="primary"
+                      endDecorator={
+                        <ChipDelete onClick={() => removeUpdateCode(code)} />
+                      }
+                    >
+                      {code}
+                    </Chip>
+                  ))}
+                </Stack>
 
                 <MultipleAutocompleteComponent
                   label="Category"
                   placeholder="Select categories"
-                  name="name" // or whatever field you want to display
+                  name="name"
                   options={categories}
                   value={updateTerm.item_category}
+                  helperText="Use a specific and descriptive naming convention for best results."
                   setValue={(val) =>
                     setUpdateTerm((prev) => ({
                       ...prev,
@@ -471,9 +505,11 @@ export const Variant = () => {
       {openDel && (
         <ConfirmationModalComponent
           status="error"
+          rightButtonLabel={active ? "Confirm and Archive" : "Confirm and Unarchive"}
           rightButtonAction={() => deleteTerminology()}
           withAuthPin
           setAuthPin={setPin}
+          btnColor="danger"
         />
       )}
     </Fragment>
