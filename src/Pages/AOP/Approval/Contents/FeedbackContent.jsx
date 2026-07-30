@@ -29,32 +29,23 @@ export const FeedbackContent = ({
   const [activeTab, setActiveTab] = useState(0);
 
   // COMMENTS HOOK
-  const remarks = useRemarks();
-  const allComments = localStorageGetter("all_comments");
+  const remarks = useRemarks() || [];
+  const fetchedAllComments = useAllComments();
+  const allComments = useMemo(() => {
+    return Array.isArray(fetchedAllComments)
+      ? fetchedAllComments
+      : localStorageGetter("all_comments") || [];
+  }, [fetchedAllComments]);
 
   // DATA
   const feedbackDisplay = useMemo(() => {
-    let data = [];
-
-    if (!showRemarks) {
-      data = allComments.map((c) => ({
-        ...c,
-        __type: "comment",
-      }));
-    } else if (isPlanningOfficer) {
-      data = remarks.map((r) => ({
-        ...r,
-        __type: "remark",
-      }));
-    } else {
-      data =
-        activeTab === 0
-          ? allComments.map((c) => ({ ...c, __type: "comment" }))
-          : remarks.map((r) => ({ ...r, __type: "remark" }));
-    }
+    const data =
+      activeTab === 0
+        ? (allComments || []).map((c) => ({ ...c, __type: "comment" }))
+        : (remarks || []).map((r) => ({ ...r, __type: "remark" }));
 
     return groupByDate(data);
-  }, [allComments, remarks, activeTab, showRemarks]);
+  }, [allComments, remarks, activeTab]);
 
   const feedbackCount =
     activeTab === 0
@@ -62,12 +53,6 @@ export const FeedbackContent = ({
         ? allComments?.length
         : 0
       : remarks?.length;
-
-  useEffect(() => {
-    if (isPlanningOfficer) {
-      setActiveTab(1); // Switch to Remarks tab
-    }
-  }, [isPlanningOfficer]);
 
   return (
     <DrawerComponent
@@ -83,15 +68,11 @@ export const FeedbackContent = ({
             <CommentsSkeleton />
           ) : (
             <>
-              {showRemarks && !isPlanningOfficer && (
-                <>
-                  <CustomTabComponent
-                    tabOptions={feedbackTabOptions}
-                    onChange={setActiveTab}
-                  />
-                  <Divider />
-                </>
-              )}
+              <CustomTabComponent
+                tabOptions={feedbackTabOptions}
+                onChange={setActiveTab}
+              />
+              <Divider />
 
               <Stack
                 gap={1.8}

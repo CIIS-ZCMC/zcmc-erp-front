@@ -13,6 +13,7 @@ import { grey } from "@mui/material/colors";
 import ButtonComponent from "@Components/Common/ButtonComponent";
 import DrawerComponent from "@Components/Common/DrawerComponent";
 import {
+  useAllComments,
   useCommentActions,
   useComments,
 } from "../../../../../Hooks/CommentHook";
@@ -35,19 +36,23 @@ const AccordionSummary = ({
   closeDrawer,
 }) => {
   const { getCommentsByActivity } = useCommentActions();
-  const comments = useComments();
+  const fetchedAllComments = useAllComments();
+  const fetchedComments = useComments();
+  const comments = fetchedAllComments?.length ? fetchedAllComments : (fetchedComments || []);
   const theme = useTheme();
   const color = theme.palette.custom;
 
   const showComments = (e) => {
     e.stopPropagation(); // <-- this prevents the accordion from opening
 
-    getCommentsByActivity(id, () => {});
-    showDrawer();
+    getCommentsByActivity(id, () => {
+      showDrawer();
+    });
   };
 
   return (
     <>
+      {console.log(id)}
       <Stack
         direction={"row"}
         justifyContent={"space-between"}

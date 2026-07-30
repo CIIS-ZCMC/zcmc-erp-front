@@ -26,17 +26,21 @@ const useCommentHook = create((set, get) => ({
       read({
         url: `${COMMENT}/${id}`,
         success: (response) => {
-          const {
-            data: { comments },
-          } = response.data;
-          set({ allComments: comments });
+          const payload = response.data?.data;
+          const comments = Array.isArray(payload)
+            ? payload
+            : (payload?.comments ?? []);
+          set({ comments: comments, allComments: comments });
+          localStorageSetter("comments", comments);
           localStorageSetter("all_comments", comments);
 
-          callback(response.status, comments);
+          callback?.(response.status, comments);
         },
         failed: () => {
-          set({ comments: [] });
+          set({ comments: [], allComments: [] });
           localStorageRemove("comments");
+          localStorageRemove("all_comments");
+          callback?.(400, []);
         },
       });
     },

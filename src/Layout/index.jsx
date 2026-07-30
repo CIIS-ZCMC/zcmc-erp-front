@@ -111,7 +111,7 @@ function Layout() {
               xl: isCollapsed ? "5.77%" : "16.77%",
             },
             transition: "margin-left 0.3s",
-            backgroundColor: "white",
+            backgroundColor: "#F5F5F4",
             minHeight: "100vh", // Ensures the box fills full viewport height
             display: "flex",
             flexDirection: "column",

@@ -21,7 +21,11 @@ import {
   useTimelineID,
 } from "../../../../Hooks/AOP/AOPApplicationsHook";
 
-const ProcessAOPContent = () => {
+const ProcessAOPContent = ({
+  label = "Process request",
+  buttonSx,
+  fullWidth = true,
+}) => {
   // HOOKS
   const apiPermissions = useAOPPermissions();
 
@@ -125,10 +129,11 @@ const ProcessAOPContent = () => {
   return (
     <Fragment>
       <ButtonComponent
-        label={"Process request"}
+        label={label}
         disabled={disabledProcessRequest}
         onClick={handleProcessRequest}
-        fullWidth={true}
+        fullWidth={fullWidth}
+        sx={buttonSx}
       />
       {/* MODAL */}
       <ModalComponent
