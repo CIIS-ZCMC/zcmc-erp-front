@@ -120,8 +120,46 @@ export default function ManageAOP() {
   const [openMarkModal, setOpenMarkModal] = useState(false);
   const [openTimelineModal, setOpenTimelineModal] = useState(false);
   const [openFeedbackModal, setOpenFeedbackModal] = useState(false);
+  const [expandedObjective, setExpandedObjective] = useState(null);
+  const [targetActivityId, setTargetActivityId] = useState(null);
 
   const FISCAL_YEAR = new Date().getFullYear() + 1;
+
+  // FUNCTIONS
+  const handleSelectActivityFromFeedback = (commentItem) => {
+    const actId = commentItem?.activity_id;
+    const actName = commentItem?.activity_name;
+
+    const foundObj = aopApplicationObjectives?.find((obj) =>
+      obj.activities?.some(
+        (act) =>
+          (actId && (act.id == actId || act.activity_id == actId)) ||
+          (actName && (act.name === actName || act.activity_name === actName))
+      )
+    );
+
+    const foundAct = foundObj?.activities?.find(
+      (act) =>
+        (actId && (act.id == actId || act.activity_id == actId)) ||
+        (actName && (act.name === actName || act.activity_name === actName))
+    );
+
+    const targetObjId = foundObj?.id;
+    const targetActId = foundAct?.id || actId;
+
+    if (targetObjId) {
+      setExpandedObjective(targetObjId);
+    }
+    if (targetActId) {
+      setTargetActivityId(targetActId);
+      setTimeout(() => {
+        const el = document.getElementById(`activity-accordion-${targetActId}`);
+        if (el) {
+          el.scrollIntoView({ behavior: "smooth", block: "center" });
+        }
+      }, 350);
+    }
+  };
 
   // FUNCTIONS
   const handleViewFeedback = async () => {
@@ -196,7 +234,7 @@ export default function ManageAOP() {
           }
           items={[
             {
-              label: "Innovations and Information System Unit",
+              label: aopApplication?.area_from,
               current: true,
             },
           ]}
@@ -375,6 +413,7 @@ export default function ManageAOP() {
                 label="Approval Timeline"
                 startDecorator={<AssignmentOutlined sx={{ fontSize: 18 }} />}
                 onClick={handleViewTimeline}
+                isLoading={isTimelineLoading}
                 fullWidth
               />
               {isAllowedFeedbackViewing && (
@@ -519,7 +558,10 @@ export default function ManageAOP() {
                     return (
                       <AccordionComponent
                         key={id || index}
-                        defaultExpanded={false}
+                        expanded={expandedObjective === id}
+                        onChange={(event, isExpanded) =>
+                          setExpandedObjective(isExpanded ? id : null)
+                        }
                         expandedStyles={{ mb: 2 }}
                         summaryStyles={(expanded) => ({
                           bgcolor: expanded ? "#E0F5FF" : "background.body",
@@ -557,6 +599,8 @@ export default function ManageAOP() {
                             <AccordionDetails
                               objId={id}
                               activities={activities}
+                              withActivityBtn={false}
+                              targetActivityId={targetActivityId}
                             />
                           </>
                         }
@@ -625,6 +669,7 @@ export default function ManageAOP() {
           setOpenFeedbackModal={setOpenFeedbackModal}
           isLoading={isRemarksLoading}
           isActivity={false}
+          onSelectActivity={handleSelectActivityFromFeedback}
         />
       )}
 

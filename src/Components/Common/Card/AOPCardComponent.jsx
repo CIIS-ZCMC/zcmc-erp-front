@@ -30,6 +30,7 @@ AOPCardComponent.propTypes = {
   rightClick: PropTypes.func,
   handlePrint: PropTypes.func,
   total_cost: PropTypes.oneOfType([PropTypes.string, PropTypes.number]),
+  isTimelineLoading: PropTypes.bool,
 };
 
 function AOPCardComponent({
@@ -45,6 +46,7 @@ function AOPCardComponent({
   rightClick,
   handlePrint,
   total_cost,
+  isTimelineLoading = false,
 }) {
   return (
     <Card
@@ -161,6 +163,7 @@ function AOPCardComponent({
               label="Approval Timeline"
               endDecorator={<ArrowRight size={14} />}
               onClick={rightClick}
+              isLoading={isTimelineLoading}
               sx={{ borderRadius: "20px", px: 1.5, fontSize: 12, py: 0.4 }}
             />
             <ButtonComponent

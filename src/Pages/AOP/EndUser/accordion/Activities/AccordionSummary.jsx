@@ -38,7 +38,9 @@ const AccordionSummary = ({
   const { getCommentsByActivity } = useCommentActions();
   const fetchedAllComments = useAllComments();
   const fetchedComments = useComments();
-  const comments = fetchedAllComments?.length ? fetchedAllComments : (fetchedComments || []);
+  const comments = fetchedAllComments?.length
+    ? fetchedAllComments
+    : fetchedComments || [];
   const theme = useTheme();
   const color = theme.palette.custom;
 
@@ -52,7 +54,6 @@ const AccordionSummary = ({
 
   return (
     <>
-      {console.log(id)}
       <Stack
         direction={"row"}
         justifyContent={"space-between"}

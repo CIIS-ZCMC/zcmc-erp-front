@@ -41,7 +41,7 @@ const useAOPApprovalHook = create((set) => ({
     },
 
     getAOPApprovalTimeline: (AOP_ID, callback) => {
-      set(() => ({ isLoading: true }));
+      set(() => ({ isLoading: true, approvalTimeline: [] }));
       read({
         url: `approval-trail/${AOP_ID}`,
         success: (response) => {
@@ -57,13 +57,17 @@ const useAOPApprovalHook = create((set) => ({
             // approvalRoles: approval_roles,
           }));
 
-          callback(
-            status,
-            `Success fetching approval timeline for AOP ${AOP_ID}`,
-          );
+          if (typeof callback === "function") {
+            callback(
+              status,
+              `Success fetching approval timeline for AOP ${AOP_ID}`,
+            );
+          }
         },
         failed: (response) => {
-          callback(response);
+          if (typeof callback === "function") {
+            callback(response);
+          }
           set(() => ({ isLoading: false }));
         },
       });

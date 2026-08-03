@@ -16,6 +16,7 @@ const AccordionDetails = ({
   responsiblePeople,
   resourcesCount,
   peopleCount,
+  withActivityBtn = true,
 }) => {
   const quarters = [
     { label: "Q1", value: first_quarter },
@@ -45,16 +46,20 @@ const AccordionDetails = ({
           width: "100%",
         }}
       >
-        <Stack alignItems="flex-start">
-          <ChipComponent
-            label={"Go to Activities"}
-            variant={"soft"}
-            endDecorator
-            status={"next"}
-            color={"primary"}
-            onClick={handleNavigateToActivities}
-          />
-        </Stack>
+        {withActivityBtn ? (
+          <Stack alignItems="flex-start">
+            <ChipComponent
+              label={"Go to Activities"}
+              variant={"soft"}
+              endDecorator
+              status={"next"}
+              color={"primary"}
+              onClick={handleNavigateToActivities}
+            />
+          </Stack>
+        ) : (
+          <div />
+        )}
 
         <Stack
           direction="row"

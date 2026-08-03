@@ -1,13 +1,33 @@
-import React, { Fragment, useState } from "react";
+import React, { Fragment, useEffect, useState } from "react";
 import AccordionSummary from "../Activities/AccordionSummary";
 import AccordionDetails from "../Activities/AccordionDetails";
 import AccordionComponent from "@Components/Common/AccordionComponent";
 import { grey } from "@mui/material/colors";
-import { Stack, Typography } from "@mui/joy";
+import { Box, Stack, Typography } from "@mui/joy";
 import ChipComponent from "@Components/Common/ChipComponent";
 
-const ActivityAccordion = ({ objId, activities }) => {
+const ActivityAccordion = ({
+  objId,
+  activities,
+  withActivityBtn = true,
+  targetActivityId = null,
+}) => {
   const [expandedActivity, setExpandedActivity] = useState(null);
+
+  useEffect(() => {
+    if (targetActivityId) {
+      const match = activities?.find(
+        (act) =>
+          act.id === targetActivityId ||
+          act.activity_id === targetActivityId ||
+          act.id == targetActivityId ||
+          act.activity_id == targetActivityId
+      );
+      if (match) {
+        setExpandedActivity(match.id);
+      }
+    }
+  }, [targetActivityId, activities]);
 
   // Controlled drawer state per activity id
   const [drawerOpen, setDrawerOpen] = useState({});
@@ -51,7 +71,7 @@ const ActivityAccordion = ({ objId, activities }) => {
           const activityIndex = index + 1;
 
           return (
-            <>
+            <Box key={id} id={`activity-accordion-${id}`}>
               <AccordionComponent
                 expanded={expandedActivity === id}
                 onChange={(event, isExpanded) =>
@@ -93,11 +113,12 @@ const ActivityAccordion = ({ objId, activities }) => {
                       responsiblePeople={responsible_people}
                       resourcesCount={resources_count}
                       peopleCount={responsible_people_count}
+                      withActivityBtn={withActivityBtn}
                     />
                   </>
                 }
               />
-            </>
+            </Box>
           );
         },
       )}

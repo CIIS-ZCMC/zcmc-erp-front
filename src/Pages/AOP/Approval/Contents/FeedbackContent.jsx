@@ -21,6 +21,7 @@ export const FeedbackContent = ({
   isLoading,
   isActivity = false,
   showRemarks = true,
+  onSelectActivity,
 }) => {
   const apiPermissions = useAOPPermissions();
   const navigate = useNavigate();
@@ -109,30 +110,41 @@ export const FeedbackContent = ({
                           ?.filter((m) => m.__type === "comment")
                           .map(
                             (
-                              {
+                              commentItem,
+                              idx,
+                            ) => {
+                              const {
                                 name,
                                 area,
-                                area_code,
                                 created_at,
                                 comment,
                                 activity_name,
                                 path,
-                              },
-                              idx,
-                            ) => (
-                              <CommentContainerComponent
-                                key={idx}
-                                name={name}
-                                comment={comment}
-                                area_code={area}
-                                date={created_at}
-                                isActivity={isActivity}
-                                activityName={activity_name}
-                                path={path}
-                                withActivityPath={showRemarks ? true : false}
-                                handleClick={() => navigate(path)}
-                              />
-                            ),
+                              } = commentItem;
+
+                              return (
+                                <CommentContainerComponent
+                                  key={idx}
+                                  name={name}
+                                  comment={comment}
+                                  area_code={area}
+                                  date={created_at}
+                                  isActivity={isActivity}
+                                  activityName={activity_name}
+                                  path={path}
+                                  withActivityPath={showRemarks ? true : false}
+                                  handleClick={() => {
+                                    if (typeof onSelectActivity === "function") {
+                                      setOpenFeedbackModal(false);
+                                      onSelectActivity(commentItem);
+                                    } else if (path) {
+                                      setOpenFeedbackModal(false);
+                                      navigate(path);
+                                    }
+                                  }}
+                                />
+                              );
+                            },
                           )}
 
                       {/* REMARKS TAB */}

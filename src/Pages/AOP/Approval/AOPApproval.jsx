@@ -62,6 +62,7 @@ const AOPApproval = () => {
 
   // STATES
   const [openTimelineModal, setOpenTimelineModal] = useState(false);
+  const [timelineLoadingId, setTimelineLoadingId] = useState(null);
   const [index, setIndex] = useState(8);
   const [year, setYear] = useState(nextYear);
   const [search, setSearch] = useState("");
@@ -71,6 +72,7 @@ const AOPApproval = () => {
 
   // FUNCTIONS
   const handleClickCard = (id, area_code) => {
+    clearActivityStore();
     localStorageSetter("aop_application_id", id);
     localStorageSetter("aop_application_area_code", area_code);
 
@@ -94,12 +96,9 @@ const AOPApproval = () => {
       year: aopYear,
     };
 
-    exportAOP(
-      (status, message) => {
-        showSnack(status, message);
-      },
-      aopData
-    );
+    exportAOP((status, message) => {
+      showSnack(status, message);
+    }, aopData);
   };
 
   const handleGenerate = () => {
@@ -119,8 +118,10 @@ const AOPApproval = () => {
   };
 
   const handleViewTimeline = (id) => {
+    setOpenTimelineModal(true);
+    setTimelineLoadingId(id);
     getAOPApprovalTimeline(id, () => {
-      setOpenTimelineModal(true);
+      setTimelineLoadingId(null);
     });
   };
 
@@ -194,7 +195,11 @@ const AOPApproval = () => {
               setIndex={setIndex}
             />
 
-            <Stack direction={"row"} justifyContent={"space-between"} alignItems={"center"}>
+            <Stack
+              direction={"row"}
+              justifyContent={"space-between"}
+              alignItems={"center"}
+            >
               <InputComponent
                 label={"Search"}
                 placeholder="Find records by document number, year, items, etc."
@@ -327,6 +332,9 @@ const AOPApproval = () => {
                             )}
                             rightClick={() =>
                               handleViewTimeline(aop_application_id)
+                            }
+                            isTimelineLoading={
+                              timelineLoadingId === aop_application_id
                             }
                           />
                         </Grid>

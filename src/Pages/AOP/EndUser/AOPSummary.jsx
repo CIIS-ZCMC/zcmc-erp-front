@@ -48,6 +48,8 @@ const AOPSummary = () => {
   const [isLoading, setIsLoading] = useState(false);
   const [openModal, setOpenModal] = useState(false);
   const [isExporting, setIsExporting] = useState(false);
+  const [expandedObjective, setExpandedObjective] = useState(null);
+  const [targetActivityId, setTargetActivityId] = useState(null);
   const [selectedPurchaseType, setSelectedPurchaseType] = useState(null);
 
   const [validationModal, setValidationModal] = useState({
@@ -278,7 +280,10 @@ const AOPSummary = () => {
                       return (
                         <>
                           <AccordionComponent
-                            defaultExpanded={false}
+                            expanded={expandedObjective === id}
+                            onChange={(event, isExpanded) =>
+                              setExpandedObjective(isExpanded ? id : null)
+                            }
                             expandedStyles={{ mb: 2 }}
                             summaryStyles={(expanded) => ({
                               bgcolor: expanded ? "#E0F5FF" : "background.body",
@@ -331,6 +336,7 @@ const AOPSummary = () => {
                                 <AccordionDetails
                                   objId={id}
                                   activities={activities}
+                                  targetActivityId={targetActivityId}
                                 />
                               </>
                             }
