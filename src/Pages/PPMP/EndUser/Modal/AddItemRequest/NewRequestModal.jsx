@@ -24,6 +24,7 @@ export default function NewRequestModal({
   openNewRequest,
   setOpenNewRequest,
   activity_id,
+  isAop = true,
 }) {
   const [displayLoading, setDisplayLoading] = useState(false);
   const { setAlertDialog } = useModalHook();
@@ -44,6 +45,7 @@ export default function NewRequestModal({
 
   const { activities } = usePPMPState();
   const { postItemRequest, getActivities } = usePPMPActions();
+  const { postItmRequest } = useItemRequestActions();
   const [buttonLoader, setButtonLoader] = useState(false);
 
   const specsContainerRef = useRef(null);
@@ -129,7 +131,7 @@ export default function NewRequestModal({
         hasError = true;
       }
 
-      if (!itemReq.quantity || itemReq.quantity <= 0) {
+      if (isAop && (!itemReq.quantity || itemReq.quantity <= 0)) {
         setError(
           "quantity",
           true,
@@ -206,12 +208,16 @@ export default function NewRequestModal({
       name: itemReq.item_name || "",
       item_classification_id: itemReq.classification?.id ?? null,
       item_category_id: itemReq.category?.id ?? null,
-      activity_id: Array.isArray(activity_id)
-        ? activity_id
-        : activity_id
-          ? [activity_id]
-          : [],
-      quantity: itemReq.quantity,
+      ...(isAop
+        ? {
+            activity_id: Array.isArray(activity_id)
+              ? activity_id
+              : activity_id
+                ? [activity_id]
+                : [],
+            quantity: itemReq.quantity,
+          }
+        : {}),
       item_unit_id: itemReq.unit?.id ?? null,
       variant: itemReq?.variant?.id ?? null, // not required
       estimated_budget: itemReq?.estimated_budget ?? 0,
@@ -225,10 +231,12 @@ export default function NewRequestModal({
       technical_requirements: itemReq.technical_requirements || "",
     };
 
-    postItemRequest(payload, (status, message) => {
+    const submitAction = isAop ? postItemRequest : postItmRequest;
+
+    submitAction(payload, (status, message) => {
       setButtonLoader(false);
 
-      if (status === 201) {
+      if (status >= 200 && status < 300) {
         setItemReq({
           classification: null,
           category: null,
@@ -268,7 +276,7 @@ export default function NewRequestModal({
     const apiCalls = [
       { fn: getItemCategories, name: "categories" },
       { fn: getItemClassification, name: "classification" },
-      { fn: getActivities, name: "activities" },
+      ...(isAop ? [{ fn: getActivities, name: "activities" }] : []),
       { fn: getItemUnits, name: "units" },
     ];
 
@@ -287,7 +295,7 @@ export default function NewRequestModal({
         }
       });
     });
-  }, []);
+  }, [isAop]);
 
   useEffect(() => {
     if (itemReq.category?.id) {
@@ -428,18 +436,20 @@ export default function NewRequestModal({
                     </Stack>
 
                     <Stack direction={"row"} gap={1} width="100%">
-                      <InputComponent
-                        label="Quantity"
-                        name="quantity"
-                        size="sm"
-                        value={itemReq?.quantity}
-                        handleInput={(e) =>
-                          handleInputValidation(e, setItemReq, setError)
-                        }
-                        color="primary"
-                        fontWeight={500}
-                        helperText={"Quantity to add"}
-                      />
+                      {isAop && (
+                        <InputComponent
+                          label="Quantity"
+                          name="quantity"
+                          size="sm"
+                          value={itemReq?.quantity}
+                          handleInput={(e) =>
+                            handleInputValidation(e, setItemReq, setError)
+                          }
+                          color="primary"
+                          fontWeight={500}
+                          helperText={"Quantity to add"}
+                        />
+                      )}
 
                       <AutocompleteComponent
                         label="Unit of measure"

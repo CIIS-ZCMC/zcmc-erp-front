@@ -149,6 +149,7 @@ export default function UserItemRequests() {
         <NewRequestModal
           openNewRequest={openRequest}
           setOpenNewRequest={setOpenRequest}
+          isAop={false}
         />
       )}
 

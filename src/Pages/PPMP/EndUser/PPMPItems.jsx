@@ -156,6 +156,9 @@ function PPMPItems(props) {
   }, [type]);
 
   const handleEditToggle = (rowId, openRow, isSaveClick) => {
+    const isEditable = status?.name === "draft" || status?.name === "returned";
+    if (!isEditable) return;
+
     const isEditing = editingRows[rowId];
     const lockedByOther =
       lockedRows[rowId] && lockedRows[rowId].editorId !== id;

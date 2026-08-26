@@ -1,5 +1,6 @@
 import { CheckOutlined, ModeEditOutlineOutlined } from "@mui/icons-material";
 import ChipComponent from "@Components/Common/ChipComponent";
+import { usePPMPState } from "../../../Hooks/PPMP/PPMPHook";
 
 export default function EditPPMPChip({
   rowId,
@@ -9,6 +10,11 @@ export default function EditPPMPChip({
   disabled = false,
   size = "md",
 }) {
+  const { status } = usePPMPState();
+  const isEditable = status?.name === "draft" || status?.name === "returned";
+
+  if (!isEditable) return null;
+
   return (
     <ChipComponent
       label={editing ? "Save" : "Edit"}
@@ -24,3 +30,4 @@ export default function EditPPMPChip({
     />
   );
 }
+

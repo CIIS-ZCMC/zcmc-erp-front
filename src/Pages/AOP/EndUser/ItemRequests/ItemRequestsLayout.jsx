@@ -80,6 +80,7 @@ export default function ItemRequestsLayout() {
         <NewRequestModal
           openNewRequest={openRequest}
           setOpenNewRequest={setOpenRequest}
+          isAop={false}
         />
       )}
     </Fragment>

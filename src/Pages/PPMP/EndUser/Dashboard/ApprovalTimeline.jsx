@@ -40,9 +40,13 @@ export default function ApprovalTimeline({
             minHeight: 0,
             overflowY: "auto", // ✅ only this scrolls
             p: 2,
-            display: "flex",
-            alignItems: "center",
-            justifyContent: "center",
+            ...(pageLoader || !timeline?.length
+              ? {
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "center",
+                }
+              : {}),
           }}
         >
           {pageLoader ? (
