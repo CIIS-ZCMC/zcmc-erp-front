@@ -40,11 +40,12 @@ const usePPMPStoreHook = create((set, get) => ({
       per_page = 15,
       search = "",
       category_id = null,
+      year = null,
     ) => {
       set({ isLoading: true });
       read({
         url: `${PATH}-items`,
-        params: { type, page, per_page, search, category_id },
+        params: { type, page, per_page, search, category_id, year },
         failed: () => {
           set({ isLoading: false });
           callBack && callBack();

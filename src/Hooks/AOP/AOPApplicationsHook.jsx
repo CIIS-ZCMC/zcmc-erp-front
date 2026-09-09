@@ -4,7 +4,7 @@ import {
   localStorageGetter,
   localStorageSetter,
 } from "../../Utils/LocalStorage";
-import { read, update } from "../../Services/RequestMethods";
+import { read, update, post } from "../../Services/RequestMethods";
 import { API } from "../../Data/constants";
 import { persist } from "zustand/middleware";
 
@@ -98,6 +98,29 @@ const useAOPApplicationsHook = create(
           } catch (e) {
             console.log(e);
           }
+        },
+
+        // REDRAFT PPMP / AOP
+        redraftPPMP: (body, callback) => {
+          set({ isLoading: true });
+          post({
+            url: `ppmp-redraft`,
+            form: body,
+            success: (response) => {
+              set({ isLoading: false });
+              const resData = response?.data;
+              const message =
+                resData?.message ||
+                resData?.data?.message ||
+                "Successfully redrafted AOP-PPMP.";
+              const data = resData?.data;
+              callback && callback(200, message, data);
+            },
+            failed: (status, message, errors) => {
+              set({ isLoading: false });
+              callback && callback(status, message, errors);
+            },
+          });
         },
       },
     }),

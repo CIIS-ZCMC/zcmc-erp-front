@@ -310,6 +310,8 @@ function DashboardEndUser(props) {
           isLoading={isAopLoading}
           setOpenFiscalYearModal={setOpenFiscalYearModal}
           setOpenNewRequest={setOpenNewRequest}
+          handleRedraft={props?.handleRedraft}
+          onRedraftSuccess={() => handleChangeFiscalYear(fiscalYear)}
         />
       )}
 

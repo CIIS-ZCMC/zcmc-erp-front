@@ -11,6 +11,7 @@ import {
 } from "../../../../Hooks/ItemRequest/ItemRequestHook";
 import userErrorInputHook from "../../../../Hooks/ErrorInputHook";
 import useAOPStore, { useAOPActions } from "../../../../Store/AOPStore";
+
 // View Item Requests Modal Components
 import PPMPSummaryCards from "./PPMPSummaryCards";
 import DashboardHeader from "./DashboardHeader";
@@ -34,6 +35,7 @@ function PPMPDashboard(props) {
   const { setFiscalYear } = useAOPActions();
 
   const navigate = useNavigate();
+  const { setAlertDialog, closeAlertDialog } = useModalHook();
   const { dashboard, years, timeline } = usePPMPState();
   const {
     getPPMPDashboard,
@@ -71,6 +73,7 @@ function PPMPDashboard(props) {
   const [openSave, setOpenSave] = useState(false);
   const [buttonLoader, setButtonLoader] = useState(false);
   const [pin, setPin] = useState("");
+  const [submissionError, setSubmissionError] = useState("");
   const [openViewItemRequest, setOpenItemRequest] = useState();
   const [openNewRequest, setOpenNewRequest] = useState(false);
   const [step, setStep] = useState(1);
@@ -100,6 +103,7 @@ function PPMPDashboard(props) {
   const handleSubmit = async () => {
     try {
       setButtonLoader(true);
+      setSubmissionError("");
 
       const payload = {
         status_id: 2,
@@ -110,10 +114,14 @@ function PPMPDashboard(props) {
         dashboard.ppmp_application.id,
         payload,
         (status, message, errors) => {
+          setButtonLoader(false);
+          const errorMsg =
+            typeof message === "object" ? message?.message : message;
+
           if (status === 200) {
-            setButtonLoader(false);
             setOpenSave(false);
             setPin("");
+            setSubmissionError("");
             setOpenSuccessDialog(true);
             getPPMPTimeline(AOP_ID, (status, message) => {
               if (!(status >= 200 && status < 300)) {
@@ -121,47 +129,42 @@ function PPMPDashboard(props) {
               }
             });
             return;
-          } else {
-            setButtonLoader(false);
+          }
+
+          const isAopDraft =
+            typeof errorMsg === "string" &&
+            errorMsg.toLowerCase().includes("aop is still in draft");
+
+          const isPinError =
+            (typeof errorMsg === "string" &&
+              (errorMsg.toLowerCase().includes("pin") ||
+                errorMsg.toLowerCase().includes("authorization"))) ||
+            (status === 400 && !isAopDraft);
+
+          if (isAopDraft) {
+            setSubmissionError(errorMsg);
+          } else if (isPinError) {
+            setSubmissionError(errorMsg);
             setAlertDialog({
               status: "error",
-              title: "Cannot submit PPMP",
-              description: (
-                <>
-                  {status === 400 ? (
-                    <Typography>{message}</Typography>
-                  ) : (
-                    <Stack spacing={2} alignItems={"flex-end"} mt={1}>
-                      <Typography>{message}</Typography>
-                      <Link
-                        component={"button"}
-                        onClick={() => {
-                          closeAlertDialog();
-                          handleNavigate("regular");
-                        }}
-                        endDecorator={<ArrowForward />}
-                        sx={{
-                          cursor: "pointer",
-                          fontSize: 14,
-                        }}
-                        variant="soft"
-                      >
-                        Go to Item Management
-                      </Link>
-                    </Stack>
-                  )}
-                </>
-              ),
+              title: errorMsg || "Invalid Authorization PIN",
+              description: "",
+            });
+          } else {
+            setAlertDialog({
+              status: "error",
+              title: "Cannot submit: Check your PPMP Checklist."
             });
           }
         },
       );
     } catch (error) {
       console.error(error);
+      setButtonLoader(false);
       setAlertDialog({
         status: "error",
-        title: "Something went wrong",
-        description: "error",
+        title: "Unexpected Error",
+        description: "Something went wrong.",
       });
     }
   };
@@ -179,7 +182,7 @@ function PPMPDashboard(props) {
       }
       setPageLoader(false); // always hide loader
     }, fiscalYear);
-  }, [fiscalYear]);
+  }, [fiscalYear, getPPMPDashboard, getYearList]);
 
   useEffect(() => {
     if (!AOP_ID) return;
@@ -204,10 +207,7 @@ function PPMPDashboard(props) {
       });
   };
 
-  const isDispensing =
-    dashboard?.is_dispensing !== undefined
-      ? Boolean(dashboard?.is_dispensing)
-      : true;
+  const isDispensing = Boolean(dashboard?.is_dispensing);
 
   return (
     <Fragment>
@@ -340,7 +340,10 @@ function PPMPDashboard(props) {
           nextYear={nextYear}
           handleSubmit={handleSubmit}
           buttonLoader={buttonLoader}
+          pin={pin}
           setPin={setPin}
+          errorMessage={submissionError}
+          setErrorMessage={setSubmissionError}
         />
       )}
 
