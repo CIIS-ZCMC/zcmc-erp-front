@@ -9,10 +9,10 @@ const SOCKET_URL =
 export const socket = io(SOCKET_URL, {
   autoConnect: true,
   reconnection: true,
-  reconnectionAttempts: 10,
-  reconnectionDelay: 1000,
-  reconnectionDelayMax: 5000,
-  timeout: 20000,
+  reconnectionAttempts: 3,
+  reconnectionDelay: 5000,
+  reconnectionDelayMax: 10000,
+  timeout: 5000,
   transports: ["websocket", "polling"],
 });
 
@@ -47,4 +47,4 @@ export const disconnectSocket = () => {
   if (socket.connected) {
     socket.disconnect();
   }
-};
+};

@@ -52,7 +52,7 @@ export const upload = ({ url, form, success, failed }) => {
  */
 export const read = ({ url, params, token, success, failed = () => {} }) => {
   erp_api
-    .get(url, { params: params }, { cancelToken: token })
+    .get(url, { params: params, cancelToken: token })
     .then((res) => validateStatusOk(res))
     .then((res) => success(res))
     .catch((err) => failed(...handleFailedStatus(err)));

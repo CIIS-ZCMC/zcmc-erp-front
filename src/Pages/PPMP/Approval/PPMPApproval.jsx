@@ -67,14 +67,18 @@ function PPMPApproval() {
     });
   };
 
-  useEffect(() => {
-    const debouncedFetch = debounce((params) => {
-      setIsFetchLoading(true);
-      getPPMPApplications(params, () => {
-        setIsFetchLoading(false);
-      });
-    }, 300);
+  const debouncedFetch = useMemo(
+    () =>
+      debounce((params) => {
+        setIsFetchLoading(true);
+        getPPMPApplications(params, () => {
+          setIsFetchLoading(false);
+        });
+      }, 300),
+    [getPPMPApplications],
+  );
 
+  useEffect(() => {
     const params = {
       status: index === "all" ? null : index,
       year,
@@ -86,7 +90,7 @@ function PPMPApproval() {
     return () => {
       debouncedFetch.cancel();
     };
-  }, [index, year, search, getPPMPApplications]);
+  }, [index, year, search, debouncedFetch]);
 
   return (
     <Fragment>

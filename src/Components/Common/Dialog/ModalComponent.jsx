@@ -107,6 +107,8 @@ function ModalComponent({
             ? "translate(-50%, -50%) scale(1)"
             : "translate(-50%, -55%) scale(0.95)",
           opacity: isOpen ? 1 : 0,
+          pointerEvents: isOpen ? "auto" : "none",
+          visibility: isOpen ? "visible" : "hidden",
           transition: "all 0.3s ease-in-out",
         }}
         minWidth={minWidth}

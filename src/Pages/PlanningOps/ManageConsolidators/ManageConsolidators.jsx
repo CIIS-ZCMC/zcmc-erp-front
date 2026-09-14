@@ -71,11 +71,16 @@ export default function ManageConsolidators() {
     });
   };
 
+  // Fetch item categories once on mount
+  useEffect(() => {
+    getItemCategories(() => {});
+  }, []);
+
+  // Fetch consolidators when searchQuery changes
   useEffect(() => {
     actions.getConsolidators(searchQuery, (status, message) => {
       console.log(status, message);
     });
-    getItemCategories(() => {});
   }, [searchQuery]);
 
   const columns = React.useMemo(

@@ -217,6 +217,8 @@ export default function ItemRequestModal({ open, handleClose, status, row }) {
     }
   };
 
+  if (!open) return null;
+
   return (
     <div>
       <ModalComponent

@@ -435,7 +435,7 @@ export const Items = () => {
                     />
                     <Stack direction={"row"} spacing={1}>
                       <AutocompleteComponent
-                        label="Classification"
+                        label="Project Type"
                         name="classification"
                         options={classification}
                         getOptionLabel={(option) => option.name || ""}
@@ -513,7 +513,7 @@ export const Items = () => {
                       />
                     </Stack>
 
-                    <Checkbox
+                    {/* <Checkbox
                       label="I have conducted a market research prior setting the budget estimates."
                       sx={{ color: grey[900], fontSize: 13, pt: 1 }}
                       size="sm"
@@ -526,7 +526,7 @@ export const Items = () => {
                           e.target.checked,
                         )
                       }
-                    />
+                    /> */}
                   </Stack>
                 ) : (
                   <Stack>
@@ -631,7 +631,7 @@ export const Items = () => {
                     />
                     <Stack direction={"row"} spacing={1}>
                       <AutocompleteComponent
-                        label="Classification"
+                        label="Project Type"
                         name="classification"
                         options={classification}
                         getOptionLabel={(option) => option.name || ""}
@@ -709,7 +709,7 @@ export const Items = () => {
                       />
                     </Stack>
 
-                    <Checkbox
+                    {/* <Checkbox
                       label="I have conducted a market research prior setting the budget estimates."
                       sx={{ color: grey[900], fontSize: 13, pt: 1 }}
                       size="sm"
@@ -722,7 +722,7 @@ export const Items = () => {
                           e.target.checked,
                         )
                       }
-                    />
+                    /> */}
                   </Stack>
                 ) : (
                   <Stack>
@@ -781,8 +781,8 @@ export const Items = () => {
                   </Stack>
                 )}
               </TabComponent>
-              <Divider />
-              <AuthorizationPinComponent setPin={setPin} />
+              {/* <Divider /> */}
+              {/* <AuthorizationPinComponent setPin={setPin} /> */}
             </>
           }
           hasActionButtons

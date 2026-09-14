@@ -2029,8 +2029,8 @@ export const ITEMS_REQUESTS = (handleOpen, pathName, showActions = false) => [
     width: "250px",
     render: (r) => (
       <div>
-        <Typography level="title-sm">{r.item_classification.name}</Typography>
-        <Typography level="body-sm">{r.item_category.name}</Typography>
+        <Typography level="title-sm">{r.item_classification?.name || "N/A"}</Typography>
+        <Typography level="body-sm">{r.item_category?.name || "N/A"}</Typography>
       </div>
     ),
     expandTrigger: true, // ❗ only this column toggles expand
@@ -2044,7 +2044,7 @@ export const ITEMS_REQUESTS = (handleOpen, pathName, showActions = false) => [
         <Typography level="title-sm">
           {formattedPrice(r.estimated_budget)}
         </Typography>
-        <Typography level="body-sm">{r.item_unit.name}</Typography>
+        <Typography level="body-sm">{r.item_unit?.name || "N/A"}</Typography>
       </>
     ),
 
