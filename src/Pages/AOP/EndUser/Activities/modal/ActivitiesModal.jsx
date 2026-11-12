@@ -28,20 +28,24 @@ const ActivitiesModal = ({ selectedActivity }) => {
 
     // EDIT MODE
     if (selectedActivity) {
-      setActivity(selectedActivity.name || "");
+      const act = selectedActivity?.activities?.[0] || selectedActivity;
 
-      setStartMonth(selectedActivity.start_month || `${defaultYear}-01`);
+      setActivity(act.activity_name || act.name || "");
 
-      setEndMonth(selectedActivity.end_month || `${defaultYear}-12`);
+      setStartMonth(act.start_month || `${defaultYear}-01`);
 
-      setIsGadRelated(selectedActivity.is_gad_related || false);
+      setEndMonth(act.end_month || `${defaultYear}-12`);
 
-      if (selectedActivity.target) {
+      setIsGadRelated(act.is_gad_related || false);
+
+      if (act.target) {
+        const clean = (val) => (val !== null && val !== undefined ? String(val).replace("%", "") : "");
+
         setTarget({
-          firstQuarter: selectedActivity.target.first_quarter || "",
-          secondQuarter: selectedActivity.target.second_quarter || "",
-          thirdQuarter: selectedActivity.target.third_quarter || "",
-          fourthQuarter: selectedActivity.target.fourth_quarter || "",
+          firstQuarter: clean(act.target.first_quarter),
+          secondQuarter: clean(act.target.second_quarter),
+          thirdQuarter: clean(act.target.third_quarter),
+          fourthQuarter: clean(act.target.fourth_quarter),
         });
       }
 

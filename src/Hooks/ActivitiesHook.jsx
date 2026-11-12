@@ -35,11 +35,10 @@ const useActivitiesHook = () => {
         url: `${API.ACTIVITY_SHOW}/${params.id}`,
         failed: callBack,
         success: (res) => {
-          const {
-            status,
-            data: { data, message },
-          } = res;
-          setApplicationActivity(data);
+          const status = res?.status;
+          const message = res?.data?.message;
+          const activityData = res?.data?.data || res?.data?.activities?.[0] || res?.data;
+          setApplicationActivity(activityData);
           setIsEditLoading(false);
           callBack(status, message);
         },

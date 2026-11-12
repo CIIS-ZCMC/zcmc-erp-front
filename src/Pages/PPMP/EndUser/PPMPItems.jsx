@@ -101,8 +101,9 @@ function PPMPItems(props) {
       perPage,
       search,
       selectedCategory?.id,
+      fiscalYear,
     );
-  }, [page, perPage, search, selectedCategory?.id]);
+  }, [page, perPage, search, selectedCategory?.id, fiscalYear, getPPMPItems]);
 
   useEffect(() => {
     if (ppmp_items) {
@@ -260,7 +261,7 @@ function PPMPItems(props) {
                 Manage Resources for{" "}
               </Typography>
               <ChipComponent
-                label={`PPMP Fiscal Year ${nextYear}`} // change to dynamic activity name
+                label={`PPMP Fiscal Year ${fiscalYear}`}
                 color={"success"}
                 variant={"outlined"}
                 fontSize={12}

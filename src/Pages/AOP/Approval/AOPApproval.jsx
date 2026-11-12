@@ -29,7 +29,7 @@ import { ThreeDotsLoader } from "../../../Components/Common/Loading/ThreeDotsLoa
 import PageLoader from "../../../Components/Loading/PageLoader";
 import { ThreeDots } from "react-loader-spinner";
 import debounce from "lodash.debounce";
-import useAOPStore from "../../../Store/AOPStore";
+import useAOPStore, { useAOPActions } from "../../../Store/AOPStore";
 import useAOPHook from "../../../Hooks/AOP/AOPHook";
 import { nextYear } from "../../../Utils/Functions";
 import { CalendarToday, FileDownload } from "@mui/icons-material";
@@ -56,6 +56,7 @@ const AOPApproval = () => {
   const { showSnack } = useSnackbarHook();
   const { timelines, approverTimelines } = useTimelinesStore();
   const { yearDetails } = useAOPStore();
+  const { setFiscalYear } = useAOPActions();
   const { timelines: applicationTimelines, filters } = timelines;
   const { status_id, year: currentFiscalYear } = filters || {};
   const { next_year_included, years } = yearDetails || {};
@@ -151,6 +152,10 @@ const AOPApproval = () => {
   );
 
   useEffect(() => {
+    if (year) {
+      setFiscalYear(year);
+    }
+
     debouncedFetch({
       search,
       year,
@@ -160,7 +165,7 @@ const AOPApproval = () => {
     return () => {
       debouncedFetch.cancel();
     };
-  }, [search, year, index, debouncedFetch]);
+  }, [search, year, index, debouncedFetch, setFiscalYear]);
 
   return (
     <Fragment>

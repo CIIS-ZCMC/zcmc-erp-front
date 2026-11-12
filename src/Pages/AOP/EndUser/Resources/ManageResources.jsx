@@ -149,6 +149,16 @@ function ManageResources(props) {
     );
   };
 
+  // Fetch purchase types once on mount
+  useEffect(() => {
+    getPurchaseType((status, message) => {
+      if (status !== 200) {
+        console.error("Failed to fetch items:", message);
+      }
+    });
+  }, []);
+
+  // Fetch AOP resources when activity, purchase type, or debounced search changes
   useEffect(() => {
     if (!activityId) return; // prevent calling if id is not ready
     setIsLoading(true);
@@ -166,12 +176,6 @@ function ManageResources(props) {
         search: search,
       },
     );
-
-    getPurchaseType((status, message) => {
-      if (status !== 200) {
-        console.error("Failed to fetch items:", message);
-      }
-    });
   }, [activityId, selectedPurchaseType, search]);
   return (
     <Fragment>

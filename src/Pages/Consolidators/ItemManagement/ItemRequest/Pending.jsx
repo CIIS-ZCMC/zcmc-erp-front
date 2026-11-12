@@ -75,12 +75,14 @@ export default function Pending() {
         renderExpanded={(row) => <ItemDetailsRow row={row} />}
       />
 
-      <ItemRequestModal
-        open={openApprove}
-        handleClose={() => setOpenApprove(false)}
-        status={status}
-        row={row}
-      />
+      {openApprove && (
+        <ItemRequestModal
+          open={openApprove}
+          handleClose={() => setOpenApprove(false)}
+          status={status}
+          row={row}
+        />
+      )}
     </div>
   );
 }

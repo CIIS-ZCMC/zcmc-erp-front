@@ -106,9 +106,16 @@ const ExpandableRowComponent = ({
   const handleAddActivity = (selected) => {
     if (!selected) return;
 
-    const exists = linkedActivities.some(
-      (a) => a.activity_code === selected.activity_code,
-    );
+    const selectedId = selected.activity_id || selected.id;
+    const selectedCode = selected.activity_code || selected.code;
+
+    // Activities are uniquely identified by their database ID (activity_id / id)
+    // Checking activity_code can falsely block different activities sharing the same code across objectives
+    const exists = linkedActivities.some((a) => {
+      const aId = a.activity_id ?? a.id;
+      return selectedId != null && aId != null && String(aId) === String(selectedId);
+    });
+
     if (exists) {
       showSnack(500, "Activity has already been selected.");
       return;
@@ -116,9 +123,12 @@ const ExpandableRowComponent = ({
 
     const newAct = {
       ...selected,
+      activity_id: selectedId,
+      activity_code: selectedCode,
+      activity_name: selected.activity_name || selected.name,
       resources_quantity: 1,
-      total_amount: row?.item?.estimated_budget,
-      unit: selected.unit || "",
+      total_amount: row?.item?.estimated_budget || 0,
+      unit: selected.unit || unit || "",
     };
 
     setLinkedActivities((prev) => [newAct, ...prev]);
@@ -143,14 +153,15 @@ const ExpandableRowComponent = ({
     showSnack(200, "Activity removed.");
   };
 
-  const handleQuantityChange = (activityCode, value) => {
+  const handleQuantityChange = (actId, value) => {
     const qty = Number(value) || 0;
     setLinkedActivities((prev) =>
-      prev.map((item) =>
-        item.activity_code === activityCode
+      prev.map((item) => {
+        const itemId = item.activity_id ?? item.id;
+        return String(itemId) === String(actId)
           ? { ...item, resources_quantity: qty }
-          : item,
-      ),
+          : item;
+      }),
     );
   };
 
@@ -198,7 +209,7 @@ const ExpandableRowComponent = ({
                       size="sm"
                       value={act.resources_quantity}
                       onChange={(e) =>
-                        handleQuantityChange(act.activity_code, e.target.value)
+                        handleQuantityChange(act.activity_id ?? act.id, e.target.value)
                       }
                       disabled={isLocked}
                     />

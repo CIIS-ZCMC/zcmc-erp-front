@@ -76,7 +76,7 @@ export const RESPONSIBLE = {
 };
 
 export const AOP_SUMMARY = {
-  PAGE_TITLE: "AOP #2025-0031 for Fiscal Year 2026",
+  PAGE_TITLE: "AOP for Fiscal Year ",
   PAGE_REVIEW:
     "Please carefully review the complete summary of your AOP request below. Verify all details are correct before submitting. Once submitted, your AOP will be forwarded to the the approving bodies for review and approval.",
   SUMMARY_CARD_HEADER: "Document Status:",

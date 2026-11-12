@@ -148,7 +148,7 @@ export const useUserTypes = () => {
       isDivisionHead:
         type === "division" && is_head && area.area_id !== AREA_ID.OMCC,
       isPlanning:
-        area.area_id === AREA_ID.PLANNING_UNIT || area.name === "Planning Unit",
+        area.area_id === AREA_ID.PLANNING_UNIT || area.name === "OMCC: Planning Unit",
       isDepartmentHead: area.area_id === AREA_ID.OMCC || false,
       isMCC: area.area_id === AREA_ID.OMCC && is_head,
       isBudget: area.area_id === AREA_ID.BUDGET && is_head,

@@ -12,6 +12,7 @@ const ObjectivesCard = ({
   handleNavigate,
   height,
   successIndicatorCount,
+  label = "Go to Objectives",
 }) => {
   return (
     <>
@@ -23,7 +24,7 @@ const ObjectivesCard = ({
         description={`Contains (${successIndicatorCount}) success indicators in total on this request`}
         functionHandler={
           <ButtonComponent
-            label={"Go to Objectives"}
+            label={label}
             size={"sm"}
             onClick={hasFunction ? handleNavigate : null}
             endDecorator={<ArrowRight />}

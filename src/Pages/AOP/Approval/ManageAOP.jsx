@@ -79,6 +79,9 @@ import AccordionDetails from "../EndUser/accordion/Objectives/AccordionDetails";
 import ChipComponent from "@Components/Common/ChipComponent";
 import { AOP_SUMMARY } from "../../../Data/constants";
 import { useAopApplication } from "@Store/ObjectivesStore";
+import { nextYear } from "../../../Utils/Functions";
+
+import useAOPStore from "../../../Store/AOPStore";
 
 export default function ManageAOP() {
   const isLoading = useLoadingState();
@@ -103,6 +106,7 @@ export default function ManageAOP() {
   const objectives = useAOPApplicationObjectives();
   const remarks = useRemarks();
   const hasDispense = useHasDispense();
+  const { fiscalYear } = useAOPStore();
 
   const allReviewed = Boolean(
     objectives?.length &&
@@ -123,7 +127,11 @@ export default function ManageAOP() {
   const [expandedObjective, setExpandedObjective] = useState(null);
   const [targetActivityId, setTargetActivityId] = useState(null);
 
-  const FISCAL_YEAR = new Date().getFullYear() + 1;
+  const FISCAL_YEAR =
+    aopApplication?.year ||
+    aopApplication?.fiscal_year ||
+    fiscalYear ||
+    nextYear;
 
   // FUNCTIONS
   const handleSelectActivityFromFeedback = (commentItem) => {
@@ -472,6 +480,7 @@ export default function ManageAOP() {
               handleNavigate={() =>
                 navigate(`/approval/view-ppmp/${AOP_APPLICATION_ID}/regular`)
               }
+              label={"View PPMP"}
             />
           </Grid>
 

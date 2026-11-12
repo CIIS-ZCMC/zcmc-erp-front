@@ -204,7 +204,7 @@ const AOPSummary = () => {
   return (
     <>
       <PageTitle
-        title={PAGE_TITLE}
+        title={`${PAGE_TITLE}${year || ""}`}
         description={PAGE_REVIEW}
         withArrowBack
         onClickArrow={() => navigate("/aop")}
