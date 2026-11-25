@@ -212,6 +212,7 @@ export const sidebarRoutes = [
         name: "Budget Deliberation",
         element: <BudgetDeliberation />,
         childPermissions: ["ERP-PPMP-MAN:approve"],
+        budgetOfficerOnly: true,
       },
     ],
   },

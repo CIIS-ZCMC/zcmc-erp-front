@@ -5,6 +5,7 @@ import SimpleMenuItem from "./MenuItemComponent/SimpleMenuItem";
 import useSidebarHook from "../../../Hooks/SidebarHook";
 import { sidebarConfig } from "../../../Routes/sidebarConfig";
 import { useAuth } from "../../../Store/AuthStore";
+import { isBudgetOfficerUser } from "../../../Utils/BudgetOfficerCheck";
 
 const checkPermission = (requiredPermissions, userPermSet) => {
   if (!requiredPermissions || requiredPermissions.length === 0) return true;
@@ -12,9 +13,14 @@ const checkPermission = (requiredPermissions, userPermSet) => {
   return requiredPermissions.some((perm) => userPermSet.has(perm));
 };
 
+const checkRouteAccess = (route, userPermSet, isBudgetOfficer) => {
+  if (route?.budgetOfficerOnly && !isBudgetOfficer) return false;
+  return checkPermission(route?.childPermissions || route?.permissions, userPermSet);
+};
+
 const Content = () => {
   const { isCollapsed } = useSidebarHook();
-  const { permissions, isAuthenticated } = useAuth();
+  const { user, permissions, isAuthenticated } = useAuth();
   const theme = useTheme();
   const color = theme.palette.custom;
 
@@ -25,19 +31,19 @@ const Content = () => {
     }
 
     const permSet = new Set(permissions);
+    const budgetOfficer = isBudgetOfficerUser(user);
 
     return sidebarConfig
       .map((route) => {
-        // Top-level permission check
-        const topPerm = route.permissions || route.childPermissions;
-        if (!checkPermission(topPerm, permSet)) {
+        // Top-level permission and role check
+        if (!checkRouteAccess(route, permSet, budgetOfficer)) {
           return null;
         }
 
         // If route has children, filter children that user has access to
         if (route.children && route.children.length > 0) {
           const childrenItems = route.children.filter((child) =>
-            checkPermission(child.childPermissions || child.permissions, permSet)
+            checkRouteAccess(child, permSet, budgetOfficer)
           );
 
           // If user has no access to any child items, prune the parent section
@@ -51,7 +57,7 @@ const Content = () => {
         return route;
       })
       .filter(Boolean);
-  }, [permissions, isAuthenticated]);
+  }, [user, permissions, isAuthenticated]);
 
   // Show loading state if not authenticated or no permissions yet
   if (!isAuthenticated || !permissions || permissions.length === 0) {

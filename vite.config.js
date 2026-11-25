@@ -16,8 +16,8 @@ export default defineConfig({
       "@Services": path.resolve(__dirname, "src/Services"),
     },
   },
-  // server: {
-  //   host: "192.168.36.163", // alyans
-  //   port: 5173,
-  // },
+  server: {
+    host: true, // Listens on all local LAN IPs (e.g. http://192.168.36.162:5173)
+    port: 5173,
+  },
 });

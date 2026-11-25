@@ -94,6 +94,7 @@ export const sidebarConfig = [
         path: "/budget-deliberation",
         name: "Budget Deliberation",
         childPermissions: ["ERP-PPMP-MAN:approve"],
+        budgetOfficerOnly: true,
       },
     ],
   },

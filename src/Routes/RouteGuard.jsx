@@ -2,11 +2,19 @@
 import { Navigate } from "react-router-dom";
 import { useAuth } from "../Store/AuthStore";
 import { localStorageGetter } from "../Utils/LocalStorage";
+import { isBudgetOfficerUser } from "../Utils/BudgetOfficerCheck";
 
-const RouteGuard = ({ permissions, children }) => {
-  const { permissions: userPermissions, isAuthenticated } = useAuth();
+const RouteGuard = ({ permissions, budgetOfficerOnly = false, children }) => {
+  const { user, permissions: userPermissions, isAuthenticated } = useAuth();
 
   if (!isAuthenticated) return null;
+
+  if (budgetOfficerOnly && !isBudgetOfficerUser(user)) {
+    const lastPath = localStorageGetter("path") || "/";
+    return (
+      <Navigate to={lastPath} replace state={{ from: location.pathname }} />
+    );
+  }
 
   if (!permissions || permissions.length === 0) return children;
 
